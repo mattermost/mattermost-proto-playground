@@ -16,6 +16,8 @@ export interface LibraryEntry {
   description?: string;
   /** Lazy import of the .library.tsx page. */
   page: () => Promise<{ default: ComponentType }>;
+  /** Render outside DocPage chrome. Use for layouts and other full-width demos. */
+  fullBleed?: boolean;
 }
 
 export const LIBRARY_ENTRIES: LibraryEntry[] = [
@@ -433,6 +435,89 @@ export const LIBRARY_ENTRIES: LibraryEntry[] = [
     status: 'stable',
     page: () =>
       import('@/components/ui/UserAvatarGroup/UserAvatarGroup.library'),
+  },
+
+  // Patterns
+  {
+    slug: 'modal',
+    name: 'Modal',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/Modal/Modal.library'),
+  },
+  {
+    slug: 'global-header',
+    name: 'Global Header',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/GlobalHeader/GlobalHeader.library'),
+  },
+  {
+    slug: 'channel-header',
+    name: 'Channel Header',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/ChannelHeader/ChannelHeader.library'),
+  },
+  {
+    slug: 'post',
+    name: 'Post',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/Post/Post.library'),
+  },
+  {
+    slug: 'team-sidebar',
+    name: 'Team Sidebar',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/TeamSidebar/TeamSidebar.library'),
+  },
+  {
+    slug: 'channel-sidebar',
+    name: 'Channel Sidebar',
+    category: 'patterns',
+    status: 'stable',
+    page: () =>
+      import('@/components/ui/ChannelsSidebar/ChannelsSidebar.library'),
+  },
+  {
+    slug: 'message-input',
+    name: 'Message Input',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/MessageInput/MessageInput.library'),
+  },
+  {
+    slug: 'call-widget',
+    name: 'Call Widget',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/CallWidget/CallWidget.library'),
+  },
+  {
+    slug: 'profile-popover',
+    name: 'Profile Popover',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/ProfilePopover/ProfilePopover.library'),
+  },
+  {
+    slug: 'right-sidebar',
+    name: 'Right Sidebar',
+    category: 'patterns',
+    status: 'stable',
+    page: () => import('@/components/ui/RightSidebar/RightSidebar.library'),
+  },
+
+  // Layouts
+  {
+    slug: 'messaging',
+    name: 'Messaging',
+    category: 'layouts',
+    status: 'stable',
+    page: () => import('@/pages/Layouts/Layouts'),
+    fullBleed: true,
   },
 ];
 

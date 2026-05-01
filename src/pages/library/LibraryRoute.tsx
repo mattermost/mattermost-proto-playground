@@ -43,6 +43,14 @@ export default function LibraryRoute() {
     );
   }
 
+  if (entry.fullBleed) {
+    return (
+      <Suspense fallback={<p>Loading…</p>}>
+        <Page />
+      </Suspense>
+    );
+  }
+
   return (
     <DocPage eyebrow={eyebrowFor(entry)} title={entry.name}>
       <Suspense fallback={<p>Loading…</p>}>
