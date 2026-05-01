@@ -1,7 +1,11 @@
 import type { ComponentType } from 'react';
 
 export type LibraryStatus = 'stable' | 'beta' | 'deprecated';
-export type LibraryCategory = 'foundations' | 'components' | 'patterns' | 'layouts';
+export type LibraryCategory =
+  | 'foundations'
+  | 'components'
+  | 'patterns'
+  | 'layouts';
 
 export interface LibraryEntry {
   /** URL-safe identifier, used as the route slug. */
@@ -92,7 +96,8 @@ export const LIBRARY_ENTRIES: LibraryEntry[] = [
     name: 'Date & Range Picker',
     category: 'components',
     status: 'stable',
-    page: () => import('@/components/ui/DateRangePicker/DateRangePicker.library'),
+    page: () =>
+      import('@/components/ui/DateRangePicker/DateRangePicker.library'),
   },
   {
     slug: 'divider',
@@ -219,14 +224,16 @@ export const LIBRARY_ENTRIES: LibraryEntry[] = [
     name: 'Message Reactions',
     category: 'components',
     status: 'stable',
-    page: () => import('@/components/ui/MessageReactions/MessageReactions.library'),
+    page: () =>
+      import('@/components/ui/MessageReactions/MessageReactions.library'),
   },
   {
     slug: 'message-separator',
     name: 'Message Separator',
     category: 'components',
     status: 'stable',
-    page: () => import('@/components/ui/MessageSeparator/MessageSeparator.library'),
+    page: () =>
+      import('@/components/ui/MessageSeparator/MessageSeparator.library'),
   },
   {
     slug: 'more-unreads-banner',
@@ -525,9 +532,13 @@ export function findLibraryEntry(
   category: LibraryCategory,
   slug: string,
 ): LibraryEntry | undefined {
-  return LIBRARY_ENTRIES.find((e) => e.category === category && e.slug === slug);
+  return LIBRARY_ENTRIES.find(
+    (e) => e.category === category && e.slug === slug,
+  );
 }
 
-export function libraryEntriesByCategory(category: LibraryCategory): LibraryEntry[] {
+export function libraryEntriesByCategory(
+  category: LibraryCategory,
+): LibraryEntry[] {
   return LIBRARY_ENTRIES.filter((e) => e.category === category);
 }

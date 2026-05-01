@@ -57,14 +57,13 @@ export default function Scrollbar({
 
   return (
     <div
-      className={[styles.scrollbar, orientationClass, className].filter(Boolean).join(' ')}
+      className={[styles.scrollbar, orientationClass, className]
+        .filter(Boolean)
+        .join(' ')}
       aria-hidden
     >
       <div className={styles['scrollbar__track']}>
-        <div
-          className={styles['scrollbar__thumb']}
-          style={thumbStyle}
-        />
+        <div className={styles['scrollbar__thumb']} style={thumbStyle} />
       </div>
     </div>
   );

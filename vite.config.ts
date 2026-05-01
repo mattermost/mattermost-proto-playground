@@ -14,7 +14,10 @@ export default defineConfig({
       ...mdx({
         providerImportSource: '@mdx-js/react',
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [rehypeSlug, [rehypeAutolinkHeadings, { behavior: 'wrap' }]],
+        rehypePlugins: [
+          rehypeSlug,
+          [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+        ],
       }),
     },
     react({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),

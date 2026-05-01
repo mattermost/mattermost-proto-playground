@@ -32,10 +32,7 @@ export default function LibraryIndex() {
   }));
 
   return (
-    <DocPage
-      eyebrow="Design system"
-      title="Library"
-    >
+    <DocPage eyebrow="Design system" title="Library">
       <p>
         Live reference for tokens, components, patterns, and layouts. Prose
         guidance lives in <Link to="/guidelines">Guidelines</Link>.

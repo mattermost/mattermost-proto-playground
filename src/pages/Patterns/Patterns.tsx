@@ -52,8 +52,8 @@ const modalBody = (
   <div className={styles['patterns__modal-body-content']}>
     <p className={styles['patterns__body-text']}>
       This will permanently delete <strong>#design</strong> and all its
-      messages. Members will lose access immediately. This action cannot
-      be undone.
+      messages. Members will lose access immediately. This action cannot be
+      undone.
     </p>
     <TextInput label='Type "design" to confirm' placeholder="design" />
   </div>
@@ -81,7 +81,13 @@ function ModalDemo() {
       <div>
         <p className={styles['patterns__variant-label']}>Without dividers</p>
         <ModalCanvas>
-          <Modal title="Delete Channel" size="Small" headerDivider={false} footerDivider={false} footer={modalFooter}>
+          <Modal
+            title="Delete Channel"
+            size="Small"
+            headerDivider={false}
+            footerDivider={false}
+            footer={modalFooter}
+          >
             {modalBody}
           </Modal>
         </ModalCanvas>
@@ -93,13 +99,21 @@ function ModalDemo() {
 // ── Call Widget demo ───────────────────────────────────────────────────────
 
 const callWidgetParticipants: Participant[] = [
-  { id: '1', name: 'Leonard Riley', avatarSrc: avatarLeonard, host: true, talking: true },
+  {
+    id: '1',
+    name: 'Leonard Riley',
+    avatarSrc: avatarLeonard,
+    host: true,
+    talking: true,
+  },
   { id: '2', name: 'Aiko Tan', avatarSrc: avatarAikoTan },
   { id: '3', name: 'Arjun Patel', avatarSrc: avatarArjunPatel, muted: true },
 ];
 
 function CallWidgetDemo() {
-  const [overlay, setOverlay] = useState<'menu' | 'info' | 'participants' | null>(null);
+  const [overlay, setOverlay] = useState<
+    'menu' | 'info' | 'participants' | null
+  >(null);
   const [muted, setMuted] = useState(false);
   const [handRaised, setHandRaised] = useState(false);
   const [sharing, setSharing] = useState(false);
@@ -107,7 +121,9 @@ function CallWidgetDemo() {
 
   return (
     <div className={styles['patterns__call-widget-demo']}>
-      <p className={styles['patterns__variant-label']}>Active call (interactive)</p>
+      <p className={styles['patterns__variant-label']}>
+        Active call (interactive)
+      </p>
       <CallWidget
         participants={callWidgetParticipants}
         currentUserId="1"
@@ -172,28 +188,43 @@ function ChannelInfoBody() {
         <h3 className={styles['patterns__rsb-info-name']}>UX Design</h3>
 
         <div className={styles['patterns__rsb-info-group']}>
-          <span className={styles['patterns__rsb-info-group-title']}>Channel Purpose</span>
+          <span className={styles['patterns__rsb-info-group-title']}>
+            Channel Purpose
+          </span>
           <p className={styles['patterns__rsb-info-body-text']}>
             Discussion of UX by core contributors and staff.
           </p>
         </div>
 
         <div className={styles['patterns__rsb-info-group']}>
-          <span className={styles['patterns__rsb-info-group-title']}>Channel Header</span>
+          <span className={styles['patterns__rsb-info-group-title']}>
+            Channel Header
+          </span>
           <p className={styles['patterns__rsb-info-header-text']}>
-            <a href="#">Spec Template</a>{' | '}
-            <a href="#">UX Guidelines</a>{' | '}
-            <a href="#">UX Scratch</a>{' | '}
-            <a href="#">(Internal) UX Folder</a>{' | '}
-            <a href="#">Design Checklist</a>{' | '}
-            <a href="#">Design Checklist</a>{' | '}
-            <a href="#">Design Meeting Notes</a>{' | '}
+            <a href="#">Spec Template</a>
+            {' | '}
+            <a href="#">UX Guidelines</a>
+            {' | '}
+            <a href="#">UX Scratch</a>
+            {' | '}
+            <a href="#">(Internal) UX Folder</a>
+            {' | '}
+            <a href="#">Design Checklist</a>
+            {' | '}
+            <a href="#">Design Checklist</a>
+            {' | '}
+            <a href="#">Design Meeting Notes</a>
+            {' | '}
             <a href="#">OKRs…</a>{' '}
-            <a href="#" className={styles['patterns__rsb-info-more']}>More</a>
+            <a href="#" className={styles['patterns__rsb-info-more']}>
+              More
+            </a>
           </p>
         </div>
 
-        <p className={styles['patterns__rsb-info-id']}>ID: ggq4jzr8o386bpqytigtswjfr</p>
+        <p className={styles['patterns__rsb-info-id']}>
+          ID: ggq4jzr8o386bpqytigtswjfr
+        </p>
       </div>
 
       <Divider />
@@ -209,7 +240,9 @@ function ChannelInfoBody() {
         />
         <MenuItem
           label="Members"
-          leadingVisual={<Icon size="16" glyph={<AccountMultipleOutlineIcon />} />}
+          leadingVisual={
+            <Icon size="16" glyph={<AccountMultipleOutlineIcon />} />
+          }
         />
         <MenuItem
           label="Pinned Messages"
@@ -250,7 +283,9 @@ export default function Patterns() {
             userAvatarSrc={avatarLeonard}
             userAvatarAlt="Leonard Riley"
           />
-          <p className={styles['patterns__variant-label']}>Channels — with Upgrade</p>
+          <p className={styles['patterns__variant-label']}>
+            Channels — with Upgrade
+          </p>
           <GlobalHeader
             product="Channels"
             showUpgradeButton
@@ -276,9 +311,23 @@ export default function Patterns() {
         <h2 className={styles['patterns__section-title']}>Channel Header</h2>
         <div className={styles['patterns__channel-header-demo']}>
           <p className={styles['patterns__variant-label']}>Channel</p>
-          <ChannelHeader type="Channel" name="UX Design" memberCount={48} pinnedCount={1} />
-          <p className={styles['patterns__variant-label']}>Channel — favorited, muted</p>
-          <ChannelHeader type="Channel" name="UX Design" memberCount={48} pinnedCount={1} favorited muted />
+          <ChannelHeader
+            type="Channel"
+            name="UX Design"
+            memberCount={48}
+            pinnedCount={1}
+          />
+          <p className={styles['patterns__variant-label']}>
+            Channel — favorited, muted
+          </p>
+          <ChannelHeader
+            type="Channel"
+            name="UX Design"
+            memberCount={48}
+            pinnedCount={1}
+            favorited
+            muted
+          />
           <p className={styles['patterns__variant-label']}>Bot</p>
           <ChannelHeader
             type="Bot"
@@ -351,7 +400,11 @@ export default function Patterns() {
           <TeamSidebar
             activeTeamId="contributors"
             teams={[
-              { id: 'contributors', name: 'Contributors', src: avatarStaffTeam },
+              {
+                id: 'contributors',
+                name: 'Contributors',
+                src: avatarStaffTeam,
+              },
               { id: 'design', name: 'Design', initials: 'De', unread: true },
               { id: 'acme', name: 'Acme', initials: 'Ac', mentions: 3 },
             ]}
@@ -363,7 +416,9 @@ export default function Patterns() {
         <h2 className={styles['patterns__section-title']}>Channel Sidebar</h2>
         <div className={styles['patterns__sidebar-demo']}>
           <div>
-            <p className={styles['patterns__variant-label']}>Unreads category Off</p>
+            <p className={styles['patterns__variant-label']}>
+              Unreads category Off
+            </p>
             <ChannelsSidebar
               showFilter
               avatarAikoTan={avatarAikoTan}
@@ -376,7 +431,9 @@ export default function Patterns() {
             />
           </div>
           <div>
-            <p className={styles['patterns__variant-label']}>Unreads category On</p>
+            <p className={styles['patterns__variant-label']}>
+              Unreads category On
+            </p>
             <ChannelsSidebar
               showUnreadsCategory
               avatarAikoTan={avatarAikoTan}
@@ -396,12 +453,23 @@ export default function Patterns() {
         <div className={styles['patterns__message-input-demo']}>
           <p className={styles['patterns__variant-label']}>Default</p>
           <MessageInput placeholder="Message #ux-design…" />
-          <p className={styles['patterns__variant-label']}>With priority indicator</p>
-          <MessageInput placeholder="Message #ux-design…" showPriorityIndicator />
+          <p className={styles['patterns__variant-label']}>
+            With priority indicator
+          </p>
+          <MessageInput
+            placeholder="Message #ux-design…"
+            showPriorityIndicator
+          />
           <p className={styles['patterns__variant-label']}>With attachments</p>
           <MessageInput placeholder="Message #ux-design…" showAttachments />
-          <p className={styles['patterns__variant-label']}>With priority + attachments</p>
-          <MessageInput placeholder="Message #ux-design…" showPriorityIndicator showAttachments />
+          <p className={styles['patterns__variant-label']}>
+            With priority + attachments
+          </p>
+          <MessageInput
+            placeholder="Message #ux-design…"
+            showPriorityIndicator
+            showAttachments
+          />
         </div>
       </section>
 
@@ -435,7 +503,9 @@ export default function Patterns() {
             />
           </div>
           <div>
-            <p className={styles['patterns__variant-label']}>Others — with custom status + extras</p>
+            <p className={styles['patterns__variant-label']}>
+              Others — with custom status + extras
+            </p>
             <ProfilePopover
               user="Others"
               avatarSrc={avatarLeonard}
@@ -485,7 +555,9 @@ export default function Patterns() {
             />
           </div>
           <div>
-            <p className={styles['patterns__variant-label']}>You — with custom status + extras</p>
+            <p className={styles['patterns__variant-label']}>
+              You — with custom status + extras
+            </p>
             <ProfilePopover
               user="You"
               avatarSrc={avatarLeonard}
@@ -523,10 +595,18 @@ export default function Patterns() {
           <p className={styles['patterns__variant-label']}>Header — default</p>
           <RightSidebarHeader title="Thread" onClose={() => {}} />
 
-          <p className={styles['patterns__variant-label']}>Header — with secondary title</p>
-          <RightSidebarHeader title="Thread" secondaryTitle="UX Design" onClose={() => {}} />
+          <p className={styles['patterns__variant-label']}>
+            Header — with secondary title
+          </p>
+          <RightSidebarHeader
+            title="Thread"
+            secondaryTitle="UX Design"
+            onClose={() => {}}
+          />
 
-          <p className={styles['patterns__variant-label']}>Header — with back button</p>
+          <p className={styles['patterns__variant-label']}>
+            Header — with back button
+          </p>
           <RightSidebarHeader
             title="Edit Profile"
             secondaryTitle="Account Settings"
@@ -534,27 +614,34 @@ export default function Patterns() {
             onClose={() => {}}
           />
 
-          <p className={styles['patterns__variant-label']}>Header — with label tag</p>
-          <RightSidebarHeader
-            title="Apps"
-            labelTag="BETA"
-            onClose={() => {}}
-          />
+          <p className={styles['patterns__variant-label']}>
+            Header — with label tag
+          </p>
+          <RightSidebarHeader title="Apps" labelTag="BETA" onClose={() => {}} />
 
-          <p className={styles['patterns__variant-label']}>Header — with leading avatar + action</p>
+          <p className={styles['patterns__variant-label']}>
+            Header — with leading avatar + action
+          </p>
           <RightSidebarHeader
             title="Leonard Riley"
-            leadingIcon={<UserAvatar src={avatarLeonard} alt="Leonard Riley" size="24" />}
+            leadingIcon={
+              <UserAvatar src={avatarLeonard} alt="Leonard Riley" size="24" />
+            }
             actionLabel="Follow"
             onActionClick={() => {}}
             onClose={() => {}}
           />
 
-          <p className={styles['patterns__variant-label']}>Header — without expand</p>
+          <p className={styles['patterns__variant-label']}>
+            Header — without expand
+          </p>
           <RightSidebarHeader title="Saved Messages" onClose={() => {}} />
         </div>
 
-        <p className={styles['patterns__variant-label']} style={{ marginTop: 'var(--spacing-xl)' }}>
+        <p
+          className={styles['patterns__variant-label']}
+          style={{ marginTop: 'var(--spacing-xl)' }}
+        >
           Full sidebar — thread example
         </p>
         <div className={styles['patterns__rsb-shell']}>
@@ -577,8 +664,8 @@ export default function Patterns() {
               >
                 <p className={styles['patterns__body-text']}>
                   Quick gut-check: should the sidebar header always show the
-                  parent channel as a secondary title, or only when the
-                  content is scoped to a channel?
+                  parent channel as a secondary title, or only when the content
+                  is scoped to a channel?
                 </p>
               </Post>
               <Post
@@ -589,8 +676,8 @@ export default function Patterns() {
               >
                 <p className={styles['patterns__body-text']}>
                   I'd lean on showing it whenever there's a meaningful parent —
-                  threads, pinned messages, files. Skip it for global views
-                  like Saved Messages.
+                  threads, pinned messages, files. Skip it for global views like
+                  Saved Messages.
                 </p>
               </Post>
               <Post
@@ -608,7 +695,10 @@ export default function Patterns() {
           </RightSidebar>
         </div>
 
-        <p className={styles['patterns__variant-label']} style={{ marginTop: 'var(--spacing-xl)' }}>
+        <p
+          className={styles['patterns__variant-label']}
+          style={{ marginTop: 'var(--spacing-xl)' }}
+        >
           Full sidebar — flexible body (channel info)
         </p>
         <div className={styles['patterns__rsb-shell']}>
@@ -631,7 +721,9 @@ export default function Patterns() {
         <section key={name} className={styles['patterns__section']}>
           <h2 className={styles['patterns__section-title']}>{name}</h2>
           <div className={styles['patterns__placeholder']}>
-            <span className={styles['patterns__placeholder-label']}>{name}</span>
+            <span className={styles['patterns__placeholder-label']}>
+              {name}
+            </span>
           </div>
         </section>
       ))}

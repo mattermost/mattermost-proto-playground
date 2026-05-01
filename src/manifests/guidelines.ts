@@ -34,7 +34,9 @@ export function findGuidelineEntry(
   category: GuidelineCategory,
   slug: string,
 ): GuidelineEntry | undefined {
-  return GUIDELINE_ENTRIES.find((e) => e.category === category && e.slug === slug);
+  return GUIDELINE_ENTRIES.find(
+    (e) => e.category === category && e.slug === slug,
+  );
 }
 
 export function guidelineEntriesByCategory(

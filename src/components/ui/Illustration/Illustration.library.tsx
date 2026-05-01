@@ -7,23 +7,23 @@ export default function IllustrationLibrary() {
   return (
     <>
       <div className={styles['components__row']}>
-                <div className={styles['components__instance']}>
-                  <span className={styles['components__instance-label']}>
-                    AI Copilot (default size)
-                  </span>
-                  <Illustration aria-label="AI Copilot intro">
-                    <AICopilotIllustration />
-                  </Illustration>
-                </div>
-                <div className={styles['components__instance']}>
-                  <span className={styles['components__instance-label']}>
-                    Search, 200px width
-                  </span>
-                  <Illustration aria-label="Search" width="200px" height="120px">
-                    <SearchIllustration />
-                  </Illustration>
-                </div>
-              </div>
+        <div className={styles['components__instance']}>
+          <span className={styles['components__instance-label']}>
+            AI Copilot (default size)
+          </span>
+          <Illustration aria-label="AI Copilot intro">
+            <AICopilotIllustration />
+          </Illustration>
+        </div>
+        <div className={styles['components__instance']}>
+          <span className={styles['components__instance-label']}>
+            Search, 200px width
+          </span>
+          <Illustration aria-label="Search" width="200px" height="120px">
+            <SearchIllustration />
+          </Illustration>
+        </div>
+      </div>
     </>
   );
 }

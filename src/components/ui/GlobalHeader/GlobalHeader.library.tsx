@@ -11,7 +11,9 @@ export default function GlobalHeaderLibrary() {
         userAvatarSrc={avatarLeonard}
         userAvatarAlt="Leonard Riley"
       />
-      <p className={styles['patterns__variant-label']}>Channels — with Upgrade</p>
+      <p className={styles['patterns__variant-label']}>
+        Channels — with Upgrade
+      </p>
       <GlobalHeader
         product="Channels"
         showUpgradeButton

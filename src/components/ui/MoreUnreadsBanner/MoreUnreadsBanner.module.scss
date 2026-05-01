@@ -9,7 +9,9 @@
   border-radius: var(--radius-s);
   box-shadow: var(--elevation-1);
   cursor: pointer;
-  transition: background-color var(--duration-quick) var(--ease-transition), box-shadow var(--duration-quick) var(--ease-transition);
+  transition:
+    background-color var(--duration-quick) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition);
 
   &:hover {
     background-color: rgba(var(--mention-bg-rgb), 0.92);

@@ -90,7 +90,9 @@ export default function CallWidget({
 
   const menuTransition = usePopoverTransition(overlay === 'menu');
   const infoTransition = usePopoverTransition(overlay === 'info');
-  const participantsTransition = usePopoverTransition(overlay === 'participants');
+  const participantsTransition = usePopoverTransition(
+    overlay === 'participants',
+  );
 
   return (
     <div className={styles.widget} role="region" aria-label="Active call">
@@ -100,13 +102,13 @@ export default function CallWidget({
           <div className={styles['widget__header-text']}>
             <div className={styles['widget__title']}>
               <span className={styles['widget__title-name']}>{talkerName}</span>
-              <span className={styles['widget__title-tail']}>
-                {' '}is talking
-              </span>
+              <span className={styles['widget__title-tail']}> is talking</span>
             </div>
             <div className={styles['widget__sub']}>
               <span className={styles['widget__elapsed']}>3:39</span>
-              <span className={styles['widget__sub-sep']} aria-hidden>&middot;</span>
+              <span className={styles['widget__sub-sep']} aria-hidden>
+                &middot;
+              </span>
               <span className={styles['widget__channel']}>
                 <Icon size="12" glyph={<GlobeIcon />} />
                 {channelName}
@@ -157,7 +159,9 @@ export default function CallWidget({
               icon={
                 <Icon
                   size="16"
-                  glyph={handRaised ? <HandRightIcon /> : <HandRightOutlineIcon />}
+                  glyph={
+                    handRaised ? <HandRightIcon /> : <HandRightOutlineIcon />
+                  }
                 />
               }
               onClick={onToggleHand}
@@ -179,7 +183,9 @@ export default function CallWidget({
               size="Small"
               padding="Compact"
               toggled={overlay === 'menu'}
-              aria-label={overlay === 'menu' ? 'Close call menu' : 'Open call menu'}
+              aria-label={
+                overlay === 'menu' ? 'Close call menu' : 'Open call menu'
+              }
               icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
               onClick={onToggleMenu}
             />
@@ -226,15 +232,21 @@ export default function CallWidget({
             <div className={styles['widget__menu-divider']} role="separator" />
             <MenuItem
               label="Record call"
-              leadingVisual={<Icon size="16" glyph={<RecordCircleOutlineIcon />} />}
+              leadingVisual={
+                <Icon size="16" glyph={<RecordCircleOutlineIcon />} />
+              }
             />
             <MenuItem
               label="Show chat thread"
-              leadingVisual={<Icon size="16" glyph={<MessageTextOutlineIcon />} />}
+              leadingVisual={
+                <Icon size="16" glyph={<MessageTextOutlineIcon />} />
+              }
             />
             <MenuItem
               label="Call info"
-              leadingVisual={<Icon size="16" glyph={<InformationOutlineIcon />} />}
+              leadingVisual={
+                <Icon size="16" glyph={<InformationOutlineIcon />} />
+              }
               onClick={onOpenCallInfo}
             />
             <MenuItem

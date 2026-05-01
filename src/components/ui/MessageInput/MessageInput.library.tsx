@@ -6,7 +6,9 @@ export default function MessageInputLibrary() {
     <div className={styles['patterns__message-input-demo']}>
       <p className={styles['patterns__variant-label']}>Default</p>
       <MessageInput placeholder="Message #ux-design…" />
-      <p className={styles['patterns__variant-label']}>With priority indicator</p>
+      <p className={styles['patterns__variant-label']}>
+        With priority indicator
+      </p>
       <MessageInput placeholder="Message #ux-design…" showPriorityIndicator />
       <p className={styles['patterns__variant-label']}>With attachments</p>
       <MessageInput placeholder="Message #ux-design…" showAttachments />

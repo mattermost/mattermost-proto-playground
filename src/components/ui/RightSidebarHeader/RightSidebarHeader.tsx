@@ -97,7 +97,9 @@ export default function RightSidebarHeader({
             type="button"
             className={[
               styles['right-sidebar-header__action'],
-              actionActive ? styles['right-sidebar-header__action--active'] : '',
+              actionActive
+                ? styles['right-sidebar-header__action--active']
+                : '',
             ]
               .filter(Boolean)
               .join(' ')}

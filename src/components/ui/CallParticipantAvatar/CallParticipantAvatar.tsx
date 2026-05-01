@@ -91,13 +91,22 @@ export default function CallParticipantAvatar({
   const px = SIZE_PX[size];
 
   const glyphSize: IconSize =
-    size === 'Large' ? '52' : size === 'Medium' ? '40' : size === 'Small' ? '32' : '28';
+    size === 'Large'
+      ? '52'
+      : size === 'Medium'
+        ? '40'
+        : size === 'Small'
+          ? '32'
+          : '28';
 
   return (
     <div className={rootClass}>
       <div className={styles['call-participant-avatar__container']}>
         {talking && (
-          <span className={styles['call-participant-avatar__talking-ring']} aria-hidden />
+          <span
+            className={styles['call-participant-avatar__talking-ring']}
+            aria-hidden
+          />
         )}
         {kind === 'user' ? (
           <img
@@ -170,7 +179,9 @@ export default function CallParticipantAvatar({
         <span className={styles['call-participant-avatar__name']}>{name}</span>
       )}
       {host && (
-        <span className={styles['call-participant-avatar__host-label']}>HOST</span>
+        <span className={styles['call-participant-avatar__host-label']}>
+          HOST
+        </span>
       )}
       {external && (
         <span className={styles['call-participant-avatar__host-label']}>

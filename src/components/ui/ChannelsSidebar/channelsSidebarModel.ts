@@ -259,8 +259,7 @@ export function applyChannelNameOverrides(
   const mapRow = (row: ChannelsSidebarItemModel): ChannelsSidebarItemModel => ({
     ...row,
     name: resolve(row.name),
-    avatarAlt:
-      row.avatarAlt != null ? resolve(row.avatarAlt) : row.avatarAlt,
+    avatarAlt: row.avatarAlt != null ? resolve(row.avatarAlt) : row.avatarAlt,
   });
 
   return {

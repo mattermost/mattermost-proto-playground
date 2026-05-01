@@ -102,7 +102,10 @@
       color: var(--button-color);
 
       &:hover {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.08));
+        background-image: linear-gradient(
+          rgba(0, 0, 0, 0.08),
+          rgba(0, 0, 0, 0.08)
+        );
         background-color: var(--color-success);
       }
     }

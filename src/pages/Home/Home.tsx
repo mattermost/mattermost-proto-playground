@@ -13,7 +13,8 @@ const DESTINATIONS = [
   {
     label: 'Library',
     path: '/library',
-    description: 'Live reference for tokens, components, patterns, and layouts.',
+    description:
+      'Live reference for tokens, components, patterns, and layouts.',
   },
   {
     label: 'Prototypes',

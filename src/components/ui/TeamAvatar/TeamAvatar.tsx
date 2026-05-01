@@ -1,7 +1,17 @@
 import MentionBadge from '../MentionBadge/MentionBadge';
 import styles from './TeamAvatar.module.scss';
 
-export type TeamAvatarSize = '24' | '28' | '32' | '40' | '48' | '56' | '64' | '72' | '96' | '120';
+export type TeamAvatarSize =
+  | '24'
+  | '28'
+  | '32'
+  | '40'
+  | '48'
+  | '56'
+  | '64'
+  | '72'
+  | '96'
+  | '120';
 export type TeamAvatarState = 'Default' | 'Active';
 
 export interface TeamAvatarProps {
@@ -32,7 +42,9 @@ export default function TeamAvatar({
     styles[`team-avatar--size-${size}`],
     isActive && styles['team-avatar--active'],
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClasses}>
@@ -40,13 +52,20 @@ export default function TeamAvatar({
         {src ? (
           <img src={src} alt={alt} className={styles['team-avatar__image']} />
         ) : (
-          <div className={styles['team-avatar__fallback']} aria-label={alt || initials}>
+          <div
+            className={styles['team-avatar__fallback']}
+            aria-label={alt || initials}
+          >
             {initials}
           </div>
         )}
       </div>
       {showBadge && (
-        <MentionBadge count={badge!} size='Medium' className={styles['team-avatar__badge']} />
+        <MentionBadge
+          count={badge!}
+          size="Medium"
+          className={styles['team-avatar__badge']}
+        />
       )}
     </div>
   );

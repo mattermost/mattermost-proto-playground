@@ -36,10 +36,7 @@ export default function GuidelinesIndex() {
   })).filter((g) => g.entries.length > 0);
 
   return (
-    <DocPage
-      eyebrow="Design system"
-      title="Guidelines"
-    >
+    <DocPage eyebrow="Design system" title="Guidelines">
       <p>
         Written documentation for the Mattermost design system. Prose lives
         here; live implementation references live in the{' '}

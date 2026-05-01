@@ -9,7 +9,12 @@ import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import styles from './ToastBanner.module.scss';
 
-export type ToastBannerType = 'General' | 'Info' | 'Success' | 'Warning' | 'Danger';
+export type ToastBannerType =
+  | 'General'
+  | 'Info'
+  | 'Success'
+  | 'Warning'
+  | 'Danger';
 
 export interface ToastBannerProps {
   className?: string;
@@ -60,8 +65,12 @@ export default function ToastBanner({
               size="X-Small"
               className={[
                 styles['toast-banner__action-btn'],
-                type === 'Warning' ? styles['toast-banner__action-btn--warning'] : '',
-              ].filter(Boolean).join(' ')}
+                type === 'Warning'
+                  ? styles['toast-banner__action-btn--warning']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               onClick={onAction}
             >
               {actionLabel}

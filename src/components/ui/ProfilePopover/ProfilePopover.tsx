@@ -129,8 +129,13 @@ export default function ProfilePopover({
     .join(' ');
 
   const hasTitlesBlock =
-    Boolean(email) || Boolean(sharedOrg) || staff || coreCommitter || Boolean(githubHandle);
-  const hasSecondary = hasTitlesBlock || Boolean(localTime) || Boolean(customStatus);
+    Boolean(email) ||
+    Boolean(sharedOrg) ||
+    staff ||
+    coreCommitter ||
+    Boolean(githubHandle);
+  const hasSecondary =
+    hasTitlesBlock || Boolean(localTime) || Boolean(customStatus);
 
   return (
     <div className={rootClass}>
@@ -177,7 +182,9 @@ export default function ProfilePopover({
               )}
               {sharedOrg && (
                 <MetaRow
-                  icon={<Icon size="16" glyph={<CircleMultipleOutlineIcon />} />}
+                  icon={
+                    <Icon size="16" glyph={<CircleMultipleOutlineIcon />} />
+                  }
                 >
                   {sharedOrg}
                 </MetaRow>
@@ -193,9 +200,7 @@ export default function ProfilePopover({
                 </MetaRow>
               )}
               {githubHandle && (
-                <MetaRow
-                  icon={<Icon size="16" glyph={<GithubCircleIcon />} />}
-                >
+                <MetaRow icon={<Icon size="16" glyph={<GithubCircleIcon />} />}>
                   {githubHandle}
                 </MetaRow>
               )}

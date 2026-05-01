@@ -160,7 +160,8 @@
     color: var(--color-neutral-0);
     pointer-events: none;
     transform-origin: center;
-    animation: checkbox-icon-enter var(--duration-quick) var(--ease-entrance) forwards;
+    animation: checkbox-icon-enter var(--duration-quick) var(--ease-entrance)
+      forwards;
   }
 
   // ---------------------------------------------------------------------------

@@ -13,7 +13,9 @@ export default function ChannelHeaderLibrary() {
         memberCount={48}
         pinnedCount={1}
       />
-      <p className={styles['patterns__variant-label']}>Channel — favorited, muted</p>
+      <p className={styles['patterns__variant-label']}>
+        Channel — favorited, muted
+      </p>
       <ChannelHeader
         type="Channel"
         name="UX Design"

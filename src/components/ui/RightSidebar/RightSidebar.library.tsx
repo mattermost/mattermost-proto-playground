@@ -62,13 +62,20 @@ function ChannelInfoBody() {
             Channel Header
           </span>
           <p className={styles['patterns__rsb-info-header-text']}>
-            <a href="#">Spec Template</a>{' | '}
-            <a href="#">UX Guidelines</a>{' | '}
-            <a href="#">UX Scratch</a>{' | '}
-            <a href="#">(Internal) UX Folder</a>{' | '}
-            <a href="#">Design Checklist</a>{' | '}
-            <a href="#">Design Checklist</a>{' | '}
-            <a href="#">Design Meeting Notes</a>{' | '}
+            <a href="#">Spec Template</a>
+            {' | '}
+            <a href="#">UX Guidelines</a>
+            {' | '}
+            <a href="#">UX Scratch</a>
+            {' | '}
+            <a href="#">(Internal) UX Folder</a>
+            {' | '}
+            <a href="#">Design Checklist</a>
+            {' | '}
+            <a href="#">Design Checklist</a>
+            {' | '}
+            <a href="#">Design Meeting Notes</a>
+            {' | '}
             <a href="#">OKRs…</a>{' '}
             <a href="#" className={styles['patterns__rsb-info-more']}>
               More
@@ -94,7 +101,9 @@ function ChannelInfoBody() {
         />
         <MenuItem
           label="Members"
-          leadingVisual={<Icon size="16" glyph={<AccountMultipleOutlineIcon />} />}
+          leadingVisual={
+            <Icon size="16" glyph={<AccountMultipleOutlineIcon />} />
+          }
         />
         <MenuItem
           label="Pinned Messages"
@@ -185,8 +194,8 @@ export default function RightSidebarLibrary() {
             >
               <p className={styles['patterns__body-text']}>
                 Quick gut-check: should the sidebar header always show the
-                parent channel as a secondary title, or only when the content
-                is scoped to a channel?
+                parent channel as a secondary title, or only when the content is
+                scoped to a channel?
               </p>
             </Post>
             <Post

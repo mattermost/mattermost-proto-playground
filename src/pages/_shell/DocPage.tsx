@@ -13,7 +13,9 @@ export default function DocPage({ eyebrow, title, children }: DocPageProps) {
       <div className={styles['doc-page__inner']}>
         {(eyebrow || title) && (
           <header className={styles['doc-page__header']}>
-            {eyebrow && <p className={styles['doc-page__eyebrow']}>{eyebrow}</p>}
+            {eyebrow && (
+              <p className={styles['doc-page__eyebrow']}>{eyebrow}</p>
+            )}
             {title && <h1 className={styles['doc-page__title']}>{title}</h1>}
           </header>
         )}

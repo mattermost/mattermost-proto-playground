@@ -19,7 +19,8 @@ function resolveEntry(
   rawSlug: string | undefined,
 ): LibraryEntry | undefined {
   if (!rawCategory || !rawSlug) return undefined;
-  if (!VALID_CATEGORIES.includes(rawCategory as LibraryCategory)) return undefined;
+  if (!VALID_CATEGORIES.includes(rawCategory as LibraryCategory))
+    return undefined;
   return findLibraryEntry(rawCategory as LibraryCategory, rawSlug);
 }
 

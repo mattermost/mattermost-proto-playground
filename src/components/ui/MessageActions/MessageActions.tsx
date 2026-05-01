@@ -43,10 +43,17 @@ export default function MessageActions({
   const isSearchResults = type === 'Search Results';
   const showQuickReactions = quickReactions && collapsedReplyThreads;
 
-  const rootClass = [styles['message-actions'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['message-actions'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={rootClass} role="toolbar" aria-label="Message actions" {...rest}>
+    <div
+      className={rootClass}
+      role="toolbar"
+      aria-label="Message actions"
+      {...rest}
+    >
       {/* Quick reaction emojis — center channel + RHS */}
       {showQuickReactions && !isSearchResults && (
         <>
@@ -139,7 +146,11 @@ export default function MessageActions({
             size="Small"
             icon={<Icon size="16" glyph={<ReplyOutlineIcon />} />}
           />
-          <button type="button" className={styles['message-actions__jump']} aria-label="Jump to message">
+          <button
+            type="button"
+            className={styles['message-actions__jump']}
+            aria-label="Jump to message"
+          >
             Jump
           </button>
         </>

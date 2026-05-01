@@ -21,7 +21,9 @@ export default function LinkPreview({
   description = 'Mattermost is a secure, open source platform for communication, collaboration, and workflow orchestration across tools and teams.',
   className = '',
 }: LinkPreviewProps) {
-  const rootClass = [styles['link-preview'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['link-preview'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass}>

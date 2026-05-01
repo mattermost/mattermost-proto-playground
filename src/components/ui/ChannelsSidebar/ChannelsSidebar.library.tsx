@@ -12,7 +12,9 @@ export default function ChannelsSidebarLibrary() {
   return (
     <div className={styles['patterns__sidebar-demo']}>
       <div>
-        <p className={styles['patterns__variant-label']}>Unreads category Off</p>
+        <p className={styles['patterns__variant-label']}>
+          Unreads category Off
+        </p>
         <ChannelsSidebar
           showFilter
           avatarAikoTan={avatarAikoTan}

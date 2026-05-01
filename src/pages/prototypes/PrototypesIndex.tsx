@@ -5,16 +5,13 @@ import styles from './PrototypesIndex.module.scss';
 
 export default function PrototypesIndex() {
   return (
-    <DocPage
-      eyebrow="Design system"
-      title="Prototypes"
-    >
+    <DocPage eyebrow="Design system" title="Prototypes">
       <p>End-to-end flow prototypes used for design exploration and review.</p>
 
       {PROTOTYPES.length === 0 && (
         <p className={styles['prototypes-index__empty']}>
-          No prototypes registered yet. Add entries to{' '}
-          <code>PROTOTYPES</code> in <code>src/router/index.tsx</code>.
+          No prototypes registered yet. Add entries to <code>PROTOTYPES</code>{' '}
+          in <code>src/router/index.tsx</code>.
         </p>
       )}
 

@@ -11,7 +11,8 @@
     align-items: center;
     flex: 1 0 0;
     gap: var(--spacing-s);
-    padding: var(--spacing-xxs) var(--spacing-m) var(--spacing-xxs) var(--spacing-s);
+    padding: var(--spacing-xxs) var(--spacing-m) var(--spacing-xxs)
+      var(--spacing-s);
     background: transparent;
     border: none;
     cursor: pointer;
@@ -67,7 +68,9 @@
     cursor: pointer;
     color: var(--sidebar-text);
     opacity: 0.72;
-    transition: opacity var(--duration-quick) var(--ease-transition), background-color var(--duration-quick) var(--ease-transition);
+    transition:
+      opacity var(--duration-quick) var(--ease-transition),
+      background-color var(--duration-quick) var(--ease-transition);
     flex-shrink: 0;
 
     &:hover {

@@ -39,7 +39,9 @@ export default function ReactionPill({
   const rootClass = [
     styles['reaction-pill'],
     styles[`reaction-pill--size-${size.toLowerCase()}`],
-    styles[`reaction-pill--type-${type === 'Hand Raise' ? 'hand-raise' : type === 'Other' ? 'other' : 'reaction'}`],
+    styles[
+      `reaction-pill--type-${type === 'Hand Raise' ? 'hand-raise' : type === 'Other' ? 'other' : 'reaction'}`
+    ],
     className,
   ]
     .filter(Boolean)
@@ -64,7 +66,9 @@ export default function ReactionPill({
             <span className={styles['reaction-pill__leading-icon']} aria-hidden>
               <Icon size="12" glyph={<HandRightOutlineIcon />} />
             </span>
-            <span className={styles['reaction-pill__label']}>{label} Raised Hand</span>
+            <span className={styles['reaction-pill__label']}>
+              {label} Raised Hand
+            </span>
           </>
         )}
 
@@ -75,7 +79,10 @@ export default function ReactionPill({
               <Icon size="12" glyph={<MicrophoneOffIcon />} />
             </span>
             <span className={styles['reaction-pill__label']}>{message}</span>
-            <span className={styles['reaction-pill__trailing-icon']} aria-hidden>
+            <span
+              className={styles['reaction-pill__trailing-icon']}
+              aria-hidden
+            >
               <Icon size="12" glyph={<CloseCircleIcon />} />
             </span>
           </>
