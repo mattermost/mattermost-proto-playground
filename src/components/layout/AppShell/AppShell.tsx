@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Outlet, useMatch, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import PaletteOutlineIcon from '@mattermost/compass-icons/components/palette-outline';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -16,10 +16,17 @@ const THEME_LABELS: Record<ThemeId, string> = {
   onyx: 'Onyx',
 };
 
+function parentPath(pathname: string): string {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length <= 1) return '/';
+  return '/' + segments[0];
+}
+
 export default function AppShell() {
   const isHome = useMatch('/');
   const isEmbedded = window.self !== window.top;
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
@@ -42,9 +49,9 @@ export default function AppShell() {
         <div className={styles['app-shell__bar']}>
           {!isHome ? (
             <IconButton
-              aria-label="Back to home"
+              aria-label="Back"
               icon={<Icon glyph={<ArrowLeftIcon />} size="20" />}
-              onClick={() => navigate('/')}
+              onClick={() => navigate(parentPath(pathname))}
             />
           ) : (
             <div />
