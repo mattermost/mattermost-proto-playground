@@ -17,7 +17,9 @@ function SidebarHeader({ teamName }: { teamName: string }) {
   return (
     <div className={styles['channels-sidebar__header']}>
       <div className={styles['channels-sidebar__team-dropdown']}>
-        <span className={styles['channels-sidebar__team-name']}>{teamName}</span>
+        <span className={styles['channels-sidebar__team-name']}>
+          {teamName}
+        </span>
         <span className={styles['channels-sidebar__team-chevron']}>
           <ChevronDownIcon size={16} />
         </span>
@@ -52,7 +54,9 @@ function SidebarNavigator({ showFilter = false }: { showFilter?: boolean }) {
         <span className={styles['channels-sidebar__find-channels-icon']}>
           <MagnifyIcon size={16} />
         </span>
-        <span className={styles['channels-sidebar__find-channels-label']}>Find channels</span>
+        <span className={styles['channels-sidebar__find-channels-label']}>
+          Find channels
+        </span>
       </div>
     </div>
   );
@@ -85,7 +89,9 @@ function SidebarCategory({
             <ChevronDownIcon size={12} />
           </span>
         )}
-        <span className={styles['channels-sidebar__category-label']}>{label}</span>
+        <span className={styles['channels-sidebar__category-label']}>
+          {label}
+        </span>
       </div>
       {showPlusButton && (
         <IconButton
@@ -159,10 +165,7 @@ export default function ChannelsSidebar({
 
       <div className={styles['channels-sidebar__top-group']}>
         {model.topGroupItems.map((row, i) => (
-          <ChannelSidebarItem
-            key={`top-${i}-${row.name}`}
-            {...row}
-          />
+          <ChannelSidebarItem key={`top-${i}-${row.name}`} {...row} />
         ))}
       </div>
 

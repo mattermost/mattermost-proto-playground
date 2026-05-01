@@ -1,8 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "Write",
-      "Bash(mkdir *)"
-    ]
+    "allow": ["Write", "Bash(mkdir *)"]
   }
 }

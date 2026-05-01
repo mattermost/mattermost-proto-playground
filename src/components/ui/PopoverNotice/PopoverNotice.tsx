@@ -43,17 +43,17 @@ export interface PopoverNoticeProps {
 }
 
 const VARIANT_ICONS: Record<PopoverNoticeVariant, ReactNode> = {
-  info:    <Icon size="20" glyph={<InformationOutlineIcon />} />,
+  info: <Icon size="20" glyph={<InformationOutlineIcon />} />,
   success: <Icon size="20" glyph={<CheckCircleOutlineIcon />} />,
   warning: <Icon size="20" glyph={<AlertCircleOutlineIcon />} />,
-  danger:  <Icon size="20" glyph={<AlertOutlineIcon />} />,
+  danger: <Icon size="20" glyph={<AlertOutlineIcon />} />,
 };
 
 const VARIANT_ICON_CLASS: Record<PopoverNoticeVariant, string> = {
-  info:    styles['popover-notice__icon--info'],
+  info: styles['popover-notice__icon--info'],
   success: styles['popover-notice__icon--success'],
   warning: styles['popover-notice__icon--warning'],
-  danger:  styles['popover-notice__icon--danger'],
+  danger: styles['popover-notice__icon--danger'],
 };
 
 export default function PopoverNotice({
@@ -67,7 +67,9 @@ export default function PopoverNotice({
   onClose,
   className = '',
 }: PopoverNoticeProps) {
-  const rootClass = [styles['popover-notice'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['popover-notice'], className]
+    .filter(Boolean)
+    .join(' ');
 
   const resolvedIcon = icon ?? (variant ? VARIANT_ICONS[variant] : null);
   const iconColorClass = !icon && variant ? VARIANT_ICON_CLASS[variant] : '';
@@ -76,7 +78,12 @@ export default function PopoverNotice({
     <div className={rootClass}>
       <div className={styles['popover-notice__content']}>
         {resolvedIcon != null && (
-          <div className={[styles['popover-notice__icon'], iconColorClass].filter(Boolean).join(' ')} aria-hidden>
+          <div
+            className={[styles['popover-notice__icon'], iconColorClass]
+              .filter(Boolean)
+              .join(' ')}
+            aria-hidden
+          >
             {resolvedIcon}
           </div>
         )}
@@ -86,14 +93,18 @@ export default function PopoverNotice({
             <span className={styles['popover-notice__title']}>{title}</span>
           </div>
 
-          <div className={styles['popover-notice__description']}>{children}</div>
+          <div className={styles['popover-notice__description']}>
+            {children}
+          </div>
 
           {actions && actions.length > 0 && (
             <div className={styles['popover-notice__actions']}>
               {actions.map((action, i) => (
                 <Button
                   key={i}
-                  emphasis={action.emphasis === 'tertiary' ? 'Tertiary' : 'Primary'}
+                  emphasis={
+                    action.emphasis === 'tertiary' ? 'Tertiary' : 'Primary'
+                  }
                   size="Small"
                   onClick={action.onClick}
                 >
@@ -103,11 +114,7 @@ export default function PopoverNotice({
             </div>
           )}
 
-          {showCheckbox && (
-            <Checkbox size="Medium">
-              {checkboxLabel}
-            </Checkbox>
-          )}
+          {showCheckbox && <Checkbox size="Medium">{checkboxLabel}</Checkbox>}
         </div>
       </div>
 

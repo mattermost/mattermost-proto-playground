@@ -121,10 +121,7 @@ export default function Checkbox({
             const IconComponent = ICON_COMPONENT[showingIcon];
             return (
               <span key={showingIcon} className={styles['checkbox__icon']}>
-                <Icon
-                  glyph={<IconComponent />}
-                  size={iconSize}
-                />
+                <Icon glyph={<IconComponent />} size={iconSize} />
               </span>
             );
           })()}

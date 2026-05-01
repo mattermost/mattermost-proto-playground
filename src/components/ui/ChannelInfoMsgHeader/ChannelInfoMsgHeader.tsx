@@ -28,7 +28,9 @@ export default function ChannelInfoMsgHeader({
   teamName = 'Contributors',
   className = '',
 }: ChannelInfoMsgHeaderProps) {
-  const rootClass = [styles['channel-info-msg-header'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['channel-info-msg-header'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass}>
@@ -38,7 +40,9 @@ export default function ChannelInfoMsgHeader({
             key={index}
             className={[
               styles['channel-info-msg-header__tab-area'],
-              tab.active ? styles['channel-info-msg-header__tab-area--active'] : '',
+              tab.active
+                ? styles['channel-info-msg-header__tab-area--active']
+                : '',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -47,7 +51,9 @@ export default function ChannelInfoMsgHeader({
               type="button"
               className={[
                 styles['channel-info-msg-header__tab'],
-                tab.active ? styles['channel-info-msg-header__tab--active'] : '',
+                tab.active
+                  ? styles['channel-info-msg-header__tab--active']
+                  : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -59,7 +65,9 @@ export default function ChannelInfoMsgHeader({
         ))}
         {teamName != null && (
           <div className={styles['channel-info-msg-header__team']}>
-            <span className={styles['channel-info-msg-header__team-name']}>{teamName}</span>
+            <span className={styles['channel-info-msg-header__team-name']}>
+              {teamName}
+            </span>
           </div>
         )}
       </div>

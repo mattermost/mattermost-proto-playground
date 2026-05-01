@@ -54,14 +54,23 @@ export default function ImagePreview({
     return (
       <button
         type="button"
-        className={[styles['image-preview'], styles['image-preview--collapsed'], className]
+        className={[
+          styles['image-preview'],
+          styles['image-preview--collapsed'],
+          className,
+        ]
           .filter(Boolean)
           .join(' ')}
         onClick={onToggleCollapse}
         aria-label="Show image preview"
       >
         <span className={styles['image-preview__show-label']}>
-          <span className={styles['image-preview__show-icon']} aria-hidden="true">{'›'}</span>
+          <span
+            className={styles['image-preview__show-icon']}
+            aria-hidden="true"
+          >
+            {'›'}
+          </span>
           Show Image preview
         </span>
       </button>

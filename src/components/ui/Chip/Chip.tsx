@@ -9,7 +9,10 @@ import styles from './Chip.module.scss';
 
 export type ChipSize = 'Small' | 'Medium' | 'Medium Compact' | 'Large';
 
-export interface ChipProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+export interface ChipProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  'children'
+> {
   /** Chip label. */
   children: ReactNode;
   /** Visual size. Default: Medium. */
@@ -72,7 +75,11 @@ export default function Chip({
     <div className={rootClass} {...rest}>
       {leadingAvatar != null ? (
         <span className={styles['chip__avatar-slot']}>
-          <UserAvatar src={leadingAvatar.src} alt={leadingAvatar.alt} size={avatarSize} />
+          <UserAvatar
+            src={leadingAvatar.src}
+            alt={leadingAvatar.alt}
+            size={avatarSize}
+          />
         </span>
       ) : leadingIcon != null ? (
         <span className={styles['chip__icon-slot']} aria-hidden>

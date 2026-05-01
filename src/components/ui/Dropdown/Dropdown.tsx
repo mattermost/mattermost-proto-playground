@@ -8,7 +8,10 @@ import styles from './Dropdown.module.scss';
 export type DropdownSize = 'X-Small' | 'Small' | 'Medium' | 'Large' | 'X-Large';
 export type DropdownAppearance = 'Default' | 'Inverted';
 
-export interface DropdownProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'size'> {
+export interface DropdownProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'size'
+> {
   /** Optional CSS class name. */
   className?: string;
   /** Label text shown in the trigger. */

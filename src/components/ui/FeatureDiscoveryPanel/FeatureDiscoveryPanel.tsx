@@ -38,14 +38,22 @@ export default function FeatureDiscoveryPanel({
   className = '',
 }: FeatureDiscoveryPanelProps) {
   return (
-    <div className={[styles['feature-discovery-panel'], className].filter(Boolean).join(' ')}>
+    <div
+      className={[styles['feature-discovery-panel'], className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div className={styles['feature-discovery-panel__content']}>
         <div className={styles['feature-discovery-panel__text']}>
           <div className={styles['feature-discovery-panel__title-group']}>
             {skuLabel != null && <LabelTag label={skuLabel} />}
-            <h2 className={styles['feature-discovery-panel__title']}>{title}</h2>
+            <h2 className={styles['feature-discovery-panel__title']}>
+              {title}
+            </h2>
           </div>
-          <p className={styles['feature-discovery-panel__description']}>{description}</p>
+          <p className={styles['feature-discovery-panel__description']}>
+            {description}
+          </p>
         </div>
 
         {(primaryAction != null || secondaryAction != null) && (

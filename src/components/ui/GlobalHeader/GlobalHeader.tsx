@@ -34,7 +34,10 @@ export interface GlobalHeaderProps {
   userAvatarAlt: string;
 }
 
-const PRODUCT_ICON: Record<GlobalHeaderProduct, ComponentType<{ size?: number }>> = {
+const PRODUCT_ICON: Record<
+  GlobalHeaderProduct,
+  ComponentType<{ size?: number }>
+> = {
   Channels: ProductChannelsIcon,
   Playbooks: ProductPlaybooksIcon,
   Boards: ProductBoardsIcon,
@@ -102,12 +105,17 @@ export default function GlobalHeader({
   const isChannels = product === 'Channels';
   const showBrand = isChannels ? showChannelsBranding : true;
 
-  const rootClass = [styles['global-header'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['global-header'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <header className={rootClass}>
       <div className={styles['global-header__left']}>
-        <InvertedIconButton ariaLabel="Product switcher" glyph={<ProductsIcon />} />
+        <InvertedIconButton
+          ariaLabel="Product switcher"
+          glyph={<ProductsIcon />}
+        />
         {showBrand && <ProductBrand product={product} />}
         <Navigator />
       </div>
@@ -125,7 +133,10 @@ export default function GlobalHeader({
               aria-label="Search"
             />
           </div>
-          <InvertedIconButton ariaLabel="Help" glyph={<HelpCircleOutlineIcon />} />
+          <InvertedIconButton
+            ariaLabel="Help"
+            glyph={<HelpCircleOutlineIcon />}
+          />
         </div>
       )}
 
@@ -143,16 +154,33 @@ export default function GlobalHeader({
         )}
         {isChannels && (
           <>
-            <InvertedIconButton ariaLabel="Recent mentions" glyph={<AtIcon />} />
-            <InvertedIconButton ariaLabel="Saved messages" glyph={<BookmarkOutlineIcon />} />
+            <InvertedIconButton
+              ariaLabel="Recent mentions"
+              glyph={<AtIcon />}
+            />
+            <InvertedIconButton
+              ariaLabel="Saved messages"
+              glyph={<BookmarkOutlineIcon />}
+            />
           </>
         )}
         {!isChannels && (
-          <InvertedIconButton ariaLabel="Help" glyph={<HelpCircleOutlineIcon />} />
+          <InvertedIconButton
+            ariaLabel="Help"
+            glyph={<HelpCircleOutlineIcon />}
+          />
         )}
         <InvertedIconButton ariaLabel="Settings" glyph={<CogOutlineIcon />} />
-        <button className={styles['global-header__account']} aria-label="Account menu">
-          <UserAvatar src={userAvatarSrc} alt={userAvatarAlt} size="24" status />
+        <button
+          className={styles['global-header__account']}
+          aria-label="Account menu"
+        >
+          <UserAvatar
+            src={userAvatarSrc}
+            alt={userAvatarAlt}
+            size="24"
+            status
+          />
         </button>
       </div>
     </header>

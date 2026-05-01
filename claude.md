@@ -1,5 +1,33 @@
 # Project instructions for AI
 
+## Design system: Foundations, Components, Patterns, and Layouts
+
+The design system is organized in four layers, from the most basic style guidance to full screens.
+
+### Foundations
+
+Foundations are the most basic building blocks of the system. They include guidance on things like color, typography, or iconography, and can also include other aspects of interface design like layout or animation.
+
+Think of foundations as a base layer of style definition for the system.
+
+### Components
+
+Components are reusable building blocks that make up the core elements of the interface. Components leverage the foundations. Each component meets a specific need and has been created to establish patterns and intuitive user experiences.
+
+Some components may be a combination of other components.
+
+Examples of components include buttons, tags, tooltips, or messages.
+
+### Patterns
+
+Patterns are typically larger building blocks made up of multiple components. Grouping multiple components together allows for more complex interface elements that solve common problems. Patterns can also be reusable blocks but are often used in one discrete place within the application.
+
+Examples of patterns include the Channel Sidebar, Channel Header, and Right Sidebar.
+
+### Layouts
+
+Layouts are screens made up of multiple patterns and/or components. A layout is a demonstration of all the parts of the design system at work together on one screen.
+
 ## SCSS component styles: BEM + nesting
 
 When writing or editing `*.module.scss` component styles, use a **single block as the root** and nest elements and modifiers under it. This keeps each component’s styles in one hierarchy and matches BEM.
@@ -57,7 +85,8 @@ When adding an `action` to `EmptyState`, omit the `size` prop unless a Figma spe
 
 ## Routing new additions: Patterns page vs Components page
 
-When adding a new component to the playground, check the Figma file name:
+This routing aligns with **Design system: Foundations, Components, Patterns, and Layouts** (above). When adding a new component to the playground, check the Figma file name:
+
 - File name contains **"Patterns"** → add to `src/pages/Patterns/Patterns.tsx`
 - File name contains **"Component"** → add to `src/pages/Components/Components.tsx`
 
@@ -65,16 +94,33 @@ When adding a new component to the playground, check the Figma file name:
 
 When building a new component, audit the elements it needs before writing any new code. If an existing component in `src/components/` already covers an element — especially when its name matches what Figma uses — use it directly rather than reimplementing it. Only build a new sub-component when nothing suitable exists.
 
+## Shared React hooks
+
+If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (They may be introduced on a long-lived feature branch and cherry-picked to `main` later.)
+
+
+| Hook               | File                  | Use when                                                                                                                                                                   |
+| ------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useExitAnimation` | `useExitAnimation.ts` | A panel or overlay should stay mounted for `durationMs` after `open` becomes false so CSS exit animation can run. Returns `{ rendered, exiting }`.                         |
+| `useOutsideClose`  | `useOutsideClose.ts`  | A dropdown or custom menu is `open` and should close on `mousedown` outside a container `ref` (e.g. split button + menu). Pass `open` so listeners attach only while open. |
+
+
+**Profile popover + positioning:** `ProfilePopover` is the **content** card. Figma-anchored placement (e.g. from a message avatar `getBoundingClientRect()`) is a **separate concern**. Do not fork `ProfilePopover` for coordinates — either compose it inside a small page-local wrapper (e.g. `PositionedProfilePopover` in a prototype) or, if multiple prototypes need the same rules, add a **layout hook** such as `useAnchoredToRect` and keep `ProfilePopover` unchanged. Merge positioning into the design system only after UX parity with the popover animation spec in this file.
+
+**Note:** The **Outbound Calls** prototype (MM-56584) is maintained on a **feature branch only** — it is not planned for the `main` playground.
+
 ## Animation: easing and duration
 
 Always use the animation tokens from `tokens.scss` — never hard-code durations or easing keywords directly.
 
-| Scenario | Easing token | Duration token |
-|---|---|---|
-| Element already on screen, small movement | `--ease-transition` | `--duration-quick` |
+
+| Scenario                                  | Easing token        | Duration token        |
+| ----------------------------------------- | ------------------- | --------------------- |
+| Element already on screen, small movement | `--ease-transition` | `--duration-quick`    |
 | Element already on screen, large movement | `--ease-transition` | `--duration-moderate` |
-| Entrance (element entering the screen) | `--ease-entrance` | `--duration-quick` |
-| Exit (element leaving the screen) | `--ease-exit` | `--duration-quick` |
+| Entrance (element entering the screen)    | `--ease-entrance`   | `--duration-quick`    |
+| Exit (element leaving the screen)         | `--ease-exit`       | `--duration-quick`    |
+
 
 **"Large movement"** means the element travels a significant distance across the viewport — e.g. a panel sliding in from off-screen. A button hover shift or a toolbar expanding a fixed height are small movements.
 
@@ -96,12 +142,14 @@ transition: opacity var(--duration-quick) var(--ease-exit);
 
 For info/success/warning/danger states, always use the semantic tokens from `tokens.scss` — never raw palette tokens (e.g. `--color-blue-400`) or Mattermost theme vars (e.g. `--error-text`, `--away-indicator`).
 
-| Semantic token | RGB counterpart | Value |
-|---|---|---|
-| `--color-info` | `--color-info-rgb` | `--color-blue-400` |
-| `--color-success` | `--color-success-rgb` | `--color-green-500` |
+
+| Semantic token    | RGB counterpart       | Value                |
+| ----------------- | --------------------- | -------------------- |
+| `--color-info`    | `--color-info-rgb`    | `--color-blue-400`   |
+| `--color-success` | `--color-success-rgb` | `--color-green-500`  |
 | `--color-warning` | `--color-warning-rgb` | `--color-yellow-600` |
-| `--color-danger` | `--color-danger-rgb` | `--color-red-500` |
+| `--color-danger`  | `--color-danger-rgb`  | `--color-red-500`    |
+
 
 Use the `-rgb` counterpart when you need `rgba()`:
 
@@ -115,12 +163,14 @@ border-color: rgba(var(--color-warning-rgb), 0.16);
 
 When a Figma color variable has a suffix (e.g. `center-channel-color-8`, `sidebar-text-24`, `button-bg-16`, `color-danger-12`), the suffix encodes an opacity percentage. Do **not** look for a suffixed CSS token — it doesn't exist. Instead, use the root token's `-rgb` counterpart inside `rgba()`, with the suffix converted to a decimal alpha (divide by 100).
 
-| Figma variable | CSS |
-|---|---|
+
+| Figma variable           | CSS                                           |
+| ------------------------ | --------------------------------------------- |
 | `center-channel-color/8` | `rgba(var(--center-channel-color-rgb), 0.08)` |
-| `sidebar-text/24` | `rgba(var(--sidebar-text-rgb), 0.24)` |
-| `button-bg/16` | `rgba(var(--button-bg-rgb), 0.16)` |
-| `color-danger/12` | `rgba(var(--color-danger-rgb), 0.12)` |
+| `sidebar-text/24`        | `rgba(var(--sidebar-text-rgb), 0.24)`         |
+| `button-bg/16`           | `rgba(var(--button-bg-rgb), 0.16)`            |
+| `color-danger/12`        | `rgba(var(--color-danger-rgb), 0.12)`         |
+
 
 ## Iconography: phone icon is always filled
 
@@ -134,10 +184,12 @@ Use `var(--font-weight-semibold)` (600) wherever bold emphasis is needed. Do **n
 
 Popover panels (menus, info popovers, dropdowns) animate on mount/unmount with a combined scale + fade:
 
-| Phase | Scale | Opacity | Duration | Easing |
-|---|---|---|---|---|
+
+| Phase   | Scale          | Opacity   | Duration           | Easing                      |
+| ------- | -------------- | --------- | ------------------ | --------------------------- |
 | Opening | `90%` → `100%` | `0` → `1` | `--duration-quick` | `--ease-entrance` (easeOut) |
-| Closing | `100%` → `90%` | `1` → `0` | `--duration-quick` | `--ease-exit` (easeIn) |
+| Closing | `100%` → `90%` | `1` → `0` | `--duration-quick` | `--ease-exit` (easeIn)      |
+
 
 Set `transform-origin` so the scale grows from the anchor direction (e.g. `transform-origin: top left` for a popover that opens below-and-right of its trigger).
 

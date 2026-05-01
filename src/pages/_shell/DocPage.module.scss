@@ -1,0 +1,100 @@
+.doc-page {
+  width: 100%;
+}
+
+.doc-page__inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--spacing-xxxxl) var(--spacing-xxxl);
+}
+
+.doc-page__header {
+  margin-bottom: var(--spacing-xxxl);
+}
+
+.doc-page__eyebrow {
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+  margin-bottom: var(--spacing-xs);
+}
+
+.doc-page__title {
+  font-size: var(--font-size-700);
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  line-height: var(--line-height-100);
+}
+
+.doc-page__body {
+  color: var(--center-channel-color);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-200);
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin-top: var(--spacing-xxl);
+    margin-bottom: var(--spacing-m);
+    line-height: var(--line-height-100);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1 {
+    font-size: var(--font-size-500);
+  }
+  h2 {
+    font-size: var(--font-size-400);
+  }
+  h3 {
+    font-size: var(--font-size-300);
+  }
+  h4 {
+    font-size: var(--font-size-200);
+  }
+
+  p {
+    margin-bottom: var(--spacing-m);
+  }
+
+  ul,
+  ol {
+    margin-bottom: var(--spacing-m);
+  }
+
+  a {
+    color: var(--link-color);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
+    }
+  }
+
+  code {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    padding: var(--spacing-xxxxs) var(--spacing-xxs);
+    border-radius: var(--radius-s);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    margin: var(--spacing-xxl) 0;
+  }
+}

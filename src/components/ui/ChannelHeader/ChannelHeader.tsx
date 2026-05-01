@@ -14,7 +14,13 @@ import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import styles from './ChannelHeader.module.scss';
 
-export type ChannelHeaderType = 'Channel' | 'Bot' | 'DM' | 'GM' | 'Threads' | 'Drafts';
+export type ChannelHeaderType =
+  | 'Channel'
+  | 'Bot'
+  | 'DM'
+  | 'GM'
+  | 'Threads'
+  | 'Drafts';
 
 export interface ChannelHeaderProps {
   /** Channel type variant. Default: Channel. */
@@ -64,7 +70,8 @@ export default function ChannelHeader({
 }: ChannelHeaderProps) {
   const isSimple = type === 'Threads' || type === 'Drafts';
   const showCallButton = type === 'Channel' || type === 'DM' || type === 'GM';
-  const showMembers = (type === 'Channel' || type === 'GM') && memberCount != null;
+  const showMembers =
+    (type === 'Channel' || type === 'GM') && memberCount != null;
   const showFiles = type === 'Channel' || type === 'DM' || type === 'GM';
   const showChevron = type === 'Channel' || type === 'DM' || type === 'GM';
   const hasDmAvatar = (type === 'DM' || type === 'Bot') && Boolean(avatarSrc);
@@ -73,14 +80,18 @@ export default function ChannelHeader({
     styles['channel-header'],
     isSimple ? styles['channel-header--simple'] : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   if (isSimple) {
     return (
       <div className={rootClass}>
         <span className={styles['channel-header__title']}>{name}</span>
         {description && (
-          <span className={styles['channel-header__description']}>{description}</span>
+          <span className={styles['channel-header__description']}>
+            {description}
+          </span>
         )}
       </div>
     );
@@ -92,12 +103,20 @@ export default function ChannelHeader({
         <div className={styles['channel-header__top-row']}>
           <IconButton
             size="X-Small"
-            aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={
+              favorited ? 'Remove from favorites' : 'Add to favorites'
+            }
             onClick={onFavoriteClick}
             icon={
-              favorited
-                ? <span style={{ color: 'var(--button-bg)', display: 'inline-flex' }}><StarIcon size={18} /></span>
-                : <StarOutlineIcon size={18} />
+              favorited ? (
+                <span
+                  style={{ color: 'var(--button-bg)', display: 'inline-flex' }}
+                >
+                  <StarIcon size={18} />
+                </span>
+              ) : (
+                <StarOutlineIcon size={18} />
+              )
             }
           />
 
@@ -116,7 +135,9 @@ export default function ChannelHeader({
                     type="button"
                     onClick={onNameClick}
                   >
-                    <span className={styles['channel-header__name']}>{name}</span>
+                    <span className={styles['channel-header__name']}>
+                      {name}
+                    </span>
                   </button>
                   <span className={styles['channel-header__bot-tag']}>
                     <LabelTag label="BOT" casing="All Caps" />
