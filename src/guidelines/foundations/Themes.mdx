@@ -1,0 +1,186 @@
+Themes let users tailor the Mattermost interface to their environment and
+preferences while keeping the product visually coherent. A theme remaps a
+small set of role-based color tokens — sidebar, center channel, buttons,
+interactions, status — so every component built on those tokens adapts
+automatically.
+
+Themes are applied via a `data-theme` attribute on the root `<html>`
+element, and the user's selection persists across sessions.
+
+## Available themes
+
+Mattermost ships five built-in themes. **Denim** is the default. The
+previews below render the full Layouts demo scoped to each theme — switch
+your active theme in the app top nav to compare against the surrounding
+chrome.
+
+### Light themes
+
+<SplitRow>
+  <div>
+    <h4>Denim</h4>
+    <p>Mattermost's signature look. Indigo sidebar, white center channel, blue accents. The default for new users.</p>
+  </div>
+  <LayoutPreview theme="denim" />
+</SplitRow>
+
+<SplitRow>
+  <div>
+    <h4>Sapphire</h4>
+    <p>A cooler, more saturated blue sidebar pairs with a white center channel and cyan accents. Good for users who want the brand feel with a lighter sidebar than Denim.</p>
+  </div>
+  <LayoutPreview theme="sapphire" />
+</SplitRow>
+
+<SplitRow>
+  <div>
+    <h4>Quartz</h4>
+    <p>Soft neutral sidebar with a white center channel. The lightest, lowest-contrast option for users who prefer minimal chrome.</p>
+  </div>
+  <LayoutPreview theme="quartz" />
+</SplitRow>
+
+<Divider />
+
+### Dark themes
+
+<SplitRow>
+  <div>
+    <h4>Indigo</h4>
+    <p>Deep navy chrome with a near-black center channel. Reduces eye strain in dim environments while keeping a hint of brand color.</p>
+  </div>
+  <LayoutPreview theme="indigo" />
+</SplitRow>
+
+<SplitRow>
+  <div>
+    <h4>Onyx</h4>
+    <p>Pure charcoal chrome with a near-black center channel. The most neutral dark theme, suited to OLED displays and high-focus work.</p>
+  </div>
+  <LayoutPreview theme="onyx" />
+</SplitRow>
+
+<Divider />
+
+## How themes work
+
+Themes are a layer of **role-based tokens** that sit on top of the
+foundation palette. Foundation tokens (e.g. `--color-blue-500`) describe
+*what a color is*; theme tokens (e.g. `--button-bg`) describe *what role a
+color plays in the interface*. Each theme reassigns role tokens to
+appropriate palette values for that look.
+
+Every theme token also exposes an `-rgb` counterpart for use inside
+`rgba()` so transparency stays theme-aware:
+
+```scss
+// Solid fill — adapts to whatever the active theme defines.
+background-color: var(--button-bg);
+
+// Translucent fill — use the -rgb variant inside rgba().
+background-color: rgba(var(--button-bg-rgb), 0.16);
+```
+
+<Divider />
+
+## Theme regions
+
+Theme tokens are grouped by the area of the interface they control. The
+swatches below reflect the **currently active theme** — switch themes in
+the app to see them update.
+
+### Sidebar
+
+The team and channel navigation chrome.
+
+<SwatchGrid size="medium">
+  <Swatch token="sidebar-bg" label="Sidebar BG" size="medium" />
+  <Swatch token="sidebar-text" label="Sidebar Text" size="medium" />
+  <Swatch token="sidebar-text-hover-bg" label="Sidebar Hover" size="medium" />
+  <Swatch token="sidebar-text-active-border" label="Active Border" size="medium" />
+  <Swatch token="sidebar-header-bg" label="Header BG" size="medium" />
+  <Swatch token="sidebar-team-bg" label="Team BG" size="medium" />
+</SwatchGrid>
+
+### Center channel
+
+The main reading surface and its primary text color. Most product UI lives
+on these.
+
+<SwatchGrid size="medium">
+  <Swatch token="center-channel-bg" label="Center Channel BG" size="medium" />
+  <Swatch token="center-channel-color" label="Center Channel Text" size="medium" />
+</SwatchGrid>
+
+### Buttons
+
+The primary call-to-action pair.
+
+<SwatchGrid size="medium">
+  <Swatch token="button-bg" label="Button BG" size="medium" />
+  <Swatch token="button-color" label="Button Text" size="medium" />
+</SwatchGrid>
+
+### Interactions
+
+Inline UI states that need to read clearly across themes.
+
+<SwatchGrid size="medium">
+  <Swatch token="link-color" label="Link" size="medium" />
+  <Swatch token="error-text" label="Error Text" size="medium" />
+  <Swatch token="mention-bg" label="Mention BG" size="medium" />
+  <Swatch token="mention-color" label="Mention Text" size="medium" />
+  <Swatch token="mention-highlight-bg" label="Mention Highlight" size="medium" />
+  <Swatch token="new-message-separator" label="New Message" size="medium" />
+</SwatchGrid>
+
+### Status
+
+Presence indicators. Kept consistent across themes for recognizability.
+
+<SwatchGrid size="medium">
+  <Swatch token="online-indicator" label="Online" size="medium" />
+  <Swatch token="away-indicator" label="Away" size="medium" />
+  <Swatch token="dnd-indicator" label="Do Not Disturb" size="medium" />
+</SwatchGrid>
+
+<Divider />
+
+## Authoring components for themes
+
+Components must work on every theme without per-theme overrides. Follow
+these rules.
+
+**Use theme tokens for product UI.** Reach for role-based theme tokens
+over raw palette tokens. Palette tokens are appropriate inside
+foundation-level demos, illustrations, or data visualizations where the
+color is intentional and not theme-dependent.
+
+**Use the `-rgb` variant inside `rgba()`.** The variant lets translucency
+inherit the theme's resolved color. Never wrap a `var(--token)` reference
+itself in `rgba()`.
+
+**Don't hard-code hex values.** Anywhere a theme could change the surface
+beneath your component, a hard-coded color will break contrast on at least
+one theme.
+
+**Test on dark themes.** Borders, dividers, and translucent overlays often
+look correct on Denim but disappear on Indigo or Onyx. Check every new
+component on at least one light and one dark theme before merging.
+
+**Lean on `--center-channel-color-rgb`** for borders, dividers, and
+subtle backgrounds inside the center channel. A low-alpha rgba on the
+center channel text color produces a separator that adapts to every theme:
+
+```scss
+border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+```
+
+<Divider />
+
+## Related
+
+- [Color guideline](/guidelines/foundations/color) — the underlying
+  palette and shade ramps theme tokens map to.
+- [Theme Colors library page](/library/foundations/theme-colors) — every
+  theme token side-by-side across all five themes, with copy-ready values.

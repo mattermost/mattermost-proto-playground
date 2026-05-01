@@ -50,9 +50,7 @@ const THEME_GROUPS = [
 export default function ThemeColorsLibrary() {
   return (
     <>
-      <p className={styles['foundations__section-desc']}>
-        Semantic tokens — values adapt to the active theme.
-      </p>
+      <p>Semantic tokens — values adapt to the active theme.</p>
       <div className={styles['foundations__theme-groups']}>
         {THEME_GROUPS.map(({ name, tokens }) => (
           <div key={name} className={styles['foundations__theme-group']}>

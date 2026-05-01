@@ -49,12 +49,12 @@ export default function AnimationLibrary() {
 
   return (
     <>
-      <p className={styles['foundations__section-desc']}>
+      <p>
         Always use animation tokens — never hard-code durations or easing
         keywords directly.
       </p>
 
-      <h3 className={styles['foundations__subsection-title']}>Duration</h3>
+      <h3>Duration</h3>
       <div className={styles['foundations__anim-rows']}>
         {DURATIONS.map(({ name, token, value, desc }) => (
           <div key={name} className={styles['foundations__anim-row']}>
@@ -91,7 +91,7 @@ export default function AnimationLibrary() {
         ))}
       </div>
 
-      <h3 className={styles['foundations__subsection-title']}>Easing</h3>
+      <h3>Easing</h3>
       <div className={styles['foundations__anim-rows']}>
         {EASINGS.map(({ name, token, value, desc }) => (
           <div key={name} className={styles['foundations__anim-row']}>
