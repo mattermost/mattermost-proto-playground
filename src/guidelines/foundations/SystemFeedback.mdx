@@ -1,0 +1,64 @@
+The following outlines guidelines for system feedback — creating a
+predictable, consistent experience when system actions are taking place.
+
+## Guidelines
+
+**Acknowledge immediately.** Confirm input instantly with a visible state
+change.
+
+**Be consistent.** Use the same colors and patterns for success, error,
+warning, and progress across the product.
+
+**Match feedback to context and urgency.**
+
+- Inline feedback for local issues (e.g. can't send due to too many
+  characters in a message).
+- Global banners for system-wide events (e.g. connectivity issues).
+- Reserve persistent or interruptive feedback for critical blocking cases.
+
+**Support recovery.** Preserve user input during failures. Offer retry,
+cancel, or undo options when possible.
+
+**Show progress.** Indicate when tasks take more than ~300ms. Use
+determinate progress for long or staged operations (e.g. progress bars);
+indeterminate progress (e.g. spinners) for quicker operations.
+
+<Divider />
+
+## Feedback Types
+
+| Type | When to use | Guideline |
+| --- | --- | --- |
+| Acknowledgement | Input received, processing started | Show immediate visual feedback. e.g. 'Link copied'. |
+| Success | Operation completed | Use lightweight, temporary confirmation. These are often auto-dismissed. e.g. 'Settings saved'. |
+| Warning | Important but non-blocking | Non-intrusive, with remediation options. Dismissable notice. |
+| Error | Operation failed | Actionable recovery (retry, edit, cancel). |
+| Blocking Alert | User cannot proceed | Undismissable, persistent notice until resolved. |
+| Progress | Task running | Spinner or progress bar; allow cancel when appropriate. |
+| Background Completion | Async tasks | Notify on completion or failure. |
+| System Status | Connectivity, maintenance, degraded state | Persistent global indicator. |
+| Undo / Revert | After destructive actions | Provide limited-time undo. |
+
+<Divider />
+
+## Components for system feedback
+
+See the component and pattern documentation below for details on these
+feedback mechanisms.
+
+- **Spinners** — indeterminate loading state.
+- **Progress Bars** — determinate progress.
+- **Section Notices** — providing conclusive system feedback (e.g. errors
+  in form below).
+- **Input Errors** — form inputs have error states with error messages
+  proximal to the field.
+- **Popover Notice** — similar to the section notice, but displays on top
+  rather than inline (e.g. "new server version available" in System
+  Console).
+- **Global Banners** — for global system feedback (e.g. no connection).
+- **Loading States for Buttons** — to show loading state upon click (e.g.
+  logging in).
+- **Success State Variations for Buttons** — to show success on click
+  (e.g. "Link copied").
+- **Toast** — transient notification for background or asynchronous
+  completion.

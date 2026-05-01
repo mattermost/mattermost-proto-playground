@@ -126,6 +126,31 @@ export const librarySections: Partial<Record<LibraryCategory, SectionGroup[]>> =
 
 /**
  * Section groupings for the Guidelines sidebar, keyed by category.
- * Currently flat; populate as guideline content grows.
+ * Categories without an entry render as a flat list in manifest order.
  */
-export const guidelineSections: Partial<Record<GuidelineCategory, SectionGroup[]>> = {};
+export const guidelineSections: Partial<Record<GuidelineCategory, SectionGroup[]>> = {
+  foundations: [
+    {
+      label: 'Guidelines',
+      slugs: [
+        'writing-style',
+        'usability-heuristics',
+        'system-feedback',
+        'accessibility-guidelines',
+      ],
+    },
+    {
+      label: 'Style',
+      slugs: [
+        'color',
+        'themes',
+        'typography',
+        'iconography',
+        'shape',
+        'elevation',
+        'layout',
+        'animation',
+      ],
+    },
+  ],
+};

@@ -6,6 +6,7 @@ import {
   type LibraryEntry,
 } from '@/manifests/library';
 import DocPage from '@/pages/_shell/DocPage';
+import PageHero from '@/components/layout/PageHero/PageHero';
 
 const VALID_CATEGORIES: LibraryCategory[] = [
   'foundations',
@@ -13,6 +14,13 @@ const VALID_CATEGORIES: LibraryCategory[] = [
   'patterns',
   'layouts',
 ];
+
+const CATEGORY_LABELS: Record<LibraryCategory, string> = {
+  foundations: 'Foundations',
+  components: 'Components',
+  patterns: 'Patterns',
+  layouts: 'Layouts',
+};
 
 function resolveEntry(
   rawCategory: string | undefined,
@@ -24,8 +32,8 @@ function resolveEntry(
   return findLibraryEntry(rawCategory as LibraryCategory, rawSlug);
 }
 
-function eyebrowFor(entry: LibraryEntry): string {
-  return `Library · ${entry.category[0].toUpperCase()}${entry.category.slice(1)}`;
+function breadcrumbFor(entry: LibraryEntry): string {
+  return `Library / ${CATEGORY_LABELS[entry.category]}`;
 }
 
 export default function LibraryRoute() {
@@ -35,7 +43,7 @@ export default function LibraryRoute() {
 
   if (!entry || !Page) {
     return (
-      <DocPage eyebrow="Library" title="Not found">
+      <DocPage hero={<PageHero breadcrumb="Library" title="Not found" />}>
         <p>
           No library entry registered for this URL. Check{' '}
           <code>src/manifests/library.ts</code>.
@@ -53,7 +61,15 @@ export default function LibraryRoute() {
   }
 
   return (
-    <DocPage eyebrow={eyebrowFor(entry)} title={entry.name}>
+    <DocPage
+      hero={
+        <PageHero
+          breadcrumb={breadcrumbFor(entry)}
+          title={entry.name}
+          description={entry.description}
+        />
+      }
+    >
       <Suspense fallback={<p>Loading…</p>}>
         <Page />
       </Suspense>
