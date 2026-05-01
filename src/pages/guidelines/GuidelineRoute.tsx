@@ -6,38 +6,39 @@ import {
   type GuidelineEntry,
 } from '@/manifests/guidelines';
 import DocPage from '@/pages/_shell/DocPage';
+import PageHero from '@/components/layout/PageHero/PageHero';
 
 const VALID_CATEGORIES: GuidelineCategory[] = [
+  'overview',
   'foundations',
   'components',
   'patterns',
   'layouts',
 ];
 
+const CATEGORY_LABELS: Record<GuidelineCategory, string> = {
+  overview: 'Overview',
+  foundations: 'Foundations',
+  components: 'Components',
+  patterns: 'Patterns',
+  layouts: 'Layouts',
+};
+
 function resolveEntry(
   rawCategory: string | undefined,
   rawSlug: string | undefined,
 ): GuidelineEntry | undefined {
-  if (!rawSlug) return undefined;
-
-  if (rawCategory === undefined) {
-    return GUIDELINE_ENTRIES.find(
-      (e) => e.category === 'top-level' && e.slug === rawSlug,
-    );
-  }
-
+  if (!rawSlug || !rawCategory) return undefined;
   if (!VALID_CATEGORIES.includes(rawCategory as GuidelineCategory)) {
     return undefined;
   }
-
   return GUIDELINE_ENTRIES.find(
     (e) => e.category === rawCategory && e.slug === rawSlug,
   );
 }
 
-function eyebrowFor(entry: GuidelineEntry): string {
-  if (entry.category === 'top-level') return 'Guidelines';
-  return `Guidelines · ${entry.category[0].toUpperCase()}${entry.category.slice(1)}`;
+function breadcrumbFor(entry: GuidelineEntry): string {
+  return `Guidelines / ${CATEGORY_LABELS[entry.category]}`;
 }
 
 export default function GuidelineRoute() {
@@ -47,7 +48,9 @@ export default function GuidelineRoute() {
 
   if (!entry || !Page) {
     return (
-      <DocPage eyebrow="Guidelines" title="Not found">
+      <DocPage
+        hero={<PageHero breadcrumb="Guidelines" title="Not found" />}
+      >
         <p>
           No guideline registered for this URL. Check{' '}
           <code>src/manifests/guidelines.ts</code>.
@@ -57,7 +60,15 @@ export default function GuidelineRoute() {
   }
 
   return (
-    <DocPage eyebrow={eyebrowFor(entry)} title={entry.name}>
+    <DocPage
+      hero={
+        <PageHero
+          breadcrumb={breadcrumbFor(entry)}
+          title={entry.name}
+          description={entry.description}
+        />
+      }
+    >
       <Suspense fallback={<p>Loading…</p>}>
         <Page />
       </Suspense>

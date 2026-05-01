@@ -1,0 +1,71 @@
+## Primary Palette
+
+Our Primary Palette is comprised of indigo, blue, and neutral tones to bring trust and boldness to our brand. We use these colors in logical ways to guide the eye and highlight important information.
+
+<SwatchGrid size="large">
+  <Swatch token="color-indigo-500" label="Indigo" size="large" />
+  <Swatch token="color-blue-500" label="Blue" size="large" />
+  <Swatch token="color-neutral-900" label="Neutral" size="large" />
+</SwatchGrid>
+
+<Divider />
+
+## Secondary Palette
+
+Our secondary palette has a variety of colors to keep things fresh and interesting.
+
+<SwatchGrid size="medium">
+  <Swatch token="color-cyan-500" label="Cyan" size="medium" />
+  <Swatch token="color-green-500" label="Green" size="medium" />
+  <Swatch token="color-orange-500" label="Orange" size="medium" />
+  <Swatch token="color-purple-500" label="Purple" size="medium" />
+  <Swatch token="color-red-500" label="Red" size="medium" />
+  <Swatch token="color-teal-500" label="Teal" size="medium" />
+  <Swatch token="color-yellow-500" label="Yellow" size="medium" />
+</SwatchGrid>
+
+<Divider />
+
+## Semantic Colors
+
+Semantic colors help users identify status, see critical information, locate help, and understand the next steps they need to take.
+
+<SwatchGrid size="medium">
+  <Swatch token="color-info" label="Info" size="medium" />
+  <Swatch token="color-success" label="Success" size="medium" />
+  <Swatch token="color-warning" label="Warning" size="medium" />
+  <Swatch token="color-danger" label="Danger" size="medium" />
+</SwatchGrid>
+
+<Divider />
+
+## Shades
+
+Each of the Primary and Secondary colors have shades ranging from 100–800, with the exception of Neutrals which have a wider range of shades.
+
+<SwatchRamp label="Indigo" base="color-indigo" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Blue" base="color-blue" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Cyan" base="color-cyan" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Green" base="color-green" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Orange" base="color-orange" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Purple" base="color-purple" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Red" base="color-red" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Teal" base="color-teal" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp label="Yellow" base="color-yellow" shades={[100, 200, 300, 400, 500, 600, 700, 800]} />
+<SwatchRamp
+  label="Neutral"
+  base="color-neutral"
+  shades={[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200]}
+/>
+
+<Divider />
+
+## Tokens and implementation
+
+Each shade is exposed as a CSS custom property (e.g. `--color-blue-500`) along with its `-rgb` counterpart for use inside `rgba()`. For the full token list, copy-ready values, and usage examples, see the [Color library page](/library/foundations/color).
+
+<Divider />
+
+## Themes
+
+Most product surfaces should reach for **theme-aware tokens** rather than raw palette values, so the interface adapts across light, dark, and custom themes. See the [Themes guideline](/guidelines/foundations/themes) for how themes work and which tokens to use when authoring new components.

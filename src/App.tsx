@@ -1,5 +1,10 @@
 import AppRouter from './router';
+import MdxProvider from './guidelines/_provider/MdxProvider';
 
 export default function App() {
-  return <AppRouter />;
+  return (
+    <MdxProvider>
+      <AppRouter />
+    </MdxProvider>
+  );
 }

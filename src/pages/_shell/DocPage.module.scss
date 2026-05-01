@@ -10,6 +10,7 @@
 
 .doc-page__header {
   margin-bottom: var(--spacing-xxxl);
+  padding: var(--spacing-xxxl);
 }
 
 .doc-page__eyebrow {
@@ -31,8 +32,9 @@
 
 .doc-page__body {
   color: var(--center-channel-color);
-  font-size: var(--font-size-100);
+  font-size: var(--font-size-200);
   line-height: var(--line-height-200);
+  padding: var(--spacing-xxxl);
 
   h1,
   h2,
@@ -48,19 +50,35 @@
     &:first-child {
       margin-top: 0;
     }
+
+    // rehype-autolink-headings wraps headings in <a> for deep-linking.
+    // Render the anchor as a regular heading; only show the underline on hover.
+    a {
+      color: inherit;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   h1 {
-    font-size: var(--font-size-500);
+    font-size: var(--font-size-1000);
   }
   h2 {
-    font-size: var(--font-size-400);
+    font-size: var(--font-size-700);
+    margin-top: var(--spacing-xxl);
+    margin-bottom: var(--spacing-xxl);
   }
   h3 {
-    font-size: var(--font-size-300);
+    font-size: var(--font-size-500);
+    margin-top: var(--spacing-xxl);
+    margin-bottom: var(--spacing-l);
   }
   h4 {
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-300);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-m);
   }
 
   p {
@@ -70,6 +88,13 @@
   ul,
   ol {
     margin-bottom: var(--spacing-m);
+  }
+
+  li {
+    margin-bottom: var(--spacing-xs);
+    list-style-type: disc;
+    margin-left: var(--spacing-l);
+    padding-left: var(--spacing-xxxs);
   }
 
   a {
@@ -92,9 +117,52 @@
     border-radius: var(--radius-s);
   }
 
+  pre {
+    margin: var(--spacing-m) 0;
+    padding: var(--spacing-l);
+    border-radius: var(--radius-m);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    overflow-x: auto;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+
+    code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+    }
+  }
+
   hr {
     border: 0;
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    margin: var(--spacing-xxl) 0;
+    margin: var(--spacing-m) 0;
+  }
+
+  strong {
+    font-weight: var(--font-weight-semibold);
   }
 }

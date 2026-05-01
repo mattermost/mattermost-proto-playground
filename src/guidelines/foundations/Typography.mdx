@@ -1,0 +1,149 @@
+Text is an integral part of any user interface, so it's important that all
+typographic elements are designed for legibility and consistency. This section
+defines the typographic style and usage guidelines.
+
+<Divider />
+
+## Typefaces
+
+Compass uses **Metropolis** and **Open Sans** as its primary typefaces. Together
+they cover everything from chrome-level labels and body copy to large display
+headings.
+
+<TypefaceCard
+  name="Metropolis"
+  family="Metropolis, sans-serif"
+  display="Aa"
+  href="https://fontsarena.com/metropolis-by-chris-simpson/"
+  description={
+    <>
+      A modern, geometric typeface that is open-sourced and openly available.
+      Designed for optimal readability at small point sizes while remaining
+      beautiful at large point sizes. Used for larger headings.
+    </>
+  }
+/>
+
+<TypefaceCard
+  name="Open Sans"
+  family="'Open Sans', sans-serif"
+  display="Aa"
+  href="https://fonts.google.com/specimen/Open+Sans"
+  description={
+    <>
+      A modern sans-serif that's incredibly legible and offers an excellent
+      reading experience. Built for high performance as a web font, it combines
+      the strongest attributes of the top sans-serif fonts. Used for all body
+      copy and smaller headings.
+    </>
+  }
+/>
+
+<Divider />
+
+## Type scale
+
+A type scale ensures different sizes of text work together harmoniously. Compass
+uses a **1.125 ratio** — each step is multiplied or divided by 1.125 from the
+previous size, then rounded.
+
+The base font size for the Mattermost web app is **14px**.
+
+### Line heights
+
+Body copy line heights generally use a multiplier of **1.5** based on the font
+size, with adjustments so baselines fall on a 4px grid.
+
+Heading line heights generally use a multiplier of **1.3** based on the font
+size, with adjustments for the 4px grid. Smaller headings also use the 1.5
+multiplier.
+
+<Divider />
+
+## Headings
+
+Headings are generally used in the **semibold** weight, but can also use regular
+or light weights when typographic contrast is needed. Bold weights can be used
+in special cases to help legibility for the smallest headings.
+
+<TypeStack>
+  <TypeSpecimen level={1000} kind="heading" sample="Heading 1000" compact />
+  <TypeSpecimen level={900} kind="heading" sample="Heading 900" compact />
+  <TypeSpecimen level={800} kind="heading" sample="Heading 800" compact />
+  <TypeSpecimen level={700} kind="heading" sample="Heading 700" compact />
+  <TypeSpecimen level={600} kind="heading" sample="Heading 600" compact />
+  <TypeSpecimen level={500} kind="heading" sample="Heading 500" compact />
+  <TypeSpecimen level={400} kind="heading" sample="Heading 400" compact />
+  <TypeSpecimen level={300} kind="heading" sample="Heading 300" compact />
+  <TypeSpecimen level={200} kind="heading" sample="Heading 200" compact />
+  <TypeSpecimen level={100} kind="heading" sample="Heading 100" base compact />
+  <TypeSpecimen level={75} kind="heading" sample="Heading 75" compact />
+  <TypeSpecimen level={50} kind="heading" sample="Heading 50" compact />
+  <TypeSpecimen level={25} kind="heading" sample="Heading 25" compact />
+</TypeStack>
+
+<Divider />
+
+## Body copy
+
+Body copy always uses the **regular** weight. Where emphasis is needed, the
+**semibold** weight can be used. In special cases, bold weights can be used to
+help legibility with the smallest body sizes.
+
+<TypeStack>
+  <TypeSpecimen level={300} kind="body" sample="The quick brown fox jumps over the lazy dog." compact />
+  <TypeSpecimen level={200} kind="body" sample="The quick brown fox jumps over the lazy dog." compact />
+  <TypeSpecimen level={100} kind="body" sample="The quick brown fox jumps over the lazy dog." base compact />
+  <TypeSpecimen level={75} kind="body" sample="The quick brown fox jumps over the lazy dog." compact />
+  <TypeSpecimen level={50} kind="body" sample="The quick brown fox jumps over the lazy dog." compact />
+  <TypeSpecimen level={25} kind="body" sample="The quick brown fox jumps over the lazy dog." compact />
+</TypeStack>
+
+<Divider />
+
+## Margins
+
+Margin refers to the space surrounding a text element. The values below are
+defaults that produce a good typographic starting point — they can be overridden
+when a specific layout requires it.
+
+### Collapsing margins
+
+Top and bottom margins of adjacent text elements collapse into a single margin
+equal to the **larger** of the two. Don't double up by setting both — pick one
+direction and let the other element drive the gap.
+
+### Headings
+
+- **Top margin** = font-size ÷ 1.125, rounded to the nearest 4px. _Only applied
+  when there is content above the heading._
+- **Bottom margin** = font-size × 0.25, rounded to the nearest 4px, with a
+  minimum of 8px. _Only applied when there is content below the heading._
+
+### Body copy
+
+- **Top margin** = font-size × 0.75, rounded to the nearest 4px, minimum 8px.
+- **Bottom margin** = font-size × 0.75, rounded to the nearest 4px, minimum 8px.
+
+<Divider />
+
+## Font stack
+
+When the primary typefaces aren't available, fall back to the device's system
+sans-serif so the page stays readable.
+
+```css
+/* Headings */
+font-family: Metropolis, sans-serif;
+
+/* Body copy */
+font-family: 'Open Sans', sans-serif;
+```
+
+<Divider />
+
+## Tokens and implementation
+
+Each scale step, weight, and family is exposed as a CSS custom property. For the
+full token list, copy-ready values, computed margin tables, and weight samples,
+see the [Typography library page](/library/foundations/typography).

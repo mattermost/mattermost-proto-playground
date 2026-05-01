@@ -34,7 +34,6 @@ export default function AppRouter() {
         {/* Docs surfaces — wrapped with the persistent sidebar. */}
         <Route element={<DocsLayout />}>
           <Route path="/guidelines" element={<GuidelinesIndex />} />
-          <Route path="/guidelines/:slug" element={<GuidelineRoute />} />
           <Route
             path="/guidelines/:category/:slug"
             element={<GuidelineRoute />}

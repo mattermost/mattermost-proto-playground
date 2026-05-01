@@ -1,0 +1,121 @@
+## Why Accessibility Matters
+
+At Mattermost, accessibility is not a checkbox — it's a core part of
+delivering resilient, inclusive, and user-centered experiences. Many of our
+users operate in high-stakes environments where equal access to information
+and workflows is critical. Designing with accessibility in mind ensures
+everyone, including people with disabilities, can participate fully.
+
+<Divider />
+
+## Our Approach
+
+Accessibility is a shared responsibility across product, design,
+engineering, and QA teams. We aim to build accessibility in from the start,
+rather than retrofit it later. This includes:
+
+- Designing with accessibility best practices.
+- Building components that are accessible by default.
+- Testing with assistive technologies and real users.
+- Continuously improving through feedback and audits.
+
+Accessibility is not just about compliance. It's about creating better
+experiences for everyone — more usable, more flexible, and more thoughtful.
+
+We follow the W3C Web Content Accessibility Guidelines (WCAG) 2.1 as the
+benchmark for accessible design, ensuring our tools are perceivable,
+operable, understandable, and robust.
+
+- **Perceivable** — Users must be able to perceive content through one or
+  more senses.
+- **Operable** — Users must be able to navigate and interact with UI
+  components.
+- **Understandable** — The interface should behave in predictable,
+  consistent ways.
+- **Robust** — Content must be compatible with a range of assistive
+  technologies.
+
+<Divider />
+
+## Components of accessible design
+
+### Color and Contrast
+
+- Maintain a minimum contrast ratio of 4.5:1 for normal text and 3:1 for
+  large text (18pt, or 14pt bold).
+- Use accessible color palettes from Compass tokens to ensure readability.
+- Do not rely on color alone to convey meaning (e.g. use icons, text
+  labels, or patterns in addition to color).
+
+### Typography
+
+- Use resizable text that scales with the browser or operating system.
+- Maintain clear visual hierarchy with consistent font sizes and weights.
+
+### Keyboard Navigation
+
+- All interactive elements must be focusable and operable via keyboard
+  (Tab, Shift+Tab, Enter, Space, Arrow keys).
+- Maintain a visible focus indicator.
+- Ensure logical and intuitive tab order across the interface.
+
+### Focus Management
+
+- Manage focus appropriately during modal dialogs, popovers, and dynamic
+  changes.
+- Return focus to the previous element after closing overlays or dialogs.
+- Trap focus within modals and ensure Escape dismisses them.
+
+### Forms and Inputs
+
+- Use explicit labels for all form fields; avoid placeholder-only labeling.
+- Provide error messages that are clear, descriptive, and associated with
+  their input fields.
+- Support autocomplete, keyboard navigation, and appropriate input types
+  (e.g. `type="email"`).
+
+### Screen Reader Support
+
+- Use semantic HTML and ARIA roles where necessary to ensure assistive
+  technology compatibility.
+- Include descriptive labels, alt text, and role attributes for all
+  interactive elements and media.
+- Ensure that status updates, alerts, and dynamic content changes are
+  announced properly via ARIA live regions.
+
+### Motion and Animations
+
+- Avoid flashing or blinking elements that may cause seizures or
+  discomfort.
+- Provide a reduced motion mode; respect user system preferences (via
+  `prefers-reduced-motion`).
+- Use animations sparingly and ensure they do not interfere with task
+  completion.
+
+<Divider />
+
+## Design and Development Collaboration
+
+- **Designers** — Incorporate accessibility into early design stages.
+  Annotate mockups with accessibility notes (e.g. focus order, roles, alt
+  text).
+- **Developers** — Implement and test with assistive technologies (e.g.
+  NVDA, VoiceOver).
+- **QA** — Include accessibility checks in test plans.
+
+<Divider />
+
+## Tools and Resources
+
+- **Color contrast checker** — [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/).
+- **Stark Figma plugin** — accessibility checker.
+- **Screen reader testing** — NVDA, VoiceOver.
+- **Accessibility audits** — axe DevTools, Lighthouse.
+
+<Divider />
+
+## Continuous Improvement
+
+Mattermost is committed to continuous accessibility evaluation and
+improvement. Feedback loops, user testing with diverse users, and regular
+audits help ensure accessibility evolves with our product.
