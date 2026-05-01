@@ -37,9 +37,10 @@ export default function ProgressBar({
   className = '',
 }: ProgressBarProps) {
   const clampedValue = Math.min(100, Math.max(0, value));
-  const sizeClass = size === 'Small'
-    ? styles['progress-bar--size-small']
-    : styles['progress-bar--size-large'];
+  const sizeClass =
+    size === 'Small'
+      ? styles['progress-bar--size-small']
+      : styles['progress-bar--size-large'];
 
   const fillColorClass = semanticColors
     ? getSemanticColorClass(clampedValue)
@@ -52,10 +53,14 @@ export default function ProgressBar({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={ariaLabel}
-      className={[styles['progress-bar'], sizeClass, className].filter(Boolean).join(' ')}
+      className={[styles['progress-bar'], sizeClass, className]
+        .filter(Boolean)
+        .join(' ')}
     >
       <div
-        className={[styles['progress-bar__fill'], fillColorClass].filter(Boolean).join(' ')}
+        className={[styles['progress-bar__fill'], fillColorClass]
+          .filter(Boolean)
+          .join(' ')}
         style={{ width: `${clampedValue}%` }}
       />
     </div>

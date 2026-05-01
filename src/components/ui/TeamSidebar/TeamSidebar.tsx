@@ -38,7 +38,9 @@ export default function TeamSidebar({
   onAddTeam,
   onDialPadClick,
 }: TeamSidebarProps) {
-  const rootClass = [styles['team-sidebar'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['team-sidebar'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass}>

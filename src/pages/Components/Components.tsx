@@ -93,7 +93,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Action Button</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <ActionButton
               icon={<EmoticonHappyOutlineIcon size={20} />}
               label="Action"
@@ -196,28 +198,89 @@ export default function Components() {
       <section className={styles['components__section']}>
         <h2 className={styles['components__section-title']}>Attachment Card</h2>
         <div className={styles['components__row']}>
-          <AttachmentCard fileName="Filename_goes_here.txt" fileMeta="TXT 15KB" fileType="text" />
-          <AttachmentCard fileName="Filename_goes_here.docx" fileMeta="DOCX 2.4MB" fileType="word" channelTag="UX Design" dateTimeStamp="Sep 24 5:14 PM" />
-          <AttachmentCard fileName="Spreadsheet_Q3_results.xlsx" fileMeta="XLSX 842KB" fileType="excel" />
+          <AttachmentCard
+            fileName="Filename_goes_here.txt"
+            fileMeta="TXT 15KB"
+            fileType="text"
+          />
+          <AttachmentCard
+            fileName="Filename_goes_here.docx"
+            fileMeta="DOCX 2.4MB"
+            fileType="word"
+            channelTag="UX Design"
+            dateTimeStamp="Sep 24 5:14 PM"
+          />
+          <AttachmentCard
+            fileName="Spreadsheet_Q3_results.xlsx"
+            fileMeta="XLSX 842KB"
+            fileType="excel"
+          />
         </div>
         <div className={styles['components__row']}>
-          <AttachmentCard fileName="Presentation.pptx" fileMeta="PPTX 12MB" fileType="powerpoint" />
-          <AttachmentCard fileName="Design_spec.pdf" fileMeta="PDF 3.1MB" fileType="pdf" />
-          <AttachmentCard fileName="photo.jpg" fileMeta="JPG 2.2MB" fileType="image-icon" />
+          <AttachmentCard
+            fileName="Presentation.pptx"
+            fileMeta="PPTX 12MB"
+            fileType="powerpoint"
+          />
+          <AttachmentCard
+            fileName="Design_spec.pdf"
+            fileMeta="PDF 3.1MB"
+            fileType="pdf"
+          />
+          <AttachmentCard
+            fileName="photo.jpg"
+            fileMeta="JPG 2.2MB"
+            fileType="image-icon"
+          />
         </div>
         <div className={styles['components__row']}>
-          <AttachmentCard fileName="thumbnail.jpg" fileMeta="JPG 2.2MB" fileType="image-thumbnail" thumbnailSrc="https://picsum.photos/seed/mm/80/80" />
-          <AttachmentCard fileName="screencast.mp4" fileMeta="MP4 48MB" fileType="video" />
-          <AttachmentCard fileName="podcast_ep12.mp3" fileMeta="MP3 28MB" fileType="audio" />
+          <AttachmentCard
+            fileName="thumbnail.jpg"
+            fileMeta="JPG 2.2MB"
+            fileType="image-thumbnail"
+            thumbnailSrc="https://picsum.photos/seed/mm/80/80"
+          />
+          <AttachmentCard
+            fileName="screencast.mp4"
+            fileMeta="MP4 48MB"
+            fileType="video"
+          />
+          <AttachmentCard
+            fileName="podcast_ep12.mp3"
+            fileMeta="MP3 28MB"
+            fileType="audio"
+          />
         </div>
         <div className={styles['components__row']}>
-          <AttachmentCard fileName="patch-0001.diff" fileMeta="DIFF 14KB" fileType="patch" />
-          <AttachmentCard fileName="archive.zip" fileMeta="ZIP 156MB" fileType="zip" />
-          <AttachmentCard fileName="index.ts" fileMeta="TS 4KB" fileType="code" />
+          <AttachmentCard
+            fileName="patch-0001.diff"
+            fileMeta="DIFF 14KB"
+            fileType="patch"
+          />
+          <AttachmentCard
+            fileName="archive.zip"
+            fileMeta="ZIP 156MB"
+            fileType="zip"
+          />
+          <AttachmentCard
+            fileName="index.ts"
+            fileMeta="TS 4KB"
+            fileType="code"
+          />
         </div>
         <div className={styles['components__row']}>
-          <AttachmentCard fileName="uploading_file.psd" fileType="generic" state="uploading" progress={56} />
-          <AttachmentCard fileName="uploaded_file.psd" fileMeta="PSD 48MB" fileType="generic" state="uploaded" />
+          <AttachmentCard
+            fileName="uploading_file.psd"
+            fileType="generic"
+            state="uploading"
+            progress={56}
+          />
+          <AttachmentCard
+            fileName="uploaded_file.psd"
+            fileMeta="PSD 48MB"
+            fileType="generic"
+            state="uploaded"
+          />
         </div>
       </section>
 
@@ -229,14 +292,10 @@ export default function Components() {
               Primary
             </span>
             <Button>Primary</Button>
-            <Button
-              leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}
-            >
+            <Button leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}>
               With leading icon
             </Button>
-            <Button
-              trailingIcon={<Icon glyph={<GlobeIcon />} size="16" />}
-            >
+            <Button trailingIcon={<Icon glyph={<GlobeIcon />} size="16" />}>
               With trailing icon
             </Button>
           </div>
@@ -295,33 +354,83 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Call Participant Avatar</h2>
-        <div className={`${styles['components__button-block']} ${styles['components__button-block--calls-bg']}`}>
+        <h2 className={styles['components__section-title']}>
+          Call Participant Avatar
+        </h2>
+        <div
+          className={`${styles['components__button-block']} ${styles['components__button-block--calls-bg']}`}
+        >
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Sizes</span>
-            <CallParticipantAvatar src={avatarLeonard} alt="Leonard Riley" size="XS" name="Leonard R." />
-            <CallParticipantAvatar src={avatarDanielle} alt="Danielle Okoro" size="Small" name="Danielle O." />
-            <CallParticipantAvatar src={avatarMarco} alt="Marco Rinaldi" size="Medium" name="Marco R." />
+            <CallParticipantAvatar
+              src={avatarLeonard}
+              alt="Leonard Riley"
+              size="XS"
+              name="Leonard R."
+            />
+            <CallParticipantAvatar
+              src={avatarDanielle}
+              alt="Danielle Okoro"
+              size="Small"
+              name="Danielle O."
+            />
+            <CallParticipantAvatar
+              src={avatarMarco}
+              alt="Marco Rinaldi"
+              size="Medium"
+              name="Marco R."
+            />
           </div>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>States</span>
-            <CallParticipantAvatar src={avatarLeonard} alt="Leonard Riley" size="Small" muteState="muted" name="Muted" />
-            <CallParticipantAvatar src={avatarDanielle} alt="Danielle Okoro" size="Small" muteState="unmuted" name="Unmuted" talking />
-            <CallParticipantAvatar src={avatarMarco} alt="Marco Rinaldi" size="Small" host name="Host" />
-            <CallParticipantAvatar src={avatarEmma} alt="Emma Novak" size="Small" reaction="🎉" name="Reaction" />
+            <CallParticipantAvatar
+              src={avatarLeonard}
+              alt="Leonard Riley"
+              size="Small"
+              muteState="muted"
+              name="Muted"
+            />
+            <CallParticipantAvatar
+              src={avatarDanielle}
+              alt="Danielle Okoro"
+              size="Small"
+              muteState="unmuted"
+              name="Unmuted"
+              talking
+            />
+            <CallParticipantAvatar
+              src={avatarMarco}
+              alt="Marco Rinaldi"
+              size="Small"
+              host
+              name="Host"
+            />
+            <CallParticipantAvatar
+              src={avatarEmma}
+              alt="Emma Novak"
+              size="Small"
+              reaction="🎉"
+              name="Reaction"
+            />
           </div>
         </div>
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Channel Info Msg Header</h2>
+        <h2 className={styles['components__section-title']}>
+          Channel Info Msg Header
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <ChannelInfoMsgHeader />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Multiple tabs</span>
+            <span className={styles['components__instance-label']}>
+              Multiple tabs
+            </span>
             <ChannelInfoMsgHeader
               tabs={[
                 { label: 'Spec Reviews', active: true },
@@ -335,14 +444,22 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Channel Sidebar Item</h2>
+        <h2 className={styles['components__section-title']}>
+          Channel Sidebar Item
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Leading visuals</span>
+            <span className={styles['components__instance-label']}>
+              Leading visuals
+            </span>
             <div className={styles['components__sidebar-demo']}>
               <ChannelSidebarItem leadingVisual="Public" name="Design" />
               <ChannelSidebarItem leadingVisual="Private" name="Engineering" />
-              <ChannelSidebarItem leadingVisual="Group Message" name="Design Team" memberCount={4} />
+              <ChannelSidebarItem
+                leadingVisual="Group Message"
+                name="Design Team"
+                memberCount={4}
+              />
               <ChannelSidebarItem
                 leadingVisual="Direct Message"
                 name="Leonard Riley"
@@ -358,8 +475,16 @@ export default function Components() {
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Status</span>
             <div className={styles['components__sidebar-demo']}>
-              <ChannelSidebarItem leadingVisual="Public" name="Read channel" status="Read" />
-              <ChannelSidebarItem leadingVisual="Public" name="Unread channel" status="Unread" />
+              <ChannelSidebarItem
+                leadingVisual="Public"
+                name="Read channel"
+                status="Read"
+              />
+              <ChannelSidebarItem
+                leadingVisual="Public"
+                name="Unread channel"
+                status="Unread"
+              />
               <ChannelSidebarItem
                 leadingVisual="Public"
                 name="Mention channel"
@@ -369,10 +494,20 @@ export default function Components() {
             </div>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Active & muted</span>
+            <span className={styles['components__instance-label']}>
+              Active & muted
+            </span>
             <div className={styles['components__sidebar-demo']}>
-              <ChannelSidebarItem leadingVisual="Public" name="Active channel" active />
-              <ChannelSidebarItem leadingVisual="Public" name="Muted channel" muted />
+              <ChannelSidebarItem
+                leadingVisual="Public"
+                name="Active channel"
+                active
+              />
+              <ChannelSidebarItem
+                leadingVisual="Public"
+                name="Muted channel"
+                muted
+              />
               <ChannelSidebarItem
                 leadingVisual="Direct Message"
                 name="Danielle Okoro"
@@ -383,10 +518,20 @@ export default function Components() {
             </div>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Shared / call / emoji</span>
+            <span className={styles['components__instance-label']}>
+              Shared / call / emoji
+            </span>
             <div className={styles['components__sidebar-demo']}>
-              <ChannelSidebarItem leadingVisual="Public" name="Shared channel" sharedChannel />
-              <ChannelSidebarItem leadingVisual="Private" name="Call active" callActive />
+              <ChannelSidebarItem
+                leadingVisual="Public"
+                name="Shared channel"
+                sharedChannel
+              />
+              <ChannelSidebarItem
+                leadingVisual="Private"
+                name="Call active"
+                callActive
+              />
               <ChannelSidebarItem
                 leadingVisual="Direct Message"
                 name="Marco Rinaldi"
@@ -465,25 +610,57 @@ export default function Components() {
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Sizes</span>
-            <Chip size="Small" onRemove={() => {}}>Label</Chip>
-            <Chip size="Medium" onRemove={() => {}}>Label</Chip>
-            <Chip size="Medium Compact" onRemove={() => {}}>Label</Chip>
-            <Chip size="Large" onRemove={() => {}}>Label</Chip>
+            <Chip size="Small" onRemove={() => {}}>
+              Label
+            </Chip>
+            <Chip size="Medium" onRemove={() => {}}>
+              Label
+            </Chip>
+            <Chip size="Medium Compact" onRemove={() => {}}>
+              Label
+            </Chip>
+            <Chip size="Large" onRemove={() => {}}>
+              Label
+            </Chip>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Leading</span>
-            <Chip size="Medium" onRemove={() => {}}>No leading</Chip>
-            <Chip size="Medium" leadingIcon={<EmoticonHappyOutlineIcon size={12} />} onRemove={() => {}}>With icon</Chip>
-            <Chip size="Medium" leadingAvatar={{ src: avatarLeonard, alt: 'Leonard Riley' }} onRemove={() => {}}>Leonard Riley</Chip>
+            <span className={styles['components__instance-label']}>
+              Leading
+            </span>
+            <Chip size="Medium" onRemove={() => {}}>
+              No leading
+            </Chip>
+            <Chip
+              size="Medium"
+              leadingIcon={<EmoticonHappyOutlineIcon size={12} />}
+              onRemove={() => {}}
+            >
+              With icon
+            </Chip>
+            <Chip
+              size="Medium"
+              leadingAvatar={{ src: avatarLeonard, alt: 'Leonard Riley' }}
+              onRemove={() => {}}
+            >
+              Leonard Riley
+            </Chip>
           </div>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>States</span>
-            <Chip size="Medium" onRemove={() => {}}>Default</Chip>
-            <Chip size="Medium" error onRemove={() => {}}>Error</Chip>
-            <Chip size="Medium" colored onRemove={() => {}}>Colored</Chip>
+            <Chip size="Medium" onRemove={() => {}}>
+              Default
+            </Chip>
+            <Chip size="Medium" error onRemove={() => {}}>
+              Error
+            </Chip>
+            <Chip size="Medium" colored onRemove={() => {}}>
+              Colored
+            </Chip>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>No remove</span>
+            <span className={styles['components__instance-label']}>
+              No remove
+            </span>
             <Chip size="Small">Small</Chip>
             <Chip size="Medium">Medium</Chip>
             <Chip size="Large">Large</Chip>
@@ -492,14 +669,20 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Date &amp; Range Picker</h2>
+        <h2 className={styles['components__section-title']}>
+          Date &amp; Range Picker
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Single date</span>
+            <span className={styles['components__instance-label']}>
+              Single date
+            </span>
             <DateRangePicker mode="date" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Date range</span>
+            <span className={styles['components__instance-label']}>
+              Date range
+            </span>
             <DateRangePicker mode="range" />
           </div>
         </div>
@@ -537,7 +720,9 @@ export default function Components() {
               styles['components__button-row--inverted-bg'],
             ].join(' ')}
           >
-            <span className={styles['components__instance-label']}>Inverted</span>
+            <span className={styles['components__instance-label']}>
+              Inverted
+            </span>
             <Dropdown appearance="Inverted">Inverted</Dropdown>
           </div>
         </div>
@@ -577,16 +762,25 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Empty State</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With illustration</span>
+            <span className={styles['components__instance-label']}>
+              With illustration
+            </span>
             <EmptyState
-              illustration={{ 'aria-label': 'Search', width: '120px', height: '80px', children: <SearchIllustration /> }}
+              illustration={{
+                'aria-label': 'Search',
+                width: '120px',
+                height: '80px',
+                children: <SearchIllustration />,
+              }}
               title="No results found"
               description="Try adjusting your search or filters to find what you're looking for."
               action={{ children: 'Clear filters' }}
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Text only</span>
+            <span className={styles['components__instance-label']}>
+              Text only
+            </span>
             <EmptyState
               title="No messages yet"
               description="Be the first to start the conversation."
@@ -599,7 +793,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Error Message</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Examples</span>
+            <span className={styles['components__instance-label']}>
+              Examples
+            </span>
             <ErrorMessage message="This field is required." />
             <ErrorMessage message="Invalid email address." />
             <ErrorMessage message="Password must be at least 8 characters." />
@@ -608,21 +804,32 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Feature Discovery Panel</h2>
+        <h2 className={styles['components__section-title']}>
+          Feature Discovery Panel
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With illustration</span>
+            <span className={styles['components__instance-label']}>
+              With illustration
+            </span>
             <FeatureDiscoveryPanel
               skuLabel="PROFESSIONAL"
               title="Synchronize your Active Directory/LDAP groups"
               description="Use AD/LDAP groups to organize and apply actions to multiple users at once. Manage team and channel memberships, permissions, and more."
               primaryAction={{ children: 'Contact sales' }}
               secondaryAction={{ emphasis: 'Tertiary', children: 'Learn more' }}
-              illustration={{ children: <GroupsIllustration />, width: '276px', height: '170px', 'aria-label': 'Groups illustration' }}
+              illustration={{
+                children: <GroupsIllustration />,
+                width: '276px',
+                height: '170px',
+                'aria-label': 'Groups illustration',
+              }}
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Text only</span>
+            <span className={styles['components__instance-label']}>
+              Text only
+            </span>
             <FeatureDiscoveryPanel
               skuLabel="PROFESSIONAL"
               title="Unlock advanced reporting"
@@ -632,7 +839,9 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>No SKU tag</span>
+            <span className={styles['components__instance-label']}>
+              No SKU tag
+            </span>
             <FeatureDiscoveryPanel
               skuLabel={null}
               title="Enable compliance exports"
@@ -649,11 +858,38 @@ export default function Components() {
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Types</span>
           </div>
-          <GlobalBanner message="Your license expires in 14 days." type="General" actionLabel="Renew" onAction={() => {}} onDismiss={() => {}} />
-          <GlobalBanner message="Scheduled maintenance window tonight from 2–4 AM UTC." type="Warning" onDismiss={() => {}} />
-          <GlobalBanner message="Critical security update required. Please update immediately." type="Danger" actionLabel="Update now" onAction={() => {}} />
-          <GlobalBanner message="New version of Mattermost is available." type="Info" actionLabel="Learn more" onAction={() => {}} onDismiss={() => {}} />
-          <GlobalBanner message="Your data export is ready to download." type="Success" actionLabel="Download" onAction={() => {}} onDismiss={() => {}} />
+          <GlobalBanner
+            message="Your license expires in 14 days."
+            type="General"
+            actionLabel="Renew"
+            onAction={() => {}}
+            onDismiss={() => {}}
+          />
+          <GlobalBanner
+            message="Scheduled maintenance window tonight from 2–4 AM UTC."
+            type="Warning"
+            onDismiss={() => {}}
+          />
+          <GlobalBanner
+            message="Critical security update required. Please update immediately."
+            type="Danger"
+            actionLabel="Update now"
+            onAction={() => {}}
+          />
+          <GlobalBanner
+            message="New version of Mattermost is available."
+            type="Info"
+            actionLabel="Learn more"
+            onAction={() => {}}
+            onDismiss={() => {}}
+          />
+          <GlobalBanner
+            message="Your data export is ready to download."
+            type="Success"
+            actionLabel="Download"
+            onAction={() => {}}
+            onDismiss={() => {}}
+          />
         </div>
       </section>
 
@@ -764,9 +1000,7 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>
-              Count
-            </span>
+            <span className={styles['components__instance-label']}>Count</span>
             <IconButton
               aria-label="12 notifications, X-Small"
               count={12}
@@ -907,7 +1141,9 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Collapsed</span>
+            <span className={styles['components__instance-label']}>
+              Collapsed
+            </span>
             <ImagePreview
               src="https://picsum.photos/seed/mm3/480/270"
               alt="Collapsed image"
@@ -921,7 +1157,9 @@ export default function Components() {
       <section className={styles['components__section']}>
         <h2 className={styles['components__section-title']}>Label Tag</h2>
         <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Types · X-Small</span>
+          <span className={styles['components__instance-label']}>
+            Types · X-Small
+          </span>
           <LabelTag label="Default" type="Default" />
           <LabelTag label="Info" type="Info" />
           <LabelTag label="Info Dim" type="Info Dim" />
@@ -930,7 +1168,9 @@ export default function Components() {
           <LabelTag label="Warning" type="Warning" />
         </div>
         <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Types · Small</span>
+          <span className={styles['components__instance-label']}>
+            Types · Small
+          </span>
           <LabelTag label="Default" type="Default" size="Small" />
           <LabelTag label="Info" type="Info" size="Small" />
           <LabelTag label="Info Dim" type="Info Dim" size="Small" />
@@ -948,10 +1188,26 @@ export default function Components() {
           <LabelTag label="Tag" type="Warning" casing="All Caps" />
         </div>
         <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>With icon</span>
-          <LabelTag label="PROFESSIONAL" type="Default" casing="All Caps" leadingIcon={<GlobeIcon size={10} />} />
-          <LabelTag label="Info" type="Info" leadingIcon={<GlobeIcon size={10} />} />
-          <LabelTag label="Success" type="Success" size="Small" leadingIcon={<GlobeIcon size={12} />} />
+          <span className={styles['components__instance-label']}>
+            With icon
+          </span>
+          <LabelTag
+            label="PROFESSIONAL"
+            type="Default"
+            casing="All Caps"
+            leadingIcon={<GlobeIcon size={10} />}
+          />
+          <LabelTag
+            label="Info"
+            type="Info"
+            leadingIcon={<GlobeIcon size={10} />}
+          />
+          <LabelTag
+            label="Success"
+            type="Success"
+            size="Small"
+            leadingIcon={<GlobeIcon size={12} />}
+          />
         </div>
       </section>
 
@@ -959,7 +1215,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Link Preview</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <LinkPreview />
           </div>
           <div className={styles['components__button-row']}>
@@ -976,32 +1234,48 @@ export default function Components() {
       <section className={styles['components__section']}>
         <h2 className={styles['components__section-title']}>Mention Badge</h2>
         <div className={styles['components__button-block']}>
-          <div className={`${styles['components__button-row']} ${styles['components__button-row--inverted-bg']}`}>
-            <span className={styles['components__instance-label']}>Sidebar</span>
+          <div
+            className={`${styles['components__button-row']} ${styles['components__button-row--inverted-bg']}`}
+          >
+            <span className={styles['components__instance-label']}>
+              Sidebar
+            </span>
             <MentionBadge count={1} location="Sidebar" size="Small" />
             <MentionBadge count={22} location="Sidebar" size="Small" />
             <MentionBadge count={100} location="Sidebar" size="Small" />
           </div>
-          <div className={`${styles['components__button-row']} ${styles['components__button-row--inverted-bg']}`}>
-            <span className={styles['components__instance-label']}>Sidebar Medium</span>
+          <div
+            className={`${styles['components__button-row']} ${styles['components__button-row--inverted-bg']}`}
+          >
+            <span className={styles['components__instance-label']}>
+              Sidebar Medium
+            </span>
             <MentionBadge count={1} location="Sidebar" size="Medium" />
             <MentionBadge count={22} location="Sidebar" size="Medium" />
             <MentionBadge count={100} location="Sidebar" size="Medium" />
           </div>
-          <div className={`${styles['components__button-row']} ${styles['components__button-row--inverted-bg']}`}>
-            <span className={styles['components__instance-label']}>Sidebar Large</span>
+          <div
+            className={`${styles['components__button-row']} ${styles['components__button-row--inverted-bg']}`}
+          >
+            <span className={styles['components__instance-label']}>
+              Sidebar Large
+            </span>
             <MentionBadge count={1} location="Sidebar" size="Large" />
             <MentionBadge count={22} location="Sidebar" size="Large" />
             <MentionBadge count={100} location="Sidebar" size="Large" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Menu Item</span>
+            <span className={styles['components__instance-label']}>
+              Menu Item
+            </span>
             <MentionBadge count={1} location="Menu Item" size="Small" />
             <MentionBadge count={22} location="Menu Item" size="Medium" />
             <MentionBadge count={100} location="Menu Item" size="Large" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Icon Button</span>
+            <span className={styles['components__instance-label']}>
+              Icon Button
+            </span>
             <MentionBadge count={1} location="Icon Button" size="Small" />
             <MentionBadge count={22} location="Icon Button" size="Small" />
             <MentionBadge count={100} location="Icon Button" size="Small" />
@@ -1013,7 +1287,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Menu Item</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <div className={styles['components__menu-demo']}>
               <MenuItem label="Menu Item" />
               <MenuItem label="With trailing check" trailingElement />
@@ -1021,9 +1297,14 @@ export default function Components() {
             </div>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Secondary label</span>
+            <span className={styles['components__instance-label']}>
+              Secondary label
+            </span>
             <div className={styles['components__menu-demo']}>
-              <MenuItem label="Menu Item" secondaryLabel="Descriptive text below" />
+              <MenuItem
+                label="Menu Item"
+                secondaryLabel="Descriptive text below"
+              />
               <MenuItem
                 label="Menu Item"
                 secondaryLabel="Inline text"
@@ -1032,7 +1313,9 @@ export default function Components() {
             </div>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Badges & tag</span>
+            <span className={styles['components__instance-label']}>
+              Badges & tag
+            </span>
             <div className={styles['components__menu-demo']}>
               <MenuItem label="New feature" tag />
               <MenuItem label="Mentions" mentionCount={3} />
@@ -1040,14 +1323,18 @@ export default function Components() {
             </div>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Destructive</span>
+            <span className={styles['components__instance-label']}>
+              Destructive
+            </span>
             <div className={styles['components__menu-demo']}>
               <MenuItem label="Delete item" destructive />
               <MenuItem label="Delete item" destructive trailingElement />
             </div>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Disabled</span>
+            <span className={styles['components__instance-label']}>
+              Disabled
+            </span>
             <div className={styles['components__menu-demo']}>
               <MenuItem label="Menu Item" disabled />
               <MenuItem label="With badge" disabled mentionCount={2} />
@@ -1061,7 +1348,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Message Actions</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Center Channel</span>
+            <span className={styles['components__instance-label']}>
+              Center Channel
+            </span>
             <MessageActions type="Center Channel" />
           </div>
           <div className={styles['components__button-row']}>
@@ -1069,7 +1358,9 @@ export default function Components() {
             <MessageActions type="RHS" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Search Results</span>
+            <span className={styles['components__instance-label']}>
+              Search Results
+            </span>
             <MessageActions type="Search Results" />
           </div>
         </div>
@@ -1108,14 +1399,20 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Message Reactions</h2>
+        <h2 className={styles['components__section-title']}>
+          Message Reactions
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <MessageReactions />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With add button</span>
+            <span className={styles['components__instance-label']}>
+              With add button
+            </span>
             <MessageReactions
               reactions={[
                 { emoji: '👍', count: 5, byCurrentUser: true },
@@ -1125,7 +1422,9 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Acknowledge — unclicked</span>
+            <span className={styles['components__instance-label']}>
+              Acknowledge — unclicked
+            </span>
             <MessageReactions
               reactions={[]}
               acknowledged
@@ -1134,7 +1433,9 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Acknowledge — clicked</span>
+            <span className={styles['components__instance-label']}>
+              Acknowledge — clicked
+            </span>
             <MessageReactions
               reactions={[]}
               acknowledged
@@ -1146,28 +1447,38 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Message Separator</h2>
+        <h2 className={styles['components__section-title']}>
+          Message Separator
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Date</span>
             <MessageSeparator type="Date" label="Today" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>New Messages</span>
+            <span className={styles['components__instance-label']}>
+              New Messages
+            </span>
             <MessageSeparator type="New Messages" showAiSummary />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Reply Count</span>
+            <span className={styles['components__instance-label']}>
+              Reply Count
+            </span>
             <MessageSeparator type="Reply Count" label="6 replies" />
           </div>
         </div>
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>More Unreads Banner</h2>
+        <h2 className={styles['components__section-title']}>
+          More Unreads Banner
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Directions</span>
+            <span className={styles['components__instance-label']}>
+              Directions
+            </span>
             <MoreUnreadsBanner direction="Up" />
             <MoreUnreadsBanner direction="Down" />
           </div>
@@ -1181,10 +1492,14 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>New Message Banner</h2>
+        <h2 className={styles['components__section-title']}>
+          New Message Banner
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Jump to unreads</span>
+            <span className={styles['components__instance-label']}>
+              Jump to unreads
+            </span>
             <NewMessageBanner
               type="JumpToUnreads"
               countLabel="21 new messages since Saturday"
@@ -1192,7 +1507,9 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>New replies</span>
+            <span className={styles['components__instance-label']}>
+              New replies
+            </span>
             <NewMessageBanner type="NewReplies" onDismiss={() => {}} />
           </div>
         </div>
@@ -1202,11 +1519,15 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Pagination Dots</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Horizontal</span>
+            <span className={styles['components__instance-label']}>
+              Horizontal
+            </span>
             <PaginationDots pages={5} activePage={2} orientation="Horizontal" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Vertical</span>
+            <span className={styles['components__instance-label']}>
+              Vertical
+            </span>
             <PaginationDots pages={4} activePage={1} orientation="Vertical" />
           </div>
           <div
@@ -1215,21 +1536,29 @@ export default function Components() {
               styles['components__button-row--inverted-bg'],
             ].join(' ')}
           >
-            <span className={styles['components__instance-label']}>Inverted</span>
+            <span className={styles['components__instance-label']}>
+              Inverted
+            </span>
             <PaginationDots pages={5} activePage={3} dotStyle="Inverted" />
           </div>
         </div>
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Permalink Preview</h2>
+        <h2 className={styles['components__section-title']}>
+          Permalink Preview
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <PermalinkPreview avatarSrc={avatarLeonard} />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With avatar</span>
+            <span className={styles['components__instance-label']}>
+              With avatar
+            </span>
             <PermalinkPreview
               authorName="Danielle Okoro"
               avatarSrc={avatarDanielle}
@@ -1245,7 +1574,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Popover Notice</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <PopoverNotice
               title="Keyboard shortcut"
               onClose={() => {}}
@@ -1254,7 +1585,8 @@ export default function Components() {
                 { label: 'Dismiss', emphasis: 'tertiary' },
               ]}
             >
-              Press <kbd>Ctrl+K</kbd> to open the quick switcher and jump to any channel.
+              Press <kbd>Ctrl+K</kbd> to open the quick switcher and jump to any
+              channel.
             </PopoverNotice>
           </div>
           <div className={styles['components__button-row']}>
@@ -1268,7 +1600,9 @@ export default function Components() {
             </PopoverNotice>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Success</span>
+            <span className={styles['components__instance-label']}>
+              Success
+            </span>
             <PopoverNotice
               title="Changes saved"
               variant="success"
@@ -1279,7 +1613,9 @@ export default function Components() {
             </PopoverNotice>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Warning</span>
+            <span className={styles['components__instance-label']}>
+              Warning
+            </span>
             <PopoverNotice
               title="Session expiring soon"
               variant="warning"
@@ -1304,7 +1640,9 @@ export default function Components() {
             </PopoverNotice>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With checkbox</span>
+            <span className={styles['components__instance-label']}>
+              With checkbox
+            </span>
             <PopoverNotice
               title="New feature available"
               showCheckbox
@@ -1332,7 +1670,9 @@ export default function Components() {
             <ProgressBar value={60} size="Large" aria-label="Large 60%" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Semantic colors</span>
+            <span className={styles['components__instance-label']}>
+              Semantic colors
+            </span>
             <ProgressBar value={30} semanticColors aria-label="30% success" />
             <ProgressBar value={75} semanticColors aria-label="75% warning" />
             <ProgressBar value={95} semanticColors aria-label="95% danger" />
@@ -1418,13 +1758,31 @@ export default function Components() {
             <span className={styles['components__instance-label']}>Types</span>
             <ReactionPill type="Reaction" emoji="🎉" label="Leonard R." />
             <ReactionPill type="Hand Raise" label="Danielle O." />
-            <ReactionPill type="Other" message="You have been muted by the host" />
+            <ReactionPill
+              type="Other"
+              message="You have been muted by the host"
+            />
           </div>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Sizes</span>
-            <ReactionPill type="Reaction" emoji="👍" label="Marco R." size="Small" />
-            <ReactionPill type="Reaction" emoji="👍" label="Marco R." size="Medium" />
-            <ReactionPill type="Reaction" emoji="👍" label="Marco R." size="Large" />
+            <ReactionPill
+              type="Reaction"
+              emoji="👍"
+              label="Marco R."
+              size="Small"
+            />
+            <ReactionPill
+              type="Reaction"
+              emoji="👍"
+              label="Marco R."
+              size="Medium"
+            />
+            <ReactionPill
+              type="Reaction"
+              emoji="👍"
+              label="Marco R."
+              size="Large"
+            />
           </div>
         </div>
       </section>
@@ -1445,15 +1803,39 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Scrollbar</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Vertical</span>
-            <Scrollbar orientation="Vertical" thumbSize="25%" scrollPosition={0} />
-            <Scrollbar orientation="Vertical" thumbSize="33%" scrollPosition={50} />
-            <Scrollbar orientation="Vertical" thumbSize="50%" scrollPosition={100} />
+            <span className={styles['components__instance-label']}>
+              Vertical
+            </span>
+            <Scrollbar
+              orientation="Vertical"
+              thumbSize="25%"
+              scrollPosition={0}
+            />
+            <Scrollbar
+              orientation="Vertical"
+              thumbSize="33%"
+              scrollPosition={50}
+            />
+            <Scrollbar
+              orientation="Vertical"
+              thumbSize="50%"
+              scrollPosition={100}
+            />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Horizontal</span>
-            <Scrollbar orientation="Horizontal" thumbSize="25%" scrollPosition={0} />
-            <Scrollbar orientation="Horizontal" thumbSize="50%" scrollPosition={50} />
+            <span className={styles['components__instance-label']}>
+              Horizontal
+            </span>
+            <Scrollbar
+              orientation="Horizontal"
+              thumbSize="25%"
+              scrollPosition={0}
+            />
+            <Scrollbar
+              orientation="Horizontal"
+              thumbSize="50%"
+              scrollPosition={50}
+            />
           </div>
         </div>
       </section>
@@ -1468,21 +1850,32 @@ export default function Components() {
             <SearchInput size="Large" placeholder="Large search..." />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With label</span>
-            <SearchInput label="Search channels" placeholder="Find a channel..." />
+            <span className={styles['components__instance-label']}>
+              With label
+            </span>
+            <SearchInput
+              label="Search channels"
+              placeholder="Find a channel..."
+            />
           </div>
         </div>
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Search Tip Banner</h2>
+        <h2 className={styles['components__section-title']}>
+          Search Tip Banner
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <SearchTipBanner onDismiss={() => {}} />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Custom keys</span>
+            <span className={styles['components__instance-label']}>
+              Custom keys
+            </span>
             <SearchTipBanner
               prefix="Tip: Use"
               suffix="to open quick switcher"
@@ -1496,11 +1889,38 @@ export default function Components() {
       <section className={styles['components__section']}>
         <h2 className={styles['components__section-title']}>Section Notice</h2>
         <div className={styles['components__button-block']}>
-          <SectionNotice type="Info" title="Email notifications are enabled." description="You will receive notifications at your registered email address." />
-          <SectionNotice type="Warning" title="Your session will expire soon." description="Save your work before the session ends." primaryButtonLabel="Extend session" onPrimaryAction={() => {}} />
-          <SectionNotice type="Danger" title="This action cannot be undone." description="Deleting this workspace will permanently remove all data." primaryButtonLabel="Delete" onPrimaryAction={() => {}} secondaryButtonLabel="Cancel" onSecondaryAction={() => {}} />
-          <SectionNotice type="Success" title="Configuration saved successfully." onDismiss={() => {}} />
-          <SectionNotice type="Hint" title="Tip: You can drag and drop files to upload them." icon={<Icon size="20" glyph={<LightbulbOutlineIcon />} />} onDismiss={() => {}} />
+          <SectionNotice
+            type="Info"
+            title="Email notifications are enabled."
+            description="You will receive notifications at your registered email address."
+          />
+          <SectionNotice
+            type="Warning"
+            title="Your session will expire soon."
+            description="Save your work before the session ends."
+            primaryButtonLabel="Extend session"
+            onPrimaryAction={() => {}}
+          />
+          <SectionNotice
+            type="Danger"
+            title="This action cannot be undone."
+            description="Deleting this workspace will permanently remove all data."
+            primaryButtonLabel="Delete"
+            onPrimaryAction={() => {}}
+            secondaryButtonLabel="Cancel"
+            onSecondaryAction={() => {}}
+          />
+          <SectionNotice
+            type="Success"
+            title="Configuration saved successfully."
+            onDismiss={() => {}}
+          />
+          <SectionNotice
+            type="Hint"
+            title="Tip: You can drag and drop files to upload them."
+            icon={<Icon size="20" glyph={<LightbulbOutlineIcon />} />}
+            onDismiss={() => {}}
+          />
         </div>
       </section>
 
@@ -1660,7 +2080,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Tabs</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <Tabs
               tabs={[
                 { key: 'messages', label: 'Messages' },
@@ -1689,22 +2111,36 @@ export default function Components() {
           </div>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Sizes</span>
-            <Tags size="X-Small" type="Info">X-Small</Tags>
-            <Tags size="Small" type="Info">Small</Tags>
+            <Tags size="X-Small" type="Info">
+              X-Small
+            </Tags>
+            <Tags size="Small" type="Info">
+              Small
+            </Tags>
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>All caps</span>
-            <Tags type="General" casing="All Caps">professional</Tags>
-            <Tags type="Success" casing="All Caps">active</Tags>
+            <span className={styles['components__instance-label']}>
+              All caps
+            </span>
+            <Tags type="General" casing="All Caps">
+              professional
+            </Tags>
+            <Tags type="Success" casing="All Caps">
+              active
+            </Tags>
           </div>
         </div>
       </section>
 
       <section className={styles['components__section']}>
         <h2 className={styles['components__section-title']}>Team Avatar</h2>
-        <div className={`${styles['components__button-block']} ${styles['components__button-block--sidebar-header-bg']}`}>
+        <div
+          className={`${styles['components__button-block']} ${styles['components__button-block--sidebar-header-bg']}`}
+        >
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default — Image (hover to preview)</span>
+            <span className={styles['components__instance-label']}>
+              Default — Image (hover to preview)
+            </span>
             <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="24" />
             <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="32" />
             <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="40" />
@@ -1713,16 +2149,50 @@ export default function Components() {
             <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="64" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Active — Image</span>
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="24" state="Active" />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="32" state="Active" />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="40" state="Active" />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="48" state="Active" />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="56" state="Active" />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="64" state="Active" />
+            <span className={styles['components__instance-label']}>
+              Active — Image
+            </span>
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="24"
+              state="Active"
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="32"
+              state="Active"
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="40"
+              state="Active"
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="48"
+              state="Active"
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="56"
+              state="Active"
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="64"
+              state="Active"
+            />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default — Fallback (hover to preview)</span>
+            <span className={styles['components__instance-label']}>
+              Default — Fallback (hover to preview)
+            </span>
             <TeamAvatar initials="Ac" alt="Core Team" size="24" />
             <TeamAvatar initials="Ac" alt="Core Team" size="32" />
             <TeamAvatar initials="Ac" alt="Core Team" size="40" />
@@ -1731,19 +2201,66 @@ export default function Components() {
             <TeamAvatar initials="Ac" alt="Core Team" size="64" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Active — Fallback</span>
-            <TeamAvatar initials="Ac" alt="Design Team" size="24" state="Active" />
-            <TeamAvatar initials="Ac" alt="Design Team" size="32" state="Active" />
-            <TeamAvatar initials="Ac" alt="Design Team" size="40" state="Active" />
-            <TeamAvatar initials="Ac" alt="Design Team" size="48" state="Active" />
-            <TeamAvatar initials="Ac" alt="Design Team" size="56" state="Active" />
-            <TeamAvatar initials="Ac" alt="Design Team" size="64" state="Active" />
+            <span className={styles['components__instance-label']}>
+              Active — Fallback
+            </span>
+            <TeamAvatar
+              initials="Ac"
+              alt="Design Team"
+              size="24"
+              state="Active"
+            />
+            <TeamAvatar
+              initials="Ac"
+              alt="Design Team"
+              size="32"
+              state="Active"
+            />
+            <TeamAvatar
+              initials="Ac"
+              alt="Design Team"
+              size="40"
+              state="Active"
+            />
+            <TeamAvatar
+              initials="Ac"
+              alt="Design Team"
+              size="48"
+              state="Active"
+            />
+            <TeamAvatar
+              initials="Ac"
+              alt="Design Team"
+              size="56"
+              state="Active"
+            />
+            <TeamAvatar
+              initials="Ac"
+              alt="Design Team"
+              size="64"
+              state="Active"
+            />
           </div>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Badge</span>
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="32" badge={1} />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="40" badge={5} />
-            <TeamAvatar src={avatarStaffTeam} alt="Staff Team" size="56" badge={99} />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="32"
+              badge={1}
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="40"
+              badge={5}
+            />
+            <TeamAvatar
+              src={avatarStaffTeam}
+              alt="Staff Team"
+              size="56"
+              badge={99}
+            />
           </div>
         </div>
       </section>
@@ -1758,19 +2275,41 @@ export default function Components() {
             <TextArea size="Large" placeholder="Large…" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With label</span>
+            <span className={styles['components__instance-label']}>
+              With label
+            </span>
             <TextArea label="Description" placeholder="Enter a description…" />
-            <TextArea label="With value" defaultValue="Some existing content here." />
+            <TextArea
+              label="With value"
+              defaultValue="Some existing content here."
+            />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Character counter & invalid</span>
-            <TextArea label="Bio" placeholder="Write your bio…" maxLength={200} showCharacterCount />
-            <TextArea label="Error field" invalid placeholder="Required field" />
+            <span className={styles['components__instance-label']}>
+              Character counter & invalid
+            </span>
+            <TextArea
+              label="Bio"
+              placeholder="Write your bio…"
+              maxLength={200}
+              showCharacterCount
+            />
+            <TextArea
+              label="Error field"
+              invalid
+              placeholder="Required field"
+            />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Disabled & read-only</span>
+            <span className={styles['components__instance-label']}>
+              Disabled & read-only
+            </span>
             <TextArea label="Disabled" disabled placeholder="Disabled" />
-            <TextArea label="Read-only" readOnly defaultValue="Read only content." />
+            <TextArea
+              label="Read-only"
+              readOnly
+              defaultValue="Read only content."
+            />
           </div>
         </div>
       </section>
@@ -1866,7 +2405,9 @@ export default function Components() {
         <h2 className={styles['components__section-title']}>Thread Footer</h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <ThreadFooter
               replyCount={4}
               avatars={[
@@ -1877,7 +2418,9 @@ export default function Components() {
             />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Following</span>
+            <span className={styles['components__instance-label']}>
+              Following
+            </span>
             <ThreadFooter
               replyCount={2}
               avatars={[
@@ -1890,23 +2433,43 @@ export default function Components() {
           </div>
           <div className={styles['components__button-row']}>
             <span className={styles['components__instance-label']}>Badges</span>
-            <ThreadFooter replyCount={3} badge="Unread" avatars={[{ src: avatarLeonard, alt: 'Leonard' }]} />
-            <ThreadFooter replyCount={1} badge="Mention" avatars={[{ src: avatarDanielle, alt: 'Danielle' }]} />
+            <ThreadFooter
+              replyCount={3}
+              badge="Unread"
+              avatars={[{ src: avatarLeonard, alt: 'Leonard' }]}
+            />
+            <ThreadFooter
+              replyCount={1}
+              badge="Mention"
+              avatars={[{ src: avatarDanielle, alt: 'Danielle' }]}
+            />
           </div>
         </div>
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>Thread List Item</h2>
+        <h2 className={styles['components__section-title']}>
+          Thread List Item
+        </h2>
         <div className={styles['components__button-block']}>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Default</span>
+            <span className={styles['components__instance-label']}>
+              Default
+            </span>
             <ThreadListItem />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Active & unread</span>
+            <span className={styles['components__instance-label']}>
+              Active & unread
+            </span>
             <ThreadListItem active />
-            <ThreadListItem badge="Unread" authorName="Danielle Okoro" channelLabel="DESIGN TEAM" replyCount={7} timestamp="12 mins ago" />
+            <ThreadListItem
+              badge="Unread"
+              authorName="Danielle Okoro"
+              channelLabel="DESIGN TEAM"
+              replyCount={7}
+              timestamp="12 mins ago"
+            />
           </div>
         </div>
       </section>
@@ -1914,11 +2477,35 @@ export default function Components() {
       <section className={styles['components__section']}>
         <h2 className={styles['components__section-title']}>Toast Banner</h2>
         <div className={styles['components__button-block']}>
-          <ToastBanner message="Link copied to clipboard." type="General" onDismiss={() => {}} />
-          <ToastBanner message="Message saved successfully." type="Success" onDismiss={() => {}} />
-          <ToastBanner message="Failed to send message. Please try again." type="Danger" actionLabel="Retry" onAction={() => {}} onDismiss={() => {}} />
-          <ToastBanner message="Your session will expire in 5 minutes." type="Warning" onDismiss={() => {}} />
-          <ToastBanner message="New update available. Refresh to apply." type="Info" actionLabel="Refresh" onAction={() => {}} onDismiss={() => {}} />
+          <ToastBanner
+            message="Link copied to clipboard."
+            type="General"
+            onDismiss={() => {}}
+          />
+          <ToastBanner
+            message="Message saved successfully."
+            type="Success"
+            onDismiss={() => {}}
+          />
+          <ToastBanner
+            message="Failed to send message. Please try again."
+            type="Danger"
+            actionLabel="Retry"
+            onAction={() => {}}
+            onDismiss={() => {}}
+          />
+          <ToastBanner
+            message="Your session will expire in 5 minutes."
+            type="Warning"
+            onDismiss={() => {}}
+          />
+          <ToastBanner
+            message="New update available. Refresh to apply."
+            type="Info"
+            actionLabel="Refresh"
+            onAction={() => {}}
+            onDismiss={() => {}}
+          />
         </div>
       </section>
 
@@ -1933,7 +2520,9 @@ export default function Components() {
             <Tooltip label="Left arrow" arrow="Left" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>With shortcut & hint</span>
+            <span className={styles['components__instance-label']}>
+              With shortcut & hint
+            </span>
             <Tooltip
               label="Bold"
               arrow="Bottom"
@@ -1958,7 +2547,9 @@ export default function Components() {
             <UnreadBadge size="8" context="Team Icon" />
           </div>
           <div className={styles['components__button-row']}>
-            <span className={styles['components__instance-label']}>Contexts</span>
+            <span className={styles['components__instance-label']}>
+              Contexts
+            </span>
             <UnreadBadge size="8" context="Team Icon" />
             <UnreadBadge size="8" context="Icon Button" />
           </div>
@@ -2010,16 +2601,24 @@ export default function Components() {
       </section>
 
       <section className={styles['components__section']}>
-        <h2 className={styles['components__section-title']}>User Avatar Group</h2>
+        <h2 className={styles['components__section-title']}>
+          User Avatar Group
+        </h2>
         <div className={styles['components__button-block']}>
           {(['24', '32', '40'] as const).map((size) => (
             <div key={size} className={styles['components__button-row']}>
-              <span className={styles['components__instance-label']}>{size}</span>
+              <span className={styles['components__instance-label']}>
+                {size}
+              </span>
               <UserAvatarGroup
                 size={size}
                 avatars={[
                   { key: 'leonard', src: avatarLeonard, name: 'Leonard Riley' },
-                  { key: 'danielle', src: avatarDanielle, name: 'Danielle Okoro' },
+                  {
+                    key: 'danielle',
+                    src: avatarDanielle,
+                    name: 'Danielle Okoro',
+                  },
                   { key: 'marco', src: avatarMarco, name: 'Marco Rinaldi' },
                   { key: 'emma', src: avatarEmma, name: 'Emma Novak' },
                   { key: 'sofia', src: avatarSofia, name: 'Sofia Bauer' },

@@ -35,11 +35,5 @@ export default function UnreadBadge({
     .filter(Boolean)
     .join(' ');
 
-  return (
-    <span
-      className={rootClass}
-      role="status"
-      aria-label={ariaLabel}
-    />
-  );
+  return <span className={rootClass} role="status" aria-label={ariaLabel} />;
 }

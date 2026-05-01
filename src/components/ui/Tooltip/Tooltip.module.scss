@@ -86,7 +86,8 @@
       left: 0;
       transform: translateY(-50%);
       border-style: solid;
-      border-color: transparent transparent transparent var(--color-neutral-1100, #1b1d22);
+      border-color: transparent transparent transparent
+        var(--color-neutral-1100, #1b1d22);
       border-width: 4px 0 4px 4px;
     }
   }
@@ -103,7 +104,8 @@
       align-self: center;
 
       &::before {
-        border-color: transparent transparent transparent var(--color-neutral-1100, #1b1d22);
+        border-color: transparent transparent transparent
+          var(--color-neutral-1100, #1b1d22);
         border-width: 4px 0 4px 4px;
         top: 50%;
         left: 0;
@@ -121,7 +123,8 @@
       align-self: center;
 
       &::before {
-        border-color: transparent var(--color-neutral-1100, #1b1d22) transparent transparent;
+        border-color: transparent var(--color-neutral-1100, #1b1d22) transparent
+          transparent;
         border-width: 4px 4px 4px 0;
         top: 50%;
         right: 0;
@@ -140,9 +143,11 @@
       align-self: center;
 
       &::before {
-        border-color: transparent transparent transparent var(--color-neutral-1100, #1b1d22);
+        border-color: transparent transparent transparent
+          var(--color-neutral-1100, #1b1d22);
         border-width: 0 4px 4px 4px;
-        border-color: var(--color-neutral-1100, #1b1d22) transparent transparent transparent;
+        border-color: var(--color-neutral-1100, #1b1d22) transparent transparent
+          transparent;
         top: 0;
         left: 50%;
         transform: translateX(-50%);
@@ -159,7 +164,8 @@
       align-self: center;
 
       &::before {
-        border-color: transparent transparent var(--color-neutral-1100, #1b1d22) transparent;
+        border-color: transparent transparent var(--color-neutral-1100, #1b1d22)
+          transparent;
         border-width: 0 4px 4px 4px;
         bottom: 0;
         left: 50%;

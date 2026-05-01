@@ -7,7 +7,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-m);
-  padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-m);
+  padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-xxxs)
+    var(--spacing-m);
   background: var(--center-channel-bg);
 
   &__label {

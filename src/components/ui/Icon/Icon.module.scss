@@ -12,11 +12,11 @@
   // Elements
   // ---------------------------------------------------------------------------
 
-  // Container that clips the oversized SVG glyph.
-  // Children are absolutely centred so they bleed equally on all sides.
+  // Oversized SVG (SVG_SIZE_MAP) is centred; avoid clipping so strokes are not
+  // cut at the optical box (e.g. in IconButton).
   &__glyph-area {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     flex-shrink: 0;
 
     > * {

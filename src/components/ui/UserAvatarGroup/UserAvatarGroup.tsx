@@ -1,7 +1,16 @@
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import styles from './UserAvatarGroup.module.scss';
 
-export type UserAvatarGroupSize = '20' | '24' | '28' | '32' | '40' | '48' | '56' | '64' | '72';
+export type UserAvatarGroupSize =
+  | '20'
+  | '24'
+  | '28'
+  | '32'
+  | '40'
+  | '48'
+  | '56'
+  | '64'
+  | '72';
 
 export interface UserAvatarGroupItem {
   /** Unique key for the list item. */
@@ -48,7 +57,11 @@ export default function UserAvatarGroup({
     .join(' ');
 
   return (
-    <div className={rootClass} role="group" aria-label={`${avatars.length} participants`}>
+    <div
+      className={rootClass}
+      role="group"
+      aria-label={`${avatars.length} participants`}
+    >
       {visible.map((avatar) => (
         <span
           key={avatar.key}

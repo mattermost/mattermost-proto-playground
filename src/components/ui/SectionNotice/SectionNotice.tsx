@@ -9,7 +9,12 @@ import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-c
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import styles from './SectionNotice.module.scss';
 
-export type SectionNoticeType = 'Info' | 'Warning' | 'Danger' | 'Success' | 'Hint';
+export type SectionNoticeType =
+  | 'Info'
+  | 'Warning'
+  | 'Danger'
+  | 'Success'
+  | 'Hint';
 
 export interface SectionNoticeProps {
   /** Optional CSS class name. */
@@ -67,8 +72,7 @@ export default function SectionNotice({
 
   const resolvedIcon = icon !== undefined ? icon : DEFAULT_ICONS[type];
 
-  const hasActions =
-    primaryButtonLabel != null || secondaryButtonLabel != null;
+  const hasActions = primaryButtonLabel != null || secondaryButtonLabel != null;
 
   return (
     <div className={rootClass}>

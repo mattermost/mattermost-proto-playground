@@ -41,7 +41,9 @@ export default function RecordingPill({
         type="button"
         className={styles['recording-pill__button']}
         onClick={onStop}
-        aria-label={state === 'Hover' ? 'Stop recording' : 'Recording in progress'}
+        aria-label={
+          state === 'Hover' ? 'Stop recording' : 'Recording in progress'
+        }
       >
         <span className={styles['recording-pill__icon']} aria-hidden>
           {state === 'Initializing' && (

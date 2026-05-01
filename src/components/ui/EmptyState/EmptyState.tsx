@@ -32,7 +32,9 @@ export default function EmptyState({
   className = '',
 }: EmptyStateProps) {
   return (
-    <div className={[styles['empty-state'], className].filter(Boolean).join(' ')}>
+    <div
+      className={[styles['empty-state'], className].filter(Boolean).join(' ')}
+    >
       <div className={styles['empty-state__container']}>
         {illustration != null && (
           <div className={styles['empty-state__illustration']}>

@@ -1,9 +1,27 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PROTOTYPES } from '@/router';
 import styles from './Home.module.scss';
 
 const IFRAME_W = 1280;
+
+const DESTINATIONS = [
+  {
+    label: 'Guidelines',
+    path: '/guidelines',
+    description: 'Written documentation for the design system.',
+  },
+  {
+    label: 'Library',
+    path: '/library',
+    description:
+      'Live reference for tokens, components, patterns, and layouts.',
+  },
+  {
+    label: 'Prototypes',
+    path: '/prototypes',
+    description: 'End-to-end flow prototypes for design exploration.',
+  },
+];
 
 function CardThumbnail({ src }: { src: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -28,7 +46,7 @@ function CardThumbnail({ src }: { src: string }) {
       <iframe
         className={styles['home__card-iframe']}
         src={src}
-        title="Prototype preview"
+        title="Section preview"
         tabIndex={-1}
         aria-hidden="true"
         scrolling="no"
@@ -42,49 +60,21 @@ export default function Home() {
   return (
     <div className={styles.home}>
       <header className={styles['home__header']}>
-        <h1 className={styles['home__heading']}>Prototype Playground</h1>
+        <h1 className={styles['home__heading']}>Mattermost Design System</h1>
         <p className={styles['home__subheading']}>
-          Select a flow below to start exploring. Add new flows in{' '}
-          <code>src/router/index.tsx</code>.
+          Guidelines, library, and prototypes — all in one place.
         </p>
       </header>
 
       <div className={styles['home__grid']}>
-        <Link to="/foundations" className={styles['home__card']}>
-          <CardThumbnail src="/foundations" />
-          <div className={styles['home__card-body']}>
-            <span className={styles['home__card-label']}>Foundations</span>
-            <span className={styles['home__card-arrow']}>→</span>
-          </div>
-        </Link>
-        <Link to="/components" className={styles['home__card']}>
-          <CardThumbnail src="/components" />
-          <div className={styles['home__card-body']}>
-            <span className={styles['home__card-label']}>Components</span>
-            <span className={styles['home__card-arrow']}>→</span>
-          </div>
-        </Link>
-        <Link to="/patterns" className={styles['home__card']}>
-          <CardThumbnail src="/patterns" />
-          <div className={styles['home__card-body']}>
-            <span className={styles['home__card-label']}>Patterns</span>
-            <span className={styles['home__card-arrow']}>→</span>
-          </div>
-        </Link>
-        <Link to="/layouts" className={styles['home__card']}>
-          <CardThumbnail src="/layouts" />
-          <div className={styles['home__card-body']}>
-            <span className={styles['home__card-label']}>Layouts</span>
-            <span className={styles['home__card-arrow']}>→</span>
-          </div>
-        </Link>
-        {PROTOTYPES.map(({ id, label, path }) => (
-          <Link key={id} to={path} className={styles['home__card']}>
-            <CardThumbnail src={path} />
+        {DESTINATIONS.map((d) => (
+          <Link key={d.path} to={d.path} className={styles['home__card']}>
+            <CardThumbnail src={d.path} />
             <div className={styles['home__card-body']}>
-              <span className={styles['home__card-label']}>{label}</span>
+              <span className={styles['home__card-label']}>{d.label}</span>
               <span className={styles['home__card-arrow']}>→</span>
             </div>
+            <p className={styles['home__card-desc']}>{d.description}</p>
           </Link>
         ))}
       </div>

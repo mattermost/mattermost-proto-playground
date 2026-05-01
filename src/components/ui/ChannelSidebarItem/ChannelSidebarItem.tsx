@@ -121,7 +121,12 @@ export default function ChannelSidebarItem({
   const isDrafts = leadingVisual === 'Drafts';
   const effectiveStatus = isDrafts && status === 'Unread' ? 'Read' : status;
   const hasMentionBadge = effectiveStatus === 'Mention';
-  const isChannelOrDM = ['Public', 'Private', 'Group Message', 'Direct Message'].includes(leadingVisual);
+  const isChannelOrDM = [
+    'Public',
+    'Private',
+    'Group Message',
+    'Direct Message',
+  ].includes(leadingVisual);
 
   const rootClass = [
     styles['channel-sidebar-item'],
@@ -130,12 +135,16 @@ export default function ChannelSidebarItem({
     styles[`channel-sidebar-item--status-${effectiveStatus.toLowerCase()}`],
     isDrafts ? styles['channel-sidebar-item--drafts'] : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const iconContainerClass = [
     styles['channel-sidebar-item__icon-container'],
     isDM ? styles['channel-sidebar-item__icon-container--dm'] : '',
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const rightClass = styles['channel-sidebar-item__right'];
 
@@ -152,7 +161,9 @@ export default function ChannelSidebarItem({
         }
       }}
     >
-      {active && <div className={styles['channel-sidebar-item__active-border']} />}
+      {active && (
+        <div className={styles['channel-sidebar-item__active-border']} />
+      )}
       <div className={styles['channel-sidebar-item__left']}>
         <div className={iconContainerClass}>
           <LeadingVisualContent
@@ -185,7 +196,11 @@ export default function ChannelSidebarItem({
         )}
         {hasMentionBadge && (
           <span className={styles['channel-sidebar-item__mention-badge']}>
-            <MentionBadge count={mentionCount ?? 1} location="Sidebar" size="Medium" />
+            <MentionBadge
+              count={mentionCount ?? 1}
+              location="Sidebar"
+              size="Medium"
+            />
           </span>
         )}
         {isChannelOrDM && (
