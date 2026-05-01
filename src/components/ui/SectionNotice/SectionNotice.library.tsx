@@ -1,7 +1,7 @@
 import LightbulbOutlineIcon from '@mattermost/compass-icons/components/lightbulb-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function SectionNoticeLibrary() {
   return (

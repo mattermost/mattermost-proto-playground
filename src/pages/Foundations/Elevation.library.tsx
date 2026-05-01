@@ -1,4 +1,4 @@
-import styles from './Foundations.module.scss';
+import styles from '@/styles/library-demo/foundations.module.scss';
 
 const ELEVATIONS = [
   { level: '1', token: '--elevation-1', desc: 'Subtle — hover, dropdowns' },

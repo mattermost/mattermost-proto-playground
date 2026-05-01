@@ -1,5 +1,5 @@
 import SearchInput from '@/components/ui/SearchInput/SearchInput';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function SearchInputLibrary() {
   return (

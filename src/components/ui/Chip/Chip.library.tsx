@@ -1,7 +1,7 @@
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import Chip from '@/components/ui/Chip/Chip';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ChipLibrary() {
   return (

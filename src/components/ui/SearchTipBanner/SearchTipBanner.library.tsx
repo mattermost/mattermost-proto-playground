@@ -1,5 +1,5 @@
 import SearchTipBanner from '@/components/ui/SearchTipBanner/SearchTipBanner';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function SearchTipBannerLibrary() {
   return (

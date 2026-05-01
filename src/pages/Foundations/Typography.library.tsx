@@ -6,7 +6,7 @@ import {
   MarginTable,
   type TypeLevel,
 } from '@/guidelines/_components/Type';
-import styles from './Foundations.module.scss';
+import styles from '@/styles/library-demo/foundations.module.scss';
 
 const HEADING_LEVELS: TypeLevel[] = [
   1000, 900, 800, 700, 600, 500, 400, 300, 200, 100, 75, 50, 25,

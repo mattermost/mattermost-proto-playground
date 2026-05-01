@@ -4,7 +4,7 @@ import Icon from '@/components/ui/Icon/Icon';
 import IconButton, {
   ICON_BUTTON_ICON_SIZES,
 } from '@/components/ui/IconButton/IconButton';
-import styles from './Foundations.module.scss';
+import styles from '@/styles/library-demo/foundations.module.scss';
 
 const DURATIONS = [
   {

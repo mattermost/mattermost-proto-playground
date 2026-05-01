@@ -2,7 +2,7 @@ import Post from '@/components/ui/Post/Post';
 import Divider from '@/components/ui/Divider/Divider';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function PostLibrary() {
   return (

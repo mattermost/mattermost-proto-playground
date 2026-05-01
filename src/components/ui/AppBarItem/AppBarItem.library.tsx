@@ -3,7 +3,7 @@ import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoti
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import AppBarItem from '@/components/ui/AppBarItem/AppBarItem';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function AppBarItemLibrary() {
   return (

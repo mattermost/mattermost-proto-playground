@@ -1,5 +1,5 @@
 import Divider from '@/components/ui/Divider/Divider';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function DividerLibrary() {
   return (

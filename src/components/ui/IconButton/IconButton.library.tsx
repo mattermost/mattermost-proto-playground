@@ -2,7 +2,7 @@ import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import { ICON_BUTTON_ICON_SIZES } from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function IconButtonLibrary() {
   return (

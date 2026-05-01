@@ -1,6 +1,6 @@
 import ProfilePopover from '@/components/ui/ProfilePopover/ProfilePopover';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function ProfilePopoverLibrary() {
   return (

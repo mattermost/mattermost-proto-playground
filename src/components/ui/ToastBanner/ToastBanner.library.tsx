@@ -1,5 +1,5 @@
 import ToastBanner from '@/components/ui/ToastBanner/ToastBanner';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ToastBannerLibrary() {
   return (

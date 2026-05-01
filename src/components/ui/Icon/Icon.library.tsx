@@ -1,7 +1,7 @@
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Icon from '@/components/ui/Icon/Icon';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 const SIZE_DEMOS: { size: '16' | '20' | '24' | '28' | '32' | '40' | '52' | '64' }[] = [
   { size: '16' },
