@@ -70,16 +70,18 @@
   ul,
   ol {
     margin-bottom: var(--spacing-m);
-    padding-left: var(--spacing-l);
-
-    li {
-      margin-bottom: var(--spacing-xs);
-    }
   }
 
   a {
     color: var(--link-color);
-    text-decoration: underline;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
+    }
   }
 
   code {

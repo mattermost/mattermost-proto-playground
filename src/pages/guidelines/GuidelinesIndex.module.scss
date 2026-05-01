@@ -25,7 +25,15 @@
   a {
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
+    color: var(--link-color);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
+    }
   }
 }
 
