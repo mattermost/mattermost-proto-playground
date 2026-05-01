@@ -30,6 +30,11 @@
     background-color: rgba(var(--center-channel-color-rgb), 0.4);
   }
 
+  &__header {
+    padding-bottom: var(--spacing-s);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
   &__group {
     display: flex;
     flex-direction: column;

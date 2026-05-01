@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './DocSidebar.module.scss';
 
@@ -20,11 +21,14 @@ export interface SidebarGroup {
 
 interface DocSidebarProps {
   groups: SidebarGroup[];
+  /** Optional content rendered above all section groups (e.g. back button). */
+  header?: ReactNode;
 }
 
-export default function DocSidebar({ groups }: DocSidebarProps) {
+export default function DocSidebar({ groups, header }: DocSidebarProps) {
   return (
     <nav className={styles['doc-sidebar']} aria-label="Section navigation">
+      {header && <div className={styles['doc-sidebar__header']}>{header}</div>}
       {groups.map((group, i) =>
         group.items.length === 0 ? null : (
           <div key={`${group.label}-${i}`} className={styles['doc-sidebar__group']}>

@@ -1,4 +1,5 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import {
   LIBRARY_ENTRIES,
   type LibraryCategory,
@@ -17,7 +18,15 @@ import {
 import DocSidebar, {
   type SidebarGroup,
 } from '@/components/layout/DocSidebar/DocSidebar';
+import IconButton from '@/components/ui/IconButton/IconButton';
+import Icon from '@/components/ui/Icon/Icon';
 import styles from './DocsLayout.module.scss';
+
+function parentPath(pathname: string): string {
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length <= 1) return '/';
+  return '/' + segments[0];
+}
 
 const LIBRARY_CATEGORIES: { slug: LibraryCategory; name: string }[] = [
   { slug: 'foundations', name: 'Foundations' },
@@ -159,6 +168,7 @@ function buildGroupsForGuidelines(pathname: string): SidebarGroup[] {
 
 export default function DocsLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const segments = location.pathname.split('/').filter(Boolean);
   const source = segments[0];
 
@@ -171,9 +181,17 @@ export default function DocsLayout() {
     return <Outlet />;
   }
 
+  const header = (
+    <IconButton
+      aria-label="Back"
+      icon={<Icon glyph={<ArrowLeftIcon />} size="20" />}
+      onClick={() => navigate(parentPath(location.pathname))}
+    />
+  );
+
   return (
     <div className={styles['docs-layout']}>
-      <DocSidebar groups={groups} />
+      <DocSidebar groups={groups} header={header} />
       <div className={styles['docs-layout__content']}>
         <Outlet />
       </div>
