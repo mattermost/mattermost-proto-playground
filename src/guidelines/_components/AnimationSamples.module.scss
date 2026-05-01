@@ -67,6 +67,13 @@
     overflow: hidden;
     display: flex;
     align-items: center;
+
+    // Entrance/exit chips rest at the right edge so a leftward translation
+    // covers the full visible width of the stage.
+    &--entrance,
+    &--exit {
+      justify-content: flex-end;
+    }
   }
 
   &__chip {
@@ -150,8 +157,8 @@
     opacity: 0;
     pointer-events: none;
     transition:
-      transform var(--duration-moderate) var(--ease-exit),
-      opacity var(--duration-moderate) var(--ease-exit);
+      transform var(--duration-quick) var(--ease-exit),
+      opacity var(--duration-quick) var(--ease-exit);
 
     &--open {
       transform: scale(1);
@@ -159,8 +166,8 @@
       pointer-events: auto;
       // Entrance easing applies when --open is added.
       transition:
-        transform var(--duration-moderate) var(--ease-entrance),
-        opacity var(--duration-moderate) var(--ease-entrance);
+        transform var(--duration-quick) var(--ease-entrance),
+        opacity var(--duration-quick) var(--ease-entrance);
     }
   }
 

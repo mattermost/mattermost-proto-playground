@@ -75,7 +75,9 @@ export function MotionMatrix() {
               </div>
             </div>
 
-            <div className={styles['motion-matrix__stage']}>
+            <div
+              className={`${styles['motion-matrix__stage']} ${styles[`motion-matrix__stage--${cell.demo}`]}`}
+            >
               <span
                 key={keys[cell.id] ?? 0}
                 className={chipClass}

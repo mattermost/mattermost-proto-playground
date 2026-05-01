@@ -91,10 +91,13 @@ Popovers — menus, info popovers, dropdowns — animate on open and close with 
 combined **scale + fade**. The scale grows the panel out from its anchor; the
 fade prevents the appearance from feeling abrupt.
 
-| Phase    | Scale         | Opacity   | Duration               | Easing               |
-| -------- | ------------- | --------- | ---------------------- | -------------------- |
-| Opening  | 90% → 100%    | 0 → 1     | `--duration-moderate`  | `--ease-entrance`    |
-| Closing  | 100% → 90%    | 1 → 0     | `--duration-moderate`  | `--ease-exit`        |
+| Phase    | Scale         | Opacity   | Duration            | Easing               |
+| -------- | ------------- | --------- | ------------------- | -------------------- |
+| Opening  | 90% → 100%    | 0 → 1     | `--duration-quick`  | `--ease-entrance`    |
+| Closing  | 100% → 90%    | 1 → 0     | `--duration-quick`  | `--ease-exit`        |
+
+Popovers are a short-distance entrance/exit, so they use `--duration-quick`
+rather than the moderate timing reserved for full-size panels and drawers.
 
 Set `transform-origin` so the scale grows from the anchor — for a popover that
 opens below-and-right of its trigger, use `transform-origin: top left`. For
