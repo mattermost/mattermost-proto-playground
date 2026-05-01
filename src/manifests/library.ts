@@ -25,6 +25,51 @@ export interface LibraryEntry {
 }
 
 export const LIBRARY_ENTRIES: LibraryEntry[] = [
+  // Foundations
+  {
+    slug: 'color',
+    name: 'Color',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/Color.library'),
+  },
+  {
+    slug: 'theme-colors',
+    name: 'Theme Colors',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/ThemeColors.library'),
+  },
+  {
+    slug: 'elevation',
+    name: 'Elevation',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/Elevation.library'),
+  },
+  {
+    slug: 'typography',
+    name: 'Typography',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/Typography.library'),
+  },
+  {
+    slug: 'animation',
+    name: 'Animation',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/Animation.library'),
+  },
+  {
+    slug: 'shape',
+    name: 'Shape',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/Shape.library'),
+  },
+
+  // Components
   {
     slug: 'action-button',
     name: 'Action Button',
