@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import AppShell from '@/components/layout/AppShell/AppShell';
+import DocsLayout from '@/components/layout/DocsLayout/DocsLayout';
 import Home from '@/pages/Home/Home';
 import Components from '@/pages/Components/Components';
 import Foundations from '@/pages/Foundations/Foundations';
@@ -29,16 +30,18 @@ export default function AppRouter() {
       <Route element={<AppShell />}>
         <Route index element={<Home />} />
 
-        {/* New top-level destinations */}
-        <Route path="/guidelines" element={<GuidelinesIndex />} />
-        <Route path="/guidelines/:slug" element={<GuidelineRoute />} />
-        <Route
-          path="/guidelines/:category/:slug"
-          element={<GuidelineRoute />}
-        />
+        {/* Docs surfaces — wrapped with the persistent sidebar. */}
+        <Route element={<DocsLayout />}>
+          <Route path="/guidelines" element={<GuidelinesIndex />} />
+          <Route path="/guidelines/:slug" element={<GuidelineRoute />} />
+          <Route
+            path="/guidelines/:category/:slug"
+            element={<GuidelineRoute />}
+          />
 
-        <Route path="/library" element={<LibraryIndex />} />
-        <Route path="/library/:category/:slug" element={<LibraryRoute />} />
+          <Route path="/library" element={<LibraryIndex />} />
+          <Route path="/library/:category/:slug" element={<LibraryRoute />} />
+        </Route>
 
         <Route path="/prototypes" element={<PrototypesIndex />} />
 
