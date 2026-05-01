@@ -1,7 +1,7 @@
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ButtonLibrary() {
   return (

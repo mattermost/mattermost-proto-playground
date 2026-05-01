@@ -2,7 +2,7 @@ import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import ChannelSidebarItem from '@/components/ui/ChannelSidebarItem/ChannelSidebarItem';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ChannelSidebarItemLibrary() {
   return (

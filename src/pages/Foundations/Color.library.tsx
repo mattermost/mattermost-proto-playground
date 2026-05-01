@@ -1,4 +1,4 @@
-import styles from './Foundations.module.scss';
+import styles from '@/styles/library-demo/foundations.module.scss';
 
 const PALETTES = [
   {
