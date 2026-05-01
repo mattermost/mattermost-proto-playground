@@ -1,5 +1,5 @@
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function MessageSeparatorLibrary() {
   return (

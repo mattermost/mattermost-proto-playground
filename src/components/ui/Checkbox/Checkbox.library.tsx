@@ -1,5 +1,5 @@
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function CheckboxLibrary() {
   return (

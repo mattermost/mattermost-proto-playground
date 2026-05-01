@@ -1,5 +1,5 @@
 import PopoverNotice from '@/components/ui/PopoverNotice/PopoverNotice';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function PopoverNoticeLibrary() {
   return (

@@ -6,7 +6,7 @@ import avatarDariusCole from '@/assets/avatars/Darius Cole.png';
 import avatarDavidLiang from '@/assets/avatars/David Liang.png';
 import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
 import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function ChannelsSidebarLibrary() {
   return (

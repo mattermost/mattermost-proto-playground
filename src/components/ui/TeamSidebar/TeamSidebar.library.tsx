@@ -1,6 +1,6 @@
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
 import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function TeamSidebarLibrary() {
   return (

@@ -1,5 +1,5 @@
 import MessageInput from '@/components/ui/MessageInput';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function MessageInputLibrary() {
   return (

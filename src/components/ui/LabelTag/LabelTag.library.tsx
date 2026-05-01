@@ -1,6 +1,6 @@
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LabelTag from '@/components/ui/LabelTag/LabelTag';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function LabelTagLibrary() {
   return (

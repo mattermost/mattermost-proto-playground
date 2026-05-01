@@ -4,7 +4,7 @@ import type { Participant } from '@/types/callParticipant';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 const participants: Participant[] = [
   {

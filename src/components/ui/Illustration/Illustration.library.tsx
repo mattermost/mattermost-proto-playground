@@ -1,7 +1,7 @@
 import AICopilotIllustration from '@/assets/illustrations/ai-copilot-intro.svg?react';
 import Illustration from '@/components/ui/Illustration/Illustration';
 import SearchIllustration from '@/assets/illustrations/search.svg?react';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function IllustrationLibrary() {
   return (

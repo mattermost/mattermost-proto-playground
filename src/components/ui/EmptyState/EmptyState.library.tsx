@@ -1,6 +1,6 @@
 import EmptyState from '@/components/ui/EmptyState/EmptyState';
 import SearchIllustration from '@/assets/illustrations/search.svg?react';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function EmptyStateLibrary() {
   return (

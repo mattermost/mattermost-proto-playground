@@ -3,7 +3,7 @@ import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import CallParticipantAvatar from '@/components/ui/CallParticipantAvatar/CallParticipantAvatar';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function CallParticipantAvatarLibrary() {
   return (
