@@ -1,0 +1,97 @@
+import type { ReactNode } from 'react';
+import { MDXProvider } from '@mdx-js/react';
+import Preview from '@/guidelines/_components/Preview';
+import Swatch, { SwatchGrid, SwatchRamp } from '@/guidelines/_components/Swatch';
+import LayoutPreview, { LayoutPreviewGrid, SplitRow } from '@/guidelines/_components/LayoutPreview';
+import {
+  TypefaceCard,
+  TypeStack,
+  TypeSpecimen,
+  ScaleTable,
+  MarginTable,
+} from '@/guidelines/_components/Type';
+import {
+  IconShowcase,
+  IconSizeRamp,
+  IconStyleCompare,
+  FiletypeShowcase,
+  Principle,
+  PrincipleList,
+} from '@/guidelines/_components/IconSamples';
+import {
+  CoreShapes,
+  RadiusRamp,
+  ShapeExamples,
+} from '@/guidelines/_components/ShapeSamples';
+import {
+  ElevationScale,
+  ElevationPopoverExample,
+} from '@/guidelines/_components/ElevationSamples';
+import {
+  SpacingScale,
+  PaddingExample,
+  GridOverlay,
+  GridAnatomy,
+  BreakpointTable,
+  AspectRatios,
+  InteractionTargets,
+  SidebarOffset,
+  DensityCard,
+} from '@/guidelines/_components/LayoutSamples';
+import {
+  MotionMatrix,
+  PopoverPattern,
+} from '@/guidelines/_components/AnimationSamples';
+import Divider from '@/components/ui/Divider/Divider';
+import Chip from '@/components/ui/Chip/Chip';
+
+/**
+ * Components made globally available inside MDX guideline pages — no import
+ * needed in the .mdx file. Add domain-specific helpers here.
+ */
+const MDX_COMPONENTS = {
+  Preview,
+  Swatch,
+  SwatchGrid,
+  SwatchRamp,
+  LayoutPreview,
+  LayoutPreviewGrid,
+  SplitRow,
+  TypefaceCard,
+  TypeStack,
+  TypeSpecimen,
+  ScaleTable,
+  MarginTable,
+  IconShowcase,
+  IconSizeRamp,
+  IconStyleCompare,
+  FiletypeShowcase,
+  Principle,
+  PrincipleList,
+  CoreShapes,
+  RadiusRamp,
+  ShapeExamples,
+  ElevationScale,
+  ElevationPopoverExample,
+  SpacingScale,
+  PaddingExample,
+  GridOverlay,
+  GridAnatomy,
+  BreakpointTable,
+  AspectRatios,
+  InteractionTargets,
+  SidebarOffset,
+  DensityCard,
+  MotionMatrix,
+  PopoverPattern,
+  Divider,
+  Chip,
+};
+
+interface MdxProviderProps {
+  children: ReactNode;
+}
+
+export default function MdxProvider({ children }: MdxProviderProps) {
+  return <MDXProvider components={MDX_COMPONENTS}>{children}</MDXProvider>;
+}
