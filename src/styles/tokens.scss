@@ -331,11 +331,11 @@
   // ============================================================
   // Animation
   // ============================================================
-  --duration-quick:    150ms;
+  --duration-quick: 150ms;
   --duration-moderate: 300ms;
-  --ease-transition:   ease-in-out; // element already on screen
-  --ease-entrance:     ease-out;    // element entering
-  --ease-exit:         ease-in;     // element leaving
+  --ease-transition: ease-in-out; // element already on screen
+  --ease-entrance: ease-out; // element entering
+  --ease-exit: ease-in; // element leaving
 
   // ============================================================
   // Icon sizes (Mattermost Icon component scale)
@@ -355,21 +355,21 @@
   // ============================================================
   // Semantic colors
   // ============================================================
-  --color-info:        var(--color-blue-400);
-  --color-info-rgb:    var(--color-blue-400-rgb);
-  --color-success:     var(--color-green-500);
+  --color-info: var(--color-blue-400);
+  --color-info-rgb: var(--color-blue-400-rgb);
+  --color-success: var(--color-green-500);
   --color-success-rgb: var(--color-green-500-rgb);
-  --color-warning:     var(--color-yellow-600);
+  --color-warning: var(--color-yellow-600);
   --color-warning-rgb: var(--color-yellow-600-rgb);
-  --color-danger:      var(--color-red-500);
-  --color-danger-rgb:  var(--color-red-500-rgb);
+  --color-danger: var(--color-red-500);
+  --color-danger-rgb: var(--color-red-500-rgb);
 
   // ============================================================
   // Attachment Card file-type accent colors
   // ============================================================
-  --attachment-blue: var(--color-blue-300);     // word, image, video, audio
-  --attachment-green: var(--color-green-600);   // excel
-  --attachment-red: var(--color-red-500);       // pdf
+  --attachment-blue: var(--color-blue-300); // word, image, video, audio
+  --attachment-green: var(--color-green-600); // excel
+  --attachment-red: var(--color-red-500); // pdf
   --attachment-orange: var(--color-orange-500); // powerpoint
 
   // ============================================================

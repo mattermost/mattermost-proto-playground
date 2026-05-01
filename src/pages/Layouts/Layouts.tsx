@@ -41,7 +41,11 @@ export default function Layouts() {
           <TeamSidebar
             activeTeamId="contributors"
             teams={[
-              { id: 'contributors', name: 'Contributors', src: avatarStaffTeam },
+              {
+                id: 'contributors',
+                name: 'Contributors',
+                src: avatarStaffTeam,
+              },
               { id: 'design', name: 'Design', initials: 'De', unread: true },
               { id: 'acme', name: 'Acme', initials: 'Ac', mentions: 3 },
             ]}
@@ -98,8 +102,8 @@ export default function Layouts() {
                 >
                   <p className={styles['layouts__post-text']}>
                     Just pushed the updated onboarding flow to staging — would
-                    love a second pair of eyes on the empty states before we
-                    cut a release.
+                    love a second pair of eyes on the empty states before we cut
+                    a release.
                   </p>
                 </Post>
 

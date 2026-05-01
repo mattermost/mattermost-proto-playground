@@ -13,8 +13,13 @@ export interface ErrorMessageProps {
  * Error Message — inline red error text for form validation.
  * Displays an error icon alongside the message. Used below form inputs.
  */
-export default function ErrorMessage({ className = '', message }: ErrorMessageProps) {
-  const rootClass = [styles['error-message'], className].filter(Boolean).join(' ');
+export default function ErrorMessage({
+  className = '',
+  message,
+}: ErrorMessageProps) {
+  const rootClass = [styles['error-message'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass} role="alert">

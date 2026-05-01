@@ -75,30 +75,42 @@ export default function ThreadListItem({
           <div className={styles['thread-list-item__post-content']}>
             <div className={styles['thread-list-item__unread-dot']}>
               {badge === 'Unread' && (
-                <UnreadBadge className={styles['thread-list-item__unread-badge']} />
+                <UnreadBadge
+                  className={styles['thread-list-item__unread-badge']}
+                />
               )}
             </div>
             <div className={styles['thread-list-item__post-body']}>
               <div className={styles['thread-list-item__post-body-content']}>
                 <div className={styles['thread-list-item__name-row']}>
                   <div className={styles['thread-list-item__name-group']}>
-                    <span className={styles['thread-list-item__author']}>{authorName}</span>
+                    <span className={styles['thread-list-item__author']}>
+                      {authorName}
+                    </span>
                     <LabelTag label={channelLabel} casing="All Caps" />
                   </div>
-                  <span className={styles['thread-list-item__timestamp']}>{timestamp}</span>
+                  <span className={styles['thread-list-item__timestamp']}>
+                    {timestamp}
+                  </span>
                 </div>
                 {threadTitle != null && (
                   <div className={styles['thread-list-item__title-row']}>
-                    <p className={styles['thread-list-item__title']}>{threadTitle}</p>
+                    <p className={styles['thread-list-item__title']}>
+                      {threadTitle}
+                    </p>
                   </div>
                 )}
-                <p className={styles['thread-list-item__preview']}>{previewText}</p>
+                <p className={styles['thread-list-item__preview']}>
+                  {previewText}
+                </p>
               </div>
             </div>
           </div>
           <div className={styles['thread-list-item__replies']}>
             <div className={styles['thread-list-item__replies-inner']}>
-              <span className={styles['thread-list-item__reply-count']}>{replyCount} replies</span>
+              <span className={styles['thread-list-item__reply-count']}>
+                {replyCount} replies
+              </span>
             </div>
           </div>
         </div>

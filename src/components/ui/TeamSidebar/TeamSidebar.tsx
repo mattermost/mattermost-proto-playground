@@ -31,7 +31,9 @@ export default function TeamSidebar({
   onSelectTeam,
   onAddTeam,
 }: TeamSidebarProps) {
-  const rootClass = [styles['team-sidebar'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['team-sidebar'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass}>

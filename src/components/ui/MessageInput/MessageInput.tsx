@@ -53,13 +53,22 @@ export default function MessageInput({
     [styles[base], mod ? styles[mod] : ''].filter(Boolean).join(' ');
 
   return (
-    <div className={[styles['message-input'], className].filter(Boolean).join(' ')}>
-      <div className={cls('message-input__container', formattingOpen ? 'message-input__container--formatting-open' : '')}>
-
+    <div
+      className={[styles['message-input'], className].filter(Boolean).join(' ')}
+    >
+      <div
+        className={cls(
+          'message-input__container',
+          formattingOpen ? 'message-input__container--formatting-open' : '',
+        )}
+      >
         {/* Preview button — fades in when formatting is open */}
         <button
           type="button"
-          className={cls('message-input__preview-btn', formattingOpen ? 'message-input__preview-btn--visible' : '')}
+          className={cls(
+            'message-input__preview-btn',
+            formattingOpen ? 'message-input__preview-btn--visible' : '',
+          )}
           aria-label="Preview"
           tabIndex={formattingOpen ? 0 : -1}
         >
@@ -67,7 +76,12 @@ export default function MessageInput({
         </button>
 
         {/* Main text area */}
-        <div className={cls('message-input__body', formattingOpen ? 'message-input__body--formatting-open' : '')}>
+        <div
+          className={cls(
+            'message-input__body',
+            formattingOpen ? 'message-input__body--formatting-open' : '',
+          )}
+        >
           {showPriorityIndicator && (
             <div className={styles['message-input__priority-row']}>
               <LabelTag
@@ -75,7 +89,9 @@ export default function MessageInput({
                 type="Info"
                 size="X-Small"
                 casing="All Caps"
-                leadingIcon={<Icon glyph={<AlertCircleOutlineIcon />} size="10" />}
+                leadingIcon={
+                  <Icon glyph={<AlertCircleOutlineIcon />} size="10" />
+                }
               />
             </div>
           )}
@@ -114,42 +130,104 @@ export default function MessageInput({
 
         {/* Formatting toolbar — slides in/out */}
         <div
-          className={cls('message-input__formatting-bar', formattingOpen ? 'message-input__formatting-bar--open' : '')}
+          className={cls(
+            'message-input__formatting-bar',
+            formattingOpen ? 'message-input__formatting-bar--open' : '',
+          )}
           aria-hidden={!formattingOpen}
         >
           <div className={styles['message-input__toolbar-controls']}>
             {/* Style */}
             <div className={styles['message-input__toolbar-group']}>
-              <IconButton icon={<Icon glyph={<FormatBoldIcon />} size="16" />} size="Small" aria-label="Bold" />
-              <IconButton icon={<Icon glyph={<FormatItalicIcon />} size="16" />} size="Small" aria-label="Italic" />
-              <IconButton icon={<Icon glyph={<FormatStrikethroughVariantIcon />} size="16" />} size="Small" aria-label="Strikethrough" />
-              <IconButton icon={<Icon glyph={<FormatHeaderIcon />} size="16" />} size="Small" aria-label="Heading" />
+              <IconButton
+                icon={<Icon glyph={<FormatBoldIcon />} size="16" />}
+                size="Small"
+                aria-label="Bold"
+              />
+              <IconButton
+                icon={<Icon glyph={<FormatItalicIcon />} size="16" />}
+                size="Small"
+                aria-label="Italic"
+              />
+              <IconButton
+                icon={
+                  <Icon glyph={<FormatStrikethroughVariantIcon />} size="16" />
+                }
+                size="Small"
+                aria-label="Strikethrough"
+              />
+              <IconButton
+                icon={<Icon glyph={<FormatHeaderIcon />} size="16" />}
+                size="Small"
+                aria-label="Heading"
+              />
             </div>
 
-            <span className={styles['message-input__toolbar-divider']} aria-hidden />
+            <span
+              className={styles['message-input__toolbar-divider']}
+              aria-hidden
+            />
 
             {/* Links + Code */}
             <div className={styles['message-input__toolbar-group']}>
-              <IconButton icon={<Icon glyph={<LinkVariantIcon />} size="16" />} size="Small" aria-label="Add link" />
-              <IconButton icon={<Icon glyph={<CodeTagsIcon />} size="16" />} size="Small" aria-label="Code" />
+              <IconButton
+                icon={<Icon glyph={<LinkVariantIcon />} size="16" />}
+                size="Small"
+                aria-label="Add link"
+              />
+              <IconButton
+                icon={<Icon glyph={<CodeTagsIcon />} size="16" />}
+                size="Small"
+                aria-label="Code"
+              />
             </div>
 
-            <span className={styles['message-input__toolbar-divider']} aria-hidden />
+            <span
+              className={styles['message-input__toolbar-divider']}
+              aria-hidden
+            />
 
             {/* Paragraph */}
             <div className={styles['message-input__toolbar-group']}>
-              <IconButton icon={<Icon glyph={<FormatQuoteOpenIcon />} size="16" />} size="Small" aria-label="Quote" />
-              <IconButton icon={<Icon glyph={<FormatListBulletedIcon />} size="16" />} size="Small" aria-label="Bulleted list" />
-              <IconButton icon={<Icon glyph={<FormatListNumberedIcon />} size="16" />} size="Small" aria-label="Numbered list" />
+              <IconButton
+                icon={<Icon glyph={<FormatQuoteOpenIcon />} size="16" />}
+                size="Small"
+                aria-label="Quote"
+              />
+              <IconButton
+                icon={<Icon glyph={<FormatListBulletedIcon />} size="16" />}
+                size="Small"
+                aria-label="Bulleted list"
+              />
+              <IconButton
+                icon={<Icon glyph={<FormatListNumberedIcon />} size="16" />}
+                size="Small"
+                aria-label="Numbered list"
+              />
             </div>
 
-            <span className={styles['message-input__toolbar-divider']} aria-hidden />
+            <span
+              className={styles['message-input__toolbar-divider']}
+              aria-hidden
+            />
 
             {/* Tools */}
             <div className={styles['message-input__toolbar-group']}>
-              <IconButton icon={<Icon glyph={<AlertCircleOutlineIcon />} size="16" />} size="Small" aria-label="Message priority" />
-              <IconButton icon={<Icon glyph={<FireIcon />} size="16" />} size="Small" aria-label="Burn on read" />
-              <IconButton icon={<Icon glyph={<CreationOutlineIcon />} size="16" />} size="Small" aria-label="AI assistance" />
+              <IconButton
+                icon={<Icon glyph={<AlertCircleOutlineIcon />} size="16" />}
+                size="Small"
+                aria-label="Message priority"
+              />
+              <IconButton
+                icon={<Icon glyph={<FireIcon />} size="16" />}
+                size="Small"
+                aria-label="Burn on read"
+              />
+              <IconButton
+                icon={<Icon glyph={<CreationOutlineIcon />} size="16" />}
+                size="Small"
+                aria-label="AI assistance"
+              />
             </div>
           </div>
         </div>
@@ -158,33 +236,70 @@ export default function MessageInput({
         <div className={styles['message-input__actions']}>
           <button
             type="button"
-            className={cls('message-input__format-btn', formattingOpen ? 'message-input__format-btn--active' : '')}
-            aria-label={formattingOpen ? 'Hide formatting toolbar' : 'Show formatting toolbar'}
+            className={cls(
+              'message-input__format-btn',
+              formattingOpen ? 'message-input__format-btn--active' : '',
+            )}
+            aria-label={
+              formattingOpen
+                ? 'Hide formatting toolbar'
+                : 'Show formatting toolbar'
+            }
             aria-pressed={formattingOpen}
             onClick={() => setFormattingOpen((prev) => !prev)}
           >
             <Icon glyph={<FormatLetterCaseIcon />} size="16" />
-            <span className={cls('message-input__format-chevron', formattingOpen ? 'message-input__format-chevron--rotated' : '')}>
+            <span
+              className={cls(
+                'message-input__format-chevron',
+                formattingOpen ? 'message-input__format-chevron--rotated' : '',
+              )}
+            >
               <Icon glyph={<ChevronDownIcon />} size="12" />
             </span>
           </button>
 
-          <span className={styles['message-input__actions-divider']} aria-hidden />
+          <span
+            className={styles['message-input__actions-divider']}
+            aria-hidden
+          />
 
-          <IconButton icon={<Icon glyph={<PaperclipIcon />} size="16" />} size="Small" aria-label="Attach a file" />
-          <IconButton icon={<Icon glyph={<EmoticonHappyOutlineIcon />} size="16" />} size="Small" aria-label="Add an emoji" />
+          <IconButton
+            icon={<Icon glyph={<PaperclipIcon />} size="16" />}
+            size="Small"
+            aria-label="Attach a file"
+          />
+          <IconButton
+            icon={<Icon glyph={<EmoticonHappyOutlineIcon />} size="16" />}
+            size="Small"
+            aria-label="Add an emoji"
+          />
 
           {/* Split send button */}
-          <div className={cls('message-input__send', !hasSendValue ? 'message-input__send--disabled' : '')}>
-            <button type="button" className={styles['message-input__send-main']} aria-label="Send message" disabled={!hasSendValue}>
+          <div
+            className={cls(
+              'message-input__send',
+              !hasSendValue ? 'message-input__send--disabled' : '',
+            )}
+          >
+            <button
+              type="button"
+              className={styles['message-input__send-main']}
+              aria-label="Send message"
+              disabled={!hasSendValue}
+            >
               <Icon glyph={<SendIcon />} size="16" />
             </button>
-            <button type="button" className={styles['message-input__send-dropdown']} aria-label="Send options" disabled={!hasSendValue}>
+            <button
+              type="button"
+              className={styles['message-input__send-dropdown']}
+              aria-label="Send options"
+              disabled={!hasSendValue}
+            >
               <Icon glyph={<ChevronDownIcon />} size="16" />
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

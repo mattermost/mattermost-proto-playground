@@ -40,7 +40,9 @@ export default function MessageSeparator({
 
   const rootClass = [
     styles['message-separator'],
-    styles[`message-separator--${type === 'New Messages' ? 'new' : type === 'Reply Count' ? 'reply' : 'date'}`],
+    styles[
+      `message-separator--${type === 'New Messages' ? 'new' : type === 'Reply Count' ? 'reply' : 'date'}`
+    ],
     className,
   ]
     .filter(Boolean)
@@ -51,7 +53,9 @@ export default function MessageSeparator({
       <div className={styles['message-separator__line']} aria-hidden />
 
       <div className={styles['message-separator__label']}>
-        <span className={styles['message-separator__text']}>{displayLabel}</span>
+        <span className={styles['message-separator__text']}>
+          {displayLabel}
+        </span>
 
         {type === 'New Messages' && showAiSummary && (
           <button
@@ -60,7 +64,10 @@ export default function MessageSeparator({
             onClick={onSummarize}
             aria-label="Summarize new messages with AI"
           >
-            <span className={styles['message-separator__summarize-icon']} aria-hidden>
+            <span
+              className={styles['message-separator__summarize-icon']}
+              aria-hidden
+            >
               <Icon size="12" glyph={<CreationOutlineIcon />} />
             </span>
             Summarize

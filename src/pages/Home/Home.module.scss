@@ -90,3 +90,10 @@
   font-size: var(--font-size-200);
   color: var(--center-channel-color);
 }
+
+.home__card-desc {
+  padding: 0 var(--spacing-l) var(--spacing-l);
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  line-height: var(--line-height-200);
+}

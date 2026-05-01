@@ -36,7 +36,9 @@ export default function Tooltip({
 }: TooltipProps) {
   const arrowClass = styles[`tooltip--arrow-${arrow.toLowerCase()}`] ?? '';
 
-  const rootClass = [styles.tooltip, arrowClass, className].filter(Boolean).join(' ');
+  const rootClass = [styles.tooltip, arrowClass, className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass}>

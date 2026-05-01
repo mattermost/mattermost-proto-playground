@@ -37,13 +37,16 @@ export default function PaginationDots({
   const orientationClass = isVertical
     ? styles['pagination-dots--vertical']
     : styles['pagination-dots--horizontal'];
-  const styleClass = isInverted
-    ? styles['pagination-dots--inverted']
-    : '';
+  const styleClass = isInverted ? styles['pagination-dots--inverted'] : '';
 
   return (
     <div
-      className={[styles['pagination-dots'], orientationClass, styleClass, className]
+      className={[
+        styles['pagination-dots'],
+        orientationClass,
+        styleClass,
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
       role="tablist"

@@ -1,6 +1,10 @@
 @keyframes foundations-slide {
-  from { left: 0; }
-  to   { left: calc(100% - 10px); }
+  from {
+    left: 0;
+  }
+  to {
+    left: calc(100% - 10px);
+  }
 }
 
 .foundations {

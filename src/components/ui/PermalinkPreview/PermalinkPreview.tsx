@@ -30,7 +30,9 @@ export default function PermalinkPreview({
   originalChannel = '~Desktop App',
   className = '',
 }: PermalinkPreviewProps) {
-  const rootClass = [styles['permalink-preview'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['permalink-preview'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass}>
@@ -44,7 +46,9 @@ export default function PermalinkPreview({
             <p className={styles['permalink-preview__text']}>{messageText}</p>
           </div>
         </div>
-        <p className={styles['permalink-preview__origin']}>Originally posted in {originalChannel}</p>
+        <p className={styles['permalink-preview__origin']}>
+          Originally posted in {originalChannel}
+        </p>
       </div>
     </div>
   );

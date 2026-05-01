@@ -26,7 +26,9 @@ export default function RightSidebar({
     <aside className={rootClass} aria-label="Right sidebar">
       <div className={styles['right-sidebar__header']}>{header}</div>
       <div className={styles['right-sidebar__body']}>{children}</div>
-      {footer && <div className={styles['right-sidebar__footer']}>{footer}</div>}
+      {footer && (
+        <div className={styles['right-sidebar__footer']}>{footer}</div>
+      )}
     </aside>
   );
 }

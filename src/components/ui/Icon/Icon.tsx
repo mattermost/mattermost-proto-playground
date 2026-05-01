@@ -22,16 +22,16 @@ export type IconSize =
  * used as a glyph (e.g. <GlobeIcon size={SVG_SIZE_MAP['24']} />).
  */
 export const SVG_SIZE_MAP: Record<IconSize, number> = {
-  '10':  12,
-  '12':  14,
-  '16':  18,
-  '20':  24,
-  '24':  28,
-  '28':  32,
-  '32':  36,
-  '40':  48,
-  '52':  60,
-  '64':  72,
+  '10': 12,
+  '12': 14,
+  '16': 18,
+  '20': 24,
+  '24': 28,
+  '28': 32,
+  '32': 36,
+  '40': 48,
+  '52': 60,
+  '64': 72,
   '104': 120,
 };
 
@@ -49,16 +49,16 @@ export interface IconProps {
 }
 
 const SIZE_CLASS_MAP: Record<IconSize, string> = {
-  '10':  styles['icon--size-10'],
-  '12':  styles['icon--size-12'],
-  '16':  styles['icon--size-16'],
-  '20':  styles['icon--size-20'],
-  '24':  styles['icon--size-24'],
-  '28':  styles['icon--size-28'],
-  '32':  styles['icon--size-32'],
-  '40':  styles['icon--size-40'],
-  '52':  styles['icon--size-52'],
-  '64':  styles['icon--size-64'],
+  '10': styles['icon--size-10'],
+  '12': styles['icon--size-12'],
+  '16': styles['icon--size-16'],
+  '20': styles['icon--size-20'],
+  '24': styles['icon--size-24'],
+  '28': styles['icon--size-28'],
+  '32': styles['icon--size-32'],
+  '40': styles['icon--size-40'],
+  '52': styles['icon--size-52'],
+  '64': styles['icon--size-64'],
   '104': styles['icon--size-104'],
 };
 
@@ -87,9 +87,12 @@ export default function Icon({
     // Inject the correct SVG size into the glyph so callers don't need to
     // know about SVG_SIZE_MAP — the container size is all that's needed.
     if (React.isValidElement(glyph)) {
-      return React.cloneElement(glyph as React.ReactElement<{ size?: number }>, {
-        size: svgSize,
-      });
+      return React.cloneElement(
+        glyph as React.ReactElement<{ size?: number }>,
+        {
+          size: svgSize,
+        },
+      );
     }
     return glyph;
   })();

@@ -111,7 +111,9 @@
     border-radius: 0 0 4px 4px;
     padding: 0 var(--spacing-xs);
     opacity: 0;
-    transition: height var(--duration-quick) var(--ease-transition), opacity var(--duration-quick) var(--ease-entrance);
+    transition:
+      height var(--duration-quick) var(--ease-transition),
+      opacity var(--duration-quick) var(--ease-entrance);
 
     &--open {
       height: var(--spacing-xxxxxl);
@@ -169,7 +171,8 @@
   &__format-btn {
     display: inline-flex;
     align-items: center;
-    padding: var(--spacing-xs) var(--spacing-xxs) var(--spacing-xs) var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-xxs) var(--spacing-xs)
+      var(--spacing-xs);
     border-radius: var(--radius-s);
     border: none;
     background: none;

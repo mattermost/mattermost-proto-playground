@@ -38,8 +38,14 @@
   }
 
   // Per-digit-count horizontal padding — Small is same for all digit counts
-  &--digits-1 { --_mb-px-m: 6.5px; --_mb-px-l: 7.5px; }
-  &--digits-3 { --_mb-px-m: 4.5px; --_mb-px-l: 4px; }
+  &--digits-1 {
+    --_mb-px-m: 6.5px;
+    --_mb-px-l: 7.5px;
+  }
+  &--digits-3 {
+    --_mb-px-m: 4.5px;
+    --_mb-px-l: 4px;
+  }
 
   // ---------------------------------------------------------------------------
   // Location modifiers (Figma: Sidebar default, Menu Item, Icon Button)

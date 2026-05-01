@@ -34,10 +34,18 @@ export default function NewMessageBanner({
   onClick,
   onDismiss,
 }: NewMessageBannerProps) {
-  const typeClass = styles[`new-message-banner--type-${type === 'JumpToUnreads' ? 'jump-to-unreads' : 'new-replies'}`];
+  const typeClass =
+    styles[
+      `new-message-banner--type-${type === 'JumpToUnreads' ? 'jump-to-unreads' : 'new-replies'}`
+    ];
   const sizeClass = styles[`new-message-banner--size-${size.toLowerCase()}`];
 
-  const rootClass = [styles['new-message-banner'], typeClass, sizeClass, className]
+  const rootClass = [
+    styles['new-message-banner'],
+    typeClass,
+    sizeClass,
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -57,7 +65,9 @@ export default function NewMessageBanner({
           </span>
         </span>
         {type === 'JumpToUnreads' && countLabel != null && (
-          <span className={styles['new-message-banner__count']}>{countLabel}</span>
+          <span className={styles['new-message-banner__count']}>
+            {countLabel}
+          </span>
         )}
       </button>
       {onDismiss != null && (

@@ -56,7 +56,9 @@ export default function MessageReactions({
   className = '',
   ...rest
 }: MessageReactionsProps) {
-  const rootClass = [styles['message-reactions'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['message-reactions'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={rootClass} {...rest}>
@@ -66,7 +68,9 @@ export default function MessageReactions({
           type="button"
           className={[
             styles['message-reactions__ack'],
-            currentUserAcknowledged ? styles['message-reactions__ack--active'] : '',
+            currentUserAcknowledged
+              ? styles['message-reactions__ack--active']
+              : '',
           ]
             .filter(Boolean)
             .join(' ')}
@@ -78,9 +82,13 @@ export default function MessageReactions({
             <Icon size="16" glyph={<CheckCircleOutlineIcon />} />
           </span>
           {currentUserAcknowledged ? (
-            <span className={styles['message-reactions__ack-count']}>{acknowledgeCount}</span>
+            <span className={styles['message-reactions__ack-count']}>
+              {acknowledgeCount}
+            </span>
           ) : (
-            <span className={styles['message-reactions__ack-label']}>Acknowledge</span>
+            <span className={styles['message-reactions__ack-label']}>
+              Acknowledge
+            </span>
           )}
         </button>
       )}
@@ -101,10 +109,15 @@ export default function MessageReactions({
             aria-label={`${emoji} ${count} reaction${count !== 1 ? 's' : ''}`}
             aria-pressed={byCurrentUser}
           >
-            <span className={styles['message-reactions__pill-emoji']} aria-hidden>
+            <span
+              className={styles['message-reactions__pill-emoji']}
+              aria-hidden
+            >
               {emoji}
             </span>
-            <span className={styles['message-reactions__pill-count']}>{count}</span>
+            <span className={styles['message-reactions__pill-count']}>
+              {count}
+            </span>
           </button>
         ))}
 

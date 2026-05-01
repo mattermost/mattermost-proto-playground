@@ -64,7 +64,10 @@ export interface AttachmentCardProps {
 
 type IconComponent = ComponentType<{ size: number; className?: string }>;
 
-const FILE_TYPE_ICONS: Record<Exclude<AttachmentCardFileType, 'image-thumbnail'>, IconComponent> = {
+const FILE_TYPE_ICONS: Record<
+  Exclude<AttachmentCardFileType, 'image-thumbnail'>,
+  IconComponent
+> = {
   audio: FileAudioOutlineLargeIcon,
   code: FileCodeOutlineLargeIcon,
   excel: FileExcelOutlineLargeIcon,
@@ -79,19 +82,22 @@ const FILE_TYPE_ICONS: Record<Exclude<AttachmentCardFileType, 'image-thumbnail'>
   zip: FileZipOutlineLargeIcon,
 };
 
-const FILE_TYPE_COLORS: Record<Exclude<AttachmentCardFileType, 'image-thumbnail'>, string | undefined> = {
-  audio:        'var(--attachment-blue)',
-  code:         undefined,
-  excel:        'var(--attachment-green)',
-  generic:      undefined,
+const FILE_TYPE_COLORS: Record<
+  Exclude<AttachmentCardFileType, 'image-thumbnail'>,
+  string | undefined
+> = {
+  audio: 'var(--attachment-blue)',
+  code: undefined,
+  excel: 'var(--attachment-green)',
+  generic: undefined,
   'image-icon': 'var(--attachment-blue)',
-  patch:        undefined,
-  pdf:          'var(--attachment-red)',
-  powerpoint:   'var(--attachment-orange)',
-  text:         undefined,
-  video:        'var(--attachment-blue)',
-  word:         'var(--attachment-blue)',
-  zip:          undefined,
+  patch: undefined,
+  pdf: 'var(--attachment-red)',
+  powerpoint: 'var(--attachment-orange)',
+  text: undefined,
+  video: 'var(--attachment-blue)',
+  word: 'var(--attachment-blue)',
+  zip: undefined,
 };
 
 export default function AttachmentCard({
@@ -117,19 +123,18 @@ export default function AttachmentCard({
     .filter(Boolean)
     .join(' ');
 
-  const FileIcon = fileType !== 'image-thumbnail'
-    ? FILE_TYPE_ICONS[fileType]
-    : FileGenericOutlineLargeIcon;
+  const FileIcon =
+    fileType !== 'image-thumbnail'
+      ? FILE_TYPE_ICONS[fileType]
+      : FileGenericOutlineLargeIcon;
 
-  const iconColor = fileType !== 'image-thumbnail'
-    ? FILE_TYPE_COLORS[fileType]
-    : undefined;
+  const iconColor =
+    fileType !== 'image-thumbnail' ? FILE_TYPE_COLORS[fileType] : undefined;
 
   return (
     <div className={rootClass}>
       <div className={styles['attachment-card__container']}>
         <div className={styles['attachment-card__inner']}>
-
           <div className={styles['attachment-card__left']}>
             {fileType === 'image-thumbnail' && thumbnailSrc ? (
               <img
@@ -179,7 +184,9 @@ export default function AttachmentCard({
                 <IconButton
                   size="Small"
                   icon={<Icon glyph={<CloseIcon />} size="16" />}
-                  aria-label={isUploading ? 'Cancel upload' : 'Remove attachment'}
+                  aria-label={
+                    isUploading ? 'Cancel upload' : 'Remove attachment'
+                  }
                   onClick={onRemove}
                 />
               )}
@@ -201,7 +208,6 @@ export default function AttachmentCard({
               )}
             </div>
           </div>
-
         </div>
       </div>
 

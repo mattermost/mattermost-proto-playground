@@ -37,14 +37,19 @@ export default function MentionBadge({
     styles['mention-badge'],
     styles[`mention-badge--size-${toKebab(size)}`],
     styles[`mention-badge--digits-${digitCount}`],
-    location !== 'Sidebar' ? styles[`mention-badge--location-${toKebab(location)}`] : '',
+    location !== 'Sidebar'
+      ? styles[`mention-badge--location-${toKebab(location)}`]
+      : '',
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <span className={rootClass} aria-label={`${count} mention${count === 1 ? '' : 's'}`}>
+    <span
+      className={rootClass}
+      aria-label={`${count} mention${count === 1 ? '' : 's'}`}
+    >
       {displayText}
     </span>
   );
