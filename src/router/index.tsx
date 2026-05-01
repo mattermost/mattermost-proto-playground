@@ -12,6 +12,7 @@ import GuidelineRoute from '@/pages/guidelines/GuidelineRoute';
 import LibraryIndex from '@/pages/library/LibraryIndex';
 import LibraryRoute from '@/pages/library/LibraryRoute';
 import PrototypesIndex from '@/pages/prototypes/PrototypesIndex';
+import ResourcesIndex from '@/pages/resources/ResourcesIndex';
 
 // Register prototype flows here.
 // Each entry becomes a sidebar nav item and a route.
@@ -44,6 +45,7 @@ export default function AppRouter() {
         </Route>
 
         <Route path="/prototypes" element={<PrototypesIndex />} />
+        <Route path="/resources" element={<ResourcesIndex />} />
 
         {/* Legacy routes — kept functional during migration. */}
         <Route path="/components" element={<Components />} />

@@ -65,6 +65,7 @@
   // Misc
   --calls-bg: var(--color-indigo-600);
   --calls-bg-rgb: var(--color-indigo-600-rgb);
+  --logo-color: var(--color-indigo-500);
 }
 
 // ============================================================
@@ -120,6 +121,7 @@
   // Misc
   --calls-bg: #091d48;
   --calls-bg-rgb: 9, 29, 72;
+  --logo-color: var(--color-indigo-500);
 }
 
 // ============================================================
@@ -175,6 +177,7 @@
   // Misc
   --calls-bg: var(--color-neutral-1050);
   --calls-bg-rgb: var(--color-neutral-1050-rgb);
+  --logo-color: var(--color-indigo-500);
 }
 
 // ============================================================
@@ -230,6 +233,7 @@
   // Misc
   --calls-bg: #222c3f;
   --calls-bg-rgb: 34, 44, 63;
+  --logo-color: var(--color-neutral-0);
 }
 
 // ============================================================
@@ -285,4 +289,5 @@
   // Misc
   --calls-bg: #24262d;
   --calls-bg-rgb: 36, 38, 45;
+  --logo-color: var(--color-neutral-0);
 }

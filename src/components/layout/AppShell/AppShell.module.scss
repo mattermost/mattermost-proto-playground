@@ -6,25 +6,12 @@
   color: var(--center-channel-color);
 }
 
-.app-shell__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-m) var(--spacing-l);
-  flex: 0 0 auto;
-}
-
 .app-shell__content {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-}
 
-.app-shell__floating-theme {
-  position: fixed;
-  top: var(--spacing-l);
-  right: var(--spacing-l);
-  z-index: 50;
+  @include minimal-scrollbar;
 }
