@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Button from '@/components/ui/Button/Button';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import { Modal } from '@/components/ui/Modal';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 const modalFooter = (
   <>

@@ -1,5 +1,5 @@
 import MessageActions from '@/components/ui/MessageActions/MessageActions';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function MessageActionsLibrary() {
   return (

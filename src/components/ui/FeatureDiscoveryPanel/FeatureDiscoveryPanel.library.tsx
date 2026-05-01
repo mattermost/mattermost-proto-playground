@@ -1,6 +1,6 @@
 import FeatureDiscoveryPanel from '@/components/ui/FeatureDiscoveryPanel/FeatureDiscoveryPanel';
 import GroupsIllustration from '@/assets/illustrations/groups.svg?react';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function FeatureDiscoveryPanelLibrary() {
   return (

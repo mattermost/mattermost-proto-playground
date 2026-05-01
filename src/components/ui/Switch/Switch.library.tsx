@@ -1,5 +1,5 @@
 import Switch from '@/components/ui/Switch/Switch';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function SwitchLibrary() {
   return (

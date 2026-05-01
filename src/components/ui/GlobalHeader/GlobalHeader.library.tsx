@@ -1,6 +1,6 @@
 import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function GlobalHeaderLibrary() {
   return (

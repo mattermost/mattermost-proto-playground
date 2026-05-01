@@ -1,5 +1,5 @@
 import MessageHeader from '@/components/ui/MessageHeader/MessageHeader';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function MessageHeaderLibrary() {
   return (

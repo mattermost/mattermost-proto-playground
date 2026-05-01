@@ -1,7 +1,7 @@
 import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
-import styles from '@/pages/Patterns/Patterns.module.scss';
+import styles from '@/styles/library-demo/patterns.module.scss';
 
 export default function ChannelHeaderLibrary() {
   return (

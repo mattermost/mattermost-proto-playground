@@ -4,7 +4,7 @@ import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import UserAvatarGroup from '@/components/ui/UserAvatarGroup/UserAvatarGroup';
-import styles from '@/pages/Components/Components.module.scss';
+import styles from '@/styles/library-demo/components.module.scss';
 
 export default function UserAvatarGroupLibrary() {
   return (
