@@ -307,36 +307,35 @@
 // Breakpoint table
 // ============================================================
 .bp-table {
+  width: 100%;
   margin: var(--spacing-l) 0;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-200);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   border-radius: var(--radius-m);
   overflow: hidden;
-  background-color: var(--center-channel-bg);
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--font-size-100);
-  }
 
   th,
   td {
-    padding: var(--spacing-m) var(--spacing-l);
+    padding: var(--spacing-xs) var(--spacing-m);
     text-align: left;
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
-    color: var(--center-channel-color);
+    vertical-align: top;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    overflow-wrap: break-word;
   }
 
-  th {
+  thead th {
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-    background: rgba(var(--center-channel-color-rgb), 0.02);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  tr:last-child td {
+  tbody tr:last-child td {
     border-bottom: 0;
   }
 

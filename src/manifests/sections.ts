@@ -98,24 +98,19 @@ export const librarySections: Partial<Record<LibraryCategory, SectionGroup[]>> =
     },
     {
       label: 'Navigation',
-      slugs: ['app-bar-item', 'menu-item'],
+      slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
     },
     {
       label: 'Messaging',
       slugs: [
+        'channel-info-msg-header',
         'message-actions',
         'message-header',
         'message-reactions',
         'message-separator',
+        'thread-footer',
+        'thread-list-item',
       ],
-    },
-    {
-      label: 'Channel',
-      slugs: ['channel-info-msg-header', 'channel-sidebar-item'],
-    },
-    {
-      label: 'Threading',
-      slugs: ['thread-footer', 'thread-list-item'],
     },
     {
       label: 'Calls',
@@ -131,15 +126,6 @@ export const librarySections: Partial<Record<LibraryCategory, SectionGroup[]>> =
 export const guidelineSections: Partial<Record<GuidelineCategory, SectionGroup[]>> = {
   foundations: [
     {
-      label: 'Guidelines',
-      slugs: [
-        'writing-style',
-        'usability-heuristics',
-        'system-feedback',
-        'accessibility-guidelines',
-      ],
-    },
-    {
       label: 'Style',
       slugs: [
         'color',
@@ -148,9 +134,119 @@ export const guidelineSections: Partial<Record<GuidelineCategory, SectionGroup[]
         'iconography',
         'shape',
         'elevation',
+        'spacing',
         'layout',
         'animation',
       ],
+    },
+    {
+      label: 'Guidelines',
+      slugs: [
+        'writing-style',
+        'usability-heuristics',
+        'system-feedback',
+        'accessibility-guidelines',
+      ],
+    },
+  ],
+  components: [
+    {
+      label: 'Actions',
+      slugs: ['action-button', 'button', 'icon-button'],
+    },
+    {
+      label: 'Forms and Input',
+      slugs: [
+        'checkbox',
+        'chip',
+        'date-range-picker',
+        'dropdown',
+        'radio',
+        'search-input',
+        'select',
+        'switch',
+        'text-area',
+        'text-input',
+      ],
+    },
+    {
+      label: 'Images and Icons',
+      slugs: [
+        'emoji',
+        'icon',
+        'illustration',
+        'team-avatar',
+        'user-avatar',
+        'user-avatar-group',
+      ],
+    },
+    {
+      label: 'Progress Indicators',
+      slugs: ['pagination-dots', 'progress-bar', 'spinner'],
+    },
+    {
+      label: 'Overlays and Layering',
+      slugs: ['popover-notice', 'tooltip'],
+    },
+    {
+      label: 'Status Indicators',
+      slugs: [
+        'label-tag',
+        'mention-badge',
+        'reaction-pill',
+        'recording-pill',
+        'status-badge',
+        'tags',
+        'unread-badge',
+      ],
+    },
+    {
+      label: 'Banners',
+      slugs: [
+        'global-banner',
+        'more-unreads-banner',
+        'new-message-banner',
+        'search-tip-banner',
+        'toast-banner',
+      ],
+    },
+    {
+      label: 'Cards and Previews',
+      slugs: [
+        'attachment-card',
+        'feature-discovery-panel',
+        'image-preview',
+        'link-preview',
+        'permalink-preview',
+      ],
+    },
+    {
+      label: 'Layout and Containers',
+      slugs: ['divider', 'empty-state', 'scrollbar', 'tabs'],
+    },
+    {
+      label: 'Feedback and Notices',
+      slugs: ['error-message', 'section-notice'],
+    },
+    {
+      label: 'Navigation',
+      slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
+    },
+    {
+      label: 'Messaging',
+      slugs: [
+        'channel-info-msg-header',
+        'message-actions',
+        'message-header',
+        'message-reactions',
+        'message-separator',
+        'thread-footer',
+        'thread-list-item',
+      ],
+    },
+    {
+      label: 'Calls',
+      slugs: ['call-participant-avatar'],
     },
   ],
 };

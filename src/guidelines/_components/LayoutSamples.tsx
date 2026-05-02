@@ -178,37 +178,35 @@ const BREAKPOINTS: BreakpointRow[] = [
 
 export function BreakpointTable() {
   return (
-    <div className={styles['bp-table']}>
-      <table>
-        <thead>
-          <tr>
-            <th>Breakpoint</th>
-            <th>Range (px)</th>
-            <th>Columns</th>
-            <th>Gutter</th>
-            <th>Margin</th>
+    <table className={styles['bp-table']}>
+      <thead>
+        <tr>
+          <th>Breakpoint</th>
+          <th>Range (px)</th>
+          <th>Columns</th>
+          <th>Gutter</th>
+          <th>Margin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {BREAKPOINTS.map((bp) => (
+          <tr
+            key={bp.name}
+            className={
+              bp.withSidebar ? styles['bp-table__row--sidebar'] : undefined
+            }
+          >
+            <td>
+              <span className={styles['bp-table__name']}>{bp.name}</span>
+            </td>
+            <td>{bp.range}</td>
+            <td>{bp.columns}</td>
+            <td>{bp.gutter}px</td>
+            <td>{bp.margin}px</td>
           </tr>
-        </thead>
-        <tbody>
-          {BREAKPOINTS.map((bp) => (
-            <tr
-              key={bp.name}
-              className={
-                bp.withSidebar ? styles['bp-table__row--sidebar'] : undefined
-              }
-            >
-              <td>
-                <span className={styles['bp-table__name']}>{bp.name}</span>
-              </td>
-              <td>{bp.range}</td>
-              <td>{bp.columns}</td>
-              <td>{bp.gutter}px</td>
-              <td>{bp.margin}px</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

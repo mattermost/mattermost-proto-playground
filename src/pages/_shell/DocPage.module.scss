@@ -70,11 +70,20 @@
   font-size: var(--font-size-200);
   line-height: var(--line-height-200);
   padding: var(--spacing-xxxl);
+}
 
-  h1,
-  h2,
-  h3,
-  h4 {
+// Prose typography is opt-in via the `prose` prop on DocPage. Used for MDX
+// guideline pages and library pages — both render bare HTML tags for prose
+// (`<h2>Sizes</h2>`, `<p>...</p>`) alongside component instances.
+//
+// Every selector is gated with `:not([class])` so prose rules apply only to
+// bare HTML emitted by MDX or library pages, never to CSS-module-styled
+// elements rendered by components (e.g. Modal's classed `<h2 className="modal__title">`).
+.doc-page__prose {
+  h1:not([class]),
+  h2:not([class]),
+  h3:not([class]),
+  h4:not([class]) {
     font-family: var(--font-family-heading);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
@@ -97,42 +106,42 @@
     }
   }
 
-  h1 {
+  h1:not([class]) {
     font-size: var(--font-size-1000);
   }
-  h2 {
+  h2:not([class]) {
     font-size: var(--font-size-700);
     margin-top: var(--spacing-xxl);
     margin-bottom: var(--spacing-xxl);
   }
-  h3 {
+  h3:not([class]) {
     font-size: var(--font-size-500);
     margin-top: var(--spacing-xxl);
     margin-bottom: var(--spacing-l);
   }
-  h4 {
+  h4:not([class]) {
     font-size: var(--font-size-300);
     margin-top: var(--spacing-xl);
     margin-bottom: var(--spacing-m);
   }
 
-  p {
+  p:not([class]) {
     margin-bottom: var(--spacing-m);
   }
 
-  ul,
-  ol {
+  ul:not([class]),
+  ol:not([class]) {
     margin-bottom: var(--spacing-m);
   }
 
-  li {
+  li:not([class]) {
     margin-bottom: var(--spacing-xs);
     list-style-type: disc;
     margin-left: var(--spacing-l);
     padding-left: var(--spacing-xxxs);
   }
 
-  a {
+  a:not([class]) {
     color: var(--link-color);
     text-decoration: none;
     &:hover {
@@ -144,7 +153,7 @@
     }
   }
 
-  code {
+  code:not([class]) {
     font-family: var(--font-family-mono);
     font-size: var(--font-size-75);
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
@@ -152,7 +161,7 @@
     border-radius: var(--radius-s);
   }
 
-  pre {
+  pre:not([class]) {
     margin: var(--spacing-m) 0;
     padding: var(--spacing-l);
     border-radius: var(--radius-m);
@@ -191,13 +200,48 @@
     }
   }
 
-  hr {
+  table:not([class]) {
+    width: 100%;
+    margin: var(--spacing-l) 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+    // Clip cell backgrounds (e.g. thead) to the rounded outer border.
+    overflow: hidden;
+
+    th,
+    td {
+      padding: var(--spacing-xs) var(--spacing-m);
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      overflow-wrap: break-word;
+    }
+
+    thead th {
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+      font-size: var(--font-size-75);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  hr:not([class]) {
     border: 0;
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
     margin: var(--spacing-m) 0;
   }
 
-  strong {
+  strong:not([class]) {
     font-weight: var(--font-weight-semibold);
   }
 }

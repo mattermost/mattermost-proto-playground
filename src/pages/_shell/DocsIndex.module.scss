@@ -2,7 +2,12 @@
   margin-top: var(--spacing-xxl);
 
   h2 {
-    margin-bottom: var(--spacing-m);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    margin: 0 0 var(--spacing-m);
   }
 }
 
@@ -48,4 +53,6 @@
   background-color: rgba(var(--center-channel-color-rgb), 0.04);
   border-radius: var(--radius-m);
   color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
 }

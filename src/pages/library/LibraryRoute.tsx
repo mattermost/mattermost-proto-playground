@@ -62,6 +62,7 @@ export default function LibraryRoute() {
 
   return (
     <DocPage
+      prose
       hero={
         <PageHero
           breadcrumb={breadcrumbFor(entry)}
