@@ -15,9 +15,9 @@ export type UserAvatarGroupSize =
 export interface UserAvatarGroupItem {
   /** Unique key for the list item. */
   key: string;
-  /** Image URL for the avatar. */
-  src: string;
-  /** Alt text / display name for the avatar. */
+  /** Image URL for the avatar. Omit to render the Fallback (initials) variant. */
+  src?: string;
+  /** Alt text / display name for the avatar. Drives initials and fallback colour. */
   name: string;
 }
 
@@ -68,7 +68,12 @@ export default function UserAvatarGroup({
           className={styles['user-avatar-group__item']}
           title={avatar.name}
         >
-          <UserAvatar src={avatar.src} alt={avatar.name} size={size} />
+          <UserAvatar
+            src={avatar.src}
+            alt={avatar.name}
+            name={avatar.name}
+            size={size}
+          />
         </span>
       ))}
       {overflow > 0 && (

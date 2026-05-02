@@ -1,4 +1,14 @@
 import UserAvatarGroup from '@/components/ui/UserAvatarGroup/UserAvatarGroup';
+import avatarAiko from '@/assets/avatars/Aiko Tan.png';
+import avatarArjun from '@/assets/avatars/Arjun Patel.png';
+import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
+import avatarDarius from '@/assets/avatars/Darius Cole.png';
+import avatarDavid from '@/assets/avatars/David Liang.png';
+import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
+import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 
 A User Avatar Group displays multiple participants as a stack of overlapping
 avatars. It's a compact way to show "who's involved" — thread participants,
@@ -13,11 +23,11 @@ channel members, call attendees — without a list.
     size="48"
     max={3}
     avatars={[
-      { key: 'a', src: 'https://i.pravatar.cc/96?u=anatomy-a', name: 'A' },
-      { key: 'b', src: 'https://i.pravatar.cc/96?u=anatomy-b', name: 'B' },
-      { key: 'c', src: 'https://i.pravatar.cc/96?u=anatomy-c', name: 'C' },
-      { key: 'd', src: 'https://i.pravatar.cc/96?u=anatomy-d', name: 'D' },
-      { key: 'e', src: 'https://i.pravatar.cc/96?u=anatomy-e', name: 'E' },
+      { key: 'leonard', src: avatarLeonard, name: 'Leonard Riley' },
+      { key: 'danielle', src: avatarDanielle, name: 'Danielle Okoro' },
+      { key: 'emma', src: avatarEmma, name: 'Emma Novak' },
+      { key: 'marco', src: avatarMarco, name: 'Marco Rinaldi' },
+      { key: 'sofia', src: avatarSofia, name: 'Sofia Bauer' },
     ]}
   />
 </AnatomyStage>
@@ -41,25 +51,25 @@ their own.
   <UserAvatarGroup
     size="20"
     avatars={[
-      { key: 'a', src: 'https://i.pravatar.cc/40?u=a', name: 'A' },
-      { key: 'b', src: 'https://i.pravatar.cc/40?u=b', name: 'B' },
-      { key: 'c', src: 'https://i.pravatar.cc/40?u=c', name: 'C' },
+      { key: 'leonard', src: avatarLeonard, name: 'Leonard Riley' },
+      { key: 'danielle', src: avatarDanielle, name: 'Danielle Okoro' },
+      { key: 'emma', src: avatarEmma, name: 'Emma Novak' },
     ]}
   />
   <UserAvatarGroup
     size="32"
     avatars={[
-      { key: 'a', src: 'https://i.pravatar.cc/64?u=a', name: 'A' },
-      { key: 'b', src: 'https://i.pravatar.cc/64?u=b', name: 'B' },
-      { key: 'c', src: 'https://i.pravatar.cc/64?u=c', name: 'C' },
+      { key: 'leonard', src: avatarLeonard, name: 'Leonard Riley' },
+      { key: 'danielle', src: avatarDanielle, name: 'Danielle Okoro' },
+      { key: 'emma', src: avatarEmma, name: 'Emma Novak' },
     ]}
   />
   <UserAvatarGroup
     size="48"
     avatars={[
-      { key: 'a', src: 'https://i.pravatar.cc/96?u=a', name: 'A' },
-      { key: 'b', src: 'https://i.pravatar.cc/96?u=b', name: 'B' },
-      { key: 'c', src: 'https://i.pravatar.cc/96?u=c', name: 'C' },
+      { key: 'leonard', src: avatarLeonard, name: 'Leonard Riley' },
+      { key: 'danielle', src: avatarDanielle, name: 'Danielle Okoro' },
+      { key: 'emma', src: avatarEmma, name: 'Emma Novak' },
     ]}
   />
 </div>
@@ -83,13 +93,16 @@ avatar always sits on top so the stack reads as recently-added-on-the-right.
     size="32"
     max={3}
     avatars={[
-      { key: 'a', src: 'https://i.pravatar.cc/64?u=g1', name: 'A' },
-      { key: 'b', src: 'https://i.pravatar.cc/64?u=g2', name: 'B' },
-      { key: 'c', src: 'https://i.pravatar.cc/64?u=g3', name: 'C' },
-      { key: 'd', src: 'https://i.pravatar.cc/64?u=g4', name: 'D' },
-      { key: 'e', src: 'https://i.pravatar.cc/64?u=g5', name: 'E' },
-      { key: 'f', src: 'https://i.pravatar.cc/64?u=g6', name: 'F' },
-      { key: 'g', src: 'https://i.pravatar.cc/64?u=g7', name: 'G' },
+      { key: 'leonard', src: avatarLeonard, name: 'Leonard Riley' },
+      { key: 'danielle', src: avatarDanielle, name: 'Danielle Okoro' },
+      { key: 'emma', src: avatarEmma, name: 'Emma Novak' },
+      { key: 'marco', src: avatarMarco, name: 'Marco Rinaldi' },
+      { key: 'sofia', src: avatarSofia, name: 'Sofia Bauer' },
+      { key: 'aiko', src: avatarAiko, name: 'Aiko Tan' },
+      { key: 'arjun', src: avatarArjun, name: 'Arjun Patel' },
+      { key: 'darius', src: avatarDarius, name: 'Darius Cole' },
+      { key: 'david', src: avatarDavid, name: 'David Liang' },
+      { key: 'ethan', src: avatarEthan, name: 'Ethan Brooks' },
     ]}
   />
 </div>
