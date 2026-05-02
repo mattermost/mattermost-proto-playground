@@ -53,6 +53,7 @@ import {
   ButtonPositioning,
 } from '@/guidelines/_components/ButtonSamples';
 import Num from '@/guidelines/_components/Num';
+import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import Divider from '@/components/ui/Divider/Divider';
 import Chip from '@/components/ui/Chip/Chip';
 
@@ -104,6 +105,7 @@ const MDX_COMPONENTS = {
   ButtonWidths,
   ButtonPositioning,
   Num,
+  AnatomyStage,
   Divider,
   Chip,
 };

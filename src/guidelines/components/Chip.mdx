@@ -1,1 +1,94 @@
-Guidance for the Chip component is coming soon. In the meantime, see the [library page](/library/components/chip) for variants and props.
+import Chip from '@/components/ui/Chip/Chip';
+import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
+import HashtagIcon from '@mattermost/compass-icons/components/pound';
+
+Chips are compact, self-contained tokens that represent a selection — a
+person added to an invite, a filter applied to a search, a chosen value in
+a tokenizing input. Each Chip stands on its own and is removable or
+selectable, depending on context.
+
+Use a Chip when a piece of structured data needs to live inline alongside
+other values. Reach for a [Tag](/guidelines/components/labeltag) instead
+when you're labeling content (Bot, Guest, severity), not selecting it.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Container** — pill-shaped surface with a subtle background.
+- <Num>2</Num> **Supporting visual** — optional. An avatar for people, an
+  icon for filters or properties.
+- <Num>3</Num> **Label** — required text describing the value.
+- <Num>4</Num> **Remove button** — the × control for input chips. Removes
+  the chip from the input.
+
+<AnatomyStage style={{gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
+  <Chip leadingAvatar={{ src: '', alt: 'Avery' }} onRemove={() => {}}>Avery</Chip>
+  <Chip leadingIcon={<HashtagIcon />} onRemove={() => {}}>design</Chip>
+  <Chip leadingIcon={<AccountOutlineIcon />}>From: Mira</Chip>
+</AnatomyStage>
+
+<Divider />
+
+## Sizes
+
+Sizes line up with the Text Input scale so chips drop into inputs without
+adjusting padding.
+
+| Size           | Use when                                                  |
+| -------------- | --------------------------------------------------------- |
+| Small          | Dense filter rows, table cells.                           |
+| Medium         | Default. Composer fields, search filters.                 |
+| Medium Compact | Inside compact inputs and tight toolbars.                 |
+| Large          | Touch-first inputs and accessibility-led surfaces.        |
+
+<div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
+  <Chip size="Small">Small</Chip>
+  <Chip size="Medium">Medium</Chip>
+  <Chip size="Medium Compact">Medium Compact</Chip>
+  <Chip size="Large">Large</Chip>
+</div>
+
+<Divider />
+
+## Variants
+
+### Input chips
+
+Input chips appear inside a tokenizing input — adding members to a channel,
+filtering a list, picking tags. Each chip carries a remove (×) control.
+
+<div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
+  <Chip leadingAvatar={{ src: '', alt: 'Avery' }} onRemove={() => {}}>Avery Chen</Chip>
+  <Chip leadingAvatar={{ src: '', alt: 'Mira' }} onRemove={() => {}}>Mira Patel</Chip>
+  <Chip leadingAvatar={{ src: '', alt: 'Noor' }} onRemove={() => {}}>Noor Adler</Chip>
+</div>
+
+### Choice chips
+
+Choice chips are selectable filters. They toggle on and off but don't get
+removed — keep the remove control off.
+
+<div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
+  <Chip leadingIcon={<HashtagIcon />}>All channels</Chip>
+  <Chip leadingIcon={<HashtagIcon />} colored>Direct messages</Chip>
+</div>
+
+<Divider />
+
+## Error state
+
+Use the error variant when an input chip fails validation — for example, an
+email that didn't resolve to a member. Pair it with field-level error text
+so the cause is explicit.
+
+<div style={{display:'flex',gap:'0.5rem'}}>
+  <Chip error onRemove={() => {}}>not-a-member@example.com</Chip>
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Chip library page](/library/components/chip).

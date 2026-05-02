@@ -1,1 +1,79 @@
-Guidance for the Channel Sidebar Item component is coming soon. In the meantime, see the [library page](/library/components/channel-sidebar-item) for variants and props.
+import ChannelSidebarItem from '@/components/ui/ChannelSidebarItem/ChannelSidebarItem';
+
+The Channel Sidebar Item is the row people use to move between channels,
+DMs, and group messages. It compresses a lot of state — channel type,
+unread, mention count, mute, in-call — into a single, scannable line.
+
+Use it inside the Channel Sidebar pattern. For freeform navigation lists,
+reach for Menu Items instead.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Leading visual** — the icon or avatar that identifies the
+  channel type. Public, Private, Group Message, Direct Message, and special
+  rows like Threads, Drafts, and Insights each have their own glyph.
+- <Num>2</Num> **Label** — the channel, group, or user name.
+- <Num>3</Num> **Active border** — a 3px left-edge accent shown on the
+  currently selected item.
+- <Num>4</Num> **Mention badge** — numeric badge shown when the row has
+  unread mentions.
+- <Num>5</Num> **Channel menu** — three-dot button revealed on hover for
+  channel and DM rows.
+- <Num>6</Num> **Trailing decorations** — call-in-progress glyph, custom
+  status emoji on DMs, shared-channel marker.
+
+<AnatomyStage>
+  <div style={{width:'100%',maxWidth:'320px',padding:'0.75rem',background:'var(--sidebar-bg)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.25rem'}}>
+    <ChannelSidebarItem name="design" leadingVisual="Public" active />
+    <ChannelSidebarItem name="design-leadership" leadingVisual="Private" status="Mention" mentionCount={3} />
+    <ChannelSidebarItem name="Avery, Mira" leadingVisual="Group Message" memberCount={3} status="Unread" />
+    <ChannelSidebarItem name="Noor Patel" leadingVisual="Direct Message" status="Unread" />
+  </div>
+</AnatomyStage>
+
+<Divider />
+
+## Leading visuals
+
+| Visual         | Use for                                                   |
+| -------------- | --------------------------------------------------------- |
+| Public         | Public channels in the team.                              |
+| Private        | Private channels.                                         |
+| Group Message  | Multi-person DMs. Member count appears in the glyph.      |
+| Direct Message | One-on-one DMs. The user's avatar is the visual.          |
+| Threads        | The Threads inbox row.                                    |
+| Drafts         | The Drafts row.                                           |
+| Insights       | The Insights row.                                         |
+
+<Divider />
+
+## Status
+
+The row's status drives weight, color, and trailing badge.
+
+| Status  | Treatment                                                            |
+| ------- | -------------------------------------------------------------------- |
+| Read    | Resting weight; the row recedes.                                     |
+| Unread  | Semibold name; brighter text color.                                  |
+| Mention | Semibold name; mention badge with count.                             |
+
+Mute reduces opacity across the row regardless of status — muted channels
+shouldn't compete for attention even when they have unreads.
+
+<Divider />
+
+## Active and hover
+
+A single item is **Active** at any time — it shows the left-edge border, an
+elevated background, and stays in that state until the user navigates away.
+On hover, non-active rows show a subtle background. The channel menu (three
+dots) only appears on hover or focus to keep resting rows quiet.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Channel Sidebar Item library page](/library/components/channel-sidebar-item).

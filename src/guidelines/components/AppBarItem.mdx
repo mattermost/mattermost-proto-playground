@@ -1,1 +1,51 @@
-Guidance for the App Bar Item component is coming soon. In the meantime, see the [library page](/library/components/app-bar-item) for variants and props.
+import AppBarItem from '@/components/ui/AppBarItem/AppBarItem';
+import GithubIcon from '@mattermost/compass-icons/components/github-circle';
+import GitlabIcon from '@mattermost/compass-icons/components/brand-gitlab';
+import ZoomIcon from '@mattermost/compass-icons/components/brand-zoom';
+
+The App Bar Item is a circular icon that anchors a third-party app or plugin
+in the right-side App Bar. Each item is a single tap-target with optional
+selection styling and notification badges.
+
+Use App Bar Items for plugin entry points that need persistent visibility —
+GitHub, GitLab, Zoom, and similar integrations. Channel- and message-level
+actions belong elsewhere.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Icon** — round 24px glyph or app logo. Custom artwork is
+  cropped to a circle.
+- <Num>2</Num> **Selection indicator** — a 3px vertical accent on the left
+  edge when the app's panel is open.
+- <Num>3</Num> **Mention badge** — numeric, shown for unread mentions.
+- <Num>4</Num> **Unread badge** — a small dot, shown when there are unreads
+  but no mentions.
+
+<AnatomyStage>
+  <div style={{display:'flex',gap:'1.5rem',flexWrap:'wrap',padding:'1rem',background:'var(--sidebar-header-bg)',borderRadius:'8px'}}>
+    <AppBarItem icon={<GithubIcon size={24} />} label="GitHub" />
+    <AppBarItem icon={<GitlabIcon size={24} />} label="GitLab" state="Selected" />
+    <AppBarItem icon={<ZoomIcon size={24} />} label="Zoom" mentionBadge={3} />
+    <AppBarItem icon={<GithubIcon size={24} />} label="GitHub" unreadBadge />
+  </div>
+</AnatomyStage>
+
+<Divider />
+
+## States
+
+App Bar Items have two states. **Default** is the resting state. **Selected**
+shows a left-edge accent that matches the active sidebar border, signalling
+that the app's panel is open.
+
+The mention and unread badges are mutually exclusive — when both apply, the
+mention badge wins because it carries a count.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[App Bar Item library page](/library/components/app-bar-item).

@@ -1,1 +1,96 @@
-Guidance for the Attachment Card component is coming soon. In the meantime, see the [library page](/library/components/attachment-card) for variants and props.
+import AttachmentCard from '@/components/ui/AttachmentCard/AttachmentCard';
+
+Attachment Cards represent a file shared in a channel, message, or task.
+Each card shows the file's identity at a glance — type, name, size — and
+hosts the actions a viewer can take on it.
+
+Reach for an Attachment Card any time a file is referenced inline. The same
+card carries through upload, browsing, and download contexts so users
+recognise it across surfaces.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Container** — Elevation 1; rounded corners; clickable surface
+  that opens the file or its preview.
+- <Num>2</Num> **Filetype icon** — colored glyph that maps to the file type
+  (PDF, Word, image, etc.).
+- <Num>3</Num> **Filename** — the file's name, truncated with an ellipsis if
+  it overflows.
+- <Num>4</Num> **Metadata** — file type and size, optionally followed by a
+  channel tag and timestamp.
+- <Num>5</Num> **Actions** — More options and Download appear on hover in the
+  default state; a Cancel/Remove button appears during upload and on
+  uploaded-but-not-yet-sent cards.
+- <Num>6</Num> **Progress bar** — shown only during upload; spans the bottom
+  edge of the card.
+
+<AnatomyStage>
+  <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',width:'100%',maxWidth:'420px'}}>
+    <AttachmentCard
+      fileName="quarterly-report.pdf"
+      fileMeta="PDF 248KB"
+      fileType="pdf"
+    />
+  </div>
+</AnatomyStage>
+
+<Divider />
+
+## File types
+
+The leading icon is colored to match the family of the file. Code, patch,
+text, generic, and zip files use a neutral icon; everything else maps to a
+brand color reserved for that family.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.5rem',maxWidth:'420px'}}>
+  <AttachmentCard fileName="design-spec.docx" fileMeta="DOCX 84KB" fileType="word" />
+  <AttachmentCard fileName="forecast.xlsx" fileMeta="XLSX 32KB" fileType="excel" />
+  <AttachmentCard fileName="kickoff.pptx" fileMeta="PPTX 1.2MB" fileType="powerpoint" />
+  <AttachmentCard fileName="logo.png" fileMeta="PNG 64KB" fileType="image-icon" />
+  <AttachmentCard fileName="walkthrough.mp4" fileMeta="MP4 12MB" fileType="video" />
+  <AttachmentCard fileName="release-notes.txt" fileMeta="TXT 4KB" fileType="text" />
+</div>
+
+<Divider />
+
+## States
+
+The card has three states tied to the lifecycle of the file.
+
+| State     | Use when                                                                           |
+| --------- | ---------------------------------------------------------------------------------- |
+| Default   | The file lives in the conversation; viewers can download or open it.               |
+| Uploading | The author is staging the upload. Shows progress; cancel button replaces actions.  |
+| Uploaded  | The file is queued in a draft (e.g. composer). Shows a remove button.              |
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.5rem',maxWidth:'420px'}}>
+  <AttachmentCard
+    fileName="proposal.pdf"
+    fileMeta="PDF 1.4MB"
+    fileType="pdf"
+    state="uploading"
+    progress={62}
+  />
+  <AttachmentCard
+    fileName="proposal.pdf"
+    fileMeta="PDF 1.4MB"
+    fileType="pdf"
+    state="uploaded"
+  />
+</div>
+
+<Divider />
+
+## Image thumbnails
+
+When the attachment is an image, swap the file icon for a thumbnail crop.
+The rest of the card layout stays the same so cards align in mixed lists.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Attachment Card library page](/library/components/attachment-card).

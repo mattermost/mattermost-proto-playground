@@ -1,1 +1,108 @@
-Guidance for the Menu Item component is coming soon. In the meantime, see the [library page](/library/components/menu-item) for variants and props.
+import MenuItem from '@/components/ui/MenuItem/MenuItem';
+import Icon from '@/components/ui/Icon/Icon';
+import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
+import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
+import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
+import LogoutVariantIcon from '@mattermost/compass-icons/components/logout-variant';
+import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+
+Menu Items are the rows inside a Menu — the smallest selectable unit in any
+dropdown, kebab, or context menu. One label, optional supporting visuals, and
+a clear hit target.
+
+Reach for a Menu Item whenever you're populating a [Dropdown](/guidelines/components/dropdown)
+or any popover-style menu. Use the destructive variant for irreversible
+actions.
+
+<Divider />
+
+## Anatomy
+
+Four parts. Only the label is required — everything else is opt-in.
+
+- <Num>1</Num> **Label** — the action or option text. Required. Keep it short
+  and verb-first for actions ("Edit profile"), noun-first for options
+  ("English").
+- <Num>2</Num> **Leading element** — optional icon, avatar, or emoji that
+  reinforces the label.
+- <Num>3</Num> **Secondary label** — optional metadata (e.g. an account
+  email, a hint). Place inline for short tags and below for longer copy.
+- <Num>4</Num> **Trailing element** — optional check mark, chevron for a
+  submenu, shortcut tag, or [Mention Badge](/guidelines/components/mention-badge).
+
+<AnatomyStage style={{flexDirection:'column',gap:'0.25rem',alignItems:'stretch',maxWidth:'320px',margin:'0 auto var(--spacing-m)'}}>
+  <MenuItem
+    label="Profile"
+    leadingVisual={<Icon glyph={<AccountOutlineIcon />} size="16" />}
+  />
+  <MenuItem
+    label="Notifications"
+    secondaryLabel="All activity"
+    secondaryLabelPosition="Inline"
+    leadingVisual={<Icon glyph={<BellOutlineIcon />} size="16" />}
+  />
+  <MenuItem
+    label="Preferences"
+    secondaryLabel="Theme, language, time zone"
+    leadingVisual={<Icon glyph={<CogOutlineIcon />} size="16" />}
+    trailingElement
+    trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+  />
+</AnatomyStage>
+
+The leading element should reinforce — never decorate. If you can't pick a
+glyph that matches the action, drop it.
+
+<Divider />
+
+## States
+
+Menu Items share their state model with other interactive list rows. Hover
+and focus surface the row; pressed gives quick feedback; disabled drops the
+opacity.
+
+| State    | Use when                                                              |
+| -------- | --------------------------------------------------------------------- |
+| Default  | Resting row.                                                          |
+| Hover    | Pointer is over the row.                                              |
+| Focus    | Keyboard focus has landed on the row.                                 |
+| Pressed  | Row is being clicked or tapped.                                       |
+| Selected | The current value in a single-select menu (paired with a check mark). |
+| Disabled | The action isn't available right now.                                 |
+
+<Divider />
+
+## Variants
+
+### Destructive
+
+Use the destructive variant for actions that remove or undo — leave a
+channel, delete a saved item, sign out of a workspace. Pair with confirmation
+where the action is irreversible.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.25rem',maxWidth:'320px',padding:'0.5rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <MenuItem
+    label="Sign out"
+    destructive
+    leadingVisual={<Icon glyph={<LogoutVariantIcon />} size="16" />}
+  />
+</div>
+
+### Trailing add-ons
+
+Trailing elements pull double duty — they communicate state (`check` for
+selected, chevron for a submenu) or surface metadata (a shortcut, a mention
+count, a `NEW` tag).
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.25rem',maxWidth:'320px',padding:'0.5rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <MenuItem label="English" trailingElement />
+  <MenuItem label="Threads" mentionCount={3} leadingElement={false} />
+  <MenuItem label="What's new" tag leadingElement={false} />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Menu Item library page](/library/components/menu-item).

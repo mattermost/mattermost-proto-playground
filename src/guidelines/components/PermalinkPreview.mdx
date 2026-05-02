@@ -1,1 +1,65 @@
-Guidance for the Permalink Preview component is coming soon. In the meantime, see the [library page](/library/components/permalink-preview) for variants and props.
+import PermalinkPreview from '@/components/ui/PermalinkPreview/PermalinkPreview';
+
+A Permalink Preview renders an inline card for a message that another
+message links to. Sender, timestamp, body, and origin channel — enough
+context to recognise the quoted message without leaving where you are.
+
+<Divider />
+
+## Anatomy
+
+An `Elevation 1` card with a [Message Header](/guidelines/components/message-header)
+on top, the message body in the middle, and an origin footer at the bottom.
+
+- <Num>1</Num> **Container** — `Elevation 1` rounded surface. Max width
+  700px.
+- <Num>2</Num> **Message Header** — author avatar, name, timestamp. Avatar
+  displays inline (smaller than in the main stream).
+- <Num>3</Num> **Body** — the quoted message text. Truncated past ~100px;
+  show a `Show more` affordance to expand.
+- <Num>4</Num> **Origin** — `Originally posted in ~Channel` footer that
+  links back to the source.
+
+<AnatomyStage>
+  <PermalinkPreview
+    avatarSrc=""
+    authorName="Leonard Riley"
+    timestamp="10:43 AM"
+    messageText="At eu sed tristique gravida et fames vel pellentesque. Urna phasellus integer eu tempor mauris amet sagittis. Mollis risus mi felis magna."
+    originalChannel="~Desktop App"
+  />
+</AnatomyStage>
+
+The preview is a quotation, not a duplicate of the message. Reactions,
+threads, and message actions don't appear inside it — those live with the
+real message.
+
+<Divider />
+
+## Attachments
+
+When the linked message contains attachments, render them inside the
+preview body using the same components as the main stream — at reduced
+density.
+
+| Attachment    | Treatment                                                                |
+| ------------- | ------------------------------------------------------------------------ |
+| File cards    | Below the body in a responsive grid with 12px spacing.                   |
+| Single image  | Max width 320px, max height 180px.                                       |
+| Link previews | Render without the associated image; cap the description at two lines.  |
+
+<Divider />
+
+## Behavior
+
+- **Click** anywhere on the preview to navigate to the original message.
+- **Truncation** kicks in past 100px of body height — append a `Show more`
+  link that expands the preview in place.
+- **Max width** is 700px, matching message-stream width.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Permalink Preview library page](/library/components/permalink-preview).

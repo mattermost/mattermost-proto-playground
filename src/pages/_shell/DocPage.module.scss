@@ -141,6 +141,34 @@
     padding-left: var(--spacing-xxxs);
   }
 
+  // Lists where each item is marked with a <Num> get the disc replaced by the
+  // numbered circle. The Num itself is absolutely positioned to act as the
+  // bullet; the list item gets a hanging indent so wrapped lines align with
+  // the prose. Selector is scoped under .doc-page__body so it beats the
+  // generic :not([class]) rules above on specificity.
+  ul:has(:global(.compass-num)):not([class]) {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  ul:has(:global(.compass-num)):not([class]) > li {
+    list-style-type: none;
+    margin-left: 0;
+    margin-bottom: var(--spacing-m);
+    padding-left: 30px;
+    position: relative;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    :global(.compass-num) {
+      position: absolute;
+      left: 0;
+      margin-right: 0;
+    }
+  }
+
   a:not([class]) {
     color: var(--link-color);
     text-decoration: none;

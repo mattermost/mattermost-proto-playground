@@ -1,1 +1,70 @@
-Guidance for the Search Input component is coming soon. In the meantime, see the [library page](/library/components/search-input) for variants and props.
+import SearchInput from '@/components/ui/SearchInput/SearchInput';
+
+Search Inputs are the entry point to filtering or finding content — global
+search, channel switcher, member picker, file finder. They look like a
+text input with a leading magnifier so the affordance is obvious before the
+user reads a single word.
+
+Reach for a Search Input whenever the field's job is "find something" rather
+than "enter a value." Use a [Text Input](/guidelines/components/text-input)
+for free-form data entry instead.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
+  <div style={{width:'100%',maxWidth:'320px'}}>
+    <SearchInput placeholder="Search messages" />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Leading icon** — a magnifier. Always present; signals the
+  field's purpose.
+- <Num>2</Num> **Input** — the editable field. Accepts a placeholder or a
+  floating label.
+- <Num>3</Num> **Clear button** — appears once the field has a value when an
+  `onClear` handler is provided. Tabbed past, not into.
+
+<Divider />
+
+## Sizes
+
+Three sizes — match them to the surface they sit on.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
+  <SearchInput size="Small" placeholder="Small" />
+  <SearchInput size="Medium" placeholder="Medium" />
+  <SearchInput size="Large" placeholder="Large" />
+</div>
+
+| Size   | Use when                                                              |
+| ------ | --------------------------------------------------------------------- |
+| Small  | Compact toolbars, inline filters, side panels.                        |
+| Medium | The default. Forms, modals, channel and DM finders.                   |
+| Large  | Hero placement — a dedicated search page or a top-of-channel finder.  |
+
+<Divider />
+
+## States
+
+States mirror the rest of the input family: Default, Focus (a blue ring on
+the border), Filled (the floating label settles above the input), and
+Disabled.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
+  <SearchInput label="Search" placeholder="Default" />
+  <SearchInput label="Search" defaultValue="design system" onClear={() => {}} />
+  <SearchInput label="Search" placeholder="Disabled" disabled />
+</div>
+
+A clear button only appears once the field has a value and an `onClear`
+handler is wired up — leave it off when you don't need to clear (e.g.
+search-as-you-type that resets when the user blurs).
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Search Input library page](/library/components/search-input).

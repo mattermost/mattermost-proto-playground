@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
-import styles from './Num.module.scss';
+// Plain SCSS (not .module.scss) so the `compass-num` class and the
+// `ul:has(.compass-num)` bullet-suppression rules stay global.
+import './Num.scss';
 
 interface NumProps {
   children: ReactNode;
@@ -10,5 +12,5 @@ interface NumProps {
  * corresponds to a numbered callout in an anatomy diagram above.
  */
 export default function Num({ children }: NumProps) {
-  return <span className={styles['num']}>{children}</span>;
+  return <span className="compass-num">{children}</span>;
 }

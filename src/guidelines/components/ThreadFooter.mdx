@@ -1,1 +1,73 @@
-Guidance for the Thread Footer component is coming soon. In the meantime, see the [library page](/library/components/thread-footer) for variants and props.
+import ThreadFooter from '@/components/ui/ThreadFooter/ThreadFooter';
+
+The Thread Footer is the reply summary bar at the bottom of a message. It
+shows participants, reply count, follow state, and last-reply time — the
+information someone needs to decide whether to dive in.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage>
+  <div style={{ width: '100%', maxWidth: '560px' }}>
+    <ThreadFooter replyCount={3} following lastReplyTime="5m ago" badge="Mention" />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Avatars** — up to three participant avatars stacked, plus a
+  `+N` overflow when more than three users have replied.
+- <Num>2</Num> **Reply count** — quaternary button labelled "N replies"; this
+  is the primary entry point into the thread.
+- <Num>3</Num> **Follow toggle** — quaternary button that toggles between
+  "Follow" and "Following".
+- <Num>4</Num> **Last reply time** — relative timestamp ("5m ago"), shown
+  only when the user is following the thread.
+- <Num>5</Num> **Badge slot** — optional unread dot or `@` mention badge to
+  the left of the avatar stack.
+
+<Divider />
+
+## Variants
+
+| Variant     | Use when                                                                          |
+| ----------- | --------------------------------------------------------------------------------- |
+| Default     | The user hasn't followed this thread and has no unread state on it.               |
+| Following   | The user is following the thread; show last reply time after the toggle.         |
+| Unread      | The user is following and has unread replies; show the unread dot badge.         |
+| Mention     | The user has been `@`mentioned in the thread; show the mention badge.            |
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '560px' }}>
+  <ThreadFooter replyCount={3} />
+  <ThreadFooter replyCount={3} following lastReplyTime="5m ago" />
+  <ThreadFooter replyCount={3} following lastReplyTime="5m ago" badge="Unread" />
+  <ThreadFooter replyCount={3} following lastReplyTime="5m ago" badge="Mention" />
+</div>
+
+<Divider />
+
+## Behavior
+
+- The reply count is the primary action — clicking it opens the thread in
+  the right sidebar.
+- Follow / Following is a self-contained toggle. Following adds the thread to
+  the user's Threads view and surfaces last-reply time.
+- The unread dot appears when the user is following **and** there are unread
+  replies. It clears once the user has read everything in the thread.
+- Mention badge wins over unread dot — if the user is mentioned, surface the
+  mention regardless of read state.
+
+<Divider />
+
+## Content
+
+- Reply count uses the singular when there's exactly one reply ("1 reply",
+  not "1 replies").
+- Last-reply time is relative and short ("just now", "5m ago", "2d ago"),
+  not a full date.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Thread Footer library page](/library/components/thread-footer).
