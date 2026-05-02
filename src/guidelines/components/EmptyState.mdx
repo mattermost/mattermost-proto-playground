@@ -1,1 +1,58 @@
-Guidance for the Empty State component is coming soon. In the meantime, see the [library page](/library/components/empty-state) for variants and props.
+import EmptyState from '@/components/ui/EmptyState/EmptyState';
+import SearchIllustration from '@/assets/illustrations/search.svg?react';
+
+Empty State fills a view that has no content yet — no saved messages, no
+mentions, no search results, no files. It pairs an illustration with a short
+explanation and, when there's something the user can do next, a single
+action.
+
+<Divider />
+
+## Anatomy
+
+Empty State stacks four parts vertically and centres them in the available
+space.
+
+<div style={{padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <EmptyState
+    illustration={{
+      'aria-label': 'Search',
+      width: '120px',
+      height: '80px',
+      children: <SearchIllustration />,
+    }}
+    title="No results found"
+    description="Try adjusting your search or filters to find what you're looking for."
+    action={{ children: 'Clear filters' }}
+  />
+</div>
+
+- <Num>1</Num> **Illustration** — optional. Sets the tone and helps users
+  recognise the view at a glance.
+- <Num>2</Num> **Title** — the headline. One short sentence that names the
+  empty condition (_No results found_, _No messages yet_).
+- <Num>3</Num> **Description** — optional. A line or two explaining why the
+  view is empty and what to try next.
+- <Num>4</Num> **Action** — optional Button. Use only when there's a clear
+  next step the user can take from this view.
+
+<Divider />
+
+## Variants
+
+| Variant              | Use when                                                                                  |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| With action          | The user can do something to populate the view (clear filters, invite teammates, retry).  |
+| Without action       | The empty state is informational only — no next step belongs in this surface.             |
+| Without illustration | A minimal empty state in a small surface, sidebar panel, or modal where art is overkill.  |
+
+The action button defaults to **Medium** size — leave the `size` prop unset
+unless a Figma spec calls for a different size. Use a single Primary or
+Tertiary button; don't stack multiple actions inside an empty state.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Empty State library page](/library/components/empty-state).

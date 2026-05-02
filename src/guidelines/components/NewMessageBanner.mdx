@@ -1,1 +1,86 @@
-Guidance for the New Message Banner component is coming soon. In the meantime, see the [library page](/library/components/new-message-banner) for variants and props.
+import NewMessageBanner from '@/components/ui/NewMessageBanner/NewMessageBanner';
+
+The New Messages Banner alerts the user that there's fresh activity in the
+channel they're reading. It floats over the message stream so they can jump
+to the unread region in one click — or dismiss it if they'd rather keep
+scrolling.
+
+<Divider />
+
+## Anatomy
+
+A blue pill with a leading arrow, a label, and an optional dismiss button.
+
+- <Num>1</Num> **Container** — `Elevation 1` pill on the brand blue
+  surface. Floats above the message stream.
+- <Num>2</Num> **Arrow icon** — visually anchors the action to a direction
+  (jumping down to unreads).
+- <Num>3</Num> **Label** — `Jump to unreads` for the full variant or `New
+  replies` for the compact one.
+- <Num>4</Num> **Count** — optional. Shows the unread count and time
+  reference (e.g. _21 new messages since Saturday_).
+- <Num>5</Num> **Dismiss** — optional `×` button. Closes the banner without
+  jumping.
+
+<div style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <NewMessageBanner
+    type="JumpToUnreads"
+    countLabel="21 new messages since Saturday"
+    onClick={() => {}}
+    onDismiss={() => {}}
+  />
+  <NewMessageBanner
+    type="NewReplies"
+    onClick={() => {}}
+  />
+</div>
+
+<Divider />
+
+## Variants
+
+Two variants — pick by surface, not preference.
+
+| Variant         | Use when                                                                       |
+| --------------- | ------------------------------------------------------------------------------ |
+| Jump to unreads | Channel view — banner is wide, includes a count, and lives at the top.         |
+| New replies     | RHS / thread view — compact, no count, floats over the most recent reply.      |
+
+<Divider />
+
+## Sizes
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <NewMessageBanner type="JumpToUnreads" size="Small" countLabel="3 new messages" />
+  <NewMessageBanner type="JumpToUnreads" size="Medium" countLabel="3 new messages" />
+  <NewMessageBanner type="JumpToUnreads" size="Large" countLabel="3 new messages" />
+</div>
+
+| Size   | Use when                                                            |
+| ------ | ------------------------------------------------------------------- |
+| Small  | Compact RHS or split-screen panes.                                  |
+| Medium | Default — center channel and most surfaces.                         |
+| Large  | Mobile and high-density readability layouts.                        |
+
+<Divider />
+
+## States
+
+Three interactive states matching the [Button](/guidelines/components/button)
+spec.
+
+| State    | Use when                                          |
+| -------- | ------------------------------------------------- |
+| Default  | The banner is visible and waiting.                |
+| Hover    | Pointer is over the banner.                       |
+| Active   | The banner is being clicked.                      |
+
+The banner should fade in when new activity arrives and fade out when the
+user catches up — never blink or animate aggressively.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[New Message Banner library page](/library/components/new-message-banner).

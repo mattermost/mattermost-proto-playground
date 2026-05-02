@@ -1,1 +1,71 @@
-Guidance for the Status Badge component is coming soon. In the meantime, see the [library page](/library/components/status-badge) for variants and props.
+import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
+
+A Status Badge tells you whether someone is reachable. It pairs with an
+avatar or username so a glance is enough to know if a teammate is online,
+focused, away, or signed out.
+
+Status Badges are about presence, not activity. Don't repurpose them to
+signal task state, build state, or anything else that isn't a person's
+reachability.
+
+<Divider />
+
+## Anatomy
+
+A single coloured glyph, scaled to sit on the corner of an avatar or inline
+beside a name.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <StatusBadge status="Online" size="Medium" />
+</div>
+
+The glyph carries the meaning — colour is reinforcement. Each status uses a
+distinct shape so the badge stays legible in greyscale and to colour-blind
+users.
+
+<Divider />
+
+## Statuses
+
+| Status         | Glyph              | Meaning                                                              |
+| -------------- | ------------------ | -------------------------------------------------------------------- |
+| Online         | Filled check       | Active and reachable.                                                |
+| Away           | Clock              | Idle for the away threshold or set themselves Away manually.         |
+| Do Not Disturb | Minus circle       | Notifications muted; reach out only if it's urgent.                  |
+| Offline        | Empty circle       | Not signed in.                                                       |
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <StatusBadge status="Online" size="Medium" />
+  <StatusBadge status="Away" size="Medium" />
+  <StatusBadge status="Do Not Disturb" size="Medium" />
+  <StatusBadge status="Offline" size="Medium" />
+</div>
+
+<Divider />
+
+## Sizes
+
+Five sizes match the avatar scale they overlay.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <StatusBadge size="XX-Small" />
+  <StatusBadge size="X-Small" />
+  <StatusBadge size="Small" />
+  <StatusBadge size="Medium" />
+  <StatusBadge size="Large" />
+</div>
+
+| Badge size | Avatar size | Use when                                                       |
+| ---------- | ----------- | -------------------------------------------------------------- |
+| XX-Small   | 20–24px     | Channel sidebar, dense lists.                                  |
+| X-Small    | 28–32px     | The default for most surfaces.                                 |
+| Small      | 40px        | Mention lists, compact cards.                                  |
+| Medium     | 48–56px     | Profile popover header, member lists.                          |
+| Large      | 72px+       | Profile pages and large cards.                                 |
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Status Badge library page](/library/components/status-badge).

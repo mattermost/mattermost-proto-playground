@@ -1,1 +1,136 @@
-Guidance for the Icon Button component is coming soon. In the meantime, see the [library page](/library/components/icon-button) for variants and props.
+import IconButton, { ICON_BUTTON_ICON_SIZES } from '@/components/ui/IconButton/IconButton';
+import Icon from '@/components/ui/Icon/Icon';
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
+import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
+import CloseIcon from '@mattermost/compass-icons/components/close';
+
+Icon Buttons are compact, label-free actions for tight surfaces — channel
+headers, message hover actions, modal dismissals, toolbar slots. They lean
+on the icon to communicate intent, so every Icon Button must pair with a
+tooltip or `aria-label` that makes the action explicit.
+
+<Divider />
+
+## Anatomy
+
+A square (or pill) target wrapping a single Icon. Optional add-ons attach a
+count or an unread dot.
+
+<div style={{display:'flex',alignItems:'center',gap:'1rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <IconButton aria-label="Globe" icon={<Icon glyph={<GlobeIcon />} size={ICON_BUTTON_ICON_SIZES.Medium} />} />
+  <IconButton aria-label="Notifications" count={12} icon={<Icon glyph={<GlobeIcon />} size={ICON_BUTTON_ICON_SIZES.Medium} />} />
+  <IconButton aria-label="Unread" unreadBadge icon={<Icon glyph={<GlobeIcon />} size={ICON_BUTTON_ICON_SIZES.Medium} />} />
+</div>
+
+- <Num>1</Num> **Container** — square or pill (rounded) target. Sized to
+  the chosen size token; defaults to 4px corner radius.
+- <Num>2</Num> **Icon** — the action's visual. Sized via
+  `ICON_BUTTON_ICON_SIZES[size]` so it matches the container.
+- <Num>3</Num> **Count** — optional inline number after the icon. Replaces
+  the fixed-square layout with an auto-width row.
+- <Num>4</Num> **Unread badge** — optional small dot top-right. Use when a
+  count would be noise but the user should know there's something to see.
+
+<Divider />
+
+## Sizes
+
+Four sizes, each with a matching default icon size. **Compact** padding is
+available where the surrounding rhythm calls for a tighter target — table
+rows, dense toolbars.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <IconButton aria-label="X-Small" size="X-Small" icon={<Icon glyph={<GlobeIcon />} size="12" />} />
+  <IconButton aria-label="Small" size="Small" icon={<Icon glyph={<GlobeIcon />} size="16" />} />
+  <IconButton aria-label="Medium" size="Medium" icon={<Icon glyph={<GlobeIcon />} size="20" />} />
+  <IconButton aria-label="Large" size="Large" icon={<Icon glyph={<GlobeIcon />} size="24" />} />
+</div>
+
+| Size    | Container | Icon | Use when                                                |
+| ------- | --------- | ---- | ------------------------------------------------------- |
+| X-Small | 24px      | 12px | Hover actions on messages, dense rows.                  |
+| Small   | 32px      | 16px | Toolbar slots, tight headers.                           |
+| Medium  | 40px      | 20px | Default for channel headers and most app surfaces.      |
+| Large   | 48px      | 24px | Mobile, prominent feature controls.                     |
+
+<Divider />
+
+## States
+
+Icon Buttons share the standard interactive states — Default, Hover, Focus,
+Active, Disabled — and add **Toggled** for on/off controls.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <IconButton aria-label="Default" icon={<Icon glyph={<StarOutlineIcon />} size="20" />} />
+  <IconButton aria-label="Toggled" toggled icon={<Icon glyph={<StarOutlineIcon />} size="20" />} />
+  <IconButton aria-label="Disabled" disabled icon={<Icon glyph={<StarOutlineIcon />} size="20" />} />
+</div>
+
+**Toggled** uses the active button colour to communicate "on" — pin a
+message, favourite a channel, expand a panel. Pair the toggled state with
+an `aria-pressed` attribute (the component sets this for you).
+
+<Divider />
+
+## Variants
+
+### Rounded
+
+A pill-shaped Icon Button. Use for action chips inside floating UI
+(suggestions, hover trays) where the rounded shape signals
+non-destructiveness.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <IconButton aria-label="Rounded" rounded icon={<Icon glyph={<GlobeIcon />} size="20" />} />
+</div>
+
+### Destructive
+
+For irreversible actions like deleting a message or removing a member.
+Renders the icon in `--color-danger` and tints the hover background.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <IconButton aria-label="Delete" destructive icon={<Icon glyph={<TrashCanOutlineIcon />} size="20" />} />
+</div>
+
+### Inverted
+
+For dark surfaces — sidebar, theme-coloured headers, banner overlays —
+where the default colours wouldn't hold contrast.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'var(--sidebar-bg, #1E325C)',borderRadius:'8px'}}>
+  <IconButton aria-label="Inverted" style="Inverted" icon={<Icon glyph={<CloseIcon />} size="20" />} />
+  <IconButton aria-label="Inverted toggled" style="Inverted" toggled icon={<Icon glyph={<StarOutlineIcon />} size="20" />} />
+</div>
+
+### Count
+
+When a numeric badge belongs alongside the icon (notification counts,
+unread totals), pass a `count` and the button switches from a fixed square
+to an auto-width row. Numbers above 99 follow the Mention Badge convention
+(`99+`).
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <IconButton aria-label="3 mentions" count={3} icon={<Icon glyph={<GlobeIcon />} size="20" />} />
+  <IconButton aria-label="48 mentions" count={48} icon={<Icon glyph={<GlobeIcon />} size="20" />} />
+</div>
+
+<Divider />
+
+## Tooltips & accessibility
+
+- **Always provide an `aria-label`.** Icon Buttons have no visible text;
+  the label is what screen readers announce.
+- **Pair with a Tooltip.** A 400ms hover-delay Tooltip should appear on
+  every Icon Button, repeating the `aria-label` text. Tooltips surface
+  the action without forcing users to guess from the glyph.
+- **Don't echo a visible label in a Tooltip.** Tooltips are for
+  unlabeled controls, not redundant repeats.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Icon Button library page](/library/components/icon-button).

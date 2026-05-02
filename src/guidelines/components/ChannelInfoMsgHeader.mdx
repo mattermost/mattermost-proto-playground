@@ -1,1 +1,45 @@
-Guidance for the Channel Info Msg Header component is coming soon. In the meantime, see the [library page](/library/components/channel-info-msg-header) for variants and props.
+import ChannelInfoMsgHeader from '@/components/ui/ChannelInfoMsgHeader/ChannelInfoMsgHeader';
+
+The Channel Info Message Header is a slim tab bar that anchors the top of a
+channel's information panel. It identifies the active section and, when
+useful, names the team the channel belongs to.
+
+Use it inside the channel info right sidebar — not as a general tab pattern.
+For free-floating tabs, reach for the Tabs component.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Tab** — the section label. The active tab is semibold and
+  carries an underline.
+- <Num>2</Num> **Tab area** — interactive hit target around the label.
+- <Num>3</Num> **Team name** — optional label after the tabs identifying
+  which team owns the channel.
+
+<div style={{maxWidth:'420px',border:'1px solid rgba(var(--center-channel-color-rgb),0.16)',borderRadius:'8px',overflow:'hidden'}}>
+  <ChannelInfoMsgHeader
+    tabs={[
+      { label: 'Spec Reviews', active: true },
+      { label: 'Drafts' },
+    ]}
+    teamName="Contributors"
+  />
+</div>
+
+<Divider />
+
+## Behavior
+
+- Only one tab is active at a time. Clicking another tab swaps the panel
+  content beneath the header.
+- The team name is a passive label — it doesn't navigate. Hide it when the
+  context is unambiguous (single-team workspaces, or panels nested inside the
+  team they belong to).
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Channel Info Msg Header library page](/library/components/channel-info-msg-header).

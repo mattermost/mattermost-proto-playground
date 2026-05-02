@@ -1,1 +1,85 @@
-Guidance for the Thread List Item component is coming soon. In the meantime, see the [library page](/library/components/thread-list-item) for variants and props.
+import ThreadListItem from '@/components/ui/ThreadListItem/ThreadListItem';
+
+The Thread List Item is a single entry in the Threads view. Each row gives
+the user enough context — who, where, what, when — to decide whether to open
+the thread without opening it.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Unread indicator** — left-edge dot that signals unread
+  replies on the thread.
+- <Num>2</Num> **Author name** — the person who wrote the most recent
+  message, or the original poster on a quiet thread.
+- <Num>3</Num> **Channel / team label** — a label tag in all-caps showing
+  where the thread lives.
+- <Num>4</Num> **Timestamp** — relative time of the latest message in the
+  thread.
+- <Num>5</Num> **Thread title** — optional, shown when the thread has a
+  saved title.
+- <Num>6</Num> **Preview** — first ~100 characters of the most recent
+  message, truncated with an ellipsis.
+- <Num>7</Num> **Reply count** — total replies on the thread.
+
+<Divider />
+
+## States
+
+| State    | Use when                                                                          |
+| -------- | --------------------------------------------------------------------------------- |
+| Default  | Resting state; not selected, no unread replies.                                   |
+| Active   | The thread is the currently selected one in the Threads view.                     |
+| Unread   | The user is following the thread and has unread replies; show the unread dot.     |
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '640px' }}>
+  <ThreadListItem
+    authorName="Martin Kraft"
+    channelLabel="ENTERPRISE TEAM"
+    previewText="Do we have a guideline for what minimum width we should support in the system console? I know that…"
+    timestamp="5 mins ago"
+    replyCount={3}
+  />
+  <ThreadListItem
+    active
+    authorName="Martin Kraft"
+    channelLabel="ENTERPRISE TEAM"
+    previewText="Do we have a guideline for what minimum width we should support in the system console? I know that…"
+    timestamp="5 mins ago"
+    replyCount={3}
+  />
+  <ThreadListItem
+    badge="Unread"
+    authorName="Martin Kraft"
+    channelLabel="ENTERPRISE TEAM"
+    previewText="Do we have a guideline for what minimum width we should support in the system console? I know that…"
+    timestamp="5 mins ago"
+    replyCount={3}
+  />
+</div>
+
+<Divider />
+
+## Behavior
+
+- Clicking a row opens the thread in the right sidebar.
+- Selecting a row sets it to **Active**. Active beats Unread visually — once
+  you're on the row, the unread dot is no longer needed.
+- Items are keyboard-focusable. **Enter** and **Space** open the thread.
+
+<Divider />
+
+## Content
+
+- Truncate preview text with an ellipsis at one line on narrow widths, two
+  lines on wider lists.
+- Channel labels are sentence case in their underlying name but render
+  **all caps** here as eyebrow text — keep them short ("Engineering", not
+  "Backend Engineering Team Sync").
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Thread List Item library page](/library/components/thread-list-item).

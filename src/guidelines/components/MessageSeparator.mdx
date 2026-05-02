@@ -1,1 +1,64 @@
-Guidance for the Message Separator component is coming soon. In the meantime, see the [library page](/library/components/message-separator) for variants and props.
+import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
+
+Message Separators sit between messages in the stream to group them — by
+day, by reply count, or to mark the boundary between read and unread. They
+help readers orient themselves when scrolling back through history or
+returning to a busy channel.
+
+<Divider />
+
+## Anatomy
+
+A horizontal line broken by a centered label. The label sits inline with the
+line; nothing else competes with it.
+
+- <Num>1</Num> **Line** — full-width hairline, behind the label.
+- <Num>2</Num> **Label** — short text on top of the line. Date, "New
+  Messages", or a reply count.
+- <Num>3</Num> **AI Summarize** — optional button on the New Messages
+  variant that triggers an AI summary of unread activity.
+
+<div style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <MessageSeparator type="Date" label="Today" />
+  <MessageSeparator type="New Messages" />
+  <MessageSeparator type="Reply Count" label="4 replies" />
+</div>
+
+<Divider />
+
+## Variants
+
+Three variants, three jobs. Don't combine them — pick the one the moment
+calls for.
+
+| Variant      | Use when                                                                 |
+| ------------ | ------------------------------------------------------------------------ |
+| Date         | Dividing messages by day in the stream.                                  |
+| New Messages | Marking the boundary between messages the user has read and new ones.    |
+| Reply Count  | Inside a thread, showing how many replies follow.                        |
+
+### Date labels
+
+Date labels follow the user's locale and shorten when they can:
+
+- **Today** and **Yesterday** for the most recent two days.
+- **Friday**, **Monday**, etc. for the last week.
+- **February 11** for older dates in the current year.
+- **February 11, 2018** for prior years.
+
+### New Messages
+
+The New Messages separator is the gold-coloured one — a single, durable
+landmark that stays where the user left off until they scroll past it. Use
+the `Summarize` action only when AI summaries are enabled.
+
+<div style={{padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <MessageSeparator type="New Messages" showAiSummary />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Message Separator library page](/library/components/message-separator).

@@ -1,1 +1,92 @@
-Guidance for the Progress Bar component is coming soon. In the meantime, see the [library page](/library/components/progress-bar) for variants and props.
+import ProgressBar from '@/components/ui/ProgressBar/ProgressBar';
+
+Progress Bar shows determinate progress through a wait state — an upload
+finishing, a quota filling, an import running. Use it when the duration or
+total is known; reach for [Spinner](/guidelines/components/spinner) when
+it isn't.
+
+<Divider />
+
+## Anatomy
+
+Two parts — a track that defines the total, and a fill that grows from `0`
+to `100%`.
+
+- <Num>1</Num> **Track** — the surface behind the fill. Tells the user how
+  much is left.
+- <Num>2</Num> **Indicator** — the filled portion. Width follows the
+  current value.
+
+<div style={{padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px',maxWidth:'320px'}}>
+  <ProgressBar value={45} />
+</div>
+
+Always pair the bar with a textual percentage or count nearby — the bar
+gives the gestalt, the text gives the precision.
+
+<Divider />
+
+## States
+
+Walk through the bar at the values you'd expect to render. The fill
+animates smoothly from old to new — never snap.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px',maxWidth:'320px'}}>
+  <ProgressBar value={0} />
+  <ProgressBar value={25} />
+  <ProgressBar value={50} />
+  <ProgressBar value={75} />
+  <ProgressBar value={100} />
+</div>
+
+| Value    | Use when                                                              |
+| -------- | --------------------------------------------------------------------- |
+| 0%       | The operation hasn't started or is queued.                            |
+| 1–99%    | In progress. Animate the fill change.                                 |
+| 100%     | Operation complete — hold briefly, then unmount or transition state.  |
+
+<Divider />
+
+## Sizes
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px',maxWidth:'320px'}}>
+  <ProgressBar value={60} size="Small" />
+  <ProgressBar value={60} size="Large" />
+</div>
+
+| Size  | Use when                                                                  |
+| ----- | ------------------------------------------------------------------------- |
+| Small | Inline progress — list rows, toast banners, [Attachment Card](/guidelines/components/attachment-card) uploading state. |
+| Large | Default — quota panels, full-width upload tracks, modals.                 |
+
+<Divider />
+
+## Variants
+
+### Semantic colours
+
+Turn on semantic colours when the bar represents a quota or threshold —
+the fill shifts green → yellow → red as the value crosses 70% and 90%.
+This is meaning, not decoration: only enable it when "more is worse".
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px',maxWidth:'320px'}}>
+  <ProgressBar value={40} semanticColors />
+  <ProgressBar value={75} semanticColors />
+  <ProgressBar value={95} semanticColors />
+</div>
+
+| Range    | Colour                                                              |
+| -------- | ------------------------------------------------------------------- |
+| 0–69%    | `--color-success` — within budget.                                  |
+| 70–89%   | `--color-warning` — getting close to the limit.                     |
+| 90–100%  | `--color-danger` — at or past the limit.                            |
+
+For "more is better" scenarios (download progress, file upload), keep the
+default brand fill.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Progress Bar library page](/library/components/progress-bar).

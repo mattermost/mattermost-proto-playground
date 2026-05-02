@@ -1,1 +1,89 @@
-Guidance for the Checkbox component is coming soon. In the meantime, see the [library page](/library/components/checkbox) for variants and props.
+import Checkbox from '@/components/ui/Checkbox/Checkbox';
+
+A Checkbox lets people pick any number of options from a set, or toggle a
+single setting on or off. Each box represents one independent choice — pick
+none, some, or all.
+
+Reach for a Checkbox when selections are independent. For mutually exclusive
+options, use a Radio. For "save immediately" toggles where the change takes
+effect right away, use a Switch.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Selector** — the box that flips between off, on, and
+  indeterminate.
+- <Num>2</Num> **Label** — sits to the right of the box. Click target spans
+  both, so users don't have to land on the box itself.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+  <Checkbox defaultChecked>Notify me about replies</Checkbox>
+  <Checkbox>Notify me about reactions</Checkbox>
+  <Checkbox indeterminate>Some items selected</Checkbox>
+</div>
+
+<Divider />
+
+## Sizes
+
+| Size   | Box  | Use when                                              |
+| ------ | ---- | ----------------------------------------------------- |
+| Small  | 12px | Dense lists, table rows, compact filters.             |
+| Medium | 16px | Default. Forms, settings, modal bodies.               |
+| Large  | 20px | Touch-first surfaces and accessibility-led contexts.  |
+
+<div style={{display:'flex',gap:'1.5rem',flexWrap:'wrap',alignItems:'center'}}>
+  <Checkbox size="Small" defaultChecked>Small</Checkbox>
+  <Checkbox size="Medium" defaultChecked>Medium</Checkbox>
+  <Checkbox size="Large" defaultChecked>Large</Checkbox>
+</div>
+
+<Divider />
+
+## States
+
+The checkbox renders three logical states — Off, On, and Indeterminate —
+each with hover, focus, disabled, and invalid treatments.
+
+| State         | Use when                                                       |
+| ------------- | -------------------------------------------------------------- |
+| Off           | The default unchecked state.                                   |
+| On            | The user (or a default) has selected the option.               |
+| Indeterminate | A parent reflecting partial selection of its children.         |
+| Disabled      | The choice exists but isn't currently available.               |
+| Invalid       | The selection is required and missing, or fails validation.    |
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+  <Checkbox>Off</Checkbox>
+  <Checkbox defaultChecked>On</Checkbox>
+  <Checkbox indeterminate>Indeterminate</Checkbox>
+  <Checkbox disabled>Disabled</Checkbox>
+  <Checkbox defaultChecked disabled>Disabled (on)</Checkbox>
+  <Checkbox valid={false} defaultChecked>Invalid</Checkbox>
+</div>
+
+<Divider />
+
+## Indeterminate
+
+Use the indeterminate state on a parent checkbox when only some of its
+children are checked. Clicking it should select all remaining children, not
+toggle to off.
+
+<Divider />
+
+## Labels
+
+- Use sentence case.
+- Phrase the label as the option, not the action — "Email me weekly digests",
+  not "Toggle email digests".
+- Keep labels short. If a setting needs explanation, add helper text below.
+- Never ship a checkbox without a visible label.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Checkbox library page](/library/components/checkbox).

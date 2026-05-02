@@ -1,1 +1,52 @@
-Guidance for the Recording Pill component is coming soon. In the meantime, see the [library page](/library/components/recording-pill) for variants and props.
+import RecordingPill from '@/components/ui/RecordingPill/RecordingPill';
+
+The Recording Pill is the persistent indicator that a call is being recorded.
+It sits in the call surface, makes the recording state unmistakable, and
+gives anyone with permission a single click to stop.
+
+Privacy and consent depend on this pill being visible the entire time a
+recording is in progress — never hide it, even on compact layouts.
+
+<Divider />
+
+## Anatomy
+
+A leading status icon paired with the **REC** label, wrapped in a pressable
+container.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <RecordingPill state="Recording" />
+</div>
+
+- <Num>1</Num> **Status icon** — a spinner while initializing, a record glyph
+  while recording, a stop glyph on hover.
+- <Num>2</Num> **Label** — always **REC**. The label never changes; only the
+  icon does.
+
+<Divider />
+
+## States
+
+| State        | What it shows                                                                          |
+| ------------ | -------------------------------------------------------------------------------------- |
+| Initializing | Spinner + REC. The recording is being set up; the pill is not yet actionable.          |
+| Recording    | Record icon + REC. The default in-progress state.                                      |
+| Hover        | Stop icon + REC + tooltip "Click to Stop". Reveals the stop affordance to authorised users. |
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-start',padding:'1rem 0'}}>
+  <RecordingPill state="Initializing" />
+  <RecordingPill state="Recording" />
+  <RecordingPill state="Hover" />
+</div>
+
+The hover state is only meaningful for users who can stop the recording.
+Hide the hover affordance for participants who don't have permission — for
+them, the pill stays in its Recording state and acts as a label, not a
+button.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Recording Pill library page](/library/components/recording-pill).

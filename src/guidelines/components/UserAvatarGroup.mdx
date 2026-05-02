@@ -1,1 +1,99 @@
-Guidance for the User Avatar Group component is coming soon. In the meantime, see the [library page](/library/components/user-avatar-group) for variants and props.
+import UserAvatarGroup from '@/components/ui/UserAvatarGroup/UserAvatarGroup';
+
+A User Avatar Group displays multiple participants as a stack of overlapping
+avatars. It's a compact way to show "who's involved" — thread participants,
+channel members, call attendees — without a list.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Avatars** — overlapping User Avatars; the right-most avatar
+  sits on top.
+- <Num>2</Num> **Borders** — each avatar wears a small surface-coloured
+  border that creates the stacked silhouette.
+- <Num>3</Num> **Overflow count** — `+N` chip that appears when more
+  participants exist than fit the configured maximum.
+
+<Divider />
+
+## Sizes
+
+The group inherits its sizes from User Avatar but is capped at 72px — beyond
+that, a stack stops reading as a group and individual avatars belong on
+their own.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+  <UserAvatarGroup
+    size="20"
+    avatars={[
+      { key: 'a', src: 'https://i.pravatar.cc/40?u=a', name: 'A' },
+      { key: 'b', src: 'https://i.pravatar.cc/40?u=b', name: 'B' },
+      { key: 'c', src: 'https://i.pravatar.cc/40?u=c', name: 'C' },
+    ]}
+  />
+  <UserAvatarGroup
+    size="32"
+    avatars={[
+      { key: 'a', src: 'https://i.pravatar.cc/64?u=a', name: 'A' },
+      { key: 'b', src: 'https://i.pravatar.cc/64?u=b', name: 'B' },
+      { key: 'c', src: 'https://i.pravatar.cc/64?u=c', name: 'C' },
+    ]}
+  />
+  <UserAvatarGroup
+    size="48"
+    avatars={[
+      { key: 'a', src: 'https://i.pravatar.cc/96?u=a', name: 'A' },
+      { key: 'b', src: 'https://i.pravatar.cc/96?u=b', name: 'B' },
+      { key: 'c', src: 'https://i.pravatar.cc/96?u=c', name: 'C' },
+    ]}
+  />
+</div>
+
+| Size  | Use when                                                                          |
+| ----- | --------------------------------------------------------------------------------- |
+| 20px  | Inline group hints in thread footers, list rows, and message metadata.            |
+| 24–32px | Cards, channel info, playbook run participants.                                 |
+| 40–72px | Headline group references in profile-style surfaces.                             |
+
+<Divider />
+
+## Number of avatars
+
+Show between **3 and 6** avatars before falling back to an overflow chip.
+The default is **3** — err on the side of fewer to reduce noise. The right-most
+avatar always sits on top so the stack reads as recently-added-on-the-right.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+  <UserAvatarGroup
+    size="32"
+    max={3}
+    avatars={[
+      { key: 'a', src: 'https://i.pravatar.cc/64?u=g1', name: 'A' },
+      { key: 'b', src: 'https://i.pravatar.cc/64?u=g2', name: 'B' },
+      { key: 'c', src: 'https://i.pravatar.cc/64?u=g3', name: 'C' },
+      { key: 'd', src: 'https://i.pravatar.cc/64?u=g4', name: 'D' },
+      { key: 'e', src: 'https://i.pravatar.cc/64?u=g5', name: 'E' },
+      { key: 'f', src: 'https://i.pravatar.cc/64?u=g6', name: 'F' },
+      { key: 'g', src: 'https://i.pravatar.cc/64?u=g7', name: 'G' },
+    ]}
+  />
+</div>
+
+<Divider />
+
+## Behavior
+
+- Hovering an individual avatar shows a tooltip with that user's name —
+  follows the standard tooltip delay.
+- Hovering the overflow chip shows the remaining users as a comma-separated
+  tooltip ("Dana Lee, Ravi Patel, Wren Cho").
+- The overflow chip is auto-managed; it appears only when the number of
+  participants exceeds the configured maximum.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[User Avatar Group library page](/library/components/user-avatar-group).

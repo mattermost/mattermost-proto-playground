@@ -1,1 +1,103 @@
-Guidance for the Text Area component is coming soon. In the meantime, see the [library page](/library/components/text-area) for variants and props.
+import TextArea from '@/components/ui/TextArea/TextArea';
+
+Text Areas let people write long-form text that spans multiple lines —
+descriptions, channel purposes, message drafts, admin notes. They share their
+visual rhythm with Text Input but trade the single-line constraint for room
+to breathe.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Container** — rounded border with a 1px stroke that frames
+  the input area.
+- <Num>2</Num> **Label** — floating label that lifts above the border on
+  focus or when the field has a value.
+- <Num>3</Num> **Placeholder** — sample text or a brief help statement; only
+  visible when the field is empty.
+- <Num>4</Num> **Value** — the text the user has entered.
+- <Num>5</Num> **Character counter** — optional `current / max` indicator
+  shown below the field when a length limit applies.
+
+<Divider />
+
+## Sizes
+
+| Size   | Use when                                                                          |
+| ------ | --------------------------------------------------------------------------------- |
+| Small  | Dense forms, table cells, side-panel settings.                                    |
+| Medium | The default. Pairs with body copy in modals and standard forms.                   |
+| Large  | High-prominence inputs — top of a setup flow, hero forms, mobile-leaning views.   |
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '480px' }}>
+  <TextArea size="Small" label="Small" placeholder="Tell us more…" />
+  <TextArea size="Medium" label="Medium" placeholder="Tell us more…" />
+  <TextArea size="Large" label="Large" placeholder="Tell us more…" />
+</div>
+
+<Divider />
+
+## States
+
+Text Areas share the same five interactive states as Text Input — Default,
+Hover, Focus, Active, and Read-only — plus an Invalid state for validation
+errors.
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '480px' }}>
+  <TextArea label="Default" placeholder="Tell us more…" />
+  <TextArea label="With value" defaultValue="A draft message in progress." />
+  <TextArea label="Disabled" placeholder="Tell us more…" disabled />
+  <TextArea
+    label="Invalid"
+    defaultValue="This is required and not yet valid."
+    invalid
+  />
+</div>
+
+<Divider />
+
+## Resize behavior
+
+Text Areas support three resize modes — pick the one that matches the
+surface's expectations.
+
+| Mode        | Use when                                                                          |
+| ----------- | --------------------------------------------------------------------------------- |
+| Auto-resize | The field grows as the user types. Best for compose surfaces and chat-like input. |
+| Resizable   | The user can drag the resize handle. Best for long-form admin notes.              |
+| None        | Fixed height with an internal scrollbar. Best when surrounding layout can't shift.|
+
+<Divider />
+
+## Character counter
+
+Show a counter when there's a length limit the user should be aware of —
+status messages, channel purposes, post drafts with a server cap. Place it
+below the field so it doesn't compete with the label.
+
+<div style={{ maxWidth: '480px' }}>
+  <TextArea
+    label="Channel purpose"
+    placeholder="What's this channel about?"
+    maxLength={120}
+    showCharacterCount
+  />
+</div>
+
+<Divider />
+
+## Content
+
+- Labels describe the input as briefly as possible — sentence case, no
+  trailing punctuation.
+- Placeholders are a hint, not a label. Don't rely on a placeholder alone for
+  field meaning.
+- Validation errors should sit immediately below the field, in plain
+  language, and explain how to fix the problem.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Text Area library page](/library/components/text-area).

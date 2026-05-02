@@ -1,1 +1,59 @@
-Guidance for the Reaction Pill component is coming soon. In the meantime, see the [library page](/library/components/reaction-pill) for variants and props.
+import ReactionPill from '@/components/ui/ReactionPill/ReactionPill';
+
+Reaction Pills surface lightweight, transient signals during a call —
+emoji reactions, raised hands, and system notifications like "you've been
+muted." They float over the call surface long enough to register and then
+disappear; they aren't meant to be durable UI.
+
+Reach for a Reaction Pill when something happens during a call that the
+participant should notice without leaving their current view.
+
+<Divider />
+
+## Anatomy
+
+Pills compose a leading symbol with a label, and — for system notifications —
+a trailing dismiss icon.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',alignItems:'flex-start'}}>
+  <ReactionPill type="Reaction" emoji="🎉" label="Leonard R." />
+  <ReactionPill type="Hand Raise" label="Leonard R." />
+  <ReactionPill type="Other" message="You have been muted by the host" />
+</div>
+
+- <Num>1</Num> **Leading symbol** — an emoji (Reaction) or compass icon
+  (Hand Raise, Other).
+- <Num>2</Num> **Label** — the participant's name, the reaction text, or the
+  system message.
+- <Num>3</Num> **Trailing dismiss** — only on the Other (system) variant;
+  closes the notification.
+
+<Divider />
+
+## Variants
+
+| Variant   | Use when                                                                                  |
+| --------- | ----------------------------------------------------------------------------------------- |
+| Reaction  | A participant sends an emoji reaction. Show the emoji + their name.                       |
+| Hand Raise | A participant raises their hand. Show the hand icon + "[Name] Raised Hand".              |
+| Other     | A system notification (muted, removed, etc.). Show the system icon + a dismiss affordance. |
+
+<Divider />
+
+## Sizes
+
+Three sizes match the call surface — **Small** for compact in-call rails,
+**Medium** for the main stage overlay, **Large** for full-screen mobile.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <ReactionPill size="Small" emoji="👍" label="Leonard R." />
+  <ReactionPill size="Medium" emoji="👍" label="Leonard R." />
+  <ReactionPill size="Large" emoji="👍" label="Leonard R." />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Reaction Pill library page](/library/components/reaction-pill).

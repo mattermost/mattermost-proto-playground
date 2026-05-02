@@ -1,1 +1,86 @@
-Guidance for the Team Avatar component is coming soon. In the meantime, see the [library page](/library/components/team-avatar) for variants and props.
+import TeamAvatar from '@/components/ui/TeamAvatar/TeamAvatar';
+
+Team Avatars identify a Team in Mattermost. Their rounded-square shape sets
+them apart from circular User Avatars at a glance — same scanning rhythm,
+different kind of subject.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Container** — the rounded square that holds the avatar
+  content.
+- <Num>2</Num> **Image or initials** — a Team's uploaded image, or a
+  two-letter fallback on a coloured background.
+- <Num>3</Num> **Badge slot** — optional Mention Badge or Unread Badge
+  layered over the corner.
+
+<Divider />
+
+## Variants
+
+| Variant   | Use when                                                                          |
+| --------- | --------------------------------------------------------------------------------- |
+| Image     | The Team has uploaded an avatar. Always preferred when an image is available.     |
+| Fallback  | The Team has no image. Show the first two letters of the Team name on colour.     |
+
+<div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+  <TeamAvatar initials="Ac" size="48" />
+  <TeamAvatar initials="Mm" size="48" />
+  <TeamAvatar initials="Ds" size="48" />
+</div>
+
+<Divider />
+
+## Sizes
+
+Team Avatars come in 10 sizes from 24px through 120px. The Team Sidebar uses
+40px; profile and settings surfaces use 48px and up.
+
+<div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+  <TeamAvatar initials="Ac" size="24" />
+  <TeamAvatar initials="Ac" size="32" />
+  <TeamAvatar initials="Ac" size="40" />
+  <TeamAvatar initials="Ac" size="48" />
+  <TeamAvatar initials="Ac" size="64" />
+  <TeamAvatar initials="Ac" size="96" />
+</div>
+
+Don't render a Team Avatar smaller than **32px** — initials and uploaded
+images both lose legibility below that size.
+
+<Divider />
+
+## States
+
+| State    | Use when                                                                                |
+| -------- | --------------------------------------------------------------------------------------- |
+| Default  | Resting state in the Team Sidebar or any inline reference to the Team.                  |
+| Active   | The Team is the currently selected Team in the Team Sidebar — visible left edge marker. |
+
+<div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+  <TeamAvatar initials="Ac" size="40" state="Default" />
+  <TeamAvatar initials="Ac" size="40" state="Active" />
+</div>
+
+<Divider />
+
+## Badges
+
+Team Avatars in the Team Sidebar can show a **Mention Badge** when the Team
+has unread mentions, or an **Unread Badge** dot when the Team has unread
+content but no mentions. Badges are not shown above 64px or in the Active
+state — once the Team is selected, the badge is no longer useful.
+
+<div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+  <TeamAvatar initials="Ac" size="40" badge={3} />
+  <TeamAvatar initials="Mm" size="40" badge={12} />
+  <TeamAvatar initials="Ds" size="40" badge={99} />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Team Avatar library page](/library/components/team-avatar).

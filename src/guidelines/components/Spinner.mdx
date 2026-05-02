@@ -1,1 +1,81 @@
-Guidance for the Spinner component is coming soon. In the meantime, see the [library page](/library/components/spinner) for variants and props.
+import Spinner from '@/components/ui/Spinner/Spinner';
+
+A Spinner is the all-purpose indicator that something is happening but the
+duration is unknown. It signals "wait" without claiming to know how long the
+wait will be.
+
+Use a Spinner when the system is doing work, the user can't act yet, and
+you don't have a meaningful percentage to show. If you do know the
+percentage, reach for a [Progress Bar](/guidelines/components/progress-bar)
+instead.
+
+<Divider />
+
+## Anatomy
+
+A single rotating arc, sized to the surface that hosts it. No label, no
+container, no decoration.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <Spinner size={20} />
+</div>
+
+When a Spinner stands alone on a screen — a full-page loader, a card
+loading state — pair it with a short status line below ("Loading messages…")
+so the wait has a name.
+
+<Divider />
+
+## Sizes
+
+Spinner sizes track the [Icon](/guidelines/components/icon) scale, so the
+spinner replaces an icon at the same dimensions without shifting layout.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <Spinner size={10} />
+  <Spinner size={12} />
+  <Spinner size={16} />
+  <Spinner size={20} />
+  <Spinner size={24} />
+  <Spinner size={28} />
+  <Spinner size={32} />
+</div>
+
+| Size  | Use when                                                            |
+| ----- | ------------------------------------------------------------------- |
+| 10–12 | Inline with body text or inside small pills (e.g. Recording Pill).  |
+| 16    | Inside compact controls and toolbars.                               |
+| 20–24 | Buttons in a loading state; row-level loaders.                      |
+| 28–32 | Card or section loaders that anchor a larger empty area.            |
+
+<Divider />
+
+## Styles
+
+Two appearances: **Default** (theme-coloured arc) and **Inverted** for use
+on dark or saturated surfaces.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center',padding:'1rem 0'}}>
+  <Spinner size={24} />
+  <div style={{display:'inline-flex',padding:'0.5rem',borderRadius:'4px',background:'var(--button-bg)'}}>
+    <Spinner size={24} inverted />
+  </div>
+</div>
+
+<Divider />
+
+## Behaviour
+
+- **Show late, hide early.** Don't flash a spinner for sub-200ms work — it
+  reads as a glitch. If a request typically resolves quickly, delay the
+  spinner by ~200ms.
+- **Don't combine with a Progress Bar.** Pick one indicator per region.
+- **Stay in place.** Don't reposition the spinner mid-wait; users use its
+  position as a landmark.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Spinner library page](/library/components/spinner).

@@ -1,1 +1,91 @@
-Guidance for the Switch component is coming soon. In the meantime, see the [library page](/library/components/switch) for variants and props.
+import Switch from '@/components/ui/Switch/Switch';
+
+A Switch is a real-world toggle: flip it, and the change happens. Use it for
+binary settings that take effect immediately and don't need a separate
+"Save" step.
+
+Three good fits for a Switch:
+
+1. **A setting that saves in real time** — desktop notifications, send on
+   Enter, compact mode.
+2. **A toggle that reveals a secondary option** — turn on "Notify by email"
+   to expose an email-frequency picker.
+3. **A toggle that enables a section or large group of settings** —
+   "Enable channel mentions" gating a row of related checkboxes.
+
+If the user needs a "Save" or "Cancel" step before the change takes effect,
+use a [Checkbox](/guidelines/components/checkbox) inside a form instead.
+
+<Divider />
+
+## Anatomy
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'420px'}}>
+  <Switch defaultChecked semiBold secondaryLabel="Play a sound when a message arrives in this channel.">
+    Desktop notifications
+  </Switch>
+</div>
+
+- <Num>1</Num> **Selector** — the track and sliding knob. Off sits left and
+  reads grey; On sits right and reads blue.
+- <Num>2</Num> **Label** — names the setting. Click anywhere on the label to
+  toggle.
+- <Num>3</Num> **Secondary label** — optional helper copy below the primary
+  label. Use it to clarify what changes when the switch flips.
+
+<Divider />
+
+## Sizes
+
+Three sizes track the surrounding type.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'420px',alignItems:'flex-start'}}>
+  <Switch size="Small" defaultChecked>Small (12px label)</Switch>
+  <Switch size="Medium" defaultChecked>Medium (14px label)</Switch>
+  <Switch size="Large" defaultChecked>Large (16px label)</Switch>
+</div>
+
+<Divider />
+
+## Variants
+
+Two boolean axes compose the variant matrix:
+
+- **Semi-bold label** — turn on for setting-row labels where the switch is
+  the row's main control.
+- **Secondary label** — add for context-sensitive helper copy that explains
+  the change.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'420px',alignItems:'flex-start'}}>
+  <Switch>Default label</Switch>
+  <Switch semiBold>Semi-bold label</Switch>
+  <Switch secondaryLabel="Helper copy describes what changes.">With secondary label</Switch>
+  <Switch semiBold secondaryLabel="Helper copy describes what changes.">Semi-bold with secondary</Switch>
+</div>
+
+<Divider />
+
+## States
+
+| State    | Knob     | Track          |
+| -------- | -------- | -------------- |
+| Off      | Left     | Grey           |
+| On       | Right    | Blue           |
+| Disabled | Anchored | Reduced contrast |
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'420px',alignItems:'flex-start'}}>
+  <Switch>Off</Switch>
+  <Switch defaultChecked>On</Switch>
+  <Switch disabled>Disabled — Off</Switch>
+  <Switch disabled defaultChecked>Disabled — On</Switch>
+</div>
+
+The knob animates between sides — the motion is part of the affordance, so
+keep it. Don't replace the slide with an instant snap.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Switch library page](/library/components/switch).
