@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-// Imported for its side-effect — this file declares `:global(.compass-num)`
-// styles plus the list-bullet override rules that reference the same class.
-import './Num.module.scss';
+// Plain SCSS (not .module.scss) so the `compass-num` class and the
+// `ul:has(.compass-num)` bullet-suppression rules stay global.
+import './Num.scss';
 
 interface NumProps {
   children: ReactNode;
