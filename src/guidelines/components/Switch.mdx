@@ -20,11 +20,13 @@ use a [Checkbox](/guidelines/components/checkbox) inside a form instead.
 
 ## Anatomy
 
-<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'420px'}}>
-  <Switch defaultChecked semiBold secondaryLabel="Play a sound when a message arrives in this channel.">
-    Desktop notifications
-  </Switch>
-</div>
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
+  <div style={{width:'100%',maxWidth:'420px'}}>
+    <Switch defaultChecked semiBold secondaryLabel="Play a sound when a message arrives in this channel.">
+      Desktop notifications
+    </Switch>
+  </div>
+</AnatomyStage>
 
 - <Num>1</Num> **Selector** — the track and sliding knob. Off sits left and
   reads grey; On sits right and reads blue.

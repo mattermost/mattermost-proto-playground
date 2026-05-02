@@ -17,15 +17,17 @@ For free-floating tabs, reach for the Tabs component.
 - <Num>3</Num> **Team name** — optional label after the tabs identifying
   which team owns the channel.
 
-<div style={{maxWidth:'420px',border:'1px solid rgba(var(--center-channel-color-rgb),0.16)',borderRadius:'8px',overflow:'hidden'}}>
-  <ChannelInfoMsgHeader
-    tabs={[
-      { label: 'Spec Reviews', active: true },
-      { label: 'Drafts' },
-    ]}
-    teamName="Contributors"
-  />
-</div>
+<AnatomyStage>
+  <div style={{width:'100%',maxWidth:'420px',border:'1px solid rgba(var(--center-channel-color-rgb),0.16)',borderRadius:'8px',overflow:'hidden',background:'var(--center-channel-bg)'}}>
+    <ChannelInfoMsgHeader
+      tabs={[
+        { label: 'Spec Reviews', active: true },
+        { label: 'Drafts' },
+      ]}
+      teamName="Contributors"
+    />
+  </div>
+</AnatomyStage>
 
 <Divider />
 

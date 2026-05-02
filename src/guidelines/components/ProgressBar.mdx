@@ -17,9 +17,11 @@ to `100%`.
 - <Num>2</Num> **Indicator** — the filled portion. Width follows the
   current value.
 
-<div style={{padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px',maxWidth:'320px'}}>
-  <ProgressBar value={45} />
-</div>
+<AnatomyStage>
+  <div style={{width:'320px'}}>
+    <ProgressBar value={45} />
+  </div>
+</AnatomyStage>
 
 Always pair the bar with a textual percentage or count nearby — the bar
 gives the gestalt, the text gives the precision.

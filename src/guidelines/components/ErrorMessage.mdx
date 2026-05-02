@@ -10,11 +10,11 @@ explanation so the user can fix the field and move on.
 
 Two parts, sitting on a single line directly under the input they describe.
 
-<div style={{padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.75rem',maxWidth:'420px'}}>
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem',maxWidth:'420px'}}>
   <ErrorMessage message="Enter a valid email address." />
   <ErrorMessage message="Password must be at least 12 characters." />
   <ErrorMessage message="Channel names can't contain spaces or special characters except dashes and underscores." />
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Icon** — `alert-circle-outline` at 12px, in
   `--color-danger`. Decorative; meaning is carried by the text.

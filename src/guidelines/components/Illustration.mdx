@@ -16,7 +16,7 @@ A single inline-block that takes the SVG as its child. The component
 constrains the SVG to fit inside an explicit width and height, preserving
 aspect ratio.
 
-<div style={{display:'flex',alignItems:'center',gap:'1.5rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
+<AnatomyStage style={{gap:'1.5rem',flexWrap:'wrap'}}>
   <Illustration aria-label="Search" width="160px" height="100px">
     <SearchIllustration />
   </Illustration>
@@ -26,7 +26,7 @@ aspect ratio.
   <Illustration aria-label="AI Copilot intro" width="240px" height="140px">
     <AICopilotIllustration />
   </Illustration>
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Container** — inline-block with explicit width and
   height. Prevents the SVG from overflowing or stretching.

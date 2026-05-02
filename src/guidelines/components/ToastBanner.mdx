@@ -9,6 +9,18 @@ after a short duration.
 
 ## Anatomy
 
+<AnatomyStage>
+  <div style={{ width: '100%', maxWidth: '480px' }}>
+    <ToastBanner
+      type="Info"
+      message="New update available. Refresh to apply."
+      actionLabel="Refresh"
+      onAction={() => {}}
+      onDismiss={() => {}}
+    />
+  </div>
+</AnatomyStage>
+
 - <Num>1</Num> **Container** — dark surface with rounded corners; a coloured
   variant is reserved for warnings.
 - <Num>2</Num> **Leading icon** — semantic icon that mirrors the toast's

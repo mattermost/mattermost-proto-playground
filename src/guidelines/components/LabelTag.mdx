@@ -17,12 +17,12 @@ Tags for @mentions and search hits — see the
 A pill-shaped container with a label, optional leading icon, and a colour
 that signals the tag's intent.
 
-<div style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
+<AnatomyStage style={{gap:'0.5rem',flexWrap:'wrap'}}>
   <LabelTag label="BOT" type="Info Dim" casing="All Caps" />
   <LabelTag label="Guest" type="Default" />
   <LabelTag label="Beta" type="Info" />
   <LabelTag label="PROFESSIONAL" type="Default" casing="All Caps" leadingIcon={<GlobeIcon size={10} />} />
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Container** — rounded rectangle. Background and text
   colour map to the chosen `type`.

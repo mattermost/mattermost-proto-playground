@@ -22,12 +22,12 @@ The Icon component is a single block: a sized container that centres a
 glyph. Pass any compass-icons component as the `glyph` prop and Icon will
 inject the correct SVG render size automatically.
 
-<div style={{display:'flex',alignItems:'center',gap:'1rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+<AnatomyStage style={{gap:'1rem'}}>
   <Icon glyph={<GlobeIcon />} size="24" />
   <Icon glyph={<PhoneIcon />} size="24" />
   <Icon glyph={<DownloadOutlineIcon />} size="24" />
   <Icon glyph={<EmoticonHappyOutlineIcon />} size="24" />
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Container** — fixed-size frame from the icon scale.
   Provides the layout box other components measure against.

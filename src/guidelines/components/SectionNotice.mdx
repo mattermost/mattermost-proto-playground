@@ -14,16 +14,18 @@ area of the page. For transient confirmation, use a
 
 ## Anatomy
 
-<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'480px'}}>
-  <SectionNotice
-    type="Info"
-    title="Two-factor authentication is now required"
-    description="Set up authenticator codes the next time you sign in to keep access to this workspace."
-    primaryButtonLabel="Set up now"
-    secondaryButtonLabel="Learn more"
-    onDismiss={() => {}}
-  />
-</div>
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
+  <div style={{width:'100%',maxWidth:'480px'}}>
+    <SectionNotice
+      type="Info"
+      title="Two-factor authentication is now required"
+      description="Set up authenticator codes the next time you sign in to keep access to this workspace."
+      primaryButtonLabel="Set up now"
+      secondaryButtonLabel="Learn more"
+      onDismiss={() => {}}
+    />
+  </div>
+</AnatomyStage>
 
 - <Num>1</Num> **Icon** — optional. Defaults to a glyph that matches the
   notice type. Hide it only if the notice sits next to another icon already.

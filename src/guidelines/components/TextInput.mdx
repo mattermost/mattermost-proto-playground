@@ -11,6 +11,17 @@ modal in Mattermost.
 
 ## Anatomy
 
+<AnatomyStage>
+  <div style={{ width: '100%', maxWidth: '420px' }}>
+    <TextInput
+      label="Search"
+      defaultValue="design"
+      leadingIcon={<Icon glyph={<MagnifyIcon />} size="16" />}
+      trailingIcon={<Icon glyph={<CloseCircleIcon />} size="16" />}
+    />
+  </div>
+</AnatomyStage>
+
 - <Num>1</Num> **Container** — rounded border with a 1px stroke.
 - <Num>2</Num> **Label** — floating label that sits inside the field at rest
   and lifts above the border on focus or when the field has a value.

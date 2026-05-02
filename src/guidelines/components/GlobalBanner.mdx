@@ -15,7 +15,7 @@ condition resolves.
 A fixed 40px-tall band, full width, with the message centred and dismiss /
 action controls anchored to the right edge.
 
-<div style={{padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+<AnatomyStage style={{flexDirection:'column',gap:'0.5rem'}}>
   <GlobalBanner
     message="Your license expires in 14 days."
     type="General"
@@ -24,7 +24,7 @@ action controls anchored to the right edge.
     onAction={() => {}}
     onDismiss={() => {}}
   />
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Container** — full-width strip, fixed at 40px, coloured by
   the banner type.

@@ -24,12 +24,14 @@ reach for Menu Items instead.
 - <Num>6</Num> **Trailing decorations** — call-in-progress glyph, custom
   status emoji on DMs, shared-channel marker.
 
-<div style={{maxWidth:'320px',padding:'0.75rem',background:'var(--sidebar-bg)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.25rem'}}>
-  <ChannelSidebarItem name="design" leadingVisual="Public" active />
-  <ChannelSidebarItem name="design-leadership" leadingVisual="Private" status="Mention" mentionCount={3} />
-  <ChannelSidebarItem name="Avery, Mira" leadingVisual="Group Message" memberCount={3} status="Unread" />
-  <ChannelSidebarItem name="Noor Patel" leadingVisual="Direct Message" status="Unread" />
-</div>
+<AnatomyStage>
+  <div style={{width:'100%',maxWidth:'320px',padding:'0.75rem',background:'var(--sidebar-bg)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.25rem'}}>
+    <ChannelSidebarItem name="design" leadingVisual="Public" active />
+    <ChannelSidebarItem name="design-leadership" leadingVisual="Private" status="Mention" mentionCount={3} />
+    <ChannelSidebarItem name="Avery, Mira" leadingVisual="Group Message" memberCount={3} status="Unread" />
+    <ChannelSidebarItem name="Noor Patel" leadingVisual="Direct Message" status="Unread" />
+  </div>
+</AnatomyStage>
 
 <Divider />
 

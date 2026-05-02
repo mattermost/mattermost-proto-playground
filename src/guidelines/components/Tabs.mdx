@@ -13,6 +13,18 @@ A tab strip is a row of tab triggers, each with a label and optional badge,
 and an optional controls slot for actions that apply to the whole strip
 (filters, sorts, refresh).
 
+<AnatomyStage>
+  <Tabs
+    tabs={[
+      { key: 'all', label: 'All' },
+      { key: 'unreads', label: 'Unreads', countBadge: 4 },
+      { key: 'mentions', label: 'Mentions', unreadBadge: true },
+    ]}
+    activeKey="all"
+    onChange={() => {}}
+  />
+</AnatomyStage>
+
 - <Num>1</Num> **Tab list** — the row of triggers that switch the active view.
 - <Num>2</Num> **Tab label** — the action text. Sentence case, short.
 - <Num>3</Num> **Count badge** — optional numeric indicator for the active or

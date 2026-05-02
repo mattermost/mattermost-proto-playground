@@ -12,14 +12,14 @@ behave the way scrollbars behave everywhere else.
 
 ## Anatomy
 
-<div style={{display:'flex',gap:'1.5rem',flexWrap:'wrap',alignItems:'flex-start',padding:'1rem 0'}}>
+<AnatomyStage style={{gap:'1.5rem',flexWrap:'wrap',alignItems:'flex-start'}}>
   <div style={{height:'160px',display:'flex',alignItems:'stretch'}}>
     <Scrollbar orientation="Vertical" thumbSize="33%" scrollPosition={20} />
   </div>
   <div style={{width:'200px'}}>
     <Scrollbar orientation="Horizontal" thumbSize="33%" scrollPosition={20} />
   </div>
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Track** — the transparent area that contains the thumb. Click
   the track to jump-scroll.

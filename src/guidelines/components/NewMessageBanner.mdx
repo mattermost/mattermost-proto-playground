@@ -22,7 +22,7 @@ A blue pill with a leading arrow, a label, and an optional dismiss button.
 - <Num>5</Num> **Dismiss** — optional `×` button. Closes the banner without
   jumping.
 
-<div style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+<AnatomyStage style={{flexDirection:'column',gap:'1rem'}}>
   <NewMessageBanner
     type="JumpToUnreads"
     countLabel="21 new messages since Saturday"
@@ -33,7 +33,7 @@ A blue pill with a leading arrow, a label, and an optional dismiss button.
     type="NewReplies"
     onClick={() => {}}
   />
-</div>
+</AnatomyStage>
 
 <Divider />
 

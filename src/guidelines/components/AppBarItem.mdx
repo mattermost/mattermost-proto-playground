@@ -23,12 +23,14 @@ actions belong elsewhere.
 - <Num>4</Num> **Unread badge** — a small dot, shown when there are unreads
   but no mentions.
 
-<div style={{display:'flex',gap:'1.5rem',flexWrap:'wrap',padding:'1rem',background:'var(--sidebar-header-bg)',borderRadius:'8px'}}>
-  <AppBarItem icon={<GithubIcon size={24} />} label="GitHub" />
-  <AppBarItem icon={<GitlabIcon size={24} />} label="GitLab" state="Selected" />
-  <AppBarItem icon={<ZoomIcon size={24} />} label="Zoom" mentionBadge={3} />
-  <AppBarItem icon={<GithubIcon size={24} />} label="GitHub" unreadBadge />
-</div>
+<AnatomyStage>
+  <div style={{display:'flex',gap:'1.5rem',flexWrap:'wrap',padding:'1rem',background:'var(--sidebar-header-bg)',borderRadius:'8px'}}>
+    <AppBarItem icon={<GithubIcon size={24} />} label="GitHub" />
+    <AppBarItem icon={<GitlabIcon size={24} />} label="GitLab" state="Selected" />
+    <AppBarItem icon={<ZoomIcon size={24} />} label="Zoom" mentionBadge={3} />
+    <AppBarItem icon={<GithubIcon size={24} />} label="GitHub" unreadBadge />
+  </div>
+</AnatomyStage>
 
 <Divider />
 

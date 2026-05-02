@@ -17,11 +17,11 @@ tooltip or `aria-label` that makes the action explicit.
 A square (or pill) target wrapping a single Icon. Optional add-ons attach a
 count or an unread dot.
 
-<div style={{display:'flex',alignItems:'center',gap:'1rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+<AnatomyStage style={{gap:'1rem'}}>
   <IconButton aria-label="Globe" icon={<Icon glyph={<GlobeIcon />} size={ICON_BUTTON_ICON_SIZES.Medium} />} />
   <IconButton aria-label="Notifications" count={12} icon={<Icon glyph={<GlobeIcon />} size={ICON_BUTTON_ICON_SIZES.Medium} />} />
   <IconButton aria-label="Unread" unreadBadge icon={<Icon glyph={<GlobeIcon />} size={ICON_BUTTON_ICON_SIZES.Medium} />} />
-</div>
+</AnatomyStage>
 
 - <Num>1</Num> **Container** — square or pill (rounded) target. Sized to
   the chosen size token; defaults to 4px corner radius.
