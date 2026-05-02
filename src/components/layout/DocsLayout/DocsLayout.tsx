@@ -48,16 +48,24 @@ const VALID_GUIDELINE = new Set<string>(GUIDELINE_CATEGORIES.map((c) => c.slug))
 
 /**
  * Build the "category overview" sidebar shown on docs index pages.
- * Each item links to the first entry in that category, since we don't (yet)
- * have a per-category landing page.
+ *
+ * - `linkToCategoryIndex`: list every category and link to its index page
+ *   (`/<prefix>/<cat>`). The category's index page handles empty states.
+ * - default: link to the first entry in the category, skipping empty ones.
  */
 function categoryOverviewGroups(
   pathPrefix: string,
   categories: { slug: string; name: string }[],
   entries: readonly { slug: string; category: string }[],
+  options?: { linkToCategoryIndex?: boolean },
 ): SidebarGroup[] {
+  const linkToCategoryIndex = options?.linkToCategoryIndex ?? false;
+
   const items = categories
     .map(({ slug: catSlug, name }) => {
+      if (linkToCategoryIndex) {
+        return { key: catSlug, name, to: `${pathPrefix}/${catSlug}` };
+      }
       const first = entries.find((e) => e.category === catSlug);
       if (!first) return null;
       return {
@@ -155,6 +163,7 @@ function buildGroupsForGuidelines(pathname: string): SidebarGroup[] {
       '/guidelines',
       GUIDELINE_CATEGORIES,
       GUIDELINE_ENTRIES as readonly GuidelineEntry[],
+      { linkToCategoryIndex: true },
     );
   }
 

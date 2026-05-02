@@ -9,6 +9,12 @@ interface DocPageProps {
   hero?: ReactNode;
   /** When true, renders an "On this page" right rail next to the body. */
   toc?: boolean;
+  /**
+   * When true, applies prose typography (headings, paragraphs, lists, code,
+   * tables, etc.) to children. Use for MDX-rendered guideline pages. Leave
+   * off for library/index pages so component previews aren't affected.
+   */
+  prose?: boolean;
   children: ReactNode;
 }
 
@@ -17,6 +23,7 @@ export default function DocPage({
   title,
   hero,
   toc = false,
+  prose = false,
   children,
 }: DocPageProps) {
   const innerClass = [
@@ -44,7 +51,11 @@ export default function DocPage({
         {toc ? (
           <div className={styles['doc-page__columns']}>
             <div className={styles['doc-page__body']} data-doc-body>
-              {children}
+              {prose ? (
+                <div className={styles['doc-page__prose']}>{children}</div>
+              ) : (
+                children
+              )}
             </div>
             <aside className={styles['doc-page__toc']}>
               <OnThisPage />
@@ -52,7 +63,11 @@ export default function DocPage({
           </div>
         ) : (
           <div className={styles['doc-page__body']} data-doc-body>
-            {children}
+            {prose ? (
+              <div className={styles['doc-page__prose']}>{children}</div>
+            ) : (
+              children
+            )}
           </div>
         )}
       </div>

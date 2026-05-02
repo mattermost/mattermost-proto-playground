@@ -1,0 +1,86 @@
+import { useState } from 'react';
+import Tabs from '@/components/ui/Tabs/Tabs';
+
+Tabs let people switch between sibling views inside the same surface — Mentions
+in the right sidebar, sections of a settings panel, or filters on a list. The
+content area changes; the surrounding chrome doesn't.
+
+<Divider />
+
+## Anatomy
+
+A tab strip is a row of tab triggers, each with a label and optional badge,
+and an optional controls slot for actions that apply to the whole strip
+(filters, sorts, refresh).
+
+<AnatomyStage>
+  <Tabs
+    tabs={[
+      { key: 'all', label: 'All' },
+      { key: 'unreads', label: 'Unreads', countBadge: 4 },
+      { key: 'mentions', label: 'Mentions', unreadBadge: true },
+    ]}
+    activeKey="all"
+    onChange={() => {}}
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Tab list** — the row of triggers that switch the active view.
+- <Num>2</Num> **Tab label** — the action text. Sentence case, short.
+- <Num>3</Num> **Count badge** — optional numeric indicator for the active or
+  total items in the tab.
+- <Num>4</Num> **Unread dot** — optional unread indicator on inactive tabs;
+  hidden when the tab becomes active.
+- <Num>5</Num> **Controls slot** — optional trailing area for tab-strip-level
+  actions.
+
+<Divider />
+
+## Behavior
+
+Selecting a tab swaps the panel below; surrounding chrome stays put. The
+active tab shows an underline and a darker label. Inactive tabs read as quiet
+controls until hovered.
+
+export const TabsDemo = () => {
+  const [active, setActive] = useState('all');
+  return (
+    <Tabs
+      tabs={[
+        { key: 'all', label: 'All' },
+        { key: 'unreads', label: 'Unreads', countBadge: 4 },
+        { key: 'mentions', label: 'Mentions', unreadBadge: true },
+      ]}
+      activeKey={active}
+      onChange={setActive}
+    />
+  );
+};
+
+<TabsDemo />
+
+- **Count badge** — use when the number of items in a tab is meaningful at a
+  glance (e.g. unread count, filter result size). Prefer a count over a dot
+  when the user benefits from knowing how many.
+- **Unread dot** — use when "something is new" matters but the count doesn't.
+  The dot disappears once the tab is active to avoid implying "still
+  unread."
+
+<Divider />
+
+## Content
+
+- Keep labels to one or two words. Sentence case.
+- Tabs are siblings — labels should read as a parallel set ("All / Unreads /
+  Mentions", not "All things / New / @ me").
+- Don't pair tabs with a heading that says the same thing; the active tab is
+  already the heading.
+- If your strip needs more than five or six tabs, switch to a different
+  navigation pattern (sidebar nav, dropdown filter).
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Tabs library page](/library/components/tabs).

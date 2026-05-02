@@ -1,0 +1,67 @@
+import Illustration from '@/components/ui/Illustration/Illustration';
+import AICopilotIllustration from '@/assets/illustrations/ai-copilot-intro.svg?react';
+import SearchIllustration from '@/assets/illustrations/search.svg?react';
+import GroupsIllustration from '@/assets/illustrations/groups.svg?react';
+
+Illustration is the wrapper for any of the brand SVG artworks shipped under
+`@/assets/illustrations/`. It enforces a consistent size box, contains the
+SVG, and exposes an accessible label so screen readers can describe the
+artwork (or skip it when it's purely decorative).
+
+<Divider />
+
+## Anatomy
+
+A single inline-block that takes the SVG as its child. The component
+constrains the SVG to fit inside an explicit width and height, preserving
+aspect ratio.
+
+<AnatomyStage style={{gap:'1.5rem',flexWrap:'wrap'}}>
+  <Illustration aria-label="Search" width="160px" height="100px">
+    <SearchIllustration />
+  </Illustration>
+  <Illustration aria-label="Groups" width="200px" height="120px">
+    <GroupsIllustration />
+  </Illustration>
+  <Illustration aria-label="AI Copilot intro" width="240px" height="140px">
+    <AICopilotIllustration />
+  </Illustration>
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — inline-block with explicit width and
+  height. Prevents the SVG from overflowing or stretching.
+- <Num>2</Num> **SVG** — passed in as `children`. Imported with the
+  `?react` suffix so Vite renders it as a React component.
+
+<Divider />
+
+## Usage
+
+- **Empty states.** Pair an Illustration with the Empty State component to
+  set tone before the message lands.
+- **Feature discovery.** A supporting visual on the right column of a
+  Feature Discovery Panel.
+- **Onboarding and modals.** Hero artwork for first-run flows, Tour Points,
+  and welcome modals.
+
+Illustrations are not icons. Don't reach for an Illustration when an Icon
+will do — Illustrations carry brand and emotional weight, and using them
+indiscriminately dilutes both.
+
+<Divider />
+
+## Accessibility
+
+- **Decorative artwork.** Pass `aria-label=""` (empty string) and the
+  component renders `aria-hidden`. Screen readers will skip it.
+- **Meaningful artwork.** Pass an `aria-label` that summarises what the
+  illustration depicts (_AI Copilot intro_, _No results_).
+- Don't put critical content in an illustration alone — the surrounding
+  title and description should communicate the same idea in words.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Illustration library page](/library/components/illustration).

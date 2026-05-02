@@ -1,0 +1,71 @@
+import UnreadBadge from '@/components/ui/UnreadBadge/UnreadBadge';
+
+The Unread Badge is a small dot that signals "something's new here" without
+specifying how much. Reach for it when the count would be noisy, distracting,
+or simply isn't useful — a Team has unread channels, an icon button has a
+new state, a tab has activity behind it.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage>
+  <UnreadBadge size="8" />
+</AnatomyStage>
+
+- <Num>1</Num> **Dot** — a circular indicator without text or count. Two
+  sizes (`6px` and `8px`) and two contexts.
+
+<Divider />
+
+## Sizes
+
+<div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <UnreadBadge size="6" /> <span>6px</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <UnreadBadge size="8" /> <span>8px (default)</span>
+  </div>
+</div>
+
+| Size  | Use when                                                                          |
+| ----- | --------------------------------------------------------------------------------- |
+| 6px   | Dense surfaces — overlaid on small Icon Buttons, tab triggers, list items.        |
+| 8px   | The default. Pairs with Team Avatars and standard sidebar surfaces.               |
+
+<Divider />
+
+## Contexts
+
+The badge picks up its colour from the surface it sits on, so an unread dot
+on a Team Avatar reads as a sidebar accent, while one on an Icon Button reads
+as a foreground notification.
+
+<div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <UnreadBadge context="Team Icon" /> <span>Team Icon</span>
+  </div>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <UnreadBadge context="Icon Button" /> <span>Icon Button</span>
+  </div>
+</div>
+
+<Divider />
+
+## When to use
+
+- **Team Sidebar** — a Team has unread content, but no mentions.
+- **Channel Sidebar** — a tab or filter has activity not yet shown.
+- **Icon Buttons** — an action surface has new state behind it (e.g. saved
+  posts, mentions list) without a meaningful count.
+
+When a number **is** meaningful (mentions, replies, queued items), use a
+**Mention Badge** instead.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Unread Badge library page](/library/components/unread-badge).

@@ -4,6 +4,7 @@ import DocsLayout from '@/components/layout/DocsLayout/DocsLayout';
 import Home from '@/pages/Home/Home';
 import OutboundCalls from '@/pages/OutboundCalls/OutboundCalls';
 import GuidelinesIndex from '@/pages/guidelines/GuidelinesIndex';
+import GuidelineCategoryIndex from '@/pages/guidelines/GuidelineCategoryIndex';
 import GuidelineRoute from '@/pages/guidelines/GuidelineRoute';
 import LibraryIndex from '@/pages/library/LibraryIndex';
 import LibraryRoute from '@/pages/library/LibraryRoute';
@@ -30,6 +31,10 @@ export default function AppRouter() {
         {/* Docs surfaces — wrapped with the persistent sidebar. */}
         <Route element={<DocsLayout />}>
           <Route path="/guidelines" element={<GuidelinesIndex />} />
+          <Route
+            path="/guidelines/:category"
+            element={<GuidelineCategoryIndex />}
+          />
           <Route
             path="/guidelines/:category/:slug"
             element={<GuidelineRoute />}

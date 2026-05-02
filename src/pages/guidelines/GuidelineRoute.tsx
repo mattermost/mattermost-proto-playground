@@ -49,6 +49,7 @@ export default function GuidelineRoute() {
   if (!entry || !Page) {
     return (
       <DocPage
+        prose
         hero={<PageHero breadcrumb="Guidelines" title="Not found" />}
       >
         <p>
@@ -62,6 +63,7 @@ export default function GuidelineRoute() {
   return (
     <DocPage
       toc
+      prose
       hero={
         <PageHero
           breadcrumb={breadcrumbFor(entry)}

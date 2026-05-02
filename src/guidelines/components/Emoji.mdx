@@ -1,0 +1,57 @@
+import Emoji from '@/components/ui/Emoji/Emoji';
+
+Emoji is a compact, inline visual for conveying emotion, intent, or status —
+on messages, in reactions, in pickers, or sprinkled through UI copy. The
+component standardises sizing so native Unicode and custom workspace emoji
+render at a consistent footprint alongside Icon.
+
+<Divider />
+
+## Anatomy
+
+Emoji is a single-element component: a fixed-size inline frame that holds the
+glyph. It mirrors the Icon container so the two compose cleanly side-by-side.
+
+<AnatomyStage>
+  <Emoji emoji="🎉" size="40" />
+</AnatomyStage>
+
+- <Num>1</Num> **Glyph** — the emoji character itself. Native Unicode or a
+  custom workspace emoji.
+- <Num>2</Num> **Container** — a square frame that scales the glyph to one of
+  the standard icon sizes.
+
+<Divider />
+
+## Sizes
+
+Emoji uses the same scale as Icon, so the two stay aligned wherever they
+appear together — message reactions, menu items, autocomplete results.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
+  <Emoji emoji="👍" size="16" />
+  <Emoji emoji="👍" size="20" />
+  <Emoji emoji="👍" size="24" />
+  <Emoji emoji="👍" size="28" />
+  <Emoji emoji="👍" size="32" />
+  <Emoji emoji="👍" size="40" />
+  <Emoji emoji="👍" size="52" />
+  <Emoji emoji="👍" size="64" />
+</div>
+
+| Size  | Use when                                                                              |
+| ----- | ------------------------------------------------------------------------------------- |
+| 10–16 | Inline with body text or in dense rows (autocomplete results, menu items).            |
+| 20–24 | Default for reactions and message-adjacent UI.                                        |
+| 28–40 | Picker grids and prominent reaction summaries.                                        |
+| 52+   | Large, hero-style placements — empty states, celebration moments, onboarding visuals. |
+
+Pick the size that matches the surrounding type and tap target. Don't mix
+sizes within the same row.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Emoji library page](/library/components/emoji).

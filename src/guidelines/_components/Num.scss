@@ -1,0 +1,20 @@
+// Visual styling for the numbered-circle marker. Bullet/list-suppression
+// rules live in DocPage.module.scss so they can scope under .doc-page__body
+// and outweigh the generic prose rules there.
+.compass-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-right: var(--spacing-s);
+  border-radius: 50%;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.32);
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  vertical-align: middle;
+}

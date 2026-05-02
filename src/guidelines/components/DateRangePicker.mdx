@@ -1,0 +1,81 @@
+import DateRangePicker from '@/components/ui/DateRangePicker/DateRangePicker';
+
+The Date and Range Picker lets people pick a single date or a start/end
+range from a calendar. The trigger is a compact field; the calendar is a
+popover anchored 4px below it.
+
+Use it in scheduling, filtering, and reporting flows — anywhere a precise
+calendar date matters more than typing a string. For relative ranges
+("last 7 days"), pair the picker with a Select of presets.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Trigger** — input-style field with a calendar icon, the
+  current value (or `mm/dd/yyyy` placeholder), and a chevron.
+- <Num>2</Num> **Month header** — the displayed month and year, plus
+  previous/next navigation and a Today shortcut.
+- <Num>3</Num> **Day grid** — seven-column grid with weekday headers.
+- <Num>4</Num> **Date cells** — each day with hover, selected, in-range, and
+  today states.
+
+<AnatomyStage>
+  <div style={{width:'100%',maxWidth:'320px'}}>
+    <DateRangePicker />
+  </div>
+</AnatomyStage>
+
+<Divider />
+
+## Modes
+
+Two selection modes:
+
+| Mode    | Use when                                                              |
+| ------- | --------------------------------------------------------------------- |
+| `date`  | Single point in time — due date, scheduled send, birthday.            |
+| `range` | A start-and-end window — report range, leave dates, event window.     |
+
+In range mode the first click sets the start, the second sets the end. Days
+between the two are highlighted as in-range. A third click starts a new
+range from scratch.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap'}}>
+  <div style={{maxWidth:'320px',flex:'1 1 240px'}}>
+    <DateRangePicker mode="date" />
+  </div>
+  <div style={{maxWidth:'320px',flex:'1 1 240px'}}>
+    <DateRangePicker mode="range" />
+  </div>
+</div>
+
+<Divider />
+
+## Day states
+
+| State       | Treatment                                                       |
+| ----------- | --------------------------------------------------------------- |
+| Available   | Default day. Hover shows a soft background.                     |
+| Today       | Carries a today indicator until selected.                       |
+| Selected    | Filled day cell. End-cap shape in range mode.                   |
+| In range    | Soft connector fill between the two range endpoints.            |
+| Unavailable | Dimmed and non-interactive. Used for disabled dates.            |
+
+<Divider />
+
+## Behavior
+
+- The popover opens 4px below the trigger and dismisses on outside click,
+  Escape, or selection.
+- The Today shortcut returns the calendar view to the current month and
+  year — it doesn't select today.
+- Keep the picker keyboard-operable: Enter or Space toggles the popover from
+  the trigger; arrow keys move focus through the day grid.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Date Range Picker library page](/library/components/date-range-picker).
