@@ -1,0 +1,78 @@
+import Scrollbar from '@/components/ui/Scrollbar/Scrollbar';
+
+Scrollbars let people move through content that exceeds the viewport while
+showing where they are in the larger whole. Compass uses a single, minimal
+treatment — a transparent track with a thin, translucent thumb — so the
+scrollbar reads as a position indicator first and a control second.
+
+Per Jakob's Law, scrollbars don't get hover or active states; they should
+behave the way scrollbars behave everywhere else.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{gap:'1.5rem',flexWrap:'wrap',alignItems:'flex-start'}}>
+  <div style={{height:'160px',display:'flex',alignItems:'stretch'}}>
+    <Scrollbar orientation="Vertical" thumbSize="33%" scrollPosition={20} />
+  </div>
+  <div style={{width:'200px'}}>
+    <Scrollbar orientation="Horizontal" thumbSize="33%" scrollPosition={20} />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Track** — the transparent area that contains the thumb. Click
+  the track to jump-scroll.
+- <Num>2</Num> **Thumb** — the visible indicator. Its length shows how much
+  of the content fits in the viewport; its position shows where you are.
+  Drag to reposition.
+
+<Divider />
+
+## Variants
+
+| Variant     | Values                              | Use when                                                  |
+| ----------- | ----------------------------------- | --------------------------------------------------------- |
+| Orientation | Vertical, Horizontal                | Match the scroll direction of the container.              |
+| Thumb size  | 25%, 33%, 50%, 75% of the track     | Reflects the visible portion of the total content.        |
+| Position    | 0–100% offset along the track       | Reflects the user's current scroll offset.                |
+
+A larger thumb means more of the content is visible. When the thumb fills the
+track at 100%, hide the scrollbar — there's nothing to scroll.
+
+<Divider />
+
+## Use the minimal-scrollbar treatment
+
+Any element with `overflow: auto`, `overflow: scroll`, `overflow-y: auto|scroll`,
+or `overflow-x: auto|scroll` should adopt the minimal scrollbar treatment.
+Don't ship the browser-default chunky scrollbar on content regions.
+
+The shared mixin lives at `src/styles/mixins.scss` and is auto-injected into
+every module SCSS file:
+
+```scss
+.your-scroll-region {
+  overflow-y: auto;
+  @include minimal-scrollbar;
+}
+```
+
+What the mixin gives you:
+
+- A thin track (`scrollbar-width: thin` on Firefox; 8px width on WebKit).
+- A transparent track and a translucent thumb that adapts to light and dark
+  themes via `--center-channel-color-rgb` at 24% alpha.
+- A hover state on the thumb that bumps the alpha to 40%.
+- A short transition tied to `--duration-quick` and `--ease-transition`.
+
+Apply `scrollbar-gutter` only on the page-level scroller that needs
+shift-free behaviour — nested minimal-scrollbar regions will each reserve
+their own 8px gutter if you don't.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Scrollbar library page](/library/components/scrollbar).

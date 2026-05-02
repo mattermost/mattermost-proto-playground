@@ -1,0 +1,57 @@
+import SearchTipBanner from '@/components/ui/SearchTipBanner/SearchTipBanner';
+
+The Search Tip Banner nudges people toward the keyboard shortcut for
+in-channel search. It appears once a user has scrolled up far enough that
+they're clearly looking for something, and offers a faster path than
+scroll-and-skim.
+
+Trigger it after the user has scrolled past three viewport heights of
+channel history. Show the banner once per channel session — don't nag.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
+  <div style={{width:'100%',maxWidth:'420px'}}>
+    <SearchTipBanner onDismiss={() => {}} />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Tip text** — a short prefix and suffix that frame the
+  shortcut ("Tip: Try … to search this channel").
+- <Num>2</Num> **Shortcut keys** — `<kbd>` chips showing the key combination.
+- <Num>3</Num> **Dismiss button** — closes the banner. The user's choice
+  should be remembered for the rest of the session.
+
+<Divider />
+
+## States
+
+The banner has two interactive states. There is no error or warning style —
+it's an informational nudge, not feedback.
+
+| State   | Behaviour                                                              |
+| ------- | ---------------------------------------------------------------------- |
+| Default | The banner sits quietly above the messages, waiting to be read or dismissed. |
+| Hover   | The dismiss button reveals a subtle background; the rest stays still.  |
+
+<Divider />
+
+## Content
+
+Keep the prose short and platform-agnostic. The shortcut keys themselves do
+the teaching:
+
+- Use the platform-correct modifier — render `⌘` on macOS and `Ctrl` on
+  Windows/Linux.
+- Lead with **Tip:** so the banner doesn't read as a system error.
+- Frame the action ("to search this channel"), not the mechanism ("opens the
+  search panel").
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Search Tip Banner library page](/library/components/search-tip-banner).

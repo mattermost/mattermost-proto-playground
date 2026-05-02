@@ -1,0 +1,89 @@
+import Icon from '@/components/ui/Icon/Icon';
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
+import DownloadOutlineIcon from '@mattermost/compass-icons/components/download-outline';
+
+Icon is the standard wrapper for any glyph from `@mattermost/compass-icons`.
+It enforces a consistent container size, strips the package's built-in
+clear-space padding, and keeps icons aligned with text and other icons
+across the system.
+
+For deeper guidance on the icon set itself — design rules, custom-icon
+authoring, the full library — see the
+[Iconography foundation](/guidelines/foundations/iconography). This page
+documents the React component.
+
+<Divider />
+
+## Anatomy
+
+The Icon component is a single block: a sized container that centres a
+glyph. Pass any compass-icons component as the `glyph` prop and Icon will
+inject the correct SVG render size automatically.
+
+<AnatomyStage style={{gap:'1rem'}}>
+  <Icon glyph={<GlobeIcon />} size="24" />
+  <Icon glyph={<PhoneIcon />} size="24" />
+  <Icon glyph={<DownloadOutlineIcon />} size="24" />
+  <Icon glyph={<EmoticonHappyOutlineIcon />} size="24" />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — fixed-size frame from the icon scale.
+  Provides the layout box other components measure against.
+- <Num>2</Num> **Glyph** — the SVG itself. Rendered slightly larger than
+  the container so strokes reach the optical edge — Icon handles the
+  oversize internally.
+
+<Divider />
+
+## Sizes
+
+Icon supports the eleven standard sizes from the Mattermost icon scale.
+Container sizes are in pixels.
+
+<div style={{display:'flex',alignItems:'flex-end',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
+  <Icon glyph={<GlobeIcon />} size="12" />
+  <Icon glyph={<GlobeIcon />} size="16" />
+  <Icon glyph={<GlobeIcon />} size="20" />
+  <Icon glyph={<GlobeIcon />} size="24" />
+  <Icon glyph={<GlobeIcon />} size="28" />
+  <Icon glyph={<GlobeIcon />} size="32" />
+  <Icon glyph={<GlobeIcon />} size="40" />
+  <Icon glyph={<GlobeIcon />} size="52" />
+  <Icon glyph={<GlobeIcon />} size="64" />
+</div>
+
+| Size       | Use when                                                                          |
+| ---------- | --------------------------------------------------------------------------------- |
+| 10, 12     | Inline with caption-size text or in dense rows.                                   |
+| 16         | Default for inline icons in body copy and Small button slots.                     |
+| 20         | Default for Medium Icon Buttons and component leading slots.                      |
+| 24         | Default for Large buttons and channel-header controls.                            |
+| 28, 32     | Toolbars, prominent surfaces.                                                     |
+| 40, 52, 64 | Empty state heroes, marketing surfaces, large feature callouts.                   |
+| 104        | Full-screen splash and onboarding visuals only.                                   |
+
+Pair icon size with the surrounding type and tap target. When in doubt,
+match the size of the text or control next to it.
+
+<Divider />
+
+## Style
+
+Compass icons follow a consistent design language: outlined first, simple
+geometry, legible at small sizes. A handful of glyphs ship as filled
+counterparts where the filled form reads more clearly — most notably the
+phone glyph, which is **always filled** for any call action. Use
+`phone`, never `phone-outline`.
+
+<div style={{display:'flex',alignItems:'center',gap:'1rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <Icon glyph={<PhoneIcon />} size="24" />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Icon library page](/library/components/icon).

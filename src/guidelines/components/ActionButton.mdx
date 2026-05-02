@@ -1,0 +1,67 @@
+import ActionButton from '@/components/ui/ActionButton/ActionButton';
+import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
+import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
+import AtIcon from '@mattermost/compass-icons/components/at';
+import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
+
+Action Buttons surface a small set of high-frequency actions in a fixed
+context — a profile popover, a channel info panel, a card. They sit close to
+the content they act on and read as a row of equal-weight choices.
+
+Reach for an Action Button when an icon plus a one-word label communicates
+faster than a labelled Button, and when several related actions need to sit
+side-by-side without one outranking the others.
+
+<Divider />
+
+## Anatomy
+
+Three parts — container, icon, and label — stacked vertically.
+
+- <Num>1</Num> **Container** — the surface that gives the action its shape and
+  hit target.
+- <Num>2</Num> **Icon** — required. Reinforces the action at a glance.
+- <Num>3</Num> **Label** — required. Action verb, four words or fewer.
+
+<AnatomyStage style={{gap:'1rem',flexWrap:'wrap'}}>
+  <ActionButton icon={<MessageTextOutlineIcon size={20} />} label="Message" />
+  <ActionButton icon={<AtIcon size={20} />} label="Mention" />
+  <ActionButton icon={<AccountPlusOutlineIcon size={20} />} label="Add" />
+</AnatomyStage>
+
+<Divider />
+
+## States
+
+Action Buttons have three interactive states — Default, Hover, and Active —
+plus a Destructive variant. The Active state signals that the action is
+toggled on (e.g. "Following").
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap'}}>
+  <ActionButton icon={<MessageTextOutlineIcon size={20} />} label="Default" />
+  <ActionButton icon={<AccountPlusOutlineIcon size={20} />} label="Active" active />
+  <ActionButton icon={<MessageTextOutlineIcon size={20} />} label="Disabled" disabled />
+</div>
+
+<Divider />
+
+## Destructive
+
+Use the destructive variant only for actions that remove or undo something —
+leaving a channel, removing a member from a group DM, deleting a saved item.
+Pair it with a confirmation step; the button itself isn't a confirmation.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap'}}>
+  <ActionButton
+    icon={<TrashCanOutlineIcon size={20} />}
+    label="Remove"
+    destructive
+  />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Action Button library page](/library/components/action-button).

@@ -1,0 +1,102 @@
+import ImagePreview from '@/components/ui/ImagePreview/ImagePreview';
+
+Image Preview displays image attachments, markdown images, and inline image
+links inside the message stream. It frames the image, shows hover actions
+for copy and download, and lets the user collapse the preview when it's in
+the way.
+
+<Divider />
+
+## Anatomy
+
+A bordered frame containing the image, with controls that appear on hover
+in the top-right corner of the frame.
+
+<AnatomyStage>
+  <ImagePreview
+    src="https://picsum.photos/seed/mm1/480/270"
+    alt="Sample image"
+    onCopyLink={() => {}}
+    onDownload={() => {}}
+    onToggleCollapse={() => {}}
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Frame** — bordered, rounded container that holds the
+  image. The image is centred and cropped to the frame.
+- <Num>2</Num> **Image** — the source asset. Rendered with `object-fit:
+  cover` so it fills the frame without distortion.
+- <Num>3</Num> **Hover actions** — a small floating cluster that surfaces
+  Copy link and Download. Hidden until the user mouses over the frame.
+- <Num>4</Num> **Collapse toggle** — a circular control in the top-left
+  corner that hides the preview body when the user wants it out of the
+  way.
+
+<Divider />
+
+## Sizes & aspect ratios
+
+Image Preview scales to fit within the message column. For single images,
+the component caps the frame so it doesn't dominate the conversation.
+
+| Layout         | Width                  | Height        |
+| -------------- | ---------------------- | ------------- |
+| Single image   | min 48px, max 700px    | min 48px, max 240px |
+| Gallery (4:3)  | Cropped to 4:3 ratio   | —             |
+| Gallery (3:4)  | Cropped to 3:4 ratio   | —             |
+| Gallery (1:1)  | Square                 | —             |
+
+The component exposes three preset aspect ratios — `16:9`, `4:3`, `1:1` —
+for cases where the consumer needs a fixed framing.
+
+<div style={{display:'flex',gap:'1rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
+  <ImagePreview
+    src="https://picsum.photos/seed/mm-aspect-1/480/270"
+    alt="16:9"
+    aspectRatio="16:9"
+    onCopyLink={() => {}}
+    onDownload={() => {}}
+  />
+  <ImagePreview
+    src="https://picsum.photos/seed/mm-aspect-2/200/200"
+    alt="1:1"
+    aspectRatio="1:1"
+    onCopyLink={() => {}}
+    onDownload={() => {}}
+  />
+</div>
+
+<Divider />
+
+## States
+
+- **Default.** Frame visible, hover controls hidden.
+- **Hover.** Copy link, Download, and Collapse controls fade in.
+- **Collapsed.** The image body is replaced by a single line of secondary
+  text — _Show image preview_ — that the user can click to restore the
+  frame.
+
+<div style={{padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <ImagePreview
+    src="https://picsum.photos/seed/mm-collapsed/480/270"
+    alt="Collapsed image"
+    collapsed
+    onToggleCollapse={() => {}}
+  />
+</div>
+
+<Divider />
+
+## Galleries
+
+When a message contains multiple images, render them as a gallery with a
+title (e.g. _3 images_) and a _Download all_ control. Galleries flow into
+multiple rows when the message is taller than a single row of previews can
+hold.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Image Preview library page](/library/components/image-preview).

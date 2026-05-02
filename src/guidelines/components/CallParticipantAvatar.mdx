@@ -1,0 +1,110 @@
+import CallParticipantAvatar from '@/components/ui/CallParticipantAvatar/CallParticipantAvatar';
+
+The Call Participant Avatar represents a person — or a phone-in or
+external-link participant — inside a Mattermost call. It carries the cues
+that make a live call legible: who's talking, who's muted, who has their
+hand up, who's a guest.
+
+Use it anywhere participants are tiled or stacked: the call grid, the call
+sidebar, popouts, and recording previews.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Image** — the user's avatar, cropped to a circle. Falls back
+  to a silhouette for external links and a phone glyph for dial-in
+  participants.
+- <Num>2</Num> **Name label** — display name beneath the avatar.
+- <Num>3</Num> **Mute badge** — a corner pill showing the current mic state.
+  Required during a call.
+- <Num>4</Num> **Talking ring** — animated outline that pulses while the
+  participant is speaking.
+- <Num>5</Num> **Reaction overlay** — floats an emoji above the avatar for the
+  reaction's lifetime.
+- <Num>6</Num> **Raised hand overlay** — pinned indicator that stays until the
+  participant lowers their hand.
+- <Num>7</Num> **Role labels** — small caps tag for HOST or EXTERNAL
+  participants, beneath the name.
+
+<AnatomyStage style={{gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+  <CallParticipantAvatar
+    alt="Avery"
+    name="Avery"
+    size="Medium"
+    muteState="unmuted"
+    host
+    talking
+  />
+  <CallParticipantAvatar
+    alt="Mira"
+    name="Mira"
+    size="Medium"
+    muteState="muted"
+    raisedHand
+  />
+  <CallParticipantAvatar
+    alt="Noor"
+    name="Noor"
+    size="Medium"
+    muteState="unmuted"
+    reaction="🎉"
+  />
+</AnatomyStage>
+
+<Divider />
+
+## Sizes
+
+Four sizes match the surfaces calls render on — from full-bleed grid tiles
+down to the call sidebar.
+
+| Size   | Avatar | Use when                                                  |
+| ------ | ------ | --------------------------------------------------------- |
+| Large  | 120px  | Call popout grid, single-participant focus.               |
+| Medium | 96px   | Multi-participant grid in the call window.                |
+| Small  | 72px   | Compact grid; sidebar previews.                           |
+| XS     | 56px   | Roster lists; dense participant rows.                     |
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+  <CallParticipantAvatar alt="Large" name="Large" size="Large" muteState="unmuted" />
+  <CallParticipantAvatar alt="Medium" name="Medium" size="Medium" muteState="unmuted" />
+  <CallParticipantAvatar alt="Small" name="Small" size="Small" muteState="unmuted" />
+  <CallParticipantAvatar alt="XS" name="XS" size="XS" muteState="unmuted" />
+</div>
+
+<Divider />
+
+## Participant kinds
+
+The avatar handles three kinds of participants. Use the right kind so guests
+and dial-ins are unambiguous.
+
+| Kind            | Visual                                                              |
+| --------------- | ------------------------------------------------------------------- |
+| `user`          | The person's avatar image.                                          |
+| `external-link` | Silhouette fallback. Pair with the EXTERNAL label.                  |
+| `dial-in`       | Filled phone glyph on a green circle. Pair with the EXTERNAL label. |
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+  <CallParticipantAvatar alt="Guest" name="Guest" size="Medium" kind="external-link" external muteState="muted" />
+  <CallParticipantAvatar alt="+1 555…" name="+1 555 0123" size="Medium" kind="dial-in" external muteState="muted" />
+</div>
+
+<Divider />
+
+## States and overlays
+
+- **Muted / Unmuted** — always show the mic badge during a call so state is
+  unambiguous; absence reads as "we don't know".
+- **Talking** — pulse the ring only while audio is detected; remove
+  immediately when speech stops.
+- **Raised hand** — pinned, persistent. Doesn't auto-clear.
+- **Reaction** — overlays for the reaction's lifetime, then fades.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Call Participant Avatar library page](/library/components/call-participant-avatar).

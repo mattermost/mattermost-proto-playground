@@ -68,6 +68,13 @@ export const LIBRARY_ENTRIES: LibraryEntry[] = [
     status: 'stable',
     page: () => import('@/pages/Foundations/Shape.library'),
   },
+  {
+    slug: 'spacing',
+    name: 'Spacing',
+    category: 'foundations',
+    status: 'stable',
+    page: () => import('@/pages/Foundations/Spacing.library'),
+  },
 
   // Components
   {

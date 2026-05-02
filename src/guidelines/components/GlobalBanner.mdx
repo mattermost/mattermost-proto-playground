@@ -1,0 +1,117 @@
+import GlobalBanner from '@/components/ui/GlobalBanner/GlobalBanner';
+import Icon from '@/components/ui/Icon/Icon';
+import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline';
+
+Global Banners sit at the very top of the application and broadcast
+something every user in the workspace needs to know — a maintenance window,
+an expiring licence, a connectivity problem, an available update. They span
+the full width of the app and stay visible until they're dismissed or the
+condition resolves.
+
+<Divider />
+
+## Anatomy
+
+A fixed 40px-tall band, full width, with the message centred and dismiss /
+action controls anchored to the right edge.
+
+<AnatomyStage style={{flexDirection:'column',gap:'0.5rem'}}>
+  <GlobalBanner
+    message="Your license expires in 14 days."
+    type="General"
+    leadingIcon={<Icon glyph={<AlertOutlineIcon />} size="16" />}
+    actionLabel="Renew"
+    onAction={() => {}}
+    onDismiss={() => {}}
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — full-width strip, fixed at 40px, coloured by
+  the banner type.
+- <Num>2</Num> **Leading icon** — optional. Reinforces the banner type at a
+  glance.
+- <Num>3</Num> **Message** — the headline. One short sentence, semibold,
+  centred. Don't wrap it onto two lines — shorten the copy instead.
+- <Num>4</Num> **Action button** — optional. An inverted Tertiary X-Small
+  button for the next step (_Renew_, _Update now_, _Learn more_).
+- <Num>5</Num> **Dismiss** — optional Inverted Icon Button anchored to the
+  right edge. Omit for banners the user can't act on.
+
+<Divider />
+
+## Variants
+
+Five colour-coded types map to the semantic intent of the banner. The
+container colour comes from the matching semantic token; the message and
+icon are inverted to maintain contrast.
+
+<div style={{padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+  <GlobalBanner
+    message="Your license expires in 14 days."
+    type="General"
+    actionLabel="Renew"
+    onAction={() => {}}
+    onDismiss={() => {}}
+  />
+  <GlobalBanner
+    message="New version of Mattermost is available."
+    type="Info"
+    actionLabel="Learn more"
+    onAction={() => {}}
+    onDismiss={() => {}}
+  />
+  <GlobalBanner
+    message="Your data export is ready to download."
+    type="Success"
+    actionLabel="Download"
+    onAction={() => {}}
+    onDismiss={() => {}}
+  />
+  <GlobalBanner
+    message="Scheduled maintenance window tonight from 2–4 AM UTC."
+    type="Warning"
+    onDismiss={() => {}}
+  />
+  <GlobalBanner
+    message="Critical security update required. Please update immediately."
+    type="Danger"
+    actionLabel="Update now"
+    onAction={() => {}}
+  />
+</div>
+
+| Type    | Use when                                                                              |
+| ------- | ------------------------------------------------------------------------------------- |
+| General | Neutral system notices — licence reminders, scheduled changes that aren't urgent.     |
+| Info    | A new release, a feature change, or an opt-in announcement.                           |
+| Success | The result of a global action the admin took (data export ready, migration complete). |
+| Warning | Something is about to go wrong — maintenance imminent, capacity nearing, expiring soon. |
+| Danger  | Something is broken or requires immediate action — security update, outage.           |
+
+<Divider />
+
+## States
+
+Global Banners have two states: **Default** and **Hover**. Hover is reserved
+for the dismiss and action controls — the banner itself isn't a click
+target.
+
+<Divider />
+
+## Behaviour
+
+- **Persistence.** The banner stays visible until the user dismisses it or
+  the underlying condition resolves. Don't auto-dismiss.
+- **One at a time.** Show one Global Banner at the top of the app. If
+  multiple system events fire at once, surface the highest-severity one and
+  fall back to a Section Notice or Toast for the rest.
+- **Don't use for in-page feedback.** Global Banners are for
+  application-wide events. Inline form errors, per-action confirmations, and
+  per-page warnings belong in Section Notice, Error Message, or Toast.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Global Banner library page](/library/components/global-banner).

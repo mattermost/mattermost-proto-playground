@@ -252,45 +252,43 @@ export function ScaleTable({
   }));
 
   return (
-    <div className={styles['scale']}>
-      <table className={styles['scale__table']}>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>Token</th>
-            <th>Size</th>
-            <th>Line height</th>
-            <th>Ratio to base</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => {
-            const ratio = row.size / FONT_SIZE_PX[base];
-            return (
-              <tr
-                key={row.level}
-                className={
-                  row.level === base ? styles['scale__row--base'] : undefined
-                }
-              >
-                <td>
-                  {row.level}
-                  {row.level === base && (
-                    <span className={styles['scale__pill']}>Base</span>
-                  )}
-                </td>
-                <td>
-                  <code>{`--font-size-${row.level}`}</code>
-                </td>
-                <td>{row.size}px</td>
-                <td>{row.line}px</td>
-                <td>{ratio.toFixed(3).replace(/\.?0+$/, '')}×</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <table className={styles['scale']}>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>Token</th>
+          <th>Size</th>
+          <th>Line height</th>
+          <th>Ratio to base</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => {
+          const ratio = row.size / FONT_SIZE_PX[base];
+          return (
+            <tr
+              key={row.level}
+              className={
+                row.level === base ? styles['scale__row--base'] : undefined
+              }
+            >
+              <td>
+                {row.level}
+                {row.level === base && (
+                  <span className={styles['scale__pill']}>Base</span>
+                )}
+              </td>
+              <td>
+                <code>{`--font-size-${row.level}`}</code>
+              </td>
+              <td>{row.size}px</td>
+              <td>{row.line}px</td>
+              <td>{ratio.toFixed(3).replace(/\.?0+$/, '')}×</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 
@@ -334,29 +332,27 @@ export function MarginTable({ kind, levels }: MarginTableProps) {
   });
 
   return (
-    <div className={styles['scale']}>
-      <table className={styles['scale__table']}>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>Size</th>
-            <th>Top margin</th>
-            <th>Bottom margin</th>
+    <table className={styles['scale']}>
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>Size</th>
+          <th>Top margin</th>
+          <th>Bottom margin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row.level}>
+            <td>
+              {kind === 'heading' ? 'Heading' : 'Body'} {row.level}
+            </td>
+            <td>{FONT_SIZE_PX[row.level]}px</td>
+            <td>{row.top}px</td>
+            <td>{row.bottom}px</td>
           </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={row.level}>
-              <td>
-                {kind === 'heading' ? 'Heading' : 'Body'} {row.level}
-              </td>
-              <td>{FONT_SIZE_PX[row.level]}px</td>
-              <td>{row.top}px</td>
-              <td>{row.bottom}px</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 }

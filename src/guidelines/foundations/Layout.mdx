@@ -1,38 +1,6 @@
-Layout guidelines keep the product feeling steady and predictable across
-platforms and screen sizes. They cover the units, spacing, and grids that hold
-every surface together — and the targets that keep it usable.
-
-<Divider />
-
-## Measurement units
-
-Compass uses a single base unit of measurement for layout: **8px**. Containers,
-spacing, and component dimensions should always resolve to multiples of 8 where
-possible.
-
-For smaller elements where 8px is too coarse — type, icons, badges, and tight
-controls — drop to a **4px** sub-unit. Below that, 2px is reserved for
-hairline cases like checkbox interiors.
-
-<Divider />
-
-## Spacing
-
-Compass uses a fixed spacing scale. The scale is designed so that 4px and 8px
-steps are always available, with intermediate values for fine adjustments
-inside dense controls.
-
-<SpacingScale />
-
-<Divider />
-
-## Padding
-
-Padding is the space inside a container — the room around content that keeps
-text and controls off the edges. Padding values come from the same spacing
-scale; the most common choice for a card or panel is **16px**.
-
-<PaddingExample />
+Layout keeps the product feeling structured and predictable across platforms
+and screen sizes. Grids, breakpoints, and persistent panels hold every surface
+together — and interaction targets keep them usable.
 
 <Divider />
 
@@ -154,11 +122,3 @@ For pointer devices, the minimum hit area is **24×24px** with at least
 For touch devices, the minimum tap area is **40×40px** with at least **8px**
 between targets. In tight regions like dense toolbars, spacing can drop to
 **4px** — but never below.
-
-<Divider />
-
-## Tokens and implementation
-
-Each spacing step is exposed as a CSS custom property. For the full token
-list, copy-ready values, and breakpoint variables, see the
-[Layout library page](/library/foundations/layout).

@@ -1,0 +1,109 @@
+import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
+import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
+import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
+
+User Avatars represent a person — usually their uploaded photo, with
+initials on a colour background as a fallback. Their circular shape
+distinguishes them from rounded-square Team Avatars at a glance.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{ gap: '1rem', flexWrap: 'wrap' }}>
+  <UserAvatar src={avatarLeonard} alt="Leonard Riley" size="64" status />
+  <UserAvatar alt="Jane Doe" name="Jane Doe" size="64" />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — circular crop of the avatar content.
+- <Num>2</Num> **Image or initials** — the user's uploaded image, or the
+  first one or two letters of their name on one of eight randomly-assigned
+  background colours.
+- <Num>3</Num> **Status badge** — optional online indicator overlaid on the
+  bottom-right of the avatar.
+
+<Divider />
+
+## Variants
+
+| Variant   | Use when                                                                          |
+| --------- | --------------------------------------------------------------------------------- |
+| Image     | The user has uploaded a photo. Always preferred when an image is available.       |
+| Fallback  | The user has no image. Show initials on one of eight assigned colour backgrounds. |
+
+<div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+  <UserAvatar src={avatarLeonard} alt="Leonard Riley" size="48" />
+  <UserAvatar src={avatarDanielle} alt="Danielle Okoro" size="48" />
+  <UserAvatar src={avatarEmma} alt="Emma Novak" size="48" />
+  <UserAvatar src={avatarMarco} alt="Marco Rinaldi" size="48" />
+  <UserAvatar alt="Jane Doe" name="Jane Doe" size="48" />
+  <UserAvatar alt="Marcus Wells" name="Marcus Wells" size="48" />
+  <UserAvatar alt="Priya Shah" name="Priya Shah" size="48" />
+  <UserAvatar alt="Wren Cho" name="Wren Cho" size="48" />
+</div>
+
+The first four show the Image variant; the last four show the Fallback —
+initials on one of eight automatically-assigned colour backgrounds, hashed
+deterministically from the name.
+
+<Divider />
+
+## Sizes
+
+User Avatars come in 13 sizes from 12px to 120px. Pick a size that matches
+the surface — message rows use 32px, profile cards use 96px or larger.
+
+<div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="12" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="20" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="24" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="32" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="40" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="48" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="64" />
+  <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="96" />
+</div>
+
+| Size       | Use when                                                                          |
+| ---------- | --------------------------------------------------------------------------------- |
+| 16–24px    | Inline references in tags, chips, list items, avatar groups.                      |
+| 32px       | Default for message headers and dense surfaces.                                   |
+| 40–48px    | Sidebar headers, member lists, settings forms.                                    |
+| 64px+      | Profile popovers, profile pages, and onboarding moments.                          |
+
+<Divider />
+
+## Status
+
+Pair the avatar with a **Status Badge** when the user's presence matters in
+context — message headers, profile popovers, channel members lists.
+
+<div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+  <UserAvatar src={avatarLeonard} alt="Leonard Riley" size="32" status />
+  <UserAvatar src={avatarLeonard} alt="Leonard Riley" size="48" status />
+  <UserAvatar src={avatarLeonard} alt="Leonard Riley" size="64" status />
+</div>
+
+Don't show status on avatars **smaller than 20px** — the badge becomes
+illegible — and don't show it in places where presence isn't actionable
+(e.g. dense table rows of historical authors).
+
+<Divider />
+
+## Content
+
+- Always provide meaningful `alt` text — the user's display name. The image
+  is a substitute for that name, not a separate piece of information.
+- Fallback initials use the first one or two letters of the display name. The
+  background colour is deterministic per user, so the same person reads the
+  same way across the product.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[User Avatar library page](/library/components/user-avatar).

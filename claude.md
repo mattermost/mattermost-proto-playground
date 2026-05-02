@@ -94,6 +94,14 @@ This routing aligns with **Design system: Foundations, Components, Patterns, and
 
 When building a new component, audit the elements it needs before writing any new code. If an existing component in `src/components/` already covers an element — especially when its name matches what Figma uses — use it directly rather than reimplementing it. Only build a new sub-component when nothing suitable exists.
 
+## Doc shell: prose vs. non-prose
+
+`DocPage` has a `prose` prop that wraps children in `.doc-page__prose`. Set it for MDX guideline pages (`GuidelineRoute`) and library pages (`LibraryRoute`) — both render bare `<h2>`, `<p>`, `<code>`, etc. for section copy alongside component instances. Leave it off for index pages (`DocsIndex`, `GuidelineCategoryIndex`'s list section), which use their own CSS-module classes.
+
+Prose rules in `DocPage.module.scss` are gated with `:not([class])`, so they only target bare HTML emitted by MDX or library pages. This keeps prose typography from cascading into classed component elements (e.g. Modal's `<h2 className="modal__title">`) when those components are rendered inside a prose context.
+
+**Corollary for component authors:** never render a bare `<h2>`, `<p>`, `<li>`, etc. inside a component. Always attach a CSS-module className — otherwise the element will silently inherit prose typography when the component is rendered on a prose page.
+
 ## Shared React hooks
 
 If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (They may be introduced on a long-lived feature branch and cherry-picked to `main` later.)
