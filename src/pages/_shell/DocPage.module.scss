@@ -6,6 +6,41 @@
   max-width: 880px;
   margin: 0 auto;
   padding: var(--spacing-xxxxl) var(--spacing-xxxl);
+
+  // Wider container when an "On this page" rail is rendered: body keeps its
+  // readable width, TOC sits next to it at standard widths, drops out at
+  // narrow widths.
+  &--with-toc {
+    max-width: 1180px;
+  }
+}
+
+.doc-page__columns {
+  max-width: 964px;
+  margin: 0 auto;
+  display: flex;
+  gap: var(--spacing-xl);
+  // Default align-items: stretch — required so the TOC aside is as tall as
+  // the body, giving the sticky <OnThisPage> scope to stay pinned as you
+  // scroll the page.
+
+  // Pin the body to the available column width. flex-basis: 0 + min-width: 0
+  // lets it shrink under content with a wide intrinsic min-width (e.g. a
+  // dense SwatchRamp) instead of pushing the column past its max-width.
+  > .doc-page__body {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.doc-page__toc {
+  width: 240px;
+  flex-shrink: 0;
+  align-self: stretch;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 }
 
 .doc-page__header {

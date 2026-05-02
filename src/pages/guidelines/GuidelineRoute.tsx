@@ -61,6 +61,7 @@ export default function GuidelineRoute() {
 
   return (
     <DocPage
+      toc
       hero={
         <PageHero
           breadcrumb={breadcrumbFor(entry)}
