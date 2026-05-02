@@ -41,9 +41,8 @@
 .home__card {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: var(--radius-l);
-  box-shadow: var(--elevation-1);
   overflow: hidden;
   background-color: var(--center-channel-bg);
   transition:
@@ -62,6 +61,7 @@
   overflow: hidden;
   background-color: rgba(var(--center-channel-color-rgb), 0.08);
   pointer-events: none;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.02);
 }
 
 .home__card-iframe {
@@ -95,5 +95,5 @@
   padding: 0 var(--spacing-l) var(--spacing-l);
   font-size: var(--font-size-75);
   color: rgba(var(--center-channel-color-rgb), 0.72);
-  line-height: var(--line-height-200);
+  line-height: var(--line-height-75);
 }

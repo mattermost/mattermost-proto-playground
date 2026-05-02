@@ -7,6 +7,25 @@ export type GuidelineCategory =
   | 'patterns'
   | 'layouts';
 
+/**
+ * Visual hint for richly-rendered index cards (e.g. the Foundations bento).
+ * `kind` selects which visual primitive to render. Indexes that don't use
+ * card layout ignore this. Card sizing (hero, medium, small) is decided by
+ * the index page's layout, not the manifest entry.
+ */
+export interface GuidelineVisual {
+  kind:
+    | 'swatches'
+    | 'type-specimen'
+    | 'icon-grid'
+    | 'spacing-stack'
+    | 'shape-stack'
+    | 'elevation-stack'
+    | 'theme-split'
+    | 'motion'
+    | 'layout-grid';
+}
+
 export interface GuidelineEntry {
   /** URL-safe identifier. */
   slug: string;
@@ -16,6 +35,8 @@ export interface GuidelineEntry {
   category: GuidelineCategory;
   /** One-line summary for index pages and the page hero. */
   description?: string;
+  /** Optional visual hint for card-style index pages. */
+  visual?: GuidelineVisual;
   /** Lazy import of the .mdx page. */
   page: () => Promise<{ default: ComponentType }>;
 }
@@ -87,6 +108,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Color',
     category: 'foundations',
     description: 'Palette intent, semantic tokens, and contrast rules.',
+    visual: { kind: 'swatches' },
     page: () => import('@/guidelines/foundations/Color.mdx'),
   },
   {
@@ -94,6 +116,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Themes',
     category: 'foundations',
     description: 'How themes adapt color and authoring components that work across them.',
+    visual: { kind: 'theme-split' },
     page: () => import('@/guidelines/foundations/Themes.mdx'),
   },
   {
@@ -101,6 +124,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Typography',
     category: 'foundations',
     description: 'Type families, the scale, and weight conventions.',
+    visual: { kind: 'type-specimen' },
     page: () => import('@/guidelines/foundations/Typography.mdx'),
   },
   {
@@ -108,6 +132,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Iconography',
     category: 'foundations',
     description: 'When to use icons, sizing, and pairing with labels.',
+    visual: { kind: 'icon-grid' },
     page: () => import('@/guidelines/foundations/Iconography.mdx'),
   },
   {
@@ -115,6 +140,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Shape',
     category: 'foundations',
     description: 'Corner radius scale and the role of shape in hierarchy.',
+    visual: { kind: 'shape-stack' },
     page: () => import('@/guidelines/foundations/Shape.mdx'),
   },
   {
@@ -122,6 +148,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Elevation',
     category: 'foundations',
     description: 'The relative distance between objects along the z-axis.',
+    visual: { kind: 'elevation-stack' },
     page: () => import('@/guidelines/foundations/Elevation.mdx'),
   },
   {
@@ -129,6 +156,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Spacing',
     category: 'foundations',
     description: 'The base unit, spacing scale, and how padding flows from it.',
+    visual: { kind: 'spacing-stack' },
     page: () => import('@/guidelines/foundations/Spacing.mdx'),
   },
   {
@@ -136,6 +164,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Layout',
     category: 'foundations',
     description: 'Grids, breakpoints, panel offsets, and interaction targets.',
+    visual: { kind: 'layout-grid' },
     page: () => import('@/guidelines/foundations/Layout.mdx'),
   },
   {
@@ -143,6 +172,7 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     name: 'Animation',
     category: 'foundations',
     description: 'Duration and easing tokens, and when to animate.',
+    visual: { kind: 'motion' },
     page: () => import('@/guidelines/foundations/Animation.mdx'),
   },
 

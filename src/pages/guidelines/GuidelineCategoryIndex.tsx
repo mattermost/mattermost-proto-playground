@@ -8,6 +8,7 @@ import {
 import { guidelineSections } from '@/manifests/sections';
 import DocPage from '@/pages/_shell/DocPage';
 import PageHero from '@/components/layout/PageHero/PageHero';
+import FoundationsBento from './FoundationsBento/FoundationsBento';
 import indexStyles from '@/pages/_shell/DocsIndex.module.scss';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
 
@@ -96,6 +97,8 @@ export default function GuidelineCategoryIndex() {
   const description = CATEGORY_DESCRIPTIONS[validCategory];
   const groups = buildGroups(validCategory);
   const hasEntries = groups.some((g) => g.items.length > 0);
+  const useBento = validCategory === 'foundations' && hasEntries;
+  const allEntries = GUIDELINE_ENTRIES.filter((e) => e.category === validCategory);
 
   return (
     <DocPage
@@ -121,30 +124,33 @@ export default function GuidelineCategoryIndex() {
         </p>
       )}
 
-      {groups.map((g, idx) =>
-        g.items.length === 0 ? null : (
-          <section
-            key={g.label || `group-${idx}`}
-            className={indexStyles['docs-index__section']}
-          >
-            {g.label && <h2>{g.label}</h2>}
-            <ul className={indexStyles['docs-index__list']}>
-              {g.items.map((entry) => (
-                <li key={entry.slug}>
-                  <Link to={`/guidelines/${entry.category}/${entry.slug}`}>
-                    {entry.name}
-                  </Link>
-                  {entry.description && (
-                    <span className={indexStyles['docs-index__desc']}>
-                      {entry.description}
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        ),
-      )}
+      {useBento && <FoundationsBento entries={allEntries} />}
+
+      {!useBento &&
+        groups.map((g, idx) =>
+          g.items.length === 0 ? null : (
+            <section
+              key={g.label || `group-${idx}`}
+              className={indexStyles['docs-index__section']}
+            >
+              {g.label && <h2>{g.label}</h2>}
+              <ul className={indexStyles['docs-index__list']}>
+                {g.items.map((entry) => (
+                  <li key={entry.slug}>
+                    <Link to={`/guidelines/${entry.category}/${entry.slug}`}>
+                      {entry.name}
+                    </Link>
+                    {entry.description && (
+                      <span className={indexStyles['docs-index__desc']}>
+                        {entry.description}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ),
+        )}
     </DocPage>
   );
 }
