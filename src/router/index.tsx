@@ -6,6 +6,7 @@ import Foundations from '@/pages/Foundations/Foundations';
 import Patterns from '@/pages/Patterns/Patterns';
 import Layouts from '@/pages/Layouts/Layouts';
 import ExampleFlow from '@/pages/ExampleFlow/ExampleFlow';
+import ProductSwitcher from '@/pages/ProductSwitcher/ProductSwitcher';
 
 // Register prototype flows here.
 // Each entry becomes a sidebar nav item and a route.
@@ -15,6 +16,12 @@ export const PROTOTYPES = [
     label: 'Example Flow',
     path: '/prototypes/example-flow',
     component: ExampleFlow,
+  },
+  {
+    id: 'product-switcher',
+    label: 'Product Switcher',
+    path: '/prototypes/product-switcher',
+    component: ProductSwitcher,
   },
 ];
 

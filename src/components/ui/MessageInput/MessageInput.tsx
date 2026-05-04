@@ -28,6 +28,8 @@ export interface MessageInputProps {
   placeholder?: string;
   showPriorityIndicator?: boolean;
   showAttachments?: boolean;
+  /** When true, the formatting toolbar starts in the expanded state. */
+  defaultFormattingOpen?: boolean;
 }
 
 export default function MessageInput({
@@ -35,9 +37,10 @@ export default function MessageInput({
   placeholder = 'Message channel…',
   showPriorityIndicator = false,
   showAttachments = false,
+  defaultFormattingOpen = false,
 }: MessageInputProps) {
   const [text, setText] = useState('');
-  const [formattingOpen, setFormattingOpen] = useState(false);
+  const [formattingOpen, setFormattingOpen] = useState(defaultFormattingOpen);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInput = useCallback(() => {

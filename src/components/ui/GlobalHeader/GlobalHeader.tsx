@@ -14,7 +14,7 @@ import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import type { ComponentType } from 'react';
+import type { ComponentType, MouseEventHandler } from 'react';
 import styles from './GlobalHeader.module.scss';
 
 export type GlobalHeaderProduct = 'Channels' | 'Playbooks' | 'Boards';
@@ -32,6 +32,10 @@ export interface GlobalHeaderProps {
   userAvatarSrc: string;
   /** Alt text for the signed-in user avatar. */
   userAvatarAlt: string;
+  /** Called when the product switcher icon button is clicked. */
+  onProductSwitcherClick?: MouseEventHandler<HTMLButtonElement>;
+  /** Marks the product switcher button as expanded (for ARIA). */
+  productSwitcherOpen?: boolean;
 }
 
 const PRODUCT_ICON: Record<GlobalHeaderProduct, ComponentType<{ size?: number }>> = {
@@ -43,9 +47,15 @@ const PRODUCT_ICON: Record<GlobalHeaderProduct, ComponentType<{ size?: number }>
 function InvertedIconButton({
   ariaLabel,
   glyph,
+  onClick,
+  ariaExpanded,
+  ariaHasPopup,
 }: {
   ariaLabel: string;
   glyph: React.ReactNode;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  ariaExpanded?: boolean;
+  ariaHasPopup?: 'menu' | 'true';
 }) {
   return (
     <IconButton
@@ -54,6 +64,9 @@ function InvertedIconButton({
       padding="Compact"
       style="Inverted"
       icon={<Icon size="16" glyph={glyph} />}
+      onClick={onClick}
+      aria-expanded={ariaExpanded}
+      aria-haspopup={ariaHasPopup}
     />
   );
 }
@@ -98,6 +111,8 @@ export default function GlobalHeader({
   showUpgradeButton = false,
   userAvatarSrc,
   userAvatarAlt,
+  onProductSwitcherClick,
+  productSwitcherOpen = false,
 }: GlobalHeaderProps) {
   const isChannels = product === 'Channels';
   const showBrand = isChannels ? showChannelsBranding : true;
@@ -107,7 +122,13 @@ export default function GlobalHeader({
   return (
     <header className={rootClass}>
       <div className={styles['global-header__left']}>
-        <InvertedIconButton ariaLabel="Product switcher" glyph={<ProductsIcon />} />
+        <InvertedIconButton
+          ariaLabel="Product switcher"
+          glyph={<ProductsIcon />}
+          onClick={onProductSwitcherClick}
+          ariaExpanded={productSwitcherOpen}
+          ariaHasPopup="menu"
+        />
         {showBrand && <ProductBrand product={product} />}
         <Navigator />
       </div>
