@@ -64,14 +64,6 @@ export const GUIDELINE_ENTRIES: GuidelineEntry[] = [
     description: 'How foundations, components, patterns, and layouts relate.',
     page: () => import('@/guidelines/overview/SystemHierarchy.mdx'),
   },
-  {
-    slug: 'status-legend',
-    name: 'Status Legend',
-    category: 'overview',
-    description: 'How to read status badges on library entries.',
-    page: () => import('@/guidelines/overview/StatusLegend.mdx'),
-  },
-
   // Foundations
   {
     slug: 'writing-style',
