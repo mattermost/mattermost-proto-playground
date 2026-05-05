@@ -25,7 +25,7 @@ import styles from './DocsLayout.module.scss';
 function parentPath(pathname: string): string {
   const segments = pathname.split('/').filter(Boolean);
   if (segments.length <= 1) return '/';
-  return '/' + segments[0];
+  return '/' + segments.slice(0, -1).join('/');
 }
 
 const LIBRARY_CATEGORIES: { slug: LibraryCategory; name: string }[] = [
