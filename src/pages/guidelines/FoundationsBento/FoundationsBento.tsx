@@ -1,23 +1,46 @@
 import { Link } from 'react-router-dom';
-import type { GuidelineEntry } from '@/manifests/guidelines';
+import type { GuidelineVisual } from '@/manifests/guidelines';
 import { Visual } from './visuals';
 import styles from './FoundationsBento.module.scss';
 
-interface FoundationsBentoProps {
-  entries: GuidelineEntry[];
+/**
+ * Structural shape the bento needs from each entry. Matches both
+ * `GuidelineEntry` (legacy) and `Topic` (unified manifest) — `category`
+ * is widened to `string` so either type satisfies it.
+ */
+export interface BentoEntry {
+  slug: string;
+  name: string;
+  category: string;
+  description?: string;
+  visual?: GuidelineVisual;
 }
+
+interface FoundationsBentoProps {
+  entries: readonly BentoEntry[];
+  /**
+   * Build the destination URL for an entry. Defaults to the legacy
+   * `/guidelines/...` shape; the unified shell passes a flat `/<cat>/<slug>`
+   * resolver instead.
+   */
+  pathFor?: (entry: BentoEntry) => string;
+}
+
+const defaultPathFor = (entry: BentoEntry) =>
+  `/guidelines/${entry.category}/${entry.slug}`;
 
 type CardSize = 'hero' | 'medium' | 'small' | 'wide';
 
 interface BentoCardProps {
-  entry: GuidelineEntry;
+  entry: BentoEntry;
   size: CardSize;
+  to: string;
 }
 
-function BentoCard({ entry, size }: BentoCardProps) {
+function BentoCard({ entry, size, to }: BentoCardProps) {
   return (
     <Link
-      to={`/guidelines/${entry.category}/${entry.slug}`}
+      to={to}
       className={`${styles['bento-card']} ${styles[`bento-card--${size}`]}`}
     >
       {entry.visual && (
@@ -33,13 +56,14 @@ function BentoCard({ entry, size }: BentoCardProps) {
 }
 
 interface PlainCardProps {
-  entry: GuidelineEntry;
+  entry: BentoEntry;
+  to: string;
 }
 
-function PlainCard({ entry }: PlainCardProps) {
+function PlainCard({ entry, to }: PlainCardProps) {
   return (
     <Link
-      to={`/guidelines/${entry.category}/${entry.slug}`}
+      to={to}
       className={`${styles['bento-card']} ${styles['bento-card--plain']}`}
     >
       <span className={styles['bento-card__body']}>
@@ -63,10 +87,13 @@ const GUIDELINE_SLUGS = [
   'accessibility-guidelines',
 ];
 
-export default function FoundationsBento({ entries }: FoundationsBentoProps) {
+export default function FoundationsBento({
+  entries,
+  pathFor = defaultPathFor,
+}: FoundationsBentoProps) {
   const bySlug = new Map(entries.map((e) => [e.slug, e]));
   const pick = (slugs: string[]) =>
-    slugs.map((s) => bySlug.get(s)).filter((e): e is GuidelineEntry => !!e);
+    slugs.map((s) => bySlug.get(s)).filter((e): e is BentoEntry => !!e);
 
   const heroes = pick(STYLE_HEROES);
   const medium = pick(STYLE_MEDIUM);
@@ -90,13 +117,13 @@ export default function FoundationsBento({ entries }: FoundationsBentoProps) {
           <h2 className={styles['foundations-bento__heading']}>Style</h2>
           <div className={styles['foundations-bento__heroes']}>
             {heroes.map((e) => (
-              <BentoCard key={e.slug} entry={e} size="hero" />
+              <BentoCard key={e.slug} entry={e} size="hero" to={pathFor(e)} />
             ))}
           </div>
           {medium.length > 0 && (
             <div className={styles['foundations-bento__medium']}>
               {medium.map((e) => (
-                <BentoCard key={e.slug} entry={e} size="medium" />
+                <BentoCard key={e.slug} entry={e} size="medium" to={pathFor(e)} />
               ))}
             </div>
           )}
@@ -107,6 +134,7 @@ export default function FoundationsBento({ entries }: FoundationsBentoProps) {
                   key={e.slug}
                   entry={e}
                   size={i === small.length - 1 ? 'wide' : 'small'}
+                  to={pathFor(e)}
                 />
               ))}
             </div>
@@ -119,7 +147,7 @@ export default function FoundationsBento({ entries }: FoundationsBentoProps) {
           <h2 className={styles['foundations-bento__heading']}>Guidelines</h2>
           <div className={styles['foundations-bento__plain']}>
             {guidelineEntries.map((e) => (
-              <PlainCard key={e.slug} entry={e} />
+              <PlainCard key={e.slug} entry={e} to={pathFor(e)} />
             ))}
           </div>
         </section>
@@ -129,7 +157,7 @@ export default function FoundationsBento({ entries }: FoundationsBentoProps) {
         <section className={styles['foundations-bento__section']}>
           <div className={styles['foundations-bento__plain']}>
             {unplaced.map((e) => (
-              <PlainCard key={e.slug} entry={e} />
+              <PlainCard key={e.slug} entry={e} to={pathFor(e)} />
             ))}
           </div>
         </section>

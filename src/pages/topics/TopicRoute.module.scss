@@ -1,0 +1,25 @@
+.topic {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.topic__tabs {
+  max-width: 1180px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xxxl);
+  // Bottom rule that the tabs underline sits on; mirrors the typical
+  // tabbed-page treatment so tabs feel anchored under the hero.
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+}
+
+.topic__body {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--spacing-xxxl);
+  color: var(--center-channel-color);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
+}
