@@ -10,9 +10,11 @@ import {
   type GuidelineCategory,
   type GuidelineEntry,
 } from '@/manifests/guidelines';
+import { TOPICS, type TopicCategory, type Topic } from '@/manifests/topics';
 import {
   librarySections,
   guidelineSections,
+  topicSections,
   type SectionGroup,
 } from '@/manifests/sections';
 import DocSidebar, {
@@ -43,8 +45,16 @@ const GUIDELINE_CATEGORIES: { slug: GuidelineCategory; name: string }[] = [
   { slug: 'layouts', name: 'Layouts' },
 ];
 
+const TOPIC_CATEGORIES: { slug: TopicCategory; name: string }[] = [
+  { slug: 'foundations', name: 'Foundations' },
+  { slug: 'components', name: 'Components' },
+  { slug: 'patterns', name: 'Patterns' },
+  { slug: 'layouts', name: 'Layouts' },
+];
+
 const VALID_LIBRARY = new Set<string>(LIBRARY_CATEGORIES.map((c) => c.slug));
 const VALID_GUIDELINE = new Set<string>(GUIDELINE_CATEGORIES.map((c) => c.slug));
+const VALID_TOPIC = new Set<string>(TOPIC_CATEGORIES.map((c) => c.slug));
 
 /**
  * Build the "category overview" sidebar shown on docs index pages.
@@ -176,6 +186,19 @@ function buildGroupsForGuidelines(pathname: string): SidebarGroup[] {
   );
 }
 
+function buildGroupsForTopics(pathname: string): SidebarGroup[] {
+  const segments = pathname.split('/').filter(Boolean);
+  const categoryFromUrl = segments[0] as TopicCategory;
+  // entriesGroupsFor builds `${pathPrefix}/${category}/${slug}`. Pass an
+  // empty prefix so the result is the flat `/<category>/<slug>` URL.
+  return entriesGroupsFor(
+    '',
+    categoryFromUrl,
+    TOPICS as readonly Topic[],
+    topicSections[categoryFromUrl],
+  );
+}
+
 export default function DocsLayout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -187,6 +210,8 @@ export default function DocsLayout() {
     groups = buildGroupsForLibrary(location.pathname);
   } else if (source === 'guidelines') {
     groups = buildGroupsForGuidelines(location.pathname);
+  } else if (VALID_TOPIC.has(source)) {
+    groups = buildGroupsForTopics(location.pathname);
   } else {
     return <Outlet />;
   }

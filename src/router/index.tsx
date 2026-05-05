@@ -8,6 +8,8 @@ import GuidelineCategoryIndex from '@/pages/guidelines/GuidelineCategoryIndex';
 import GuidelineRoute from '@/pages/guidelines/GuidelineRoute';
 import LibraryIndex from '@/pages/library/LibraryIndex';
 import LibraryRoute from '@/pages/library/LibraryRoute';
+import CategoryRoute from '@/pages/topics/CategoryRoute';
+import TopicRoute from '@/pages/topics/TopicRoute';
 import PrototypesIndex from '@/pages/prototypes/PrototypesIndex';
 import ResourcesIndex from '@/pages/resources/ResourcesIndex';
 
@@ -42,6 +44,16 @@ export default function AppRouter() {
 
           <Route path="/library" element={<LibraryIndex />} />
           <Route path="/library/:category/:slug" element={<LibraryRoute />} />
+
+          {/* Unified docs — flat URLs under each category. Specific routes
+              (e.g. /library) outrank these dynamic patterns, so legacy
+              /library and /guidelines URLs continue to resolve. */}
+          <Route path="/:category" element={<CategoryRoute />} />
+          <Route path="/:category/:slug" element={<TopicRoute />} />
+          <Route
+            path="/:category/:slug/specimen"
+            element={<TopicRoute />}
+          />
         </Route>
 
         <Route path="/prototypes" element={<PrototypesIndex />} />
