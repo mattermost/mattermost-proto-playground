@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes } from 'react';
-import { useState, useCallback, useId, useRef, useEffect } from 'react';
+import { useState, useCallback, useId, useRef } from 'react';
 import Button from '@/components/ui/Button/Button';
 import IconButton, {
   ICON_BUTTON_ICON_SIZES,
@@ -9,6 +9,7 @@ import CalendarOutlineIcon from '@mattermost/compass-icons/components/calendar-o
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import styles from './DateRangePicker.module.scss';
 
 export type DateRangePickerMode = 'date' | 'range';
@@ -119,16 +120,7 @@ export default function DateRangePicker({
   const selectedStart = startDate ?? internalStart;
   const selectedEnd = endDate ?? internalEnd;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleClickOutside(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+  useOutsideClose(rootRef, isOpen, () => setIsOpen(false));
 
   const handleToggle = useCallback(() => {
     if (!disabled) setIsOpen((o) => !o);

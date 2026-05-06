@@ -47,6 +47,34 @@
   border-bottom: 1px solid var(--color-neutral-200);
 }
 
+.components__paragraph {
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-200);
+  color: var(--center-channel-color);
+  margin: 0 0 var(--spacing-m);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.components__code-block {
+  display: block;
+  margin: 0 0 var(--spacing-m);
+  padding: var(--spacing-m);
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  border-radius: var(--radius-s);
+  font-family: var(--font-family-monospace);
+  font-size: var(--font-size-75);
+  line-height: var(--line-height-100);
+  color: var(--center-channel-color);
+  overflow-x: auto;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
 .components__row {
   display: flex;
   flex-wrap: wrap;

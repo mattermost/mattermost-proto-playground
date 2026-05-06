@@ -21,7 +21,7 @@ export default function IconLibrary() {
         <h3 className={styles['components__section-title']}>
           Compass Icons package
         </h3>
-        <p>
+        <p className={styles['components__paragraph']}>
           Mattermost UI icons ship in <code>@mattermost/compass-icons</code>.
           The package provides tree-shakeable React SVG components and an icon
           font, sourced from <a href="https://pictogrammers.com/library/mdi/">Material Design Icons</a>{' '}
@@ -35,8 +35,8 @@ export default function IconLibrary() {
           </a>
           .
         </p>
-        <p>Import a glyph by name and pass it to the <code>Icon</code> wrapper:</p>
-        <pre>
+        <p className={styles['components__paragraph']}>Import a glyph by name and pass it to the <code>Icon</code> wrapper:</p>
+        <pre className={styles['components__code-block']}>
           <code>{`import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Icon from '@/components/ui/Icon/Icon';
 
@@ -48,7 +48,7 @@ import Icon from '@/components/ui/Icon/Icon';
         <h3 className={styles['components__section-title']}>
           Container size vs. glyph size
         </h3>
-        <p>
+        <p className={styles['components__paragraph']}>
           The <code>size</code> prop sets the <strong>container</strong>, not the
           SVG itself. <code>Icon</code> auto-injects the correct SVG render size
           (slightly larger than the container) so the glyph bleeds past
