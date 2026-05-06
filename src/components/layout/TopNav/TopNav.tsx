@@ -8,8 +8,7 @@ import styles from './TopNav.module.scss';
 
 const NAV_ITEMS: { to: string; label: string; end?: boolean }[] = [
   { to: '/', label: 'Home', end: true },
-  { to: '/guidelines', label: 'Guidelines' },
-  { to: '/library', label: 'Library' },
+  { to: '/foundations', label: 'Design System' },
   { to: '/prototypes', label: 'Prototypes' },
   { to: '/resources', label: 'Resources' },
 ];
