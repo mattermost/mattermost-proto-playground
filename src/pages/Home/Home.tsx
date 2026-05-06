@@ -6,15 +6,29 @@ const IFRAME_W = 1280;
 
 const DESTINATIONS = [
   {
-    label: 'Design System',
+    label: 'Foundations',
     path: '/foundations',
-    description:
-      'Foundations, components, patterns, and layouts — guidelines and live specimens, side by side.',
+    description: 'Color, typography, spacing, and the rest of the system base.',
+  },
+  {
+    label: 'Components',
+    path: '/components',
+    description: 'Reusable building blocks that make up the interface.',
+  },
+  {
+    label: 'Patterns',
+    path: '/patterns',
+    description: 'Larger compositions that solve common product problems.',
   },
   {
     label: 'Prototypes',
     path: '/prototypes',
     description: 'End-to-end flow prototypes for design exploration.',
+  },
+  {
+    label: 'Resources',
+    path: '/resources',
+    description: 'Links, downloads, and references for the design team.',
   },
 ];
 

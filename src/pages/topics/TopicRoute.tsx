@@ -14,7 +14,7 @@ import PageHero from '@/components/layout/PageHero/PageHero';
 import Tabs from '@/components/ui/Tabs/Tabs';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
-import styles from './TopicRoute.module.scss';
+import styles from '@/pages/_shell/DocShell.module.scss';
 
 const VALID_CATEGORIES: TopicCategory[] = [
   'foundations',
@@ -62,9 +62,9 @@ export default function TopicRoute() {
 
   if (!topic || !GuidelinePage) {
     return (
-      <div className={styles['topic']}>
+      <div className={styles['doc-shell']}>
         <PageHero breadcrumb="Docs" title="Not found" />
-        <div className={styles['topic__body']}>
+        <div className={styles['doc-shell__body']}>
           <div className={docStyles['doc-page__prose']}>
             <p>
               No topic registered for this URL. Check{' '}
@@ -90,8 +90,8 @@ export default function TopicRoute() {
   };
 
   return (
-    <div className={styles['topic']}>
-      <div className={styles['topic__top']}>
+    <div className={styles['doc-shell']}>
+      <div className={styles['doc-shell__top']}>
         <PageHero
           breadcrumb={CATEGORY_LABELS[topic.category]}
           title={topic.name}
@@ -99,7 +99,7 @@ export default function TopicRoute() {
           status={topic.status}
         />
         {hasTabs && (
-          <div className={styles['topic__tabs']}>
+          <div className={styles['doc-shell__tabs']}>
             <Tabs
               tabs={[
                 { key: 'guidelines', label: 'Guidelines' },
@@ -116,21 +116,21 @@ export default function TopicRoute() {
           <SpecimenPage />
         </Suspense>
       ) : view === 'guidelines' ? (
-        <div className={styles['topic__columns']}>
-          <div className={styles['topic__body']} data-doc-body>
+        <div className={styles['doc-shell__columns']}>
+          <div className={styles['doc-shell__body']} data-doc-body>
             <Suspense fallback={<p>Loading…</p>}>
               <div className={docStyles['doc-page__prose']}>
                 <GuidelinePage />
               </div>
             </Suspense>
           </div>
-          <aside className={styles['topic__toc']}>
+          <aside className={styles['doc-shell__toc']}>
             <OnThisPage />
           </aside>
         </div>
       ) : (
         <div
-          className={`${styles['topic__body']} ${styles['topic__body--standalone']}`}
+          className={`${styles['doc-shell__body']} ${styles['doc-shell__body--standalone']}`}
         >
           <Suspense fallback={<p>Loading…</p>}>
             {SpecimenPage && <SpecimenPage />}

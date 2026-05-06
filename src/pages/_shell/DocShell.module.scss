@@ -1,4 +1,4 @@
-.topic {
+.doc-shell {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -6,23 +6,23 @@
 
 // Hero + tabs share the same outer width as DocPage's `--with-toc` inner,
 // so the rounded hero card stays inset from the viewport edges.
-.topic__top {
+.doc-shell__top {
   max-width: 1180px;
   width: 100%;
   margin: 0 auto;
   padding: var(--spacing-xxxxl) var(--spacing-xxxl) 0;
 }
 
-.topic__tabs {
+.doc-shell__tabs {
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 var(--spacing-xxxl);
+  padding: 0 var(--spacing-xxxl) var(--spacing-m);
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
 }
 
 // Two-column layout for the Guidelines tab — prose body + sticky TOC rail.
-.topic__columns {
+.doc-shell__columns {
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
@@ -30,13 +30,13 @@
   display: flex;
   gap: var(--spacing-xl);
 
-  > .topic__body {
+  > .doc-shell__body {
     flex: 1 1 0;
     min-width: 0;
   }
 }
 
-.topic__toc {
+.doc-shell__toc {
   width: 240px;
   flex-shrink: 0;
   align-self: stretch;
@@ -46,16 +46,17 @@
   }
 }
 
-.topic__body {
+.doc-shell__body {
   color: var(--center-channel-color);
   font-size: var(--font-size-200);
   line-height: var(--line-height-200);
 }
 
-// Standalone body (Specimen tab) — owns its own width + padding, since
-// it doesn't sit inside `topic__columns`. Width matches `topic__columns`
-// so the body aligns with the tab bar above.
-.topic__body--standalone {
+// Standalone body — owns its own width + padding, since it doesn't sit
+// inside `doc-shell__columns`. Width matches `doc-shell__columns` so
+// the body aligns with the tab bar above and feels consistent across
+// topic pages and category indexes.
+.doc-shell__body--standalone {
   max-width: 960px;
   width: 100%;
   margin: 0 auto;

@@ -24,12 +24,6 @@ import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import styles from './DocsLayout.module.scss';
 
-function parentPath(pathname: string): string {
-  const segments = pathname.split('/').filter(Boolean);
-  if (segments.length <= 1) return '/';
-  return '/' + segments.slice(0, -1).join('/');
-}
-
 const LIBRARY_CATEGORIES: { slug: LibraryCategory; name: string }[] = [
   { slug: 'foundations', name: 'Foundations' },
   { slug: 'components', name: 'Components' },
@@ -218,9 +212,9 @@ export default function DocsLayout() {
 
   const header = (
     <IconButton
-      aria-label="Back"
+      aria-label="Home"
       icon={<Icon glyph={<ArrowLeftIcon />} size="20" />}
-      onClick={() => navigate(parentPath(location.pathname))}
+      onClick={() => navigate('/')}
     />
   );
 

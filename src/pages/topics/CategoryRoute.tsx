@@ -6,13 +6,13 @@ import {
   type TopicCategory,
 } from '@/manifests/topics';
 import { topicSections } from '@/manifests/sections';
-import DocPage from '@/pages/_shell/DocPage';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import FoundationsBento, {
   type BentoEntry,
 } from '@/pages/guidelines/FoundationsBento/FoundationsBento';
 import indexStyles from '@/pages/_shell/DocsIndex.module.scss';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
+import shellStyles from '@/pages/_shell/DocShell.module.scss';
 
 const VALID_CATEGORIES: TopicCategory[] = [
   'foundations',
@@ -89,9 +89,18 @@ export default function CategoryRoute() {
 
   if (!validCategory) {
     return (
-      <DocPage hero={<PageHero breadcrumb="Docs" title="Not found" />}>
-        <p>No category at this URL.</p>
-      </DocPage>
+      <div className={shellStyles['doc-shell']}>
+        <div className={shellStyles['doc-shell__top']}>
+          <PageHero breadcrumb="Docs" title="Not found" />
+        </div>
+        <div
+          className={`${shellStyles['doc-shell__body']} ${shellStyles['doc-shell__body--standalone']}`}
+        >
+          <div className={docStyles['doc-page__prose']}>
+            <p>No category at this URL.</p>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -103,58 +112,61 @@ export default function CategoryRoute() {
   const allEntries = topicsByCategory(validCategory);
 
   return (
-    <DocPage
-      hero={
+    <div className={shellStyles['doc-shell']}>
+      <div className={shellStyles['doc-shell__top']}>
         <PageHero
           breadcrumb="Design system"
           title={label}
           description={description}
         />
-      }
-    >
-      {Intro && (
-        <div className={docStyles['doc-page__prose']}>
-          <Suspense fallback={null}>
-            <Intro />
-          </Suspense>
-        </div>
-      )}
-
-      {!hasEntries && (
-        <p className={indexStyles['docs-index__empty']}>
-          No entries registered for this category yet.
-        </p>
-      )}
-
-      {useBento && (
-        <FoundationsBento entries={allEntries} pathFor={topicPath} />
-      )}
-
-      {!useBento &&
-        groups.map((g, idx) =>
-          g.items.length === 0 ? null : (
-            <section
-              key={g.label || `group-${idx}`}
-              className={indexStyles['docs-index__section']}
-            >
-              {g.label && <h2>{g.label}</h2>}
-              <ul className={indexStyles['docs-index__list']}>
-                {g.items.map((entry) => (
-                  <li key={entry.slug}>
-                    <Link to={`/${entry.category}/${entry.slug}`}>
-                      {entry.name}
-                    </Link>
-                    {entry.description && (
-                      <span className={indexStyles['docs-index__desc']}>
-                        {entry.description}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ),
+      </div>
+      <div
+        className={`${shellStyles['doc-shell__body']} ${shellStyles['doc-shell__body--standalone']}`}
+      >
+        {Intro && (
+          <div className={docStyles['doc-page__prose']}>
+            <Suspense fallback={null}>
+              <Intro />
+            </Suspense>
+          </div>
         )}
-    </DocPage>
+
+        {!hasEntries && (
+          <p className={indexStyles['docs-index__empty']}>
+            No entries registered for this category yet.
+          </p>
+        )}
+
+        {useBento && (
+          <FoundationsBento entries={allEntries} pathFor={topicPath} />
+        )}
+
+        {!useBento &&
+          groups.map((g, idx) =>
+            g.items.length === 0 ? null : (
+              <section
+                key={g.label || `group-${idx}`}
+                className={indexStyles['docs-index__section']}
+              >
+                {g.label && <h2>{g.label}</h2>}
+                <ul className={indexStyles['docs-index__list']}>
+                  {g.items.map((entry) => (
+                    <li key={entry.slug}>
+                      <Link to={`/${entry.category}/${entry.slug}`}>
+                        {entry.name}
+                      </Link>
+                      {entry.description && (
+                        <span className={indexStyles['docs-index__desc']}>
+                          {entry.description}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ),
+          )}
+      </div>
+    </div>
   );
 }
