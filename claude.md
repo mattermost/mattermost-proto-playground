@@ -83,12 +83,18 @@ Keyframes and other global at-rules can stay at the top of the file; the rest of
 
 When adding an `action` to `EmptyState`, omit the `size` prop unless a Figma spec requires a different size. `Button` defaults to `Medium`, which is the correct size for empty state actions.
 
-## Routing new additions: Patterns page vs Components page
+## Adding a topic to the docs
 
-This routing aligns with **Design system: Foundations, Components, Patterns, and Layouts** (above). When adding a new component to the playground, check the Figma file name:
+Every docs entry — a foundation, component, pattern, or layout — is a single **topic** registered in `src/manifests/topics.ts`. A topic carries its prose (`guidelinePage`) and its live demo (`specimenPage`); the topic shell renders them as Guidelines / Specimen tabs over the same `/<category>/<slug>` URL.
 
-- File name contains **"Patterns"** → add to `src/pages/Patterns/Patterns.tsx`
-- File name contains **"Component"** → add to `src/pages/Components/Components.tsx`
+To add a topic:
+
+1. Pick the category from the four-layer model above (Foundations / Components / Patterns / Layouts) — that's the URL prefix.
+2. Author an MDX guideline page under `src/guidelines/<category>/` (required — every topic has prose).
+3. Author a `*.library.tsx` specimen under `src/components/ui/<Name>/` or `src/pages/<Layout>/` (optional — overview-style entries can omit it; the tab strip hides automatically).
+4. Add a `Topic` entry to `TOPICS` in `topics.ts`. If the topic should appear in a specific sidebar group, list its slug under the right `topicSections[<category>]` group in `src/manifests/sections.ts`; otherwise it falls through to "Other".
+
+The Foundations bento on `/foundations` is curated separately in `src/pages/topics/FoundationsBento/FoundationsBento.tsx` (slug arrays for hero/medium/small placement). New foundation topics that aren't placed there fall to the bento's plain-card fallback.
 
 ## Building new components: reuse existing components first
 
@@ -96,9 +102,11 @@ When building a new component, audit the elements it needs before writing any ne
 
 ## Doc shell: prose vs. non-prose
 
-`DocPage` has a `prose` prop that wraps children in `.doc-page__prose`. Set it for MDX guideline pages (`GuidelineRoute`) and library pages (`LibraryRoute`) — both render bare `<h2>`, `<p>`, `<code>`, etc. for section copy alongside component instances. Leave it off for index pages (`DocsIndex`, `GuidelineCategoryIndex`'s list section), which use their own CSS-module classes.
+Every docs page (TopicRoute, CategoryRoute, PrototypesIndex, ResourcesIndex) renders inside the shared `DocShell` styles in `src/pages/_shell/DocShell.module.scss` — hero at 1180px, body at 960px. The shell itself is layout-only.
 
-Prose rules in `DocPage.module.scss` are gated with `:not([class])`, so they only target bare HTML emitted by MDX or library pages. This keeps prose typography from cascading into classed component elements (e.g. Modal's `<h2 className="modal__title">`) when those components are rendered inside a prose context.
+Prose typography lives in `src/pages/_shell/DocPage.module.scss` under the `.doc-page__prose` class. Wrap MDX content with that class wherever bare `<h2>`, `<p>`, `<code>`, etc. need styling — TopicRoute does this for the Guidelines tab; CategoryRoute does it for category intros. Specimen tabs and category indexes do **not** wrap in prose, so live components and curated lists keep their own styling.
+
+`.doc-page__prose` rules are all gated with `:not([class])`, so they only target bare HTML emitted by MDX. Classed component elements (e.g. Modal's `<h2 className="modal__title">`) are unaffected when rendered inside a prose context.
 
 **Corollary for component authors:** never render a bare `<h2>`, `<p>`, `<li>`, etc. inside a component. Always attach a CSS-module className — otherwise the element will silently inherit prose typography when the component is rendered on a prose page.
 
