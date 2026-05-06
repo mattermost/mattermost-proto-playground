@@ -12,6 +12,7 @@ import {
 } from '@/manifests/topics';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import Tabs from '@/components/ui/Tabs/Tabs';
+import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
 import styles from './TopicRoute.module.scss';
 
@@ -90,37 +91,49 @@ export default function TopicRoute() {
 
   return (
     <div className={styles['topic']}>
-      <PageHero
-        breadcrumb={CATEGORY_LABELS[topic.category]}
-        title={topic.name}
-        description={topic.description}
-        status={topic.status}
-      />
-      {hasTabs && (
-        <div className={styles['topic__tabs']}>
-          <Tabs
-            tabs={[
-              { key: 'guidelines', label: 'Guidelines' },
-              { key: 'specimen', label: 'Specimen' },
-            ]}
-            activeKey={view}
-            onChange={handleTabChange}
-          />
-        </div>
-      )}
+      <div className={styles['topic__top']}>
+        <PageHero
+          breadcrumb={CATEGORY_LABELS[topic.category]}
+          title={topic.name}
+          description={topic.description}
+          status={topic.status}
+        />
+        {hasTabs && (
+          <div className={styles['topic__tabs']}>
+            <Tabs
+              tabs={[
+                { key: 'guidelines', label: 'Guidelines' },
+                { key: 'specimen', label: 'Specimen' },
+              ]}
+              activeKey={view}
+              onChange={handleTabChange}
+            />
+          </div>
+        )}
+      </div>
       {fullBleed && SpecimenPage ? (
         <Suspense fallback={null}>
           <SpecimenPage />
         </Suspense>
-      ) : (
-        <div className={styles['topic__body']}>
-          <Suspense fallback={<p>Loading…</p>}>
-            {view === 'guidelines' && (
+      ) : view === 'guidelines' ? (
+        <div className={styles['topic__columns']}>
+          <div className={styles['topic__body']} data-doc-body>
+            <Suspense fallback={<p>Loading…</p>}>
               <div className={docStyles['doc-page__prose']}>
                 <GuidelinePage />
               </div>
-            )}
-            {view === 'specimen' && SpecimenPage && <SpecimenPage />}
+            </Suspense>
+          </div>
+          <aside className={styles['topic__toc']}>
+            <OnThisPage />
+          </aside>
+        </div>
+      ) : (
+        <div
+          className={`${styles['topic__body']} ${styles['topic__body--standalone']}`}
+        >
+          <Suspense fallback={<p>Loading…</p>}>
+            {SpecimenPage && <SpecimenPage />}
           </Suspense>
         </div>
       )}
