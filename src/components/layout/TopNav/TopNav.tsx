@@ -1,15 +1,64 @@
 import { useState, useRef, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import PaletteOutlineIcon from '@mattermost/compass-icons/components/palette-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import { useTheme, type ThemeId } from '@/contexts/ThemeContext';
+import { TOPICS, type TopicCategory } from '@/manifests/topics';
+import { topicSections } from '@/manifests/sections';
 import styles from './TopNav.module.scss';
 
-const NAV_ITEMS: { to: string; label: string; end?: boolean }[] = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/guidelines', label: 'Guidelines' },
-  { to: '/library', label: 'Library' },
+interface NavItem {
+  to: string;
+  label: string;
+  end?: boolean;
+  /**
+   * URL prefix used for active-state matching. Defaults to `to`. Set this
+   * when an item links to a deep child but should highlight on any path
+   * under a category (e.g. /foundations/* keeps "Foundations" active even
+   * though `to` is `/foundations/why-compass`).
+   */
+  activePrefix?: string;
+}
+
+/**
+ * Resolve the first topic for a category, honoring sidebar section order.
+ * Falls back to manifest order if no sections are defined.
+ */
+function firstChildPath(category: TopicCategory): string {
+  const inCategory = TOPICS.filter((t) => t.category === category);
+  const sections = topicSections[category];
+  const fallback = inCategory[0];
+
+  if (!sections || sections.length === 0) {
+    return fallback ? `/${category}/${fallback.slug}` : `/${category}`;
+  }
+
+  const slugs = new Set(inCategory.map((t) => t.slug));
+  for (const section of sections) {
+    for (const slug of section.slugs) {
+      if (slugs.has(slug)) return `/${category}/${slug}`;
+    }
+  }
+  return fallback ? `/${category}/${fallback.slug}` : `/${category}`;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    to: firstChildPath('foundations'),
+    label: 'Foundations',
+    activePrefix: '/foundations',
+  },
+  {
+    to: firstChildPath('components'),
+    label: 'Components',
+    activePrefix: '/components',
+  },
+  {
+    to: firstChildPath('patterns'),
+    label: 'Patterns',
+    activePrefix: '/patterns',
+  },
   { to: '/prototypes', label: 'Prototypes' },
   { to: '/resources', label: 'Resources' },
 ];
@@ -21,6 +70,54 @@ const THEME_LABELS: Record<ThemeId, string> = {
   indigo: 'Indigo',
   onyx: 'Onyx',
 };
+
+function pathStartsWith(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(prefix + '/');
+}
+
+interface TopNavLinkProps {
+  item: NavItem;
+}
+
+function TopNavLink({ item }: TopNavLinkProps) {
+  const { pathname } = useLocation();
+
+  // Items with an activePrefix need custom matching since NavLink only
+  // matches against `to`, which here points to a deep child.
+  if (item.activePrefix) {
+    const isActive = pathStartsWith(pathname, item.activePrefix);
+    return (
+      <Link
+        to={item.to}
+        className={[
+          styles['top-nav__item'],
+          isActive ? styles['top-nav__item--active'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
+  return (
+    <NavLink
+      to={item.to}
+      end={item.end}
+      className={({ isActive }) =>
+        [
+          styles['top-nav__item'],
+          isActive ? styles['top-nav__item--active'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')
+      }
+    >
+      {item.label}
+    </NavLink>
+  );
+}
 
 export default function TopNav() {
   const { theme, setTheme } = useTheme();
@@ -47,21 +144,7 @@ export default function TopNav() {
 
       <nav className={styles['top-nav__items']} aria-label="Primary">
         {NAV_ITEMS.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            className={({ isActive }) =>
-              [
-                styles['top-nav__item'],
-                isActive ? styles['top-nav__item--active'] : '',
-              ]
-                .filter(Boolean)
-                .join(' ')
-            }
-          >
-            {item.label}
-          </NavLink>
+          <TopNavLink key={item.label} item={item} />
         ))}
 
         <div ref={themeRef} className={styles['top-nav__theme']}>
