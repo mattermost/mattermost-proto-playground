@@ -3,11 +3,8 @@ import AppShell from '@/components/layout/AppShell/AppShell';
 import DocsLayout from '@/components/layout/DocsLayout/DocsLayout';
 import Home from '@/pages/Home/Home';
 import ExternalCallParticipants from '@/pages/ExternalCallParticipants/ExternalCallParticipants';
-import GuidelinesIndex from '@/pages/guidelines/GuidelinesIndex';
-import GuidelineCategoryIndex from '@/pages/guidelines/GuidelineCategoryIndex';
-import GuidelineRoute from '@/pages/guidelines/GuidelineRoute';
-import LibraryIndex from '@/pages/library/LibraryIndex';
-import LibraryRoute from '@/pages/library/LibraryRoute';
+import CategoryRoute from '@/pages/topics/CategoryRoute';
+import TopicRoute from '@/pages/topics/TopicRoute';
 import PrototypesIndex from '@/pages/prototypes/PrototypesIndex';
 import ResourcesIndex from '@/pages/resources/ResourcesIndex';
 
@@ -28,20 +25,15 @@ export default function AppRouter() {
       <Route element={<AppShell />}>
         <Route index element={<Home />} />
 
-        {/* Docs surfaces — wrapped with the persistent sidebar. */}
+        {/* Docs surfaces — wrapped with the persistent sidebar. Flat URLs
+            under each category resolve to the unified topic shell. */}
         <Route element={<DocsLayout />}>
-          <Route path="/guidelines" element={<GuidelinesIndex />} />
+          <Route path="/:category" element={<CategoryRoute />} />
+          <Route path="/:category/:slug" element={<TopicRoute />} />
           <Route
-            path="/guidelines/:category"
-            element={<GuidelineCategoryIndex />}
+            path="/:category/:slug/specimen"
+            element={<TopicRoute />}
           />
-          <Route
-            path="/guidelines/:category/:slug"
-            element={<GuidelineRoute />}
-          />
-
-          <Route path="/library" element={<LibraryIndex />} />
-          <Route path="/library/:category/:slug" element={<LibraryRoute />} />
         </Route>
 
         <Route path="/prototypes" element={<PrototypesIndex />} />

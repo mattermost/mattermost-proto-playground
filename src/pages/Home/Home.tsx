@@ -6,20 +6,29 @@ const IFRAME_W = 1280;
 
 const DESTINATIONS = [
   {
-    label: 'Guidelines',
-    path: '/guidelines',
-    description: 'Written documentation for the design system.',
+    label: 'Foundations',
+    path: '/foundations',
+    description: 'Color, typography, spacing, and the rest of the system base.',
   },
   {
-    label: 'Library',
-    path: '/library',
-    description:
-      'Live reference for tokens, components, patterns, and layouts.',
+    label: 'Components',
+    path: '/components',
+    description: 'Reusable building blocks that make up the interface.',
+  },
+  {
+    label: 'Patterns',
+    path: '/patterns',
+    description: 'Larger compositions that solve common product problems.',
   },
   {
     label: 'Prototypes',
     path: '/prototypes',
     description: 'End-to-end flow prototypes for design exploration.',
+  },
+  {
+    label: 'Resources',
+    path: '/resources',
+    description: 'Links, downloads, and references for the design team.',
   },
 ];
 
@@ -62,7 +71,7 @@ export default function Home() {
       <header className={styles['home__header']}>
         <h1 className={styles['home__heading']}>Mattermost Design System</h1>
         <p className={styles['home__subheading']}>
-          Guidelines, library, and prototypes — all in one place.
+          Design system docs and prototypes — all in one place.
         </p>
       </header>
 
