@@ -1,43 +1,13 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
-import {
-  LIBRARY_ENTRIES,
-  type LibraryCategory,
-  type LibraryEntry,
-} from '@/manifests/library';
-import {
-  GUIDELINE_ENTRIES,
-  type GuidelineCategory,
-  type GuidelineEntry,
-} from '@/manifests/guidelines';
 import { TOPICS, type TopicCategory, type Topic } from '@/manifests/topics';
-import {
-  librarySections,
-  guidelineSections,
-  topicSections,
-  type SectionGroup,
-} from '@/manifests/sections';
+import { topicSections, type SectionGroup } from '@/manifests/sections';
 import DocSidebar, {
   type SidebarGroup,
 } from '@/components/layout/DocSidebar/DocSidebar';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import styles from './DocsLayout.module.scss';
-
-const LIBRARY_CATEGORIES: { slug: LibraryCategory; name: string }[] = [
-  { slug: 'foundations', name: 'Foundations' },
-  { slug: 'components', name: 'Components' },
-  { slug: 'patterns', name: 'Patterns' },
-  { slug: 'layouts', name: 'Layouts' },
-];
-
-const GUIDELINE_CATEGORIES: { slug: GuidelineCategory; name: string }[] = [
-  { slug: 'overview', name: 'Overview' },
-  { slug: 'foundations', name: 'Foundations' },
-  { slug: 'components', name: 'Components' },
-  { slug: 'patterns', name: 'Patterns' },
-  { slug: 'layouts', name: 'Layouts' },
-];
 
 const TOPIC_CATEGORIES: { slug: TopicCategory; name: string }[] = [
   { slug: 'foundations', name: 'Foundations' },
@@ -46,79 +16,44 @@ const TOPIC_CATEGORIES: { slug: TopicCategory; name: string }[] = [
   { slug: 'layouts', name: 'Layouts' },
 ];
 
-const VALID_LIBRARY = new Set<string>(LIBRARY_CATEGORIES.map((c) => c.slug));
-const VALID_GUIDELINE = new Set<string>(GUIDELINE_CATEGORIES.map((c) => c.slug));
 const VALID_TOPIC = new Set<string>(TOPIC_CATEGORIES.map((c) => c.slug));
 
 /**
- * Build the "category overview" sidebar shown on docs index pages.
- *
- * - `linkToCategoryIndex`: list every category and link to its index page
- *   (`/<prefix>/<cat>`). The category's index page handles empty states.
- * - default: link to the first entry in the category, skipping empty ones.
- */
-function categoryOverviewGroups(
-  pathPrefix: string,
-  categories: { slug: string; name: string }[],
-  entries: readonly { slug: string; category: string }[],
-  options?: { linkToCategoryIndex?: boolean },
-): SidebarGroup[] {
-  const linkToCategoryIndex = options?.linkToCategoryIndex ?? false;
-
-  const items = categories
-    .map(({ slug: catSlug, name }) => {
-      if (linkToCategoryIndex) {
-        return { key: catSlug, name, to: `${pathPrefix}/${catSlug}` };
-      }
-      const first = entries.find((e) => e.category === catSlug);
-      if (!first) return null;
-      return {
-        key: catSlug,
-        name,
-        to: `${pathPrefix}/${catSlug}/${first.slug}`,
-      };
-    })
-    .filter((item): item is NonNullable<typeof item> => item !== null);
-
-  return [{ label: '', items }];
-}
-
-/**
  * Build the in-category sidebar — section-grouped if sections defined,
- * flat otherwise.
+ * flat otherwise. Returned items link to `/<category>/<slug>` (the
+ * Guidelines tab — switching to Specimen happens within TopicRoute).
  */
 function entriesGroupsFor(
-  pathPrefix: string,
-  category: string,
-  entries: readonly { slug: string; name: string; category: string }[],
+  category: TopicCategory,
+  topics: readonly Topic[],
   sections: SectionGroup[] | undefined,
 ): SidebarGroup[] {
-  const inCategory = entries.filter((e) => e.category === category);
-  const bySlug = new Map(inCategory.map((e) => [e.slug, e]));
+  const inCategory = topics.filter((t) => t.category === category);
+  const bySlug = new Map(inCategory.map((t) => [t.slug, t]));
 
   if (sections && sections.length > 0) {
     const used = new Set<string>();
     const groups: SidebarGroup[] = sections.map((s) => {
       const items = s.slugs
         .map((slug) => bySlug.get(slug))
-        .filter((e): e is NonNullable<typeof e> => e !== undefined)
-        .map((e) => ({
-          key: e.slug,
-          name: e.name,
-          to: `${pathPrefix}/${category}/${e.slug}`,
+        .filter((t): t is Topic => t !== undefined)
+        .map((t) => ({
+          key: t.slug,
+          name: t.name,
+          to: `/${category}/${t.slug}`,
         }));
       items.forEach((i) => used.add(i.key));
       return { label: s.label, items };
     });
 
-    const ungrouped = inCategory.filter((e) => !used.has(e.slug));
+    const ungrouped = inCategory.filter((t) => !used.has(t.slug));
     if (ungrouped.length > 0) {
       groups.push({
         label: 'Other',
-        items: ungrouped.map((e) => ({
-          key: e.slug,
-          name: e.name,
-          to: `${pathPrefix}/${category}/${e.slug}`,
+        items: ungrouped.map((t) => ({
+          key: t.slug,
+          name: t.name,
+          to: `/${category}/${t.slug}`,
         })),
       });
     }
@@ -128,69 +63,13 @@ function entriesGroupsFor(
   return [
     {
       label: '',
-      items: inCategory.map((e) => ({
-        key: e.slug,
-        name: e.name,
-        to: `${pathPrefix}/${category}/${e.slug}`,
+      items: inCategory.map((t) => ({
+        key: t.slug,
+        name: t.name,
+        to: `/${category}/${t.slug}`,
       })),
     },
   ];
-}
-
-function buildGroupsForLibrary(pathname: string): SidebarGroup[] {
-  const segments = pathname.split('/').filter(Boolean);
-  const categoryFromUrl = segments[1];
-
-  if (!categoryFromUrl || !VALID_LIBRARY.has(categoryFromUrl)) {
-    return categoryOverviewGroups(
-      '/library',
-      LIBRARY_CATEGORIES,
-      LIBRARY_ENTRIES as readonly LibraryEntry[],
-    );
-  }
-
-  const category = categoryFromUrl as LibraryCategory;
-  return entriesGroupsFor(
-    '/library',
-    category,
-    LIBRARY_ENTRIES as readonly LibraryEntry[],
-    librarySections[category],
-  );
-}
-
-function buildGroupsForGuidelines(pathname: string): SidebarGroup[] {
-  const segments = pathname.split('/').filter(Boolean);
-  const categoryFromUrl = segments[1];
-
-  if (!categoryFromUrl || !VALID_GUIDELINE.has(categoryFromUrl)) {
-    return categoryOverviewGroups(
-      '/guidelines',
-      GUIDELINE_CATEGORIES,
-      GUIDELINE_ENTRIES as readonly GuidelineEntry[],
-      { linkToCategoryIndex: true },
-    );
-  }
-
-  const category = categoryFromUrl as GuidelineCategory;
-  return entriesGroupsFor(
-    '/guidelines',
-    category,
-    GUIDELINE_ENTRIES as readonly GuidelineEntry[],
-    guidelineSections[category],
-  );
-}
-
-function buildGroupsForTopics(pathname: string): SidebarGroup[] {
-  const segments = pathname.split('/').filter(Boolean);
-  const categoryFromUrl = segments[0] as TopicCategory;
-  // entriesGroupsFor builds `${pathPrefix}/${category}/${slug}`. Pass an
-  // empty prefix so the result is the flat `/<category>/<slug>` URL.
-  return entriesGroupsFor(
-    '',
-    categoryFromUrl,
-    TOPICS as readonly Topic[],
-    topicSections[categoryFromUrl],
-  );
 }
 
 export default function DocsLayout() {
@@ -199,16 +78,13 @@ export default function DocsLayout() {
   const segments = location.pathname.split('/').filter(Boolean);
   const source = segments[0];
 
-  let groups: SidebarGroup[];
-  if (source === 'library') {
-    groups = buildGroupsForLibrary(location.pathname);
-  } else if (source === 'guidelines') {
-    groups = buildGroupsForGuidelines(location.pathname);
-  } else if (VALID_TOPIC.has(source)) {
-    groups = buildGroupsForTopics(location.pathname);
-  } else {
-    return <Outlet />;
-  }
+  if (!VALID_TOPIC.has(source)) return <Outlet />;
+
+  const groups = entriesGroupsFor(
+    source as TopicCategory,
+    TOPICS,
+    topicSections[source as TopicCategory],
+  );
 
   const header = (
     <IconButton

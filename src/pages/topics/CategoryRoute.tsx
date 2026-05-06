@@ -9,7 +9,7 @@ import { topicSections } from '@/manifests/sections';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import FoundationsBento, {
   type BentoEntry,
-} from '@/pages/guidelines/FoundationsBento/FoundationsBento';
+} from './FoundationsBento/FoundationsBento';
 import indexStyles from '@/pages/_shell/DocsIndex.module.scss';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
 import shellStyles from '@/pages/_shell/DocShell.module.scss';

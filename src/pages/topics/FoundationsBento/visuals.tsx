@@ -7,7 +7,7 @@ import EmoticonOutlineIcon from '@mattermost/compass-icons/components/emoticon-o
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import PaperclipIcon from '@mattermost/compass-icons/components/paperclip';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
-import type { GuidelineVisual } from '@/manifests/guidelines';
+import type { TopicVisual } from '@/manifests/topics';
 import styles from './FoundationsBento.module.scss';
 
 type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
@@ -148,7 +148,7 @@ function LayoutGrid() {
   );
 }
 
-const VISUALS: Record<GuidelineVisual['kind'], ComponentType> = {
+const VISUALS: Record<TopicVisual['kind'], ComponentType> = {
   swatches: Swatches,
   'type-specimen': TypeSpecimen,
   'icon-grid': IconGrid,
@@ -160,7 +160,7 @@ const VISUALS: Record<GuidelineVisual['kind'], ComponentType> = {
   'layout-grid': LayoutGrid,
 };
 
-export function Visual({ kind }: { kind: GuidelineVisual['kind'] }) {
+export function Visual({ kind }: { kind: TopicVisual['kind'] }) {
   const Component = VISUALS[kind];
   return <Component />;
 }

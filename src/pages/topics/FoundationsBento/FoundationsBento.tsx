@@ -1,33 +1,33 @@
 import { Link } from 'react-router-dom';
-import type { GuidelineVisual } from '@/manifests/guidelines';
+import type { TopicVisual } from '@/manifests/topics';
 import { Visual } from './visuals';
 import styles from './FoundationsBento.module.scss';
 
 /**
- * Structural shape the bento needs from each entry. Matches both
- * `GuidelineEntry` (legacy) and `Topic` (unified manifest) — `category`
- * is widened to `string` so either type satisfies it.
+ * Structural shape the bento needs from each entry. Matches `Topic`
+ * with `category` widened to `string` so consumers don't have to narrow
+ * the category union before passing entries in.
  */
 export interface BentoEntry {
   slug: string;
   name: string;
   category: string;
   description?: string;
-  visual?: GuidelineVisual;
+  visual?: TopicVisual;
 }
 
 interface FoundationsBentoProps {
   entries: readonly BentoEntry[];
   /**
-   * Build the destination URL for an entry. Defaults to the legacy
-   * `/guidelines/...` shape; the unified shell passes a flat `/<cat>/<slug>`
-   * resolver instead.
+   * Build the destination URL for an entry. Defaults to the flat
+   * `/<category>/<slug>` shape; pass a custom resolver to land on a
+   * different tab or surface.
    */
   pathFor?: (entry: BentoEntry) => string;
 }
 
 const defaultPathFor = (entry: BentoEntry) =>
-  `/guidelines/${entry.category}/${entry.slug}`;
+  `/${entry.category}/${entry.slug}`;
 
 type CardSize = 'hero' | 'medium' | 'small' | 'wide';
 
