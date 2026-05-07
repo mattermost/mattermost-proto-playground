@@ -78,7 +78,9 @@ export default function Home() {
       <div className={styles['home__grid']}>
         {DESTINATIONS.map((d) => (
           <Link key={d.path} to={d.path} className={styles['home__card']}>
-            <CardThumbnail src={d.path} />
+            <CardThumbnail
+              src={`${import.meta.env.BASE_URL}${d.path.replace(/^\//, '')}`}
+            />
             <div className={styles['home__card-body']}>
               <span className={styles['home__card-label']}>{d.label}</span>
               <span className={styles['home__card-arrow']}>→</span>
