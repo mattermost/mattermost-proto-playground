@@ -21,7 +21,7 @@ import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
-import styles from './Layouts.module.scss';
+import styles from './messaging.specimen.module.scss';
 
 export default function Layouts() {
   const [rightSidebarOpen, setRightSidebarOpen] = useState(false);

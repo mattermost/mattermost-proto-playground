@@ -1,8 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import AppShell from '@/components/layout/AppShell/AppShell';
 import DocsLayout from '@/components/layout/DocsLayout/DocsLayout';
-import Home from '@/pages/Home/Home';
-import ExampleFlow from '@/pages/ExampleFlow/ExampleFlow';
+import Home from '@/pages/home/Home';
+import ExampleFlow from '@/pages/example-flow/ExampleFlow';
 import CategoryRoute from '@/pages/topics/CategoryRoute';
 import TopicRoute from '@/pages/topics/TopicRoute';
 import PrototypesIndex from '@/pages/prototypes/PrototypesIndex';

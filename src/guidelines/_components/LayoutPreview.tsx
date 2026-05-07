@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import Layouts from '@/pages/Layouts/Layouts';
+import Layouts from '@/guidelines/layouts/messaging/messaging.specimen';
 import type { ThemeId } from '@/contexts/ThemeContext';
 import styles from './LayoutPreview.module.scss';
 
