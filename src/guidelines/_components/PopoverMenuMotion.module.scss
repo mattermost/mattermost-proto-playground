@@ -1,0 +1,104 @@
+.pm-motion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-l);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-l) 0;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+
+  &__stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 240px;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+    &--above,
+    &--below {
+      flex-direction: column;
+      gap: var(--spacing-xs);
+    }
+
+    &--submenu-left,
+    &--submenu-right {
+      flex-direction: row;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    // Visual ordering — surface sits on the side it opens toward.
+    // (Default order 0 applies to the trigger / parent, so the surface uses
+    // -1 to lay out before it and 1 to lay out after.)
+    &--above .pm-motion__surface {
+      order: -1;
+    }
+    &--below .pm-motion__surface {
+      order: 1;
+    }
+    &--submenu-left .pm-motion__surface {
+      order: -1;
+      margin-right: -8px;
+    }
+    &--submenu-right .pm-motion__surface {
+      order: 1;
+      margin-left: -8px;
+    }
+  }
+
+  // Wrapping div for the animated child menu — the real PopoverMenu sits
+  // inside untouched.
+  &__surface {
+    position: relative;
+    z-index: 1;
+    display: flex;
+
+    // Closed state per direction. Open animation reverses these offsets.
+    &--above {
+      transform: translateY(8px);
+      opacity: 0;
+    }
+    &--below {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
+    &--submenu-left {
+      transform: translateX(8px);
+      opacity: 0;
+    }
+    &--submenu-right {
+      transform: translateX(-8px);
+      opacity: 0;
+    }
+
+    // Close = exit easing, 100ms (per spec — no token at this duration).
+    transition:
+      transform 100ms var(--ease-exit),
+      opacity 100ms var(--ease-exit);
+
+    pointer-events: none;
+
+    &--open {
+      transform: translate(0, 0);
+      opacity: 1;
+      pointer-events: auto;
+      // Open = entrance easing, 150ms = --duration-quick.
+      transition:
+        transform var(--duration-quick) var(--ease-entrance),
+        opacity var(--duration-quick) var(--ease-entrance);
+    }
+  }
+
+  // Parent menu wrapper for the submenu cases.
+  &__parent {
+    position: relative;
+    z-index: 0;
+    display: flex;
+  }
+}

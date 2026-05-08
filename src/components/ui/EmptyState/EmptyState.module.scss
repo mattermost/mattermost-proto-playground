@@ -8,6 +8,8 @@
   overflow-x: hidden;
   overflow-y: auto;
 
+  @include minimal-scrollbar;
+
   &__container {
     display: flex;
     flex-direction: column;

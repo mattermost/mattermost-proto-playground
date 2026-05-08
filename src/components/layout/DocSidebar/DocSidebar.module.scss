@@ -42,6 +42,10 @@
     flex-direction: column;
   }
 
+  &__list-item {
+    margin: 0;
+  }
+
   &__item {
     display: block;
     padding: var(--spacing-xxs) var(--spacing-s);

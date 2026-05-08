@@ -80,7 +80,9 @@ export default function ImagePreview({
   return (
     <div className={rootClass}>
       <div className={styles['image-preview__frame']}>
-        <img src={src} alt={alt} className={styles['image-preview__img']} />
+        <div className={styles['image-preview__media']}>
+          <img src={src} alt={alt} className={styles['image-preview__img']} />
+        </div>
 
         {/* Hover action buttons */}
         <div className={styles['image-preview__actions']}>

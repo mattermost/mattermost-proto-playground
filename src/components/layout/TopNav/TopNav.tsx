@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import PaletteOutlineIcon from '@mattermost/compass-icons/components/palette-outline';
@@ -6,6 +6,7 @@ import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import { useTheme, type ThemeId } from '@/contexts/ThemeContext';
 import { TOPICS, type TopicCategory } from '@/manifests/topics';
 import { topicSections } from '@/manifests/sections';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import styles from './TopNav.module.scss';
 
 interface NavItem {
@@ -124,16 +125,7 @@ export default function TopNav() {
   const [open, setOpen] = useState(false);
   const themeRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    function handleClickOutside(e: MouseEvent) {
-      if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [open]);
+  useOutsideClose(themeRef, open, () => setOpen(false));
 
   return (
     <div className={styles['top-nav']}>
