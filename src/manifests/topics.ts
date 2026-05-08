@@ -746,6 +746,8 @@ export const TOPICS: Topic[] = [
     slug: 'message-input',
     name: 'Message Input',
     category: 'patterns',
+    description:
+      'Composer for drafting messages: text area, formatting bar, attachments, emoji, and send.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/message-input/message-input.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/message-input/message-input.specimen'),
@@ -754,6 +756,8 @@ export const TOPICS: Topic[] = [
     slug: 'call-widget',
     name: 'Call Widget',
     category: 'patterns',
+    description:
+      'Floating active-call controls: speaker, timer, participants, mute, share, menu, and leave.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/call-widget/call-widget.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/call-widget/call-widget.specimen'),
@@ -772,6 +776,8 @@ export const TOPICS: Topic[] = [
     slug: 'right-sidebar',
     name: 'Right Sidebar',
     category: 'patterns',
+    description:
+      'Secondary column for threads, channel info, search, and tools beside the center channel.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/right-sidebar/right-sidebar.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/right-sidebar/right-sidebar.specimen'),
