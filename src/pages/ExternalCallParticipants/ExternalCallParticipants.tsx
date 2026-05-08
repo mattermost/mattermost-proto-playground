@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import CallPopout from '@/components/ui/CallPopout/CallPopout';
 import CallWidget from '@/components/ui/CallWidget/CallWidget';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
@@ -111,7 +111,7 @@ export default function ExternalCallParticipants() {
           <div className={layoutStyles['page__messages']}>
             <MessageSeparator type="Date" label="Today" />
 
-            <Post
+            <Message
               avatarSrc={avatarSofia}
               avatarAlt="Sofia Bauer"
               username="Sofia Bauer"
@@ -122,9 +122,9 @@ export default function ExternalCallParticipants() {
                 minutes — sharing the external link so Priya can join without a
                 Mattermost account.
               </p>
-            </Post>
+            </Message>
 
-            <Post
+            <Message
               avatarSrc={avatarMarco}
               avatarAlt="Marco Rinaldi"
               username="Marco Rinaldi"
@@ -134,7 +134,7 @@ export default function ExternalCallParticipants() {
                 I&rsquo;ll dial in from the shop floor — no browser there. Drop
                 the SIP number and PIN in the thread please.
               </p>
-            </Post>
+            </Message>
           </div>
 
           <div className={layoutStyles['page__message-input']}>
