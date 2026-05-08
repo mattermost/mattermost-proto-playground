@@ -9,7 +9,7 @@ import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-
 import RightSidebar from '@/components/ui/RightSidebar';
 import RightSidebarHeader from '@/components/ui/RightSidebarHeader';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import Divider from '@/components/ui/Divider/Divider';
 import ActionButton from '@/components/ui/ActionButton/ActionButton';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
@@ -186,7 +186,8 @@ export default function RightSidebarLibrary() {
           }
         >
           <div className={styles['patterns__rsb-thread']}>
-            <Post
+            <Message
+              messageActionsType="RHS"
               avatarSrc={avatarLeonard}
               avatarAlt="Leonard Riley"
               username="Leonard Riley"
@@ -197,8 +198,9 @@ export default function RightSidebarLibrary() {
                 parent channel as a secondary title, or only when the content is
                 scoped to a channel?
               </p>
-            </Post>
-            <Post
+            </Message>
+            <Message
+              messageActionsType="RHS"
               avatarSrc={avatarAikoTan}
               avatarAlt="Aiko Tan"
               username="Aiko Tan"
@@ -209,8 +211,9 @@ export default function RightSidebarLibrary() {
                 threads, pinned messages, files. Skip it for global views like
                 Saved Messages.
               </p>
-            </Post>
-            <Post
+            </Message>
+            <Message
+              messageActionsType="RHS"
               avatarSrc={avatarDanielle}
               avatarAlt="Danielle Okoro"
               username="Danielle Okoro"
@@ -220,7 +223,7 @@ export default function RightSidebarLibrary() {
                 +1. The divider treatment also reads as "scoped to" which
                 reinforces the relationship.
               </p>
-            </Post>
+            </Message>
           </div>
         </RightSidebar>
       </div>

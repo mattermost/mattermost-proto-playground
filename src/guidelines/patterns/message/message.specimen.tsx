@@ -1,13 +1,13 @@
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import Divider from '@/components/ui/Divider/Divider';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import styles from '@/styles/library-demo/patterns.module.scss';
 
-export default function PostLibrary() {
+export default function MessageLibrary() {
   return (
-    <div className={styles['patterns__post-demo']}>
-      <Post
+    <div className={styles['patterns__message-demo']}>
+      <Message
         avatarSrc={avatarLeonard}
         avatarAlt="Leonard Riley"
         username="Leonard Riley"
@@ -16,9 +16,9 @@ export default function PostLibrary() {
         <p className={styles['patterns__body-text']}>
           Hey team, the new components are looking great!
         </p>
-      </Post>
+      </Message>
       <Divider />
-      <Post
+      <Message
         avatarSrc={avatarDanielle}
         avatarAlt="Danielle Okoro"
         username="Mattermost"
@@ -28,7 +28,7 @@ export default function PostLibrary() {
         <p className={styles['patterns__body-text']}>
           You have 3 unread messages in #general.
         </p>
-      </Post>
+      </Message>
     </div>
   );
 }

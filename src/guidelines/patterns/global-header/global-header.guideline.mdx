@@ -1,5 +1,148 @@
-The Global Header sits at the top of the application and hosts the
-top-level controls that travel with the user across every screen — search,
-account, and product-wide actions.
+import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 
-> Documentation in progress.
+The Global Header is the full-width bar at the very top of the application. It
+carries product context, history navigation, global discovery (where the product
+allows), and session-level actions — help, settings, and the signed-in account —
+so users keep the same muscle memory as they move across surfaces.
+
+It sits above regional chrome such as the Channel Header; together they form the
+vertical hierarchy from platform → product → conversation context.
+
+<Divider />
+
+## Anatomy
+
+The layout is grouped into left, optional center (Channels only), and right
+clusters. The diagram shows the default Channels configuration.
+
+<GlobalHeaderAnatomyStage />
+
+- <Num>1</Num> **Product switcher** — Opens the grid of Mattermost products.
+  Uses an inverted icon button sized for the dense header.
+- <Num>2</Num> **Product branding** — Product glyph plus label (Channels,
+  Playbooks, or Boards). On Channels, branding can be toggled off with
+  `showChannelsBranding={false}` when the switcher alone is enough.
+- <Num>3</Num> **Navigator** — Back and Forward affordances for in-app history
+  (inverted icon buttons).
+- <Num>4</Num> **Global search** — Channels only. Centered search field with
+  leading magnifier; opens team / message discovery flows from the shell.
+- <Num>5</Num> **Help** — Channels: inverted icon beside search in the center
+  cluster. Playbooks and Boards: the same help affordance moves into the right
+  cluster when there is no center column.
+- <Num>6</Num> **Upgrade** — Optional Primary button (`showUpgradeButton`). Use
+  when licensing or upgrade messaging belongs in the global chrome.
+- <Num>7</Num> **Product shortcuts** — Channels: Recent mentions and Saved
+  messages (inverted icons). Playbooks: Tasks. Boards: no extra shortcut in this
+  implementation — the right cluster goes from optional Upgrade to Help, then
+  Settings and Account.
+- <Num>8</Num> **Settings** — Session settings entry (inverted cog icon).
+- <Num>9</Num> **Account menu** — Signed-in avatar with presence; activates the
+  account menu. Implemented as a transparent hit target with hover feedback.
+
+The bar sits on the dark sidebar header background with inverted icon buttons so
+controls stay legible. Search and account affordances use short hover transitions
+consistent with the rest of the shell.
+
+<Divider />
+
+## Product variants
+
+Each `product` value changes which center column exists and which icons appear on
+the right. The live React implementation mirrors the Global Header Figma spec
+(v1.2.1).
+
+### Channels
+
+<Preview caption="Channels">
+  <div style={{ width: '100%' }}>
+    <GlobalHeader
+      product="Channels"
+      userAvatarSrc={avatarLeonard}
+      userAvatarAlt="Leonard Riley"
+    />
+  </div>
+</Preview>
+
+Default layout: left (switcher, branding, navigator) → center (search + help)
+→ right (optional Upgrade, mentions, saved, settings, account).
+
+### Channels with Upgrade
+
+<Preview caption="Channels — Upgrade">
+  <div style={{ width: '100%' }}>
+    <GlobalHeader
+      product="Channels"
+      showUpgradeButton
+      userAvatarSrc={avatarLeonard}
+      userAvatarAlt="Leonard Riley"
+    />
+  </div>
+</Preview>
+
+When upgrade messaging is required, the Upgrade action sits ahead of the other
+right-cluster icons so it remains visible without crowding search.
+
+### Playbooks
+
+<Preview caption="Playbooks">
+  <div style={{ width: '100%' }}>
+    <GlobalHeader
+      product="Playbooks"
+      userAvatarSrc={avatarLeonard}
+      userAvatarAlt="Leonard Riley"
+    />
+  </div>
+</Preview>
+
+No centered search: the left cluster stays the same; the right cluster adds
+Tasks, then Help, Settings, and Account.
+
+### Boards
+
+<Preview caption="Boards">
+  <div style={{ width: '100%' }}>
+    <GlobalHeader
+      product="Boards"
+      userAvatarSrc={avatarLeonard}
+      userAvatarAlt="Leonard Riley"
+    />
+  </div>
+</Preview>
+
+Same shell as Playbooks minus the Tasks shortcut: Help, Settings, and Account
+only (plus optional Upgrade).
+
+### Hiding Channels branding
+
+For Channels, pass `showChannelsBranding={false}` to omit the product icon and
+wordmark while keeping the switcher and navigator on the left — useful when
+another surface already states product context.
+
+<Divider />
+
+## Dimensions & search field
+
+- Header height is 40px, with tight horizontal padding on the bar and slightly
+  larger inset on the left and right clusters.
+- Search (Channels): fixed width 432px, height 28px, rounded container, translucent
+  fill over the header; placeholder and icon use muted sidebar-type coloring.
+
+<Divider />
+
+## Behavior notes
+
+- Search input is a native `type="search"` field with custom styling; focus clears
+  the default outline in favor of container treatment — wire focus rings or
+  command-palette behavior at the app layer if required by accessibility audit.
+- Icon buttons use `padding="Compact"` and `style="Inverted"` for density and
+  contrast on the dark header surface.
+- Account uses `UserAvatar` at 24px with `status` enabled so presence reads
+  consistently with the rest of the shell.
+
+<Divider />
+
+## Live reference
+
+Open the Specimen tab for side-by-side Channels (with and without Upgrade),
+Playbooks, and Boards examples using the same props as this page.

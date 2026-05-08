@@ -1,3 +1,4 @@
+import sampleImage from '@/assets/images/sample-image.jpg';
 import ImagePreview from '@/components/ui/ImagePreview/ImagePreview';
 
 Image Preview displays image attachments, markdown images, and inline image
@@ -14,7 +15,7 @@ in the top-right corner of the frame.
 
 <AnatomyStage>
   <ImagePreview
-    src="https://picsum.photos/seed/mm1/480/270"
+    src={sampleImage}
     alt="Sample image"
     onCopyLink={() => {}}
     onDownload={() => {}}
@@ -51,14 +52,14 @@ for cases where the consumer needs a fixed framing.
 
 <div style={{display:'flex',gap:'1rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
   <ImagePreview
-    src="https://picsum.photos/seed/mm-aspect-1/480/270"
+    src={sampleImage}
     alt="16:9"
     aspectRatio="16:9"
     onCopyLink={() => {}}
     onDownload={() => {}}
   />
   <ImagePreview
-    src="https://picsum.photos/seed/mm-aspect-2/200/200"
+    src={sampleImage}
     alt="1:1"
     aspectRatio="1:1"
     onCopyLink={() => {}}
@@ -78,7 +79,7 @@ for cases where the consumer needs a fixed framing.
 
 <div style={{padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
   <ImagePreview
-    src="https://picsum.photos/seed/mm-collapsed/480/270"
+    src={sampleImage}
     alt="Collapsed image"
     collapsed
     onToggleCollapse={() => {}}

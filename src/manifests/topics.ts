@@ -674,14 +674,30 @@ export const TOPICS: Topic[] = [
     slug: 'modal',
     name: 'Modal',
     category: 'patterns',
+    description:
+      'Displays content that requires user interaction in a layer on top of the page.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/modal/modal.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/modal/modal.specimen'),
   },
   {
+    slug: 'popover-menu',
+    name: 'Popover Menu',
+    category: 'patterns',
+    description:
+      'Multiple choices in an elevated overlay, opened from a trigger control.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/popover-menu/popover-menu.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/popover-menu/popover-menu.specimen'),
+  },
+  {
     slug: 'global-header',
     name: 'Global Header',
     category: 'patterns',
+    description:
+      'Full-width top bar for product switching, navigation history, search, and session controls.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/global-header/global-header.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/global-header/global-header.specimen'),
@@ -690,22 +706,28 @@ export const TOPICS: Topic[] = [
     slug: 'channel-header',
     name: 'Channel Header',
     category: 'patterns',
+    description:
+      'The header above the main channel content area displaying channel identity, membership and actions',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/channel-header/channel-header.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/channel-header/channel-header.specimen'),
   },
   {
-    slug: 'post',
-    name: 'Post',
+    slug: 'message',
+    name: 'Message',
     category: 'patterns',
+    description:
+      'User, bot, and integration messages with formatted text, link previews, images, and file attachments.',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/post/post.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/post/post.specimen'),
+    guidelinePage: () => import('@/guidelines/patterns/message/message.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/message/message.specimen'),
   },
   {
     slug: 'team-sidebar',
     name: 'Team Sidebar',
     category: 'patterns',
+    description:
+      'Leftmost strip for switching teams when a server has more than one team.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.specimen'),
@@ -714,6 +736,8 @@ export const TOPICS: Topic[] = [
     slug: 'channel-sidebar',
     name: 'Channel Sidebar',
     category: 'patterns',
+    description:
+      'Primary navigation for the active team: channels and direct messages grouped in categories.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.specimen'),
@@ -739,6 +763,8 @@ export const TOPICS: Topic[] = [
     name: 'Profile Popover',
     category: 'patterns',
     status: 'stable',
+    description:
+      'User profile summary and quick actions when opening a profile from a username or avatar.',
     guidelinePage: () => import('@/guidelines/patterns/profile-popover/profile-popover.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/profile-popover/profile-popover.specimen'),
   },

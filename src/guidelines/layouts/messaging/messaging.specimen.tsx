@@ -8,7 +8,7 @@ import IconButton from '@/components/ui/IconButton/IconButton';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
@@ -82,7 +82,7 @@ export default function Layouts() {
               <div className={styles['layouts__messages']}>
                 <MessageSeparator type="Date" label="Today" />
 
-                <Post
+                <Message
                   avatarSrc={avatarSofia}
                   avatarAlt="Sofia Bauer"
                   username="Sofia Bauer"
@@ -92,9 +92,9 @@ export default function Layouts() {
                     Morning everyone! Reminder that the Q2 roadmap review is at
                     10:30 today. Agenda is in the thread below.
                   </p>
-                </Post>
+                </Message>
 
-                <Post
+                <Message
                   avatarSrc={avatarMarco}
                   avatarAlt="Marco Rinaldi"
                   username="Marco Rinaldi"
@@ -105,9 +105,9 @@ export default function Layouts() {
                     love a second pair of eyes on the empty states before we cut
                     a release.
                   </p>
-                </Post>
+                </Message>
 
-                <Post
+                <Message
                   avatarSrc={avatarDanielle}
                   avatarAlt="Mattermost"
                   username="Mattermost"
@@ -118,9 +118,9 @@ export default function Layouts() {
                     Build #2847 succeeded on <code>main</code>. Deploy to
                     staging completed in 3m 12s.
                   </p>
-                </Post>
+                </Message>
 
-                <Post
+                <Message
                   avatarSrc={avatarAikoTan}
                   avatarAlt="Aiko Tan"
                   username="Aiko Tan"
@@ -137,9 +137,9 @@ export default function Layouts() {
                     ]}
                     showAddReaction
                   />
-                </Post>
+                </Message>
 
-                <Post
+                <Message
                   avatarSrc={avatarArjunPatel}
                   avatarAlt="Arjun Patel"
                   username="Arjun Patel"
@@ -149,11 +149,11 @@ export default function Layouts() {
                     Heads up — I'll be out Friday afternoon. If anything urgent
                     comes up with the ingest pipeline, ping Leila first.
                   </p>
-                </Post>
+                </Message>
 
                 <MessageSeparator type="New Messages" />
 
-                <Post
+                <Message
                   avatarSrc={avatarLeonard}
                   avatarAlt="Leonard Riley"
                   username="Leonard Riley"
@@ -163,7 +163,7 @@ export default function Layouts() {
                     Design review is bumped to 2:00 PM today — conflict with the
                     roadmap meeting. Same room.
                   </p>
-                </Post>
+                </Message>
               </div>
 
               <div className={styles['layouts__message-input']}>

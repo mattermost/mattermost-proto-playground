@@ -1,3 +1,4 @@
+import sampleImage from '@/assets/images/sample-image.jpg';
 import ImagePreview from '@/components/ui/ImagePreview/ImagePreview';
 import styles from '@/styles/library-demo/components.module.scss';
 
@@ -8,7 +9,7 @@ export default function ImagePreviewLibrary() {
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>16:9</span>
           <ImagePreview
-            src="https://picsum.photos/seed/mm1/480/270"
+            src={sampleImage}
             alt="Sample image"
             onCopyLink={() => {}}
             onDownload={() => {}}
@@ -18,7 +19,7 @@ export default function ImagePreviewLibrary() {
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>1:1</span>
           <ImagePreview
-            src="https://picsum.photos/seed/mm2/200/200"
+            src={sampleImage}
             alt="Square image"
             aspectRatio="1:1"
             onCopyLink={() => {}}
@@ -30,7 +31,7 @@ export default function ImagePreviewLibrary() {
             Collapsed
           </span>
           <ImagePreview
-            src="https://picsum.photos/seed/mm3/480/270"
+            src={sampleImage}
             alt="Collapsed image"
             collapsed
             onToggleCollapse={() => {}}

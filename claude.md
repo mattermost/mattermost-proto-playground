@@ -110,6 +110,28 @@ Prose typography lives in `src/pages/_shell/DocPage.module.scss` under the `.doc
 
 **Corollary for component authors:** never render a bare `<h2>`, `<p>`, `<li>`, etc. inside a component. Always attach a CSS-module className — otherwise the element will silently inherit prose typography when the component is rendered on a prose page.
 
+## Guideline MDX: use bold sparingly
+
+Do not sprinkle bold through guideline prose for emphasis. Dense bold looks noisy and hides what actually matters.
+
+- Anatomy lists: bold only the short label before the em dash in `<Num>` bullets (e.g. **Container** — …), consistent with existing component guidelines such as Button.
+- Everything else: plain sentences. Use `` `backticks` `` for components, props, file paths, and literal UI copy — not bold.
+- Rare exceptions: one bold phrase for a genuinely critical warning or a single standout default is fine; avoid multiple bold phrases in the same paragraph.
+
+Headings and list structure carry hierarchy; they do not need bold reinforcement every few words.
+
+## Guideline MDX: no CSS files or tokens in prose
+
+Pattern and component guidelines should read as product guidance, not implementation walkthroughs. In MDX prose (outside code samples), do not reference `*.module.scss` files, CSS custom properties, or design-token identifiers such as `spacing-m`, `radius-s`, or `sidebar-header-bg`.
+
+Describe appearance and layout in plain language instead (e.g. “dark sidebar header strip”, “compact padding”, “rounded corners aligned with avatar rows”). Reserve token and variable detail for Foundations topics or explicit “Implementation” sections when truly necessary.
+
+## Guideline MDX: product voice, not playground voice
+
+Guidelines describe Mattermost product behavior and Compass patterns for anyone reading the docs. Do not center prose on “the playground”, “this repo”, or how the local demo wires props — write what the pattern is and how real apps should behave.
+
+Pointing readers to the Specimen tab as a live demo is fine. Avoid implying that this documentation site or its demo implementation is the source of truth for product wiring.
+
 ## Shared React hooks
 
 If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (They may be introduced on a long-lived feature branch and cherry-picked to `main` later.)

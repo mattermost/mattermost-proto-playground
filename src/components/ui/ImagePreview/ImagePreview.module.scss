@@ -10,10 +10,27 @@
     position: relative;
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     border-radius: var(--radius-s);
-    overflow: hidden;
+    /** Keep overflow visible so the collapse control (offset outside the rect) isn’t clipped. */
+    overflow: visible;
     // Default 16:9 at a common preview width
     width: 428px;
     height: 240px;
+    transition:
+      box-shadow var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      box-shadow: var(--elevation-2);
+      border-color: rgba(var(--center-channel-color-rgb), 0.24);
+      cursor: pointer;
+    }
+  }
+
+  &__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: calc(var(--radius-s) - 1px);
   }
 
   &--ratio-4-3 {

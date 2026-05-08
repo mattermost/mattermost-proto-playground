@@ -1,93 +1,111 @@
-import { useState, useRef, useEffect } from 'react';
+import type { ComponentType, SVGProps } from 'react';
 import { Link } from 'react-router-dom';
+import Illustration from '@/components/ui/Illustration/Illustration';
+import btnStyles from '@/components/ui/Button/Button.module.scss';
+import LayoutPreview from '@/guidelines/_components/LayoutPreview';
+import FoundationsCardArt from '@/assets/home/card-foundations.svg?react';
+import ComponentsCardArt from '@/assets/home/card-components.svg?react';
+import PatternsCardArt from '@/assets/home/card-patterns.svg?react';
+import ResourcesCardArt from '@/assets/home/card-resources.svg?react';
 import styles from './Home.module.scss';
 
-const IFRAME_W = 1280;
+type CardSvg = ComponentType<SVGProps<SVGSVGElement>>;
 
-const DESTINATIONS = [
+const DESTINATIONS: {
+  label: string;
+  path: string;
+  description: string;
+  Illustration: CardSvg;
+}[] = [
   {
     label: 'Foundations',
     path: '/foundations',
     description: 'Color, typography, spacing, and the rest of the system base.',
+    Illustration: FoundationsCardArt,
   },
   {
     label: 'Components',
     path: '/components',
     description: 'Reusable building blocks that make up the interface.',
+    Illustration: ComponentsCardArt,
   },
   {
     label: 'Patterns',
     path: '/patterns',
     description: 'Larger compositions that solve common product problems.',
-  },
-  {
-    label: 'Prototypes',
-    path: '/prototypes',
-    description: 'End-to-end flow prototypes for design exploration.',
+    Illustration: PatternsCardArt,
   },
   {
     label: 'Resources',
     path: '/resources',
     description: 'Links, downloads, and references for the design team.',
+    Illustration: ResourcesCardArt,
   },
 ];
-
-function CardThumbnail({ src }: { src: string }) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      setScale(entry.contentRect.width / IFRAME_W);
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={wrapperRef}
-      className={styles['home__card-thumb']}
-      aria-hidden="true"
-    >
-      <iframe
-        className={styles['home__card-iframe']}
-        src={src}
-        title="Section preview"
-        tabIndex={-1}
-        aria-hidden="true"
-        scrolling="no"
-        style={{ transform: `scale(${scale})` }}
-      />
-    </div>
-  );
-}
 
 export default function Home() {
   return (
     <div className={styles.home}>
-      <header className={styles['home__header']}>
-        <h1 className={styles['home__heading']}>Mattermost Design System</h1>
-        <p className={styles['home__subheading']}>
-          Design system docs and prototypes — all in one place.
-        </p>
-      </header>
-
-      <div className={styles['home__grid']}>
-        {DESTINATIONS.map((d) => (
-          <Link key={d.path} to={d.path} className={styles['home__card']}>
-            <CardThumbnail
-              src={`${import.meta.env.BASE_URL}${d.path.replace(/^\//, '')}`}
-            />
-            <div className={styles['home__card-body']}>
-              <span className={styles['home__card-label']}>{d.label}</span>
-              <span className={styles['home__card-arrow']}>→</span>
+      <section className={styles['home__hero']} aria-labelledby="home-hero-heading">
+        <div className={styles['home__hero-inner']}>
+          <div className={styles['home__hero-main']}>
+            <div className={styles['home__hero-copy']}>
+              <div className={styles['home__hero-head']}>
+                <p className={styles['home__hero-eyebrow']}>COMPASS</p>
+                <h1 id="home-hero-heading" className={styles['home__hero-title']}>
+                  Explore the Mattermost Design System
+                </h1>
+              </div>
+              <p className={styles['home__hero-lede']}>
+                Compass is the source of truth for styles, components, and patterns
+                in the Mattermost platform — built for teams who need data control,
+                speed, and clarity under pressure.
+              </p>
+              <div className={styles['home__hero-ctas']}>
+                <Link
+                  to="/foundations/why-compass"
+                  className={[
+                    btnStyles.button,
+                    btnStyles['button--emphasis-primary'],
+                    btnStyles['button--size-large'],
+                  ].join(' ')}
+                >
+                  <span className={btnStyles.button__label}>Get started</span>
+                </Link>
+                <Link
+                  to="/components"
+                  className={styles['home__hero-cta-secondary']}
+                >
+                  Browse components
+                </Link>
+              </div>
             </div>
-            <p className={styles['home__card-desc']}>{d.description}</p>
-          </Link>
-        ))}
+            <div className={styles['home__hero-visual']} aria-hidden>
+              <div className={styles['home__hero-layout']}>
+                <LayoutPreview />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className={styles['home__body']}>
+        <div className={styles['home__grid']}>
+          {DESTINATIONS.map((d) => (
+            <Link key={d.path} to={d.path} className={styles['home__card']}>
+              <div className={styles['home__card-art']} aria-hidden="true">
+                <Illustration className={styles['home__card-illustration']}>
+                  <d.Illustration />
+                </Illustration>
+              </div>
+              <div className={styles['home__card-body']}>
+                <span className={styles['home__card-label']}>{d.label}</span>
+                <span className={styles['home__card-arrow']}>→</span>
+              </div>
+              <p className={styles['home__card-desc']}>{d.description}</p>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

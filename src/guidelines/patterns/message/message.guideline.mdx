@@ -1,0 +1,76 @@
+import { MessageGuidelineAnatomyStage } from '@/guidelines/_components/MessageGuidelineAnatomy';
+import { MessageGuidelineStates } from '@/guidelines/_components/MessageGuidelineStates';
+
+## Anatomy
+
+The Message is comprised of the following elements:
+
+<MessageGuidelineAnatomyStage />
+
+- <Num>1</Num> **Pinned & Saved Indicators** — inside the message container at
+  the top when applicable: **Pin** and **Bookmark** icons (12px) followed by
+  link-coloured labels **Pinned** • **Saved** (Body 75), with the bullet in
+  secondary text colour.
+- <Num>2</Num> **Message Actions Container** — holds the
+  [Message Actions](/components/message-actions) toolbar (quick reactions,
+  save, reply, more, and similar actions). On hover, it appears in the top-right
+  of the message.
+- <Num>3</Num> **Avatar** — uses the **User Avatar with Status Badge** variant
+  of [User Avatar](/components/user-avatar) for the author. Shows a photo or
+  initials when no photo is available.
+- <Num>4</Num> **Message Header** — [Message Header](/components/message-header)
+  shows the author name and the send time.
+- <Num>5</Num> **Message Text** — the primary body copy; supports Markdown.
+- <Num>6</Num> **Link Preview** — unfurled link from the text (site, title,
+  description). See [Link Preview](/components/link-preview).
+- <Num>7</Num> **Images Container** — thumbnails for images in the message;
+  layout depends on count and dimensions. See
+  [Image Preview](/components/image-preview).
+- <Num>8</Num> **Attachments Container** — holds [Attachment Cards](/components/attachment-card)
+  for files shared in the message.
+- <Num>9</Num> **Message Reactions** — [Message Reactions](/components/message-reactions)
+  show emoji reactions and add-reaction.
+
+In the Message component, **Link Preview** and **image previews** map to optional
+`linkPreview` and `imagePreviews` props (each a React node, typically
+[Link Preview](/components/link-preview) and [Image Preview](/components/image-preview)).
+Use `children` for the main text, then those slots, and `footer` for
+attachments, reactions, or other trailing content — or pass everything in
+`children` only if you do not need the fixed ordering.
+
+<Divider />
+
+## Types
+
+### New Message
+
+When a user initiates a conversation in a channel or a direct message.
+
+### Reply Message
+
+When a user replies to an existing message or thread.
+
+### Consecutive Message
+
+When the same user posts multiple messages or replies one after the other within
+a certain time period, all subsequent messages after the first one are considered
+consecutive messages. Consecutive messages are displayed without the Message
+Header and Avatar.
+
+<Divider />
+
+## States
+
+<MessageGuidelineStates />
+
+### Default State
+
+The default presentation of a message in the channel or thread list — center
+channel background, no hover tint, Message Actions hidden until pointer or
+keyboard focus.
+
+### Hover State
+
+Hover applies a light center-channel-color tint on the message surface and
+shows **Message Actions** in the top-right. The Hover preview above is a static
+snapshot that matches that appearance for documentation.
