@@ -38,8 +38,8 @@ const CATEGORY_DESCRIPTIONS: Partial<Record<TopicCategory, string>> = {
 const CATEGORY_INTRO: Partial<
   Record<TopicCategory, () => Promise<{ default: ComponentType }>>
 > = {
-  foundations: () => import('@/guidelines/foundations/Overview.mdx'),
-  components: () => import('@/guidelines/components/Overview.mdx'),
+  foundations: () => import('@/guidelines/foundations/_overview.mdx'),
+  components: () => import('@/guidelines/components/_overview.mdx'),
 };
 
 interface IndexGroup {

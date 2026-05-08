@@ -1,6 +1,5 @@
 .preview {
   margin: var(--spacing-l) 0;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: var(--radius-m);
   background-color: var(--center-channel-bg);
   overflow: hidden;
@@ -13,13 +12,13 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: rgba(var(--center-channel-color-rgb), 0.64);
-  background-color: rgba(var(--center-channel-color-rgb), 0.03);
-  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
   margin: 0;
 }
 
 .preview__body {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-s) var(--spacing-l) var(--spacing-l) var(--spacing-l);
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
 
   &--center {
     display: flex;

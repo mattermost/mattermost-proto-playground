@@ -6,6 +6,7 @@ import GithubCircleIcon from '@mattermost/compass-icons/components/github-circle
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import AtIcon from '@mattermost/compass-icons/components/at';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import Button from '@/components/ui/Button/Button';
@@ -81,7 +82,11 @@ export interface ProfilePopoverProps {
   githubHandle?: string;
   onClose?: () => void;
   onPrimaryAction?: () => void;
-  onAddContact?: () => void;
+  /** Inserts an @mention for this user in the active channel message input. */
+  onMention?: () => void;
+  /** Opens the Add to Channel flow for this user. */
+  onAddToChannel?: () => void;
+  /** Used when `callButton` is not provided; starts a simple outbound call action. */
   onCall?: () => void;
   onSend?: () => void;
   /** Replaces the default Call icon button in the footer when provided. */
@@ -141,7 +146,8 @@ export default function ProfilePopover({
   githubHandle,
   onClose,
   onPrimaryAction,
-  onAddContact,
+  onMention,
+  onAddToChannel,
   onCall,
   onSend,
   callButton,
@@ -360,19 +366,26 @@ export default function ProfilePopover({
           ) : (
             <>
               <IconButton
-                aria-label="Add to contacts"
+                aria-label="Mention user"
+                size="Small"
+                icon={<Icon size="16" glyph={<AtIcon />} />}
+                onClick={onMention}
+              />
+              <IconButton
+                aria-label="Add to channel"
                 size="Small"
                 icon={<Icon size="16" glyph={<AccountPlusOutlineIcon />} />}
-                onClick={onAddContact}
+                onClick={onAddToChannel}
               />
-              {callButton ?? (
-                <IconButton
-                  aria-label="Call"
-                  size="Small"
-                  icon={<Icon size="16" glyph={<PhoneIcon />} />}
-                  onClick={onCall}
-                />
-              )}
+              {callButton ??
+                (onCall ? (
+                  <IconButton
+                    aria-label="Call"
+                    size="Small"
+                    icon={<Icon size="16" glyph={<PhoneIcon />} />}
+                    onClick={onCall}
+                  />
+                ) : null)}
             </>
           )}
         </div>

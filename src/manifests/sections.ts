@@ -55,6 +55,34 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       slugs: ['action-button', 'button', 'icon-button'],
     },
     {
+      label: 'Banners',
+      slugs: [
+        'global-banner',
+        'more-unreads-banner',
+        'new-message-banner',
+        'search-tip-banner',
+        'toast-banner',
+      ],
+    },
+    {
+      label: 'Calls',
+      slugs: ['call-participant-avatar'],
+    },
+    {
+      label: 'Cards and Previews',
+      slugs: [
+        'attachment-card',
+        'feature-discovery-panel',
+        'image-preview',
+        'link-preview',
+        'permalink-preview',
+      ],
+    },
+    {
+      label: 'Feedback and Notices',
+      slugs: ['error-message', 'section-notice'],
+    },
+    {
       label: 'Forms and Input',
       slugs: [
         'checkbox',
@@ -81,56 +109,8 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       ],
     },
     {
-      label: 'Progress Indicators',
-      slugs: ['pagination-dots', 'progress-bar', 'spinner'],
-    },
-    {
-      label: 'Overlays and Layering',
-      slugs: ['popover-notice', 'tooltip'],
-    },
-    {
-      label: 'Status Indicators',
-      slugs: [
-        'label-tag',
-        'mention-badge',
-        'reaction-pill',
-        'recording-pill',
-        'status-badge',
-        'tags',
-        'unread-badge',
-      ],
-    },
-    {
-      label: 'Banners',
-      slugs: [
-        'global-banner',
-        'more-unreads-banner',
-        'new-message-banner',
-        'search-tip-banner',
-        'toast-banner',
-      ],
-    },
-    {
-      label: 'Cards and Previews',
-      slugs: [
-        'attachment-card',
-        'feature-discovery-panel',
-        'image-preview',
-        'link-preview',
-        'permalink-preview',
-      ],
-    },
-    {
       label: 'Layout and Containers',
       slugs: ['divider', 'empty-state', 'scrollbar', 'tabs'],
-    },
-    {
-      label: 'Feedback and Notices',
-      slugs: ['error-message', 'section-notice'],
-    },
-    {
-      label: 'Navigation',
-      slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
     },
     {
       label: 'Messaging',
@@ -145,8 +125,28 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       ],
     },
     {
-      label: 'Calls',
-      slugs: ['call-participant-avatar'],
+      label: 'Navigation',
+      slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
+    },
+    {
+      label: 'Overlays and Layering',
+      slugs: ['popover-notice', 'tooltip'],
+    },
+    {
+      label: 'Progress Indicators',
+      slugs: ['pagination-dots', 'progress-bar', 'spinner'],
+    },
+    {
+      label: 'Status Indicators',
+      slugs: [
+        'label-tag',
+        'mention-badge',
+        'reaction-pill',
+        'recording-pill',
+        'status-badge',
+        'tags',
+        'unread-badge',
+      ],
     },
   ],
 };

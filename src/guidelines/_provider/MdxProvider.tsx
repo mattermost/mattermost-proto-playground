@@ -52,7 +52,14 @@ import {
   ButtonWidths,
   ButtonPositioning,
 } from '@/guidelines/_components/ButtonSamples';
+import { ModalAnatomy } from '@/guidelines/_components/ModalSamples';
+import PopoverMenuMotion from '@/guidelines/_components/PopoverMenuMotion';
+import { ChannelHeaderAnatomyStage } from '@/guidelines/_components/ChannelHeaderGuidelineAnatomy';
+import { GlobalHeaderAnatomyStage } from '@/guidelines/_components/GlobalHeaderGuidelineAnatomy';
+import { TeamSidebarAnatomyStage } from '@/guidelines/_components/TeamSidebarGuidelineAnatomy';
+import { ChannelSidebarAnatomyStage } from '@/guidelines/_components/ChannelSidebarGuidelineAnatomy';
 import Num from '@/guidelines/_components/Num';
+import MdxAnchor from '@/guidelines/_components/MdxAnchor';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import Divider from '@/components/ui/Divider/Divider';
 import Chip from '@/components/ui/Chip/Chip';
@@ -62,6 +69,7 @@ import Chip from '@/components/ui/Chip/Chip';
  * needed in the .mdx file. Add domain-specific helpers here.
  */
 const MDX_COMPONENTS = {
+  a: MdxAnchor,
   Preview,
   Swatch,
   SwatchGrid,
@@ -104,6 +112,12 @@ const MDX_COMPONENTS = {
   ButtonDestructive,
   ButtonWidths,
   ButtonPositioning,
+  ModalAnatomy,
+  PopoverMenuMotion,
+  ChannelHeaderAnatomyStage,
+  GlobalHeaderAnatomyStage,
+  TeamSidebarAnatomyStage,
+  ChannelSidebarAnatomyStage,
   Num,
   AnatomyStage,
   Divider,

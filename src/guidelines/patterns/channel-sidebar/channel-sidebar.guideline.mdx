@@ -1,0 +1,104 @@
+import { ChannelSidebarHeaderPreview } from '@/guidelines/_components/ChannelSidebarHeaderPreview';
+import { ChannelSidebarNavigatorPreview } from '@/guidelines/_components/ChannelSidebarNavigatorPreview';
+
+## Anatomy
+
+The Channel Sidebar is composed of the following elements:
+
+<ChannelSidebarAnatomyStage />
+
+- <Num>1</Num> **Channel Sidebar Header** — Team name and Add icon button.
+- <Num>2</Num> **Channel Navigator** — Find channels and Unread filter icon button.
+- <Num>3</Num> **Channel Sidebar Category Headers** — Headers for each channel
+  group.
+- <Num>4</Num> **Channel Sidebar Items** — Rows for each channel or direct message.
+
+<Divider />
+
+### Channel Sidebar Header
+
+The Channel Sidebar Header is made up of the team name and the Add icon button.
+
+<Preview caption="Default">
+  <ChannelSidebarHeaderPreview />
+</Preview>
+
+The team name row uses the hover treatment when it behaves as a menu trigger.
+
+The Add icon button shows its hover state when the pointer rests on that control.
+
+<Divider />
+
+### Channel Navigator
+
+The Channel Navigator is made up of the Find channels control and the Unread
+filter icon button.
+
+#### Find channels button
+
+Clicking this button opens the Channel Switcher modal. See the
+[Modal](/patterns/modal) pattern for modal behavior.
+
+#### Unread filter icon button
+
+Clicking this toggles the channel list to show only channels with unread
+messages. This option appears only when `Group Unreads separately` is set to
+false.
+
+<Preview caption="Unread filter control visible">
+  <ChannelSidebarNavigatorPreview showFilter />
+</Preview>
+
+<Divider />
+
+### Channel Sidebar Category Header
+
+A channel sidebar category header identifies a group of channels.
+
+#### Collapse and expand behavior
+
+If enabled, a category header can be collapsed or expanded by clicking or tapping
+it. When hovering over a category header, a menu icon button appears for
+category-level actions.
+
+#### Drag-and-drop behavior
+
+Channel sidebar category headers can be reordered and regrouped by dragging them
+within the sidebar. Dragging a category moves its channels with it.
+
+<Divider />
+
+### Channel Sidebar Items
+
+Channel Sidebar Items identify channels by name or type and are the primary
+navigation elements of the sidebar. Selecting one navigates to the channel or
+conversation it represents.
+
+See the [Channel Sidebar Item](/components/channel-sidebar-item) component
+guidelines for detail.
+
+#### Drag-and-drop behavior
+
+Channel sidebar items can be reordered and regrouped by dragging within the
+sidebar.
+
+<Divider />
+
+## Menus
+
+The channel sidebar opens various popover menus from its controls and rows. See
+the [Dropdown](/components/dropdown) component guidelines for popover menu
+behavior and structure.
+
+## Tooltips
+
+The channel sidebar uses tooltips on hover for long channel titles, icon buttons,
+and similar compact targets. See the [Tooltip](/components/tooltip) component
+guidelines for timing, placement, and accessibility.
+
+<Divider />
+
+## Live reference
+
+Open the Specimen tab for a live demo of the channel sidebar, including variants
+with the unread category and unread filter.

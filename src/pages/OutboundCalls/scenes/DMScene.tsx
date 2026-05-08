@@ -1,12 +1,12 @@
 import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import { OutboundCallPhoneNumberLink } from '@/pages/OutboundCalls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/OutboundCalls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/OutboundCalls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/OutboundCalls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import layoutStyles from '@/pages/Layouts/Layouts.module.scss';
+import layoutStyles from '@/guidelines/layouts/messaging/messaging.specimen.module.scss';
 
 export function DMScene({
   onOpenProfile,
@@ -66,7 +66,7 @@ export function DMScene({
       <div className={layoutStyles['layouts__messages']}>
         <MessageSeparator type="Date" label="Today" />
 
-        <Post
+        <Message
           avatarSrc={contact.avatar}
           avatarAlt={contact.name}
           username={contact.name}
@@ -76,8 +76,8 @@ export function DMScene({
             Hey — have a minute? Need to walk through the Nightingale comms plan before the 11:00
             handover. Easier by voice.
           </p>
-        </Post>
-        <Post
+        </Message>
+        <Message
           avatarSrc={avatarLeonard}
           avatarAlt="Leonard Riley"
           username="Leonard Riley"
@@ -86,8 +86,8 @@ export function DMScene({
           <p className={layoutStyles['layouts__post-text']}>
             Copy — hit Call above or pick a number off my profile, either works.
           </p>
-        </Post>
-        <Post
+        </Message>
+        <Message
           avatarSrc={contact.avatar}
           avatarAlt={contact.name}
           username={contact.name}
@@ -102,7 +102,7 @@ export function DMScene({
               />
             )}
           </p>
-        </Post>
+        </Message>
       </div>
       <div className={layoutStyles['layouts__message-input']}>
         <TelAutocompleteMessageInput placeholder={`Message ${contact.name}`} />

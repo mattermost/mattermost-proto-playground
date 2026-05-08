@@ -34,7 +34,12 @@ function applyChannelSidebarInteractivity(
   };
 }
 
-function SidebarHeader({ teamName }: { teamName: string }) {
+export interface ChannelsSidebarHeaderProps {
+  teamName: string;
+}
+
+/** Team row + Add control; same markup as the top of `ChannelsSidebar`. */
+export function ChannelsSidebarHeader({ teamName }: ChannelsSidebarHeaderProps) {
   return (
     <div className={styles['channels-sidebar__header']}>
       <div className={styles['channels-sidebar__team-dropdown']}>
@@ -58,7 +63,14 @@ function SidebarHeader({ teamName }: { teamName: string }) {
   );
 }
 
-function SidebarNavigator({ showFilter = false }: { showFilter?: boolean }) {
+export interface ChannelsSidebarNavigatorProps {
+  showFilter?: boolean;
+}
+
+/** Find channels row + optional unread filter control; same markup as `ChannelsSidebar`. */
+export function ChannelsSidebarNavigator({
+  showFilter = false,
+}: ChannelsSidebarNavigatorProps) {
   return (
     <div className={styles['channels-sidebar__navigator']}>
       {showFilter && (
@@ -211,8 +223,8 @@ export default function ChannelsSidebar({
 
   return (
     <div className={styles['channels-sidebar']}>
-      <SidebarHeader teamName={teamName} />
-      <SidebarNavigator showFilter={showFilter} />
+      <ChannelsSidebarHeader teamName={teamName} />
+      <ChannelsSidebarNavigator showFilter={showFilter} />
 
       <div className={styles['channels-sidebar__top-group']}>
         {model.topGroupItems.map((row, i) => (

@@ -77,6 +77,8 @@
     padding: 28px var(--spacing-xxxl);
     overflow-y: auto;
     flex: 1;
+
+    @include minimal-scrollbar;
   }
 
   // ── Footer ────────────────────────────────────────────────

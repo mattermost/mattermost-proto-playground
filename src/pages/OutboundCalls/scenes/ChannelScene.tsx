@@ -2,12 +2,12 @@ import type { MouseEvent, ReactNode } from 'react';
 import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import { OutboundCallPhoneNumberLink } from '@/pages/OutboundCalls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/OutboundCalls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/OutboundCalls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import layoutStyles from '@/pages/Layouts/Layouts.module.scss';
+import layoutStyles from '@/guidelines/layouts/messaging/messaging.specimen.module.scss';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({
@@ -81,14 +81,14 @@ export function ChannelScene({
               contactName={c.name}
               onOpen={onOpenProfile}
             >
-              <Post
+              <Message
                 avatarSrc={c.avatar}
                 avatarAlt={c.name}
                 username={c.name}
                 timestamp={p.timestamp}
               >
                 <p className={layoutStyles['layouts__post-text']}>{p.body}</p>
-              </Post>
+              </Message>
             </ProfileClickable>
           );
         })}
@@ -98,7 +98,7 @@ export function ChannelScene({
           contactName="Leonard Riley"
           onOpen={onOpenProfile}
         >
-          <Post
+          <Message
             avatarSrc={CONTACT_MAP['leonard'].avatar}
             avatarAlt="Leonard Riley"
             username="Leonard Riley"
@@ -112,7 +112,7 @@ export function ChannelScene({
               />{' '}
               — I'm at my desk for the next hour.
             </p>
-          </Post>
+          </Message>
         </ProfileClickable>
       </div>
       <div className={layoutStyles['layouts__message-input']}>

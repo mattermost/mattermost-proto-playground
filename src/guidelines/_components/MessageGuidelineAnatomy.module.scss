@@ -1,0 +1,16 @@
+.message-anatomy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+
+  &__sample-text {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+    margin: 0;
+  }
+}

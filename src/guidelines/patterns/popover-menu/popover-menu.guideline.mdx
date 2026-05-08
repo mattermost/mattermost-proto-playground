@@ -1,0 +1,423 @@
+import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
+import AppsIcon from '@mattermost/compass-icons/components/apps';
+import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
+import BellOffOutlineIcon from '@mattermost/compass-icons/components/bell-off-outline';
+import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
+import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-outline';
+import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
+import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
+import FolderMoveOutlineIcon from '@mattermost/compass-icons/components/folder-move-outline';
+import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
+import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
+import MenuItem from '@/components/ui/MenuItem/MenuItem';
+import Icon from '@/components/ui/Icon/Icon';
+import PopoverMenu, {
+  PopoverMenuGroup,
+  PopoverMenuDivider,
+} from '@/components/ui/PopoverMenu';
+
+A Popover Menu is a way of displaying multiple choices overlayed on top of the
+current context. It displays when interacting with a trigger (such as an icon or
+button).
+
+<Divider />
+
+## Anatomy
+
+A Popover Menu is essentially a container that holds the Menu Title, Menu Item,
+Menu Group Title, or Menu Divider components.
+
+<AnatomyStage
+  style={{
+    margin: '0 auto var(--spacing-m)',
+  }}
+>
+  <PopoverMenu>
+    <PopoverMenuGroup>
+      <MenuItem
+        label="View info"
+        leadingVisual={<Icon glyph={<InformationOutlineIcon />} size="16" />}
+      />
+      <MenuItem
+        label="Mute channel"
+        leadingVisual={<Icon glyph={<BellOffOutlineIcon />} size="16" />}
+      />
+      <MenuItem
+        label="Notification preferences"
+        leadingVisual={<Icon glyph={<BellOutlineIcon />} size="16" />}
+      />
+      <MenuItem
+        label="Channel settings"
+        leadingVisual={<Icon glyph={<CogOutlineIcon />} size="16" />}
+        trailingElement
+        trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+      />
+      <MenuItem
+        label="Bookmarks bar"
+        leadingVisual={<Icon glyph={<BookmarkOutlineIcon />} size="16" />}
+        trailingElement
+        trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+      />
+    </PopoverMenuGroup>
+    <PopoverMenuDivider />
+    <PopoverMenuGroup>
+      <MenuItem
+        label="Members"
+        leadingVisual={<Icon glyph={<AccountOutlineIcon />} size="16" />}
+      />
+    </PopoverMenuGroup>
+    <PopoverMenuDivider />
+    <PopoverMenuGroup>
+      <MenuItem
+        label="Move to"
+        leadingVisual={<Icon glyph={<FolderMoveOutlineIcon />} size="16" />}
+        trailingElement
+        trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+      />
+      <MenuItem
+        label="More actions"
+        leadingVisual={<Icon glyph={<AppsIcon />} size="16" />}
+        trailingElement
+        trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+      />
+    </PopoverMenuGroup>
+    <PopoverMenuDivider />
+    <PopoverMenuGroup>
+      <MenuItem
+        label="Leave channel"
+        destructive
+        leadingVisual={<Icon glyph={<ExitToAppIcon />} size="16" />}
+      />
+      <MenuItem
+        label="Archive channel"
+        destructive
+        leadingVisual={<Icon glyph={<ArchiveOutlineIcon />} size="16" />}
+      />
+    </PopoverMenuGroup>
+  </PopoverMenu>
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — uses a 1px border (16% Center Channel Color) with
+  the Center Channel Background Color as the fill. It also has elevation applied
+  so it separates from the background it covers. The default elevation of the
+  container is Elevation 4. The container has 8px of space above the first Menu
+  Item, and 8px of space below the last.
+- <Num>2</Num> **Menu Title** (optional) — provides context for the menu; often
+  unnecessary when the trigger makes the purpose obvious.
+- <Num>3</Num> **Menu Item** — the core interactive element. See the [Menu
+  Item](/components/menu-item) component for all variants.
+- <Num>4</Num> **Menu Divider** (optional) — separates groups of Menu Items, or
+  separates the Menu Title from the Menu Items.
+- <Num>5</Num> **Menu Group** — a container that holds related Menu Items.
+- <Num>6</Num> **Menu Group Title** (optional) — not every group needs a title;
+  spacing alone can be enough.
+
+<Divider />
+
+## Parent and child menus
+
+Submenus allow groups of items to be collapsed under one parent menu item. Menu
+Items that trigger submenus are indicated by the chevron icon pointing to the
+right.
+
+Submenus should not trigger other submenus to prevent too many layers of
+traversal. Consider another navigation pattern if this is required.
+
+<AnatomyStage
+  style={{
+    padding: 'var(--spacing-xxl) var(--spacing-xl)',
+  }}
+>
+  <div style={{ position: 'relative', width: '479px', maxWidth: '100%' }}>
+    <PopoverMenu style={{ width: '247px' }}>
+      <PopoverMenuGroup>
+        <MenuItem
+          label="View info"
+          leadingVisual={<Icon glyph={<InformationOutlineIcon />} size="16" />}
+        />
+        <MenuItem
+          label="Mute channel"
+          leadingVisual={<Icon glyph={<BellOffOutlineIcon />} size="16" />}
+        />
+        <MenuItem
+          label="Notification preferences"
+          leadingVisual={<Icon glyph={<BellOutlineIcon />} size="16" />}
+        />
+        <MenuItem
+          label="Channel settings"
+          leadingVisual={<Icon glyph={<CogOutlineIcon />} size="16" />}
+          trailingElement
+          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+        />
+        <MenuItem
+          label="Bookmarks bar"
+          leadingVisual={<Icon glyph={<BookmarkOutlineIcon />} size="16" />}
+          trailingElement
+          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+        />
+      </PopoverMenuGroup>
+      <PopoverMenuDivider />
+      <PopoverMenuGroup>
+        <MenuItem
+          label="Members"
+          leadingVisual={<Icon glyph={<AccountOutlineIcon />} size="16" />}
+        />
+      </PopoverMenuGroup>
+      <PopoverMenuDivider />
+      <PopoverMenuGroup>
+        <MenuItem
+          label="Move to"
+          leadingVisual={<Icon glyph={<FolderMoveOutlineIcon />} size="16" />}
+          trailingElement
+          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+          style={{
+            backgroundColor: 'rgba(var(--center-channel-color-rgb), 0.08)',
+          }}
+        />
+        <MenuItem
+          label="More actions"
+          leadingVisual={<Icon glyph={<AppsIcon />} size="16" />}
+          trailingElement
+          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+        />
+      </PopoverMenuGroup>
+      <PopoverMenuDivider />
+      <PopoverMenuGroup>
+        <MenuItem
+          label="Leave channel"
+          destructive
+          leadingVisual={<Icon glyph={<ExitToAppIcon />} size="16" />}
+        />
+        <MenuItem
+          label="Archive channel"
+          destructive
+          leadingVisual={<Icon glyph={<ArchiveOutlineIcon />} size="16" />}
+        />
+      </PopoverMenuGroup>
+    </PopoverMenu>
+    <div
+      style={{
+        position: 'absolute',
+        top: '248px',
+        left: '239px',
+        zIndex: 1,
+      }}
+    >
+      <PopoverMenu variant="child" style={{ width: '240px' }}>
+        <PopoverMenuGroup>
+          <MenuItem
+            label="Category 1"
+            leadingVisual={<Icon glyph={<FolderOutlineIcon />} size="16" />}
+            trailingElement
+          />
+          <MenuItem
+            label="Category 2"
+            leadingVisual={<Icon glyph={<FolderOutlineIcon />} size="16" />}
+          />
+          <MenuItem
+            label="Category 3"
+            leadingVisual={<Icon glyph={<FolderOutlineIcon />} size="16" />}
+          />
+        </PopoverMenuGroup>
+      </PopoverMenu>
+    </div>
+  </div>
+</AnatomyStage>
+
+The child menu opens to the right of the parent and overlaps it horizontally by
+8px. The first item in the child menu aligns with the parent menu item that
+triggered it — here, **Category 1** lines up with **Move to**. The check mark
+indicates the currently selected category.
+
+### Child menu behavior
+
+Traversing submenus can be difficult for users, so we need to make the
+interaction as forgiving as possible. In order to do this, an invisible triangle
+is drawn from the center of the Parent Menu Item to the edges of the Child Menu.
+It is used to prevent the submenu from closing on angular mouse movement. See
+this post for implementation ideas.
+
+### Elevations
+
+Parent Menus use Elevation 4 and Child Menus use Elevation 5.
+
+<Divider />
+
+## Positioning
+
+### Vertical positioning
+
+If the trigger for the popover is at the top of the screen, and there is
+vertical room for the popover to fit, the popover should appear 4px below the
+trigger button. Otherwise, the popover will need to show 4px above the trigger.
+
+### Child menu vertical positioning
+
+The first menu item in the Child Menu aligns with the selected Parent Menu item.
+
+### Horizontal positioning
+
+If the trigger for the popover is on left half of the screen, the popover should
+be left-aligned with the trigger button.
+
+### Child menu horizontal positioning
+
+Child Menus overlap the parent menu horizontally by 8px. If there is room, they
+should always open up to the right of the parent menu. In cases where the child
+menu needs to open to the left, the chevron icon remains the same — it's more of
+an indicator of a submenu rather than a pointer in the direction the menu will
+open.
+
+<Divider />
+
+## Animation
+
+Depending on the positioning of the menu popover in relation the trigger button,
+it will either open up or open down.
+
+### Positioned above trigger
+
+<PopoverMenuMotion direction="above" />
+
+**Open animation**
+
+| Property | Value                  |
+| -------- | ---------------------- |
+| Movement | Move up 8px vertically |
+| Duration | 150ms                  |
+| Opacity  | From 0% to 100%        |
+| Easing   | EaseOut                |
+
+**Close animation**
+
+| Property | Value                    |
+| -------- | ------------------------ |
+| Movement | Move down 8px vertically |
+| Duration | 100ms                    |
+| Opacity  | From 100% to 0%          |
+| Easing   | EaseIn                   |
+
+### Positioned below trigger
+
+<PopoverMenuMotion direction="below" />
+
+**Open animation**
+
+| Property | Value                    |
+| -------- | ------------------------ |
+| Movement | Move down 8px vertically |
+| Duration | 150ms                    |
+| Opacity  | From 0% to 100%          |
+| Easing   | EaseOut                  |
+
+**Close animation**
+
+| Property | Value                  |
+| -------- | ---------------------- |
+| Movement | Move up 8px vertically |
+| Duration | 100ms                  |
+| Opacity  | From 100% to 0%        |
+| Easing   | EaseIn                 |
+
+### Submenu — opening to the left
+
+Submenus open on hover (if hover is available — otherwise on tap).
+
+<PopoverMenuMotion direction="submenu-left" />
+
+**Open animation**
+
+| Property | Value                      |
+| -------- | -------------------------- |
+| Movement | Move left 8px horizontally |
+| Duration | 150ms                      |
+| Opacity  | From 0% to 100%            |
+| Easing   | EaseOut                    |
+
+**Close animation**
+
+| Property | Value                       |
+| -------- | --------------------------- |
+| Movement | Move right 8px horizontally |
+| Duration | 100ms                       |
+| Opacity  | From 100% to 0%             |
+| Easing   | EaseIn                      |
+
+### Submenu — opening to the right
+
+Submenus open on hover (if hover is available — otherwise on tap).
+
+<PopoverMenuMotion direction="submenu-right" />
+
+**Open animation**
+
+| Property | Value                       |
+| -------- | --------------------------- |
+| Movement | Move right 8px horizontally |
+| Duration | 150ms                       |
+| Opacity  | From 0% to 100%             |
+| Easing   | EaseOut                     |
+
+**Close animation**
+
+| Property | Value                      |
+| -------- | -------------------------- |
+| Movement | Move left 8px horizontally |
+| Duration | 100ms                      |
+| Opacity  | From 100% to 0%            |
+| Easing   | EaseIn                     |
+
+<Divider />
+
+## Menu max-heights
+
+Depending on the location of the menu and its trigger, a menu's max height may be
+calculated differently:
+
+- If menu opens above trigger, the max-height is trigger y position − 48px.
+- If menu opens below trigger, the max-height is viewport height − trigger y
+  position − trigger height − 48px.
+- Bottom sheets have max-height = viewport height − 80px.
+
+<Divider />
+
+## Menu widths
+
+The menu width should be sized automatically based on the longest item in the
+menu.
+
+### Minimum and maximum widths
+
+Popover Menus should not be less than 144px in width and no wider than 496px.
+
+<Divider />
+
+## Scrolling
+
+For cases where a Popover Menu has more items beyond the menu container's
+height, the menu can scroll. If the menu has a Menu Title, the Menu Title
+remains fixed to the top as the menu scrolls.
+
+<Divider />
+
+## Accessibility and keyboard behavior
+
+When a menu opens, the keyboard focus is placed on the first item.
+
+- **DOWN** should move the focus to the next menu item, wrapping to the first
+  item when it reaches the end.
+- **UP** should move the focus to the previous menu item, wrapping from the
+  first item to the last.
+- **TAB** and **SHIFT+TAB** do not move focus among items within the menu, but
+  should move to the next/previous tabbable element outside the menu.
+- When a menu item is focused, **ENTER** executes the menu item and closes the
+  menu.
+- **RIGHT** key: When focus is on a menu item that has a submenu, RIGHT opens
+  the submenu and places focus on its first item.
+- **LEFT** key: When focused within a submenu, LEFT closes the submenu and
+  places focus on the parent menu item that the submenu originated from.
+- **ESC** closes the menu and returns focus to the original trigger that opened
+  the menu.
+
+**Reference:** [Menu and Menubar Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/menu/) (WAI-ARIA Authoring Practices Guide).

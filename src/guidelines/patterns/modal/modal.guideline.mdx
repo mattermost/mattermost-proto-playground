@@ -1,0 +1,95 @@
+A modal displays content that requires user interaction in a layer on top of
+the page.
+
+<Divider />
+
+## Usage
+
+Modals are used for quick interactions or brief interruptions to the user's
+current workflow. When a modal is open, all other functionality is obscured and
+disabled; it stays open until dismissed or acted upon.
+
+When modals are dismissed, users return to their original workflow and context.
+
+Appropriate use cases:
+
+- Giving focus to an interaction that requires attention or emphasis.
+- Displaying urgent or critical information that requires a user's action.
+- Displaying a contextual list to choose from.
+- Confirming a choice or decision that might be destructive or costly to the user.
+
+<Divider />
+
+## Anatomy
+
+Every modal is built from the same five regions: the framed container, the
+header and body, an optional footer, and the dimmed overlay behind the dialog.
+
+<ModalAnatomy />
+
+- <Num>1</Num> **Container** — the dialog shell: 12px corner radius, 1px border,
+  and Elevation 6.
+- <Num>2</Num> **Header** — identifies purpose and intent: title, subtitle,
+  optional header action, optional header input, and close button.
+- <Num>3</Num> **Body** — the main content region; scrolls when it exceeds the
+  viewable area.
+- <Num>4</Num> **Footer** — optional actions, pagination, stepped progress, or a
+  spacer to balance the layout.
+- <Num>5</Num> **Overlay** — darkens everything behind the dialog so focus stays
+  on the modal (black at 64% opacity in Compass).
+
+The title should be a short statement or question; add a subtitle only when
+users need more guidance. Reserve a header action for related work that is not
+one of the modal's primary outcomes. Use a header input (small) when the body
+shows long lists — search is the common case. Body padding is 32px horizontal and
+28px vertical, or 8px vertical when header and footer dividers are off; rows of
+menu items should bleed so content lines up with the 32px horizontal margins. In
+the footer, pair primary (confirming) and secondary (dismissive) actions,
+right-aligned with primary on the right; pagination keeps the page count on the
+left and prev/next on the right; stepped flows add previous/next plus dots; a
+spacer footer can be small or large when blank space balances the dialog.
+
+<Divider />
+
+## Sizes
+
+Modals are available in Small, Medium, and Large widths. Choose a size that fits
+the content without excess empty space.
+
+<Divider />
+
+## Positioning
+
+Modals are horizontally and vertically centered, with a −24px vertical offset
+from true center.
+
+<Divider />
+
+## Maximum height
+
+Viewport height ≥ 900px
+
+Maximum modal height is viewport height minus 240px (120px inset from top and
+bottom). If content exceeds that, the body scrolls.
+
+Viewport height &lt; 900px
+
+Maximum height is viewport height minus 160px (80px inset from top and bottom).
+Overflow scrolls in the body.
+
+<Divider />
+
+## Behavior
+
+Closing with Escape: when a modal is open, the Escape key closes it with the same
+behavior as the close button.
+
+Opening and closing transitions are specified in the Compass motion
+documentation.
+
+<Divider />
+
+## Live reference
+
+Use the Specimen tab for interactive examples: header variants, body spacing with
+menu items, divider on/off, footer actions, and sizes.

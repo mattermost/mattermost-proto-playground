@@ -39,7 +39,7 @@ export default function DocSidebar({ groups, header }: DocSidebarProps) {
             )}
             <ul className={styles['doc-sidebar__list']}>
               {group.items.map((item) => (
-                <li key={item.key}>
+                <li key={item.key} className={styles['doc-sidebar__list-item']}>
                   <NavLink
                     to={item.to}
                     end={item.end}

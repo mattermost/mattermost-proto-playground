@@ -81,8 +81,8 @@
     }
   }
 
-  // ── Post demo ───────────────────────────────────────────────
-  &__post-demo {
+  // ── Message demo ─────────────────────────────────────────────
+  &__message-demo {
     max-width: 600px;
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
     border-radius: var(--radius-m);
@@ -132,7 +132,6 @@
   &__team-sidebar-demo {
     display: inline-flex;
     align-items: stretch;
-    min-height: 320px;
   }
 
   // ── Channel Sidebar demo ────────────────────────────────────
@@ -321,5 +320,21 @@
     .patterns__variant-label {
       margin-bottom: var(--spacing-xs);
     }
+  }
+
+  // ── Popover Menu demo ───────────────────────────────────────
+  &__popover-menu-demo {
+    display: inline-flex;
+    align-items: flex-start;
+    padding: var(--spacing-xl);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+  }
+
+  &__popover-nested-demo {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: flex-start;
   }
 }
