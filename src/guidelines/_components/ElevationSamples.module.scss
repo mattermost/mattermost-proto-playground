@@ -96,38 +96,41 @@
 // ============================================================
 .stage {
   position: relative;
-  height: 360px;
+  height: 420px;
   margin: var(--spacing-l) 0;
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: var(--radius-m);
   background-color: var(--center-channel-bg);
   overflow: hidden;
 
-  &__surface {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-l);
-    padding: var(--spacing-xxl);
-  }
-
-  &__line {
-    height: 8px;
-    background-color: rgba(var(--center-channel-color-rgb), 0.08);
-    border-radius: var(--radius-full);
-  }
-
   &__parent {
     position: absolute;
-    top: 56px;
+    top: 32px;
     left: 64px;
   }
 
+  // Parent width 240 at left 64 → right edge 304; 296 gives 8px overlap.
   &__child {
     position: absolute;
-    top: 112px;
-    left: 312px;
+    top: 136px;
+    left: 296px;
+  }
+}
+
+.popover-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  width: 240px;
+
+  &__label {
+    padding: 0 var(--spacing-l);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
   }
 }
 
@@ -137,16 +140,6 @@
   background-color: var(--center-channel-bg);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   border-radius: var(--radius-s);
-
-  &__label {
-    padding: 0 var(--spacing-l) var(--spacing-xxs);
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: rgba(var(--center-channel-color-rgb), 0.56);
-  }
 
   &__title {
     padding: 0 var(--spacing-l) var(--spacing-xs);

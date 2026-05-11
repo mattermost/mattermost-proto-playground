@@ -4,6 +4,7 @@ import EmailOutlineIcon from '@mattermost/compass-icons/components/email-outline
 import PinOutlineIcon from '@mattermost/compass-icons/components/pin-outline';
 import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
+import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import ArrowUpIcon from '@mattermost/compass-icons/components/arrow-up';
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -116,12 +117,17 @@ interface PopoverProps {
 }
 
 function PopoverCard({ level, title, className, children }: PopoverProps) {
-  const cls = [styles['popover'], className].filter(Boolean).join(' ');
+  const wrapCls = [styles['popover-stack'], className].filter(Boolean).join(' ');
   return (
-    <div className={cls} style={{ boxShadow: `var(--elevation-${level})` }}>
-      <div className={styles['popover__label']}>Elevation {level}</div>
-      <div className={styles['popover__title']}>{title}</div>
-      <div className={styles['popover__items']}>{children}</div>
+    <div className={wrapCls}>
+      <div className={styles['popover-stack__label']}>Elevation {level}</div>
+      <div
+        className={styles.popover}
+        style={{ boxShadow: `var(--elevation-${level})` }}
+      >
+        <div className={styles['popover__title']}>{title}</div>
+        <div className={styles['popover__items']}>{children}</div>
+      </div>
     </div>
   );
 }
@@ -129,13 +135,6 @@ function PopoverCard({ level, title, className, children }: PopoverProps) {
 export function ElevationPopoverExample() {
   return (
     <div className={styles['stage']}>
-      <div className={styles['stage__surface']} aria-hidden="true">
-        <div className={styles['stage__line']} style={{ width: '60%' }} />
-        <div className={styles['stage__line']} style={{ width: '85%' }} />
-        <div className={styles['stage__line']} style={{ width: '45%' }} />
-        <div className={styles['stage__line']} style={{ width: '72%' }} />
-      </div>
-
       <PopoverCard
         level={4}
         title="Parent menu"
@@ -160,6 +159,10 @@ export function ElevationPopoverExample() {
         <MenuItem
           label="More actions"
           leadingVisual={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+          trailingElement
+          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+          active
+          aria-expanded="true"
         />
       </PopoverCard>
 
