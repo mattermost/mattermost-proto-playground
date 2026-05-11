@@ -1,4 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import styles from './Swatch.module.scss';
 
 type SwatchSize = 'small' | 'medium' | 'large';
@@ -19,13 +25,15 @@ function humanize(token: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function useResolvedTokenValue(token: string): string {
+function useResolvedTokenValue(
+  token: string,
+  ref?: RefObject<HTMLElement | null>,
+): string {
   const [value, setValue] = useState('');
   useEffect(() => {
     const read = () => {
-      const v = getComputedStyle(document.documentElement)
-        .getPropertyValue(`--${token}`)
-        .trim();
+      const element = ref?.current ?? document.documentElement;
+      const v = getComputedStyle(element).getPropertyValue(`--${token}`).trim();
       setValue(v);
     };
     read();
@@ -35,14 +43,18 @@ function useResolvedTokenValue(token: string): string {
       attributeFilter: ['data-theme'],
     });
     return () => observer.disconnect();
-  }, [token]);
+  }, [ref, token]);
   return value;
 }
 
 export default function Swatch({ token, label, size = 'medium' }: SwatchProps) {
-  const hex = useResolvedTokenValue(token);
+  const swatchRef = useRef<HTMLDivElement>(null);
+  const hex = useResolvedTokenValue(token, swatchRef);
   return (
-    <div className={`${styles.swatch} ${styles[`swatch--${size}`]}`}>
+    <div
+      ref={swatchRef}
+      className={`${styles.swatch} ${styles[`swatch--${size}`]}`}
+    >
       <div
         className={styles.swatch__chip}
         style={{ backgroundColor: `var(--${token})` }}

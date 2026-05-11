@@ -5,11 +5,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import {
-  findTopic,
-  type Topic,
-  type TopicCategory,
-} from '@/manifests/topics';
+import { findTopic, type Topic, type TopicCategory } from '@/manifests/topics';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import Tabs from '@/components/ui/Tabs/Tabs';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
@@ -37,7 +33,8 @@ function resolveTopic(
   rawSlug: string | undefined,
 ): Topic | undefined {
   if (!rawCategory || !rawSlug) return undefined;
-  if (!VALID_CATEGORIES.includes(rawCategory as TopicCategory)) return undefined;
+  if (!VALID_CATEGORIES.includes(rawCategory as TopicCategory))
+    return undefined;
   return findTopic(rawCategory as TopicCategory, rawSlug);
 }
 
@@ -133,7 +130,9 @@ export default function TopicRoute() {
           className={`${styles['doc-shell__body']} ${styles['doc-shell__body--standalone']}`}
         >
           <Suspense fallback={<p>Loading…</p>}>
-            {SpecimenPage && <SpecimenPage />}
+            <div className={docStyles['doc-page__prose']}>
+              {SpecimenPage && <SpecimenPage />}
+            </div>
           </Suspense>
         </div>
       )}

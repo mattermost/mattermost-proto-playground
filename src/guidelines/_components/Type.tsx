@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import OpenInNewIcon from '@mattermost/compass-icons/components/open-in-new';
 import styles from './Type.module.scss';
 
 export type TypeLevel =
@@ -58,7 +59,10 @@ const FONT_WEIGHT_VAL: Record<TypeWeight, number> = {
   bold: 700,
 };
 
-function familyFor(kind: TypeKind, level: TypeLevel): 'Metropolis' | 'Open Sans' {
+function familyFor(
+  kind: TypeKind,
+  level: TypeLevel,
+): 'Metropolis' | 'Open Sans' {
   if (kind === 'body') return 'Open Sans';
   return level >= 300 ? 'Metropolis' : 'Open Sans';
 }
@@ -74,6 +78,8 @@ interface TypefaceCardProps {
   /** Optional download URL. */
   href?: string;
   hrefLabel?: string;
+  /** Removes the large display panel for token-reference contexts. */
+  compact?: boolean;
 }
 
 export function TypefaceCard({
@@ -84,17 +90,30 @@ export function TypefaceCard({
   token,
   href,
   hrefLabel = 'Download',
+  compact = false,
 }: TypefaceCardProps) {
+  const className = [
+    styles['typeface'],
+    compact ? styles['typeface--compact'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className={styles['typeface']}>
-      <div
-        className={styles['typeface__display']}
-        style={{ fontFamily: family }}
-      >
-        {display}
-      </div>
+    <div className={className}>
+      {!compact && (
+        <div
+          className={styles['typeface__display']}
+          style={{ fontFamily: family }}
+        >
+          {display}
+        </div>
+      )}
       <div className={styles['typeface__meta']}>
-        <div className={styles['typeface__name']} style={{ fontFamily: family }}>
+        <div
+          className={styles['typeface__name']}
+          style={{ fontFamily: family }}
+        >
           {name}
         </div>
         {token && (
@@ -105,16 +124,18 @@ export function TypefaceCard({
         {description && (
           <div className={styles['typeface__description']}>{description}</div>
         )}
-        <div
-          className={styles['typeface__alphabet']}
-          style={{ fontFamily: family }}
-        >
-          ABCDEFGHIJKLMNOPQRSTUVWXYZ
-          <br />
-          abcdefghijklmnopqrstuvwxyz
-          <br />
-          0123456789 &amp; ! ? @ # $ %
-        </div>
+        {!compact && (
+          <div
+            className={styles['typeface__alphabet']}
+            style={{ fontFamily: family }}
+          >
+            ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            <br />
+            abcdefghijklmnopqrstuvwxyz
+            <br />
+            0123456789 &amp; ! ? @ # $ %
+          </div>
+        )}
         {href && (
           <a
             className={styles['typeface__link']}
@@ -122,7 +143,11 @@ export function TypefaceCard({
             target="_blank"
             rel="noreferrer"
           >
-            {hrefLabel} ↗
+            {hrefLabel}
+            <OpenInNewIcon
+              className={styles['typeface__link-icon']}
+              aria-hidden="true"
+            />
           </a>
         )}
       </div>
@@ -164,7 +189,9 @@ export function TypeSpecimen({
   const fontWeight = FONT_WEIGHT_VAL[weight];
   const label = kind === 'heading' ? 'Heading' : 'Body';
   const fallback =
-    kind === 'heading' ? `${label} ${level}` : `${label} ${level} — the quick brown fox`;
+    kind === 'heading'
+      ? `${label} ${level}`
+      : `${label} ${level} — the quick brown fox`;
 
   const rootClass = [
     styles['specimen'],
@@ -218,7 +245,8 @@ export function TypeSpecimen({
             <div>
               <dt>Weight</dt>
               <dd>
-                {fontWeight} <span className={styles['specimen__muted']}>({weight})</span>
+                {fontWeight}{' '}
+                <span className={styles['specimen__muted']}>({weight})</span>
               </dd>
             </div>
           </dl>

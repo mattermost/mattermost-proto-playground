@@ -128,53 +128,89 @@
 
   // ── Theme Colors ──────────────────────────────────────────────────────────
 
+  &__theme-library {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxl);
+  }
+
   &__theme-groups {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xxl);
+    gap: var(--spacing-xxxl);
   }
 
-  &__theme-group-name {
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
+  &__theme-section-heading {
+    max-width: 680px;
+  }
+
+  &__theme {
+    padding: var(--spacing-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-l);
+    background-color: var(--center-channel-bg);
     color: var(--center-channel-color);
-    opacity: 0.56;
-    text-transform: uppercase;
-    letter-spacing: var(--letter-spacing-wide-1);
+  }
+
+  &__theme-group {
+    margin-bottom: var(--spacing-xxxl);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__theme-group-heading {
+    display: flex;
+    flex-direction: column;
+    max-width: 680px;
     margin-bottom: var(--spacing-m);
   }
 
-  &__theme-swatches {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-l);
+  // ── Iconography ───────────────────────────────────────────────────────────
+
+  &__icon-library {
+    margin-top: var(--spacing-l);
   }
 
-  &__theme-swatch {
+  &__icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    gap: var(--spacing-m);
+  }
+
+  &__icon-cell {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xxs);
-  }
-
-  &__theme-swatch-color {
-    width: 52px;
-    height: 52px;
+    align-items: center;
+    padding: var(--spacing-xs);
     border-radius: var(--radius-m);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background-color: var(--center-channel-bg);
   }
 
-  &__theme-swatch-name {
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
+  &__icon-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--center-channel-color);
+    margin-bottom: var(--spacing-xs);
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
   }
 
-  &__theme-swatch-token {
-    font-size: 9px;
+  &__icon-token {
+    font-size: var(--font-size-50);
     font-family: var(--font-family-mono);
     color: var(--center-channel-color);
-    opacity: 0.4;
-    white-space: nowrap;
+    opacity: 0.72;
+    text-align: center;
+    word-break: break-word;
+    line-height: var(--line-height-50);
+    max-width: 100%;
   }
 
   // ── Elevation ─────────────────────────────────────────────────────────────
@@ -495,17 +531,15 @@
   }
 
   &__radius-value {
-    font-size: 10px;
-    color: var(--center-channel-color);
-    opacity: 0.48;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
     font-family: var(--font-family-mono);
   }
 
   &__radius-token {
-    font-size: 9px;
+    font-size: var(--font-size-75);
     font-family: var(--font-family-mono);
-    color: var(--center-channel-color);
-    opacity: 0.36;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
     text-align: center;
   }
 }

@@ -23,26 +23,55 @@ const FONT_WEIGHTS = [
 export default function TypographyLibrary() {
   return (
     <>
-      <h3>Families</h3>
+      <h2>Typography Tokens</h2>
+      <p>
+        Typography tokens expose the Compass font families, scale, line heights,
+        and weights as CSS custom properties. Use this page as the
+        implementation reference for product UI and documentation examples.
+      </p>
+
+      <h3>Font Stack</h3>
+      <p>
+        Use the family tokens instead of writing font stacks directly in
+        component styles.
+      </p>
       <TypefaceCard
         name="Metropolis"
         family="Metropolis, sans-serif"
         token="font-family-heading"
         href="https://fontsarena.com/metropolis-by-chris-simpson/"
-        description="Used for headings 300–1000."
+        description="Heading family. Used for heading steps 300-1000."
+        compact
       />
       <TypefaceCard
         name="Open Sans"
         family="'Open Sans', sans-serif"
         token="font-family-body"
         href="https://fonts.google.com/specimen/Open+Sans"
-        description="Used for body copy and headings 25–200."
+        description="Body family. Used for body copy and heading steps 25-200."
+        compact
       />
 
-      <h3>Scale</h3>
+      <pre>
+        <code>{`/* Heading text */
+font-family: var(--font-family-heading);
+
+/* Body text */
+font-family: var(--font-family-body);`}</code>
+      </pre>
+
+      <h3>Scale Tokens</h3>
+      <p>
+        Each step has a size token and a matching line-height value. The 100
+        step is the 14px base size for the Mattermost web app.
+      </p>
       <ScaleTable base={100} />
 
-      <h3>Headings</h3>
+      <h3>Heading Scale</h3>
+      <p>
+        Heading rows show the rendered sample plus the token, size, line height,
+        family, and default weight.
+      </p>
       <TypeStack>
         {HEADING_LEVELS.map((level) => (
           <TypeSpecimen
@@ -54,7 +83,11 @@ export default function TypographyLibrary() {
         ))}
       </TypeStack>
 
-      <h3>Body</h3>
+      <h3>Body Scale</h3>
+      <p>
+        Body rows use Open Sans with regular weight by default. Use semibold for
+        emphasis when needed.
+      </p>
       <TypeStack>
         {BODY_LEVELS.map((level) => (
           <TypeSpecimen
@@ -67,7 +100,11 @@ export default function TypographyLibrary() {
         ))}
       </TypeStack>
 
-      <h3>Weights</h3>
+      <h3>Weight Tokens</h3>
+      <p>
+        Prefer semibold for emphasis. Reserve bold for cases where the smallest
+        type sizes need extra legibility.
+      </p>
       <div className={styles['foundations__type-weights']}>
         {FONT_WEIGHTS.map(({ name, value, token }) => (
           <div key={name} className={styles['foundations__weight-row']}>
@@ -85,10 +122,25 @@ export default function TypographyLibrary() {
         ))}
       </div>
 
-      <h3>Heading margins</h3>
+      <h3>Margin Tables</h3>
+      <p>
+        These computed margins are defaults for prose-like text. Component and
+        pattern layout can override them with explicit spacing.
+      </p>
+
+      <h4>Heading Margins</h4>
+      <p>
+        Top margin is font size divided by 1.125, rounded to the nearest 4px.
+        Bottom margin is font size multiplied by 0.25, rounded to the nearest
+        4px, with an 8px minimum.
+      </p>
       <MarginTable kind="heading" />
 
-      <h3>Body margins</h3>
+      <h4>Body Margins</h4>
+      <p>
+        Top and bottom margins are font size multiplied by 0.75, rounded to the
+        nearest 4px, with an 8px minimum.
+      </p>
       <MarginTable kind="body" />
     </>
   );
