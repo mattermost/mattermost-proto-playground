@@ -77,7 +77,7 @@ Keyframes and other global at-rules can stay at the top of the file; the rest of
 
 ## Button emphasis: use Primary sparingly
 
-`emphasis="Primary"` should appear **at most once per view** — it draws the eye and loses meaning if overused. Use `Secondary`, `Tertiary`, or `Link` for supporting actions. Only reach for `Primary` when one action clearly outranks all others on screen.
+`emphasis="Primary"` should appear **at most once per view** — it draws the eye and loses meaning if overused. Use `Secondary`, `Tertiary`, or `Quaternary` for supporting actions. Only reach for `Primary` when one action clearly outranks all others on screen.
 
 ## EmptyState: default button size is Medium
 

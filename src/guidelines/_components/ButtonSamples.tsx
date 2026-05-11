@@ -56,7 +56,6 @@ export function ButtonEmphasis() {
       <Button emphasis="Secondary">Secondary</Button>
       <Button emphasis="Tertiary">Tertiary</Button>
       <Button emphasis="Quaternary">Quaternary</Button>
-      <Button emphasis="Link">Link</Button>
     </div>
   );
 }

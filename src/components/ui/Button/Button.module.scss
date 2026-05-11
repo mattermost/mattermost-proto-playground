@@ -178,24 +178,6 @@
     }
   }
 
-  &--emphasis-link {
-    background-color: transparent;
-    color: var(--link-color);
-    padding: 0;
-
-    &:hover:not(:disabled) {
-      text-decoration: underline;
-    }
-    &:disabled {
-      color: rgba(var(--center-channel-color-rgb), 0.32);
-    }
-    &:focus-visible {
-      box-shadow:
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--link-color);
-    }
-  }
-
   // ---------------------------------------------------------------------------
   // Destructive + emphasis
   // ---------------------------------------------------------------------------
@@ -282,18 +264,6 @@
       }
     }
 
-    &.button--emphasis-link {
-      color: var(--color-danger);
-
-      &:disabled {
-        color: rgba(var(--center-channel-color-rgb), 0.32);
-      }
-      &:focus-visible {
-        box-shadow:
-          0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
-      }
-    }
   }
 
   // ---------------------------------------------------------------------------
@@ -382,17 +352,5 @@
       }
     }
 
-    &.button--emphasis-link {
-      color: var(--sidebar-text);
-
-      &:disabled {
-        color: rgba(var(--sidebar-text-rgb), 0.32);
-      }
-      &:focus-visible {
-        box-shadow:
-          0 0 0 3px var(--color-neutral-1100),
-          0 0 0 5px var(--color-neutral-0);
-      }
-    }
   }
 }

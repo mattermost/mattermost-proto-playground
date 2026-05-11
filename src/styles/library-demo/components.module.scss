@@ -107,6 +107,93 @@
   gap: var(--spacing-xl);
 }
 
+.components__button-variant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: var(--spacing-l) var(--spacing-xl);
+}
+
+.components__button-variant-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  min-width: 0;
+
+  > .components__instance-label {
+    text-align: left;
+  }
+}
+
+// Emphasis × size matrix: one row per emphasis, columns = sizes
+.components__button-variant-matrix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  min-width: 0;
+
+  &__head,
+  &__row {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, 8.5rem) repeat(4, minmax(0, 1fr));
+    gap: var(--spacing-m) var(--spacing-l);
+    align-items: center;
+  }
+
+  &__head {
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__corner {
+    min-height: 1px;
+  }
+
+  &__size-heading {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-neutral-500);
+  }
+
+  &__emphasis-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-neutral-500);
+  }
+
+  &__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-width: 0;
+  }
+}
+
+.components__button-surface--inverted {
+  background-color: var(--sidebar-bg);
+  padding: var(--spacing-l);
+  border-radius: var(--radius-m);
+
+  .components__instance-label {
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+  }
+
+  .components__section-title {
+    color: var(--sidebar-text);
+    border-bottom-color: rgba(var(--sidebar-text-rgb), 0.24);
+  }
+
+  .components__button-variant-matrix__head {
+    border-bottom-color: rgba(var(--sidebar-text-rgb), 0.24);
+  }
+
+  .components__button-variant-matrix__size-heading,
+  .components__button-variant-matrix__emphasis-label {
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+  }
+}
+
 .components__button-row {
   display: flex;
   flex-wrap: wrap;
