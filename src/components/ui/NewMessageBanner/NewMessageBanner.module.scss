@@ -1,10 +1,12 @@
 .new-message-banner {
+  position: relative;
   display: flex;
   align-items: center;
   background-color: var(--button-bg);
   border-radius: var(--radius-s);
   box-shadow: var(--elevation-2);
   overflow: hidden;
+  width: 100%;
 
   &__main {
     display: flex;
@@ -16,7 +18,8 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    justify-content: space-between;
+    justify-content: flex-start;
+    min-width: 0;
 
     &:focus-visible {
       outline: none;
@@ -50,6 +53,12 @@
   }
 
   &__count {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-100);
@@ -59,6 +68,8 @@
   }
 
   &__dismiss {
+    position: relative;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -91,31 +102,19 @@
   // ---------------------------------------------------------------------------
   // Type modifiers
   // ---------------------------------------------------------------------------
+  &--type-jump-to-unreads {
+    container-name: new-message-banner;
+    container-type: inline-size;
+  }
+
   &--type-new-replies {
     display: inline-flex;
     width: auto;
-
-    .new-message-banner__main {
-      justify-content: flex-start;
-    }
   }
+}
 
-  // ---------------------------------------------------------------------------
-  // Size modifiers
-  // ---------------------------------------------------------------------------
-  &--size-small {
-    .new-message-banner__jump-label,
-    .new-message-banner__count {
-      font-size: var(--font-size-75);
-      line-height: var(--line-height-75);
-    }
-  }
-
-  &--size-large {
-    .new-message-banner__jump-label,
-    .new-message-banner__count {
-      font-size: var(--font-size-200);
-      line-height: var(--line-height-200);
-    }
+@container new-message-banner (max-width: 749px) {
+  .new-message-banner--type-jump-to-unreads .new-message-banner__jump-label {
+    display: none;
   }
 }
