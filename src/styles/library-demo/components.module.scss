@@ -249,6 +249,10 @@
   background-color: var(--calls-bg);
   padding: var(--spacing-l);
   border-radius: var(--radius-m);
+
+  .components__instance-label {
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+  }
 }
 
 .components__button-block--sidebar-header-bg {

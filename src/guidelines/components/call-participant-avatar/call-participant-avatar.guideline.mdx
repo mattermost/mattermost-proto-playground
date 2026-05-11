@@ -82,7 +82,17 @@ down to the call sidebar.
 | Small  | 72px   | Compact grid; sidebar previews.                           |
 | XS     | 56px   | Roster lists; dense participant rows.                     |
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+<div
+  style={{
+    display: 'flex',
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    backgroundColor: 'var(--calls-bg)',
+    padding: 'var(--spacing-l)',
+    borderRadius: 'var(--radius-m)',
+  }}
+>
   <CallParticipantAvatar src={avatarLeonard} alt="Large" name="Large" size="Large" muteState="unmuted" />
   <CallParticipantAvatar src={avatarLeonard} alt="Medium" name="Medium" size="Medium" muteState="unmuted" />
   <CallParticipantAvatar src={avatarLeonard} alt="Small" name="Small" size="Small" muteState="unmuted" />
@@ -102,7 +112,17 @@ and dial-ins are unambiguous.
 | `external-link` | Silhouette fallback. Pair with the EXTERNAL label.                  |
 | `dial-in`       | Filled phone glyph on a green circle. Pair with the EXTERNAL label. |
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+<div
+  style={{
+    display: 'flex',
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    backgroundColor: 'var(--calls-bg)',
+    padding: 'var(--spacing-l)',
+    borderRadius: 'var(--radius-m)',
+  }}
+>
   <CallParticipantAvatar alt="Guest" name="Guest" size="Medium" kind="external-link" external muteState="muted" />
   <CallParticipantAvatar alt="+1 555…" name="+1 555 0123" size="Medium" kind="dial-in" external muteState="muted" />
 </div>
@@ -122,10 +142,3 @@ and dial-ins are unambiguous.
   immediately when speech stops.
 - **Raised hand** — pinned, persistent. Doesn't auto-clear.
 - **Reaction** — overlays for the reaction's lifetime, then fades.
-
-<Divider />
-
-## Implementation
-
-For props, variants, and copy-ready examples, see the
-[Call Participant Avatar library page](/components/call-participant-avatar/specimen).

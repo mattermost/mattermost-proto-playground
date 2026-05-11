@@ -126,6 +126,7 @@ export default function CallParticipantAvatar({
           <IconButton
             aria-label="Host participant actions"
             style="Inverted"
+            padding="Compact"
             size={hostControlsButtonSize}
             icon={
               <Icon
