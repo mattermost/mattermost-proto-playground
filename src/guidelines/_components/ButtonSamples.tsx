@@ -131,7 +131,7 @@ export function ButtonWidths() {
           <Button className={styles['widths__full']}>Sign in</Button>
           <Button
             className={styles['widths__full']}
-            emphasis="Secondary"
+            emphasis="Tertiary"
           >
             Use a different account
           </Button>

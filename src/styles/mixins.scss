@@ -84,3 +84,12 @@
     background-color: rgba(var(--center-channel-color-rgb), 0.4);
   }
 }
+
+/** Horizontal flex wrap for inline guideline demos (buttons, chips, toggles). */
+@mixin guideline-sample-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-l);
+  margin-bottom: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+}
