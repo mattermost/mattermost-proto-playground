@@ -153,6 +153,7 @@
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-semibold);
     color: var(--color-neutral-500);
+    text-align: center;
   }
 
   &__emphasis-label {
@@ -167,6 +168,10 @@
     align-items: flex-start;
     justify-content: center;
     min-width: 0;
+  }
+
+  &__cell--icon {
+    align-items: center;
   }
 }
 
