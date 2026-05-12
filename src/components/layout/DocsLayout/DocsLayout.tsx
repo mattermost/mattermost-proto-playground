@@ -7,7 +7,6 @@ import DocSidebar, {
 } from '@/components/layout/DocSidebar/DocSidebar';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import styles from './DocsLayout.module.scss';
 
 const TOPIC_CATEGORIES: { slug: TopicCategory; name: string }[] = [
@@ -99,9 +98,7 @@ export default function DocsLayout() {
     <div className={styles['docs-layout']}>
       <DocSidebar groups={groups} header={header} />
       <div className={styles['docs-layout__content']}>
-        <Scrollbars>
-          <Outlet />
-        </Scrollbars>
+        <Outlet />
       </div>
     </div>
   );

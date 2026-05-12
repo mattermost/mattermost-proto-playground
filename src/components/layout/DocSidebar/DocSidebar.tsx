@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import styles from './DocSidebar.module.scss';
 
 export interface SidebarItem {
@@ -29,50 +28,38 @@ interface DocSidebarProps {
 export default function DocSidebar({ groups, header }: DocSidebarProps) {
   return (
     <nav className={styles['doc-sidebar']} aria-label="Section navigation">
-      <Scrollbars>
-        <div className={styles['doc-sidebar__inner']}>
-          {header && (
-            <div className={styles['doc-sidebar__header']}>{header}</div>
-          )}
-          {groups.map((group, i) =>
-            group.items.length === 0 ? null : (
-              <div
-                key={`${group.label}-${i}`}
-                className={styles['doc-sidebar__group']}
-              >
-                {group.label && (
-                  <div className={styles['doc-sidebar__group-header']}>
-                    {group.label}
-                  </div>
-                )}
-                <ul className={styles['doc-sidebar__list']}>
-                  {group.items.map((item) => (
-                    <li
-                      key={item.key}
-                      className={styles['doc-sidebar__list-item']}
-                    >
-                      <NavLink
-                        to={item.to}
-                        end={item.end}
-                        className={({ isActive }) =>
-                          [
-                            styles['doc-sidebar__item'],
-                            isActive ? styles['doc-sidebar__item--active'] : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')
-                        }
-                      >
-                        {item.name}
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
+      {header && <div className={styles['doc-sidebar__header']}>{header}</div>}
+      {groups.map((group, i) =>
+        group.items.length === 0 ? null : (
+          <div key={`${group.label}-${i}`} className={styles['doc-sidebar__group']}>
+            {group.label && (
+              <div className={styles['doc-sidebar__group-header']}>
+                {group.label}
               </div>
-            ),
-          )}
-        </div>
-      </Scrollbars>
+            )}
+            <ul className={styles['doc-sidebar__list']}>
+              {group.items.map((item) => (
+                <li key={item.key} className={styles['doc-sidebar__list-item']}>
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) =>
+                      [
+                        styles['doc-sidebar__item'],
+                        isActive ? styles['doc-sidebar__item--active'] : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')
+                    }
+                  >
+                    {item.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ),
+      )}
     </nav>
   );
 }
