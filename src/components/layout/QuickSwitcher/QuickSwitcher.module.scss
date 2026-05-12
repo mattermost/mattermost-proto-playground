@@ -1,0 +1,172 @@
+.quick-switcher {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 15vh var(--spacing-l) var(--spacing-l);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.64);
+    border: none;
+    padding: 0;
+    cursor: default;
+  }
+
+  &__panel {
+    position: relative;
+    width: min(560px, 100%);
+    background-color: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-l);
+    box-shadow: var(--elevation-5);
+    display: flex;
+    flex-direction: column;
+    max-height: min(420px, 70vh);
+    transform-origin: top center;
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity var(--duration-quick) var(--ease-entrance),
+      transform var(--duration-quick) var(--ease-entrance);
+
+    &--visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    &--exiting {
+      opacity: 0;
+      transform: scale(0.9);
+      transition:
+        opacity var(--duration-quick) var(--ease-exit),
+        transform var(--duration-quick) var(--ease-exit);
+    }
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-m) var(--spacing-l);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex-shrink: 0;
+  }
+
+  &__search-icon {
+    display: flex;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    flex-shrink: 0;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+    outline: none;
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.48);
+    }
+  }
+
+  &__hint {
+    flex-shrink: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: 1.2;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    white-space: nowrap;
+  }
+
+  &__list {
+    margin: 0;
+    padding: var(--spacing-xs) 0;
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+  }
+
+  &__item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-s) var(--spacing-l);
+    margin: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: var(--center-channel-color);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &--active {
+      background-color: rgba(var(--button-bg-rgb), 0.08);
+    }
+  }
+
+  &__item-title {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-subtitle {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    padding: var(--spacing-xl) var(--spacing-l);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    text-align: center;
+  }
+}

@@ -3,9 +3,12 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import PaletteOutlineIcon from '@mattermost/compass-icons/components/palette-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import { useTheme, type ThemeId } from '@/contexts/ThemeContext';
 import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
+import Icon from '@/components/ui/Icon/Icon';
+import IconButton from '@/components/ui/IconButton/IconButton';
 import styles from './TopNav.module.scss';
 
 interface NavItem {
@@ -97,7 +100,12 @@ function TopNavLink({ item }: TopNavLinkProps) {
   );
 }
 
-export default function TopNav() {
+interface TopNavProps {
+  /** Opens the ⌘K / Ctrl+K quick switcher (navigate to any page). */
+  onOpenQuickSwitcher?: () => void;
+}
+
+export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const themeRef = useRef<HTMLDivElement>(null);
@@ -115,6 +123,17 @@ export default function TopNav() {
         {NAV_ITEMS.map((item) => (
           <TopNavLink key={item.label} item={item} />
         ))}
+
+        {onOpenQuickSwitcher != null && (
+          <IconButton
+            aria-label="Open quick switcher"
+            aria-keyshortcuts="Control+K Meta+K"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<MagnifyIcon />} />}
+            onClick={onOpenQuickSwitcher}
+          />
+        )}
 
         <div ref={themeRef} className={styles['top-nav__theme']}>
           <button
