@@ -231,30 +231,34 @@ Popover panels (menus, info popovers, dropdowns) animate on mount/unmount with a
 
 Set `transform-origin` so the scale grows from the anchor direction (e.g. `transform-origin: top left` for a popover that opens below-and-right of its trigger).
 
-## Scrollbars: minimal style for scrolling content
+## Scrollbars: use the `Scrollbars` wrapper for UI components
 
-Any element with `overflow: auto`, `overflow: scroll`, `overflow-y: auto|scroll`, or `overflow-x: auto|scroll` must use the minimal scrollbar treatment — thin track, subtle translucent thumb, transparent track, darker on hover. Never ship the browser-default chunky scrollbar on content regions.
+Any scrolling region inside a Compass UI component or pattern (`src/components/ui/`, `src/guidelines/**/*.specimen.tsx`) must render through the shared `Scrollbars` component at `src/components/ui/Scrollbars/`. It wraps `simplebar-react` to produce an overlay scrollbar — the thumb floats above content (no reserved gutter), auto-hides when idle, and matches Compass theming via `--center-channel-color-rgb`.
 
-```scss
-scrollbar-width: thin;
-scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+```tsx
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 
-&::-webkit-scrollbar {
-  width: 8px;   // use `height: 8px` for horizontal scrollers
-}
-&::-webkit-scrollbar-track {
-  background: transparent;
-}
-&::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--center-channel-color-rgb), 0.24);
-  border-radius: 3px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-  transition: background-color var(--duration-quick) var(--ease-transition);
-}
-&::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(var(--center-channel-color-rgb), 0.4);
-}
+<div className={styles['my-panel__body']}>
+  <Scrollbars>
+    {/* tall content */}
+  </Scrollbars>
+</div>
 ```
 
-Reference implementation: the `__messages` block in `src/pages/Layouts/Layouts.module.scss`. If this starts to recur in more places, extract a `@mixin minimal-scrollbar` into `src/styles/mixins.scss`.
+Conventions:
+
+- **Sizing.** `Scrollbars` fills its parent. In a flex column give the parent `flex: 1; min-height: 0;`. For menus and other capped-height surfaces, pass `style={{ maxHeight }}` on the wrapper.
+- **Theming.** Default thumb colour follows `--center-channel-color-rgb`. On dark surfaces (e.g. the channel sidebar) pass `color="--sidebar-text-rgb"` so the thumb stays visible.
+- **Padding.** Apply layout padding to a child wrapper inside `<Scrollbars>`, not to the `Scrollbars` root — the scrollbar track sits at the wrapper's content-box edge, so padding on the wrapper pushes the thumb inward.
+- **Imperative scroll.** Forward a ref to `<Scrollbars>` to receive the inner scrollable `<div>`. Use it for `.scrollTo(...)` or to read `.scrollTop` (e.g. "more unreads above/below" indicators).
+
+### Exception: docs shell components
+
+Layout-level scrollers in `src/components/layout/` (`AppShell`, `DocsLayout`, `DocSidebar`, `OnThisPage`) keep raw `overflow: auto` and apply `@include minimal-scrollbar;` from `src/styles/mixins.scss`. The mixin produces the same thin/translucent look as the wrapper.
+
+These stay on native scrolling because:
+
+1. **`position: sticky` descendants** (`OnThisPage`) need a native scrolling ancestor — sticky positioning breaks inside SimpleBar's wrapper/mask/offset DOM.
+2. **Flex-driven heights** rely on a clean flex chain from `app-shell` down through `docs-layout` to the docs sidebar and main pane. Wrapping `AppShell.__content` or `DocsLayout.__content` in SimpleBar inserts a `.simplebar-content` element with no defined height, which collapses any `flex: 1; min-height: 0;` descendants.
+
+Don't reach for the mixin in UI components; reach for `<Scrollbars>`.

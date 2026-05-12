@@ -6,6 +6,7 @@ import ChannelSidebarItem from '@/components/ui/ChannelSidebarItem/ChannelSideba
 import MoreUnreadsBanner from '@/components/ui/MoreUnreadsBanner/MoreUnreadsBanner';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import {
   applyChannelNameOverrides,
   buildDefaultChannelsSidebarModel,
@@ -182,26 +183,28 @@ export default function ChannelsSidebar({
       </div>
 
       <div className={styles['channels-sidebar__scroll-view']}>
-        <div className={styles['channels-sidebar__channel-groups']}>
-          {model.groups.map((group) => (
-            <div
-              key={group.key}
-              className={styles['channels-sidebar__channel-group']}
-            >
-              <SidebarCategory
-                label={group.category.label}
-                showChevron={group.category.showChevron}
-                showPlusButton={group.category.showPlusButton}
-              />
-              {group.items.map((row, index) => (
-                <ChannelSidebarItem
-                  key={`${group.key}-${index}-${row.name}`}
-                  {...row}
+        <Scrollbars color="--sidebar-text-rgb">
+          <div className={styles['channels-sidebar__channel-groups']}>
+            {model.groups.map((group) => (
+              <div
+                key={group.key}
+                className={styles['channels-sidebar__channel-group']}
+              >
+                <SidebarCategory
+                  label={group.category.label}
+                  showChevron={group.category.showChevron}
+                  showPlusButton={group.category.showPlusButton}
                 />
-              ))}
-            </div>
-          ))}
-        </div>
+                {group.items.map((row, index) => (
+                  <ChannelSidebarItem
+                    key={`${group.key}-${index}-${row.name}`}
+                    {...row}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </Scrollbars>
 
         {moreUnreadsAbove && (
           <MoreUnreadsBanner
