@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import styles from './OnThisPage.module.scss';
 
 interface Heading {
@@ -123,29 +124,33 @@ export default function OnThisPage({
 
   return (
     <nav className={styles['on-this-page']} aria-label="On this page">
-      <p className={styles['on-this-page__eyebrow']}>On this page</p>
-      <ul className={styles['on-this-page__list']}>
-        {headings.map((h) => (
-          <li
-            key={h.id}
-            className={[
-              styles['on-this-page__item'],
-              h.level === 3 ? styles['on-this-page__item--indent'] : '',
-              h.id === activeId ? styles['on-this-page__item--active'] : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            <a
-              href={`#${h.id}`}
-              className={styles['on-this-page__link']}
-              onClick={(e) => handleClick(e, h.id)}
-            >
-              {h.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <Scrollbars>
+        <div className={styles['on-this-page__inner']}>
+          <p className={styles['on-this-page__eyebrow']}>On this page</p>
+          <ul className={styles['on-this-page__list']}>
+            {headings.map((h) => (
+              <li
+                key={h.id}
+                className={[
+                  styles['on-this-page__item'],
+                  h.level === 3 ? styles['on-this-page__item--indent'] : '',
+                  h.id === activeId ? styles['on-this-page__item--active'] : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                <a
+                  href={`#${h.id}`}
+                  className={styles['on-this-page__link']}
+                  onClick={(e) => handleClick(e, h.id)}
+                >
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Scrollbars>
     </nav>
   );
 }

@@ -74,11 +74,12 @@
 
   // ── Body ──────────────────────────────────────────────────
   &__body {
-    padding: 28px var(--spacing-xxxl);
-    overflow-y: auto;
     flex: 1;
+    min-height: 0;
+  }
 
-    @include minimal-scrollbar;
+  &__body-inner {
+    padding: 28px var(--spacing-xxxl);
   }
 
   // ── Footer ────────────────────────────────────────────────

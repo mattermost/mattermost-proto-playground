@@ -9,6 +9,7 @@ import MessageInput from '@/components/ui/MessageInput';
 import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
 import Message from '@/components/ui/Message/Message';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
@@ -80,7 +81,9 @@ export default function Layouts() {
               />
 
               <div className={styles['layouts__messages']}>
-                <MessageSeparator type="Date" label="Today" />
+                <Scrollbars>
+                  <div className={styles['layouts__messages-list']}>
+                    <MessageSeparator type="Date" label="Today" />
 
                 <Message
                   avatarSrc={avatarSofia}
@@ -164,7 +167,10 @@ export default function Layouts() {
                     roadmap meeting. Same room.
                   </p>
                 </Message>
+                  </div>
+                </Scrollbars>
               </div>
+
 
               <div className={styles['layouts__message-input']}>
                 <MessageInput placeholder="Write to Town Square" />
@@ -185,10 +191,16 @@ export default function Layouts() {
                   />
                 </div>
                 <div className={styles['layouts__right-sidebar-body']}>
-                  <p className={styles['layouts__right-sidebar-placeholder']}>
-                    Right sidebar placeholder. This panel is shown or hidden by
-                    toggling the info button in the channel header.
-                  </p>
+                  <Scrollbars>
+                    <div className={styles['layouts__right-sidebar-body-inner']}>
+                      <p
+                        className={styles['layouts__right-sidebar-placeholder']}
+                      >
+                        Right sidebar placeholder. This panel is shown or hidden
+                        by toggling the info button in the channel header.
+                      </p>
+                    </div>
+                  </Scrollbars>
                 </div>
               </aside>
             )}

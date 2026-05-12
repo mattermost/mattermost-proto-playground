@@ -16,10 +16,6 @@
   &__body {
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-
-    @include minimal-scrollbar;
   }
 
   &__footer {

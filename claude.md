@@ -231,30 +231,24 @@ Popover panels (menus, info popovers, dropdowns) animate on mount/unmount with a
 
 Set `transform-origin` so the scale grows from the anchor direction (e.g. `transform-origin: top left` for a popover that opens below-and-right of its trigger).
 
-## Scrollbars: minimal style for scrolling content
+## Scrollbars: use the `Scrollbars` wrapper
 
-Any element with `overflow: auto`, `overflow: scroll`, `overflow-y: auto|scroll`, or `overflow-x: auto|scroll` must use the minimal scrollbar treatment — thin track, subtle translucent thumb, transparent track, darker on hover. Never ship the browser-default chunky scrollbar on content regions.
+Any scrolling region in a Compass surface must render through the `Scrollbars` component at `src/components/ui/Scrollbars/`. It wraps `simplebar-react` to produce an overlay scrollbar — the thumb floats above content (no reserved gutter), auto-hides when idle, and matches Compass theming via `--center-channel-color-rgb`.
 
-```scss
-scrollbar-width: thin;
-scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+```tsx
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 
-&::-webkit-scrollbar {
-  width: 8px;   // use `height: 8px` for horizontal scrollers
-}
-&::-webkit-scrollbar-track {
-  background: transparent;
-}
-&::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--center-channel-color-rgb), 0.24);
-  border-radius: 3px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-  transition: background-color var(--duration-quick) var(--ease-transition);
-}
-&::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(var(--center-channel-color-rgb), 0.4);
-}
+<div className={styles['my-panel__body']}>
+  <Scrollbars>
+    {/* tall content */}
+  </Scrollbars>
+</div>
 ```
 
-Reference implementation: the `__messages` block in `src/pages/Layouts/Layouts.module.scss`. If this starts to recur in more places, extract a `@mixin minimal-scrollbar` into `src/styles/mixins.scss`.
+Conventions:
+
+- **Don't reach for raw CSS scrollbars** (`overflow: auto` with `::-webkit-scrollbar` overrides or `scrollbar-width: thin`). Add a `<Scrollbars>` wrapper instead. The legacy `minimal-scrollbar` mixin has been removed.
+- **Sizing.** `Scrollbars` fills its parent. In a flex column give the parent `flex: 1; min-height: 0;`. For menus and other capped-height surfaces, pass `style={{ maxHeight }}` on the wrapper.
+- **Theming.** Default thumb colour follows `--center-channel-color-rgb`. On dark surfaces (e.g. the channel sidebar) pass `color="--sidebar-text-rgb"` so the thumb stays visible.
+- **Padding.** Apply layout padding to a child wrapper inside `<Scrollbars>`, not to the `Scrollbars` root — the scrollbar track sits at the wrapper's content-box edge, so padding on the wrapper pushes the thumb inward.
+- **Imperative scroll.** Forward a ref to `<Scrollbars>` to receive the inner scrollable `<div>`. Use it for `.scrollTo(...)` or to read `.scrollTop` (e.g. "more unreads above/below" indicators).

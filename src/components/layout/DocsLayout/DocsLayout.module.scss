@@ -10,15 +10,4 @@
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: auto;
-
-  // Reserve the scrollbar gutter on this scroller only — prevents horizontal
-  // page shift when navigating between long (scrolling) and short
-  // (non-scrolling) docs pages. Kept off the `minimal-scrollbar` mixin so
-  // nested scrollers (e.g. doc sidebar, TOC rail) don't each carve out their
-  // own gutter and push the visible scrollbar inward from the viewport edge.
-  scrollbar-gutter: stable;
-
-  @include minimal-scrollbar;
 }

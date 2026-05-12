@@ -7,10 +7,12 @@
   top: var(--spacing-xl);
   align-self: flex-start;
   max-height: calc(100vh - var(--spacing-xxxl));
-  overflow-y: auto;
-  padding-left: var(--spacing-xl);
+}
 
-  @include minimal-scrollbar;
+.on-this-page__inner {
+  display: flex;
+  flex-direction: column;
+  padding-left: var(--spacing-xl);
 }
 
 .on-this-page__eyebrow {
