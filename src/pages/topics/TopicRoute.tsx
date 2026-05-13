@@ -5,8 +5,10 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { findTopic, type Topic, type TopicCategory } from '@/manifests/topics';
+import { findTopic, type TopicCategory } from '@/manifests/topics';
+import { nextTopicInCategorySeries } from '@/manifests/topicSeriesOrder';
 import PageHero from '@/components/layout/PageHero/PageHero';
+import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/GuidelineNextTopicCard';
 import Tabs from '@/components/ui/Tabs/Tabs';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
@@ -86,6 +88,11 @@ export default function TopicRoute() {
     navigate(key === 'specimen' ? `${tabsBase}/specimen` : tabsBase);
   };
 
+  const nextTopic = useMemo(
+    () => nextTopicInCategorySeries(topic),
+    [topic],
+  );
+
   return (
     <div className={styles['doc-shell']}>
       <div className={styles['doc-shell__top']}>
@@ -118,6 +125,7 @@ export default function TopicRoute() {
             <Suspense fallback={<p>Loading…</p>}>
               <div className={docStyles['doc-page__prose']}>
                 <GuidelinePage />
+                {nextTopic ? <GuidelineNextTopicCard next={nextTopic} /> : null}
               </div>
             </Suspense>
           </div>
