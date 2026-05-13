@@ -158,9 +158,9 @@ interface SwatchRampProps {
   base: string;
   /** Shade numbers to render as a horizontal ramp. */
   shades: number[];
-  /** Compact ramp cells (e.g. dense library pages). */
+  /** Compact ramp cells (e.g. dense specimen layouts). */
   chipSize?: RampChipSize;
-  /** Show `--token`, hex, and rgb() under each chip (specimen / library). */
+  /** Show `--token`, hex, and rgb() under each chip (specimen layouts). */
   showTokenDetails?: boolean;
 }
 

@@ -91,7 +91,7 @@ To add a topic:
 
 1. Pick the category from the four-layer model above (Foundations / Components / Patterns / Layouts) — that's the URL prefix.
 2. Author an MDX guideline page under `src/guidelines/<category>/` (required — every topic has prose).
-3. Author a `*.library.tsx` specimen under `src/components/ui/<Name>/` or `src/pages/<Layout>/` (optional — overview-style entries can omit it; the tab strip hides automatically).
+3. Author a `*.specimen.tsx` live demo under `src/guidelines/<category>/<slug>/` (optional — overview-style entries can omit it; the tab strip hides automatically).
 4. Add a `Topic` entry to `TOPICS` in `topics.ts`. If the topic should appear in a specific sidebar group, list its slug under the right `topicSections[<category>]` group in `src/manifests/sections.ts`; otherwise it falls through to "Other".
 
 The Foundations bento on `/foundations` is curated separately in `src/pages/topics/FoundationsBento/FoundationsBento.tsx` (slug arrays for hero/medium/small placement). New foundation topics that aren't placed there fall to the bento's plain-card fallback.
