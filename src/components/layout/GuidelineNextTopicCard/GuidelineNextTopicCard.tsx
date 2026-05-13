@@ -6,25 +6,37 @@ import styles from './GuidelineNextTopicCard.module.scss';
 
 interface GuidelineNextTopicCardProps {
   next: Topic;
+  /** Visible + accessible title. Defaults to `Continue to {next.name}`. */
+  title?: string;
+  /** Subtitle under the title. Defaults to `next.description` when set. */
+  description?: string | null;
 }
 
-export default function GuidelineNextTopicCard({ next }: GuidelineNextTopicCardProps) {
+export default function GuidelineNextTopicCard({
+  next,
+  title,
+  description,
+}: GuidelineNextTopicCardProps) {
   const to = `/${next.category}/${next.slug}`;
-  const label = `Continue to ${next.name}`;
+  const heading = title ?? `Continue to ${next.name}`;
+  const desc =
+    description !== undefined && description !== null
+      ? description
+      : next.description;
 
   return (
     <Link
       to={to}
       className={styles['guideline-next-topic-card']}
-      aria-label={label}
+      aria-label={heading}
     >
       <div className={styles['guideline-next-topic-card__content']}>
       <span className={styles['guideline-next-topic-card__header']}>
-        <span className={styles['guideline-next-topic-card__title']}>{label}</span>
+        <span className={styles['guideline-next-topic-card__title']}>{heading}</span>
       </span>
-      {next.description ? (
+      {desc ? (
         <span className={styles['guideline-next-topic-card__description']}>
-          {next.description}
+          {desc}
         </span>
       ) : null}
       </div>

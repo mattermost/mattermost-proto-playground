@@ -22,11 +22,13 @@ const CORE_SHAPES: CoreShape[] = [
     name: 'Rectangle',
     hint: 'Global containers and full-bleed surfaces.',
     radius: '0',
+    square: true,
   },
   {
     name: 'Rounded rectangle',
     hint: 'Buttons, modals, popovers, cards.',
-    radius: '12px',
+    radius: '8px',
+    square: true,
   },
   {
     name: 'Pill',
@@ -75,6 +77,10 @@ const RADIUS_STEPS: RadiusStep[] = [
   { px: 16 },
   { px: 20 },
   { px: 24 },
+  {
+    px: 9999,
+    note: 'Full radius — pills, capsules, and fully rounded controls',
+  },
 ];
 
 export function RadiusRamp() {

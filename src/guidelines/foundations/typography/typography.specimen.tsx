@@ -123,7 +123,7 @@ font-family: var(--font-family-body);`}</code>
         ))}
       </div>
 
-      <h3>Margin Tables</h3>
+      <h3>Margins</h3>
       <p>
         These computed margins are defaults for prose-like text. Component and
         pattern layout can override them with explicit spacing.

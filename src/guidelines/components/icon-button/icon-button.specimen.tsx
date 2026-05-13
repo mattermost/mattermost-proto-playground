@@ -98,7 +98,7 @@ export default function IconButtonLibrary() {
 
       <div className={styles['components__section']}>
         <h3 className={styles['components__section-title']}>
-          Default — enabled
+          Default
         </h3>
         <IconButtonPermutationGrid
           surfaceStyle="Default"
@@ -109,7 +109,7 @@ export default function IconButtonLibrary() {
 
       <div className={styles['components__section']}>
         <h3 className={styles['components__section-title']}>
-          Default — destructive
+          Destructive
         </h3>
         <IconButtonPermutationGrid
           surfaceStyle="Default"
@@ -120,7 +120,7 @@ export default function IconButtonLibrary() {
 
       <div className={styles['components__section']}>
         <h3 className={styles['components__section-title']}>
-          Default — disabled
+          Disabled
         </h3>
         <IconButtonPermutationGrid
           surfaceStyle="Default"
@@ -132,7 +132,7 @@ export default function IconButtonLibrary() {
       <div className={styles['components__button-surface--inverted']}>
         <div className={styles['components__section']}>
           <h3 className={styles['components__section-title']}>
-            Inverted — enabled
+            Inverted
           </h3>
           <IconButtonPermutationGrid
             surfaceStyle="Inverted"
@@ -143,7 +143,7 @@ export default function IconButtonLibrary() {
 
         <div className={styles['components__section']}>
           <h3 className={styles['components__section-title']}>
-            Inverted — destructive
+            Inverted Destructive
           </h3>
           <IconButtonPermutationGrid
             surfaceStyle="Inverted"
@@ -154,7 +154,7 @@ export default function IconButtonLibrary() {
 
         <div className={styles['components__section']}>
           <h3 className={styles['components__section-title']}>
-            Inverted — disabled
+            Inverted Disabled
           </h3>
           <IconButtonPermutationGrid
             surfaceStyle="Inverted"

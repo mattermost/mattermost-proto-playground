@@ -48,6 +48,33 @@
     margin-right: var(--spacing-xxxs);
   }
 
+  // Palette ink on saturated / dark toast surfaces — not Button Inverted
+  // (sidebar tokens), which breaks on themes such as Quartz.
+  &__action-btn--on-dark {
+    background-color: rgba(var(--color-neutral-0-rgb), 0.08) !important;
+    color: var(--color-neutral-0) !important;
+    border-color: transparent !important;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(var(--color-neutral-0-rgb), 0.12) !important;
+      color: var(--color-neutral-0) !important;
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(var(--color-neutral-0-rgb), 0.16) !important;
+      color: var(--color-neutral-0) !important;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px rgba(var(--color-neutral-0-rgb), 0.56) !important;
+    }
+
+    &:disabled {
+      color: rgba(var(--color-neutral-0-rgb), 0.4) !important;
+      background-color: rgba(var(--color-neutral-0-rgb), 0.06) !important;
+    }
+  }
+
   &__action-btn--warning {
     background-color: rgba(var(--color-neutral-900-rgb), 0.08) !important;
     color: var(--color-neutral-900) !important;
@@ -58,6 +85,48 @@
 
     &:active:not(:disabled) {
       background-color: rgba(var(--color-neutral-900-rgb), 0.16) !important;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px rgba(var(--color-neutral-900-rgb), 0.4) !important;
+    }
+  }
+
+  &__dismiss {
+    color: rgba(var(--color-neutral-0-rgb), 0.92) !important;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(var(--color-neutral-0-rgb), 0.12) !important;
+      color: var(--color-neutral-0) !important;
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(var(--color-neutral-0-rgb), 0.2) !important;
+      color: var(--color-neutral-0) !important;
+    }
+
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(var(--color-neutral-0-rgb), 0.56) !important;
+    }
+  }
+
+  &__dismiss--warning {
+    color: rgba(var(--color-neutral-900-rgb), 0.92) !important;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(var(--color-neutral-900-rgb), 0.12) !important;
+      color: var(--color-neutral-900) !important;
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(var(--color-neutral-900-rgb), 0.2) !important;
+      color: var(--color-neutral-900) !important;
+    }
+
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(var(--color-neutral-900-rgb), 0.4) !important;
     }
   }
 

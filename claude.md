@@ -96,6 +96,20 @@ To add a topic:
 
 The Foundations bento on `/foundations` is curated separately in `src/pages/topics/FoundationsBento/FoundationsBento.tsx` (slug arrays for hero/medium/small placement). New foundation topics that aren't placed there fall to the bento's plain-card fallback.
 
+## Foundation specimen pages: token rows
+
+Foundation **Specimen** tabs (`src/guidelines/foundations/*/*.specimen.tsx`) often list CSS custom properties in tables or rows. Shared styling for many of these lives under `.foundations` in `src/styles/library-demo/foundations.module.scss`.
+
+When adding or editing token lists on specimen pages:
+
+- **No duplicate label column** — If the token name is the copy-paste source of truth (e.g. `--spacing-xxxxs`, `--duration-quick`), do not add a separate short-name column (`xxxxs`, `Quick`) beside it. The token string is enough; a second column repeats the same idea and clutters the layout.
+- **Token and value text must not look “disabled”** — Style token identifiers and primary values (`150ms`, `16px`, easing keywords) with `var(--font-size-75)` or another readable step, `var(--font-family-mono)` where appropriate, and **full** `var(--center-channel-color)`. Avoid tiny sizes (e.g. `10px`) and avoid low `opacity` on those cells — that reads as greyed-out UI instead of documentation.
+- **Descriptions as secondary tier** — Supporting sentences can use `rgba(var(--center-channel-color-rgb), 0.72)` so they sit slightly behind the token/value without looking washed out.
+- **Elevation** — Use `foundations__elevation-rows` / `foundations__elevation-row`: leading `<code>` token (em dash for level 0 where no variable exists), a small preview tile with the shadow applied, then the summary text. Row dividers match spacing and animation (`border-top` on the first row, `border-bottom` between rows).
+- **Shape (radius)** — Use `foundations__shape-rows` / `foundations__shape-row`: token, resolved pixel value, then a preview box with `border-radius` from the token. Same row dividers as spacing and animation.
+
+Keep new foundation token tables visually aligned with existing spacing, animation, and elevation specimen patterns unless a topic truly needs a different layout.
+
 ## Building new components: reuse existing components first
 
 When building a new component, audit the elements it needs before writing any new code. If an existing component in `src/components/` already covers an element — especially when its name matches what Figma uses — use it directly rather than reimplementing it. Only build a new sub-component when nothing suitable exists.

@@ -8,13 +8,11 @@ import styles from '@/styles/library-demo/foundations.module.scss';
 
 const DURATIONS = [
   {
-    name: 'Quick',
     token: '--duration-quick',
     value: '150ms',
     desc: 'Default — hover states, small reveals',
   },
   {
-    name: 'Moderate',
     token: '--duration-moderate',
     value: '300ms',
     desc: 'Large movements — panels, drawers',
@@ -23,19 +21,16 @@ const DURATIONS = [
 
 const EASINGS = [
   {
-    name: 'Transition',
     token: '--ease-transition',
     value: 'ease-in-out',
     desc: 'Element already on screen',
   },
   {
-    name: 'Entrance',
     token: '--ease-entrance',
     value: 'ease-out',
     desc: 'Element entering the screen',
   },
   {
-    name: 'Exit',
     token: '--ease-exit',
     value: 'ease-in',
     desc: 'Element leaving the screen',
@@ -56,10 +51,9 @@ export default function AnimationLibrary() {
 
       <h3>Duration</h3>
       <div className={styles['foundations__anim-rows']}>
-        {DURATIONS.map(({ name, token, value, desc }) => (
-          <div key={name} className={styles['foundations__anim-row']}>
+        {DURATIONS.map(({ token, value, desc }) => (
+          <div key={token} className={styles['foundations__anim-row']}>
             <div className={styles['foundations__anim-meta']}>
-              <span className={styles['foundations__anim-name']}>{name}</span>
               <code className={styles['foundations__anim-token']}>{token}</code>
               <span className={styles['foundations__anim-value']}>{value}</span>
               <span className={styles['foundations__anim-desc']}>{desc}</span>
@@ -84,7 +78,7 @@ export default function AnimationLibrary() {
                 />
               }
               size="Small"
-              aria-label={`Play ${name} duration`}
+              aria-label={`Play ${token} preview`}
               onClick={() => replay(token)}
             />
           </div>
@@ -93,10 +87,9 @@ export default function AnimationLibrary() {
 
       <h3>Easing</h3>
       <div className={styles['foundations__anim-rows']}>
-        {EASINGS.map(({ name, token, value, desc }) => (
-          <div key={name} className={styles['foundations__anim-row']}>
+        {EASINGS.map(({ token, value, desc }) => (
+          <div key={token} className={styles['foundations__anim-row']}>
             <div className={styles['foundations__anim-meta']}>
-              <span className={styles['foundations__anim-name']}>{name}</span>
               <code className={styles['foundations__anim-token']}>{token}</code>
               <span className={styles['foundations__anim-value']}>{value}</span>
               <span className={styles['foundations__anim-desc']}>{desc}</span>
@@ -121,7 +114,7 @@ export default function AnimationLibrary() {
                 />
               }
               size="Small"
-              aria-label={`Play ${name} easing`}
+              aria-label={`Play ${token} preview`}
               onClick={() => replay(token)}
             />
           </div>

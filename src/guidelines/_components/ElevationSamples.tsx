@@ -14,14 +14,14 @@ import Icon from '@/components/ui/Icon/Icon';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import styles from './ElevationSamples.module.scss';
 
-interface ElevationStep {
+export interface ElevationStep {
   level: number;
   token?: string;
   summary: string;
   uses: string[];
 }
 
-const ELEVATION_STEPS: ElevationStep[] = [
+export const ELEVATION_STEPS: ElevationStep[] = [
   {
     level: 0,
     summary: 'The default surface; no shadow applied.',
@@ -72,7 +72,17 @@ const ELEVATION_STEPS: ElevationStep[] = [
   },
 ];
 
-export function ElevationScale() {
+interface ElevationScaleProps {
+  /** When true, show CSS custom property names (Specimen tab). */
+  showTokens?: boolean;
+  /** When false, hide role chips (Specimen tab). */
+  showUses?: boolean;
+}
+
+export function ElevationScale({
+  showTokens = false,
+  showUses = true,
+}: ElevationScaleProps) {
   return (
     <div className={styles['scale']}>
       {ELEVATION_STEPS.map(({ level, token, summary, uses }) => (
@@ -88,12 +98,12 @@ export function ElevationScale() {
           <div className={styles['scale__meta']}>
             <div className={styles['scale__heading']}>
               <span className={styles['scale__name']}>Elevation {level}</span>
-              {token && (
+              {showTokens && token && (
                 <code className={styles['scale__token']}>{token}</code>
               )}
             </div>
             <div className={styles['scale__summary']}>{summary}</div>
-            {uses.length > 0 && (
+            {showUses && uses.length > 0 && (
               <div className={styles['scale__uses']}>
                 {uses.map((use) => (
                   <Chip key={use} size="Small">

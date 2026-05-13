@@ -6,7 +6,11 @@ import {
   useParams,
 } from 'react-router-dom';
 import { findTopic, type TopicCategory } from '@/manifests/topics';
-import { nextTopicInCategorySeries } from '@/manifests/topicSeriesOrder';
+import {
+  firstTopicInNextCategory,
+  isLastTopicInCategorySeries,
+  nextTopicInCategorySeries,
+} from '@/manifests/topicSeriesOrder';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/GuidelineNextTopicCard';
 import Tabs from '@/components/ui/Tabs/Tabs';
@@ -92,6 +96,12 @@ export default function TopicRoute() {
     () => nextTopicInCategorySeries(topic),
     [topic],
   );
+  const firstTopicNextSection = useMemo(() => {
+    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
+      return undefined;
+    }
+    return firstTopicInNextCategory(topic);
+  }, [topic, nextTopic]);
 
   return (
     <div className={styles['doc-shell']}>
@@ -125,7 +135,19 @@ export default function TopicRoute() {
             <Suspense fallback={<p>Loading…</p>}>
               <div className={docStyles['doc-page__prose']}>
                 <GuidelinePage />
-                {nextTopic ? <GuidelineNextTopicCard next={nextTopic} /> : null}
+                {nextTopic ? (
+                  <GuidelineNextTopicCard next={nextTopic} />
+                ) : firstTopicNextSection ? (
+                  <GuidelineNextTopicCard
+                    next={firstTopicNextSection}
+                    title={`Continue to ${CATEGORY_LABELS[firstTopicNextSection.category]}`}
+                    description={
+                      firstTopicNextSection.description
+                        ? `${firstTopicNextSection.name} — ${firstTopicNextSection.description}`
+                        : firstTopicNextSection.name
+                    }
+                  />
+                ) : null}
               </div>
             </Suspense>
           </div>
