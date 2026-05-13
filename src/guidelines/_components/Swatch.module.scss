@@ -33,6 +33,22 @@
     letter-spacing: 0.02em;
   }
 
+  &__token {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    line-height: var(--line-height-100);
+    word-break: break-all;
+  }
+
+  &__rgb {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    line-height: var(--line-height-100);
+  }
+
   &--large {
     .swatch__chip {
       height: 160px;
@@ -53,6 +69,10 @@
       font-size: var(--font-size-75);
     }
     .swatch__value {
+      font-size: var(--font-size-50);
+    }
+    .swatch__token,
+    .swatch__rgb {
       font-size: var(--font-size-50);
     }
   }
@@ -94,13 +114,14 @@
     overflow: hidden;
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     box-shadow: var(--elevation-1);
+    flex-wrap: wrap;
   }
 
   &__chip {
     flex: 1 1 0;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    min-width: 64px;
   }
 
   &__swatch {
@@ -114,5 +135,64 @@
     font-size: var(--font-size-50);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     text-align: center;
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    padding: var(--spacing-xxs) var(--spacing-xxxs);
+    align-items: center;
+    text-align: center;
+    background-color: var(--center-channel-bg);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__token,
+  &__hex,
+  &__rgb {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    word-break: break-all;
+    max-width: 100%;
+  }
+
+  &__token {
+    color: var(--center-channel-color);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &--detail {
+    .ramp__chip {
+      flex: 0 1 auto;
+      min-width: 120px;
+    }
+
+    .ramp__row {
+      align-items: stretch;
+    }
+  }
+
+  &--small {
+    .ramp__chip {
+      min-width: 40px;
+    }
+
+    .ramp__swatch {
+      height: 36px;
+    }
+
+    .ramp__shade {
+      padding: var(--spacing-xxxxs) var(--spacing-xxxs);
+      font-size: 10px;
+    }
+  }
+
+  #{&}--detail#{&}--small {
+    .ramp__chip {
+      min-width: 104px;
+    }
   }
 }

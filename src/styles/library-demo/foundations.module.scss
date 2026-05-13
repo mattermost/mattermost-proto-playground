@@ -72,60 +72,6 @@
     margin-bottom: var(--spacing-m);
   }
 
-  // ── Foundation Color Palettes ─────────────────────────────────────────────
-
-  &__palettes {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  &__palette-row {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-l);
-  }
-
-  &__palette-name {
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-    opacity: 0.56;
-    width: 56px;
-    flex-shrink: 0;
-    padding-top: 10px;
-    text-align: right;
-  }
-
-  &__swatch-strip {
-    display: flex;
-    flex: 1;
-    gap: 2px;
-  }
-
-  &__swatch {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xxxxs);
-  }
-
-  &__swatch-color {
-    height: 36px;
-    border-radius: var(--radius-xs);
-  }
-
-  &__swatch-step {
-    font-size: 9px;
-    color: var(--center-channel-color);
-    opacity: 0.4;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: clip;
-  }
-
   // ── Theme Colors ──────────────────────────────────────────────────────────
 
   &__theme-library {
