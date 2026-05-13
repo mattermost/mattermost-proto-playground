@@ -3,4 +3,5 @@ export type {
   DropdownProps,
   DropdownSize,
   DropdownAppearance,
+  DropdownPadding,
 } from './Dropdown';

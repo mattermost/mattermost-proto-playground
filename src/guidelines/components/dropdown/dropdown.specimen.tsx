@@ -14,6 +14,13 @@ export default function DropdownLibrary() {
           <Dropdown size="X-Large">X-Large</Dropdown>
         </div>
         <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>Padding</span>
+          <Dropdown size="Medium">Tight</Dropdown>
+          <Dropdown size="Medium" padding="Compact">
+            Compact
+          </Dropdown>
+        </div>
+        <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>States</span>
           <Dropdown>Default</Dropdown>
           <Dropdown isOpen>Open</Dropdown>
