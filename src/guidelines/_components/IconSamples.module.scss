@@ -42,41 +42,6 @@
 }
 
 // ============================================================
-// Size ramp — same icon at multiple pixel sizes
-// ============================================================
-.size-ramp {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-l);
-  flex-wrap: wrap;
-  padding: var(--spacing-xxl);
-  margin: var(--spacing-xl) 0;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  border-radius: var(--radius-m);
-  background-color: var(--center-channel-bg);
-
-  &__tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-xs);
-  }
-
-  &__chip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--center-channel-color);
-  }
-
-  &__label {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-50);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-  }
-}
-
-// ============================================================
 // Outlined vs filled comparison
 // ============================================================
 .style-compare {

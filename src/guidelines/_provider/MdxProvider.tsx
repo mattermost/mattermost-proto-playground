@@ -12,7 +12,6 @@ import {
 } from '@/guidelines/_components/Type';
 import {
   IconShowcase,
-  IconSizeRamp,
   IconStyleCompare,
   FiletypeShowcase,
   Principle,
@@ -84,7 +83,6 @@ const MDX_COMPONENTS = {
   ScaleTable,
   MarginTable,
   IconShowcase,
-  IconSizeRamp,
   IconStyleCompare,
   FiletypeShowcase,
   Principle,

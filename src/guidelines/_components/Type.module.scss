@@ -273,7 +273,8 @@
     border-radius: var(--radius-s);
   }
 
-  &__row--base td {
+  &__row--base td,
+  &__row--mobile-base td {
     background-color: rgba(var(--color-info-rgb), 0.06);
   }
 

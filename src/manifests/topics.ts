@@ -145,7 +145,7 @@ export const TOPICS: Topic[] = [
     name: 'Iconography',
     category: 'foundations',
     status: 'stable',
-    description: 'When to use icons, sizing, and pairing with labels.',
+    description: 'When to use icons, styles, and pairing with labels.',
     visual: { kind: 'icon-grid' },
     guidelinePage: () => import('@/guidelines/foundations/iconography/iconography.guideline.mdx'),
     specimenPage: () => import('@/guidelines/foundations/iconography/iconography.specimen'),

@@ -63,9 +63,10 @@ font-family: var(--font-family-body);`}</code>
       <h3>Scale Tokens</h3>
       <p>
         Each step has a size token and a matching line-height value. The 100
-        step is the 14px base size for the Mattermost web app.
+        step is the 14px base size for the Mattermost web app; on mobile, the
+        200 step is the default body reference size (16px).
       </p>
-      <ScaleTable base={100} />
+      <ScaleTable base={100} mobileBase={200} />
 
       <h3>Heading Scale</h3>
       <p>
