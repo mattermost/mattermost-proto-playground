@@ -827,6 +827,19 @@ export const TOPICS: Topic[] = [
       ),
     fullBleedSpecimen: true,
   },
+  {
+    slug: 'threads-view',
+    name: 'Threads View',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channels shell with the thread inbox, a scrollable list of threads, and the thread right sidebar open.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.specimen'),
+    fullBleedSpecimen: true,
+  },
 ];
 
 export function findTopic(

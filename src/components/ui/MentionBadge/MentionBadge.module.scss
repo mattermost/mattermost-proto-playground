@@ -48,7 +48,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Location modifiers (Figma: Sidebar default, Menu Item, Icon Button)
+  // Location modifiers (Figma: Sidebar default, Menu Item, Icon Button, Channel)
   // ---------------------------------------------------------------------------
   &--location-menu-item {
     background-color: rgba(var(--center-channel-color-rgb), 0.48);
@@ -57,6 +57,11 @@
 
   &--location-icon-button {
     background-color: var(--sidebar-text-active-border);
+    color: var(--button-color);
+  }
+
+  &--location-channel {
+    background-color: var(--button-bg);
     color: var(--button-color);
   }
 }

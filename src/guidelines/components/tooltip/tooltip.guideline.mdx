@@ -31,7 +31,7 @@ Tooltips can anchor above, below, left, or right of the trigger. The arrow
 points back at the trigger; pick the direction that has the most room and
 follows the user's reading flow.
 
-<div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', padding: '1.5rem 0' }}>
+<div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem', flexWrap: 'wrap', padding: '1.5rem 0' }}>
   <Tooltip label="Above" arrow="Bottom" />
   <Tooltip label="Right" arrow="Left" />
   <Tooltip label="Below" arrow="Top" />
@@ -42,7 +42,7 @@ follows the user's reading flow.
 
 ## Variants
 
-<div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', padding: '1.5rem 0' }}>
+<div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem', flexWrap: 'wrap', padding: '1.5rem 0' }}>
   <Tooltip label="Save changes" />
   <Tooltip label="Search" shortcutKeys={[{ label: '⌘' }, { label: 'K' }]} />
   <Tooltip label="Mute channel" hint="You won't get notifications, but you'll still see new messages." />

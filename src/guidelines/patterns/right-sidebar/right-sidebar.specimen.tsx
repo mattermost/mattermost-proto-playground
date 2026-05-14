@@ -55,6 +55,16 @@ export default function RightSidebarLibrary() {
           Header — without expand
         </p>
         <RightSidebarHeader title="Saved Messages" onClose={() => {}} />
+
+        <p className={styles['patterns__variant-label']}>
+          Header — thread column without expand or close
+        </p>
+        <RightSidebarHeader
+          title="Thread"
+          secondaryTitle="UX Design"
+          actionLabel="Following"
+          actionActive
+        />
       </div>
 
       <p

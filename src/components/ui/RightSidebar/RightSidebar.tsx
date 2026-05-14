@@ -12,6 +12,11 @@ export interface RightSidebarProps {
   children?: ReactNode;
   className?: string;
   /**
+   * When true, the sidebar grows horizontally instead of staying at 400px.
+   * Pair with a parent flex row and `layouts__right-sidebar--fill` in full layouts.
+   */
+  fill?: boolean;
+  /**
    * When `end`, short body content sits on the bottom of the scroll viewport (e.g.
    * thread replies). Default `start` keeps content top-aligned (e.g. channel info).
    */
@@ -23,9 +28,14 @@ export default function RightSidebar({
   footer,
   children,
   className = '',
+  fill = false,
   alignBody = 'start',
 }: RightSidebarProps) {
-  const rootClass = [styles['right-sidebar'], className]
+  const rootClass = [
+    styles['right-sidebar'],
+    fill ? styles['right-sidebar--fill'] : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 

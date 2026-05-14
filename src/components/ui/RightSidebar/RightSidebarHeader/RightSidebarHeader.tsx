@@ -23,7 +23,7 @@ export interface RightSidebarHeaderProps {
   onBack?: () => void;
   /** When set, shows an expand button and calls this on click. */
   onExpand?: () => void;
-  /** Close handler — close button is always shown. */
+  /** When set, shows a close button and calls this on click. */
   onClose?: () => void;
   /** Optional inline action label (e.g. "Follow"). */
   actionLabel?: string;
@@ -117,12 +117,14 @@ export default function RightSidebarHeader({
             icon={<Icon size="16" glyph={<ArrowExpandIcon />} />}
           />
         )}
-        <IconButton
-          size="Small"
-          aria-label="Close"
-          onClick={onClose}
-          icon={<Icon size="16" glyph={<CloseIcon />} />}
-        />
+        {onClose && (
+          <IconButton
+            size="Small"
+            aria-label="Close"
+            onClick={onClose}
+            icon={<Icon size="16" glyph={<CloseIcon />} />}
+          />
+        )}
       </div>
     </div>
   );

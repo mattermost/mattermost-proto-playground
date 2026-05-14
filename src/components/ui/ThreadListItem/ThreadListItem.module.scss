@@ -1,18 +1,43 @@
 .thread-list-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  background-color: var(--center-channel-bg);
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  cursor: default;
+
+  &[role='button'] {
+    cursor: pointer;
+  }
+
+  &:hover,
+  &:focus-within {
+    background-color: rgba(var(--button-bg-rgb), 0.08);
+
+    .thread-list-item__menu-button {
+      display: flex;
+    }
+
+    .thread-list-item__timestamp {
+      display: none;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px rgba(var(--center-channel-color-rgb), 0.32);
+  }
 
   &--active {
-    background-color: rgba(var(--button-bg-rgb), 0.04);
+    background-color: rgba(var(--button-bg-rgb), 0.08);
   }
 
   &__thread {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: var(--spacing-xl);
+    padding: var(--spacing-l);
     width: 100%;
   }
 
@@ -32,17 +57,29 @@
     width: 100%;
   }
 
-  &__unread-dot {
+  &__gutter {
     position: relative;
     flex-shrink: 0;
     width: 8px;
-    height: 21px;
+    min-height: 21px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
   &__unread-badge {
     position: absolute;
     top: var(--spacing-xxs);
     left: -4px;
+  }
+
+  &__mention-gutter {
+    position: absolute;
+    top: 1px;
+    left: -12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__post-body {
@@ -76,10 +113,10 @@
     gap: var(--spacing-xs);
     align-items: center;
     overflow: hidden;
+  }
 
-    :global(.label-tag) {
-      align-self: center;
-    }
+  &__name-group &__label-tag {
+    align-self: center;
   }
 
   &__author {
@@ -134,15 +171,20 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding-left: 14px;
-    padding-right: 14px;
+    padding-left: var(--spacing-m);
+
   }
 
   &__replies-inner {
     display: flex;
     align-items: center;
-    height: 24px;
+    gap: var(--spacing-xxxxs, 4px);
+    min-height: 24px;
     border-radius: var(--radius-s);
+  }
+
+  &__avatar-group {
+    flex-shrink: 0;
   }
 
   &__reply-count {
@@ -151,5 +193,23 @@
     line-height: var(--line-height-25);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     padding: 4.5px var(--spacing-s);
+  }
+
+  &__actions {
+    position: absolute;
+    top: var(--spacing-m);
+    right: var(--spacing-m);
+    z-index: 1;
+    pointer-events: none;
+
+    .thread-list-item__menu-button {
+      pointer-events: auto;
+    }
+  }
+
+  &__menu-button {
+    display: none;
+    align-items: center;
+    justify-content: center;
   }
 }

@@ -9,6 +9,14 @@
   flex-shrink: 0;
   line-height: 1;
 
+  // Toolbar reactions: full channel color (not IconButton muted color) and
+  // modest scale so glyphs read closer to product emoji pickers.
+  &--vivid {
+    color: var(--center-channel-color);
+    transform: scale(1.12);
+    transform-origin: center center;
+  }
+
   // ---------------------------------------------------------------------------
   // Size modifiers
   // ---------------------------------------------------------------------------
