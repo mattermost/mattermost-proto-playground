@@ -65,6 +65,7 @@ export default function RightSidebarLibrary() {
       </p>
       <div className={styles['patterns__rsb-shell']}>
         <RightSidebar
+          alignBody="end"
           header={
             <RightSidebarHeader
               title="Thread"

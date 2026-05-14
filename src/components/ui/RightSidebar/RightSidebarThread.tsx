@@ -1,16 +1,16 @@
 import Message from '@/components/ui/Message/Message';
+import messageStyles from '@/components/ui/Message/Message.module.scss';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import styles from './RightSidebarThread.module.scss';
 
 export default function RightSidebarThread() {
-  const textClass = styles['right-sidebar-thread__message-text'];
+  const textClass = messageStyles['message__body-text'];
 
   return (
     <div className={styles['right-sidebar-thread']}>
       <Message
-        messageActionsType="RHS"
         avatarSrc={avatarLeonard}
         avatarAlt="Leonard Riley"
         username="Leonard Riley"
@@ -23,7 +23,6 @@ export default function RightSidebarThread() {
         </p>
       </Message>
       <Message
-        messageActionsType="RHS"
         avatarSrc={avatarAikoTan}
         avatarAlt="Aiko Tan"
         username="Aiko Tan"
@@ -36,7 +35,6 @@ export default function RightSidebarThread() {
         </p>
       </Message>
       <Message
-        messageActionsType="RHS"
         avatarSrc={avatarDanielle}
         avatarAlt="Danielle Okoro"
         username="Danielle Okoro"

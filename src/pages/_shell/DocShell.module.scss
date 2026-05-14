@@ -8,6 +8,8 @@
 .doc-shell--layout-only {
   flex: 1 1 auto;
   min-height: 0;
+  margin-top: var(--spacing-xxl);
+  margin-bottom: var(--spacing-xxl);
 }
 
 // Hero + tabs share the same outer width as DocPage's `--with-toc` inner,

@@ -797,6 +797,36 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/layouts/messaging/messaging.specimen'),
     fullBleedSpecimen: true,
   },
+  {
+    slug: 'messaging-thread',
+    name: 'Messaging (thread)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full messaging shell with the right sidebar showing an open thread and reply composer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/messaging-thread/messaging-thread.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/messaging-thread/messaging-thread.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'messaging-channel-info',
+    name: 'Messaging (channel info)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full messaging shell with the right sidebar showing open channel info.',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/layouts/messaging-channel-info/messaging-channel-info.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import(
+        '@/guidelines/layouts/messaging-channel-info/messaging-channel-info.specimen'
+      ),
+    fullBleedSpecimen: true,
+  },
 ];
 
 export function findTopic(

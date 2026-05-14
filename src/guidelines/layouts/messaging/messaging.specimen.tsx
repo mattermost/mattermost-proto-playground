@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import CloseIcon from '@mattermost/compass-icons/components/close';
 import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
 import ChannelsSidebar from '@/components/ui/ChannelsSidebar/ChannelsSidebar';
 import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
 import Message from '@/components/ui/Message/Message';
+import {
+  RightSidebarChannelInfo,
+  RightSidebarHeader,
+} from '@/components/ui/RightSidebar';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
@@ -179,27 +180,14 @@ export default function Layouts() {
 
             {rightSidebarOpen && (
               <aside className={styles['layouts__right-sidebar']}>
-                <div className={styles['layouts__right-sidebar-header']}>
-                  <span className={styles['layouts__right-sidebar-title']}>
-                    Channel Info
-                  </span>
-                  <IconButton
-                    size="Small"
-                    aria-label="Close"
-                    icon={<Icon size="16" glyph={<CloseIcon />} />}
-                    onClick={() => setRightSidebarOpen(false)}
-                  />
-                </div>
+                <RightSidebarHeader
+                  title="Channel Info"
+                  secondaryTitle="Town Square"
+                  onClose={() => setRightSidebarOpen(false)}
+                />
                 <div className={styles['layouts__right-sidebar-body']}>
                   <Scrollbars>
-                    <div className={styles['layouts__right-sidebar-body-inner']}>
-                      <p
-                        className={styles['layouts__right-sidebar-placeholder']}
-                      >
-                        Right sidebar placeholder. This panel is shown or hidden
-                        by toggling the info button in the channel header.
-                      </p>
-                    </div>
+                    <RightSidebarChannelInfo />
                   </Scrollbars>
                 </div>
               </aside>

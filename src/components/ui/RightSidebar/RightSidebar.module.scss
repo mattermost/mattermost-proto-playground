@@ -18,8 +18,16 @@
     min-height: 0;
   }
 
+  &__body--align-end {
+    :global(.simplebar-content) {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+  }
+
   &__footer {
     flex-shrink: 0;
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   }
 }
