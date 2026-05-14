@@ -23,7 +23,9 @@ type MessageProps = {
   className?: string;
   /**
    * Primary body content (e.g. message text). When using structured slots, this
-   * is usually the markdown/text block only.
+   * is usually the markdown/text block only. For plain `<p>` copy, use the
+   * `message__body-text` class from `Message.module.scss` so typography matches
+   * the component and host shells (docs, patterns) cannot restyle bare tags.
    */
   children: React.ReactNode;
   /** Link Preview block — renders after `children`. */

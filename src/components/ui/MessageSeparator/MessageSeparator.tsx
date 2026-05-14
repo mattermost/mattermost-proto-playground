@@ -48,34 +48,48 @@ export default function MessageSeparator({
     .filter(Boolean)
     .join(' ');
 
+  const labelBlock = (
+    <div className={styles['message-separator__label']}>
+      <span className={styles['message-separator__text']}>
+        {displayLabel}
+      </span>
+
+      {type === 'New Messages' && showAiSummary && (
+        <button
+          type="button"
+          className={styles['message-separator__summarize']}
+          onClick={onSummarize}
+          aria-label="Summarize new messages with AI"
+        >
+          <span
+            className={styles['message-separator__summarize-icon']}
+            aria-hidden
+          >
+            <Icon size="12" glyph={<CreationOutlineIcon />} />
+          </span>
+          Summarize
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className={rootClass} role="separator" {...rest}>
-      <div className={styles['message-separator__line']} aria-hidden />
-
-      <div className={styles['message-separator__label']}>
-        <span className={styles['message-separator__text']}>
-          {displayLabel}
-        </span>
-
-        {type === 'New Messages' && showAiSummary && (
-          <button
-            type="button"
-            className={styles['message-separator__summarize']}
-            onClick={onSummarize}
-            aria-label="Summarize new messages with AI"
-          >
-            <span
-              className={styles['message-separator__summarize-icon']}
-              aria-hidden
-            >
-              <Icon size="12" glyph={<CreationOutlineIcon />} />
-            </span>
-            Summarize
-          </button>
-        )}
-      </div>
-
-      <div className={styles['message-separator__line']} aria-hidden />
+      {type === 'Reply Count' ? (
+        <>
+          <div className={styles['message-separator__reply-gutter']} aria-hidden>
+            <div className={styles['message-separator__reply-line-start']} />
+          </div>
+          {labelBlock}
+          <div className={styles['message-separator__line']} aria-hidden />
+        </>
+      ) : (
+        <>
+          <div className={styles['message-separator__line']} aria-hidden />
+          {labelBlock}
+          <div className={styles['message-separator__line']} aria-hidden />
+        </>
+      )}
     </div>
   );
 }

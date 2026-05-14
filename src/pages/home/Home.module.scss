@@ -6,7 +6,7 @@
 
 // --- Hero (Figma: Compass Design System Site — Frame 4, node 2:2299) ---
 .home__hero {
-  color: #ffffff;
+  color: var(--color-neutral-0);
   padding: var(--spacing-xxxxxl) var(--spacing-xxxl);
   overflow: hidden;
   height: auto;
@@ -67,7 +67,7 @@
   line-height: var(--line-height-75);
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: rgba(var(--sidebar-text-rgb), 0.75);
+  color: rgba(var(--color-neutral-0-rgb), 0.75);
 }
 
 .home__hero-title {
@@ -77,7 +77,7 @@
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-1000);
   letter-spacing: -0.8px;
-  color: var(--sidebar-text);
+  color: var(--color-neutral-0);
 }
 
 .home__hero-lede {
@@ -86,7 +86,7 @@
   font-size: var(--font-size-300);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-400);
-  color: rgba(var(--sidebar-text-rgb), 0.75);
+  color: rgba(var(--color-neutral-0-rgb), 0.75);
   max-width: 36rem;
 }
 
@@ -97,7 +97,7 @@
   gap: var(--spacing-xs);
 }
 
-// Secondary CTA — matches Figma “sidebar-text / 12” fill on dark
+// Secondary CTA — translucent neutral-0 fill on dark hero
 .home__hero-cta-secondary {
   display: inline-flex;
   align-items: center;
@@ -109,19 +109,19 @@
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-200);
   text-decoration: none;
-  color: var(--sidebar-text);
-  background-color: rgba(var(--sidebar-text-rgb), 0.12);
+  color: var(--color-neutral-0);
+  background-color: rgba(var(--color-neutral-0-rgb), 0.12);
   border: 1px solid transparent;
   transition:
     background-color var(--duration-quick) var(--ease-transition),
     color var(--duration-quick) var(--ease-transition);
 
   &:hover {
-    background-color: rgba(var(--sidebar-text-rgb), 0.2);
+    background-color: rgba(var(--color-neutral-0-rgb), 0.2);
   }
 
   &:active {
-    background-color: rgba(var(--sidebar-text-rgb), 0.28);
+    background-color: rgba(var(--color-neutral-0-rgb), 0.28);
   }
 
   &:focus-visible {

@@ -5,8 +5,8 @@ showing where they are in the larger whole. Compass uses a single, minimal
 treatment — a transparent track with a thin, translucent thumb — so the
 scrollbar reads as a position indicator first and a control second.
 
-Per Jakob's Law, scrollbars don't get hover or active states; they should
-behave the way scrollbars behave everywhere else.
+The thumb auto-hides when idle and reappears on hover or while scrolling, so
+the scrollbar never competes with content for attention.
 
 <Divider />
 
@@ -42,37 +42,54 @@ track at 100%, hide the scrollbar — there's nothing to scroll.
 
 <Divider />
 
-## Use the minimal-scrollbar treatment
+## Use the Scrollbars wrapper
 
-Any element with `overflow: auto`, `overflow: scroll`, `overflow-y: auto|scroll`,
-or `overflow-x: auto|scroll` should adopt the minimal scrollbar treatment.
-Don't ship the browser-default chunky scrollbar on content regions.
+Any scrolling region in a Compass surface should be rendered through the
+`Scrollbars` component. It wraps `simplebar-react` and renders an overlay
+scrollbar that floats above content — items always span the full width of
+the container, and the thumb never reserves a gutter that pushes layout
+around.
 
-The shared mixin lives at `src/styles/mixins.scss` and is auto-injected into
-every module SCSS file:
+```tsx
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 
-```scss
-.your-scroll-region {
-  overflow-y: auto;
-  @include minimal-scrollbar;
-}
+<Scrollbars>
+  <YourLongList />
+</Scrollbars>
 ```
 
-What the mixin gives you:
+What you get:
 
-- A thin track (`scrollbar-width: thin` on Firefox; 8px width on WebKit).
-- A transparent track and a translucent thumb that adapts to light and dark
-  themes via `--center-channel-color-rgb` at 24% alpha.
-- A hover state on the thumb that bumps the alpha to 40%.
-- A short transition tied to `--duration-quick` and `--ease-transition`.
+- An overlay thumb that auto-hides when idle and reappears on hover or while
+  scrolling.
+- Cross-browser consistency — overlay behaviour, transitions, and theming
+  match in Chrome, Safari, and Firefox.
+- A translucent thumb tied to `--center-channel-color-rgb` at 24% alpha that
+  bumps to 40% on hover, so the colour adapts to light and dark surfaces.
+- A forwarded ref to the inner scrollable element for imperative
+  `.scrollTo(...)` or read access to `.scrollTop`.
 
-Apply `scrollbar-gutter` only on the page-level scroller that needs
-shift-free behaviour — nested minimal-scrollbar regions will each reserve
-their own 8px gutter if you don't.
+### Sizing
+
+`Scrollbars` fills its parent by default. In a flex column, give the parent
+`flex: 1; min-height: 0;` so the scroller can shrink correctly. For
+fixed-height surfaces like menus, pass `style={{ maxHeight }}` directly on
+the wrapper.
+
+### Theming the thumb
+
+On dark surfaces (e.g. the channel sidebar), pass `color` with the CSS
+variable name to recolour the thumb against its background:
+
+```tsx
+<Scrollbars color="--sidebar-text-rgb">
+  <ChannelList />
+</Scrollbars>
+```
 
 <Divider />
 
 ## Implementation
 
-For props, variants, and copy-ready examples, see the
-[Scrollbar library page](/components/scrollbar/specimen).
+For variants, props, and copy-ready examples, see the
+[Scrollbar specimen page](/components/scrollbar/specimen).

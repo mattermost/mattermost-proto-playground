@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: var(--spacing-s);
-  margin: var(--spacing-l) 0;
+  margin: var(--spacing-xl) 0;
 
   &__tile {
     display: flex;
@@ -42,48 +42,13 @@
 }
 
 // ============================================================
-// Size ramp — same icon at multiple pixel sizes
-// ============================================================
-.size-ramp {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--spacing-l);
-  flex-wrap: wrap;
-  padding: var(--spacing-xxl);
-  margin: var(--spacing-l) 0;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  border-radius: var(--radius-m);
-  background-color: var(--center-channel-bg);
-
-  &__tile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-xs);
-  }
-
-  &__chip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--center-channel-color);
-  }
-
-  &__label {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-50);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-  }
-}
-
-// ============================================================
 // Outlined vs filled comparison
 // ============================================================
 .style-compare {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-l);
-  margin: var(--spacing-l) 0;
+  margin: var(--spacing-xl) 0;
 
   &__col {
     display: flex;
@@ -132,7 +97,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-m);
-  margin: var(--spacing-l) 0;
+  margin: var(--spacing-xl) 0;
 
   &__row {
     display: grid;
@@ -185,7 +150,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: var(--spacing-l);
-  margin: var(--spacing-l) 0;
+  margin: var(--spacing-xl) 0;
 }
 
 .principle {

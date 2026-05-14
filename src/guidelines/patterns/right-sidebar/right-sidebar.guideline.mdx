@@ -1,5 +1,113 @@
-The Right Sidebar is the contextual panel that hosts threads, search
-results, channel info, and other secondary surfaces alongside the active
-channel.
+import { RightSidebarAnatomyStage } from '@/guidelines/_components/RightSidebarGuidelineAnatomy';
 
-> Documentation in progress.
+The Right Sidebar pattern is a **multi-purpose** panel used to show messages and
+supporting information **alongside** the main Center Channel. It keeps secondary
+workflows — threads, channel info, search results, saved posts, member lists,
+and similar surfaces — visible in parallel so users can read or act in the
+sidebar without losing the primary channel context.
+
+At the layout level, the Right Sidebar sits in the east column of the channel
+shell; see [Channel](/layouts/channel) for how it composes with the team bar,
+channel sidebar, center channel, and global header.
+
+<Divider />
+
+## Anatomy
+
+The pattern has three structural regions: a fixed **header**, a scrollable
+**body**, and an optional **footer** (for example a reply composer). The header
+is implemented with **Right Sidebar Header**; the shell is **Right Sidebar**.
+
+<RightSidebarAnatomyStage />
+
+- <Num>1</Num> **Sidebar shell** — An `<aside>` with `aria-label="Right sidebar"`,
+  full height, center-channel background, and a left edge divider so it reads as
+  a distinct column. In this anatomy preview the shell is **400px** wide; product
+  layouts may introduce responsiveness or resizing.
+- <Num>2</Num> **Header region** — A non-scrolling strip at the top. Pass a
+  [Right Sidebar Header](#right-sidebar-header) (or equivalent) so titles,
+  navigation, and dismiss actions stay visible while body content scrolls.
+- <Num>3</Num> **Body region** — Flexible content that **scrolls vertically**
+  when it overflows. The body has **no default padding**; each surface (thread,
+  info, search, etc.) supplies spacing that matches its density and typography.
+- <Num>4</Num> **Footer region** (optional) — Pinned below the body when
+  provided. Use it for controls that must stay on-screen while the body scrolls,
+  such as the [Message Input](/patterns/message-input) in reply threads.
+
+<Divider />
+
+### Right Sidebar Header
+
+Use **Right Sidebar Header** for consistent chrome across RHS experiences:
+
+- **Primary title** — Names the current sidebar mode (e.g. Thread, Info, Saved
+  Messages).
+- **Secondary title** (optional) — Often the **parent channel or scope** (shown
+  beside a divider). Omit when the view is global or self-explanatory (e.g. some
+  product-wide lists).
+- **Back** (optional) — When the RHS stacks nested steps (e.g. settings),
+  **Back** returns to the previous step via `onBack`.
+- **Leading icon or avatar** (optional) — Supports profile- or entity-scoped
+  headers (e.g. user avatar next to a name).
+- **Label tag** (optional) — For lifecycle chips such as beta (`LabelTag`).
+- **Inline action** (optional) — Text action (e.g. Follow) with optional active
+  styling.
+- **Expand** (optional) — Promotes the sidebar content to a larger surface when
+  `onExpand` is provided.
+- **Close** (optional) — Dismisses the sidebar when `onClose` is provided (omit in
+  layouts where the thread column is persistent, such as Threads View).
+
+Header actions use [Icon Button](/components/icon-button) where applicable.
+
+<Divider />
+
+## Common surfaces
+
+### Threads and conversations
+
+The body typically renders a stack of [Message](/patterns/message) rows using
+the RHS treatment for actions and density. Thread-specific interaction (reply
+focus, unread indicators) lives at the app layer; the pattern supplies the
+scrollable column and optional footer composer.
+
+### Channel and entity info
+
+Bodies often combine **Action Button** rows, descriptive copy, identifiers, and
+[Menu Item](/components/menu-item) lists for settings, members, pins, and files —
+matching the flexible body shown in the Specimen tab.
+
+### Search and other secondary views
+
+Any narrow, scrollable workflow can occupy the body as long as it respects the
+shell’s scrolling model and supplies its own internal spacing.
+
+<Divider />
+
+## Behavior
+
+### Parallel layout
+
+The Right Sidebar occupies the eastern column while the Center Channel remains
+active; users can scan or interact with both regions according to window size and
+focus rules defined in product.
+
+### Scrolling
+
+Only the **body** scrolls. Header and footer stay fixed, which keeps titles and
+primary actions visible during long threads or tall info screens. The body uses
+the minimal scrollbar treatment for consistency with Compass scrolling surfaces.
+
+### Footer and composer
+
+When the footer hosts a composer, pair this pattern with [Message
+Input](/patterns/message-input) behavior for anchoring, auto-grow, and shortcuts
+in thread contexts.
+
+<Divider />
+
+## Accessibility
+
+- The shell exposes a named **complementary** landmark (`aside`) with an
+  accessible name so assistive technology can identify the panel.
+- Right Sidebar Header controls ship with explicit **aria-label** values (Back,
+  Expand, Close) and **aria-pressed** when inline actions toggle state.

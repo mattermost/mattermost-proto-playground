@@ -2,14 +2,49 @@
 // Block — call participant avatar with overlays (Figma Call Participant Avatar)
 // ---------------------------------------------------------------------------
 .call-participant-avatar {
+  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-xs);
+  border-radius: var(--radius-m);
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: rgba(var(--sidebar-text-rgb), 0.08);
+    }
+  }
+
+  &:focus-within {
+    background-color: rgba(var(--sidebar-text-rgb), 0.08);
+  }
 
   // ---------------------------------------------------------------------------
   // Elements
   // ---------------------------------------------------------------------------
+  &__host-actions {
+    position: absolute;
+    top: var(--spacing-xxxs);
+    right: var(--spacing-xxxs);
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover &__host-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &:focus-within &__host-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   &__container {
     position: relative;
     flex-shrink: 0;
@@ -186,6 +221,11 @@
     padding: var(--spacing-m);
     gap: var(--spacing-s);
 
+    .call-participant-avatar__host-actions {
+      top: var(--spacing-xxxxs);
+      right: var(--spacing-xxxxs);
+    }
+
     .call-participant-avatar__image {
       width: 72px;
       height: 72px;
@@ -209,7 +249,12 @@
 
   &--size-xs {
     padding: var(--spacing-m);
-    gap: var(--spacing-xs);
+    gap: var(--spacing-xxs);
+
+    .call-participant-avatar__host-actions {
+      top: 0;
+      right: 0;
+    }
 
     .call-participant-avatar__image {
       width: 56px;

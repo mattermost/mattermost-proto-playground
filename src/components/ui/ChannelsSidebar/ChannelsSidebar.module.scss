@@ -123,15 +123,6 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-      display: none;
-    }
   }
 
   &__channel-groups {

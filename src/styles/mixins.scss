@@ -54,14 +54,11 @@
   border: 0;
 }
 
-// Minimal, theme-aware scrollbar for any element with overflow auto/scroll.
-// Thumb uses center-channel-color at low alpha so it adapts to light/dark
-// themes automatically. Track stays transparent.
-//
-// Note: this mixin does NOT set `scrollbar-gutter`. Apply it explicitly on
-// the page-level scroller that needs shift-free behavior, otherwise nested
-// minimal-scrollbar regions will each reserve their own 8px gutter and the
-// outermost scrollbar ends up visually inset from the viewport edge.
+// Minimal native scrollbar, used ONLY on layout-level page scrollers
+// (AppShell content, DocsLayout main pane) where descendants rely on
+// `position: sticky` needing a native scrolling ancestor — SimpleBar's
+// wrapper/mask/offset chain breaks sticky positioning. Component-level
+// scrolling should use `<Scrollbars>` instead.
 @mixin minimal-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
@@ -83,4 +80,13 @@
   &::-webkit-scrollbar-thumb:hover {
     background-color: rgba(var(--center-channel-color-rgb), 0.4);
   }
+}
+
+/** Horizontal flex wrap for inline guideline demos (buttons, chips, toggles). */
+@mixin guideline-sample-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-l);
+  margin-bottom: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
 }

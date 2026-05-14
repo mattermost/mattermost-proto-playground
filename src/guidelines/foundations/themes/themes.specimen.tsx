@@ -1,82 +1,100 @@
 import styles from '@/styles/library-demo/foundations.module.scss';
+import { THEME_IDS, type ThemeId } from '@/contexts/ThemeContext';
+import Swatch, { SwatchGrid } from '@/guidelines/_components/Swatch';
 
 const THEME_GROUPS = [
   {
     name: 'Sidebar',
+    description: 'Navigation chrome, team strip, and channel list states.',
     tokens: [
-      { name: 'BG', token: '--sidebar-bg' },
-      { name: 'Header BG', token: '--sidebar-header-bg' },
-      { name: 'Team BG', token: '--sidebar-team-bg' },
-      { name: 'Text', token: '--sidebar-text' },
-      { name: 'Hover BG', token: '--sidebar-text-hover-bg' },
-      { name: 'Active Border', token: '--sidebar-text-active-border' },
+      'sidebar-bg',
+      'sidebar-header-bg',
+      'sidebar-team-bg',
+      'sidebar-text',
+      'sidebar-text-hover-bg',
+      'sidebar-text-active-border',
     ],
   },
   {
     name: 'Center Channel',
-    tokens: [
-      { name: 'BG', token: '--center-channel-bg' },
-      { name: 'Color', token: '--center-channel-color' },
-    ],
+    description: 'The main message surface and default text color.',
+    tokens: ['center-channel-bg', 'center-channel-color'],
   },
   {
     name: 'Buttons',
-    tokens: [
-      { name: 'BG', token: '--button-bg' },
-      { name: 'Color', token: '--button-color' },
-    ],
+    description: 'Primary call-to-action fill and text color.',
+    tokens: ['button-bg', 'button-color'],
   },
   {
     name: 'Interactions',
+    description: 'Inline states, mentions, separators, and validation color.',
     tokens: [
-      { name: 'Link', token: '--link-color' },
-      { name: 'Error', token: '--error-text' },
-      { name: 'Mention BG', token: '--mention-bg' },
-      { name: 'Mention Color', token: '--mention-color' },
-      { name: 'Highlight BG', token: '--mention-highlight-bg' },
-      { name: 'New Message', token: '--new-message-separator' },
+      'link-color',
+      'error-text',
+      'mention-bg',
+      'mention-color',
+      'mention-highlight-bg',
+      'new-message-separator',
     ],
   },
   {
     name: 'Status',
-    tokens: [
-      { name: 'Online', token: '--online-indicator' },
-      { name: 'Away', token: '--away-indicator' },
-      { name: 'Do Not Disturb', token: '--dnd-indicator' },
-    ],
+    description: 'Presence indicators that remain recognizable across themes.',
+    tokens: ['online-indicator', 'away-indicator', 'dnd-indicator'],
   },
 ];
 
+const THEME_NAMES: Record<ThemeId, string> = {
+  denim: 'Denim',
+  sapphire: 'Sapphire',
+  quartz: 'Quartz',
+  indigo: 'Indigo',
+  onyx: 'Onyx',
+};
+
 export default function ThemeColorsLibrary() {
   return (
-    <>
-      <p>Semantic tokens — values adapt to the active theme.</p>
-      <div className={styles['foundations__theme-groups']}>
-        {THEME_GROUPS.map(({ name, tokens }) => (
-          <div key={name} className={styles['foundations__theme-group']}>
-            <h3 className={styles['foundations__theme-group-name']}>{name}</h3>
-            <div className={styles['foundations__theme-swatches']}>
-              {tokens.map(({ name: tokenName, token }) => (
-                <div
-                  key={token}
-                  className={styles['foundations__theme-swatch']}
-                >
-                  <div
-                    className={styles['foundations__theme-swatch-color']}
-                    style={{ background: `var(${token})` }}
-                  />
-                  <span className={styles['foundations__theme-swatch-name']}>
-                    {tokenName}
-                  </span>
-                  <code className={styles['foundations__theme-swatch-token']}>
-                    {token}
-                  </code>
+    <div className={styles['foundations__theme-library']}>
+      <section className={styles['foundations__theme-groups']}>
+        <div className={styles['foundations__theme-section-heading']}>
+          <h2>Theme Tokens</h2>
+          <p>
+            Role-based tokens are shown across every built-in theme. Use the
+            token name in component code and let the active theme supply the
+            value.
+          </p>
+        </div>
+
+        {THEME_IDS.map((theme) => (
+          <section
+            key={theme}
+            className={styles['foundations__theme']}
+            data-theme={theme}
+          >
+            <h3>{THEME_NAMES[theme]}</h3>
+
+            {THEME_GROUPS.map(({ name, description, tokens }) => (
+              <div key={name} className={styles['foundations__theme-group']}>
+                <div className={styles['foundations__theme-group-heading']}>
+                  <h4>{name}</h4>
+                  <p>{description}</p>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                <SwatchGrid size="medium">
+                  {tokens.map((token) => (
+                    <Swatch
+                      key={`${theme}-${token}`}
+                      token={token}
+                      label={`--${token}`}
+                      size="medium"
+                    />
+                  ))}
+                </SwatchGrid>
+              </div>
+            ))}
+          </section>
         ))}
-      </div>
-    </>
+      </section>
+    </div>
   );
 }

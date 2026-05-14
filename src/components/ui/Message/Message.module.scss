@@ -95,6 +95,15 @@
     gap: var(--spacing-xs);
   }
 
+  /** Primary copy block inside `children` — use on `<p>` (or wrappers) so body text stays on Message typography, not doc/pattern shells. */
+  &__body-text {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    margin: 0;
+  }
+
   &__link-preview-slot {
     min-width: 0;
   }

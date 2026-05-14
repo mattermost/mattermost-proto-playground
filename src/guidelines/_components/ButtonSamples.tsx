@@ -8,7 +8,7 @@ import styles from './ButtonSamples.module.scss';
 
 export function ButtonAnatomy() {
   return (
-    <div className={styles['anatomy']}>
+    <div className={[styles['anatomy'], 'compass-doc-embed'].join(' ')}>
       <div className={styles['anatomy__chart']}>
         <Button
           size="Large"
@@ -56,7 +56,6 @@ export function ButtonEmphasis() {
       <Button emphasis="Secondary">Secondary</Button>
       <Button emphasis="Tertiary">Tertiary</Button>
       <Button emphasis="Quaternary">Quaternary</Button>
-      <Button emphasis="Link">Link</Button>
     </div>
   );
 }
@@ -131,7 +130,7 @@ export function ButtonWidths() {
           <Button className={styles['widths__full']}>Sign in</Button>
           <Button
             className={styles['widths__full']}
-            emphasis="Secondary"
+            emphasis="Tertiary"
           >
             Use a different account
           </Button>

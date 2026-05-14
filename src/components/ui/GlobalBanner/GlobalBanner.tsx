@@ -63,7 +63,8 @@ export default function GlobalBanner({
         <span className={styles['global-banner__message']}>{message}</span>
         {actionLabel != null && (
           <Button
-            appearance="Inverted"
+            className={styles['global-banner__action']}
+            appearance="Default"
             emphasis="Tertiary"
             size="X-Small"
             onClick={onAction}
@@ -77,7 +78,6 @@ export default function GlobalBanner({
           className={styles['global-banner__dismiss']}
           aria-label="Dismiss"
           size="Small"
-          style="Inverted"
           icon={<Icon glyph={<CloseIcon />} size="16" />}
           onClick={onDismiss}
         />

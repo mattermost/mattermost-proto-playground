@@ -17,6 +17,8 @@ export type LabelTagProps = {
   size?: LabelTagSize;
   casing?: LabelTagCasing;
   leadingIcon?: ReactNode;
+  /** Merged onto the root after variant classes (e.g. layout overrides in a parent row). */
+  className?: string;
 };
 
 const TYPE_CLASS: Record<LabelTagType, string> = {
@@ -34,6 +36,7 @@ export default function LabelTag({
   size = 'X-Small',
   casing = 'Title Case',
   leadingIcon,
+  className = '',
 }: LabelTagProps) {
   const classes = [
     styles['label-tag'],
@@ -42,6 +45,7 @@ export default function LabelTag({
       ? styles['label-tag--size-small']
       : styles['label-tag--size-x-small'],
     casing === 'All Caps' ? styles['label-tag--casing-all-caps'] : '',
+    className,
   ]
     .filter(Boolean)
     .join(' ');

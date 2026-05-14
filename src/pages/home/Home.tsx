@@ -7,6 +7,7 @@ import FoundationsCardArt from '@/assets/home/card-foundations.svg?react';
 import ComponentsCardArt from '@/assets/home/card-components.svg?react';
 import PatternsCardArt from '@/assets/home/card-patterns.svg?react';
 import ResourcesCardArt from '@/assets/home/card-resources.svg?react';
+import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
 import styles from './Home.module.scss';
 
 type CardSvg = ComponentType<SVGProps<SVGSVGElement>>;
@@ -25,13 +26,13 @@ const DESTINATIONS: {
   },
   {
     label: 'Components',
-    path: '/components',
+    path: categoryFirstTopicPath('components'),
     description: 'Reusable building blocks that make up the interface.',
     Illustration: ComponentsCardArt,
   },
   {
     label: 'Patterns',
-    path: '/patterns',
+    path: categoryFirstTopicPath('patterns'),
     description: 'Larger compositions that solve common product problems.',
     Illustration: PatternsCardArt,
   },
@@ -73,7 +74,7 @@ export default function Home() {
                   <span className={btnStyles.button__label}>Get started</span>
                 </Link>
                 <Link
-                  to="/components"
+                  to={categoryFirstTopicPath('components')}
                   className={styles['home__hero-cta-secondary']}
                 >
                   Browse components

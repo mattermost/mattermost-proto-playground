@@ -44,6 +44,7 @@ the thread without opening it.
 | Default  | Resting state; not selected, no unread replies.                                   |
 | Active   | The thread is the currently selected one in the Threads view.                     |
 | Unread   | The user is following the thread and has unread replies; show the unread dot.     |
+| Mention  | The thread has mentions for the current user; show the count in the left gutter. |
 
 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '640px' }}>
   <ThreadListItem
@@ -63,6 +64,15 @@ the thread without opening it.
   />
   <ThreadListItem
     badge="Unread"
+    authorName="Martin Kraft"
+    channelLabel="ENTERPRISE TEAM"
+    previewText="Do we have a guideline for what minimum width we should support in the system console? I know that…"
+    timestamp="5 mins ago"
+    replyCount={3}
+  />
+  <ThreadListItem
+    badge="Mention"
+    mentionCount={2}
     authorName="Martin Kraft"
     channelLabel="ENTERPRISE TEAM"
     previewText="Do we have a guideline for what minimum width we should support in the system console? I know that…"
@@ -95,4 +105,4 @@ the thread without opening it.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Thread List Item library page](/components/thread-list-item/specimen).
+[Thread List Item specimen page](/components/thread-list-item/specimen).

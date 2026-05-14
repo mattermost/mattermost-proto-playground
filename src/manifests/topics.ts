@@ -144,9 +144,11 @@ export const TOPICS: Topic[] = [
     slug: 'iconography',
     name: 'Iconography',
     category: 'foundations',
-    description: 'When to use icons, sizing, and pairing with labels.',
+    status: 'stable',
+    description: 'When to use icons, styles, and pairing with labels.',
     visual: { kind: 'icon-grid' },
     guidelinePage: () => import('@/guidelines/foundations/iconography/iconography.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/foundations/iconography/iconography.specimen'),
   },
   {
     slug: 'shape',
@@ -668,8 +670,68 @@ export const TOPICS: Topic[] = [
   },
 
   // ===========================================================================
-  // Patterns
+  // Patterns (sidebar order: alphabetical by display name)
   // ===========================================================================
+  {
+    slug: 'call-widget',
+    name: 'Call Widget',
+    category: 'patterns',
+    description:
+      'Floating active-call controls: speaker, timer, participants, mute, share, menu, and leave.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/call-widget/call-widget.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/call-widget/call-widget.specimen'),
+  },
+  {
+    slug: 'channel-header',
+    name: 'Channel Header',
+    category: 'patterns',
+    description:
+      'The header above the main channel content area displaying channel identity, membership and actions',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/channel-header/channel-header.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/channel-header/channel-header.specimen'),
+  },
+  {
+    slug: 'channel-sidebar',
+    name: 'Channel Sidebar',
+    category: 'patterns',
+    description:
+      'Primary navigation for the active team: channels and direct messages grouped in categories.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.specimen'),
+  },
+  {
+    slug: 'global-header',
+    name: 'Global Header',
+    category: 'patterns',
+    description:
+      'Full-width top bar for product switching, navigation history, search, and session controls.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/global-header/global-header.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/global-header/global-header.specimen'),
+  },
+  {
+    slug: 'message',
+    name: 'Message',
+    category: 'patterns',
+    description:
+      'User, bot, and integration messages with formatted text, link previews, images, and file attachments.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/message/message.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/message/message.specimen'),
+  },
+  {
+    slug: 'message-input',
+    name: 'Message Input',
+    category: 'patterns',
+    description:
+      'Composer for drafting messages: text area, formatting bar, attachments, emoji, and send.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/message-input/message-input.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/message-input/message-input.specimen'),
+  },
   {
     slug: 'modal',
     name: 'Modal',
@@ -693,72 +755,6 @@ export const TOPICS: Topic[] = [
       import('@/guidelines/patterns/popover-menu/popover-menu.specimen'),
   },
   {
-    slug: 'global-header',
-    name: 'Global Header',
-    category: 'patterns',
-    description:
-      'Full-width top bar for product switching, navigation history, search, and session controls.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/global-header/global-header.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/global-header/global-header.specimen'),
-  },
-  {
-    slug: 'channel-header',
-    name: 'Channel Header',
-    category: 'patterns',
-    description:
-      'The header above the main channel content area displaying channel identity, membership and actions',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/channel-header/channel-header.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/channel-header/channel-header.specimen'),
-  },
-  {
-    slug: 'message',
-    name: 'Message',
-    category: 'patterns',
-    description:
-      'User, bot, and integration messages with formatted text, link previews, images, and file attachments.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/message/message.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/message/message.specimen'),
-  },
-  {
-    slug: 'team-sidebar',
-    name: 'Team Sidebar',
-    category: 'patterns',
-    description:
-      'Leftmost strip for switching teams when a server has more than one team.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.specimen'),
-  },
-  {
-    slug: 'channel-sidebar',
-    name: 'Channel Sidebar',
-    category: 'patterns',
-    description:
-      'Primary navigation for the active team: channels and direct messages grouped in categories.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.specimen'),
-  },
-  {
-    slug: 'message-input',
-    name: 'Message Input',
-    category: 'patterns',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/message-input/message-input.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/message-input/message-input.specimen'),
-  },
-  {
-    slug: 'call-widget',
-    name: 'Call Widget',
-    category: 'patterns',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/call-widget/call-widget.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/call-widget/call-widget.specimen'),
-  },
-  {
     slug: 'profile-popover',
     name: 'Profile Popover',
     category: 'patterns',
@@ -772,21 +768,76 @@ export const TOPICS: Topic[] = [
     slug: 'right-sidebar',
     name: 'Right Sidebar',
     category: 'patterns',
+    description:
+      'Secondary column for threads, channel info, search, and tools beside the center channel.',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/patterns/right-sidebar/right-sidebar.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/right-sidebar/right-sidebar.specimen'),
+  },
+  {
+    slug: 'team-sidebar',
+    name: 'Team Sidebar',
+    category: 'patterns',
+    description:
+      'Leftmost strip for switching teams when a server has more than one team.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.specimen'),
   },
 
   // ===========================================================================
   // Layouts
   // ===========================================================================
   {
-    slug: 'messaging',
-    name: 'Messaging',
+    slug: 'channel',
+    name: 'Channel',
     category: 'layouts',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/layouts/messaging/messaging.guideline.mdx'),
     specimenPage: () => import('@/guidelines/layouts/messaging/messaging.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'messaging-thread',
+    name: 'Channel (thread)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full channel shell with the right sidebar showing an open thread and reply composer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/messaging-thread/messaging-thread.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/messaging-thread/messaging-thread.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'messaging-channel-info',
+    name: 'Channel (channel info)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full channel shell with the right sidebar showing open channel info.',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/layouts/messaging-channel-info/messaging-channel-info.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import(
+        '@/guidelines/layouts/messaging-channel-info/messaging-channel-info.specimen'
+      ),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'threads-view',
+    name: 'Threads View',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channels shell with the thread inbox, a scrollable list of threads, and the thread right sidebar open.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.specimen'),
     fullBleedSpecimen: true,
   },
 ];

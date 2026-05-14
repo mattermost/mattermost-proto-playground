@@ -1,5 +1,175 @@
-The Message Input is the composer used to draft and send messages, plus
-the toolbar of formatting, attachment, and emoji affordances that surround
-it.
+import MessageInput from '@/components/ui/MessageInput';
 
-> Documentation in progress.
+The Message Input is the composer for drafting and sending messages. It
+groups the text entry area, primary actions (formatting, attachments, emoji),
+an optional formatting bar, and drafted attachment previews into one anchored
+surface.
+
+<Divider />
+
+## Anatomy
+
+The Message Input is comprised of the following elements:
+
+<AnatomyStage
+  style={{
+    margin: '0 auto var(--spacing-m)',
+    maxWidth: '720px',
+  }}
+>
+  <MessageInput placeholder="Message #channel-name…" showAttachments />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — houses every part of the Message Input and
+  provides contrast from surrounding UI so it reads clearly as an input.
+- <Num>2</Num> **Placeholder text** — shown until the user enters message
+  content. Copy depends on context:
+  - In a channel: `Message {Channel Name}` (insert the active channel name).
+  - In a reply thread: **Reply to thread**.
+- <Num>3</Num> **Message text** — the text area where the user types. Content
+  appears as plain text while editing; standard Markdown formatting is
+  supported when sending.
+- <Num>4</Num> **Input controls** — [Icon Button](/components/icon-button)
+  actions:
+  - **Formatting** — opens or closes the formatting bar.
+  - **Attachment** — opens the flow to add an attachment.
+  - **Emoji** — opens the emoji picker.
+- <Num>5</Num> **Formatting bar** — when open, exposes quick Markdown actions
+  (see [Formatting bar](#formatting-bar)).
+- <Num>6</Num> **Attachment cards** — when files are attached to the draft,
+  [Attachment Card](/components/attachment-card) rows appear below the input
+  container.
+
+<Divider />
+
+## Formatting bar
+
+When the formatting bar is open, the following controls are available:
+
+- Bold
+- Italic
+- Strikethrough
+- Headings
+- Links
+- Code formatting
+- Quote
+- Bulleted lists
+- Numbered lists
+- Help — opens current message-formatting help in a new window
+- Preview — toggles a rendered preview of the Markdown (see [Preview button](#preview-button))
+
+Refer to detailed specs for interaction specifics per control.
+
+### Formatting bar closed
+
+A [Tooltip](/components/tooltip) appears when hovering the formatting control.
+On click, the formatting bar opens and the formatting control shows an **active**
+state.
+
+### Formatting bar open
+
+When open, users get quick access to standard Markdown formatting. A **Preview**
+control (eye icon) is available to preview formatted output (similar to the
+existing experimental preview behavior).
+
+### Remembering open and closed state
+
+Whether the formatting bar is open or closed **persists**. The expectation is
+that many users enable it once and rarely disable it, while still being able to
+close it easily.
+
+### Default state
+
+When the feature ships, the formatting bar is **open by default**.
+
+### Preview button
+
+The Preview control appears while the formatting bar is open. Activating it
+toggles a preview of how the Markdown will render.
+
+<Divider />
+
+## States
+
+### Tooltips
+
+Each icon control in the Message Input and formatting bar uses the
+[Tooltip](/components/tooltip) component on hover.
+
+### User typing indicator
+
+When someone is typing in a channel or thread, a text indicator appears beneath
+the Message Input.
+
+<Divider />
+
+## Variants
+
+### Center channel variant
+
+<AnatomyStage
+  style={{
+    margin: '0 auto var(--spacing-m)',
+    maxWidth: '720px',
+  }}
+>
+  <MessageInput placeholder="Message #channel-name…" />
+</AnatomyStage>
+
+The default Message Input width and layout for the main channel area.
+
+### Right sidebar variant
+
+<AnatomyStage
+  style={{
+    margin: '0 auto var(--spacing-m)',
+    maxWidth: '400px',
+  }}
+>
+  <MessageInput placeholder="Reply to thread…" width="narrow" />
+</AnatomyStage>
+
+In the Right Sidebar, horizontal space is tighter. Apply layout and density
+adjustments so the same anatomy remains usable without crowding adjacent
+content.
+
+<Divider />
+
+## Behavior
+
+### Anchoring
+
+**Center channel:** the Message Input stays anchored to the bottom of the center
+channel.
+
+**Right sidebar:**
+
+- If thread content is shorter than the sidebar content area, the Message Input
+  sits **below the last message** (scrolls with content).
+- If thread content requires scrolling, the Message Input is **anchored to the
+  bottom of the sidebar**, matching center-channel bottom anchoring.
+
+### Auto-focus
+
+When landing in a channel, focus moves to the Message Input with the caret ready
+for typing.
+
+### Auto-grow
+
+As the draft spans multiple lines, the text area grows in height until it hits a
+maximum, then scrolls inside the field.
+
+- **Center channel:** maximum height is **50vh − 40px**.
+- **Right sidebar:** maximum height is **50vh − 80px**.
+
+### Keyboard shortcuts
+
+These shortcuts apply for text formatting whether the formatting bar is open or
+closed.
+
+| Formatting    | Mac shortcut | Windows shortcut |
+| ------------- | ------------ | ---------------- |
+| Bold          | ⌘ B          | Ctrl B           |
+| Italic        | ⌘ I          | Ctrl I           |
+| Link          | ⌘ Shift K    | Ctrl Shift K     |
+| Strikethrough | ⌘ Opt X      | Shift Alt X      |

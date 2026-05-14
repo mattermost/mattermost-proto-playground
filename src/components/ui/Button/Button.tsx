@@ -8,8 +8,7 @@ export type ButtonEmphasis =
   | 'Primary'
   | 'Secondary'
   | 'Tertiary'
-  | 'Quaternary'
-  | 'Link';
+  | 'Quaternary';
 
 export type ButtonSize = 'X-Small' | 'Small' | 'Medium' | 'Large';
 

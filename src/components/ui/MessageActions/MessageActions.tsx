@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from 'react';
+import Emoji from '@/components/ui/Emoji/Emoji';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import EmoticonPlusOutlineIcon from '@mattermost/compass-icons/components/emoticon-plus-outline';
@@ -61,7 +62,7 @@ export default function MessageActions({
             aria-label="React with thumbs up"
             size="Small"
             padding="Compact"
-            icon={<Icon size="16" glyph={<span aria-hidden>👍</span>} />}
+            icon={<Emoji emoji="👍" size="16" variant="vivid" />}
           />
           {isCenterChannel && (
             <>
@@ -69,13 +70,13 @@ export default function MessageActions({
                 aria-label="React with raised hands"
                 size="Small"
                 padding="Compact"
-                icon={<Icon size="16" glyph={<span aria-hidden>🙌</span>} />}
+                icon={<Emoji emoji="🙌" size="16" variant="vivid" />}
               />
               <IconButton
                 aria-label="React with OK hand"
                 size="Small"
                 padding="Compact"
-                icon={<Icon size="16" glyph={<span aria-hidden>👌</span>} />}
+                icon={<Emoji emoji="👌" size="16" variant="vivid" />}
               />
             </>
           )}

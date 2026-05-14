@@ -4,6 +4,7 @@ import EmailOutlineIcon from '@mattermost/compass-icons/components/email-outline
 import PinOutlineIcon from '@mattermost/compass-icons/components/pin-outline';
 import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
+import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import ArrowUpIcon from '@mattermost/compass-icons/components/arrow-up';
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -13,14 +14,14 @@ import Icon from '@/components/ui/Icon/Icon';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import styles from './ElevationSamples.module.scss';
 
-interface ElevationStep {
+export interface ElevationStep {
   level: number;
   token?: string;
   summary: string;
   uses: string[];
 }
 
-const ELEVATION_STEPS: ElevationStep[] = [
+export const ELEVATION_STEPS: ElevationStep[] = [
   {
     level: 0,
     summary: 'The default surface; no shadow applied.',
@@ -71,7 +72,17 @@ const ELEVATION_STEPS: ElevationStep[] = [
   },
 ];
 
-export function ElevationScale() {
+interface ElevationScaleProps {
+  /** When true, show CSS custom property names (Specimen tab). */
+  showTokens?: boolean;
+  /** When false, hide role chips (Specimen tab). */
+  showUses?: boolean;
+}
+
+export function ElevationScale({
+  showTokens = false,
+  showUses = true,
+}: ElevationScaleProps) {
   return (
     <div className={styles['scale']}>
       {ELEVATION_STEPS.map(({ level, token, summary, uses }) => (
@@ -87,12 +98,12 @@ export function ElevationScale() {
           <div className={styles['scale__meta']}>
             <div className={styles['scale__heading']}>
               <span className={styles['scale__name']}>Elevation {level}</span>
-              {token && (
+              {showTokens && token && (
                 <code className={styles['scale__token']}>{token}</code>
               )}
             </div>
             <div className={styles['scale__summary']}>{summary}</div>
-            {uses.length > 0 && (
+            {showUses && uses.length > 0 && (
               <div className={styles['scale__uses']}>
                 {uses.map((use) => (
                   <Chip key={use} size="Small">
@@ -116,12 +127,17 @@ interface PopoverProps {
 }
 
 function PopoverCard({ level, title, className, children }: PopoverProps) {
-  const cls = [styles['popover'], className].filter(Boolean).join(' ');
+  const wrapCls = [styles['popover-stack'], className].filter(Boolean).join(' ');
   return (
-    <div className={cls} style={{ boxShadow: `var(--elevation-${level})` }}>
-      <div className={styles['popover__label']}>Elevation {level}</div>
-      <div className={styles['popover__title']}>{title}</div>
-      <div className={styles['popover__items']}>{children}</div>
+    <div className={wrapCls}>
+      <div className={styles['popover-stack__label']}>Elevation {level}</div>
+      <div
+        className={styles.popover}
+        style={{ boxShadow: `var(--elevation-${level})` }}
+      >
+        <div className={styles['popover__title']}>{title}</div>
+        <div className={styles['popover__items']}>{children}</div>
+      </div>
     </div>
   );
 }
@@ -129,13 +145,6 @@ function PopoverCard({ level, title, className, children }: PopoverProps) {
 export function ElevationPopoverExample() {
   return (
     <div className={styles['stage']}>
-      <div className={styles['stage__surface']} aria-hidden="true">
-        <div className={styles['stage__line']} style={{ width: '60%' }} />
-        <div className={styles['stage__line']} style={{ width: '85%' }} />
-        <div className={styles['stage__line']} style={{ width: '45%' }} />
-        <div className={styles['stage__line']} style={{ width: '72%' }} />
-      </div>
-
       <PopoverCard
         level={4}
         title="Parent menu"
@@ -160,6 +169,10 @@ export function ElevationPopoverExample() {
         <MenuItem
           label="More actions"
           leadingVisual={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+          trailingElement
+          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
+          active
+          aria-expanded="true"
         />
       </PopoverCard>
 

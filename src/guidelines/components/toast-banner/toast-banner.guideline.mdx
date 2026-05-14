@@ -12,7 +12,7 @@ after a short duration.
 <AnatomyStage>
   <div style={{ width: '100%', maxWidth: '480px' }}>
     <ToastBanner
-      type="Info"
+      type="General"
       message="New update available. Refresh to apply."
       actionLabel="Refresh"
       onAction={() => {}}
@@ -24,7 +24,7 @@ after a short duration.
 - <Num>1</Num> **Container** — dark surface with rounded corners; a coloured
   variant is reserved for warnings.
 - <Num>2</Num> **Leading icon** — semantic icon that mirrors the toast's
-  type (success, error, warning, info).
+  type (general, success, error, warning, info).
 - <Num>3</Num> **Message** — the line of text. One sentence; complete and
   self-contained.
 - <Num>4</Num> **Action button** — optional; for "Retry", "Undo", "View",
@@ -92,4 +92,4 @@ Pick the type that matches the message's meaning, not the colour you want.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Toast Banner library page](/components/toast-banner/specimen).
+[Toast Banner specimen page](/components/toast-banner/specimen).

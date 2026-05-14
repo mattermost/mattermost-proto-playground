@@ -4,8 +4,7 @@ import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import PaletteOutlineIcon from '@mattermost/compass-icons/components/palette-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import { useTheme, type ThemeId } from '@/contexts/ThemeContext';
-import { TOPICS, type TopicCategory } from '@/manifests/topics';
-import { topicSections } from '@/manifests/sections';
+import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import styles from './TopNav.module.scss';
 
@@ -22,43 +21,26 @@ interface NavItem {
   activePrefix?: string;
 }
 
-/**
- * Resolve the first topic for a category, honoring sidebar section order.
- * Falls back to manifest order if no sections are defined.
- */
-function firstChildPath(category: TopicCategory): string {
-  const inCategory = TOPICS.filter((t) => t.category === category);
-  const sections = topicSections[category];
-  const fallback = inCategory[0];
-
-  if (!sections || sections.length === 0) {
-    return fallback ? `/${category}/${fallback.slug}` : `/${category}`;
-  }
-
-  const slugs = new Set(inCategory.map((t) => t.slug));
-  for (const section of sections) {
-    for (const slug of section.slugs) {
-      if (slugs.has(slug)) return `/${category}/${slug}`;
-    }
-  }
-  return fallback ? `/${category}/${fallback.slug}` : `/${category}`;
-}
-
 const NAV_ITEMS: NavItem[] = [
   {
-    to: firstChildPath('foundations'),
+    to: categoryFirstTopicPath('foundations'),
     label: 'Foundations',
     activePrefix: '/foundations',
   },
   {
-    to: firstChildPath('components'),
+    to: categoryFirstTopicPath('components'),
     label: 'Components',
     activePrefix: '/components',
   },
   {
-    to: firstChildPath('patterns'),
+    to: categoryFirstTopicPath('patterns'),
     label: 'Patterns',
     activePrefix: '/patterns',
+  },
+  {
+    to: categoryFirstTopicPath('layouts'),
+    label: 'Layouts',
+    activePrefix: '/layouts',
   },
   { to: '/prototypes', label: 'Prototypes' },
   { to: '/resources', label: 'Resources' },

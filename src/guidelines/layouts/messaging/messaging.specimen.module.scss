@@ -71,6 +71,8 @@
     box-shadow: var(--elevation-1);
     overflow: hidden;
     background: var(--center-channel-bg);
+    container-type: inline-size;
+    container-name: messaging-inner;
   }
 
   &__center {
@@ -85,38 +87,22 @@
   &__messages {
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
-    padding: var(--spacing-s) 0;
+
+    // Fill the SimpleBar viewport so short threads sit on the bottom (real channel view).
+    :global(.simplebar-content) {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &__messages-list {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xxxxs);
-
-    > *:first-child {
-      margin-top: auto;
-    }
-
-    scrollbar-width: thin;
-    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(var(--center-channel-color-rgb), 0.24);
-      border-radius: 3px;
-      border: 2px solid transparent;
-      background-clip: content-box;
-      transition: background-color var(--duration-quick) var(--ease-transition);
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(var(--center-channel-color-rgb), 0.4);
-    }
+    padding: var(--spacing-s) 0;
+    flex: 1 1 auto;
+    justify-content: flex-end;
   }
 
   &__post-text {
@@ -127,7 +113,7 @@
   }
 
   &__message-input {
-    padding: var(--spacing-s) var(--spacing-l) var(--spacing-l);
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
     flex: 0 0 auto;
   }
 
@@ -144,33 +130,43 @@
     background: var(--center-channel-bg);
   }
 
-  &__right-sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-s) var(--spacing-m);
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-    flex: 0 0 auto;
+  &__right-sidebar--fill {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
   }
 
-  &__right-sidebar-title {
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-200);
-    color: var(--center-channel-color);
+  @container messaging-inner (max-width: 799px) {
+    &__center {
+      flex: 1 1 auto;
+      width: 100%;
+      min-width: 0;
+    }
+
+    &__right-sidebar,
+    &__right-sidebar--fill {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 3;
+      flex: none;
+      min-height: 0;
+      box-shadow: var(--elevation-4);
+      max-width: 100%;
+    }
+
+    &__right-sidebar {
+      width: min(400px, 100%);
+    }
+
+    &__right-sidebar--fill {
+      width: 100%;
+    }
   }
 
   &__right-sidebar-body {
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
-    padding: var(--spacing-m);
-  }
-
-  &__right-sidebar-placeholder {
-    margin: 0;
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
   }
 }

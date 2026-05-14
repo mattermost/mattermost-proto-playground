@@ -12,13 +12,13 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: rgba(var(--center-channel-color-rgb), 0.64);
-  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
   margin: 0;
 }
 
 .preview__body {
   padding: var(--spacing-s) var(--spacing-l) var(--spacing-l) var(--spacing-l);
-  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
 
   &--center {
     display: flex;
