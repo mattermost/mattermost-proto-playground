@@ -789,8 +789,8 @@ export const TOPICS: Topic[] = [
   // Layouts
   // ===========================================================================
   {
-    slug: 'messaging',
-    name: 'Messaging',
+    slug: 'channel',
+    name: 'Channel',
     category: 'layouts',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/layouts/messaging/messaging.guideline.mdx'),
@@ -799,11 +799,11 @@ export const TOPICS: Topic[] = [
   },
   {
     slug: 'messaging-thread',
-    name: 'Messaging (thread)',
+    name: 'Channel (thread)',
     category: 'layouts',
     status: 'stable',
     description:
-      'Full messaging shell with the right sidebar showing an open thread and reply composer.',
+      'Full channel shell with the right sidebar showing an open thread and reply composer.',
     guidelinePage: () =>
       import('@/guidelines/layouts/messaging-thread/messaging-thread.guideline.mdx'),
     specimenPage: () =>
@@ -812,11 +812,11 @@ export const TOPICS: Topic[] = [
   },
   {
     slug: 'messaging-channel-info',
-    name: 'Messaging (channel info)',
+    name: 'Channel (channel info)',
     category: 'layouts',
     status: 'stable',
     description:
-      'Full messaging shell with the right sidebar showing open channel info.',
+      'Full channel shell with the right sidebar showing open channel info.',
     guidelinePage: () =>
       import(
         '@/guidelines/layouts/messaging-channel-info/messaging-channel-info.guideline.mdx'

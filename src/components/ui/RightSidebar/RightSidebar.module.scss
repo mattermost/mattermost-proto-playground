@@ -6,8 +6,7 @@
   height: 100%;
   background-color: var(--center-channel-bg);
   border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  box-sizing: border-box;
-  overflow: hidden;
+  box-shadow: var(--elevation-2);
 
   &--fill {
     flex: 1 1 auto;
