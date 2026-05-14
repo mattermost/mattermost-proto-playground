@@ -37,6 +37,11 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Patterns',
     activePrefix: '/patterns',
   },
+  {
+    to: categoryFirstTopicPath('layouts'),
+    label: 'Layouts',
+    activePrefix: '/layouts',
+  },
   { to: '/prototypes', label: 'Prototypes' },
   { to: '/resources', label: 'Resources' },
 ];

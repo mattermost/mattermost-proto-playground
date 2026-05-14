@@ -5,7 +5,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { findTopic, type TopicCategory } from '@/manifests/topics';
+import { findTopic, type Topic, type TopicCategory } from '@/manifests/topics';
 import {
   firstTopicInNextCategory,
   isLastTopicInCategorySeries,
@@ -63,6 +63,39 @@ export default function TopicRoute() {
     [topic],
   );
 
+  const nextTopic = useMemo(
+    () => (topic ? nextTopicInCategorySeries(topic) : undefined),
+    [topic],
+  );
+  const firstTopicNextSection = useMemo(() => {
+    if (!topic) return undefined;
+    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
+      return undefined;
+    }
+    return firstTopicInNextCategory(topic);
+  }, [topic, nextTopic]);
+
+  if (topic?.category === 'layouts' && location.pathname.endsWith('/specimen')) {
+    return (
+      <Navigate to={`/${topic.category}/${topic.slug}`} replace />
+    );
+  }
+
+  if (topic?.category === 'layouts' && SpecimenPage) {
+    return (
+      <div
+        className={[
+          styles['doc-shell'],
+          styles['doc-shell--layout-only'],
+        ].join(' ')}
+      >
+        <Suspense fallback={null}>
+          <SpecimenPage />
+        </Suspense>
+      </div>
+    );
+  }
+
   if (!topic || !GuidelinePage) {
     return (
       <div className={styles['doc-shell']}>
@@ -91,17 +124,6 @@ export default function TopicRoute() {
   const handleTabChange = (key: string) => {
     navigate(key === 'specimen' ? `${tabsBase}/specimen` : tabsBase);
   };
-
-  const nextTopic = useMemo(
-    () => nextTopicInCategorySeries(topic),
-    [topic],
-  );
-  const firstTopicNextSection = useMemo(() => {
-    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
-      return undefined;
-    }
-    return firstTopicInNextCategory(topic);
-  }, [topic, nextTopic]);
 
   return (
     <div className={styles['doc-shell']}>
