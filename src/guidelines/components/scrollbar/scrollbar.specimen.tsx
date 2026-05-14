@@ -1,7 +1,10 @@
 import Scrollbar from '@/components/ui/Scrollbar/Scrollbar';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ScrollbarLibrary() {
+  const lipsum = Array.from({ length: 24 }, (_, i) => i + 1);
+
   return (
     <>
       <div className={styles['components__button-block']}>
@@ -37,6 +40,42 @@ export default function ScrollbarLibrary() {
             thumbSize="50%"
             scrollPosition={50}
           />
+        </div>
+
+        <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>
+            Live overlay
+          </span>
+          <div
+            style={{
+              width: 280,
+              height: 200,
+              border:
+                '1px solid rgba(var(--center-channel-color-rgb), 0.16)',
+              borderRadius: 'var(--radius-s)',
+              background: 'var(--center-channel-bg)',
+            }}
+          >
+            <Scrollbars>
+              <ul
+                style={{
+                  margin: 0,
+                  padding: 'var(--spacing-s) var(--spacing-m)',
+                  listStyle: 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 'var(--spacing-xs)',
+                  color: 'var(--center-channel-color)',
+                  fontSize: 'var(--font-size-100)',
+                  lineHeight: 'var(--line-height-100)',
+                }}
+              >
+                {lipsum.map((n) => (
+                  <li key={n}>Item {n}</li>
+                ))}
+              </ul>
+            </Scrollbars>
+          </div>
         </div>
       </div>
     </>

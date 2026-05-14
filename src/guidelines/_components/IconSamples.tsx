@@ -102,28 +102,6 @@ export function IconShowcase({ size = 28 }: IconShowcaseProps) {
   );
 }
 
-interface IconSizeRampProps {
-  /** Pixel sizes to render. Defaults to a representative range. */
-  sizes?: number[];
-}
-
-export function IconSizeRamp({
-  sizes = [16, 20, 24, 28, 32, 40, 52],
-}: IconSizeRampProps) {
-  return (
-    <div className={styles['size-ramp']}>
-      {sizes.map((s) => (
-        <div key={s} className={styles['size-ramp__tile']}>
-          <div className={styles['size-ramp__chip']}>
-            <GlobeIcon size={s} />
-          </div>
-          <span className={styles['size-ramp__label']}>{s}px</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 interface IconStylePair {
   outlined: IconComp;
   filled: IconComp;

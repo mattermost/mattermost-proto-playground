@@ -1,0 +1,17 @@
+.colorSpecimen {
+  &__palette {
+    margin-bottom: var(--spacing-xl);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__paletteTitle {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-700);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin-bottom: var(--spacing-xl);
+  }
+}

@@ -43,7 +43,7 @@ the same action group; pick one and stick with it.
 ## Emphasis
 
 Emphasis is how a button signals its rank in the screen's action hierarchy.
-Compass exposes five levels — pick the lowest that still reads as the right
+Compass exposes four levels — pick the lowest that still reads as the right
 action.
 
 <ButtonEmphasis />
@@ -53,8 +53,7 @@ action.
 | Primary     | One unambiguous, screen-defining action. **At most once per view.**                               |
 | Secondary   | A standalone action that needs weight, but no Primary is present.                                 |
 | Tertiary    | The default for grouped actions. Pairs naturally with a Primary.                                  |
-| Quaternary  | Low-emphasis actions that should sit quietly until the user looks for them.                       |
-| Link        | Inline or caption-adjacent actions where tight alignment with text matters.                       |
+| Quaternary  | Low-emphasis actions that should sit quietly until the user looks for them. Use for toolbar-style text actions and other cases where Tertiary still feels too heavy. |
 
 A few rules of thumb:
 
@@ -132,4 +131,4 @@ to. Within a group, the **Primary action is always right-most**.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Button library page](/components/button/specimen).
+[Button specimen page](/components/button/specimen).

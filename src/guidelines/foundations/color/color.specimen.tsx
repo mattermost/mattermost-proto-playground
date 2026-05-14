@@ -1,86 +1,82 @@
-import styles from '@/styles/library-demo/foundations.module.scss';
+import Swatch, { SwatchGrid } from '@/guidelines/_components/Swatch';
+import Divider from '@/components/ui/Divider/Divider';
+import styles from './color.specimen.module.scss';
 
-const PALETTES = [
+const PALETTES: { label: string; base: string; shades: number[] }[] = [
   {
-    name: 'Neutral',
-    prefix: 'color-neutral',
-    steps: [
+    label: 'Indigo',
+    base: 'color-indigo',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Blue',
+    base: 'color-blue',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Cyan',
+    base: 'color-cyan',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Green',
+    base: 'color-green',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Orange',
+    base: 'color-orange',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Purple',
+    base: 'color-purple',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Red',
+    base: 'color-red',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Teal',
+    base: 'color-teal',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Yellow',
+    base: 'color-yellow',
+    shades: [100, 200, 300, 400, 500, 600, 700, 800],
+  },
+  {
+    label: 'Neutral',
+    base: 'color-neutral',
+    shades: [
       0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700,
       750, 800, 850, 900, 950, 1000, 1050, 1100, 1150, 1200,
     ],
-  },
-  {
-    name: 'Blue',
-    prefix: 'color-blue',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Cyan',
-    prefix: 'color-cyan',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Green',
-    prefix: 'color-green',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Indigo',
-    prefix: 'color-indigo',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Orange',
-    prefix: 'color-orange',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Purple',
-    prefix: 'color-purple',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Red',
-    prefix: 'color-red',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Teal',
-    prefix: 'color-teal',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
-  },
-  {
-    name: 'Yellow',
-    prefix: 'color-yellow',
-    steps: [100, 200, 300, 400, 500, 600, 700, 800],
   },
 ];
 
 export default function ColorLibrary() {
   return (
-    <div className={styles['foundations__palettes']}>
-      {PALETTES.map(({ name, prefix, steps }) => (
-        <div key={name} className={styles['foundations__palette-row']}>
-          <span className={styles['foundations__palette-name']}>{name}</span>
-          <div className={styles['foundations__swatch-strip']}>
-            {steps.map((step) => (
-              <div
-                key={step}
-                className={styles['foundations__swatch']}
-                title={`--${prefix}-${step}`}
-              >
-                <div
-                  className={styles['foundations__swatch-color']}
-                  style={{ background: `var(--${prefix}-${step})` }}
-                />
-                <span className={styles['foundations__swatch-step']}>
-                  {step}
-                </span>
-              </div>
+    <>
+      {PALETTES.map(({ label, base, shades }) => (
+        <div key={label} className={styles.colorSpecimen__palette}>
+          <div className={styles.colorSpecimen__paletteTitle}>{label}</div>
+          <SwatchGrid size="medium">
+            {shades.map((shade) => (
+              <Swatch
+                key={shade}
+                token={`${base}-${shade}`}
+                size="medium"
+                showFullColorMeta
+              />
             ))}
-          </div>
+          </SwatchGrid>
+          <Divider />
         </div>
       ))}
-    </div>
+    </>
   );
 }

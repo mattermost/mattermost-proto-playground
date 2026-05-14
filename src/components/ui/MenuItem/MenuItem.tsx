@@ -29,6 +29,8 @@ export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   mentionCount?: number;
   /** Destructive (danger) styling. */
   destructive?: boolean;
+  /** Highlight row (e.g. submenu parent while child menu is open). */
+  active?: boolean;
 }
 
 /**
@@ -48,6 +50,7 @@ export default function MenuItem({
   tag = false,
   mentionCount,
   destructive = false,
+  active = false,
   className = '',
   disabled,
   type = 'button',
@@ -56,6 +59,7 @@ export default function MenuItem({
   const rootClass = [
     styles['menu-item'],
     destructive ? styles['menu-item--destructive'] : '',
+    active ? styles['menu-item--active'] : '',
     className,
   ]
     .filter(Boolean)

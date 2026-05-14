@@ -37,11 +37,11 @@ Action Buttons have three interactive states — Default, Hover, and Active —
 plus a Destructive variant. The Active state signals that the action is
 toggled on (e.g. "Following").
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap'}}>
+<SampleRow>
   <ActionButton icon={<MessageTextOutlineIcon size={20} />} label="Default" />
   <ActionButton icon={<AccountPlusOutlineIcon size={20} />} label="Active" active />
   <ActionButton icon={<MessageTextOutlineIcon size={20} />} label="Disabled" disabled />
-</div>
+</SampleRow>
 
 <Divider />
 
@@ -51,17 +51,17 @@ Use the destructive variant only for actions that remove or undo something —
 leaving a channel, removing a member from a group DM, deleting a saved item.
 Pair it with a confirmation step; the button itself isn't a confirmation.
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap'}}>
+<SampleRow>
   <ActionButton
     icon={<TrashCanOutlineIcon size={20} />}
     label="Remove"
     destructive
   />
-</div>
+</SampleRow>
 
 <Divider />
 
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Action Button library page](/components/action-button/specimen).
+[Action Button specimen page](/components/action-button/specimen).

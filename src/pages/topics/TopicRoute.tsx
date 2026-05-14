@@ -5,12 +5,14 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { findTopic, type TopicCategory } from '@/manifests/topics';
 import {
-  findTopic,
-  type Topic,
-  type TopicCategory,
-} from '@/manifests/topics';
+  firstTopicInNextCategory,
+  isLastTopicInCategorySeries,
+  nextTopicInCategorySeries,
+} from '@/manifests/topicSeriesOrder';
 import PageHero from '@/components/layout/PageHero/PageHero';
+import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/GuidelineNextTopicCard';
 import Tabs from '@/components/ui/Tabs/Tabs';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
@@ -37,7 +39,8 @@ function resolveTopic(
   rawSlug: string | undefined,
 ): Topic | undefined {
   if (!rawCategory || !rawSlug) return undefined;
-  if (!VALID_CATEGORIES.includes(rawCategory as TopicCategory)) return undefined;
+  if (!VALID_CATEGORIES.includes(rawCategory as TopicCategory))
+    return undefined;
   return findTopic(rawCategory as TopicCategory, rawSlug);
 }
 
@@ -89,6 +92,17 @@ export default function TopicRoute() {
     navigate(key === 'specimen' ? `${tabsBase}/specimen` : tabsBase);
   };
 
+  const nextTopic = useMemo(
+    () => nextTopicInCategorySeries(topic),
+    [topic],
+  );
+  const firstTopicNextSection = useMemo(() => {
+    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
+      return undefined;
+    }
+    return firstTopicInNextCategory(topic);
+  }, [topic, nextTopic]);
+
   return (
     <div className={styles['doc-shell']}>
       <div className={styles['doc-shell__top']}>
@@ -121,6 +135,19 @@ export default function TopicRoute() {
             <Suspense fallback={<p>Loading…</p>}>
               <div className={docStyles['doc-page__prose']}>
                 <GuidelinePage />
+                {nextTopic ? (
+                  <GuidelineNextTopicCard next={nextTopic} />
+                ) : firstTopicNextSection ? (
+                  <GuidelineNextTopicCard
+                    next={firstTopicNextSection}
+                    title={`Continue to ${CATEGORY_LABELS[firstTopicNextSection.category]}`}
+                    description={
+                      firstTopicNextSection.description
+                        ? `${firstTopicNextSection.name} — ${firstTopicNextSection.description}`
+                        : firstTopicNextSection.name
+                    }
+                  />
+                ) : null}
               </div>
             </Suspense>
           </div>
@@ -133,7 +160,9 @@ export default function TopicRoute() {
           className={`${styles['doc-shell__body']} ${styles['doc-shell__body--standalone']}`}
         >
           <Suspense fallback={<p>Loading…</p>}>
-            {SpecimenPage && <SpecimenPage />}
+            <div className={docStyles['doc-page__prose']}>
+              {SpecimenPage && <SpecimenPage />}
+            </div>
           </Suspense>
         </div>
       )}

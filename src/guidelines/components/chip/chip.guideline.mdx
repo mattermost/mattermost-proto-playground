@@ -1,6 +1,9 @@
 import Chip from '@/components/ui/Chip/Chip';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
-import HashtagIcon from '@mattermost/compass-icons/components/pound';
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
+import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
+import avatarSofiaBauer from '@/assets/avatars/Sofia Bauer.png';
 
 Chips are compact, self-contained tokens that represent a selection — a
 person added to an invite, a filter applied to a search, a chosen value in
@@ -23,8 +26,8 @@ when you're labeling content (Bot, Guest, severity), not selecting it.
   the chip from the input.
 
 <AnatomyStage style={{gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
-  <Chip leadingAvatar={{ src: '', alt: 'Avery' }} onRemove={() => {}}>Avery</Chip>
-  <Chip leadingIcon={<HashtagIcon />} onRemove={() => {}}>design</Chip>
+  <Chip leadingAvatar={{ src: avatarEmmaNovak, alt: 'Emma Novak' }} onRemove={() => {}}>Emma Novak</Chip>
+  <Chip leadingIcon={<GlobeIcon />} onRemove={() => {}}>design</Chip>
   <Chip leadingIcon={<AccountOutlineIcon />}>From: Mira</Chip>
 </AnatomyStage>
 
@@ -59,9 +62,9 @@ Input chips appear inside a tokenizing input — adding members to a channel,
 filtering a list, picking tags. Each chip carries a remove (×) control.
 
 <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
-  <Chip leadingAvatar={{ src: '', alt: 'Avery' }} onRemove={() => {}}>Avery Chen</Chip>
-  <Chip leadingAvatar={{ src: '', alt: 'Mira' }} onRemove={() => {}}>Mira Patel</Chip>
-  <Chip leadingAvatar={{ src: '', alt: 'Noor' }} onRemove={() => {}}>Noor Adler</Chip>
+  <Chip leadingAvatar={{ src: avatarEmmaNovak, alt: 'Emma Novak' }} onRemove={() => {}}>Emma Novak</Chip>
+  <Chip leadingAvatar={{ src: avatarArjunPatel, alt: 'Arjun Patel' }} onRemove={() => {}}>Arjun Patel</Chip>
+  <Chip leadingAvatar={{ src: avatarSofiaBauer, alt: 'Sofia Bauer' }} onRemove={() => {}}>Sofia Bauer</Chip>
 </div>
 
 ### Choice chips
@@ -70,8 +73,8 @@ Choice chips are selectable filters. They toggle on and off but don't get
 removed — keep the remove control off.
 
 <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',alignItems:'center'}}>
-  <Chip leadingIcon={<HashtagIcon />}>All channels</Chip>
-  <Chip leadingIcon={<HashtagIcon />} colored>Direct messages</Chip>
+  <Chip leadingIcon={<GlobeIcon />}>All channels</Chip>
+  <Chip leadingIcon={<AccountOutlineIcon />} colored>Direct messages</Chip>
 </div>
 
 <Divider />
@@ -83,7 +86,7 @@ email that didn't resolve to a member. Pair it with field-level error text
 so the cause is explicit.
 
 <div style={{display:'flex',gap:'0.5rem'}}>
-  <Chip error onRemove={() => {}}>not-a-member@example.com</Chip>
+  <Chip error onRemove={() => {}}>{'not-a-member@example.com'}</Chip>
 </div>
 
 <Divider />
@@ -91,4 +94,4 @@ so the cause is explicit.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Chip library page](/components/chip/specimen).
+[Chip specimen page](/components/chip/specimen).

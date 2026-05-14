@@ -1,70 +1,196 @@
+import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Button from '@/components/ui/Button/Button';
+import type {
+  ButtonAppearance,
+  ButtonEmphasis,
+  ButtonSize,
+} from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
 import styles from '@/styles/library-demo/components.module.scss';
 
-export default function ButtonLibrary() {
+const EMPHASES: ButtonEmphasis[] = [
+  'Primary',
+  'Secondary',
+  'Tertiary',
+  'Quaternary',
+];
+
+const SIZES: ButtonSize[] = ['X-Small', 'Small', 'Medium', 'Large'];
+
+function VariantCell({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
   return (
-    <>
-      <div className={styles['components__button-block']}>
-        <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Primary</span>
-          <Button>Primary</Button>
-          <Button leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}>
-            With leading icon
-          </Button>
-          <Button trailingIcon={<Icon glyph={<GlobeIcon />} size="16" />}>
-            With trailing icon
-          </Button>
-        </div>
-        <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>
-            Secondary
+    <div className={styles['components__button-variant-cell']}>
+      <span className={styles['components__instance-label']}>{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function ButtonPermutationGrid({
+  appearance,
+  destructive,
+  disabled,
+}: {
+  appearance: ButtonAppearance;
+  destructive: boolean;
+  disabled: boolean;
+}) {
+  return (
+    <div className={styles['components__button-variant-matrix']}>
+      <div className={styles['components__button-variant-matrix__head']}>
+        <span
+          className={styles['components__button-variant-matrix__corner']}
+          aria-hidden
+        />
+        {SIZES.map((size) => (
+          <span
+            key={size}
+            className={
+              styles['components__button-variant-matrix__size-heading']
+            }
+          >
+            {size}
           </span>
-          <Button emphasis="Secondary">Secondary</Button>
-          <Button emphasis="Tertiary">Tertiary</Button>
-          <Button emphasis="Quaternary">Quaternary</Button>
-          <Button emphasis="Link">Link</Button>
-        </div>
-        <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Sizes</span>
-          <Button size="X-Small">X-Small</Button>
-          <Button size="Small">Small</Button>
-          <Button size="Medium">Medium</Button>
-          <Button size="Large">Large</Button>
-        </div>
-        <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>
-            Destructive
-          </span>
-          <Button destructive>Delete</Button>
-          <Button destructive emphasis="Secondary">
-            Cancel
-          </Button>
-        </div>
-        <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Disabled</span>
-          <Button disabled>Disabled</Button>
-          <Button emphasis="Secondary" disabled>
-            Disabled
-          </Button>
-        </div>
+        ))}
+      </div>
+      {EMPHASES.map((emphasis) => (
         <div
-          className={[
-            styles['components__button-row'],
-            styles['components__button-row--inverted-bg'],
-          ].join(' ')}
+          key={emphasis}
+          className={styles['components__button-variant-matrix__row']}
         >
-          <span className={styles['components__instance-label']}>Inverted</span>
-          <Button appearance="Inverted">Primary</Button>
-          <Button appearance="Inverted" emphasis="Secondary">
-            Secondary
-          </Button>
-          <Button appearance="Inverted" emphasis="Tertiary">
-            Tertiary
-          </Button>
+          <span
+            className={
+              styles['components__button-variant-matrix__emphasis-label']
+            }
+          >
+            {emphasis}
+          </span>
+          {SIZES.map((size) => (
+            <div
+              key={size}
+              className={styles['components__button-variant-matrix__cell']}
+            >
+              <Button
+                appearance={appearance}
+                emphasis={emphasis}
+                destructive={destructive}
+                disabled={disabled}
+                size={size}
+              >
+                Label
+              </Button>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function ButtonLibrary() {
+  const icon16 = <Icon glyph={<GlobeIcon />} size="16" />;
+
+  return (
+    <div className={styles['components__button-block']}>
+      <p className={styles['components__paragraph']}>
+        Full prop matrix for visual testing: each row is an emphasis, columns
+        are sizes (16 buttons per section). Icon slots are covered separately
+        below.
+      </p>
+
+      <div className={styles['components__section']}>
+        <h3 className={styles['components__section-title']}>
+          Default
+        </h3>
+        <ButtonPermutationGrid
+          appearance="Default"
+          destructive={false}
+          disabled={false}
+        />
+      </div>
+
+      <div className={styles['components__section']}>
+        <h3 className={styles['components__section-title']}>
+          Destructive
+        </h3>
+        <ButtonPermutationGrid
+          appearance="Default"
+          destructive
+          disabled={false}
+        />
+      </div>
+
+      <div className={styles['components__section']}>
+        <h3 className={styles['components__section-title']}>
+          Disabled
+        </h3>
+        <ButtonPermutationGrid
+          appearance="Default"
+          destructive={false}
+          disabled
+        />
+      </div>
+
+      <div className={styles['components__button-surface--inverted']}>
+        <div className={styles['components__section']}>
+          <h3 className={styles['components__section-title']}>
+            Inverted
+          </h3>
+          <ButtonPermutationGrid
+            appearance="Inverted"
+            destructive={false}
+            disabled={false}
+          />
+        </div>
+
+        <div className={styles['components__section']}>
+          <h3 className={styles['components__section-title']}>
+            Inverted Destructive
+          </h3>
+          <ButtonPermutationGrid
+            appearance="Inverted"
+            destructive
+            disabled={false}
+          />
+        </div>
+
+        <div className={styles['components__section']}>
+          <h3 className={styles['components__section-title']}>
+            Inverted Disabled
+          </h3>
+          <ButtonPermutationGrid
+            appearance="Inverted"
+            destructive={false}
+            disabled
+          />
         </div>
       </div>
-    </>
+
+      <div className={styles['components__section']}>
+        <h3 className={styles['components__section-title']}>
+          Icon slots — Primary · Medium
+        </h3>
+        <div className={styles['components__button-variant-grid']}>
+          <VariantCell label="Leading">
+            <Button leadingIcon={icon16}>Label</Button>
+          </VariantCell>
+          <VariantCell label="Trailing">
+            <Button trailingIcon={icon16}>Label</Button>
+          </VariantCell>
+          <VariantCell label="Both">
+            <Button leadingIcon={icon16} trailingIcon={icon16}>
+              Label
+            </Button>
+          </VariantCell>
+        </div>
+      </div>
+    </div>
   );
 }

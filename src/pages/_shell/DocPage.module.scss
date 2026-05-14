@@ -73,11 +73,11 @@
 }
 
 // Prose typography is opt-in via the `prose` prop on DocPage. Used for MDX
-// guideline pages and library pages — both render bare HTML tags for prose
-// (`<h2>Sizes</h2>`, `<p>...</p>`) alongside component instances.
+// guideline pages — bare HTML tags for prose (`<h2>Sizes</h2>`, `<p>...</p>`)
+// alongside component instances.
 //
 // Every selector is gated with `:not([class])` so prose rules apply only to
-// bare HTML emitted by MDX or library pages, never to CSS-module-styled
+// bare HTML emitted by MDX, never to CSS-module-styled
 // elements rendered by components (e.g. Modal's classed `<h2 className="modal__title">`).
 .doc-page__prose {
   h1:not([class]),
@@ -89,7 +89,6 @@
     color: var(--center-channel-color);
     margin-top: var(--spacing-xxl);
     margin-bottom: var(--spacing-m);
-    line-height: var(--line-height-100);
 
     &:first-child {
       margin-top: 0;
@@ -100,6 +99,7 @@
     a {
       color: inherit;
       text-decoration: none;
+      line-height: inherit;
       &:hover {
         text-decoration: underline;
       }
@@ -108,19 +108,23 @@
 
   h1:not([class]) {
     font-size: var(--font-size-1000);
+    line-height: var(--line-height-1000);
   }
   h2:not([class]) {
     font-size: var(--font-size-700);
-    margin-top: var(--spacing-xxl);
-    margin-bottom: var(--spacing-xxl);
+    line-height: var(--line-height-700);
+    margin-top: var(--spacing-xxxl);
+    margin-bottom: var(--spacing-xl);
   }
   h3:not([class]) {
     font-size: var(--font-size-500);
+    line-height: var(--line-height-500);
     margin-top: var(--spacing-xxl);
     margin-bottom: var(--spacing-l);
   }
   h4:not([class]) {
     font-size: var(--font-size-300);
+    line-height: var(--line-height-300);
     margin-top: var(--spacing-xl);
     margin-bottom: var(--spacing-m);
   }

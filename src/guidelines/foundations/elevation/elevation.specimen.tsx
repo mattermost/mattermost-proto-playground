@@ -1,29 +1,38 @@
+import { ELEVATION_STEPS } from '@/guidelines/_components/ElevationSamples';
 import styles from '@/styles/library-demo/foundations.module.scss';
 
-const ELEVATIONS = [
-  { level: '1', token: '--elevation-1', desc: 'Subtle — hover, dropdowns' },
-  { level: '2', token: '--elevation-2', desc: 'Low — chips, small cards' },
-  { level: '3', token: '--elevation-3', desc: 'Medium — menus, tooltips' },
-  { level: '4', token: '--elevation-4', desc: 'High — modals, popovers' },
-  { level: '5', token: '--elevation-5', desc: 'Higher — dialogs, drawers' },
-  { level: '6', token: '--elevation-6', desc: 'Highest — overlays' },
-];
-
-export default function ElevationLibrary() {
+export default function ElevationSpecimen() {
   return (
-    <div className={styles['foundations__elevations']}>
-      {ELEVATIONS.map(({ level, token, desc }) => (
-        <div key={level} className={styles['foundations__elevation']}>
-          <div
-            className={styles['foundations__elevation-box']}
-            style={{ boxShadow: `var(${token})` }}
-          />
-          <span className={styles['foundations__elevation-level']}>
-            Level {level}
-          </span>
-          <span className={styles['foundations__elevation-desc']}>{desc}</span>
-        </div>
-      ))}
-    </div>
+    <>
+      <p>
+        Each elevation level maps to a shadow token. Use the variable that matches
+        the role of the layered surface — do not tune shadows by eye.
+      </p>
+
+      <div className={styles['foundations__elevation-rows']}>
+        {ELEVATION_STEPS.map(({ level, token, summary }) => (
+          <div key={level} className={styles['foundations__elevation-row']}>
+            {token ? (
+              <code className={styles['foundations__elevation-token']}>{token}</code>
+            ) : (
+              <span className={styles['foundations__elevation-token-placeholder']}>
+                —
+              </span>
+            )}
+            <div className={styles['foundations__elevation-preview']}>
+              <div
+                className={styles['foundations__elevation-tile']}
+                style={token ? { boxShadow: `var(${token})` } : undefined}
+              >
+                <span className={styles['foundations__elevation-tile-level']}>
+                  {level}
+                </span>
+              </div>
+            </div>
+            <span className={styles['foundations__elevation-desc']}>{summary}</span>
+          </div>
+        ))}
+      </div>
+    </>
   );
 }

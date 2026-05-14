@@ -60,14 +60,14 @@ export default function ToastBanner({
         <div className={styles['toast-banner__actions']}>
           {actionLabel != null && (
             <Button
-              appearance={type === 'Warning' ? 'Default' : 'Inverted'}
+              appearance="Default"
               emphasis="Tertiary"
               size="X-Small"
               className={[
                 styles['toast-banner__action-btn'],
                 type === 'Warning'
                   ? styles['toast-banner__action-btn--warning']
-                  : '',
+                  : styles['toast-banner__action-btn--on-dark'],
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -80,7 +80,14 @@ export default function ToastBanner({
             <IconButton
               aria-label="Dismiss"
               size="Small"
-              style={type === 'Warning' ? 'Default' : 'Inverted'}
+              className={[
+                styles['toast-banner__dismiss'],
+                type === 'Warning'
+                  ? styles['toast-banner__dismiss--warning']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               icon={<Icon glyph={<CloseIcon />} size="16" />}
               onClick={onDismiss}
             />

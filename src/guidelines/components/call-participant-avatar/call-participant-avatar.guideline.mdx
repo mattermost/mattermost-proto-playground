@@ -1,4 +1,8 @@
 import CallParticipantAvatar from '@/components/ui/CallParticipantAvatar/CallParticipantAvatar';
+import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
+import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 
 The Call Participant Avatar represents a person — or a phone-in or
 external-link participant — inside a Mattermost call. It carries the cues
@@ -27,16 +31,27 @@ sidebar, popouts, and recording previews.
 - <Num>7</Num> **Role labels** — small caps tag for HOST or EXTERNAL
   participants, beneath the name.
 
-<AnatomyStage style={{gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+<AnatomyStage
+  style={{
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    backgroundColor: 'var(--calls-bg)',
+  }}
+>
   <CallParticipantAvatar
+    src={avatarEmma}
     alt="Avery"
     name="Avery"
     size="Medium"
     muteState="unmuted"
     host
+    hostControls
+    onHostControlsClick={() => {}}
     talking
   />
   <CallParticipantAvatar
+    src={avatarSofia}
     alt="Mira"
     name="Mira"
     size="Medium"
@@ -44,6 +59,7 @@ sidebar, popouts, and recording previews.
     raisedHand
   />
   <CallParticipantAvatar
+    src={avatarMarco}
     alt="Noor"
     name="Noor"
     size="Medium"
@@ -66,11 +82,21 @@ down to the call sidebar.
 | Small  | 72px   | Compact grid; sidebar previews.                           |
 | XS     | 56px   | Roster lists; dense participant rows.                     |
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
-  <CallParticipantAvatar alt="Large" name="Large" size="Large" muteState="unmuted" />
-  <CallParticipantAvatar alt="Medium" name="Medium" size="Medium" muteState="unmuted" />
-  <CallParticipantAvatar alt="Small" name="Small" size="Small" muteState="unmuted" />
-  <CallParticipantAvatar alt="XS" name="XS" size="XS" muteState="unmuted" />
+<div
+  style={{
+    display: 'flex',
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    backgroundColor: 'var(--calls-bg)',
+    padding: 'var(--spacing-l)',
+    borderRadius: 'var(--radius-m)',
+  }}
+>
+  <CallParticipantAvatar src={avatarLeonard} alt="Large" name="Large" size="Large" muteState="unmuted" />
+  <CallParticipantAvatar src={avatarLeonard} alt="Medium" name="Medium" size="Medium" muteState="unmuted" />
+  <CallParticipantAvatar src={avatarLeonard} alt="Small" name="Small" size="Small" muteState="unmuted" />
+  <CallParticipantAvatar src={avatarLeonard} alt="XS" name="XS" size="XS" muteState="unmuted" />
 </div>
 
 <Divider />
@@ -86,7 +112,17 @@ and dial-ins are unambiguous.
 | `external-link` | Silhouette fallback. Pair with the EXTERNAL label.                  |
 | `dial-in`       | Filled phone glyph on a green circle. Pair with the EXTERNAL label. |
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-end'}}>
+<div
+  style={{
+    display: 'flex',
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-end',
+    backgroundColor: 'var(--calls-bg)',
+    padding: 'var(--spacing-l)',
+    borderRadius: 'var(--radius-m)',
+  }}
+>
   <CallParticipantAvatar alt="Guest" name="Guest" size="Medium" kind="external-link" external muteState="muted" />
   <CallParticipantAvatar alt="+1 555…" name="+1 555 0123" size="Medium" kind="dial-in" external muteState="muted" />
 </div>
@@ -95,16 +131,14 @@ and dial-ins are unambiguous.
 
 ## States and overlays
 
+- **Hover / focus** — the avatar sits in a rounded tile with padding that scales
+  by size. Hovering lightly highlights the tile on pointer devices; keyboard
+  focus inside the tile uses the same highlight. With `host` and
+  `hostControls`, an overflow menu control appears in the corner on hover or
+  when focus is inside the tile.
 - **Muted / Unmuted** — always show the mic badge during a call so state is
   unambiguous; absence reads as "we don't know".
 - **Talking** — pulse the ring only while audio is detected; remove
   immediately when speech stops.
 - **Raised hand** — pinned, persistent. Doesn't auto-clear.
 - **Reaction** — overlays for the reaction's lifetime, then fades.
-
-<Divider />
-
-## Implementation
-
-For props, variants, and copy-ready examples, see the
-[Call Participant Avatar library page](/components/call-participant-avatar/specimen).
