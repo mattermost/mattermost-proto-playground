@@ -6,6 +6,7 @@
 
 // Layouts category: full-bleed specimen only (no hero, no guideline/specimen tabs).
 .doc-shell--layout-only {
+  display: flex;
   flex: 1 1 auto;
   min-height: 0;
   margin-top: var(--spacing-xxl);

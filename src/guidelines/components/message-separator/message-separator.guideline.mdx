@@ -1,4 +1,8 @@
+import Message from '@/components/ui/Message/Message';
+import messageStyles from '@/components/ui/Message/Message.module.scss';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 
 Message Separators sit between messages in the stream to group them — by
 day, by reply count, or to mark the boundary between read and unread. They
@@ -46,15 +50,76 @@ Date labels follow the user's locale and shorten when they can:
 - **February 11** for older dates in the current year.
 - **February 11, 2018** for prior years.
 
+<AnatomyStage style={{ margin: 'var(--spacing-m) 0' }}>
+  <MessageSeparator type="Date" label="Today" />
+</AnatomyStage>
+
 ### New Messages
 
-The New Messages separator is the gold-coloured one — a single, durable
-landmark that stays where the user left off until they scroll past it. Use
-the `Summarize` action only when AI summaries are enabled.
+The New Messages separator is a single, durable landmark that stays where the
+user left off until they scroll past it. Use the `Summarize` action only when
+AI summaries are enabled.
 
 <div style={{padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
   <MessageSeparator type="New Messages" showAiSummary />
 </div>
+
+### Reply Count
+
+In a thread (including the right-hand reply view), place this separator under
+the first message so readers see how many replies follow. The label aligns
+with the message text column: a short line spans the avatar column, then the
+count, then the line runs to the edge—unlike the date separator, the copy is
+not centered across the full width.
+
+<AnatomyStage
+  style={{
+    margin: 'var(--spacing-m) 0',
+    maxWidth: '400px',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+  }}
+>
+  <div
+    style={{
+      width: '100%',
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      background: 'var(--center-channel-bg)',
+      border: '1px solid rgba(var(--center-channel-color-rgb), 0.08)',
+      borderRadius: '8px',
+    }}
+  >
+    <Message
+      avatarSrc={avatarLeonard}
+      avatarAlt="Leonard Riley"
+      username="Leonard Riley"
+      timestamp="Today at 9:41 AM"
+      showMessageActions={false}
+    >
+      <p className={messageStyles['message__body-text']}>
+        Quick gut-check on the thread header—should the parent channel always show
+        as a secondary title?
+      </p>
+    </Message>
+    <MessageSeparator type="Reply Count" label="7 replies" />
+    <Message
+      avatarSrc={avatarAikoTan}
+      avatarAlt="Aiko Tan"
+      username="Aiko Tan"
+      timestamp="Today at 9:48 AM"
+      showMessageActions={false}
+    >
+      <p className={messageStyles['message__body-text']}>
+        I&apos;d show it whenever there&apos;s a meaningful parent—threads, pins,
+        files—and skip it for global views like Saved Messages.
+      </p>
+    </Message>
+  </div>
+</AnatomyStage>
 
 <Divider />
 
