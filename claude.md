@@ -122,6 +122,8 @@ Prose typography lives in `src/pages/_shell/DocPage.module.scss` under the `.doc
 
 `.doc-page__prose` rules are all gated with `:not([class])`, so they only target bare HTML emitted by MDX. Classed component elements (e.g. Modal's `<h2 className="modal__title">`) are unaffected when rendered inside a prose context.
 
+**Doc UI embed:** live UI in guidelines or specimens must sit inside the **`compass-doc-embed`** island so `.doc-shell__body` type scale and prose bare-tag rules do not leak in. Use **`DocUiEmbed`** (`src/pages/_shell/DocUiEmbed/`), or **`AnatomyStage`** / **`Preview`** (they add `compass-doc-embed`). `TopicRoute` wraps specimen pages in `DocUiEmbed`. For ad hoc MDX blocks, use `<DocUiEmbed>…</DocUiEmbed>` (registered in `MdxProvider`). Isolation CSS lives in `DocPage.module.scss` next to `.doc-page__prose`.
+
 **Corollary for component authors:** never render a bare `<h2>`, `<p>`, `<li>`, etc. inside a component. Always attach a CSS-module className — otherwise the element will silently inherit prose typography when the component is rendered on a prose page.
 
 ## Guideline MDX: use bold sparingly

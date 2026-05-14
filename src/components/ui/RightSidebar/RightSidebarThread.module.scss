@@ -1,0 +1,12 @@
+.right-sidebar-thread {
+  display: flex;
+  flex-direction: column;
+
+  &__message-text {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+    margin: 0;
+  }
+}

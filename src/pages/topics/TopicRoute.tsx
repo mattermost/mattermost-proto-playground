@@ -16,6 +16,7 @@ import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/G
 import Tabs from '@/components/ui/Tabs/Tabs';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
+import DocUiEmbed from '@/pages/_shell/DocUiEmbed';
 import styles from '@/pages/_shell/DocShell.module.scss';
 
 const VALID_CATEGORIES: TopicCategory[] = [
@@ -149,7 +150,9 @@ export default function TopicRoute() {
       </div>
       {fullBleed && SpecimenPage ? (
         <Suspense fallback={null}>
-          <SpecimenPage />
+          <DocUiEmbed>
+            <SpecimenPage />
+          </DocUiEmbed>
         </Suspense>
       ) : view === 'guidelines' ? (
         <div className={styles['doc-shell__columns']}>
@@ -181,10 +184,9 @@ export default function TopicRoute() {
         <div
           className={`${styles['doc-shell__body']} ${styles['doc-shell__body--standalone']}`}
         >
+          {/* Specimens are not wrapped in doc-page__prose; DocUiEmbed resets doc-shell typography. */}
           <Suspense fallback={<p>Loading…</p>}>
-            <div className={docStyles['doc-page__prose']}>
-              {SpecimenPage && <SpecimenPage />}
-            </div>
+            <DocUiEmbed>{SpecimenPage && <SpecimenPage />}</DocUiEmbed>
           </Suspense>
         </div>
       )}

@@ -4,6 +4,7 @@ import AttachmentCard from '@/components/ui/AttachmentCard/AttachmentCard';
 import ImagePreview from '@/components/ui/ImagePreview/ImagePreview';
 import LinkPreview from '@/components/ui/LinkPreview/LinkPreview';
 import Message from '@/components/ui/Message/Message';
+import messageStyles from '@/components/ui/Message/Message.module.scss';
 import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import styles from './MessageGuidelineAnatomy.module.scss';
@@ -60,7 +61,7 @@ export function MessageGuidelineAnatomyStage() {
             </>
           }
         >
-          <p className={styles['message-anatomy__sample-text']}>
+          <p className={messageStyles['message__body-text']}>
             Here’s the latest mock for the onboarding flow — feedback welcome before
             we lock copy.
           </p>

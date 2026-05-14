@@ -9,7 +9,10 @@ interface AnatomyStageProps {
 
 export default function AnatomyStage({ children, style }: AnatomyStageProps) {
   return (
-    <div className={styles['stage']} style={style}>
+    <div
+      className={[styles['stage'], 'compass-doc-embed'].filter(Boolean).join(' ')}
+      style={style}
+    >
       {children}
     </div>
   );

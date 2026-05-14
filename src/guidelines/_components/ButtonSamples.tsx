@@ -8,7 +8,7 @@ import styles from './ButtonSamples.module.scss';
 
 export function ButtonAnatomy() {
   return (
-    <div className={styles['anatomy']}>
+    <div className={[styles['anatomy'], 'compass-doc-embed'].join(' ')}>
       <div className={styles['anatomy__chart']}>
         <Button
           size="Large"

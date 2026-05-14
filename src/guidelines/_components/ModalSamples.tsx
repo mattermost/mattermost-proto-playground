@@ -11,7 +11,7 @@ export function ModalAnatomy() {
   );
 
   return (
-    <div className={styles['modal-anatomy']}>
+    <div className={[styles['modal-anatomy'], 'compass-doc-embed'].join(' ')}>
       <div className={styles['modal-anatomy__chart']}>
         <div className={styles['modal-anatomy__backdrop']} aria-hidden />
         <div className={styles['modal-anatomy__modal-wrap']}>

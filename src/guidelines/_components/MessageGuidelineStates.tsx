@@ -9,7 +9,7 @@ import styles from './MessageGuidelineStates.module.scss';
  */
 function SampleBody() {
   return (
-    <p className={styles['message-states__text']}>
+    <p className={messageStyles['message__body-text']}>
       Short status update for the team.
     </p>
   );
