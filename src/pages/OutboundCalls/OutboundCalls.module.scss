@@ -14,21 +14,6 @@
   padding: var(--spacing-xxl);
   gap: var(--spacing-m);
 
-  // Pinned to the top of the viewport so the switcher sits in the AppShell's
-  // header row, between the back button and the theme picker.
-  &__switcher-bar {
-    position: fixed;
-    top: var(--spacing-xs);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 60;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-
-    > * { pointer-events: auto; }
-  }
-
   &__shell {
     position: relative;
     display: flex;
@@ -148,58 +133,6 @@
     min-width: 0;
     min-height: 0;
     background: var(--center-channel-bg);
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Scene switcher — lives at the very top of the page, outside the shell.
-// ---------------------------------------------------------------------------
-.scene-switcher {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-m);
-  padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-m);
-  background: var(--center-channel-bg);
-
-  &__label {
-    font-size: var(--font-size-50);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: var(--font-weight-semibold);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-  }
-
-  &__segmented {
-    display: inline-flex;
-    background: rgba(var(--center-channel-color-rgb), 0.08);
-    padding: 2px;
-    border-radius: var(--radius-full);
-    gap: 2px;
-  }
-
-  &__tab {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    color: rgba(var(--center-channel-color-rgb), 0.75);
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
-    padding: var(--spacing-xxxs) var(--spacing-m);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    transition:
-      background-color var(--duration-quick) var(--ease-transition),
-      color var(--duration-quick) var(--ease-transition);
-
-    &:hover {
-      color: var(--center-channel-color);
-    }
-
-    &--active {
-      background: var(--center-channel-bg);
-      color: var(--center-channel-color);
-      box-shadow: var(--elevation-1);
-    }
   }
 }
 
