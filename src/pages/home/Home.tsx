@@ -5,8 +5,8 @@ import btnStyles from '@/components/ui/Button/Button.module.scss';
 import LayoutPreview from '@/guidelines/_components/LayoutPreview';
 import FoundationsCardArt from '@/assets/home/card-foundations.svg?react';
 import ComponentsCardArt from '@/assets/home/card-components.svg?react';
-import PatternsCardArt from '@/assets/home/card-patterns.svg?react';
-import ResourcesCardArt from '@/assets/home/card-resources.svg?react';
+import LayoutsCardArt from '@/assets/home/card-layouts.svg?react';
+import PatternsDocumentCardArt from '@/assets/home/card-resources.svg?react';
 import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
 import styles from './Home.module.scss';
 
@@ -34,13 +34,13 @@ const DESTINATIONS: {
     label: 'Patterns',
     path: categoryFirstTopicPath('patterns'),
     description: 'Larger compositions that solve common product problems.',
-    Illustration: PatternsCardArt,
+    Illustration: PatternsDocumentCardArt,
   },
   {
-    label: 'Resources',
-    path: '/resources',
-    description: 'Links, downloads, and references for the design team.',
-    Illustration: ResourcesCardArt,
+    label: 'Layouts',
+    path: categoryFirstTopicPath('layouts'),
+    description: 'Complete screens—sidebars, headers, and primary content working together.',
+    Illustration: LayoutsCardArt,
   },
 ];
 
