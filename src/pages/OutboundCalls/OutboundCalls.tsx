@@ -4,6 +4,7 @@ import Icon from '@/components/ui/Icon/Icon';
 import ChannelsSidebar from '@/components/ui/ChannelsSidebar/ChannelsSidebar';
 import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
+import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
 import { CallPip } from '@/pages/OutboundCalls/CallPip/CallPip';
 import { OutboundCallSceneSwitcher } from '@/pages/OutboundCalls/OutboundCallSceneSwitcher';
@@ -32,6 +33,7 @@ import type { ActiveCall, AddMode, Recent, SceneId } from '@/types/outboundCall'
 import styles from './OutboundCalls.module.scss';
 
 export default function OutboundCalls() {
+  const { setCenterSlot } = usePrototypeChrome();
   const [scene, setScene] = useState<SceneId>('channel');
   const [call, setCall] = useState<ActiveCall | null>(null);
   const [keypadOpen, setKeypadOpen] = useState(false);
@@ -45,6 +47,13 @@ export default function OutboundCalls() {
   const [participantListOpen, setParticipantListOpen] = useState(false);
 
   const [nowTick, setNowTick] = useState(Date.now());
+
+  useEffect(() => {
+    setCenterSlot(
+      <OutboundCallSceneSwitcher active={scene} onChange={setScene} />,
+    );
+    return () => setCenterSlot(null);
+  }, [scene, setCenterSlot]);
 
   useEffect(() => {
     setRhsOpen(scene === 'rhs');
@@ -348,10 +357,6 @@ export default function OutboundCalls() {
 
   return (
     <div className={styles['calls']}>
-      <div className={styles['calls__switcher-bar']}>
-        <OutboundCallSceneSwitcher active={scene} onChange={setScene} />
-      </div>
-
       <div className={styles['calls__shell']}>
         <div className={styles['calls__global-header']}>
           <GlobalHeader
