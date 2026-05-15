@@ -69,10 +69,18 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       slugs: ['call-participant-avatar'],
     },
     {
+      label: 'Admin Console',
+      slugs: [
+        'admin-console-header',
+        'admin-panel-header',
+        'admin-panel-footer',
+        'feature-discovery-panel',
+      ],
+    },
+    {
       label: 'Cards and Previews',
       slugs: [
         'attachment-card',
-        'feature-discovery-panel',
         'image-preview',
         'link-preview',
         'permalink-preview',
@@ -147,6 +155,12 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
         'tags',
         'unread-badge',
       ],
+    },
+  ],
+  patterns: [
+    {
+      label: 'Admin Console',
+      slugs: ['admin-panel', 'admin-console-sidebar'],
     },
   ],
 };

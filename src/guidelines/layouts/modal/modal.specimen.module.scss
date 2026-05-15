@@ -1,0 +1,36 @@
+.modal-layout {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    pointer-events: auto;
+  }
+
+  &__body-text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__body-emphasis {
+    font-weight: var(--font-weight-semibold);
+  }
+}

@@ -1,0 +1,56 @@
+The Admin Console Sidebar is primary navigation for System Console settings: who
+you are, fast lookup, and grouped pages on a dark sidebar that shares rhythm with
+the channel list without copying team-specific patterns wholesale.
+
+<Divider />
+
+## Anatomy
+
+<AdminConsoleSidebarAnatomyStage />
+
+- <Num>1</Num> **Identity** — Account avatar, console title with menu affordance,
+  and signed-in handle.
+- <Num>2</Num> **Find settings** — Search field that filters or highlights matching
+  pages in the settings tree.
+- <Num>3</Num> **Category headers** — Uppercase section labels with a leading compass
+  icon; same rhythm as channel sidebar categories without the collapse chevron.
+- <Num>4</Num> **Navigation items** — One row per settings page; the current page shows
+  the active row treatment (left accent and emphasis on the label).
+
+<Divider />
+
+## Options
+
+| Pattern | Use when |
+| ------- | -------- |
+| Category grouping | Breaking long alphabetical trees into topical sections. |
+| Icon-led headings | Sections need faster visual scan than plain text headings alone. |
+| Find settings first | Dense consoles prioritise jumping to a page over scrolling entire trees. |
+
+<Divider />
+
+## Behaviour
+
+Selecting a row navigates to the corresponding System Console page. The title
+row opens the workspace or account switcher when that capability is available.
+
+Category headers group related pages. Long lists scroll inside the column while
+the first category header can remain pinned so people keep context for the top
+section.
+
+<Divider />
+
+## Relationship to the channel sidebar
+
+Reuse keeps visual weight, spacing, typography, scrollbar treatment, and row
+hover states consistent between the team channel list and System Console. The
+admin variant swaps the team header for identity plus Find settings, uses
+icon-led categories instead of collapsible chevrons, and drives rows from
+configuration data rather than channel membership.
+
+<Divider />
+
+## Implementation
+
+For wiring examples and scroll behaviour, see the
+[Admin Console Sidebar specimen page](/patterns/admin-console-sidebar/specimen).

@@ -1,0 +1,115 @@
+.welcome {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% - 160px);
+  height: calc(100% - 80px);
+  max-width: 1440px;
+  max-height: 800px;
+  margin: auto;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: #14213e;
+  color: var(--color-neutral-0);
+
+  &__texture {
+    position: absolute;
+    opacity: 0.3;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+
+  &__glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        ellipse 60% 50% at 50% 100%,
+        rgba(28, 88, 217, 0.28) 0%,
+        rgba(20, 33, 62, 0) 70%
+      );
+  }
+
+  &__card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+    width: 100%;
+    max-width: 420px;
+    padding: var(--spacing-xxl);
+    border: 1px solid rgba(var(--color-neutral-0-rgb), 0.12);
+    border-radius: var(--radius-l);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--color-neutral-0-rgb), 0.06) 0%,
+        rgba(var(--color-neutral-0-rgb), 0.02) 100%
+      ),
+      rgba(20, 33, 62, 0.72);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--elevation-6);
+  }
+
+  &__icon {
+    width: 64px;
+    height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    background: rgba(var(--color-neutral-0-rgb), 0.12);
+    color: var(--color-neutral-0);
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    text-align: center;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-neutral-0);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--color-neutral-0-rgb), 0.72);
+  }
+
+  &__form {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__input {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__footer {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--color-neutral-0-rgb), 0.56);
+    text-align: center;
+  }
+}
