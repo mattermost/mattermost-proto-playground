@@ -39,7 +39,6 @@ const NAV_ITEMS: NavItem[] = [
     activePrefix: '/layouts',
   },
   { to: '/prototypes', label: 'Prototypes' },
-  { to: '/resources', label: 'Resources' },
 ];
 
 function pathStartsWith(pathname: string, prefix: string): boolean {
