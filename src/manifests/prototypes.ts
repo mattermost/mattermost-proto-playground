@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import ExampleFlow from '@/pages/example-flow/ExampleFlow';
 import ExternalCallParticipants from '@/pages/ExternalCallParticipants/ExternalCallParticipants';
+import Onboarding from '@/pages/Onboarding/Onboarding';
 import OutboundCalls from '@/pages/OutboundCalls/OutboundCalls';
 
 export type PrototypeEntry = {
@@ -28,6 +29,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'onboarding',
+    label: 'Onboarding',
+    path: '/prototypes/onboarding',
+    component: Onboarding,
   },
 ];
 

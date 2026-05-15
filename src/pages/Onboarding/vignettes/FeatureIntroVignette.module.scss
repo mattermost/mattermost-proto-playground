@@ -1,0 +1,116 @@
+.feature-intro {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+
+  &__sub-switcher {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-s) var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: var(--center-channel-bg);
+  }
+
+  &__stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+
+  &__help-dot {
+    position: absolute;
+    top: 12px;
+    right: 96px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--sidebar-header-text-color);
+    border-radius: var(--radius-s);
+    padding: var(--spacing-xxs) var(--spacing-s);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    font-size: var(--font-size-75);
+    z-index: 20;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+  }
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--color-danger);
+    display: inline-block;
+  }
+
+  &__agent-anchor {
+    position: relative;
+  }
+
+  &__coachmark {
+    position: absolute;
+    top: 80px;
+    right: 200px;
+    width: 320px;
+    z-index: 10;
+  }
+
+  &__whats-new {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m);
+  }
+
+  &__release-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+  }
+
+  &__release-thumb {
+    height: 96px;
+    background: linear-gradient(
+      135deg,
+      rgba(var(--button-bg-rgb), 0.12),
+      rgba(var(--button-bg-rgb), 0.04)
+    );
+    border-radius: var(--radius-s);
+  }
+
+  &__release-title {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__release-blurb {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: var(--line-height-75);
+  }
+
+  &__release-link {
+    font-size: var(--font-size-75);
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
