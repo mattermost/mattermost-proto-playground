@@ -1,0 +1,88 @@
+.rtj-modal {
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--spacing-xxxxl) var(--spacing-xl);
+    background: rgba(var(--center-channel-color-rgb), 0.4);
+    z-index: 10;
+    overflow: auto;
+  }
+
+  &__footer {
+    display: flex;
+    gap: var(--spacing-m);
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  &__channel-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__channel-name {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__channel-purpose {
+    margin: var(--spacing-xxs) 0 var(--spacing-l) var(--spacing-xxl);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__intro {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__bullets {
+    margin: 0;
+    padding-left: var(--spacing-l);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+
+    li {
+      margin-bottom: var(--spacing-xxs);
+    }
+  }
+
+  &__pending {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    padding: var(--spacing-m);
+    background: rgba(var(--color-success-rgb), 0.06);
+    border: 1px solid rgba(var(--color-success-rgb), 0.16);
+    border-radius: var(--radius-m);
+    color: var(--color-success);
+  }
+
+  &__pending-headline {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__pending-body {
+    margin: var(--spacing-xxs) 0 0 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

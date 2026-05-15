@@ -1,0 +1,78 @@
+.dpc-a1-v2 {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  padding: var(--spacing-xl);
+  min-height: 0;
+
+  &__toast {
+    align-self: stretch;
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: var(--spacing-l);
+    align-items: start;
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    min-width: 0;
+  }
+
+  &__right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    min-width: 0;
+    position: sticky;
+    top: var(--spacing-xl);
+  }
+
+  &__mobile-admin-notice {
+    align-self: stretch;
+  }
+
+  &__showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-l);
+    align-items: start;
+  }
+
+  // Viewport modifier — mobile collapses to a single column.
+  &--viewport-mobile {
+    padding: var(--spacing-m);
+
+    .dpc-a1-v2__columns {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--spacing-m);
+    }
+
+    .dpc-a1-v2__right {
+      position: static;
+    }
+
+    .dpc-a1-v2__showcase {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--spacing-m);
+    }
+  }
+
+  &--persona-channel-admin {
+    .dpc-a1-v2__columns {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    }
+  }
+
+  &--persona-system-admin {
+    .dpc-a1-v2__columns {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    }
+  }
+}

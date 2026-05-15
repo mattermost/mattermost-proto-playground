@@ -1,0 +1,41 @@
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__field-help {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    line-height: 1.4;
+  }
+
+  &__test-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xxs);
+  }
+
+  &__test-success {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    color: var(--color-success);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+}

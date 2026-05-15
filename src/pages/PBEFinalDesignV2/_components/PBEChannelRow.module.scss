@@ -1,0 +1,44 @@
+.pbe-channel-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-xxs) var(--spacing-s);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  text-align: left;
+  cursor: pointer;
+  color: rgba(var(--sidebar-text-rgb), 0.72);
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--sidebar-text-rgb), 0.08);
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    color: inherit;
+  }
+
+  &__name {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &--unread {
+    color: var(--sidebar-unread-text);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &--active {
+    background: rgba(var(--sidebar-text-rgb), 0.12);
+    color: var(--sidebar-text-active-color);
+  }
+}

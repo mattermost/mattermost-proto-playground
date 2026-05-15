@@ -1,0 +1,26 @@
+.configurations-tab {
+  display: flex;
+  flex-direction: column;
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    margin-bottom: var(--spacing-l);
+  }
+
+  &__search {
+    flex: 1;
+    max-width: 320px;
+  }
+
+  &__footer-note {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-l);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

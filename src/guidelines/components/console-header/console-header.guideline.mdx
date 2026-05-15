@@ -1,0 +1,25 @@
+The Console Header is the identity strip at the top of the System Console
+sidebar. It tells the current administrator which workspace they are
+configuring and gives them an explicit exit back to messaging.
+
+This component lives only inside `ConsoleSidebar`. It is not a general-purpose
+header — the rest of the product uses `GlobalHeader` and `ChannelHeader`.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Avatar** — the signed-in administrator's avatar at 40px.
+- <Num>2</Num> **Title** — "System Console" by default. Override only for
+  prototypes that nest a sub-console.
+- <Num>3</Num> **Username** — the administrator's handle, with leading `@`.
+- <Num>4</Num> **Menu trigger** — an inverted icon button that opens the admin
+  menu. Used to leave the console and return to messaging.
+
+<Divider />
+
+## Content
+
+- Keep the title to "System Console". Longer phrases break the layout and
+  read as decoration rather than identity.
+- The username never wraps. Long handles ellipsize.

@@ -1,0 +1,189 @@
+.admin-console {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+
+    &::-webkit-scrollbar { width: 8px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    max-width: 960px;
+    padding: var(--spacing-xl);
+  }
+
+  &__radio-row {
+    display: flex;
+    gap: var(--spacing-xxl);
+    align-items: center;
+  }
+
+  // ── Key Managers table ────────────────────────────────────────────────
+  // Cells sit inside ConsolePropertyRow's `__value` flex container, which has
+  // `flex: 1 1 auto` and gap: spacing-s. Column widths here mirror the table
+  // header widths (path = flex, configurations = 200, status = 140).
+  &__km-mono {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__km-config {
+    flex: 0 0 200px;
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__km-status {
+    flex: 0 0 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__km-status-dash {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-size: var(--font-size-100);
+  }
+
+  // Non-Active Key Manager rows render dimmed per Figma node 4275:22963.
+  &__km-row--dim {
+    opacity: 0.64;
+  }
+
+  &__table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-l);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+  }
+
+  &__pagination-text {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // ── Eligibility radio group ──────────────────────────────────────────
+  &__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__rule-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__rule-match-info {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__rule-match-count {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__attribute-note {
+    padding: var(--spacing-s) var(--spacing-m);
+    border-radius: var(--radius-s);
+    background: rgba(var(--button-bg-rgb), 0.04);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+  }
+
+  &__chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    transition: border-color var(--duration-quick) var(--ease-transition);
+
+    &:focus-within {
+      border-color: var(--button-bg);
+      box-shadow: inset 0 0 0 1px var(--button-bg);
+    }
+  }
+
+  &__chip-input {
+    flex: 1;
+    min-width: 160px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    font: inherit;
+    color: var(--center-channel-color);
+    outline: 0;
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.5);
+    }
+  }
+
+  &__eligibility-summary {
+    margin-top: var(--spacing-m);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__eligibility-summary-text {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // ── Active Key Manager footnote ──────────────────────────────────────
+  &__active-km {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}

@@ -1,0 +1,41 @@
+Console Property Table is the tabular container for `ConsolePropertyRow`
+entries inside a System Console panel. It renders one or more sections, each
+with its own column header strip and a stack of property rows.
+
+Use it whenever the page contains a list of structured, addressable settings
+(attributes, policies, rules, key managers). Use a Console Setting row
+instead when the page shows a single labeled control.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Section** — a logical group of rows. A table can hold one or
+  many sections.
+- <Num>2</Num> **Section title** — optional. Use only when the table has
+  multiple sections that need to be distinguished.
+- <Num>3</Num> **Header row** — column labels on a tinted strip, aligned to
+  the rows below.
+- <Num>4</Num> **Rows** — a vertical stack of `ConsolePropertyRow`s.
+- <Num>5</Num> **Add action** — optional link-style row footer ("Select
+  attribute", "Add property"). Omit when the table is not user-extensible.
+
+<Divider />
+
+## Behavior
+
+Column widths are set per-column. Fixed columns pin to their declared px
+width; columns without a width flex to fill the remaining space.
+
+The header strip is sticky to the section, not the page — each section in a
+multi-section table carries its own header above its rows.
+
+<Divider />
+
+## Content
+
+- Column labels are short and noun-form ("Attribute", "Operator", "Values").
+- Section titles are optional; add them only when the user needs to tell
+  groups apart at a glance.
+- The add action label uses sentence case and describes the noun being added:
+  "Add rule", not "Click here to add".

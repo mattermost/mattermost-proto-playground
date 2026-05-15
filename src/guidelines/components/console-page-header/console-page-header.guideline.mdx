@@ -1,0 +1,31 @@
+The Console Page Header is the title bar that sits at the top of a System
+Console page, above the scrollable content area and below the global chrome.
+It establishes the page's identity and houses any page-level actions.
+
+Every System Console page has exactly one Console Page Header. It is not used
+outside the console.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Back column** — optional. When present, a 64px-wide column on
+  the left holds a back-arrow icon button, separated by a vertical divider
+  from the title. Use when the page is a sub-page of another setting and Back
+  must be more prominent than browser history.
+- <Num>2</Num> **Title** — the page's heading, rendered as an `h1`.
+- <Num>3</Num> **Tag** — optional small badge after the title (e.g.
+  "Enterprise", "Beta"). Communicates licensing or lifecycle, not status.
+- <Num>4</Num> **Trailing slot** — optional right-aligned area for page-level
+  actions. Reserve for actions that apply to the whole page; per-panel actions
+  belong in Console Panel headers instead.
+
+<Divider />
+
+## Content
+
+- Sentence case the title. Don't repeat the section name from the sidebar.
+- Use the tag for license tier or lifecycle only ("Enterprise", "Beta"); never
+  for status ("New", "Updated"). Status belongs in surfaces like a banner.
+- Keep the trailing slot to one or two controls. If you need more, move them
+  into panels below.

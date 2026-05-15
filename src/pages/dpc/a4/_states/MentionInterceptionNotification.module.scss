@@ -1,0 +1,112 @@
+.mention-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  padding: var(--spacing-l);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
+  &__eyebrow-icon {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__eyebrow-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__eyebrow {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__source {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    font-size: var(--font-size-50);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__channel-name {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-300);
+    color: var(--center-channel-color);
+  }
+
+  &__purpose {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
+  &__purpose-label {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__meta {
+    margin: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: var(--spacing-l);
+    row-gap: var(--spacing-xxxs);
+    font-size: var(--font-size-75);
+  }
+
+  &__meta-row {
+    display: contents;
+  }
+
+  &__meta-label {
+    margin: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    align-self: center;
+  }
+
+  &__meta-value {
+    margin: 0;
+    color: var(--center-channel-color);
+  }
+
+  &__hidden-note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-style: italic;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    flex-wrap: wrap;
+  }
+
+  &__guest {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}

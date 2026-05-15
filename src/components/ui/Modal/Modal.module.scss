@@ -72,6 +72,24 @@
     margin-bottom: -6px;
   }
 
+  &__header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+
+    .modal__close {
+      align-self: flex-end;
+      margin-bottom: 0;
+    }
+  }
+
+  &__header-action {
+    display: flex;
+    align-items: center;
+  }
+
   // ── Body ──────────────────────────────────────────────────
   &__body {
     padding: 28px var(--spacing-xxxl);
@@ -79,6 +97,10 @@
     flex: 1;
 
     @include minimal-scrollbar;
+
+    &--no-padding {
+      padding: 0;
+    }
   }
 
   // ── Footer ────────────────────────────────────────────────

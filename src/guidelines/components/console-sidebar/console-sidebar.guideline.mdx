@@ -1,0 +1,42 @@
+Console Sidebar is the full left rail of the System Console: identity header,
+search, and the scrollable category navigation. It is the primary way an
+administrator moves between settings pages.
+
+This component is composed: a Console Header at top, a Console Search just
+below it, and a scrolling stack of `ConsoleSidebarCategory` plus
+`ConsoleSidebarItem` rows. Use it as a single unit — don't reassemble the
+parts on a page.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Header** — Console Header strip. Fixed to the top.
+- <Num>2</Num> **Search** — Console Search input on a slightly darker strip.
+  Fixed below the header.
+- <Num>3</Num> **Categories** — vertically scrolling list of category headers,
+  each followed by its nav items.
+
+<Divider />
+
+## Behavior
+
+The header and search stay pinned at 220px wide; the category list scrolls
+independently below them. Scrollbars use the minimal treatment tuned for the
+sidebar's dark surface.
+
+Selection is single-select: at any time, exactly one nav item is active. The
+active item draws a tinted background and a right-edge caret that points
+into the content area.
+
+<Divider />
+
+## Content
+
+- Categories group settings by intent (Billing, Authentication, Plugins).
+  Keep categories stable across releases — administrators learn them by
+  position.
+- Item labels are noun phrases, sentence case. Avoid verbs ("Configure
+  email" → "Email").
+- The Beta tag is reserved for items that are usable but still iterating.
+  Don't add it to every new item.

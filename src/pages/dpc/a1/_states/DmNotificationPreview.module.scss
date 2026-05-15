@@ -1,0 +1,86 @@
+.dm-preview {
+  display: flex;
+  flex-direction: column;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-l);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m) var(--spacing-l);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__section {
+    padding: var(--spacing-m) var(--spacing-l);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.04);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__section-title {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__message {
+    display: flex;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) 0;
+  }
+
+  &__message-body {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  &__message-meta {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__message-text {
+    margin: var(--spacing-xxxs) 0 0 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+}

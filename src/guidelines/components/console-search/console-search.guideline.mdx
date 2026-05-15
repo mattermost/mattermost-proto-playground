@@ -1,0 +1,36 @@
+Console Search is the pill-shaped search input that sits in the System
+Console sidebar. It filters the admin nav by category and item name.
+
+Reach for this component only inside `ConsoleSidebar`. Use the general
+`SearchInput` for any other search affordance — Console Search is tuned for
+the sidebar's dark surface and uses sidebar text tokens.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Leading magnifier** — always present; signals the field's
+  purpose.
+- <Num>2</Num> **Input** — the editable field. Placeholder is "Find settings"
+  by default.
+- <Num>3</Num> **Clear** — appears once the field has a value and an `onClear`
+  handler is wired. Tabbed past, not into.
+
+<Divider />
+
+## Behavior
+
+The input is controlled or uncontrolled depending on whether `value` is
+provided.
+
+States mirror the input family: default, hover, focus, filled, disabled.
+Focus shows a thin blue border consistent with `--button-bg`.
+
+<Divider />
+
+## Content
+
+- Keep the placeholder to "Find settings" unless the surrounding context
+  demands a more specific phrase.
+- Don't pair Console Search with a label; the magnifier and placeholder are
+  enough.

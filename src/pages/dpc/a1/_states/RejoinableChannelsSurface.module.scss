@@ -1,0 +1,16 @@
+.rejoin-surface {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__note {
+    padding: var(--spacing-xs) var(--spacing-m);
+    background: rgba(var(--color-info-rgb), 0.06);
+    border-left: 3px solid var(--color-info);
+    border-radius: var(--radius-s);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-style: italic;
+  }
+}
