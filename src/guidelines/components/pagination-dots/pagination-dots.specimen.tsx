@@ -24,6 +24,14 @@ export default function PaginationDotsLibrary() {
           <span className={styles['components__instance-label']}>Inverted</span>
           <PaginationDots pages={5} activePage={3} dotStyle="Inverted" />
         </div>
+        <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>
+            On primary (info)
+          </span>
+          <span className={styles['components__on-primary-dots']}>
+            <PaginationDots pages={5} activePage={2} dotStyle="OnPrimary" />
+          </span>
+        </div>
       </div>
     </>
   );

@@ -162,5 +162,9 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       label: 'Admin Console',
       slugs: ['admin-panel', 'admin-console-sidebar'],
     },
+    {
+      label: 'Onboarding',
+      slugs: ['tour-point'],
+    },
   ],
 };

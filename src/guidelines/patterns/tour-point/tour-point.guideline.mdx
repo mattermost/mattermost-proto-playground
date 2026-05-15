@@ -1,0 +1,127 @@
+import TourPoint from '@/components/ui/TourPoint/TourPoint';
+
+Tour points walk people through a new feature or call attention to a particular
+part of the interface.
+
+They are most often used during onboarding: they draw the eye toward something
+new and give optional guidance to users who want more context.
+
+<Divider />
+
+## Anatomy
+
+A Tour Point is made up of the following elements:
+
+<AnatomyStage>
+  <TourPoint
+    title="Tour point title"
+    pointerPosition="top-center"
+    onClose={() => {}}
+    progress={{ pages: 3, activePage: 1 }}
+    primaryAction={{ label: 'Next', onClick: () => {} }}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel orci id
+    urna facilisis luctus.
+  </TourPoint>
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — The framed surface that holds the tour content.
+- <Num>2</Num> **Pulsing dot** — Optional animated marker on the anchor that
+  draws attention; can be turned off.
+- <Num>3</Num> **Arrow** — Points at the highlighted element. Placement follows
+  screen position and available space (see Positioning).
+- <Num>4</Num> **Title** — Short label that names the step; aim for a single
+  line.
+- <Num>5</Num> **Body** — Longer copy that explains what the user is looking at.
+- <Num>6</Num> **Image** — Optional screenshot or illustration when words alone
+  are not enough.
+- <Num>7</Num> **Pagination indicator** — Optional [Pagination dots](/components/pagination-dots)
+  when more than one Tour Point appears in a series. Keep a series to at most
+  five steps.
+- <Num>8</Num> **Buttons** — Optional `Next` and `Previous` actions that move
+  through the series. On the last step, the primary action reads `Done`.
+- <Num>9</Num> **Close button** — Uses the [Icon Button](/components/icon-button)
+  pattern so people can leave the tour.
+
+<Divider />
+
+## Container
+
+The container defines the bounds of the Tour Point and separates it from the rest
+of the page.
+
+<Divider />
+
+## Pulsing dot (optional)
+
+The pulsing dot is an animated affordance on the anchor. It can be switched off
+when a calmer presentation is better or when motion should be reduced.
+
+<Divider />
+
+## Arrow
+
+The arrow ties the card to the control or region being described. It should stay
+visually connected to the target so the relationship is obvious at a glance.
+
+<Divider />
+
+## Title
+
+Keep the title concise so it reads cleanly on one line whenever possible.
+
+<Divider />
+
+## Body
+
+The body carries the main explanation: what changed, why it matters, and what to
+try next.
+
+<Divider />
+
+## Image (optional)
+
+Sometimes a still image clarifies the UI better than text alone. Use it when the
+highlighted area is easy to misread from words only.
+
+<Divider />
+
+## Pagination indicator (optional)
+
+When the flow has more than one Tour Point, show where the user is in the series.
+Do not run sequences longer than five Tour Points.
+
+<Divider />
+
+## Buttons (optional)
+
+Provide `Next` and `Previous` where people need to move back and forth. On the
+final Tour Point, label the primary action `Done` so the exit path is explicit.
+
+<Divider />
+
+## Close button
+
+The close control uses the Icon Button component. Choosing it ends the tour and
+marks the series complete for dismissal rules below.
+
+<Divider />
+
+## Dismissing a tour
+
+For a single Tour Point with no series, clicking the dimmed backdrop outside the
+card dismisses the tour and removes the pulsing dot anchor.
+
+For a series, clicking outside only hides the current card; the pulsing dot
+stays so the same tour can be opened again from the anchor.
+
+If someone uses the close control, the entire tour is dismissed and removed,
+including the pulsing dot, and the series is considered finished.
+
+<Divider />
+
+## Positioning
+
+Tour Points can sit above, below, to the left, or to the right of the target.
+Pick the side and corner that preserves clearance on screen; the arrow should
+re-aim as the card moves so the tip still points at the highlighted element.
