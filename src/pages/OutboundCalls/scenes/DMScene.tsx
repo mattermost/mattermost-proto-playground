@@ -6,7 +6,7 @@ import { SegmentedCallButton } from '@/pages/OutboundCalls/OutboundCallStartCall
 import TelAutocompleteMessageInput from '@/pages/OutboundCalls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/OutboundCalls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import layoutStyles from '@/guidelines/layouts/messaging/messaging.specimen.module.scss';
+import layoutStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
 
 export function DMScene({
   onOpenProfile,
@@ -63,7 +63,7 @@ export function DMScene({
         }
       />
 
-      <div className={layoutStyles['layouts__messages']}>
+      <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="Date" label="Today" />
 
         <Message
@@ -72,7 +72,7 @@ export function DMScene({
           username={contact.name}
           timestamp="9:02 AM"
         >
-          <p className={layoutStyles['layouts__post-text']}>
+          <p className={layoutStyles['channel-shell__post-text']}>
             Hey — have a minute? Need to walk through the Nightingale comms plan before the 11:00
             handover. Easier by voice.
           </p>
@@ -83,7 +83,7 @@ export function DMScene({
           username="Leonard Riley"
           timestamp="9:04 AM"
         >
-          <p className={layoutStyles['layouts__post-text']}>
+          <p className={layoutStyles['channel-shell__post-text']}>
             Copy — hit Call above or pick a number off my profile, either works.
           </p>
         </Message>
@@ -93,7 +93,7 @@ export function DMScene({
           username={contact.name}
           timestamp="9:05 AM"
         >
-          <p className={layoutStyles['layouts__post-text']}>
+          <p className={layoutStyles['channel-shell__post-text']}>
             Or just ring my direct line:{' '}
             {primaryPhone && (
               <OutboundCallPhoneNumberLink
@@ -104,7 +104,7 @@ export function DMScene({
           </p>
         </Message>
       </div>
-      <div className={layoutStyles['layouts__message-input']}>
+      <div className={layoutStyles['channel-shell__message-input']}>
         <TelAutocompleteMessageInput placeholder={`Message ${contact.name}`} />
       </div>
     </>

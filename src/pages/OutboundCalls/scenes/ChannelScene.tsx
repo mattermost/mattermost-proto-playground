@@ -7,7 +7,7 @@ import { OutboundCallPhoneNumberLink } from '@/pages/OutboundCalls/OutboundCallP
 import { SegmentedCallButton } from '@/pages/OutboundCalls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/OutboundCalls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import layoutStyles from '@/guidelines/layouts/messaging/messaging.specimen.module.scss';
+import layoutStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({
@@ -69,7 +69,7 @@ export function ChannelScene({
         pinnedCount={1}
         callButton={<SegmentedCallButton actions={actions} onSelect={handleSelect} />}
       />
-      <div className={layoutStyles['layouts__messages']}>
+      <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="Date" label="Today" />
 
         {CHANNEL_POSTS.map((p) => {
@@ -87,7 +87,7 @@ export function ChannelScene({
                 username={c.name}
                 timestamp={p.timestamp}
               >
-                <p className={layoutStyles['layouts__post-text']}>{p.body}</p>
+                <p className={layoutStyles['channel-shell__post-text']}>{p.body}</p>
               </Message>
             </ProfileClickable>
           );
@@ -104,7 +104,7 @@ export function ChannelScene({
             username="Leonard Riley"
             timestamp="9:42 AM"
           >
-            <p className={layoutStyles['layouts__post-text']}>
+            <p className={layoutStyles['channel-shell__post-text']}>
               Reach me on{' '}
               <OutboundCallPhoneNumberLink
                 number={CONTACT_MAP['leonard'].phones[0].number}
@@ -115,7 +115,7 @@ export function ChannelScene({
           </Message>
         </ProfileClickable>
       </div>
-      <div className={layoutStyles['layouts__message-input']}>
+      <div className={layoutStyles['channel-shell__message-input']}>
         <MessageInput placeholder="Message op-nightingale" />
       </div>
     </>
