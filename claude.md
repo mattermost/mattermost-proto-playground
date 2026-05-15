@@ -169,6 +169,18 @@ If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (Th
 
 **Note:** The **Outbound Calls** prototype (MM-56584) is maintained on a **feature branch only** — it is not planned for the `main` playground.
 
+## Prototype views: scene navigation (default)
+
+URLs that match an entry in `src/manifests/prototypes.ts` render with **`PrototypeTopNav`** (`src/components/layout/PrototypeTopNav/`) instead of the full Compass **`TopNav`**: back to `/prototypes`, prototype title, **center slot** for tools, and theme control.
+
+**Default for multi-scene prototypes:** register scene or entry-point UI in that center slot so it aligns vertically with the rest of the bar (same pattern as the External Call Participants and Outbound Calls prototypes).
+
+1. From the prototype page component, call **`usePrototypeChrome()`** (`src/contexts/PrototypeChromeContext.tsx`) and in a **`useEffect`** set **`setCenterSlot(<…/>)`** to your control (e.g. **`SceneSwitcher`** from `src/components/navigation/SceneSwitcher/`).
+2. **Cleanup** in the effect return: **`() => setCenterSlot(null)`** so leaving the route or unmounting does not leave stale UI in the header.
+3. Re-run the effect when **`activeScene`** (or equivalent) changes so the control stays in sync.
+4. Prefer **`SceneSwitcher`** for segmented tabs; omit **`label`** unless a caption is required; set a clear **`ariaLabel`** on the tablist.
+5. **Do not** pin the scene control with **`position: fixed`** and a viewport **`top`** offset on these pages — that sits relative to the window, not the prototype header, and will look vertically misaligned next to the back button and title.
+
 ## Animation: easing and duration
 
 Always use the animation tokens from `tokens.scss` — never hard-code durations or easing keywords directly.
