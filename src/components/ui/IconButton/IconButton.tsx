@@ -13,6 +13,8 @@ export interface IconButtonProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   'style'
 > {
+  /** When true, forces the subtler pressed/active visual (lighter than toggled). */
+  active?: boolean;
   /** Optional CSS class name. */
   className?: string;
   /** Numeric count shown inline after the icon. Figma: Count. */
@@ -33,8 +35,6 @@ export interface IconButtonProps extends Omit<
   toggled?: boolean;
   /** When true, shows a small unread dot over the icon. Figma: Unread Badge. */
   unreadBadge?: boolean;
-  /** When true, forces the pressed/active visual state (subtler than toggled). */
-  active?: boolean;
 }
 
 /** Icon size (px) per IconButton size. Use with Icon: size="12" | "16" | "20" | "24". */
@@ -56,6 +56,7 @@ export const ICON_BUTTON_ICON_SIZES: Record<
  * @see https://compass.mattermost.com (Icon Button)
  */
 export default function IconButton({
+  active = false,
   className = '',
   count,
   destructive = false,
@@ -66,7 +67,6 @@ export default function IconButton({
   style = 'Default',
   toggled = false,
   unreadBadge = false,
-  active = false,
   disabled,
   type = 'button',
   'aria-label': ariaLabel,
@@ -82,9 +82,9 @@ export default function IconButton({
     : '';
   const roundedClass = rounded ? styles['icon-button--rounded'] : '';
   const toggledClass = toggled ? styles['icon-button--toggled'] : '';
+  const activeClass = active ? styles['icon-button--active'] : '';
   const hasCount = count !== undefined;
   const hasCountClass = hasCount ? styles['icon-button--has-count'] : '';
-  const activeClass = active ? styles['icon-button--active'] : '';
 
   const rootClass = [
     styles['icon-button'],
@@ -94,8 +94,8 @@ export default function IconButton({
     destructiveClass,
     roundedClass,
     toggledClass,
-    hasCountClass,
     activeClass,
+    hasCountClass,
     className,
   ]
     .filter(Boolean)
@@ -108,6 +108,7 @@ export default function IconButton({
       disabled={disabled}
       aria-label={ariaLabel}
       aria-pressed={toggled ? true : undefined}
+      data-active={active ? 'true' : undefined}
       {...rest}
     >
       <span className={styles['icon-button__icon-slot']} aria-hidden>

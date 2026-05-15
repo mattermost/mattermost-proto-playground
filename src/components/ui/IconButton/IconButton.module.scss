@@ -199,6 +199,10 @@
     &:active:not(:disabled):not(.icon-button--toggled) {
       background-color: rgba(var(--sidebar-text-rgb), 0.12);
     }
+    &.icon-button--active:not(:disabled) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.12);
+      color: var(--sidebar-text);
+    }
     &.icon-button--toggled {
       background-color: var(--sidebar-text);
       color: var(--sidebar-bg);
