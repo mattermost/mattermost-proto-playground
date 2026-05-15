@@ -87,10 +87,9 @@ function Navigator() {
  * the product switcher, product branding, navigator, and session-level
  * controls (search, mentions, saved, settings, account).
  *
- * Three product variants control the layout:
- * - Channels: center search + right controls (@ mentions, saved, settings)
- * - Playbooks: right controls (tasks, help, settings)
- * - Boards: right controls (help, settings)
+ * Layout uses a three-column CSS grid for Channels (left | centered search + help | session)
+ * so session controls stay anchored to the trailing edge. Playbooks/Boards omit the center
+ * column and use two tracks (left product block | session).
  *
  * Matches Figma Global Header v1.2.1 (node 613:4135).
  */
@@ -105,7 +104,13 @@ export default function GlobalHeader({
   const isChannels = product === 'Channels';
   const showBrand = isChannels ? showChannelsBranding : true;
 
-  const rootClass = [styles['global-header'], className]
+  const rootClass = [
+    styles['global-header'],
+    isChannels
+      ? styles['global-header--channels']
+      : styles['global-header--product-only'],
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 

@@ -1,7 +1,8 @@
-.layouts {
+.channel-shell {
+  position: relative;
   display: flex;
   flex-direction: column;
-  width: calc(100% - 160px);
+  width: calc(100% - 80px);
   height: calc(100% - 80px);
   margin: auto;
   background: var(--sidebar-bg);
@@ -11,6 +12,8 @@
   box-shadow: var(--elevation-6);
   max-width: 1440px;
   max-height: 800px;
+  min-width: 1000px;
+  min-height: 600px;
   overflow: hidden;
 
   &__global-header {
@@ -47,6 +50,7 @@
   }
 
   &__channels-sidebar {
+    position: relative;
     flex: 0 0 auto;
     display: flex;
     min-height: 0;
@@ -72,7 +76,7 @@
     overflow: hidden;
     background: var(--center-channel-bg);
     container-type: inline-size;
-    container-name: messaging-inner;
+    container-name: channel-shell-inner;
   }
 
   &__center {
@@ -88,7 +92,6 @@
     flex: 1 1 auto;
     min-height: 0;
 
-    // Fill the SimpleBar viewport so short threads sit on the bottom (real channel view).
     :global(.simplebar-content) {
       min-height: 100%;
       display: flex;
@@ -136,7 +139,7 @@
     min-width: 0;
   }
 
-  @container messaging-inner (max-width: 799px) {
+  @container channel-shell-inner (max-width: 799px) {
     &__center {
       flex: 1 1 auto;
       width: 100%;
@@ -168,5 +171,12 @@
   &__right-sidebar-body {
     flex: 1 1 auto;
     min-height: 0;
+  }
+
+  &__floating {
+    position: absolute;
+    left: var(--spacing-l);
+    bottom: var(--spacing-l);
+    z-index: 20;
   }
 }

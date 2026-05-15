@@ -33,6 +33,6 @@ pnpm-debug.log*
 # Cache
 .vite/
 *.tsbuildinfo
-.vercel/project.json
+
 /.vercel
 .vercel

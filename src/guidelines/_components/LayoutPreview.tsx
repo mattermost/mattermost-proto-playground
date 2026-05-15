@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import Layouts from '@/guidelines/layouts/messaging/messaging.specimen';
+import ChannelLayout from '@/guidelines/layouts/channel/channel.specimen';
 import type { ThemeId } from '@/contexts/ThemeContext';
 import styles from './LayoutPreview.module.scss';
 
@@ -15,7 +15,7 @@ interface LayoutPreviewProps {
 }
 
 /**
- * Renders the full Layouts demo page scaled to fit its container, optionally
+ * Renders the Channel layout specimen scaled to fit its container, optionally
  * scoped to a specific data-theme. Use inside guideline pages to showcase
  * theme variations side-by-side.
  */
@@ -58,7 +58,7 @@ export default function LayoutPreview({
             transform: `scale(${scale})`,
           }}
         >
-          <Layouts />
+          <ChannelLayout />
         </div>
       </div>
       {label && <figcaption className={styles.preview__label}>{label}</figcaption>}

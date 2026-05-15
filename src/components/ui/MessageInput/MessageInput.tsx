@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import AlertCircleOutlineIcon from '@mattermost/compass-icons/components/alert-circle-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
@@ -32,6 +32,10 @@ export interface MessageInputProps {
   placeholder?: string;
   showPriorityIndicator?: boolean;
   showAttachments?: boolean;
+  value?: string;
+  onChange?: (value: string) => void;
+  onSelectionChange?: () => void;
+  inputRef?: React.RefObject<HTMLTextAreaElement | null>;
   /** `narrow` matches the Figma Message Input “Narrow” / right-sidebar layout. */
   width?: MessageInputWidth;
 }
@@ -41,18 +45,39 @@ export default function MessageInput({
   placeholder = 'Message channel…',
   showPriorityIndicator = false,
   showAttachments = false,
+  value,
+  onChange,
+  onSelectionChange,
+  inputRef,
   width = 'wide',
 }: MessageInputProps) {
-  const [text, setText] = useState('');
+  const [internalText, setInternalText] = useState('');
+  const isControlled = value !== undefined;
+  const text = isControlled ? value : internalText;
+  const setText = (next: string) => {
+    if (isControlled) onChange?.(next);
+    else setInternalText(next);
+  };
   const [formattingOpen, setFormattingOpen] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const internalRef = useRef<HTMLTextAreaElement>(null);
+
+  const setTextareaRef = (node: HTMLTextAreaElement | null) => {
+    internalRef.current = node;
+    if (inputRef) {
+      (inputRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = node;
+    }
+  };
 
   const handleInput = useCallback(() => {
-    const el = textareaRef.current;
+    const el = internalRef.current;
     if (!el) return;
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;
   }, []);
+
+  useEffect(() => {
+    handleInput();
+  }, [text, handleInput]);
 
   const hasSendValue = text.trim().length > 0;
 
@@ -187,12 +212,15 @@ export default function MessageInput({
             </div>
           )}
           <textarea
-            ref={textareaRef}
+            ref={setTextareaRef}
             className={styles['message-input__textarea']}
             placeholder={placeholder}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onInput={handleInput}
+            onSelect={onSelectionChange}
+            onKeyUp={onSelectionChange}
+            onClick={onSelectionChange}
             rows={1}
           />
         </div>

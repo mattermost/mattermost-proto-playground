@@ -156,7 +156,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Default style — active state (subtler than toggled)
+  // Forced active/pressed state — subtler than toggled.
   // ---------------------------------------------------------------------------
   &--active:not(:disabled) {
     background-color: rgba(var(--center-channel-color-rgb), 0.12);

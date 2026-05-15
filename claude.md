@@ -83,6 +83,12 @@ Keyframes and other global at-rules can stay at the top of the file; the rest of
 
 When adding an `action` to `EmptyState`, omit the `size` prop unless a Figma spec requires a different size. `Button` defaults to `Medium`, which is the correct size for empty state actions.
 
+## Avatar components: default to fixture photos
+
+Whenever you use an avatar component or pattern that supports a real image (`UserAvatar`, `TeamAvatar`, `UserAvatarGroup` / `UserAvatarGroupItem`, `CallParticipantAvatar`, props like `src` or `userAvatarSrc`, default data in list items, and similar), **pass an imported image from `src/assets/avatars/`** so demos and product-like UI show real faces.
+
+Only rely on the **initials / fallback** avatar (omit `src` or equivalent) when the work explicitly calls for that state — for example documenting fallback behaviour, colour variants, or a spec that shows unnamed users.
+
 ## Adding a topic to the docs
 
 Every docs entry — a foundation, component, pattern, or layout — is a single **topic** registered in `src/manifests/topics.ts`. A topic carries its prose (`guidelinePage`) and its live demo (`specimenPage`); the topic shell renders them as Guidelines / Specimen tabs over the same `/<category>/<slug>` URL.
@@ -162,6 +168,18 @@ If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (Th
 **Profile popover + positioning:** `ProfilePopover` is the **content** card. Figma-anchored placement (e.g. from a message avatar `getBoundingClientRect()`) is a **separate concern**. Do not fork `ProfilePopover` for coordinates — either compose it inside a small page-local wrapper (e.g. `PositionedProfilePopover` in a prototype) or, if multiple prototypes need the same rules, add a **layout hook** such as `useAnchoredToRect` and keep `ProfilePopover` unchanged. Merge positioning into the design system only after UX parity with the popover animation spec in this file.
 
 **Note:** The **Outbound Calls** prototype (MM-56584) is maintained on a **feature branch only** — it is not planned for the `main` playground.
+
+## Prototype views: scene navigation (default)
+
+URLs that match an entry in `src/manifests/prototypes.ts` render with **`PrototypeTopNav`** (`src/components/layout/PrototypeTopNav/`) instead of the full Compass **`TopNav`**: back to `/prototypes`, prototype title, **center slot** for tools, and theme control.
+
+**Default for multi-scene prototypes:** register scene or entry-point UI in that center slot so it aligns vertically with the rest of the bar (same pattern as the External Call Participants and Outbound Calls prototypes).
+
+1. From the prototype page component, call **`usePrototypeChrome()`** (`src/contexts/PrototypeChromeContext.tsx`) and in a **`useEffect`** set **`setCenterSlot(<…/>)`** to your control (e.g. **`SceneSwitcher`** from `src/components/navigation/SceneSwitcher/`).
+2. **Cleanup** in the effect return: **`() => setCenterSlot(null)`** so leaving the route or unmounting does not leave stale UI in the header.
+3. Re-run the effect when **`activeScene`** (or equivalent) changes so the control stays in sync.
+4. Prefer **`SceneSwitcher`** for segmented tabs; omit **`label`** unless a caption is required; set a clear **`ariaLabel`** on the tablist.
+5. **Do not** pin the scene control with **`position: fixed`** and a viewport **`top`** offset on these pages — that sits relative to the window, not the prototype header, and will look vertically misaligned next to the back button and title.
 
 ## Animation: easing and duration
 

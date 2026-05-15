@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { PROTOTYPES } from '@/router';
+import { PROTOTYPES } from '@/manifests/prototypes';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import shellStyles from '@/pages/_shell/DocShell.module.scss';
 import styles from './PrototypesIndex.module.scss';
@@ -20,7 +20,7 @@ export default function PrototypesIndex() {
         {PROTOTYPES.length === 0 && (
           <p className={styles['prototypes-index__empty']}>
             No prototypes registered yet. Add entries to <code>PROTOTYPES</code>{' '}
-            in <code>src/router/index.tsx</code>.
+            in <code>src/manifests/prototypes.ts</code>.
           </p>
         )}
 

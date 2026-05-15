@@ -29,6 +29,7 @@
 .home__hero-inner {
   max-width: 1200px;
   margin: 0 auto;
+  padding: var(--spacing-xxl) 0;
 }
 
 .home__hero-main {
@@ -155,7 +156,7 @@
     width: 1280px;
     height: 720px;
     left: var(--spacing-l);
-    top: calc(-1 * var(--spacing-l));
+    top: calc(-1 * var(--spacing-xl));
   }
 
   // Vignette above the preview; gradient origin stays bottom-right of this box.

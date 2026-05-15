@@ -57,6 +57,7 @@ import { ChannelHeaderAnatomyStage } from '@/guidelines/_components/ChannelHeade
 import { GlobalHeaderAnatomyStage } from '@/guidelines/_components/GlobalHeaderGuidelineAnatomy';
 import { TeamSidebarAnatomyStage } from '@/guidelines/_components/TeamSidebarGuidelineAnatomy';
 import { ChannelSidebarAnatomyStage } from '@/guidelines/_components/ChannelSidebarGuidelineAnatomy';
+import { AdminConsoleSidebarAnatomyStage } from '@/guidelines/_components/AdminConsoleSidebarGuidelineAnatomy';
 import Num from '@/guidelines/_components/Num';
 import MdxAnchor from '@/guidelines/_components/MdxAnchor';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
@@ -118,6 +119,7 @@ const MDX_COMPONENTS = {
   GlobalHeaderAnatomyStage,
   TeamSidebarAnatomyStage,
   ChannelSidebarAnatomyStage,
+  AdminConsoleSidebarAnatomyStage,
   Num,
   AnatomyStage,
   Divider,

@@ -1,7 +1,7 @@
 .team-sidebar {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   padding: var(--spacing-m);
   background-color: var(--sidebar-header-bg);
   height: 100%;
@@ -11,6 +11,17 @@
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-m);
+  }
+
+  &__footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    padding-top: var(--spacing-m);
+  }
+
+  &__dial-pad {
+    border-radius: var(--radius-m);
   }
 
   &__team {

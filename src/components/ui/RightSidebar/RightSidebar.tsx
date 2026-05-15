@@ -13,7 +13,7 @@ export interface RightSidebarProps {
   className?: string;
   /**
    * When true, the sidebar grows horizontally instead of staying at 400px.
-   * Pair with a parent flex row and `layouts__right-sidebar--fill` in full layouts.
+   * Pair with a parent flex row and `channel-shell__right-sidebar--fill` in full layouts.
    */
   fill?: boolean;
   /**

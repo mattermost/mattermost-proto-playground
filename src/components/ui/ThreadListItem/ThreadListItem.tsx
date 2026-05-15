@@ -1,5 +1,10 @@
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import { type KeyboardEvent, type MouseEvent, useCallback } from 'react';
+import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
+import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
+import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import LabelTag from '../LabelTag/LabelTag';
@@ -11,11 +16,11 @@ import UserAvatarGroup, {
 import styles from './ThreadListItem.module.scss';
 
 const DEFAULT_PARTICIPANTS: UserAvatarGroupItem[] = [
-  { key: 'leonard', name: 'Leonard Riley' },
-  { key: 'aiko', name: 'Aiko Tan' },
-  { key: 'arjun', name: 'Arjun Patel' },
-  { key: 'sam', name: 'Sam Chen' },
-  { key: 'jordan', name: 'Jordan Lee' },
+  { key: 'leonard', name: 'Leonard Riley', src: avatarLeonard },
+  { key: 'aiko', name: 'Aiko Tan', src: avatarAikoTan },
+  { key: 'arjun', name: 'Arjun Patel', src: avatarArjunPatel },
+  { key: 'marco', name: 'Marco Rinaldi', src: avatarMarco },
+  { key: 'sofia', name: 'Sofia Bauer', src: avatarSofia },
 ];
 
 export interface ThreadListItemProps {
@@ -130,7 +135,6 @@ export default function ThreadListItem({
                     </span>
                     <LabelTag
                       casing="All Caps"
-                      className={styles['thread-list-item__label-tag']}
                       label={channelLabel}
                     />
                   </div>

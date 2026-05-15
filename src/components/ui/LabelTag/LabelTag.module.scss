@@ -1,6 +1,10 @@
 .label-tag {
   display: inline-flex;
   align-items: center;
+  box-sizing: border-box;
+  /* Column flex parents use align-items: stretch; keep tags intrinsic-width */
+  width: fit-content;
+  max-width: 100%;
   border-radius: var(--radius-s);
   font-family: var(--font-family-body);
   font-weight: var(--font-weight-semibold);

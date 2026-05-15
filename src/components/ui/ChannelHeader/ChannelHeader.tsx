@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -44,7 +45,11 @@ export interface ChannelHeaderProps {
   /** Called when the favorite star is clicked. */
   onFavoriteClick?: () => void;
   /** Called when the channel name is clicked. */
-  onNameClick?: () => void;
+  onNameClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** Called when the Start a Call button is clicked. */
+  onCallClick?: () => void;
+  /** Replaces the default Start a Call button when provided. */
+  callButton?: ReactNode;
   /** Called when the channel info button is clicked. */
   onInfoClick?: () => void;
   /** Whether the info button is in a toggled (active) state. */
@@ -64,6 +69,8 @@ export default function ChannelHeader({
   avatarStatus = false,
   onFavoriteClick,
   onNameClick,
+  onCallClick,
+  callButton,
   onInfoClick,
   infoToggled = false,
   className = '',
@@ -207,16 +214,17 @@ export default function ChannelHeader({
       </div>
 
       <div className={styles['channel-header__right']}>
-        {showCallButton && (
+        {showCallButton && (callButton ?? (
           <Button
             className={styles['channel-header__call-btn']}
             emphasis="Quaternary"
             size="Small"
             leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+            onClick={onCallClick}
           >
             Start a Call
           </Button>
-        )}
+        ))}
         <IconButton
           size="Small"
           aria-label="Channel info"

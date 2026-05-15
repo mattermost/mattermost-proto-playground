@@ -11,6 +11,7 @@ export type ChannelsSidebarItemModel = Pick<
   | 'avatarSrc'
   | 'avatarAlt'
   | 'showAvatarStatus'
+  | 'onClick'
 >;
 
 export interface ChannelsSidebarCategoryModel {
@@ -32,6 +33,8 @@ export interface ChannelsSidebarModel {
 
 export interface BuildDefaultChannelsSidebarModelInput {
   showUnreadsCategory: boolean;
+  /** When true, appends "Dial Pad" to the top group (Threads / Drafts row). */
+  showDialPad?: boolean;
   avatarAikoTan: string;
   avatarArjunPatel: string;
   avatarDanielOkoro: string;
@@ -47,6 +50,7 @@ export function buildDefaultChannelsSidebarModel(
 ): ChannelsSidebarModel {
   const {
     showUnreadsCategory,
+    showDialPad = false,
     avatarAikoTan,
     avatarArjunPatel,
     avatarDanielOkoro,
@@ -65,6 +69,9 @@ export function buildDefaultChannelsSidebarModel(
       mentionCount: 1,
     },
   ];
+  if (showDialPad) {
+    topGroupItems.push({ name: 'Dial Pad', leadingVisual: 'Dial Pad' });
+  }
 
   const groups: ChannelsSidebarGroupModel[] = [];
 
@@ -118,11 +125,21 @@ export function buildDefaultChannelsSidebarModel(
       active: true,
     });
   }
-  favoritesItems.push({
-    name: 'Hilda Martin, Steve M...',
-    leadingVisual: 'Group Message',
-    memberCount: 2,
-  });
+  favoritesItems.push(
+    { name: 'softphone-ux', leadingVisual: 'Public' },
+    {
+      name: 'Aiko Tan',
+      leadingVisual: 'Direct Message',
+      avatarSrc: avatarAikoTan,
+      avatarAlt: 'Aiko Tan',
+      showAvatarStatus: true,
+    },
+    {
+      name: 'Hilda Martin, Steve M...',
+      leadingVisual: 'Group Message',
+      memberCount: 2,
+    },
+  );
 
   groups.push({
     key: 'favorites',
@@ -145,7 +162,9 @@ export function buildDefaultChannelsSidebarModel(
     );
   }
   channelsItems.push(
+    { name: 'calling-eng', leadingVisual: 'Public' },
     { name: 'Security Incident', leadingVisual: 'Public' },
+    { name: 'telephony-vendors', leadingVisual: 'Private' },
     { name: 'System Status', leadingVisual: 'Private' },
     { name: 'Product Support', leadingVisual: 'Private' },
   );

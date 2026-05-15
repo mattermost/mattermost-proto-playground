@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
 import Message from '@/components/ui/Message/Message';
 import CallPopout from '@/components/ui/CallPopout/CallPopout';
 import CallWidget from '@/components/ui/CallWidget/CallWidget';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import type { Participant } from '@/types/callParticipant';
+import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
 import {
   DIAL_IN_NUMBER,
   DIAL_IN_PIN,
@@ -17,11 +19,12 @@ import {
 } from './externalCallParticipants.constants';
 import { CALL_PARTICIPANTS } from './externalCallParticipants.fixtures';
 import { SCENES, type SceneId } from './externalCallParticipants.scenes';
+import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import ExternalCallChannelsShell from './ExternalCallChannelsShell';
-import layoutStyles from './ExternalCallParticipantsLayout.module.scss';
 import WelcomeScene from './WelcomeScene';
 
 export default function ExternalCallParticipants() {
+  const { setCenterSlot } = usePrototypeChrome();
   const [externalEnabled, setExternalEnabled] = useState(false);
   const [scene, setScene] = useState<SceneId>('widget');
   const [callInfoOpen, setCallInfoOpen] = useState(false);
@@ -34,6 +37,18 @@ export default function ExternalCallParticipants() {
   const [guestName, setGuestName] = useState('');
 
   const popoutOpen = scene === 'popout';
+
+  useEffect(() => {
+    setCenterSlot(
+      <SceneSwitcher
+        scenes={SCENES}
+        activeId={scene}
+        onChange={(id) => setScene(id as SceneId)}
+        ariaLabel="Prototype entry points"
+      />,
+    );
+    return () => setCenterSlot(null);
+  }, [scene, setCenterSlot]);
 
   const guestParticipants: Participant[] = CALL_PARTICIPANTS.map((p) =>
     p.id === 'external-james' && guestName.trim()
@@ -50,133 +65,72 @@ export default function ExternalCallParticipants() {
 
   if (scene === 'welcome') {
     return (
-      <>
-        <SceneSwitcher
-          scenes={SCENES}
-          activeId={scene}
-          onChange={(id) => setScene(id as SceneId)}
-          label="Entry point"
-          ariaLabel="Prototype entry points"
-        />
-        <WelcomeScene
-          channelName="UX Design"
-          onJoin={(name) => {
-            setGuestName(name);
-            setScene('guest');
-          }}
-        />
-      </>
+      <WelcomeScene
+        channelName="UX Design"
+        onJoin={(name) => {
+          setGuestName(name);
+          setScene('guest');
+        }}
+      />
     );
   }
 
   if (scene === 'guest') {
     return (
-      <>
-        <SceneSwitcher
-          scenes={SCENES}
-          activeId={scene}
-          onChange={(id) => setScene(id as SceneId)}
-          label="Entry point"
-          ariaLabel="Prototype entry points"
-        />
-        <CallPopout
-          variant="fullscreen"
-          guestView
-          participants={guestParticipants}
-          currentUserId="external-james"
-          muted={muted}
-          onToggleMute={() => setMuted((m) => !m)}
-          onLeave={() => setScene('welcome')}
-          infoOpen={callInfoOpen}
-          onInfoToggle={() => setCallInfoOpen((v) => !v)}
-          externalEnabled={externalEnabled}
-          onExternalEnabledChange={setExternalEnabled}
-          {...callLinkProps}
-        />
-      </>
+      <CallPopout
+        variant="fullscreen"
+        guestView
+        participants={guestParticipants}
+        currentUserId="external-james"
+        muted={muted}
+        onToggleMute={() => setMuted((m) => !m)}
+        onLeave={() => setScene('welcome')}
+        infoOpen={callInfoOpen}
+        onInfoToggle={() => setCallInfoOpen((v) => !v)}
+        externalEnabled={externalEnabled}
+        onExternalEnabledChange={setExternalEnabled}
+        {...callLinkProps}
+      />
     );
   }
 
   return (
-    <>
-      <SceneSwitcher
-        scenes={SCENES}
-        activeId={scene}
-        onChange={(id) => setScene(id as SceneId)}
-        label="Entry point"
-        ariaLabel="Prototype entry points"
-      />
-      <div className={layoutStyles.page}>
-        <ExternalCallChannelsShell>
-          <div className={layoutStyles['page__messages']}>
-            <MessageSeparator type="Date" label="Today" />
-
-            <Message
-              avatarSrc={avatarSofia}
-              avatarAlt="Sofia Bauer"
-              username="Sofia Bauer"
-              timestamp="9:02 AM"
-            >
-              <p className={layoutStyles['page__post-text']}>
-                We&rsquo;re jumping on the call with the partner team in a few
-                minutes — sharing the external link so Priya can join without a
-                Mattermost account.
-              </p>
-            </Message>
-
-            <Message
-              avatarSrc={avatarMarco}
-              avatarAlt="Marco Rinaldi"
-              username="Marco Rinaldi"
-              timestamp="9:14 AM"
-            >
-              <p className={layoutStyles['page__post-text']}>
-                I&rsquo;ll dial in from the shop floor — no browser there. Drop
-                the SIP number and PIN in the thread please.
-              </p>
-            </Message>
-          </div>
-
-          <div className={layoutStyles['page__message-input']}>
-            <MessageInput placeholder="Write to UX Design" />
-          </div>
-        </ExternalCallChannelsShell>
-
-        {!popoutOpen && (
-          <div className={layoutStyles['page__widget-wrap']}>
-            <CallWidget
-              participants={CALL_PARTICIPANTS}
-              currentUserId="leonard"
-              talkerName="Leonard R."
-              talkerAvatarSrc={avatarLeonard}
-              channelName="UX Design"
-              muted={muted}
-              onToggleMute={() => setMuted((m) => !m)}
-              handRaised={handRaised}
-              onToggleHand={() => setHandRaised((h) => !h)}
-              sharing={sharing}
-              onToggleShare={() => setSharing((s) => !s)}
-              onExpand={() => setScene('popout')}
-              onLeave={() => setScene('widget')}
-              overlay={widgetOverlay}
-              onToggleMenu={() =>
-                setWidgetOverlay((v) => (v === 'menu' ? null : 'menu'))
-              }
-              onToggleParticipants={() =>
-                setWidgetOverlay((v) =>
-                  v === 'participants' ? null : 'participants',
-                )
-              }
-              onOpenCallInfo={() => setWidgetOverlay('info')}
-              onCloseCallInfo={() => setWidgetOverlay(null)}
-              externalEnabled={externalEnabled}
-              onExternalEnabledChange={setExternalEnabled}
-              {...callLinkProps}
-            />
-          </div>
-        )}
-
-        {popoutOpen && (
+    <ExternalCallChannelsShell
+      floating={
+        !popoutOpen ? (
+          <CallWidget
+            participants={CALL_PARTICIPANTS}
+            currentUserId="leonard"
+            talkerName="Leonard R."
+            talkerAvatarSrc={avatarLeonard}
+            channelName="UX Design"
+            muted={muted}
+            onToggleMute={() => setMuted((m) => !m)}
+            handRaised={handRaised}
+            onToggleHand={() => setHandRaised((h) => !h)}
+            sharing={sharing}
+            onToggleShare={() => setSharing((s) => !s)}
+            onExpand={() => setScene('popout')}
+            onLeave={() => setScene('widget')}
+            overlay={widgetOverlay}
+            onToggleMenu={() =>
+              setWidgetOverlay((v) => (v === 'menu' ? null : 'menu'))
+            }
+            onToggleParticipants={() =>
+              setWidgetOverlay((v) =>
+                v === 'participants' ? null : 'participants',
+              )
+            }
+            onOpenCallInfo={() => setWidgetOverlay('info')}
+            onCloseCallInfo={() => setWidgetOverlay(null)}
+            externalEnabled={externalEnabled}
+            onExternalEnabledChange={setExternalEnabled}
+            {...callLinkProps}
+          />
+        ) : undefined
+      }
+      overlay={
+        popoutOpen ? (
           <CallPopout
             participants={CALL_PARTICIPANTS}
             currentUserId="leonard"
@@ -193,8 +147,45 @@ export default function ExternalCallParticipants() {
             onExternalEnabledChange={setExternalEnabled}
             {...callLinkProps}
           />
-        )}
+        ) : undefined
+      }
+    >
+      <div className={shellStyles['channel-shell__messages']}>
+        <Scrollbars>
+          <div className={shellStyles['channel-shell__messages-list']}>
+            <MessageSeparator type="Date" label="Today" />
+
+            <Message
+              avatarSrc={avatarSofia}
+              avatarAlt="Sofia Bauer"
+              username="Sofia Bauer"
+              timestamp="9:02 AM"
+            >
+              <p className={shellStyles['channel-shell__post-text']}>
+                We&rsquo;re jumping on the call with the partner team in a few
+                minutes — sharing the external link so Priya can join without a
+                Mattermost account.
+              </p>
+            </Message>
+
+            <Message
+              avatarSrc={avatarMarco}
+              avatarAlt="Marco Rinaldi"
+              username="Marco Rinaldi"
+              timestamp="9:14 AM"
+            >
+              <p className={shellStyles['channel-shell__post-text']}>
+                I&rsquo;ll dial in from the shop floor — no browser there. Drop
+                the SIP number and PIN in the thread please.
+              </p>
+            </Message>
+          </div>
+        </Scrollbars>
       </div>
-    </>
+
+      <div className={shellStyles['channel-shell__message-input']}>
+        <MessageInput placeholder="Write to UX Design" />
+      </div>
+    </ExternalCallChannelsShell>
   );
 }

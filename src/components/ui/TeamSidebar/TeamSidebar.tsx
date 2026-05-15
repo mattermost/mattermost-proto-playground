@@ -1,4 +1,5 @@
 import PlusIcon from '@mattermost/compass-icons/components/plus';
+import DialpadIcon from '@/components/icons/DialpadIcon';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import TeamAvatar from '@/components/ui/TeamAvatar/TeamAvatar';
@@ -19,8 +20,11 @@ export interface TeamSidebarProps {
   teams: TeamSidebarItem[];
   activeTeamId?: string;
   showAddTeam?: boolean;
+  showDialPad?: boolean;
+  dialPadActive?: boolean;
   onSelectTeam?: (id: string) => void;
   onAddTeam?: () => void;
+  onDialPadClick?: () => void;
 }
 
 export default function TeamSidebar({
@@ -28,8 +32,11 @@ export default function TeamSidebar({
   teams,
   activeTeamId,
   showAddTeam = true,
+  showDialPad = false,
+  dialPadActive = false,
   onSelectTeam,
   onAddTeam,
+  onDialPadClick,
 }: TeamSidebarProps) {
   const rootClass = [styles['team-sidebar'], className]
     .filter(Boolean)
@@ -78,6 +85,19 @@ export default function TeamSidebar({
           />
         )}
       </div>
+      {showDialPad && (
+        <div className={styles['team-sidebar__footer']}>
+          <IconButton
+            aria-label="Dial pad"
+            size="Small"
+            style="Inverted"
+            active={dialPadActive}
+            icon={<Icon size="16" glyph={<DialpadIcon />} />}
+            onClick={onDialPadClick}
+            className={styles['team-sidebar__dial-pad']}
+          />
+        </div>
+      )}
     </div>
   );
 }
