@@ -245,6 +245,13 @@
   padding-right: var(--spacing-l);
 }
 
+.components__on-primary-dots {
+  display: inline-flex;
+  padding: var(--spacing-m) var(--spacing-xl);
+  background-color: var(--color-info);
+  border-radius: var(--radius-m);
+}
+
 .components__button-block--calls-bg {
   background-color: var(--calls-bg);
   padding: var(--spacing-l);

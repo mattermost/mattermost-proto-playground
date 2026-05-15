@@ -850,6 +850,16 @@ export const TOPICS: Topic[] = [
     guidelinePage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.specimen'),
   },
+  {
+    slug: 'tour-point',
+    name: 'Tour Point',
+    category: 'patterns',
+    description:
+      'Instructional callout with directional pointer, optional media, and tour navigation for guided onboarding.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/tour-point/tour-point.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/tour-point/tour-point.specimen'),
+  },
 
   // ===========================================================================
   // Layouts
