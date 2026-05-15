@@ -1,0 +1,60 @@
+.scenario-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  &__hint {
+    font-size: var(--font-size-50);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    font-style: italic;
+  }
+
+  &__label {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__toggle {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-full);
+  }
+
+  &__option {
+    padding: var(--spacing-xxxxs) var(--spacing-m);
+    border: 0;
+    background: transparent;
+    border-radius: var(--radius-full);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.2px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &--active {
+      background: var(--button-bg);
+      color: var(--button-color);
+    }
+
+    #{&}--active#{&}--danger {
+      background: var(--color-danger);
+      color: var(--center-channel-bg);
+    }
+  }
+}

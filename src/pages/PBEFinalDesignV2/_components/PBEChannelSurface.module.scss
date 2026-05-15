@@ -1,0 +1,111 @@
+.pbe-channel-surface {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+  background: var(--center-channel-bg);
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__feed {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--spacing-l) 0;
+    background: var(--center-channel-bg);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+  }
+
+  &__system {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: center;
+    padding: var(--spacing-xxs) var(--spacing-m);
+    margin-bottom: var(--spacing-m);
+    border-radius: var(--radius-full);
+    background: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--button-bg);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__system-label {
+    line-height: var(--line-height-75);
+  }
+
+  &__posts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__post {
+    display: flex;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xxs) var(--spacing-xxl);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  &__post-avatar-col {
+    flex-shrink: 0;
+    padding-top: var(--spacing-xxxxs);
+  }
+
+  &__post-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+  }
+
+  &__post-header-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__post-shield {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__post-body {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    word-break: break-word;
+  }
+}

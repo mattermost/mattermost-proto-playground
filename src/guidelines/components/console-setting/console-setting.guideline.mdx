@@ -1,0 +1,31 @@
+Console Setting is the two-column layout used for every labeled control in
+the System Console. A label on the left, a control on the right, optional
+help text underneath.
+
+This is the most-used component in the console — most pages are a stack of
+panels, and most panel bodies are stacks of these.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Label** — a fixed 290px column. Always present; reads as a
+  sentence-cased question or noun phrase, with a trailing colon.
+- <Num>2</Num> **Enterprise tag** — optional badge below the label, used when
+  the setting is gated by license tier.
+- <Num>3</Num> **Control** — the editable affordance. Pass a Radio group,
+  TextInput, Select, Switch, Button, or any combination as children.
+- <Num>4</Num> **Help text** — optional explanation rendered below the
+  control. Use one or two sentences of plain prose; longer guidance belongs
+  in a documentation link.
+
+<Divider />
+
+## Content
+
+- Label is sentence case and ends with a colon: "Allow attribute-based
+  membership controls on this server:".
+- Help text is a complete sentence. State what the setting does, then any
+  consequence the administrator should know before changing it.
+- Don't repeat the control's option labels in the help text — describe the
+  behavior, not the choices.

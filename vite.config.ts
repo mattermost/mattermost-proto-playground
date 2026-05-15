@@ -8,7 +8,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import path from 'path';
 
 export default defineConfig({
-  base: '/mattermost-proto-playground/',
+  base: process.env.VERCEL ? '/' : '/mattermost-proto-playground/',
   plugins: [
     {
       enforce: 'pre',

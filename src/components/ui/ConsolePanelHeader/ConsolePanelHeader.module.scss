@@ -1,0 +1,95 @@
+.console-panel-header {
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  overflow: hidden;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xxl);
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-xl);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__title-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__tag {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    padding: 2px var(--spacing-xxxs);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-25);
+    white-space: nowrap;
+
+    &--enterprise {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
+
+    &--beta {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-l);
+    flex-shrink: 0;
+  }
+}

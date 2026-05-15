@@ -1,0 +1,93 @@
+.console-property-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__drag {
+    display: flex;
+    align-items: flex-start;
+    flex-shrink: 0;
+    padding-top: var(--spacing-m);
+    width: 16px;
+  }
+
+  &__drag-icon {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: grab;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 128px;
+    padding: var(--spacing-s) var(--spacing-l);
+  }
+
+  &__title-text {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__type {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    width: 136px;
+    padding: var(--spacing-s) var(--spacing-l);
+    gap: var(--spacing-s);
+  }
+
+  &__type-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__type-label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--spacing-s) var(--spacing-l);
+    gap: var(--spacing-s);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__lock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: var(--spacing-s);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: var(--spacing-s);
+  }
+}

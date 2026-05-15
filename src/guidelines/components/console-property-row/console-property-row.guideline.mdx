@@ -1,0 +1,43 @@
+Console Property Row is one row inside a Console Property Table. It models a
+named attribute with a type, a value, and per-row actions.
+
+Use a property row whenever you need a structured list of small editable items
+inside the System Console: user attributes, permission policies, membership
+rules, key managers.
+
+<Divider />
+
+## Anatomy
+
+Columns left-to-right:
+
+- <Num>1</Num> **Drag handle** — optional. Surfaces only when the row is
+  reorderable.
+- <Num>2</Num> **Title** — the property's name, fixed-width column.
+- <Num>3</Num> **Type** — optional column with a 16px compass icon and a short
+  type label (e.g. "Text", "Select", "Boolean"). Omit either or both when the
+  row doesn't carry a type.
+- <Num>4</Num> **Value** — flex column. Accepts any node: chips, plain text,
+  inline edits, action buttons.
+- <Num>5</Num> **Lock** — optional indicator that the property is locked from
+  edits.
+- <Num>6</Num> **More menu** — overflow trigger for row-level actions (edit,
+  duplicate, delete). Always present unless `hideMore` is set.
+
+<Divider />
+
+## Behavior
+
+The value column flows: it accepts wrapping content, so multi-line lists of
+chips render naturally. Title and type columns stay fixed-width to keep the
+column grid aligned across rows.
+
+<Divider />
+
+## Content
+
+- Title is the property's canonical name. Keep it short — long titles
+  ellipsize before they wrap.
+- Type label is the user-facing type (e.g. "Multi-select"), not the API name.
+- Values should read top-to-bottom: a single chip first when one is dominant,
+  a "+N more" affordance after the visible set if the list is unbounded.

@@ -1,0 +1,26 @@
+Console Sidebar Category is the section header inside Console Sidebar. It
+groups a set of `ConsoleSidebarItem`s under a single labeled banner.
+
+Categories let administrators scan the sidebar for the section they want
+without reading every item. They are visual anchors, not interactive — the
+header itself does not navigate.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Icon** — a 16px compass icon that represents the category
+  (e.g. credit-card-outline for Billing, shield-outline for Compliance).
+- <Num>2</Num> **Label** — uppercase category name, sentence-case at the
+  source and uppercased visually.
+
+<Divider />
+
+## Content
+
+- Use short category labels — two or three words at most. They render
+  uppercased and need to stay scannable.
+- Pair every category with an icon. The icon is the primary affordance once
+  administrators learn the layout.
+- Avoid category names that overlap (e.g. don't pair "Authentication" with
+  "Security" — fold one into the other).

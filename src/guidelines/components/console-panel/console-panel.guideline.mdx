@@ -1,0 +1,41 @@
+Console Panel groups related settings or tabular data into a bordered card on
+a System Console page. Most non-trivial console pages are a stack of these.
+
+A panel is the unit of meaning in the console: one panel, one feature or one
+table. Wrap content into multiple panels rather than letting a single panel
+sprawl.
+
+<Divider />
+
+## Anatomy
+
+A panel is a `ConsolePanelHeader` plus a body slot:
+
+- <Num>1</Num> **Header** — title, optional subtitle, optional leading icon,
+  optional tags ("Enterprise" / "Beta"), and an action cluster on the right
+  (Switch, primary button, expand chevron). See Console Panel Header for
+  details.
+- <Num>2</Num> **Body** — any content. Console Setting rows, Console Property
+  Tables, prose, or a custom layout.
+
+<Divider />
+
+## Behavior
+
+When `expandable` is true, the chevron in the header toggles the body. The
+panel is expanded by default. Use this for low-frequency settings that bulk
+out the page without being relevant most visits — never for the main panel
+on a page.
+
+When not expandable, the chevron is hidden and the body is always rendered.
+
+<Divider />
+
+## Content
+
+- Title should describe what the panel governs, in noun form ("Membership
+  Policies", "Encryption Managers"). Skip verbs.
+- Use the subtitle to clarify scope when the title alone could be misread.
+  Keep it to one sentence.
+- One primary action per panel. Multiple primary actions read as competing
+  decisions; promote one and demote the rest to tertiary buttons in the body.

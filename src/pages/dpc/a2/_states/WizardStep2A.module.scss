@@ -1,0 +1,89 @@
+.wizard-step-2a {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.32);
+    backdrop-filter: blur(2px);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+
+  &__heading {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-300);
+    color: var(--center-channel-color);
+  }
+
+  &__copy {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // Review-note meta annotation — visibly NOT part of production UI.
+  // Dashed border + monospace + warning-tone heading.
+  &__annotation {
+    margin-top: var(--spacing-s);
+    padding: var(--spacing-m) var(--spacing-l);
+    border: 1px dashed rgba(var(--color-warning-rgb), 0.64);
+    border-radius: var(--radius-m);
+    background: rgba(var(--color-warning-rgb), 0.04);
+    font-family: var(--font-family-mono);
+  }
+
+  &__annotation-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  &__annotation-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    background: var(--color-warning);
+    color: var(--button-color);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  &__annotation-ref {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__annotation-body {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.88);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

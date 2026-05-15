@@ -1,0 +1,52 @@
+.dev-toolbar {
+  position: fixed;
+  bottom: var(--spacing-l);
+  right: var(--spacing-l);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  height: 32px;
+  padding: 0 var(--spacing-m);
+  background: rgba(var(--color-info-rgb), 0.08);
+  border: 1px solid rgba(var(--color-info-rgb), 0.24);
+  border-radius: var(--radius-s);
+  box-shadow: var(--elevation-3);
+  font-size: var(--font-size-75);
+  color: var(--center-channel-color);
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xxxxs) var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    background: var(--color-info);
+    color: var(--button-color);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__label-text {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__select {
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+    cursor: pointer;
+  }
+}

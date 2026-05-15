@@ -1,0 +1,26 @@
+.v2-dm-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  padding: var(--spacing-l);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-m);
+
+  &__header {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__placeholder {
+    padding: var(--spacing-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-radius: var(--radius-s);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-style: italic;
+  }
+}

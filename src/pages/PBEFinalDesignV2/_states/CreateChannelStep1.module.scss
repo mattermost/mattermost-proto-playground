@@ -1,0 +1,58 @@
+.create-channel-step1 {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxl);
+  }
+
+  &__dialog {
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+  }
+
+  &__type-grid {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__help {
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__footer {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+}

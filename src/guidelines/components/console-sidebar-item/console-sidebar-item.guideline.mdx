@@ -1,0 +1,34 @@
+Console Sidebar Item is a single navigation row under a
+`ConsoleSidebarCategory`. Selecting one navigates to the corresponding System
+Console page.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Label** — the page name, sentence case.
+- <Num>2</Num> **Tag** — optional small badge after the label. Reserved for
+  lifecycle ("Beta") or licensing tier; never for status.
+- <Num>3</Num> **Caret** — a right-edge triangle that points into the content
+  area. Rendered only on the active item.
+
+<Divider />
+
+## States
+
+- Default — quieted label color, no background tint.
+- Hover — label brightens to the active text color.
+- Active — tinted background, full-strength label color, right-edge caret.
+
+Selection is single-select within a sidebar: the active state belongs to one
+item at a time.
+
+<Divider />
+
+## Content
+
+- Labels are noun phrases ("Permission Policies"), not verbs ("Configure
+  permissions").
+- Don't repeat the parent category in the label ("Billing > Billing
+  History" → "Billing History" is fine; "Billing > Billing Subscription
+  Billing" is not).

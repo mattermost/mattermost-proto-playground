@@ -1,4 +1,4 @@
-import type { HTMLAttributes, MouseEvent, ReactNode } from 'react';
+import type { HTMLAttributes, ButtonHTMLAttributes, MouseEvent, ReactNode } from 'react';
 import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import Icon from '@/components/ui/Icon/Icon';
 import type { IconSize } from '@/components/ui/Icon/Icon';
@@ -9,18 +9,32 @@ import styles from './Chip.module.scss';
 
 export type ChipSize = 'Small' | 'Medium' | 'Medium Compact' | 'Large';
 
+/**
+ * Semantic state tone. Tints the chip background and colors the label/icon.
+ * Use for status-bearing chips (verdicts, validations, session-state pills).
+ * Default 'neutral' matches the standard chip surface.
+ */
+export type ChipTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+
 export interface ChipProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
-  'children'
+  'children' | 'onClick'
 > {
   /** Chip label. */
   children: ReactNode;
   /** Visual size. Default: Medium. */
   size?: ChipSize;
+  /** Semantic tone — drives tinted background + label/icon color. Default: 'neutral'. */
+  tone?: ChipTone;
   /** Leading icon from @mattermost/compass-icons. */
   leadingIcon?: ReactNode;
   /** Leading avatar. Overrides leadingIcon when both are provided. */
   leadingAvatar?: { src: string; alt: string };
+  /**
+   * Trailing icon (e.g. chevron) rendered after the label.
+   * When `onRemove` is also provided, the remove button takes precedence.
+   */
+  trailingIcon?: ReactNode;
   /** When provided, shows the remove (×) button and calls this on click. */
   onRemove?: (e: MouseEvent<HTMLButtonElement>) => void;
   /** Accessible label for the remove button. Default: "Remove". */
@@ -29,6 +43,17 @@ export interface ChipProps extends Omit<
   error?: boolean;
   /** Adds a colored background overlay. */
   colored?: boolean;
+  /**
+   * Render as a `<button>` instead of a `<div>`. Use when the chip itself is the
+   * clickable target (e.g. opens a popover). Default: 'div'.
+   */
+  as?: 'div' | 'button';
+  /** Click handler. Only meaningful when `as='button'`. */
+  onClick?: (e: MouseEvent<HTMLElement>) => void;
+  /** Forwarded to the underlying button — only used when `as='button'`. */
+  disabled?: boolean;
+  /** Forwarded to the underlying button — only used when `as='button'`. */
+  type?: ButtonHTMLAttributes<HTMLButtonElement>['type'];
   className?: string;
 }
 
@@ -49,12 +74,18 @@ const AVATAR_SIZE_MAP: Record<ChipSize, UserAvatarSize> = {
 export default function Chip({
   children,
   size = 'Medium',
+  tone = 'neutral',
   leadingIcon,
   leadingAvatar,
+  trailingIcon,
   onRemove,
   removeLabel = 'Remove',
   error = false,
   colored = false,
+  as = 'div',
+  onClick,
+  disabled,
+  type = 'button',
   className = '',
   ...rest
 }: ChipProps) {
@@ -64,6 +95,8 @@ export default function Chip({
   const rootClass = [
     styles.chip,
     styles[`chip--size-${toKebab(size)}`],
+    tone !== 'neutral' && styles[`chip--tone-${tone}`],
+    as === 'button' && styles['chip--interactive'],
     error && styles['chip--error'],
     colored && styles['chip--colored'],
     className,
@@ -71,8 +104,8 @@ export default function Chip({
     .filter(Boolean)
     .join(' ');
 
-  return (
-    <div className={rootClass} {...rest}>
+  const content = (
+    <>
       {leadingAvatar != null ? (
         <span className={styles['chip__avatar-slot']}>
           <UserAvatar
@@ -96,7 +129,31 @@ export default function Chip({
         >
           <CloseCircleIcon size={Number(iconSize)} aria-hidden />
         </button>
+      ) : trailingIcon != null ? (
+        <span className={styles['chip__trailing-slot']} aria-hidden>
+          <Icon glyph={trailingIcon} size={iconSize} />
+        </span>
       ) : null}
+    </>
+  );
+
+  if (as === 'button') {
+    return (
+      <button
+        type={type}
+        className={rootClass}
+        onClick={onClick}
+        disabled={disabled}
+        {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={rootClass} {...rest}>
+      {content}
     </div>
   );
 }

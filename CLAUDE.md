@@ -1,4 +1,83 @@
-# Project instructions for AI
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+```bash
+npm install          # install deps
+npm run dev          # Vite dev server (open URL it prints)
+npm run build        # tsc -b && vite build (type-check is part of build)
+npm run preview      # serve the production build locally
+npm run lint         # eslint .
+npm run format       # prettier --write .
+npm run format:check # prettier --check (CI-style)
+```
+
+There is no test runner configured. Type-checking happens via `tsc -b` inside `npm run build` — there is no standalone `typecheck` script.
+
+The Vite `base` is `/mattermost-proto-playground/` (see `vite.config.ts`). The dev server and GitHub Pages deploy both serve under that path; the `BrowserRouter` reads `import.meta.env.BASE_URL` so all routes are relative to it. Don't hard-code absolute `/foo` URLs.
+
+Path alias: `@/` → `./src/` (configured in both `vite.config.ts` and `tsconfig.app.json`). Always import via `@/...`, never deep relatives.
+
+CI: `.github/workflows/deploy.yml` runs `npm ci && npm run build` on push to `main` and publishes `dist/` to GitHub Pages (with `dist/index.html` copied to `dist/404.html` for SPA fallback).
+
+## Architecture
+
+This is a **design-system documentation site + prototype playground** for Mattermost UI work. It is a Vite + React 19 + TypeScript SPA. There is no backend.
+
+### The Topic manifest is the spine
+
+Every docs entry — foundation, component, pattern, or layout — is a **Topic** registered in `src/manifests/topics.ts`. A topic owns:
+
+- `guidelinePage` (required) — a lazy import of `*.guideline.mdx` prose
+- `specimenPage` (optional) — a lazy import of `*.specimen.tsx` live demo
+
+`TopicRoute` (`src/pages/topics/TopicRoute.tsx`) renders both as Guidelines / Specimen tabs over the same URL `/<category>/<slug>`. Topics with no specimen hide the tab strip and render the guideline only.
+
+Sidebar grouping is a separate concern: `src/manifests/sections.ts` defines `SectionGroup`s per category (Foundations: Overview / Style / Guidelines; Components: Actions / Banners / Forms and Input / etc.). Slugs not listed in a group fall through to "Other".
+
+The Foundations index page uses a **curated bento layout** (`src/pages/topics/FoundationsBento/FoundationsBento.tsx`) with hero/medium/small slug arrays. New foundation topics not placed there get a plain-card fallback.
+
+### Routing
+
+`src/router/index.tsx` mounts everything under `AppShell` (which hides `TopNav` when running in an iframe — used for embedded previews):
+
+- `/` → `Home`
+- `/:category` → `CategoryRoute` (category landing)
+- `/:category/:slug` → `TopicRoute` (Guidelines tab)
+- `/:category/:slug/specimen` → `TopicRoute` (Specimen tab)
+- `/prototypes` → `PrototypesIndex`; individual prototypes registered in the `PROTOTYPES` array in the same file
+- `/resources` → `ResourcesIndex`
+
+To add a new prototype flow, add a page under `src/pages/` and an entry to the `PROTOTYPES` array — it becomes both a sidebar nav item and a route.
+
+### Doc shell: prose vs. non-prose
+
+All docs pages render inside `src/pages/_shell/DocShell.module.scss` (hero 1180px, body 960px — layout only). Prose typography lives in `DocPage.module.scss` under `.doc-page__prose`. Wrap MDX content in that class **only where bare HTML emitted by MDX needs styling** — TopicRoute does this for the Guidelines tab; CategoryRoute does it for category intros. Specimen tabs and category indexes do not wrap in prose.
+
+`.doc-page__prose` selectors are all gated with `:not([class])`, so they only target bare HTML from MDX. Classed component elements (e.g. `Modal`'s `<h2 className="modal__title">`) are unaffected.
+
+**Corollary for component authors:** never render a bare `<h2>`, `<p>`, `<li>`, etc. inside a component. Always attach a CSS-module className — otherwise the element will silently inherit prose typography when rendered on a prose page.
+
+### Theming
+
+`src/contexts/ThemeContext.tsx` exposes five themes (`denim`, `sapphire`, `quartz`, `indigo`, `onyx`), persisted to `localStorage` and applied as `data-theme` on `<html>`. Theme tokens are defined in `src/styles/themes.scss`; the base token set lives in `src/styles/tokens.scss`. Vite preprends `@use "@/styles/breakpoints"` and `@use "@/styles/mixins"` into every SCSS file — those identifiers are always available.
+
+### MDX
+
+MDX is plugged in via `@mdx-js/rollup` (pre-plugin in `vite.config.ts`) with `remark-gfm`, `rehype-slug`, and `rehype-autolink-headings` (wrap behavior, so headings become their own anchors). The MDX provider in `src/guidelines/_provider/MdxProvider.tsx` injects shared anchor styling. Reusable guideline-only React components (anatomy stages, sample grids, `<Num>` lists) live in `src/guidelines/_components/`.
+
+### Folder map
+
+- `src/components/ui/` — design-system components (one folder per component, with `<Name>.tsx`, `<Name>.module.scss`, `index.ts`)
+- `src/components/layout/` — page chrome (`AppShell`, `TopNav`, `DocsLayout`, `DocSidebar`, `PageHero`, `OnThisPage`)
+- `src/guidelines/<category>/<slug>/` — per-topic `*.guideline.mdx` + optional `*.specimen.tsx`
+- `src/pages/_shell/` — `DocShell` (layout) and `DocPage` (prose) styles
+- `src/pages/topics/` — `TopicRoute`, `CategoryRoute`, `FoundationsBento`
+- `src/manifests/` — `topics.ts` and `sections.ts` (the only place a topic is registered for navigation)
+- `src/hooks/` — shared hooks (see table below)
+- `src/styles/` — `tokens.scss`, `themes.scss`, `mixins.scss`, `breakpoints.scss`, `global.scss`, `reset.scss`
 
 ## Design system: Foundations, Components, Patterns, and Layouts
 

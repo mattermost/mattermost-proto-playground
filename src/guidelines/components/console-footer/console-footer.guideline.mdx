@@ -1,0 +1,45 @@
+The Console Footer is the persistent save bar at the bottom of every System
+Console page. It commits or discards the page's pending changes and surfaces
+validation feedback for the work above it.
+
+A page that lets the administrator change settings always shows this footer.
+It sits flush with the bottom of the content area, never the viewport — when
+the content scrolls, the footer follows the page, not the window.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Save** — primary action; disabled until at least one field on
+  the page is dirty. While saving, shows "Saving…" and locks both buttons.
+- <Num>2</Num> **Cancel** — tertiary action; reverts pending edits on the
+  page.
+- <Num>3</Num> **Message slot** — empty by default. Renders a warning or error
+  inline next to the buttons when the page has unresolved validation issues.
+
+<Divider />
+
+## States
+
+The footer has three substantive states:
+
+- Default — only the Save / Cancel pair is visible. Save is disabled.
+- Warning — a triangle-alert icon and a single line of warning text appear to
+  the right of the buttons. Use for non-blocking issues the administrator
+  should know about before saving.
+- Error — a circle-alert icon and a single line of error text appear in the
+  same slot, in destructive tone. Use for blocking validation that prevents
+  saving. The Save button remains disabled while an error is present.
+
+Pass at most one of `warning` or `error`. Error wins if both are passed.
+
+<Divider />
+
+## Content
+
+- Keep messages to a single line. Long explanations belong in the field-level
+  help text, not the footer.
+- Lead the message with the field at fault when possible: "Cluster name is
+  required." rather than "Validation failed."
+- Saving text stays as "Saving…" — do not localize to "Save in progress…" or
+  similar.

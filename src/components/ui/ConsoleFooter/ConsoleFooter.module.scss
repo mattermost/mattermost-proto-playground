@@ -1,0 +1,55 @@
+.console-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--center-channel-bg);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+    padding: 14px var(--spacing-xl);
+    width: 100%;
+  }
+
+  &__buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    flex-shrink: 0;
+  }
+
+  &__message {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    overflow: hidden;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+
+    &--warning {
+      color: var(--color-warning);
+    }
+
+    &--error {
+      color: var(--color-danger);
+    }
+  }
+
+  &__message-icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: inherit;
+  }
+
+  &__message-text {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-25);
+    color: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

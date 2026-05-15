@@ -1,0 +1,22 @@
+.discard-warning-toast {
+  position: fixed;
+  left: 50%;
+  bottom: var(--spacing-xxl);
+  transform: translateX(-50%);
+  z-index: 80;
+  max-width: 640px;
+  width: calc(100% - var(--spacing-xxxl));
+  animation: discard-warning-toast-rise var(--duration-quick)
+    var(--ease-entrance);
+}
+
+@keyframes discard-warning-toast-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

@@ -156,6 +156,23 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
         'unread-badge',
       ],
     },
+    {
+      label: 'System Console',
+      slugs: [
+        'console-sidebar',
+        'console-sidebar-category',
+        'console-sidebar-item',
+        'console-header',
+        'console-search',
+        'console-page-header',
+        'console-panel',
+        'console-panel-header',
+        'console-setting',
+        'console-property-table',
+        'console-property-row',
+        'console-footer',
+      ],
+    },
   ],
   patterns: [
     {

@@ -1,0 +1,43 @@
+Console Panel Header is the top region of a Console Panel: title, optional
+subtitle and icon, and an action cluster.
+
+Most authors use `ConsolePanel` directly — it wraps this header with a body
+slot. Reach for the standalone `ConsolePanelHeader` only when you need a
+header without a card body (e.g. a header above a custom full-bleed table).
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Icon container** — optional circular tinted container with a
+  20px compass icon. Use only when the panel's subject has a recognized icon
+  (locks, keys, sync); never decorative.
+- <Num>2</Num> **Title** — the panel's name, rendered as an `h2`. Sentence
+  case.
+- <Num>3</Num> **Tag** — optional Enterprise or Beta badge. Same conventions
+  as the page header tag.
+- <Num>4</Num> **Subtitle** — optional one-line description below the title.
+- <Num>5</Num> **Action cluster** — right-aligned controls in this order:
+  Switch, primary button, expand chevron. Render only what's needed; the
+  cluster hides itself when empty.
+
+<Divider />
+
+## Behavior
+
+The expand chevron is uncontrolled by default and starts expanded. Pass
+`expanded` to control it externally. The toggle handler fires with the next
+state on each click.
+
+A switch in the header controls the whole panel's enabled state — for
+example, turning off a feature toggle should typically disable or hide the
+panel body. Owning component decides whether to render the body when the
+switch is off.
+
+<Divider />
+
+## Content
+
+- One primary button at most. If you need two affordances, promote the more
+  important and use a tertiary button in the panel body for the other.
+- Subtitle reads as a continuation of the title — don't restate the title.

@@ -25,12 +25,24 @@ export interface ModalProps {
   onClose?: () => void;
   /** Show divider between header and body. Figma: Divider = On. Default: true. */
   headerDivider?: boolean;
+  /**
+   * Optional action slot rendered in the header, stacked under the close button.
+   * Aligns to the bottom of the header content so it sits alongside the subtitle.
+   * When omitted, the close button uses the default placement (no wrapper column).
+   */
+  headerAction?: ReactNode;
   /** Body content. */
   children: ReactNode;
   /** Footer slot — typically a group of Buttons, right-aligned by default. */
   footer?: ReactNode;
   /** Show divider between body and footer. Figma: Divider = On. Default: true. */
   footerDivider?: boolean;
+  /**
+   * When true, the body has no padding. The caller manages padding per section.
+   * Useful when sections inside the body need to span edge-to-edge (e.g. dividers).
+   * Default: false.
+   */
+  noBodyPadding?: boolean;
 }
 
 export default function Modal({
@@ -41,9 +53,11 @@ export default function Modal({
   onBack,
   onClose,
   headerDivider = true,
+  headerAction,
   children,
   footer,
   footerDivider = true,
+  noBodyPadding = false,
 }: ModalProps) {
   const titleId = useId();
   const sizeClass = styles[`modal--size-${toKebab(size)}`];
@@ -80,17 +94,38 @@ export default function Modal({
             )}
           </div>
         </div>
-        <IconButton
-          aria-label="Close"
-          className={styles['modal__close']}
-          icon={<Icon glyph={<CloseIcon />} size="20" />}
-          onClick={onClose}
-        />
+        {headerAction ? (
+          <div className={styles['modal__header-right']}>
+            <IconButton
+              aria-label="Close"
+              className={styles['modal__close']}
+              icon={<Icon glyph={<CloseIcon />} size="20" />}
+              onClick={onClose}
+            />
+            <div className={styles['modal__header-action']}>{headerAction}</div>
+          </div>
+        ) : (
+          <IconButton
+            aria-label="Close"
+            className={styles['modal__close']}
+            icon={<Icon glyph={<CloseIcon />} size="20" />}
+            onClick={onClose}
+          />
+        )}
       </div>
 
       <div className={styles['modal__body']}>
         <Scrollbars>
-          <div className={styles['modal__body-inner']}>{children}</div>
+          <div
+            className={[
+              styles['modal__body-inner'],
+              noBodyPadding && styles['modal__body-inner--no-padding'],
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {children}
+          </div>
         </Scrollbars>
       </div>
 

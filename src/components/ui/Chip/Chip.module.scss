@@ -45,6 +45,14 @@
     position: relative;
   }
 
+  &__trailing-slot {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    position: relative;
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+  }
+
   &__remove {
     display: inline-flex;
     align-items: center;
@@ -76,6 +84,84 @@
 
   &--error {
     border-color: var(--color-danger);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Semantic tone modifiers — tinted background + label/icon color.
+  // Use the -rgb counterpart so the tint composes correctly with theme bg.
+  // ---------------------------------------------------------------------------
+  &--tone-success {
+    background-color: rgba(var(--color-success-rgb), 0.12);
+    color: var(--color-success);
+
+    .chip__icon-slot {
+      color: var(--color-success);
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-success-rgb), 0.16);
+    }
+  }
+
+  &--tone-warning {
+    background-color: rgba(var(--color-warning-rgb), 0.16);
+    color: var(--color-warning);
+
+    .chip__icon-slot {
+      color: var(--color-warning);
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-warning-rgb), 0.22);
+    }
+  }
+
+  &--tone-danger {
+    background-color: rgba(var(--color-danger-rgb), 0.12);
+    color: var(--color-danger);
+
+    .chip__icon-slot {
+      color: var(--color-danger);
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-danger-rgb), 0.16);
+    }
+  }
+
+  &--tone-info {
+    background-color: rgba(var(--color-info-rgb), 0.12);
+    color: var(--color-info);
+
+    .chip__icon-slot {
+      color: var(--color-info);
+    }
+
+    &:hover {
+      background-color: rgba(var(--color-info-rgb), 0.16);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Interactive mode — chip itself is the click target (renders as <button>).
+  // ---------------------------------------------------------------------------
+  &--interactive {
+    cursor: pointer;
+    font-family: inherit;
+
+    &:hover {
+      filter: brightness(0.96);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 1px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
   }
 
   // ---------------------------------------------------------------------------

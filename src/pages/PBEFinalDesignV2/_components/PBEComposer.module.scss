@@ -1,0 +1,25 @@
+.pbe-composer {
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--spacing-l) var(--spacing-l);
+  background: var(--center-channel-bg);
+  flex-shrink: 0;
+
+  &__indicator {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    margin-bottom: var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    background: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--button-bg);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__indicator-label {
+    line-height: var(--line-height-50);
+  }
+}
