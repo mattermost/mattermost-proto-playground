@@ -1,6 +1,10 @@
 import type { ComponentType } from 'react';
 
-export type TopicCategory = 'foundations' | 'components' | 'patterns' | 'layouts';
+export type TopicCategory =
+  | 'foundations'
+  | 'components'
+  | 'patterns'
+  | 'layouts';
 
 export type TopicStatus = 'stable' | 'beta' | 'deprecated';
 
@@ -211,6 +215,52 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/action-button/action-button.specimen'),
   },
   {
+    slug: 'admin-console-header',
+    name: 'Admin Console Header',
+    category: 'components',
+    description:
+      'System Console page stripe: title, optional edition tag, optional back control.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/admin-console-header/admin-console-header.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/admin-console-header/admin-console-header.specimen'),
+  },
+  {
+    slug: 'admin-panel-header',
+    name: 'Admin Panel Header',
+    category: 'components',
+    description:
+      'System Console section rail: title, optional tags and subtitle, optional icon, trailing controls.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/admin-panel-header/admin-panel-header.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/admin-panel-header/admin-panel-header.specimen'),
+  },
+  {
+    slug: 'admin-panel-footer',
+    name: 'Admin Panel Footer',
+    category: 'components',
+    description:
+      'System Console content footer: Save and Cancel with optional validation summary.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/admin-panel-footer/admin-panel-footer.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/admin-panel-footer/admin-panel-footer.specimen'),
+  },
+  {
+    slug: 'feature-discovery-panel',
+    name: 'Feature Discovery Panel',
+    category: 'components',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.specimen'),
+  },
+  {
     slug: 'app-bar-item',
     name: 'App Bar Item',
     category: 'components',
@@ -323,14 +373,6 @@ export const TOPICS: Topic[] = [
     status: 'stable',
     guidelinePage: () => import('@/guidelines/components/error-message/error-message.guideline.mdx'),
     specimenPage: () => import('@/guidelines/components/error-message/error-message.specimen'),
-  },
-  {
-    slug: 'feature-discovery-panel',
-    name: 'Feature Discovery Panel',
-    category: 'components',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.specimen'),
   },
   {
     slug: 'global-banner',
@@ -673,6 +715,30 @@ export const TOPICS: Topic[] = [
   // Patterns (sidebar order: alphabetical by display name)
   // ===========================================================================
   {
+    slug: 'admin-panel',
+    name: 'Admin Panel',
+    category: 'patterns',
+    description:
+      'Bordered settings sheet: panel header and body for grouped System Console fields.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/admin-panel/admin-panel.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/admin-panel/admin-panel.specimen'),
+  },
+  {
+    slug: 'admin-console-sidebar',
+    name: 'Admin Console Sidebar',
+    category: 'patterns',
+    description:
+      'System Console navigation: identity, find settings, grouped admin pages on a dark sidebar.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/admin-console-sidebar/admin-console-sidebar.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/admin-console-sidebar/admin-console-sidebar.specimen'),
+  },
+  {
     slug: 'call-widget',
     name: 'Call Widget',
     category: 'patterns',
@@ -789,12 +855,101 @@ export const TOPICS: Topic[] = [
   // Layouts
   // ===========================================================================
   {
-    slug: 'messaging',
-    name: 'Messaging',
+    slug: 'channel',
+    name: 'Channel',
     category: 'layouts',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/layouts/messaging/messaging.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/layouts/messaging/messaging.specimen'),
+    guidelinePage: () => import('@/guidelines/layouts/channel/channel.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/layouts/channel/channel.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'channel-thread',
+    name: 'Channel (thread)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full channel shell with the right sidebar showing an open thread and reply composer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/channel-thread/channel-thread.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/channel-thread/channel-thread.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'channel-info',
+    name: 'Channel (channel info)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full channel shell with the right sidebar showing open channel info.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/channel-info/channel-info.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/channel-info/channel-info.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'modal',
+    name: 'Modal',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channel shell with a modal above a 50% black backdrop over the channel.',
+    guidelinePage: () => import('@/guidelines/layouts/modal/modal.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/layouts/modal/modal.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'threads-view',
+    name: 'Threads View',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channels shell with the thread inbox, a scrollable list of threads, and the thread right sidebar open.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'call-widget',
+    name: 'Call (widget)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channel shell with an active call shown as the in-channel floating widget.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/call-widget/call-widget.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/call-widget/call-widget.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'call-popout',
+    name: 'Call (popout)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Windowed call popout only; specimen wrapper has no visible frame (no channel shell).',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/call-popout/call-popout.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/call-popout/call-popout.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'admin-console',
+    name: 'Admin Console',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'System Console shell with sidebar navigation, page header, settings panels, and save footer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/admin-console/admin-console.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/admin-console/admin-console.specimen'),
     fullBleedSpecimen: true,
   },
 ];

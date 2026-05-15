@@ -5,7 +5,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import { findTopic, type TopicCategory } from '@/manifests/topics';
+import { findTopic, type Topic, type TopicCategory } from '@/manifests/topics';
 import {
   firstTopicInNextCategory,
   isLastTopicInCategorySeries,
@@ -16,6 +16,7 @@ import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/G
 import Tabs from '@/components/ui/Tabs/Tabs';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
+import DocUiEmbed from '@/pages/_shell/DocUiEmbed';
 import styles from '@/pages/_shell/DocShell.module.scss';
 
 const VALID_CATEGORIES: TopicCategory[] = [
@@ -63,6 +64,39 @@ export default function TopicRoute() {
     [topic],
   );
 
+  const nextTopic = useMemo(
+    () => (topic ? nextTopicInCategorySeries(topic) : undefined),
+    [topic],
+  );
+  const firstTopicNextSection = useMemo(() => {
+    if (!topic) return undefined;
+    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
+      return undefined;
+    }
+    return firstTopicInNextCategory(topic);
+  }, [topic, nextTopic]);
+
+  if (topic?.category === 'layouts' && location.pathname.endsWith('/specimen')) {
+    return (
+      <Navigate to={`/${topic.category}/${topic.slug}`} replace />
+    );
+  }
+
+  if (topic?.category === 'layouts' && SpecimenPage) {
+    return (
+      <div
+        className={[
+          styles['doc-shell'],
+          styles['doc-shell--layout-only'],
+        ].join(' ')}
+      >
+        <Suspense fallback={null}>
+          <SpecimenPage />
+        </Suspense>
+      </div>
+    );
+  }
+
   if (!topic || !GuidelinePage) {
     return (
       <div className={styles['doc-shell']}>
@@ -92,17 +126,6 @@ export default function TopicRoute() {
     navigate(key === 'specimen' ? `${tabsBase}/specimen` : tabsBase);
   };
 
-  const nextTopic = useMemo(
-    () => nextTopicInCategorySeries(topic),
-    [topic],
-  );
-  const firstTopicNextSection = useMemo(() => {
-    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
-      return undefined;
-    }
-    return firstTopicInNextCategory(topic);
-  }, [topic, nextTopic]);
-
   return (
     <div className={styles['doc-shell']}>
       <div className={styles['doc-shell__top']}>
@@ -127,7 +150,9 @@ export default function TopicRoute() {
       </div>
       {fullBleed && SpecimenPage ? (
         <Suspense fallback={null}>
-          <SpecimenPage />
+          <DocUiEmbed>
+            <SpecimenPage />
+          </DocUiEmbed>
         </Suspense>
       ) : view === 'guidelines' ? (
         <div className={styles['doc-shell__columns']}>
@@ -159,10 +184,9 @@ export default function TopicRoute() {
         <div
           className={`${styles['doc-shell__body']} ${styles['doc-shell__body--standalone']}`}
         >
+          {/* Specimens are not wrapped in doc-page__prose; DocUiEmbed resets doc-shell typography. */}
           <Suspense fallback={<p>Loading…</p>}>
-            <div className={docStyles['doc-page__prose']}>
-              {SpecimenPage && <SpecimenPage />}
-            </div>
+            <DocUiEmbed>{SpecimenPage && <SpecimenPage />}</DocUiEmbed>
           </Suspense>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
@@ -96,21 +96,38 @@ export function ChannelsSidebarNavigator({
   );
 }
 
-interface SidebarCategoryProps {
+export interface ChannelsSidebarCategoryProps {
   label: string;
   showChevron?: boolean;
   showPlusButton?: boolean;
+  /** When set, shown instead of the expand chevron (e.g. System Console categories). */
+  leadingIcon?: ReactNode;
+  /** Pin category row to the top of the scroll container while scrolling (e.g. first console section). */
+  sticky?: boolean;
+  /** Full-opacity label + leading icon (System Console categories). Default: toned like channel sidebar. */
+  opaqueCategory?: boolean;
 }
 
-function SidebarCategory({
+export function ChannelsSidebarCategory({
   label,
   showChevron = true,
   showPlusButton = false,
-}: SidebarCategoryProps) {
+  leadingIcon,
+  sticky = false,
+  opaqueCategory = false,
+}: ChannelsSidebarCategoryProps) {
+  const hasLeadingIcon = Boolean(leadingIcon);
+  const showChevronRow = showChevron && !hasLeadingIcon;
+
   const categoryClass = [
     styles['channels-sidebar__category'],
-    !showChevron ? styles['channels-sidebar__category--no-chevron'] : '',
+    hasLeadingIcon ? styles['channels-sidebar__category--with-leading-icon'] : '',
+    opaqueCategory ? styles['channels-sidebar__category--opaque'] : '',
+    !showChevronRow && !hasLeadingIcon
+      ? styles['channels-sidebar__category--no-chevron']
+      : '',
     showPlusButton ? styles['channels-sidebar__category--has-action'] : '',
+    sticky ? styles['channels-sidebar__category--sticky'] : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -118,7 +135,12 @@ function SidebarCategory({
   return (
     <div className={categoryClass}>
       <div className={styles['channels-sidebar__category-left']}>
-        {showChevron && (
+        {hasLeadingIcon && (
+          <span className={styles['channels-sidebar__category-leading-icon']}>
+            {leadingIcon}
+          </span>
+        )}
+        {showChevronRow && (
           <span className={styles['channels-sidebar__category-chevron']}>
             <ChevronDownIcon size={12} />
           </span>
@@ -241,7 +263,7 @@ export default function ChannelsSidebar({
                 key={group.key}
                 className={styles['channels-sidebar__channel-group']}
               >
-                <SidebarCategory
+                <ChannelsSidebarCategory
                   label={group.category.label}
                   showChevron={group.category.showChevron}
                   showPlusButton={group.category.showPlusButton}

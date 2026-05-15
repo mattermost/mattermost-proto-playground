@@ -28,7 +28,12 @@ export interface ChannelSidebarItemProps {
   className?: string;
   /** Channel or user display name. */
   name: string;
-  /** Leading visual type. Default: Public. */
+  /**
+   * Text-only row (e.g. System Console navigation): no channel glyph or
+   * overflow menu; name aligns with channel sidebar label padding.
+   */
+  hideLeadingVisual?: boolean;
+  /** Leading visual type. Default: Public. Ignored when `hideLeadingVisual`. */
   leadingVisual?: ChannelSidebarItemLeadingVisual;
   /** Read/unread/mention state. Default: Read. */
   status?: ChannelSidebarItemStatus;
@@ -103,6 +108,7 @@ function LeadingVisualContent({
 export default function ChannelSidebarItem({
   className,
   name,
+  hideLeadingVisual = false,
   leadingVisual = 'Public',
   status = 'Read',
   active = false,
@@ -117,19 +123,19 @@ export default function ChannelSidebarItem({
   customStatusEmoji,
   onClick,
 }: ChannelSidebarItemProps) {
-  const isDM = leadingVisual === 'Direct Message';
-  const isDrafts = leadingVisual === 'Drafts';
+  const isDM = !hideLeadingVisual && leadingVisual === 'Direct Message';
+  const isDrafts = !hideLeadingVisual && leadingVisual === 'Drafts';
   const effectiveStatus = isDrafts && status === 'Unread' ? 'Read' : status;
   const hasMentionBadge = effectiveStatus === 'Mention';
-  const isChannelOrDM = [
-    'Public',
-    'Private',
-    'Group Message',
-    'Direct Message',
-  ].includes(leadingVisual);
+  const isChannelOrDM =
+    !hideLeadingVisual &&
+    ['Public', 'Private', 'Group Message', 'Direct Message'].includes(
+      leadingVisual,
+    );
 
   const rootClass = [
     styles['channel-sidebar-item'],
+    hideLeadingVisual ? styles['channel-sidebar-item--text-only'] : '',
     active ? styles['channel-sidebar-item--active'] : '',
     muted ? styles['channel-sidebar-item--muted'] : '',
     styles[`channel-sidebar-item--status-${effectiveStatus.toLowerCase()}`],
@@ -165,15 +171,17 @@ export default function ChannelSidebarItem({
         <div className={styles['channel-sidebar-item__active-border']} />
       )}
       <div className={styles['channel-sidebar-item__left']}>
-        <div className={iconContainerClass}>
-          <LeadingVisualContent
-            leadingVisual={leadingVisual}
-            memberCount={memberCount}
-            avatarSrc={avatarSrc}
-            avatarAlt={avatarAlt}
-            showAvatarStatus={showAvatarStatus}
-          />
-        </div>
+        {!hideLeadingVisual && (
+          <div className={iconContainerClass}>
+            <LeadingVisualContent
+              leadingVisual={leadingVisual}
+              memberCount={memberCount}
+              avatarSrc={avatarSrc}
+              avatarAlt={avatarAlt}
+              showAvatarStatus={showAvatarStatus}
+            />
+          </div>
+        )}
         <div className={styles['channel-sidebar-item__content']}>
           <span className={styles['channel-sidebar-item__name']}>{name}</span>
           {sharedChannel && (

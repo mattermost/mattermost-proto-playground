@@ -1,15 +1,9 @@
 .scene-switcher {
-  position: fixed;
-  top: var(--spacing-xs);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 60;
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-m);
-  padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-xxxs)
-    var(--spacing-m);
-  background: var(--center-channel-bg);
+  padding: var(--spacing-xxxs);
+  border-radius: var(--radius-l);
 
   &__label {
     font-size: var(--font-size-50);

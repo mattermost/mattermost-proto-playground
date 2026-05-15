@@ -1,8 +1,13 @@
 .message-input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   background-color: var(--center-channel-bg);
 
   &__container {
     position: relative;
+    min-width: 0;
     background-color: var(--center-channel-bg);
     border: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
     border-radius: var(--radius-s);
@@ -46,6 +51,7 @@
 
   &__body {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     justify-content: center;
     padding: 14px 188px 14px var(--spacing-l);
@@ -81,11 +87,13 @@
   }
 
   &__attachments {
+    min-width: 0;
     overflow: hidden;
     padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-l);
   }
 
   &__attachments-list {
+    min-width: 0;
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-xs);
@@ -111,6 +119,7 @@
     border-radius: 0 0 4px 4px;
     padding: 0 var(--spacing-xs);
     opacity: 0;
+    z-index: 0;
     transition:
       height var(--duration-quick) var(--ease-transition),
       opacity var(--duration-quick) var(--ease-entrance);
@@ -118,6 +127,42 @@
     &--open {
       height: var(--spacing-xxxxxl);
       opacity: 1;
+    }
+  }
+
+  &__narrow-chrome {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    height: var(--spacing-xxxxxl);
+    padding: 0 var(--spacing-xs);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--spacing-xs);
+    background-color: var(--center-channel-bg);
+    border-radius: 0 0 var(--radius-s) var(--radius-s);
+  }
+
+  &__narrow-chrome-left {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  &__formatting-collapsed {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 
@@ -157,6 +202,15 @@
     padding: var(--spacing-xs);
     background-color: var(--center-channel-bg);
     border-radius: 0 0 4px 0;
+  }
+
+  &__actions--narrow-chrome {
+    position: static;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    flex-shrink: 0;
+    justify-self: end;
   }
 
   &__actions-divider {
@@ -251,5 +305,25 @@
     background: none;
     cursor: pointer;
     color: var(--button-color, var(--color-neutral-0));
+  }
+
+  // Narrow / right-sidebar: stable chrome height; overrides must follow
+  // `&__container--formatting-open` so bottom padding does not jump.
+  &--width-narrow {
+    width: 100%;
+
+    .message-input__container {
+      padding-bottom: calc(
+        var(--spacing-xxxxxl) - var(--spacing-xxs)
+      );
+    }
+
+    .message-input__body {
+      padding: 14px var(--spacing-l);
+
+      &.message-input__body--formatting-open {
+        padding-right: var(--spacing-l);
+      }
+    }
   }
 }

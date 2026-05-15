@@ -2,7 +2,11 @@ import { toKebab } from '@/utils/string';
 import styles from './MentionBadge.module.scss';
 
 /** Figma Mention Badge location context — controls color scheme. */
-export type MentionBadgeLocation = 'Sidebar' | 'Menu Item' | 'Icon Button';
+export type MentionBadgeLocation =
+  | 'Sidebar'
+  | 'Menu Item'
+  | 'Icon Button'
+  | 'Channel';
 
 /** Figma Mention Badge size. */
 export type MentionBadgeSize = 'Small' | 'Medium' | 'Large';

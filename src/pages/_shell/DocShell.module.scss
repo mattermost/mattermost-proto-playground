@@ -4,6 +4,13 @@
   width: 100%;
 }
 
+// Layouts category: full-bleed specimen only (no hero, no guideline/specimen tabs).
+.doc-shell--layout-only {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 // Hero + tabs share the same outer width as DocPage's `--with-toc` inner,
 // so the rounded hero card stays inset from the viewport edges.
 .doc-shell__top {

@@ -149,6 +149,18 @@
     gap: var(--spacing-xxxxs);
     cursor: pointer;
 
+    /** System Console / admin: leading compass icon + label, full-width inset. */
+    &--with-leading-icon {
+      padding: var(--spacing-xxxs) var(--spacing-xl);
+    }
+
+    &--sticky {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--sidebar-bg);
+    }
+
     &--no-chevron {
       padding-left: 22px;
     }
@@ -164,6 +176,34 @@
     flex: 1;
     min-width: 0;
     gap: var(--spacing-xxxxs);
+  }
+
+  &__category-leading-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    color: var(--sidebar-text);
+  }
+
+  /** Admin categories: icon/label rhythm (Figma sidebar-text @ 64%, 4px between). */
+  &__category--with-leading-icon &__category-left {
+    gap: var(--spacing-xxxs);
+  }
+
+  &__category--with-leading-icon &__category-leading-icon {
+    opacity: 0.64;
+  }
+
+  /** System Console: category label + icon at full sidebar-text strength. */
+  &__category--opaque &__category-label {
+    opacity: 1;
+  }
+
+  &__category--opaque &__category-leading-icon {
+    opacity: 1;
   }
 
   &__category-chevron {

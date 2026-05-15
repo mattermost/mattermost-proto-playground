@@ -9,7 +9,7 @@ export interface SceneSwitcherProps {
   scenes: SceneSwitcherScene[];
   activeId: string;
   onChange: (id: string) => void;
-  /** Label shown before the segmented control (e.g. "Entry point"). */
+  /** Optional caption before the segmented control. Omit for label-free toolbars. */
   label?: string;
   /** Accessible name for the tablist. */
   ariaLabel?: string;
@@ -19,7 +19,7 @@ export default function SceneSwitcher({
   scenes,
   activeId,
   onChange,
-  label = 'Scenes',
+  label,
   ariaLabel = 'Scene selection',
 }: SceneSwitcherProps) {
   return (
@@ -28,7 +28,9 @@ export default function SceneSwitcher({
       role="tablist"
       aria-label={ariaLabel}
     >
-      <span className={styles['scene-switcher__label']}>{label}</span>
+      {label ? (
+        <span className={styles['scene-switcher__label']}>{label}</span>
+      ) : null}
       <div className={styles['scene-switcher__segmented']}>
         {scenes.map((s) => {
           const isActive = s.id === activeId;

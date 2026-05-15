@@ -22,7 +22,7 @@ export default function Preview({ caption, center = false, children }: PreviewPr
     .join(' ');
 
   return (
-    <div className={styles['preview']}>
+    <div className={[styles['preview'], 'compass-doc-embed'].join(' ')}>
       {caption && <p className={styles['preview__caption']}>{caption}</p>}
       <div className={bodyClass}>{children}</div>
     </div>

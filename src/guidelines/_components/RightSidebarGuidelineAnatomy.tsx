@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
-import RightSidebar from '@/components/ui/RightSidebar';
-import RightSidebarHeader from '@/components/ui/RightSidebarHeader';
+import RightSidebar, { RightSidebarHeader } from '@/components/ui/RightSidebar';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 
 const shellStyle: CSSProperties = {

@@ -30,6 +30,6 @@
 
   // Icon Button context: uses the link/button colour
   &--context-icon-button {
-    background-color: var(--link-color, var(--color-blue-500));
+    background-color: var(--button-bg);
   }
 }
