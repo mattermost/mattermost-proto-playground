@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
-import ExampleFlow from '@/pages/example-flow/ExampleFlow';
-import ExternalCallParticipants from '@/pages/ExternalCallParticipants/ExternalCallParticipants';
-import OutboundCalls from '@/pages/OutboundCalls/OutboundCalls';
+import ExampleFlow from '@/pages/prototypes/example-flow/ExampleFlow';
+import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
+import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 
 export type PrototypeEntry = {
   id: string;

@@ -1,37 +1,30 @@
 import { useState } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
-import CloseIcon from '@mattermost/compass-icons/components/close';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import DialpadIcon from '@/components/icons/DialpadIcon';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import { KeypadGrid } from '@/pages/OutboundCalls/OutboundCallKeypad';
-import { CONTACT_MAP } from '@/pages/OutboundCalls/outboundCallData';
-import { formatRecentDuration, sanitizeDigits } from '@/pages/OutboundCalls/outboundCallUtils';
-import { playDtmf } from '@/utils/phoneSounds';
+import { KeypadGrid } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
+import { CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
+import { formatRecentDuration, sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import type { Recent } from '@/types/outboundCall';
-import styles from './OutboundCalls.module.scss';
+import styles from '../OutboundCalls.module.scss';
 
-export function RhsDialer({
+export function DialerScene({
   recents,
-  onClose,
   onStartCall,
   onDialRaw,
 }: {
   recents: Recent[];
-  onClose: () => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
   onDialRaw: (number: string) => void;
 }) {
   const [typed, setTyped] = useState('');
 
-  const append = (k: string) => {
-    playDtmf(k);
-    setTyped((t) => sanitizeDigits(t + k));
-  };
+  const append = (k: string) => setTyped((t) => sanitizeDigits(t + k));
   const clearTyped = () => setTyped('');
   const dial = () => {
     if (!typed) return;
@@ -40,25 +33,21 @@ export function RhsDialer({
   };
 
   return (
-    <aside className={styles['rhs']} aria-label="Dial pad">
-      <div className={styles['rhs__header']}>
-        <span className={styles['rhs__header-icon']} aria-hidden>
+    <>
+      <div className={styles['dialer-header']}>
+        <span className={styles['dialer-header__icon']}>
           <Icon glyph={<DialpadIcon />} size="16" />
         </span>
-        <span className={styles['rhs__header-title']}>Dial Pad</span>
-        <IconButton
-          aria-label="Close dial pad"
-          size="Small"
-          padding="Compact"
-          icon={<Icon glyph={<CloseIcon />} size="16" />}
-          onClick={onClose}
-        />
+        <span className={styles['dialer-header__title']}>Dial Pad</span>
+        <span className={styles['dialer-header__description']}>
+          Dial any number — work numbers go through Mattermost Secure.
+        </span>
       </div>
 
-      <div className={styles['rhs__body']}>
-        <div className={styles['rhs__dialpad']}>
+      <div className={styles['dialer']}>
+        <div className={styles['dialer__keypad']}>
           <TextInput
-            className={styles['rhs__phone-field']}
+            className={styles['dialer__phone-field']}
             size="Large"
             value={typed}
             onChange={(e) => setTyped(sanitizeDigits(e.target.value))}
@@ -85,23 +74,26 @@ export function RhsDialer({
             }
           />
           <KeypadGrid onPress={append} />
-          <button
-            type="button"
-            className={styles['rhs__call-button']}
-            onClick={dial}
-            disabled={!typed}
-            aria-label="Start call"
-          >
-            <Icon glyph={<PhoneIcon />} size="20" />
-          </button>
+
+          <div className={styles['dialer__call-action']}>
+            <button
+              type="button"
+              className={styles['dialer__call-button']}
+              onClick={dial}
+              disabled={!typed}
+              aria-label="Start call"
+            >
+              <Icon glyph={<PhoneIcon />} size="24" />
+            </button>
+          </div>
         </div>
 
-        <div className={styles['rhs__recents']}>
-          <div className={styles['rhs__recents-header']}>
-            <Icon glyph={<ClockOutlineIcon />} size="12" />
+        <div className={styles['dialer__recents']}>
+          <div className={styles['dialer__recents-header']}>
+            <Icon glyph={<ClockOutlineIcon />} size="16" />
             <span>Recent calls</span>
           </div>
-          <ul className={styles['rhs__recents-list']}>
+          <ul className={styles['dialer__recents-list']}>
             {recents.map((r, i) => {
               const c = CONTACT_MAP[r.contactId];
               const p = c.phones[r.phoneIndex];
@@ -110,32 +102,32 @@ export function RhsDialer({
                 <li key={i}>
                   <button
                     type="button"
-                    className={styles['rhs__recent']}
+                    className={styles['dialer__recent']}
                     onClick={() => onStartCall(r.contactId, r.phoneIndex)}
                   >
                     {c.avatar ? (
                       <UserAvatar src={c.avatar} alt={c.name} size="32" />
                     ) : (
                       <div
-                        className={styles['rhs__recent-avatar-fallback']}
+                        className={styles['dialer__recent-avatar-fallback']}
                         aria-hidden
                       >
                         <Icon glyph={<PhoneIcon />} size="16" />
                       </div>
                     )}
-                    <div className={styles['rhs__recent-body']}>
+                    <div className={styles['dialer__recent-body']}>
                       <div
-                        className={`${styles['rhs__recent-name']} ${
-                          isMissed ? styles['rhs__recent-name--missed'] : ''
+                        className={`${styles['dialer__recent-name']} ${
+                          isMissed ? styles['dialer__recent-name--missed'] : ''
                         }`}
                       >
                         {c.name}
                       </div>
-                      <div className={styles['rhs__recent-meta']}>{p.number}</div>
+                      <div className={styles['dialer__recent-meta']}>{p.number}</div>
                     </div>
-                    <div className={styles['rhs__recent-right']}>
-                      <div className={styles['rhs__recent-time']}>{r.timestamp}</div>
-                      <div className={styles['rhs__recent-duration']}>
+                    <div className={styles['dialer__recent-right']}>
+                      <div className={styles['dialer__recent-time']}>{r.timestamp}</div>
+                      <div className={styles['dialer__recent-duration']}>
                         {r.durationSec !== undefined
                           ? formatRecentDuration(r.durationSec)
                           : 'Missed'}
@@ -148,6 +140,6 @@ export function RhsDialer({
           </ul>
         </div>
       </div>
-    </aside>
+    </>
   );
 }

@@ -8,8 +8,8 @@ import Divider from '@/components/ui/Divider/Divider';
 import Icon from '@/components/ui/Icon/Icon';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import { CONFERENCE_BRIDGE } from '@/pages/OutboundCalls/outboundCallData';
-import { phoneGlyphFor, phoneLabelText } from '@/pages/OutboundCalls/OutboundCallPhoneGlyphs';
+import { CONFERENCE_BRIDGE } from '@/pages/prototypes/outbound-calls/outboundCallData';
+import { phoneGlyphFor, phoneLabelText } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
 import type { StartCallAction } from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 

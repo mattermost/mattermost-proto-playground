@@ -16,10 +16,10 @@ import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import { UserAvatarGroup } from '@/components/ui/UserAvatarGroup';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
-import { AUDIO_DEVICES, AUDIO_ICON } from '@/pages/OutboundCalls/OutboundCallAudioConstants';
-import { KeypadGrid, KeypadInput } from '@/pages/OutboundCalls/OutboundCallKeypad';
-import { CONFERENCE_BRIDGE, CONTACT_MAP } from '@/pages/OutboundCalls/outboundCallData';
-import { formatDuration, sanitizeDigits } from '@/pages/OutboundCalls/outboundCallUtils';
+import { AUDIO_DEVICES, AUDIO_ICON } from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
+import { KeypadGrid, KeypadInput } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
+import { CONFERENCE_BRIDGE, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
+import { formatDuration, sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import { playDtmf } from '@/utils/phoneSounds';
 import type {
   ActiveCall,

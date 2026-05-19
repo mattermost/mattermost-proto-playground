@@ -6,12 +6,12 @@ import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
-import { CallPip } from '@/pages/OutboundCalls/CallPip/CallPip';
-import { OutboundCallSceneSwitcher } from '@/pages/OutboundCalls/OutboundCallSceneSwitcher';
-import { AUDIO_DEVICES } from '@/pages/OutboundCalls/OutboundCallAudioConstants';
-import { PositionedProfilePopover } from '@/pages/OutboundCalls/PositionedProfilePopover';
-import { RhsDialer } from '@/pages/OutboundCalls/RhsDialer';
-import { sanitizeDigits } from '@/pages/OutboundCalls/outboundCallUtils';
+import { CallPip } from '@/pages/prototypes/outbound-calls/CallPip/CallPip';
+import { OutboundCallSceneSwitcher } from '@/pages/prototypes/outbound-calls/OutboundCallSceneSwitcher';
+import { AUDIO_DEVICES } from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
+import { PositionedProfilePopover } from '@/pages/prototypes/outbound-calls/PositionedProfilePopover';
+import { RhsDialer } from '@/pages/prototypes/outbound-calls/RhsDialer';
+import { sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import {
   avatarAikoTan,
   avatarArjunPatel,
@@ -25,10 +25,10 @@ import {
   CONFERENCE_BRIDGE,
   CONTACT_MAP,
   INITIAL_RECENTS,
-} from '@/pages/OutboundCalls/outboundCallData';
-import { ChannelScene } from '@/pages/OutboundCalls/scenes/ChannelScene';
-import { DialerScene } from '@/pages/OutboundCalls/scenes/DialerScene';
-import { DMScene } from '@/pages/OutboundCalls/scenes/DMScene';
+} from '@/pages/prototypes/outbound-calls/outboundCallData';
+import { ChannelScene } from '@/pages/prototypes/outbound-calls/scenes/ChannelScene';
+import { DialerScene } from '@/pages/prototypes/outbound-calls/scenes/DialerScene';
+import { DMScene } from '@/pages/prototypes/outbound-calls/scenes/DMScene';
 import type { ActiveCall, AddMode, Recent, SceneId } from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 
