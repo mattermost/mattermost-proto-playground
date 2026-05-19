@@ -16,8 +16,8 @@ import {
   DIAL_IN_PIN,
   EXTERNAL_LINK,
   INTERNAL_LINK,
-} from './externalCallParticipants.constants';
-import { CALL_PARTICIPANTS } from './externalCallParticipants.fixtures';
+} from '@/fixtures/calls/callConstants';
+import { CALL_PARTICIPANTS } from '@/fixtures/calls/callParticipants';
 import { SCENES, type SceneId } from './externalCallParticipants.scenes';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import ExternalCallChannelsShell from './ExternalCallChannelsShell';

@@ -167,8 +167,6 @@ If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (Th
 
 **Profile popover + positioning:** `ProfilePopover` is the **content** card. Figma-anchored placement (e.g. from a message avatar `getBoundingClientRect()`) is a **separate concern**. Do not fork `ProfilePopover` for coordinates — either compose it inside a small page-local wrapper (e.g. `PositionedProfilePopover` in a prototype) or, if multiple prototypes need the same rules, add a **layout hook** such as `useAnchoredToRect` and keep `ProfilePopover` unchanged. Merge positioning into the design system only after UX parity with the popover animation spec in this file.
 
-**Note:** The **Outbound Calls** prototype (MM-56584) is maintained on a **feature branch only** — it is not planned for the `main` playground.
-
 ## Prototype views: scene navigation (default)
 
 URLs that match an entry in `src/manifests/prototypes.ts` render with **`PrototypeTopNav`** (`src/components/layout/PrototypeTopNav/`) instead of the full Compass **`TopNav`**: back to `/prototypes`, prototype title, **center slot** for tools, and theme control.

@@ -4,8 +4,8 @@
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ProfilePopover from '@/components/ui/ProfilePopover/ProfilePopover';
-import { phoneGlyphFor } from '@/pages/OutboundCalls/OutboundCallPhoneGlyphs';
-import { PopoverCallButton } from '@/pages/OutboundCalls/OutboundCallStartCallMenu';
+import { phoneGlyphFor } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
+import { PopoverCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import type { Contact, StartCallAction } from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 

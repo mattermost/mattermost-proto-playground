@@ -1,5 +1,5 @@
 import TextInput from '@/components/ui/TextInput/TextInput';
-import { sanitizeDigits } from '@/pages/OutboundCalls/outboundCallUtils';
+import { sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import type { ReactNode } from 'react';
 import styles from './OutboundCalls.module.scss';
 

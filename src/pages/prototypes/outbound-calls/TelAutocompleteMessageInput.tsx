@@ -8,8 +8,8 @@ import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import MessageInput from '@/components/ui/MessageInput';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import { CONTACTS } from '@/pages/OutboundCalls/outboundCallData';
-import { phoneGlyphFor } from '@/pages/OutboundCalls/OutboundCallPhoneGlyphs';
+import { CONTACTS } from '@/pages/prototypes/outbound-calls/outboundCallData';
+import { phoneGlyphFor } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
 import type { Contact, Phone } from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 

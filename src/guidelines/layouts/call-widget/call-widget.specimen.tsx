@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
+import ChannelShell from '@/components/ui/ChannelShell/ChannelShell';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
 import Message from '@/components/ui/Message/Message';
@@ -13,9 +15,8 @@ import {
   DIAL_IN_PIN,
   EXTERNAL_LINK,
   INTERNAL_LINK,
-} from '@/pages/ExternalCallParticipants/externalCallParticipants.constants';
-import { CALL_PARTICIPANTS } from '@/pages/ExternalCallParticipants/externalCallParticipants.fixtures';
-import ExternalCallChannelsShell from '@/pages/ExternalCallParticipants/ExternalCallChannelsShell';
+} from '@/fixtures/calls/callConstants';
+import { CALL_PARTICIPANTS } from '@/fixtures/calls/callParticipants';
 
 const callLinkProps = {
   internalLink: INTERNAL_LINK,
@@ -34,7 +35,16 @@ export default function CallWidgetLayout() {
   const [sharing, setSharing] = useState(false);
 
   return (
-    <ExternalCallChannelsShell
+    <ChannelShell
+      channelHeader={
+        <ChannelHeader
+          type="Channel"
+          name="UX Design"
+          description="Design reviews and ongoing work."
+          memberCount={24}
+          pinnedCount={2}
+        />
+      }
       floating={
         <CallWidget
           participants={CALL_PARTICIPANTS}
@@ -103,6 +113,6 @@ export default function CallWidgetLayout() {
       <div className={shellStyles['channel-shell__message-input']}>
         <MessageInput placeholder="Write to UX Design" />
       </div>
-    </ExternalCallChannelsShell>
+    </ChannelShell>
   );
 }
