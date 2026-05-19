@@ -1,23 +1,30 @@
 .admin-onboarding {
   display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   width: 100%;
   padding: var(--spacing-l);
   box-sizing: border-box;
+  gap: var(--spacing-m);
+
+  &__sub-switcher {
+    display: flex;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
 
   &__frame {
     /* Mirrors the admin-console Layout specimen frame. */
     position: relative;
     display: flex;
     flex-direction: row;
-    width: calc(100% - 80px);
-    height: calc(100% - 80px);
-    margin: auto;
+    flex: 1;
+    width: 100%;
+    margin: 0 auto;
     max-width: 1440px;
-    max-height: 800px;
-    min-width: 1000px;
-    min-height: 600px;
+    min-width: 0;
+    min-height: 0;
     border-radius: var(--radius-xl);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     box-shadow: var(--elevation-6);
@@ -68,6 +75,11 @@
     box-sizing: border-box;
   }
 
+  &__rhs-mount {
+    flex-shrink: 0;
+    display: flex;
+    min-height: 0;
+  }
 }
 
 .preset-picker {
@@ -335,3 +347,214 @@
     color: var(--center-channel-color);
   }
 }
+
+/* ─────────── Floating Agent button (FAB) ─────────── */
+
+.agent-fab {
+  position: absolute;
+  right: var(--spacing-l);
+  bottom: var(--spacing-l);
+  z-index: 30;
+  appearance: none;
+  border: none;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  box-shadow: var(--elevation-4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform var(--duration-quick) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--elevation-6);
+  }
+
+  &--pulse::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--button-bg);
+    animation: agent-fab-pulse 1.6s var(--ease-transition) infinite;
+    pointer-events: none;
+  }
+}
+
+@keyframes agent-fab-pulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+/* ─────────── Agent right sidebar (Thread RHS pattern) ─────────── */
+
+.agent-rhs {
+  flex-shrink: 0;
+  border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  animation: agent-rhs-in var(--duration-quick) var(--ease-entrance);
+
+  &__body {
+    padding: var(--spacing-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__lede {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__prompts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__prompt {
+    appearance: none;
+    text-align: left;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition:
+      border-color var(--duration-quick) var(--ease-transition),
+      background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      border-color: var(--button-bg);
+      background: rgba(var(--button-bg-rgb), 0.04);
+    }
+  }
+
+  &__prompt-cat {
+    font-size: var(--font-size-25);
+    color: var(--button-bg);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__prompt-text {
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+    line-height: var(--line-height-75);
+  }
+
+  &__convo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__bubble {
+    padding: var(--spacing-s) var(--spacing-m);
+    border-radius: var(--radius-m);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    max-width: 88%;
+  }
+
+  &__bubble--user {
+    align-self: flex-end;
+    background: var(--button-bg);
+    color: var(--button-color);
+  }
+
+  &__bubble--agent {
+    align-self: flex-start;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__bubble-line {
+    margin: 0;
+  }
+
+  &__bubble-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  &__reset {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: var(--spacing-xs) 0;
+    align-self: center;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--button-bg);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__composer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s) var(--spacing-m);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  &__input {
+    flex: 1;
+    appearance: none;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    background: var(--center-channel-bg);
+    border-radius: var(--radius-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+    line-height: var(--line-height-75);
+    min-width: 0;
+
+    &:focus {
+      outline: none;
+      border-color: var(--button-bg);
+    }
+  }
+}
+
+@keyframes agent-rhs-in {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+

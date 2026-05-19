@@ -32,6 +32,10 @@ export interface GlobalHeaderProps {
   userAvatarSrc: string;
   /** Alt text for the signed-in user avatar. */
   userAvatarAlt: string;
+  /** When true, shows a red dot badge over the Help icon (e.g. "What's new" indicator). */
+  helpDotBadge?: boolean;
+  /** Click handler for the Help icon — opens a Help menu when wired up. */
+  onHelpClick?: () => void;
 }
 
 const PRODUCT_ICON: Record<
@@ -46,18 +50,31 @@ const PRODUCT_ICON: Record<
 function InvertedIconButton({
   ariaLabel,
   glyph,
+  onClick,
+  dotBadge = false,
 }: {
   ariaLabel: string;
   glyph: React.ReactNode;
+  onClick?: () => void;
+  /** When true, renders a red dot badge over the top-right of the icon. */
+  dotBadge?: boolean;
 }) {
-  return (
+  const button = (
     <IconButton
       aria-label={ariaLabel}
       size="Small"
       padding="Compact"
       style="Inverted"
       icon={<Icon size="16" glyph={glyph} />}
+      onClick={onClick}
     />
+  );
+  if (!dotBadge) return button;
+  return (
+    <span className={styles['global-header__icon-wrap']}>
+      {button}
+      <span className={styles['global-header__icon-dot']} aria-hidden />
+    </span>
   );
 }
 
@@ -100,6 +117,8 @@ export default function GlobalHeader({
   showUpgradeButton = false,
   userAvatarSrc,
   userAvatarAlt,
+  helpDotBadge = false,
+  onHelpClick,
 }: GlobalHeaderProps) {
   const isChannels = product === 'Channels';
   const showBrand = isChannels ? showChannelsBranding : true;
@@ -141,6 +160,8 @@ export default function GlobalHeader({
           <InvertedIconButton
             ariaLabel="Help"
             glyph={<HelpCircleOutlineIcon />}
+            onClick={onHelpClick}
+            dotBadge={helpDotBadge}
           />
         </div>
       )}
@@ -173,6 +194,8 @@ export default function GlobalHeader({
           <InvertedIconButton
             ariaLabel="Help"
             glyph={<HelpCircleOutlineIcon />}
+            onClick={onHelpClick}
+            dotBadge={helpDotBadge}
           />
         )}
         <InvertedIconButton ariaLabel="Settings" glyph={<CogOutlineIcon />} />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import PoundIcon from '@mattermost/compass-icons/components/pound';
+import SendIcon from '@mattermost/compass-icons/components/send';
 import WebhookIcon from '@mattermost/compass-icons/components/webhook';
 import ShieldOutlineIcon from '@mattermost/compass-icons/components/shield-outline';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
@@ -12,16 +13,98 @@ import AdminPanel from '@/components/ui/AdminPanel/AdminPanel';
 import AdminPanelFooter from '@/components/ui/AdminPanelFooter/AdminPanelFooter';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
+import IconButton from '@/components/ui/IconButton/IconButton';
 import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import PopoverNotice from '@/components/ui/PopoverNotice/PopoverNotice';
 import ProgressBar from '@/components/ui/ProgressBar/ProgressBar';
 import Radio from '@/components/ui/Radio/Radio';
+import RightSidebar, {
+  RightSidebarHeader,
+} from '@/components/ui/RightSidebar';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import Switch from '@/components/ui/Switch/Switch';
 import TextInput from '@/components/ui/TextInput/TextInput';
+import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { defaultAdminConsoleSidebarGroups } from '@/components/ui/AdminConsoleSidebar/adminConsoleSidebarModel';
-import { CURRENT_USER } from '../onboarding.fixtures';
+import { AGENT, CURRENT_USER } from '../onboarding.fixtures';
 import styles from './AdminOnboardingVignette.module.scss';
+
+type AdminSubScene = 'setup' | 'agentic';
+
+const ADMIN_SUB_SCENES: { id: AdminSubScene; label: string }[] = [
+  { id: 'setup', label: 'Setup checklist' },
+  { id: 'agentic', label: 'Agentic helper' },
+];
+
+interface AgentSuggestedPrompt {
+  id: string;
+  label: string;
+  category: string;
+}
+
+const AGENT_PROMPTS: AgentSuggestedPrompt[] = [
+  {
+    id: 'sso',
+    label: 'Walk me through SSO setup',
+    category: 'Authentication',
+  },
+  {
+    id: 'retention',
+    label: 'How should I configure data retention?',
+    category: 'Compliance',
+  },
+  {
+    id: 'bulk-invite',
+    label: 'Help me invite users in bulk',
+    category: 'Users',
+  },
+  {
+    id: 'integrations',
+    label: 'Which integrations should I install first?',
+    category: 'Integrations',
+  },
+];
+
+interface AgentScriptedReply {
+  body: string;
+  actions: { label: string; emphasis: 'Primary' | 'Tertiary' }[];
+}
+
+const AGENT_REPLIES: Record<string, AgentScriptedReply> = {
+  sso: {
+    body:
+      'For your SecOps preset, I recommend SAML 2.0 with Okta or Azure AD. Three steps:\n\n1. Paste your IdP metadata URL above\n2. Configure attribute mapping — I can do this for you\n3. Test with a pilot user before rolling out\n\nWant me to start with step 1?',
+    actions: [
+      { label: 'Yes, configure', emphasis: 'Primary' },
+      { label: 'Open SAML docs', emphasis: 'Tertiary' },
+    ],
+  },
+  retention: {
+    body:
+      'For SecOps, 180-day default with per-channel overrides is the most common. Case-file channels often need indefinite retention. I can apply that profile for you, or walk through the trade-offs.',
+    actions: [
+      { label: 'Apply SecOps default', emphasis: 'Primary' },
+      { label: 'Explain trade-offs', emphasis: 'Tertiary' },
+    ],
+  },
+  'bulk-invite': {
+    body:
+      'You can paste up to 200 email addresses (comma- or newline-separated) and I’ll send invites. If you have an IdP set up, I can also sync user groups instead.',
+    actions: [
+      { label: 'Paste emails', emphasis: 'Primary' },
+      { label: 'Sync from IdP', emphasis: 'Tertiary' },
+    ],
+  },
+  integrations: {
+    body:
+      'For SecOps the high-value first integrations are: an incident-response webhook (PagerDuty / Opsgenie), a ticketing slash command (Jira / ServiceNow), and the Mattermost Agent plugin (already on). Install the first two now?',
+    actions: [
+      { label: 'Install both', emphasis: 'Primary' },
+      { label: 'Pick one at a time', emphasis: 'Tertiary' },
+    ],
+  },
+};
 
 type PresetId = 'secops' | 'defense' | 'intelligence' | 'critical-infra';
 
@@ -136,23 +219,43 @@ const SIDEBAR_BASE_GROUPS = defaultAdminConsoleSidebarGroups.map((group) => ({
   items: group.items.map((item) => ({ ...item, active: false })),
 }));
 
-function buildSidebarGroups(getStartedActive: boolean) {
+function buildSidebarGroups(opts: {
+  welcomeActive: boolean;
+  samlActive?: boolean;
+}) {
+  const baseGroups = opts.samlActive
+    ? SIDEBAR_BASE_GROUPS.map((group) =>
+        group.key === 'authentication'
+          ? {
+              ...group,
+              items: group.items.map((item) =>
+                item.name === 'SAML 2.0' ? { ...item, active: true } : item,
+              ),
+            }
+          : group,
+      )
+    : SIDEBAR_BASE_GROUPS;
   return [
     {
       key: 'get-started',
       categoryLabel: 'Get started',
       categoryIconKey: 'experimental' as const,
       stickyCategory: true,
-      items: [{ name: 'Welcome', active: getStartedActive }],
+      items: [{ name: 'Welcome', active: opts.welcomeActive }],
     },
-    ...SIDEBAR_BASE_GROUPS,
+    ...baseGroups,
   ];
 }
 
 export default function AdminOnboardingVignette() {
+  const [subScene, setSubScene] = useState<AdminSubScene>('setup');
   const [preset, setPreset] = useState<PresetId | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [panel, setPanel] = useState<PanelView>('overview');
+  const [agentOpen, setAgentOpen] = useState(false);
+  const [agentActivePromptId, setAgentActivePromptId] = useState<string | null>(
+    null,
+  );
 
   const completion = (checked.size / CHECKLIST.length) * 100;
   const activePreset = preset ? PRESET_BY_ID[preset] : null;
@@ -165,28 +268,48 @@ export default function AdminOnboardingVignette() {
       return next;
     });
 
+  const isAgentic = subScene === 'agentic';
+
   return (
     <div className={styles['admin-onboarding']}>
+      <div className={styles['admin-onboarding__sub-switcher']}>
+        <SceneSwitcher
+          scenes={ADMIN_SUB_SCENES}
+          activeId={subScene}
+          onChange={(id) => {
+            setSubScene(id as AdminSubScene);
+            setAgentOpen(false);
+            setAgentActivePromptId(null);
+          }}
+          ariaLabel="Admin onboarding sub-scene"
+        />
+      </div>
+
       <div className={styles['admin-onboarding__frame']}>
         <div className={styles['admin-onboarding__sidebar-mount']}>
           <AdminConsoleSidebar
             avatarSrc={CURRENT_USER.avatarSrc}
             avatarAlt={CURRENT_USER.name}
             userDisplayName={CURRENT_USER.name}
-            groups={buildSidebarGroups(panel === 'overview')}
+            groups={buildSidebarGroups({
+              welcomeActive: !isAgentic && panel === 'overview',
+              samlActive: isAgentic,
+            })}
           />
         </div>
 
         <div className={styles['admin-onboarding__main']}>
           <AdminConsoleHeader
             title={
-              panel === 'overview'
-                ? activePreset
-                  ? 'Set up your workspace'
-                  : 'Welcome to Mattermost'
-                : 'Setup'
+              isAgentic
+                ? 'SAML 2.0'
+                : panel === 'overview'
+                  ? activePreset
+                    ? 'Set up your workspace'
+                    : 'Welcome to Mattermost'
+                  : 'Setup'
             }
-            showBack={panel !== 'overview'}
+            showBack={!isAgentic && panel !== 'overview'}
             onBackClick={() => setPanel('overview')}
             enterpriseBadge
             enterpriseBadgeLabel="Enterprise Advanced"
@@ -195,40 +318,257 @@ export default function AdminOnboardingVignette() {
           <div className={styles['admin-onboarding__scroll']}>
             <Scrollbars>
               <div className={styles['admin-onboarding__panels']}>
-                {panel === 'overview' &&
-                  (activePreset ? (
-                    <>
-                      <ChecklistPanel
-                        preset={activePreset}
-                        completion={completion}
-                        checked={checked}
-                        onToggle={toggleChecked}
-                        onItemClick={(item) => setPanel(item.panel)}
-                        onChangePreset={() => setPreset(null)}
-                      />
-                      {activePreset.key === 'secops' ? (
-                        <SecOpsRecommendations />
+                {isAgentic ? (
+                  <AgenticConsoleContent />
+                ) : (
+                  <>
+                    {panel === 'overview' &&
+                      (activePreset ? (
+                        <>
+                          <ChecklistPanel
+                            preset={activePreset}
+                            completion={completion}
+                            checked={checked}
+                            onToggle={toggleChecked}
+                            onItemClick={(item) => setPanel(item.panel)}
+                            onChangePreset={() => setPreset(null)}
+                          />
+                          {activePreset.key === 'secops' ? (
+                            <SecOpsRecommendations />
+                          ) : (
+                            <PresetStub label={activePreset.label} />
+                          )}
+                        </>
                       ) : (
-                        <PresetStub label={activePreset.label} />
-                      )}
-                    </>
-                  ) : (
-                    <PresetPicker onSelect={setPreset} />
-                  ))}
+                        <PresetPicker onSelect={setPreset} />
+                      ))}
 
-                {panel === 'invite' && <InvitePanel />}
-                {panel === 'channel' && <ChannelPanel />}
-                {panel === 'integration' && <IntegrationPanel />}
-                {panel === 'sso' && <SsoPanel />}
-                {panel === 'agent' && <AgentPanel />}
+                    {panel === 'invite' && <InvitePanel />}
+                    {panel === 'channel' && <ChannelPanel />}
+                    {panel === 'integration' && <IntegrationPanel />}
+                    {panel === 'sso' && <SsoPanel />}
+                    {panel === 'agent' && <AgentPanel />}
+                  </>
+                )}
               </div>
             </Scrollbars>
           </div>
 
           <AdminPanelFooter saveDisabled={false} />
         </div>
+
+        {isAgentic && agentOpen && (
+          <div className={styles['admin-onboarding__rhs-mount']}>
+            <AgentHelperPanel
+              activePromptId={agentActivePromptId}
+              onPromptSelect={setAgentActivePromptId}
+              onReset={() => setAgentActivePromptId(null)}
+              onClose={() => setAgentOpen(false)}
+            />
+          </div>
+        )}
+
+        {isAgentic && !agentOpen && (
+          <FloatingAgentButton
+            showPulse={agentActivePromptId === null}
+            onClick={() => setAgentOpen(true)}
+          />
+        )}
       </div>
     </div>
+  );
+}
+
+/* ─────────── Agentic sub-scene ─────────── */
+
+function AgenticConsoleContent() {
+  return (
+    <>
+      <AdminPanel
+        title="SAML 2.0"
+        subtitle="Connect your identity provider for enterprise sign-in."
+      >
+        <div className={styles['settings']}>
+          <SettingToggle
+            label="Enable SAML 2.0"
+            help="Required for SecOps-aligned workspaces."
+            defaultOn
+          />
+          <TextInput
+            label="Identity provider metadata URL"
+            defaultValue=""
+          />
+          <TextInput
+            label="Service provider login URL"
+            defaultValue="https://acme-defense.mattermost.com/login/sso/saml"
+          />
+          <TextInput
+            label="Service provider entity ID"
+            defaultValue="https://acme-defense.mattermost.com"
+          />
+        </div>
+      </AdminPanel>
+
+      <AdminPanel
+        title="Attribute mapping"
+        subtitle="Map SAML attributes from your IdP to Mattermost user fields."
+      >
+        <div className={styles['settings']}>
+          <TextInput label="Email attribute" defaultValue="email" />
+          <TextInput label="Username attribute" defaultValue="username" />
+          <TextInput
+            label="First name attribute"
+            defaultValue="firstName"
+          />
+          <TextInput label="Last name attribute" defaultValue="lastName" />
+        </div>
+      </AdminPanel>
+    </>
+  );
+}
+
+function FloatingAgentButton({
+  showPulse,
+  onClick,
+}: {
+  showPulse: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={[
+        styles['agent-fab'],
+        showPulse ? styles['agent-fab--pulse'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      onClick={onClick}
+      aria-label="Open Mattermost Agent"
+    >
+      <UserAvatar src={AGENT.avatarSrc} alt="" size="40" />
+    </button>
+  );
+}
+
+function AgentHelperPanel({
+  activePromptId,
+  onPromptSelect,
+  onReset,
+  onClose,
+}: {
+  activePromptId: string | null;
+  onPromptSelect: (id: string) => void;
+  onReset: () => void;
+  onClose: () => void;
+}) {
+  const reply = activePromptId ? AGENT_REPLIES[activePromptId] : null;
+  const activePrompt = activePromptId
+    ? AGENT_PROMPTS.find((p) => p.id === activePromptId)
+    : null;
+
+  return (
+    <RightSidebar
+      className={styles['agent-rhs']}
+      header={
+        <RightSidebarHeader
+          title={AGENT.name}
+          secondaryTitle="Admin helper"
+          labelTag="Agent"
+          labelTagType="Info"
+          leadingIcon={
+            <UserAvatar src={AGENT.avatarSrc} alt={AGENT.name} size="24" />
+          }
+          onClose={onClose}
+        />
+      }
+      footer={
+        <div className={styles['agent-rhs__composer']}>
+          <input
+            className={styles['agent-rhs__input']}
+            type="text"
+            placeholder="Ask Mattermost Agent…"
+          />
+          <IconButton
+            aria-label="Send"
+            size="Small"
+            icon={<Icon size="16" glyph={<SendIcon />} />}
+          />
+        </div>
+      }
+    >
+      <div className={styles['agent-rhs__body']}>
+        {!activePrompt && (
+          <>
+            <p className={styles['agent-rhs__lede']}>
+              Hi {CURRENT_USER.name.split(' ')[0]} — I can recommend defaults,
+              explain what a setting does, or configure things for you. Try one
+              to start:
+            </p>
+            <div className={styles['agent-rhs__prompts']}>
+              {AGENT_PROMPTS.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={styles['agent-rhs__prompt']}
+                  onClick={() => onPromptSelect(p.id)}
+                >
+                  <span className={styles['agent-rhs__prompt-cat']}>
+                    {p.category}
+                  </span>
+                  <span className={styles['agent-rhs__prompt-text']}>
+                    {p.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {activePrompt && reply && (
+          <div className={styles['agent-rhs__convo']}>
+            <div
+              className={[
+                styles['agent-rhs__bubble'],
+                styles['agent-rhs__bubble--user'],
+              ].join(' ')}
+            >
+              {activePrompt.label}
+            </div>
+            <div
+              className={[
+                styles['agent-rhs__bubble'],
+                styles['agent-rhs__bubble--agent'],
+              ].join(' ')}
+            >
+              {reply.body.split('\n').map((line, i) => (
+                <p key={i} className={styles['agent-rhs__bubble-line']}>
+                  {line}
+                </p>
+              ))}
+              <div className={styles['agent-rhs__bubble-actions']}>
+                {reply.actions.map((action) => (
+                  <Button
+                    key={action.label}
+                    emphasis={action.emphasis}
+                    size="X-Small"
+                  >
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles['agent-rhs__reset']}
+              onClick={onReset}
+            >
+              Ask something else
+            </button>
+          </div>
+        )}
+      </div>
+    </RightSidebar>
   );
 }
 

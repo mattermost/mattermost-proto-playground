@@ -56,6 +56,10 @@ export interface ChannelShellProps {
   floating?: ReactNode;
   /** Layered surface over the shell (e.g. call popout). */
   overlay?: ReactNode;
+  /** Show a red dot badge over the GlobalHeader Help icon. */
+  helpDotBadge?: boolean;
+  /** Click handler for the GlobalHeader Help icon. */
+  onHelpClick?: () => void;
   className?: string;
 }
 
@@ -75,6 +79,8 @@ export default function ChannelShell({
   channelsSidebar,
   floating,
   overlay,
+  helpDotBadge = false,
+  onHelpClick,
   className = '',
 }: ChannelShellProps) {
   const rootClass = [styles['channel-shell'], className].filter(Boolean).join(' ');
@@ -109,6 +115,8 @@ export default function ChannelShell({
           product={product}
           userAvatarSrc={userAvatarSrc}
           userAvatarAlt={userAvatarAlt}
+          helpDotBadge={helpDotBadge}
+          onHelpClick={onHelpClick}
         />
       </div>
 

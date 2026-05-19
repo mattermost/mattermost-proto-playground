@@ -1,3 +1,4 @@
+import avatarAgent from '@/assets/avatars/Agent.png';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
@@ -8,7 +9,6 @@ import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
 import avatarIsabella from '@/assets/avatars/Isabella Cruz.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
 import type { ChannelsSidebarModel } from '@/components/ui/ChannelsSidebar/channelsSidebarModel';
 
 export const WORKSPACE_NAME = 'Acme Defense';
@@ -23,7 +23,7 @@ export const CURRENT_USER = {
 export const AGENT = {
   id: 'agent',
   name: 'Mattermost Agent',
-  avatarSrc: avatarStaffTeam,
+  avatarSrc: avatarAgent,
   botLabel: 'AGENT',
 };
 

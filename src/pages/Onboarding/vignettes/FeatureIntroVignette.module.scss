@@ -20,38 +20,25 @@
     display: flex;
   }
 
-  &__help-dot {
+  &__help-menu {
     position: absolute;
-    top: 12px;
-    right: 96px;
-    appearance: none;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: var(--sidebar-header-text-color);
-    border-radius: var(--radius-s);
-    padding: var(--spacing-xxs) var(--spacing-s);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    cursor: pointer;
-    font-size: var(--font-size-75);
-    z-index: 20;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.16);
-    }
+    /* Right-aligned with the GlobalHeader's Help icon. The icon sits at the
+       right edge of the centered search column (search 432px + 28px button +
+       gaps ≈ 470px wide), centered in the header. So its right edge is at
+       viewport-center + ~234px. */
+    top: 88px;
+    right: calc(50% - 234px);
+    z-index: 30;
+    animation: feature-intro-menu-in var(--duration-quick) var(--ease-entrance);
+    transform-origin: top right;
   }
 
-  &__dot {
+  &__menu-dot {
+    display: inline-block;
     width: 8px;
     height: 8px;
     border-radius: var(--radius-full);
     background: var(--color-danger);
-    display: inline-block;
-  }
-
-  &__agent-anchor {
-    position: relative;
   }
 
   &__coachmark {
@@ -62,17 +49,33 @@
     z-index: 10;
   }
 
+  &__modal-scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+  }
+
+  &__modal-footer {
+    display: flex;
+    gap: var(--spacing-s);
+    justify-content: flex-end;
+    width: 100%;
+  }
+
   &__whats-new {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-m);
-    padding: var(--spacing-m);
+    padding: var(--spacing-s) 0;
   }
 
   &__release-card {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-m);
     padding: var(--spacing-m);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     border-radius: var(--radius-m);
@@ -80,6 +83,7 @@
   }
 
   &__release-thumb {
+    flex: 0 0 96px;
     height: 96px;
     background: linear-gradient(
       135deg,
@@ -87,6 +91,14 @@
       rgba(var(--button-bg-rgb), 0.04)
     );
     border-radius: var(--radius-s);
+  }
+
+  &__release-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    min-width: 0;
   }
 
   &__release-title {
@@ -104,13 +116,25 @@
   }
 
   &__release-link {
+    margin-top: var(--spacing-xxs);
     font-size: var(--font-size-75);
-    color: var(--link-color);
+    color: var(--button-bg);
     text-decoration: none;
     font-weight: var(--font-weight-semibold);
 
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+@keyframes feature-intro-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
