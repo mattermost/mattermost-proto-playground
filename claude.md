@@ -77,22 +77,82 @@ Keyframes and other global at-rules can stay at the top of the file; the rest of
 
 ## Button emphasis: use Primary sparingly
 
-`emphasis="Primary"` should appear **at most once per view** — it draws the eye and loses meaning if overused. Use `Secondary`, `Tertiary`, or `Link` for supporting actions. Only reach for `Primary` when one action clearly outranks all others on screen.
+`emphasis="Primary"` should appear **at most once per view** — it draws the eye and loses meaning if overused. Use `Secondary`, `Tertiary`, or `Quaternary` for supporting actions. Only reach for `Primary` when one action clearly outranks all others on screen.
 
 ## EmptyState: default button size is Medium
 
 When adding an `action` to `EmptyState`, omit the `size` prop unless a Figma spec requires a different size. `Button` defaults to `Medium`, which is the correct size for empty state actions.
 
-## Routing new additions: Patterns page vs Components page
+## Avatar components: default to fixture photos
 
-This routing aligns with **Design system: Foundations, Components, Patterns, and Layouts** (above). When adding a new component to the playground, check the Figma file name:
+Whenever you use an avatar component or pattern that supports a real image (`UserAvatar`, `TeamAvatar`, `UserAvatarGroup` / `UserAvatarGroupItem`, `CallParticipantAvatar`, props like `src` or `userAvatarSrc`, default data in list items, and similar), **pass an imported image from `src/assets/avatars/`** so demos and product-like UI show real faces.
 
-- File name contains **"Patterns"** → add to `src/pages/Patterns/Patterns.tsx`
-- File name contains **"Component"** → add to `src/pages/Components/Components.tsx`
+Only rely on the **initials / fallback** avatar (omit `src` or equivalent) when the work explicitly calls for that state — for example documenting fallback behaviour, colour variants, or a spec that shows unnamed users.
+
+## Adding a topic to the docs
+
+Every docs entry — a foundation, component, pattern, or layout — is a single **topic** registered in `src/manifests/topics.ts`. A topic carries its prose (`guidelinePage`) and its live demo (`specimenPage`); the topic shell renders them as Guidelines / Specimen tabs over the same `/<category>/<slug>` URL.
+
+To add a topic:
+
+1. Pick the category from the four-layer model above (Foundations / Components / Patterns / Layouts) — that's the URL prefix.
+2. Author an MDX guideline page under `src/guidelines/<category>/` (required — every topic has prose).
+3. Author a `*.specimen.tsx` live demo under `src/guidelines/<category>/<slug>/` (optional — overview-style entries can omit it; the tab strip hides automatically).
+4. Add a `Topic` entry to `TOPICS` in `topics.ts`. If the topic should appear in a specific sidebar group, list its slug under the right `topicSections[<category>]` group in `src/manifests/sections.ts`; otherwise it falls through to "Other".
+
+The Foundations bento on `/foundations` is curated separately in `src/pages/topics/FoundationsBento/FoundationsBento.tsx` (slug arrays for hero/medium/small placement). New foundation topics that aren't placed there fall to the bento's plain-card fallback.
+
+## Foundation specimen pages: token rows
+
+Foundation **Specimen** tabs (`src/guidelines/foundations/*/*.specimen.tsx`) often list CSS custom properties in tables or rows. Shared styling for many of these lives under `.foundations` in `src/styles/library-demo/foundations.module.scss`.
+
+When adding or editing token lists on specimen pages:
+
+- **No duplicate label column** — If the token name is the copy-paste source of truth (e.g. `--spacing-xxxxs`, `--duration-quick`), do not add a separate short-name column (`xxxxs`, `Quick`) beside it. The token string is enough; a second column repeats the same idea and clutters the layout.
+- **Token and value text must not look “disabled”** — Style token identifiers and primary values (`150ms`, `16px`, easing keywords) with `var(--font-size-75)` or another readable step, `var(--font-family-mono)` where appropriate, and **full** `var(--center-channel-color)`. Avoid tiny sizes (e.g. `10px`) and avoid low `opacity` on those cells — that reads as greyed-out UI instead of documentation.
+- **Descriptions as secondary tier** — Supporting sentences can use `rgba(var(--center-channel-color-rgb), 0.72)` so they sit slightly behind the token/value without looking washed out.
+- **Elevation** — Use `foundations__elevation-rows` / `foundations__elevation-row`: leading `<code>` token (em dash for level 0 where no variable exists), a small preview tile with the shadow applied, then the summary text. Row dividers match spacing and animation (`border-top` on the first row, `border-bottom` between rows).
+- **Shape (radius)** — Use `foundations__shape-rows` / `foundations__shape-row`: token, resolved pixel value, then a preview box with `border-radius` from the token. Same row dividers as spacing and animation.
+
+Keep new foundation token tables visually aligned with existing spacing, animation, and elevation specimen patterns unless a topic truly needs a different layout.
 
 ## Building new components: reuse existing components first
 
 When building a new component, audit the elements it needs before writing any new code. If an existing component in `src/components/` already covers an element — especially when its name matches what Figma uses — use it directly rather than reimplementing it. Only build a new sub-component when nothing suitable exists.
+
+## Doc shell: prose vs. non-prose
+
+Every docs page (TopicRoute, CategoryRoute, PrototypesIndex, ResourcesIndex) renders inside the shared `DocShell` styles in `src/pages/_shell/DocShell.module.scss` — hero at 1180px, body at 960px. The shell itself is layout-only.
+
+Prose typography lives in `src/pages/_shell/DocPage.module.scss` under the `.doc-page__prose` class. Wrap MDX content with that class wherever bare `<h2>`, `<p>`, `<code>`, etc. need styling — TopicRoute does this for the Guidelines tab; CategoryRoute does it for category intros. Specimen tabs and category indexes do **not** wrap in prose, so live components and curated lists keep their own styling.
+
+`.doc-page__prose` rules are all gated with `:not([class])`, so they only target bare HTML emitted by MDX. Classed component elements (e.g. Modal's `<h2 className="modal__title">`) are unaffected when rendered inside a prose context.
+
+**Doc UI embed:** live UI in guidelines or specimens must sit inside the **`compass-doc-embed`** island so `.doc-shell__body` type scale and prose bare-tag rules do not leak in. Use **`DocUiEmbed`** (`src/pages/_shell/DocUiEmbed/`), or **`AnatomyStage`** / **`Preview`** (they add `compass-doc-embed`). `TopicRoute` wraps specimen pages in `DocUiEmbed`. For ad hoc MDX blocks, use `<DocUiEmbed>…</DocUiEmbed>` (registered in `MdxProvider`). Isolation CSS lives in `DocPage.module.scss` next to `.doc-page__prose`.
+
+**Corollary for component authors:** never render a bare `<h2>`, `<p>`, `<li>`, etc. inside a component. Always attach a CSS-module className — otherwise the element will silently inherit prose typography when the component is rendered on a prose page.
+
+## Guideline MDX: use bold sparingly
+
+Do not sprinkle bold through guideline prose for emphasis. Dense bold looks noisy and hides what actually matters.
+
+- Anatomy lists: bold only the short label before the em dash in `<Num>` bullets (e.g. **Container** — …), consistent with existing component guidelines such as Button.
+- Everything else: plain sentences. Use `` `backticks` `` for components, props, file paths, and literal UI copy — not bold.
+- Rare exceptions: one bold phrase for a genuinely critical warning or a single standout default is fine; avoid multiple bold phrases in the same paragraph.
+
+Headings and list structure carry hierarchy; they do not need bold reinforcement every few words.
+
+## Guideline MDX: no CSS files or tokens in prose
+
+Pattern and component guidelines should read as product guidance, not implementation walkthroughs. In MDX prose (outside code samples), do not reference `*.module.scss` files, CSS custom properties, or design-token identifiers such as `spacing-m`, `radius-s`, or `sidebar-header-bg`.
+
+Describe appearance and layout in plain language instead (e.g. “dark sidebar header strip”, “compact padding”, “rounded corners aligned with avatar rows”). Reserve token and variable detail for Foundations topics or explicit “Implementation” sections when truly necessary.
+
+## Guideline MDX: product voice, not playground voice
+
+Guidelines describe Mattermost product behavior and Compass patterns for anyone reading the docs. Do not center prose on “the playground”, “this repo”, or how the local demo wires props — write what the pattern is and how real apps should behave.
+
+Pointing readers to the Specimen tab as a live demo is fine. Avoid implying that this documentation site or its demo implementation is the source of truth for product wiring.
 
 ## Shared React hooks
 
@@ -107,7 +167,17 @@ If these hooks exist in `src/hooks/`, use them instead of duplicating logic. (Th
 
 **Profile popover + positioning:** `ProfilePopover` is the **content** card. Figma-anchored placement (e.g. from a message avatar `getBoundingClientRect()`) is a **separate concern**. Do not fork `ProfilePopover` for coordinates — either compose it inside a small page-local wrapper (e.g. `PositionedProfilePopover` in a prototype) or, if multiple prototypes need the same rules, add a **layout hook** such as `useAnchoredToRect` and keep `ProfilePopover` unchanged. Merge positioning into the design system only after UX parity with the popover animation spec in this file.
 
-**Note:** The **Outbound Calls** prototype (MM-56584) is maintained on a **feature branch only** — it is not planned for the `main` playground.
+## Prototype views: scene navigation (default)
+
+URLs that match an entry in `src/manifests/prototypes.ts` render with **`PrototypeTopNav`** (`src/components/layout/PrototypeTopNav/`) instead of the full Compass **`TopNav`**: back to `/prototypes`, prototype title, **center slot** for tools, and theme control.
+
+**Default for multi-scene prototypes:** register scene or entry-point UI in that center slot so it aligns vertically with the rest of the bar (same pattern as the External Call Participants and Outbound Calls prototypes).
+
+1. From the prototype page component, call **`usePrototypeChrome()`** (`src/contexts/PrototypeChromeContext.tsx`) and in a **`useEffect`** set **`setCenterSlot(<…/>)`** to your control (e.g. **`SceneSwitcher`** from `src/components/navigation/SceneSwitcher/`).
+2. **Cleanup** in the effect return: **`() => setCenterSlot(null)`** so leaving the route or unmounting does not leave stale UI in the header.
+3. Re-run the effect when **`activeScene`** (or equivalent) changes so the control stays in sync.
+4. Prefer **`SceneSwitcher`** for segmented tabs; omit **`label`** unless a caption is required; set a clear **`ariaLabel`** on the tablist.
+5. **Do not** pin the scene control with **`position: fixed`** and a viewport **`top`** offset on these pages — that sits relative to the window, not the prototype header, and will look vertically misaligned next to the back button and title.
 
 ## Animation: easing and duration
 
@@ -193,30 +263,34 @@ Popover panels (menus, info popovers, dropdowns) animate on mount/unmount with a
 
 Set `transform-origin` so the scale grows from the anchor direction (e.g. `transform-origin: top left` for a popover that opens below-and-right of its trigger).
 
-## Scrollbars: minimal style for scrolling content
+## Scrollbars: use the `Scrollbars` wrapper for UI components
 
-Any element with `overflow: auto`, `overflow: scroll`, `overflow-y: auto|scroll`, or `overflow-x: auto|scroll` must use the minimal scrollbar treatment — thin track, subtle translucent thumb, transparent track, darker on hover. Never ship the browser-default chunky scrollbar on content regions.
+Any scrolling region inside a Compass UI component or pattern (`src/components/ui/`, `src/guidelines/**/*.specimen.tsx`) must render through the shared `Scrollbars` component at `src/components/ui/Scrollbars/`. It wraps `simplebar-react` to produce an overlay scrollbar — the thumb floats above content (no reserved gutter), auto-hides when idle, and matches Compass theming via `--center-channel-color-rgb`.
 
-```scss
-scrollbar-width: thin;
-scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+```tsx
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 
-&::-webkit-scrollbar {
-  width: 8px;   // use `height: 8px` for horizontal scrollers
-}
-&::-webkit-scrollbar-track {
-  background: transparent;
-}
-&::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--center-channel-color-rgb), 0.24);
-  border-radius: 3px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-  transition: background-color var(--duration-quick) var(--ease-transition);
-}
-&::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(var(--center-channel-color-rgb), 0.4);
-}
+<div className={styles['my-panel__body']}>
+  <Scrollbars>
+    {/* tall content */}
+  </Scrollbars>
+</div>
 ```
 
-Reference implementation: the `__messages` block in `src/pages/Layouts/Layouts.module.scss`. If this starts to recur in more places, extract a `@mixin minimal-scrollbar` into `src/styles/mixins.scss`.
+Conventions:
+
+- **Sizing.** `Scrollbars` fills its parent. In a flex column give the parent `flex: 1; min-height: 0;`. For menus and other capped-height surfaces, pass `style={{ maxHeight }}` on the wrapper.
+- **Theming.** Default thumb colour follows `--center-channel-color-rgb`. On dark surfaces (e.g. the channel sidebar) pass `color="--sidebar-text-rgb"` so the thumb stays visible.
+- **Padding.** Apply layout padding to a child wrapper inside `<Scrollbars>`, not to the `Scrollbars` root — the scrollbar track sits at the wrapper's content-box edge, so padding on the wrapper pushes the thumb inward.
+- **Imperative scroll.** Forward a ref to `<Scrollbars>` to receive the inner scrollable `<div>`. Use it for `.scrollTo(...)` or to read `.scrollTop` (e.g. "more unreads above/below" indicators).
+
+### Exception: docs shell components
+
+Layout-level scrollers in `src/components/layout/` (`AppShell`, `DocsLayout`, `DocSidebar`, `OnThisPage`) keep raw `overflow: auto` and apply `@include minimal-scrollbar;` from `src/styles/mixins.scss`. The mixin produces the same thin/translucent look as the wrapper.
+
+These stay on native scrolling because:
+
+1. **`position: sticky` descendants** (`OnThisPage`) need a native scrolling ancestor — sticky positioning breaks inside SimpleBar's wrapper/mask/offset DOM.
+2. **Flex-driven heights** rely on a clean flex chain from `app-shell` down through `docs-layout` to the docs sidebar and main pane. Wrapping `AppShell.__content` or `DocsLayout.__content` in SimpleBar inserts a `.simplebar-content` element with no defined height, which collapses any `flex: 1; min-height: 0;` descendants.
+
+Don't reach for the mixin in UI components; reach for `<Scrollbars>`.

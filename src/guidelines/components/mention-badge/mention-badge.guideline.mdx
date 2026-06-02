@@ -1,0 +1,78 @@
+import MentionBadge from '@/components/ui/MentionBadge/MentionBadge';
+
+Mention Badges show a numerical count of pending mentions. They appear next
+to channel names in the sidebar, on app-bar icons, inline in menu items, and
+on center-channel lists such as thread rows — small, high-contrast pills that
+pull the eye without dominating the row.
+
+<Divider />
+
+## Anatomy
+
+A Mention Badge is a single pill with a numeric label.
+
+- <Num>1</Num> **Container** — pill surface, sized to the digit count.
+- <Num>2</Num> **Count** — the mention number. Up to `99`; anything higher
+  shows as `99+`.
+
+<AnatomyStage style={{ gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
+  <MentionBadge count={3} />
+  <MentionBadge count={3} location="Channel" />
+  <MentionBadge count={3} location="Menu Item" />
+</AnatomyStage>
+
+Use the badge for **mention** counts only. For "this row has unread activity"
+without a number, use [Unread Badge](/components/unread-badge).
+
+<Divider />
+
+## Sizes
+
+Three sizes cover every context. Pick the smallest that still reads at the
+expected viewing distance.
+
+<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'center'}}>
+  <MentionBadge count={5} size="Small" />
+  <MentionBadge count={5} size="Medium" />
+  <MentionBadge count={5} size="Large" />
+</div>
+
+| Size   | Use when                                                         |
+| ------ | ---------------------------------------------------------------- |
+| Small  | Thread view, dense menus, secondary surfaces.                    |
+| Medium | Default — channel sidebar rows, most desktop placements.         |
+| Large  | Mobile lists and any surface with a 24px+ row height.            |
+
+<Divider />
+
+## Locations
+
+The badge adapts its colour to where it sits so it reads against the
+underlying surface. Pass `location` to match the surface (see the
+[specimen](/components/mention-badge/specimen) for every size and digit count).
+
+Same count across each location:
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', padding: '0.75rem 0' }}>
+  <MentionBadge count={3} location="Sidebar" />
+  <MentionBadge count={3} location="Menu Item" />
+  <MentionBadge count={3} location="Channel" />
+  <MentionBadge count={3} location="Icon Button" />
+</div>
+
+| Location    | Use when                                                              |
+| ----------- | --------------------------------------------------------------------- |
+| Sidebar     | Default. Pinned next to a channel name in the channel sidebar.        |
+| Menu Item   | Inline at the end of a [Menu Item](/components/menu-item). |
+| Channel     | Center-channel lists such as thread rows on neutral list backgrounds. |
+| Icon Button | Anchored to an app-bar or toolbar [Icon Button](/components/icon-button). |
+
+Don't pair more than one mention badge with the same row — the count is the
+summary.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Mention Badge specimen page](/components/mention-badge/specimen).

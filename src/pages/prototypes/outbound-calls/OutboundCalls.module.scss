@@ -1,0 +1,1436 @@
+@use '@/styles/tokens.scss' as *;
+@use '@/styles/mixins.scss' as *;
+
+// ---------------------------------------------------------------------------
+// Page block — mirrors the composed layout from src/pages/Layouts.
+// ---------------------------------------------------------------------------
+.calls {
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+  gap: var(--spacing-m);
+
+  &__shell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    background: var(--sidebar-bg);
+    color: var(--center-channel-color);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    box-shadow: var(--elevation-6);
+    max-width: 1440px;
+    max-height: 800px;
+    overflow: hidden;
+  }
+
+  &__global-header {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  // Prototype-only dialpad trigger overlaid on the GlobalHeader's right side.
+  // Visually slots before the @mentions icon without modifying the shared
+  // GlobalHeader component. Offset matches: right-pad 8 + account 40 + gap 4 +
+  // settings 28 + gap 4 + saved 28 + gap 4 + mentions 28 + gap 4 = 148px.
+  &__rhs-trigger {
+    position: absolute;
+    top: 50%;
+    right: 148px;
+    transform: translateY(-50%);
+    appearance: none;
+    border: 0;
+    width: 28px;
+    height: 28px;
+    padding: var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: rgba(var(--sidebar-text-rgb), 0.75);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+      color: var(--sidebar-text);
+    }
+
+    &--active {
+      background: rgba(var(--sidebar-text-rgb), 0.16);
+      color: var(--sidebar-text);
+    }
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 0 4px 4px;
+    background: var(--sidebar-header-bg);
+  }
+
+  &__team-sidebar {
+    flex: 0 0 auto;
+    display: flex;
+    min-height: 0;
+  }
+
+  &__outer-panel {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 0;
+    border-radius: var(--radius-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    overflow: hidden;
+    background: var(--sidebar-bg);
+  }
+
+  &__channels-sidebar {
+    flex: 0 0 auto;
+    display: flex;
+    min-height: 0;
+    min-width: 0;
+
+    > * { height: 100%; }
+  }
+
+  &__inner-panel {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 0;
+    border-radius: var(--radius-l);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: var(--elevation-1);
+    overflow: hidden;
+    background: var(--center-channel-bg);
+  }
+
+  &__center {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--center-channel-bg);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Profile clickable — wraps a Post so the avatar + username open the popover.
+// ---------------------------------------------------------------------------
+.profile-clickable {
+  img {
+    cursor: pointer;
+    transition: transform var(--duration-quick) var(--ease-transition);
+    &:hover { transform: scale(1.04); }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Inline clickable phone number — appears embedded within message body text.
+// ---------------------------------------------------------------------------
+.phone-link {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 var(--spacing-xxxxs);
+  border-radius: var(--radius-s);
+  background: rgba(var(--button-bg-rgb), 0.08);
+  color: var(--link-color);
+  font-family: inherit;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+  vertical-align: baseline;
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover { background: rgba(var(--button-bg-rgb), 0.16); }
+  &:active { background: rgba(var(--button-bg-rgb), 0.24); }
+}
+
+// ---------------------------------------------------------------------------
+// Dialer header — mirrors ChannelHeader's simple variant (Threads/Drafts).
+// ---------------------------------------------------------------------------
+.dialer-header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-l) var(--spacing-l);
+  background-color: var(--center-channel-bg, var(--color-neutral-0));
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color, var(--color-neutral-900));
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__description {
+    flex: 1 0 0;
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared keypad — used by the dialer left column AND the PIP dtmf popover.
+// ---------------------------------------------------------------------------
+.keypad {
+  &__input {
+    max-width: none;
+
+    input {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xs);
+    padding: 0;
+  }
+
+  &__key {
+    appearance: none;
+    border: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: 8px;
+    height: 48px;
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    cursor: pointer;
+    color: var(--center-channel-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: rgba(var(--center-channel-color-rgb), 0.12); }
+    &:active { transform: scale(0.96); }
+  }
+
+  &__key-main {
+    font-size: 24px;
+    line-height: 24px;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__key-sub {
+    font-size: 8px;
+    line-height: 12px;
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    letter-spacing: 0.12em;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Dialer two-column body
+// ---------------------------------------------------------------------------
+.dialer {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) 1fr;
+  min-height: 0;
+
+  &__keypad {
+    padding: var(--spacing-m);
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    overflow-y: auto;
+
+    .keypad__key { height: 64px; }
+  }
+
+  &__phone-field {
+    max-width: none;
+
+    input {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  &__call-action {
+    display: flex;
+    padding-top: var(--spacing-xxs);
+  }
+
+  &__call-button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 64px;
+    border-radius: 8px;
+    background: var(--color-success);
+    color: var(--color-neutral-0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition),
+      opacity var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: var(--color-green-600);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  &__recents {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    min-width: 0;
+    overflow-y: auto;
+  }
+
+  &__recents-header {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__recents-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__recent {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: rgba(var(--center-channel-color-rgb), 0.04); }
+  }
+
+  &__recent-avatar-fallback {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__recent-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__recent-name {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+
+    &--missed { color: var(--color-danger); }
+  }
+
+  &__recent-meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__recent-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__recent-time {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__recent-duration {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Profile popover — positioning wrapper around the shared ProfilePopover.
+// The shared component brings its own background, border, shadow, and padding.
+// ---------------------------------------------------------------------------
+.popover-anchor {
+  position: fixed;
+  z-index: 40;
+}
+
+// ---------------------------------------------------------------------------
+// Segmented call button (prototype-only) — channel header
+// Figma MM-56584 Outbound Calling, node 5402:29828
+// ---------------------------------------------------------------------------
+.seg-call {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  background: rgba(var(--button-bg-rgb), 0.08);
+  border-radius: var(--radius-s);
+  color: var(--button-bg);
+  height: 32px;
+
+  &__primary,
+  &__trigger {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--button-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--button-bg-rgb), 0.08);
+    }
+  }
+
+  &__primary {
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-xs) 13px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    border-top-left-radius: var(--radius-s);
+    border-bottom-left-radius: var(--radius-s);
+  }
+
+  &__trigger {
+    padding: 0 var(--spacing-xxxs);
+    border-top-right-radius: var(--radius-s);
+    border-bottom-right-radius: var(--radius-s);
+  }
+
+  &__divider {
+    width: 1px;
+    align-self: stretch;
+    background: rgba(var(--button-bg-rgb), 0.24);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Popover footer call dropdown (prototype-only)
+// Figma MM-56584 Outbound Calling, node 5445:18098 (footer)
+// ---------------------------------------------------------------------------
+.pop-call {
+  position: relative;
+  display: inline-flex;
+
+  &__btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-s);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Start call menu (SegmentedCallButton — MenuItem-based)
+// ---------------------------------------------------------------------------
+.start-call-menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xxs));
+  right: 0;
+  min-width: 260px;
+  max-width: 320px;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elevation-4);
+  padding: var(--spacing-xxs) 0;
+  margin: 0;
+  list-style: none;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+
+  &__item {
+    list-style: none;
+  }
+
+  &__divider {
+    list-style: none;
+    padding: 0;
+  }
+}
+
+.phone-icon--secure {
+  display: inline-flex;
+  color: var(--color-danger);
+}
+
+// ---------------------------------------------------------------------------
+// tel: autocomplete (DM scene message input)
+// ---------------------------------------------------------------------------
+.tel-autocomplete {
+  position: relative;
+
+  &__menu {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-xxs));
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    max-height: 240px;
+    overflow-y: auto;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-4);
+    padding: var(--spacing-xxs) 0;
+    margin: 0;
+    list-style: none;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+  }
+
+  &__item {
+    list-style: none;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Right-hand sidebar dialer
+// ---------------------------------------------------------------------------
+@keyframes rhs-enter {
+  from { transform: translateX(16px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+.rhs {
+  flex: 0 0 auto;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--center-channel-bg);
+  border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  animation: rhs-enter var(--duration-quick) var(--ease-entrance);
+  box-shadow: var(--elevation-2);
+
+  &__header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m);
+    min-height: 57px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__header-icon {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    flex-shrink: 0;
+  }
+
+  &__header-title {
+    flex: 1 0 0;
+    min-width: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  &__dialpad {
+    flex: 0 0 auto;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+
+    .keypad__key { height: 56px; }
+  }
+
+  &__phone-field {
+    max-width: none;
+  }
+
+  &__call-button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 56px;
+    border-radius: 8px;
+    background: var(--color-success);
+    color: var(--color-neutral-0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition),
+      opacity var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: var(--color-green-600);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  &__recents {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__recents-header {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--spacing-s);
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-50);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__recents-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__recent {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: rgba(var(--center-channel-color-rgb), 0.04); }
+  }
+
+  &__recent-avatar-fallback {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__recent-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__recent-name {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+
+    &--missed { color: var(--color-danger); }
+  }
+
+  &__recent-meta {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__recent-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__recent-time {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__recent-duration {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Picture-in-picture call window
+// ---------------------------------------------------------------------------
+@keyframes pip-enter {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pip-exit {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(calc(100% + var(--spacing-l))); }
+}
+
+@keyframes pip-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+@keyframes pip-panel-enter {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pip-panel-exit {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.96); }
+}
+
+.pip {
+  position: absolute;
+  left: var(--spacing-l);
+  bottom: var(--spacing-l);
+  width: 302px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacing-xxs);
+  z-index: 50;
+  animation: pip-enter var(--duration-quick) var(--ease-entrance);
+
+  &--exiting {
+    animation: pip-exit var(--duration-quick) var(--ease-exit) forwards;
+  }
+
+  &__widget {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: 8px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+
+  &__header {
+    min-height: 50px;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: var(--spacing-xxs) 8px;
+  }
+
+  // Tighter overlap for the in-call avatar group — the default 3px gap at
+  // size-32 reads as separation; condense so the stack reads as one unit.
+  // Double the class selector to beat UserAvatarGroup's size-32 rule
+  // (.user-avatar-group--size-32 .user-avatar-group__item, specificity 0,2,0).
+  #{&}__avatar-group#{&}__avatar-group {
+    padding-right: 12px;
+
+    > span {
+      margin-right: -12px;
+    }
+  }
+
+  &__unknown-avatar {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__header-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--pulsing { animation: pip-pulse 1.4s var(--ease-transition) infinite; }
+  }
+
+  &__sub {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__sub-sep {
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+  }
+
+  &__trunk {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  &__controls {
+    height: 44px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__controls-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__more-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__hangup {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    height: 28px;
+    min-width: 40px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-s);
+    background: var(--color-danger);
+    color: var(--color-neutral-0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: var(--color-red-600); }
+  }
+
+  &__call {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    height: 28px;
+    min-width: 40px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-s);
+    background: var(--color-success);
+    color: var(--color-neutral-0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      opacity var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) { background: var(--color-green-600); }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  &__device-menu {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-xxs));
+    right: 0;
+    min-width: 220px;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-4);
+    list-style: none;
+    margin: 0;
+    padding: var(--spacing-xxxs);
+    z-index: 5;
+  }
+
+  &__device-menu-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-25);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--spacing-xxs) var(--spacing-s);
+  }
+
+  &__device-item {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    text-align: left;
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: rgba(var(--center-channel-color-rgb), 0.04); }
+
+    &--selected { color: var(--color-info); }
+  }
+
+  &__device-check {
+    margin-left: auto;
+    color: var(--color-info);
+    display: inline-flex;
+  }
+
+  // Dial pad panel (floats above the widget when keypad is toggled)
+  &__dtmf {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: 8px;
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: center bottom;
+    animation: pip-panel-enter var(--duration-quick) var(--ease-entrance);
+
+    &--exiting {
+      animation: pip-panel-exit var(--duration-quick) var(--ease-exit) forwards;
+    }
+  }
+
+  &__dtmf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-xs) 0 var(--spacing-m);
+  }
+
+  &__dtmf-title {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  // Shared tab header + underline tabs, used by the dial pad popover
+  // (Dial pad / Recent) and the Add participants popover (Contacts / Dial pad).
+  &__tabs-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-xs);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__tabs {
+    display: flex;
+    align-items: center;
+  }
+
+  &__tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+    padding: 12px var(--spacing-xs) 10px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    position: relative;
+    transition: color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(&--active) {
+      color: rgba(var(--center-channel-color-rgb), 0.88);
+    }
+
+    &--active {
+      color: var(--link-color);
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background-color: var(--button-bg);
+      }
+    }
+  }
+
+  // Shared min-height so switching tabs keeps the popover height stable.
+  // dtmf-body only gets the tall height while composing; during in-call DTMF the
+  // call button is hidden and the popover collapses.
+  &__dtmf-body--tall,
+  &__add-body,
+  &__recents,
+  &__conference {
+    height: 352px;
+  }
+
+  &__recents {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xs) 0;
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+    }
+  }
+
+  &__recents-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__recents-empty {
+    padding: var(--spacing-l) var(--spacing-m);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    text-align: center;
+  }
+
+  &__recent-avatar-fallback {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__recent-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__conference {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l) var(--spacing-l) var(--spacing-s);
+  }
+
+  &__conference-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+  &__conference-description {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__conference-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin: 0;
+  }
+
+  &__conference-row {
+    display: flex;
+    gap: var(--spacing-xxxxs);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__conference-label {
+    margin: 0;
+    font-weight: var(--font-weight-semibold);
+    flex-shrink: 0;
+  }
+
+  &__conference-value {
+    margin: 0;
+    font-weight: var(--font-weight-regular);
+  }
+
+  &__conference-call {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: var(--spacing-s) var(--spacing-xl);
+    border-radius: var(--radius-s);
+    background: var(--color-success);
+    color: var(--color-neutral-0);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: var(--color-green-600); }
+    &:active { transform: scale(0.98); }
+  }
+
+  &__dtmf-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m);
+  }
+
+  &__dtmf-call {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    background: var(--color-success);
+    color: var(--color-neutral-0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition),
+      opacity var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) { background: var(--color-green-600); }
+    &:active:not(:disabled) { transform: scale(0.96); }
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  &__controls-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+  }
+
+  // Inline pill that sits beside the dial-pad button inside pip__controls.
+  &__participants-btn {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    height: 28px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--active {
+      background: rgba(var(--center-channel-color-rgb), 0.12);
+      color: var(--center-channel-color);
+    }
+  }
+
+  // Add-participant panel (opens above pip__widget, same shell as pip__dtmf).
+  &__add {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: 8px;
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: center bottom;
+    animation: pip-panel-enter var(--duration-quick) var(--ease-entrance);
+
+    &--exiting {
+      animation: pip-panel-exit var(--duration-quick) var(--ease-exit) forwards;
+    }
+  }
+
+
+  &__add-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m);
+  }
+
+  // Participant list panel (opens above pip__widget, same shell as pip__dtmf).
+  &__participants {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: 8px;
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: center bottom;
+    animation: pip-panel-enter var(--duration-quick) var(--ease-entrance);
+
+    &--exiting {
+      animation: pip-panel-exit var(--duration-quick) var(--ease-exit) forwards;
+    }
+  }
+
+  &__participants-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-m);
+  }
+
+  &__participants-title {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__participants-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 var(--spacing-xxs);
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__participant {
+    display: block;
+    transition: opacity var(--duration-quick) var(--ease-exit);
+
+    &--ending {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+  }
+
+  &__participant-avatar-fallback {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Hangup icon shown on removable bridged rows. Keep the default icon-button
+  // background; only tint the icon itself with the danger color.
+  &__participant-remove:not(:disabled) {
+    color: var(--color-danger);
+  }
+}

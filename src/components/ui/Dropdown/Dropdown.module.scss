@@ -5,7 +5,6 @@
 .dropdown {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xxxxs);
   background: transparent;
   border: 0;
   border-radius: var(--radius-s);
@@ -40,10 +39,15 @@
   // Elements
   // ---------------------------------------------------------------------------
 
-  // Button's __label wrapper becomes transparent so dropdown__content and
-  // dropdown__chevron are direct flex children of the button element.
+  // `button__label` is display: contents; label and chevron sit in `__trigger`
+  // so Button icon-slot `gap` does not sit between them (Figma label–chevron).
   :global(.button__label) {
     display: contents;
+  }
+
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
   }
 
   &__content {
@@ -92,6 +96,10 @@
     padding-left: var(--spacing-xxxs);
     padding-right: var(--spacing-xxxxs);
 
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
+
     .dropdown__content {
       gap: var(--spacing-xxxs);
     }
@@ -109,7 +117,12 @@
   }
 
   &--size-small {
-    padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxs);
+    padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs)
+      var(--spacing-xxxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
 
     .dropdown__content {
       gap: var(--spacing-xxxs);
@@ -127,7 +140,12 @@
   }
 
   &--size-medium {
-    padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxs);
+    padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs)
+      var(--spacing-xxxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
 
     .dropdown__content {
       gap: var(--spacing-xs);
@@ -149,8 +167,18 @@
     }
   }
 
+  &--size-medium#{&}--padding-compact {
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+      var(--spacing-xs);
+  }
+
   &--size-large {
-    padding: var(--spacing-xxxxs) var(--spacing-xxxs) var(--spacing-xxxxs) var(--spacing-xxs);
+    padding: var(--spacing-xxxxs) var(--spacing-xxxs) var(--spacing-xxxxs)
+      var(--spacing-xxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
 
     .dropdown__content {
       gap: var(--spacing-s);
@@ -170,6 +198,10 @@
 
   &--size-x-large {
     padding: 0 var(--spacing-xxs) 0 var(--spacing-xs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
 
     .dropdown__content {
       gap: var(--spacing-s);

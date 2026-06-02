@@ -5,7 +5,12 @@ import Icon from '@/components/ui/Icon/Icon';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import styles from './GlobalBanner.module.scss';
 
-export type GlobalBannerType = 'General' | 'Warning' | 'Danger' | 'Info' | 'Success';
+export type GlobalBannerType =
+  | 'General'
+  | 'Warning'
+  | 'Danger'
+  | 'Info'
+  | 'Success';
 
 export interface GlobalBannerProps {
   /** Optional CSS class name. */
@@ -38,7 +43,10 @@ export default function GlobalBanner({
   onAction,
   onDismiss,
 }: GlobalBannerProps) {
-  const typeClass = type !== 'General' ? styles[`global-banner--type-${type.toLowerCase()}`] : '';
+  const typeClass =
+    type !== 'General'
+      ? styles[`global-banner--type-${type.toLowerCase()}`]
+      : '';
 
   const rootClass = [styles['global-banner'], typeClass, className]
     .filter(Boolean)
@@ -55,7 +63,8 @@ export default function GlobalBanner({
         <span className={styles['global-banner__message']}>{message}</span>
         {actionLabel != null && (
           <Button
-            appearance="Inverted"
+            className={styles['global-banner__action']}
+            appearance="Default"
             emphasis="Tertiary"
             size="X-Small"
             onClick={onAction}
@@ -69,7 +78,6 @@ export default function GlobalBanner({
           className={styles['global-banner__dismiss']}
           aria-label="Dismiss"
           size="Small"
-          style="Inverted"
           icon={<Icon glyph={<CloseIcon />} size="16" />}
           onClick={onDismiss}
         />

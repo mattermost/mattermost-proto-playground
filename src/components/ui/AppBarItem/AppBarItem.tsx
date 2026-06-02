@@ -54,13 +54,19 @@ export default function AppBarItem({
       <span className={styles['app-bar-item__icon']}>{icon}</span>
 
       {mentionBadge != null && mentionBadge > 0 && (
-        <span className={styles['app-bar-item__mention-badge']} aria-label={`${mentionBadge} mentions`}>
+        <span
+          className={styles['app-bar-item__mention-badge']}
+          aria-label={`${mentionBadge} mentions`}
+        >
           {mentionBadge}
         </span>
       )}
 
       {unreadBadge && mentionBadge == null && (
-        <span className={styles['app-bar-item__unread-badge']} aria-label="Unread" />
+        <span
+          className={styles['app-bar-item__unread-badge']}
+          aria-label="Unread"
+        />
       )}
     </button>
   );

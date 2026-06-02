@@ -36,14 +36,21 @@ export default function SearchTipBanner({
   children,
 }: SearchTipBannerProps) {
   return (
-    <div className={[styles['search-tip-banner'], className].filter(Boolean).join(' ')}>
+    <div
+      className={[styles['search-tip-banner'], className]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div className={styles['search-tip-banner__content']}>
         {children ?? (
           <>
             <span className={styles['search-tip-banner__text']}>{prefix}</span>
             <span className={styles['search-tip-banner__shortcut']}>
               {shortcutKeys.map((key) => (
-                <kbd key={key.label} className={styles['search-tip-banner__key']}>
+                <kbd
+                  key={key.label}
+                  className={styles['search-tip-banner__key']}
+                >
                   {key.label}
                 </kbd>
               ))}

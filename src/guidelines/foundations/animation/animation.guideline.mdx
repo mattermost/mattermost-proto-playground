@@ -1,0 +1,160 @@
+Motion gives the interface a sense of cause and effect. Things appear, move,
+and disappear in ways that mirror how objects behave in the physical world —
+and when used carefully, animation reinforces hierarchy, communicates state
+changes, and helps the product feel alive. Used carelessly, it gets in the
+way.
+
+This page covers when to animate, the duration and easing tokens we ship, and
+the patterns that combine them.
+
+<Divider />
+
+## When to animate
+
+Reach for animation when motion **answers a question the user is already
+asking** — _Where did this come from? Where did it go? What just changed?_
+Static interfaces force the eye to re-orient on every change; a short
+transition stitches the before and after into a single, understandable moment.
+
+<PrincipleList>
+  <Principle title="Show cause and effect">
+    Animate the result of an action so the user can connect what they did with
+    what just happened. A panel sliding in from the right is recognisably "a
+    thing that opened from this side."
+  </Principle>
+  <Principle title="Preserve continuity">
+    When a single object moves between two states (open ↔ closed, collapsed ↔
+    expanded), animate the transition. Never let the object teleport.
+  </Principle>
+  <Principle title="Stay out of the way">
+    Animation should never delay the user's next action. If a transition makes
+    the UI feel slow, shorten it or remove it.
+  </Principle>
+  <Principle title="Skip pure decoration">
+    If a motion answers no question and serves no state change, don't ship it.
+    Subtle is the system's default — flair belongs to marketing surfaces, not
+    the product.
+  </Principle>
+</PrincipleList>
+
+<Divider />
+
+## Duration
+
+Compass exposes two duration tokens. Together they cover almost every motion
+in the product.
+
+| Token                   | Value | Use for                                                                |
+| ----------------------- | ----- | ---------------------------------------------------------------------- |
+| `--duration-quick`      | 150ms | On-screen micro-transitions — hover states, color changes, small moves |
+| `--duration-moderate`   | 300ms | Entrances, exits, and larger movements — panels, drawers, popovers     |
+
+Quick is the default for elements already on screen. Reach for moderate
+whenever an element is entering or leaving the viewport, or travelling a
+significant distance — long enough that 150ms would feel rushed.
+
+<Divider />
+
+## Easing
+
+Easing controls the **shape** of a motion — whether it accelerates,
+decelerates, or moves at a constant rate. Compass uses three easing tokens,
+each tuned to a specific kind of moment.
+
+| Token                | Curve         | Use for                                                            |
+| -------------------- | ------------- | ------------------------------------------------------------------ |
+| `--ease-transition`  | ease-in-out   | Element already on screen — moving, expanding, changing color      |
+| `--ease-entrance`    | ease-out      | Element entering the screen — settles softly into place            |
+| `--ease-exit`        | ease-in       | Element leaving the screen — accelerates away                      |
+
+The asymmetry between entrance and exit matters: things should arrive gently
+and leave decisively. Inverting that — sharp entrances, sluggish exits — makes
+the interface feel jittery, even when the timing is right.
+
+<Divider />
+
+## Choosing a duration + easing pair
+
+Pick a token pair by asking two questions. _Is the element already on screen,
+or is it entering or leaving?_ And _how far is it travelling?_
+
+<MotionMatrix />
+
+These four pairings cover the bulk of UI motion. When in doubt, default to
+`--duration-quick` paired with `--ease-transition`.
+
+<Divider />
+
+## Popover panels
+
+Popovers — menus, info popovers, dropdowns — animate on open and close with a
+combined **scale + fade**. The scale grows the panel out from its anchor; the
+fade prevents the appearance from feeling abrupt.
+
+| Phase    | Scale         | Opacity   | Duration            | Easing               |
+| -------- | ------------- | --------- | ------------------- | -------------------- |
+| Opening  | 90% → 100%    | 0 → 1     | `--duration-quick`  | `--ease-entrance`    |
+| Closing  | 100% → 90%    | 1 → 0     | `--duration-quick`  | `--ease-exit`        |
+
+Popovers are a short-distance entrance/exit, so they use `--duration-quick`
+rather than the moderate timing reserved for full-size panels and drawers.
+
+Set `transform-origin` so the scale grows from the anchor — for a popover that
+opens below-and-right of its trigger, use `transform-origin: top left`. For
+unmount-on-close panels, the `useExitAnimation` hook in `src/hooks/` keeps the
+element rendered long enough for the exit animation to finish.
+
+<PopoverPattern />
+
+<Divider />
+
+## Always use the tokens
+
+Never hard-code durations or easing keywords directly. Bind to the CSS
+variables so timing stays consistent across components, and so changes to the
+system propagate without a search-and-replace.
+
+```scss
+// Small on-screen transition (e.g. hover, short expand)
+transition: opacity var(--duration-quick) var(--ease-transition);
+
+// Large on-screen transition (e.g. panel sliding across the view)
+transition: transform var(--duration-moderate) var(--ease-transition);
+
+// Entrance
+transition: opacity var(--duration-moderate) var(--ease-entrance);
+
+// Exit
+transition: opacity var(--duration-moderate) var(--ease-exit);
+```
+
+<Divider />
+
+## Reduced motion
+
+Respect the user's system preference. When `prefers-reduced-motion: reduce` is
+set, suppress non-essential animation so the interface stays usable for users
+who get motion-sick or are easily distracted by movement.
+
+```scss
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+Animation that **conveys meaning** — a loading spinner, a progress indicator,
+a typing dot — can keep moving, but should be reduced to its minimum legible
+form. Animation that's purely a flourish should disappear.
+
+<Divider />
+
+## Tokens and implementation
+
+Each duration and easing is exposed as a CSS custom property. For the full
+token list, copy-ready values, and interactive playback of each token, see the
+[Animation specimen page](/foundations/animation/specimen).

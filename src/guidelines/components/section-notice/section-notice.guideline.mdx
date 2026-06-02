@@ -1,0 +1,90 @@
+import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
+
+A Section Notice is an in-context alert that lives inside a settings page,
+admin panel, or other content region. Use it to flag important information,
+report a state change, or surface a problem the user needs to act on —
+without yanking them out of the flow.
+
+Reach for a Section Notice when feedback is conclusive and tied to a specific
+area of the page. For transient confirmation, use a
+[Toast](/components/toast-banner). For overlay-style alerts, use a
+[Popover Notice](/components/popover-notice).
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
+  <div style={{width:'100%',maxWidth:'480px'}}>
+    <SectionNotice
+      type="Info"
+      title="Two-factor authentication is now required"
+      description="Set up authenticator codes the next time you sign in to keep access to this workspace."
+      primaryButtonLabel="Set up now"
+      secondaryButtonLabel="Learn more"
+      onDismiss={() => {}}
+    />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Icon** — optional. Defaults to a glyph that matches the
+  notice type. Hide it only if the notice sits next to another icon already.
+- <Num>2</Num> **Title** — required. State the situation in one sentence.
+- <Num>3</Num> **Description** — optional. Add context or next steps.
+- <Num>4</Num> **Primary action** — optional. The recommended next step.
+- <Num>5</Num> **Secondary action** — optional. A supporting alternative
+  (e.g. "Learn more").
+- <Num>6</Num> **Dismiss** — optional. Use only when the notice is genuinely
+  optional reading.
+
+<Divider />
+
+## Variants
+
+Five severities. Pick the one that matches the user's situation; don't pick
+the one that matches your tone of voice.
+
+| Type    | Use when                                                                 |
+| ------- | ------------------------------------------------------------------------ |
+| Info    | Neutral context — a setting changed, a new feature is available.         |
+| Hint    | A soft suggestion that the user can take or leave.                       |
+| Success | An action just completed and the result is visible in this section.     |
+| Warning | Something needs attention soon, but nothing is broken yet.               |
+| Danger  | A blocking problem the user must resolve to continue.                    |
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'480px'}}>
+  <SectionNotice type="Info" title="Info" description="Your channel is being indexed." />
+  <SectionNotice type="Success" title="Success" description="Settings saved." />
+  <SectionNotice type="Warning" title="Warning" description="Your trial ends in 3 days." />
+  <SectionNotice type="Danger" title="Danger" description="We couldn't connect to the server." />
+</div>
+
+<Divider />
+
+## Actions
+
+A Section Notice can carry up to two actions. Keep buttons low-emphasis —
+they shouldn't outshout the page's main controls.
+
+- **Primary** — the action that resolves the notice. Limit to one.
+- **Secondary** — a supporting action (e.g. "Learn more"). Optional.
+
+If the notice can be safely closed without action, add an `onDismiss`
+handler. If the notice represents an unresolved problem, omit dismiss — the
+user should fix it, not hide it.
+
+<Divider />
+
+## Auto-dismissal
+
+Section Notices are persistent by default. They can be configured to dismiss
+themselves after a fixed number of seconds, but only do this for confirmation
+notices that have already been acknowledged through some other means. Never
+auto-dismiss a Warning or Danger notice.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Section Notice specimen page](/components/section-notice/specimen).

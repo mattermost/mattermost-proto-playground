@@ -20,6 +20,11 @@ export interface EmojiProps {
   emoji: string;
   /** Size from the Mattermost icon scale. Default 24. */
   size?: EmojiSize;
+  /**
+   * `vivid` — full-strength channel color and slight scale; use inside muted
+   * controls (e.g. `IconButton` quick reactions on the center channel).
+   */
+  variant?: 'default' | 'vivid';
 }
 
 const SIZE_CLASS_MAP: Record<EmojiSize, string> = {
@@ -43,9 +48,15 @@ export default function Emoji({
   className = '',
   emoji,
   size = '24',
+  variant = 'default',
 }: EmojiProps) {
   const sizeClass = SIZE_CLASS_MAP[size];
-  const rootClass = [styles.emoji, sizeClass, className]
+  const rootClass = [
+    styles.emoji,
+    sizeClass,
+    variant === 'vivid' ? styles['emoji--vivid'] : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 

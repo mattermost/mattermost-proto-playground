@@ -54,7 +54,8 @@
   &--size-small {
     .reaction-pill__inner {
       gap: var(--spacing-xxxs);
-      padding: var(--spacing-xxxxs) var(--spacing-s) var(--spacing-xxxxs) var(--spacing-xxxs);
+      padding: var(--spacing-xxxxs) var(--spacing-s) var(--spacing-xxxxs)
+        var(--spacing-xxxs);
     }
 
     .reaction-pill__emoji {
@@ -71,7 +72,8 @@
   &--size-medium {
     .reaction-pill__inner {
       gap: 5px;
-      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs) var(--spacing-xxxs);
+      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
+        var(--spacing-xxxs);
     }
 
     .reaction-pill__emoji {
@@ -87,7 +89,8 @@
   &--size-large {
     .reaction-pill__inner {
       gap: var(--spacing-xxs);
-      padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-xxs) var(--spacing-s);
+      padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-xxs)
+        var(--spacing-s);
     }
 
     .reaction-pill__emoji {
@@ -111,7 +114,8 @@
 
     .reaction-pill__inner {
       background-color: transparent;
-      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs) var(--spacing-xxxs);
+      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
+        var(--spacing-xxxs);
     }
 
     .reaction-pill__leading-icon {
@@ -128,7 +132,8 @@
   &--type-other {
     .reaction-pill__inner {
       gap: 5px;
-      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs) var(--spacing-xxxs);
+      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
+        var(--spacing-xxxs);
     }
 
     .reaction-pill__label {

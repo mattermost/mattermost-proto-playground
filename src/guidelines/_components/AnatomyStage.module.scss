@@ -1,0 +1,12 @@
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-l);
+  border-radius: 12px;
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
+}

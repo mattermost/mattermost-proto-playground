@@ -7,6 +7,18 @@
   background: var(--sidebar-bg);
   overflow: hidden;
 
+  /** Header-only preview row (guidelines / anatomy strips). */
+  &--header-preview {
+    height: auto;
+    min-height: 0;
+  }
+
+  /** Navigator-only preview strip (guidelines / anatomy strips). */
+  &--navigator-preview {
+    height: auto;
+    min-height: 0;
+  }
+
   &__sidebar-icon-button {
     background: rgba(var(--sidebar-text-rgb), 0.08) !important;
 
@@ -111,15 +123,6 @@
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-      display: none;
-    }
   }
 
   &__channel-groups {
@@ -140,10 +143,23 @@
     display: flex;
     align-items: center;
     height: 32px;
-    padding: var(--spacing-xxxs) var(--spacing-l) var(--spacing-xxxs) var(--spacing-xs);
+    padding: var(--spacing-xxxs) var(--spacing-l) var(--spacing-xxxs)
+      var(--spacing-xs);
     flex-shrink: 0;
     gap: var(--spacing-xxxxs);
     cursor: pointer;
+
+    /** System Console / admin: leading compass icon + label, full-width inset. */
+    &--with-leading-icon {
+      padding: var(--spacing-xxxs) var(--spacing-xl);
+    }
+
+    &--sticky {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--sidebar-bg);
+    }
 
     &--no-chevron {
       padding-left: 22px;
@@ -160,6 +176,34 @@
     flex: 1;
     min-width: 0;
     gap: var(--spacing-xxxxs);
+  }
+
+  &__category-leading-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    color: var(--sidebar-text);
+  }
+
+  /** Admin categories: icon/label rhythm (Figma sidebar-text @ 64%, 4px between). */
+  &__category--with-leading-icon &__category-left {
+    gap: var(--spacing-xxxs);
+  }
+
+  &__category--with-leading-icon &__category-leading-icon {
+    opacity: 0.64;
+  }
+
+  /** System Console: category label + icon at full sidebar-text strength. */
+  &__category--opaque &__category-label {
+    opacity: 1;
+  }
+
+  &__category--opaque &__category-leading-icon {
+    opacity: 1;
   }
 
   &__category-chevron {

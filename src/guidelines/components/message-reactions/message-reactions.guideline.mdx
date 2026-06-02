@@ -1,0 +1,83 @@
+import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
+
+Message Reactions are the row of emoji pills below a message — the lightest
+weight way to respond, applaud, or acknowledge without adding to the thread.
+The component handles the count, the "this is mine" highlight, and the
+add-reaction affordance.
+
+<Divider />
+
+## Anatomy
+
+A horizontal row of pill buttons. Each pill carries one emoji and the count
+of users who picked it; the row may also include an Acknowledge button and
+an add-reaction control.
+
+- <Num>1</Num> **Reaction pill** — emoji + count. Click to toggle your own
+  reaction.
+- <Num>2</Num> **Acknowledge** — optional pill with a check glyph. When the
+  current user has acknowledged, it shows a count instead of the word.
+- <Num>3</Num> **Add reaction** — optional `+` Icon Button that opens the
+  emoji picker.
+
+<AnatomyStage>
+  <MessageReactions
+    reactions={[
+      { emoji: '👍', count: 3, byCurrentUser: true },
+      { emoji: '😀', count: 4 },
+      { emoji: '🙌', count: 1 },
+    ]}
+    showAddReaction
+  />
+</AnatomyStage>
+
+<Divider />
+
+## States
+
+Reaction pills have two flavours plus the standard interactive states.
+
+| State              | Use when                                                                |
+| ------------------ | ----------------------------------------------------------------------- |
+| Others — Default   | At least one other user reacted with this emoji; you haven't.           |
+| Others — Hover     | Pointer is over the pill, previewing your own reaction.                 |
+| Mine               | The current user has reacted. Pill takes a blue outline + soft fill.    |
+
+When a pill is clicked, animate the count up by one with a quick increment;
+when removed, animate down. The animation is instant feedback before the
+server confirms.
+
+<Divider />
+
+## Acknowledge
+
+Acknowledge is a higher-emphasis "I saw this" with a different visual
+treatment — a check glyph, the word "Acknowledge" until the current user
+opts in, and a count once they have.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <MessageReactions
+    acknowledged
+    acknowledgeCount={0}
+    reactions={[]}
+  />
+  <MessageReactions
+    acknowledged
+    acknowledgeCount={4}
+    currentUserAcknowledged
+    reactions={[
+      { emoji: '👍', count: 2 },
+    ]}
+  />
+</div>
+
+Use Acknowledge sparingly — it's reserved for messages where confirmation
+matters (announcements, policy updates). Don't enable it on every channel by
+default.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Message Reactions specimen page](/components/message-reactions/specimen).

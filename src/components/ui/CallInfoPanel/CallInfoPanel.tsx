@@ -103,7 +103,11 @@ export default function CallInfoPanel({
                   <Icon
                     size="16"
                     glyph={
-                      copied === 'internal' ? <CheckIcon /> : <ContentCopyIcon />
+                      copied === 'internal' ? (
+                        <CheckIcon />
+                      ) : (
+                        <ContentCopyIcon />
+                      )
                     }
                   />
                 }
@@ -124,9 +128,13 @@ export default function CallInfoPanel({
               size="Medium"
               semiBold
               checked={externalEnabled}
-              onChange={(e) => onExternalEnabledChange?.(e.currentTarget.checked)}
+              onChange={(e) =>
+                onExternalEnabledChange?.(e.currentTarget.checked)
+              }
             >
-              {fullWidth ? 'External participants' : 'Enable external participants'}
+              {fullWidth
+                ? 'External participants'
+                : 'Enable external participants'}
             </Switch>
             <IconButton
               size="Small"
@@ -143,7 +151,9 @@ export default function CallInfoPanel({
             <div className={styles['call-info__group']}>
               <div className={styles['call-info__eyebrow']}>EXTERNAL LINK</div>
               <div className={styles['call-info__kv']}>
-                <span className={styles['call-info__value']}>{externalLink}</span>
+                <span className={styles['call-info__value']}>
+                  {externalLink}
+                </span>
                 <IconButton
                   size="Small"
                   padding="Compact"
@@ -156,7 +166,11 @@ export default function CallInfoPanel({
                     <Icon
                       size="16"
                       glyph={
-                        copied === 'external' ? <CheckIcon /> : <ContentCopyIcon />
+                        copied === 'external' ? (
+                          <CheckIcon />
+                        ) : (
+                          <ContentCopyIcon />
+                        )
                       }
                     />
                   }
@@ -184,7 +198,9 @@ export default function CallInfoPanel({
               leadingIcon={
                 <Icon
                   size="12"
-                  glyph={copied === 'full' ? <CheckIcon /> : <ContentCopyIcon />}
+                  glyph={
+                    copied === 'full' ? <CheckIcon /> : <ContentCopyIcon />
+                  }
                 />
               }
               onClick={() =>

@@ -1,0 +1,121 @@
+import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
+import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
+import TextInput from '@/components/ui/TextInput/TextInput';
+import Icon from '@/components/ui/Icon/Icon';
+
+Text Inputs let people enter and edit a single line of text — names, emails,
+search queries, channel titles. They're the workhorse of every form and
+modal in Mattermost.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage>
+  <div style={{ width: '100%', maxWidth: '420px' }}>
+    <TextInput
+      label="Search"
+      defaultValue="design"
+      leadingIcon={<Icon glyph={<MagnifyIcon />} size="16" />}
+      trailingIcon={<Icon glyph={<CloseCircleIcon />} size="16" />}
+    />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — rounded border with a 1px stroke.
+- <Num>2</Num> **Label** — floating label that sits inside the field at rest
+  and lifts above the border on focus or when the field has a value.
+- <Num>3</Num> **Leading icon** — optional; reinforces the field's purpose
+  (search, mail, calendar).
+- <Num>4</Num> **Trailing icon** — optional; signals validity, opens a
+  picker, clears the input, or indicates a dropdown.
+- <Num>5</Num> **Placeholder** — brief sample or help statement; only visible
+  when empty.
+- <Num>6</Num> **Value** — the text the user has entered.
+
+<Divider />
+
+## Sizes
+
+Pick a size to match the surface, not the content. Don't mix sizes inside the
+same form.
+
+| Size   | Use when                                                                          |
+| ------ | --------------------------------------------------------------------------------- |
+| Small  | Compact tables, toolbars, dense settings rows.                                    |
+| Medium | The default for forms and modals.                                                 |
+| Large  | Setup flows, mobile-leaning surfaces, hero forms.                                 |
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '420px' }}>
+  <TextInput size="Small" label="Small" placeholder="example@mattermost.com" />
+  <TextInput size="Medium" label="Medium" placeholder="example@mattermost.com" />
+  <TextInput size="Large" label="Large" placeholder="example@mattermost.com" />
+</div>
+
+<Divider />
+
+## States
+
+| State     | Description                                                                                  |
+| --------- | -------------------------------------------------------------------------------------------- |
+| Default   | Resting state.                                                                               |
+| Hover     | Subtle stroke darkening on pointer hover.                                                    |
+| Focus     | Active focus ring. The label floats above the border.                                        |
+| Read-only | Non-editable but visible — e.g. system-derived values the user can't change.                 |
+| Disabled  | Inactive state. The field is non-interactive and visually de-emphasised.                     |
+| Invalid   | Validation has failed; pair with an Error Message immediately below the field.               |
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '420px' }}>
+  <TextInput label="Default" placeholder="Type here…" />
+  <TextInput label="With value" defaultValue="hello@mattermost.com" />
+  <TextInput label="Disabled" placeholder="Type here…" disabled />
+  <TextInput label="Invalid" defaultValue="not-an-email" invalid />
+</div>
+
+<Divider />
+
+## Icons
+
+Use a leading icon to reinforce a recognisable input type — magnifier for
+search, mail icon for email. Reserve the trailing icon for affordances that
+relate to the field's value (clear, validity, dropdown chevron).
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '420px' }}>
+  <TextInput
+    label="Search"
+    placeholder="Search channels"
+    leadingIcon={<Icon glyph={<MagnifyIcon />} size="16" />}
+  />
+  <TextInput
+    label="Search"
+    defaultValue="design"
+    leadingIcon={<Icon glyph={<MagnifyIcon />} size="16" />}
+    trailingIcon={<Icon glyph={<CloseCircleIcon />} size="16" />}
+  />
+</div>
+
+<Divider />
+
+## Variants
+
+- **Bordered** — the default. Use anywhere the field needs to read as an
+  obvious input target.
+- **Borderless** — for product verticals with real-time editing where the
+  border would compete visually (inline title editing, quick-edit fields).
+
+<Divider />
+
+## Content
+
+- Labels describe the input as briefly as possible — sentence case, no
+  trailing punctuation or colons.
+- Use placeholders for hints, not as a substitute for the label.
+- Validation messages should be specific and constructive ("Enter a valid
+  email", not "Invalid input").
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Text Input specimen page](/components/text-input/specimen).

@@ -1,0 +1,537 @@
+// ============================================================
+// Spacing scale
+// ============================================================
+.scale {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+  margin: var(--spacing-l) 0;
+  overflow: hidden;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) 280px;
+    align-items: center;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-m) var(--spacing-xl);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    @media (max-width: 720px) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--spacing-xs);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    align-items: baseline;
+  }
+
+  &__px {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__bar-track {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 24px;
+  }
+
+  &__bar {
+    height: 100%;
+    border-radius: var(--radius-xs);
+    background: rgba(var(--button-bg-rgb), 0.5);
+  }
+
+  &__note {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+// ============================================================
+// Padding example
+// ============================================================
+.padding-demo {
+  display: flex;
+  justify-content: center;
+  margin: var(--spacing-l) 0;
+
+  &__container {
+    position: relative;
+    padding: 16px;
+    width: 100%;
+    max-width: 480px;
+    border-radius: var(--radius-m);
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(var(--button-bg-rgb), 0.06) 0,
+        rgba(var(--button-bg-rgb), 0.06) 6px,
+        transparent 6px,
+        transparent 12px
+      );
+    outline: 1px dashed rgba(var(--button-bg-rgb), 0.4);
+  }
+
+  &__content {
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__title {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  &__body {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__label {
+    position: absolute;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--button-bg-rgb), 0.72);
+    background: var(--center-channel-bg);
+    padding: 0 var(--spacing-xxs);
+    border-radius: var(--radius-xs);
+
+    &--top {
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &--bottom {
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    &--left {
+      left: -8px;
+      top: 50%;
+      transform: translate(-50%, -50%) rotate(-90deg);
+    }
+
+    &--right {
+      right: -8px;
+      top: 50%;
+      transform: translate(50%, -50%) rotate(90deg);
+    }
+  }
+}
+
+// ============================================================
+// Grid overlay (4px / 8px)
+// ============================================================
+.grid-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  margin: 0;
+
+  &__stage {
+    --grid-overlay-size: 8px;
+    position: relative;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+    background-image:
+      linear-gradient(
+        to right,
+        rgba(var(--button-bg-rgb), 0.16) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(var(--button-bg-rgb), 0.16) 1px,
+        transparent 1px
+      );
+    background-size: var(--grid-overlay-size) var(--grid-overlay-size);
+    overflow: hidden;
+  }
+
+  &__sample {
+    inset: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  &__avatar {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--button-bg-rgb), 0.5);
+  }
+
+  &__lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  &__line {
+    height: 8px;
+    border-radius: var(--radius-xs);
+    background: rgba(var(--center-channel-color-rgb), 0.16);
+    width: 80%;
+
+    &--strong {
+      height: 8px;
+      background: rgba(var(--center-channel-color-rgb), 0.32);
+    }
+
+    &--short {
+      width: 40%;
+    }
+  }
+
+  &__caption {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+}
+
+// ============================================================
+// Grid anatomy
+// ============================================================
+.anatomy {
+  margin: var(--spacing-l) 0;
+
+  &__frame {
+    position: relative;
+    height: 240px;
+    padding: var(--spacing-xxxxl) 0;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+    overflow: hidden;
+  }
+
+  &__edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background: rgba(var(--color-warning-rgb), 0.16);
+    border-color: rgba(var(--color-warning-rgb), 0.4);
+    border-style: dashed;
+    border-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--left {
+      left: 0;
+      border-right-width: 1px;
+    }
+
+    &--right {
+      right: 0;
+      border-left-width: 1px;
+    }
+  }
+
+  &__edge-label {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--color-warning-rgb), 1);
+    white-space: nowrap;
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  &__columns {
+    display: grid;
+    height: 100%;
+    align-items: stretch;
+  }
+
+  &__column {
+    position: relative;
+    background: rgba(var(--button-bg-rgb), 0.16);
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: var(--spacing-xs);
+  }
+
+  &__column-num {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    color: rgba(var(--button-bg-rgb), 0.8);
+  }
+
+  &__gutter-callout {
+    position: absolute;
+    top: var(--spacing-m);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    background: var(--center-channel-bg);
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    border-radius: var(--radius-xs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+}
+
+// ============================================================
+// Breakpoint table
+// ============================================================
+.bp-table {
+  width: 100%;
+  margin: var(--spacing-l) 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-200);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+
+  th,
+  td {
+    padding: var(--spacing-xs) var(--spacing-m);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    overflow-wrap: break-word;
+  }
+
+  thead th {
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  &__row--sidebar td {
+    background: rgba(var(--color-info-rgb), 0.04);
+  }
+
+  &__name {
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// ============================================================
+// Aspect ratios
+// ============================================================
+.ratios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--spacing-l);
+  margin: var(--spacing-l) 0;
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__shape {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--button-bg-rgb), 0.16);
+    border: 1px solid rgba(var(--button-bg-rgb), 0.32);
+    border-radius: var(--radius-s);
+    color: rgba(var(--button-bg-rgb), 1);
+  }
+
+  &__label {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__use {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// ============================================================
+// Interaction targets
+// ============================================================
+.targets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-xl);
+  margin: var(--spacing-l) 0;
+}
+
+.target {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  margin: 0;
+
+  &__stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: var(--spacing-xxxxl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+  }
+
+  &__hit {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-s);
+    background: rgba(var(--button-bg-rgb), 0.16);
+    border: 1px dashed rgba(var(--button-bg-rgb), 0.6);
+  }
+
+  &__hit-label {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    color: rgba(var(--button-bg-rgb), 1);
+  }
+
+  &__gap {
+    position: absolute;
+    bottom: var(--spacing-m);
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__caption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+
+    strong {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    span {
+      font-size: var(--font-size-75);
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+}
+
+// ============================================================
+// Sidebar offset diagram
+// ============================================================
+.sidebar-offset {
+  display: flex;
+  height: 160px;
+  margin: var(--spacing-l) 0;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background-color: var(--center-channel-bg);
+
+  &__panel {
+    flex: none;
+    width: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    padding: 0 var(--spacing-s);
+  }
+
+  &__main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image:
+      linear-gradient(
+        to right,
+        rgba(var(--button-bg-rgb), 0.12) 1px,
+        transparent 1px
+      );
+    background-size: 24px 100%;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+}
+
+// ============================================================
+// Density card (used inside SplitRow blocks)
+// ============================================================
+.density {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxs);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  outline: 1px dashed rgba(var(--button-bg-rgb), 0.4);
+  outline-offset: -1px;
+
+  &__label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__padding {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--button-bg-rgb), 1);
+  }
+
+  &__desc {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

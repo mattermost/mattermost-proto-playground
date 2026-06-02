@@ -1,0 +1,157 @@
+// ============================================================
+// Elevation scale — vertical ladder of all 7 levels
+// ============================================================
+.scale {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+  margin: var(--spacing-l) 0;
+  overflow: hidden;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: var(--spacing-xl);
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  &__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 96px;
+    background-color: rgba(var(--center-channel-color-rgb), 0.03);
+    border-radius: var(--radius-s);
+  }
+
+  &__tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 56px;
+    background-color: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-s);
+  }
+
+  &__tile-level {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    flex-wrap: wrap;
+  }
+
+  &__name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__token {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    padding: 2px var(--spacing-xs);
+    border-radius: var(--radius-xs);
+  }
+
+  &__summary {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__uses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-xs);
+  }
+}
+
+// ============================================================
+// Popover example — Level 4 + Level 5 stacked over content
+// ============================================================
+.stage {
+  position: relative;
+  height: 420px;
+  margin: var(--spacing-l) 0;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  overflow: hidden;
+
+  &__parent {
+    position: absolute;
+    top: 32px;
+    left: 64px;
+  }
+
+  // Parent width 240 at left 64 → right edge 304; 296 gives 8px overlap.
+  &__child {
+    position: absolute;
+    top: 136px;
+    left: 296px;
+  }
+}
+
+.popover-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  width: 240px;
+
+  &__label {
+    padding: 0 var(--spacing-l);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}
+
+.popover {
+  width: 240px;
+  padding: var(--spacing-s) 0;
+  background-color: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-s);
+
+  &__title {
+    padding: 0 var(--spacing-l) var(--spacing-xs);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+    margin-bottom: var(--spacing-xxs);
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+  }
+}

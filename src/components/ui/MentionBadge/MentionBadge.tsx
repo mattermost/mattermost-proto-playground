@@ -2,7 +2,11 @@ import { toKebab } from '@/utils/string';
 import styles from './MentionBadge.module.scss';
 
 /** Figma Mention Badge location context — controls color scheme. */
-export type MentionBadgeLocation = 'Sidebar' | 'Menu Item' | 'Icon Button';
+export type MentionBadgeLocation =
+  | 'Sidebar'
+  | 'Menu Item'
+  | 'Icon Button'
+  | 'Channel';
 
 /** Figma Mention Badge size. */
 export type MentionBadgeSize = 'Small' | 'Medium' | 'Large';
@@ -37,14 +41,19 @@ export default function MentionBadge({
     styles['mention-badge'],
     styles[`mention-badge--size-${toKebab(size)}`],
     styles[`mention-badge--digits-${digitCount}`],
-    location !== 'Sidebar' ? styles[`mention-badge--location-${toKebab(location)}`] : '',
+    location !== 'Sidebar'
+      ? styles[`mention-badge--location-${toKebab(location)}`]
+      : '',
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <span className={rootClass} aria-label={`${count} mention${count === 1 ? '' : 's'}`}>
+    <span
+      className={rootClass}
+      aria-label={`${count} mention${count === 1 ? '' : 's'}`}
+    >
       {displayText}
     </span>
   );

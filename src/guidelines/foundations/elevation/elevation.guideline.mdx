@@ -1,0 +1,47 @@
+Elevation is the relative distance between objects along the z-axis. It tells
+the eye which surfaces sit closer to the user and which sit deeper into the
+page — a quiet cue that drives focus, hierarchy, and interaction state.
+
+The base Elevation is **0** and has no depth. Subsequent layers increment this
+value. In total, there are **6 Elevation levels** above the base, each
+expressed as a softer or stronger drop shadow.
+
+<Divider />
+
+## Elevation example
+
+Popover menus are the clearest place to see Elevation working in real UI. A
+parent menu floats above the page on **Elevation 4**; a child menu spawned
+from that parent floats one level higher on **Elevation 5**, so the
+relationship between them stays legible.
+
+<ElevationPopoverExample />
+
+<Divider />
+
+## Elevation values
+
+Each level binds to a specific shadow token and a specific set of UI roles.
+Reach for the level that matches the role — don't pick a shadow by eye.
+
+<ElevationScale />
+
+<Divider />
+
+## Elevation and dark themes
+
+The Elevation shadows don't read as well on dark themes — a black drop shadow
+on a near-black surface barely registers. To compensate, dark themes scale the
+shadow opacity by **4×**.
+
+For example, **Elevation 1** has a shadow opacity of **8%** on light themes,
+and **32%** on dark themes. The same multiplier applies across every level,
+so the visual hierarchy stays consistent no matter which theme is active.
+
+<Divider />
+
+## Tokens and implementation
+
+Each elevation level is exposed as a CSS custom property. For the full token
+list and copy-ready values, see the
+[Elevation specimen page](/foundations/elevation/specimen).

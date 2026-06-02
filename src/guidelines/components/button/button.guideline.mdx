@@ -1,0 +1,134 @@
+Buttons let people take actions or make decisions with a single tap or click —
+saving a form, sending a message, confirming a dialog. Compass ships several
+button variants, each with the same anatomy and rhythm so they feel like
+members of the same family.
+
+<Divider />
+
+## Anatomy
+
+Every button is built from the same four parts. Container, label, and the two
+optional icon slots compose every variant.
+
+<ButtonAnatomy />
+
+- <Num>1</Num> **Label** — the action text. Keep to four words or fewer.
+- <Num>2</Num> **Container** — the surface that gives the button its shape and
+  emphasis.
+- <Num>3</Num> **Leading icon** — optional; sits left of the label. Preferred
+  over trailing.
+- <Num>4</Num> **Trailing icon** — optional; reserved for cases where the icon
+  belongs after the label (e.g. a chevron that signals "this opens
+  something").
+
+The label does the work; the icons are scaffolding. Reach for a leading icon
+to reinforce a recognisable action (download, share, globe), and only use a
+trailing icon when the icon clearly belongs after the label.
+
+<Divider />
+
+## Sizes
+
+Buttons come in four sizes. **Medium** is the default on web; **Large** is the
+default on mobile. X-Small and Small are reserved for dense surfaces — table
+rows, toolbars, compact cards.
+
+<ButtonSizes />
+
+Pair button size with the surrounding type and target area. Don't mix sizes in
+the same action group; pick one and stick with it.
+
+<Divider />
+
+## Emphasis
+
+Emphasis is how a button signals its rank in the screen's action hierarchy.
+Compass exposes four levels — pick the lowest that still reads as the right
+action.
+
+<ButtonEmphasis />
+
+| Emphasis    | Use when                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------- |
+| Primary     | One unambiguous, screen-defining action. **At most once per view.**                               |
+| Secondary   | A standalone action that needs weight, but no Primary is present.                                 |
+| Tertiary    | The default for grouped actions. Pairs naturally with a Primary.                                  |
+| Quaternary  | Low-emphasis actions that should sit quietly until the user looks for them. Use for toolbar-style text actions and other cases where Tertiary still feels too heavy. |
+
+A few rules of thumb:
+
+- **Primary appears at most once per screen** (excluding the app header and
+  modals, which have their own primary). Not every screen needs one.
+- **In a group with a Primary, pair it with Tertiary** — never two Primaries,
+  and never Primary + Secondary.
+- **In a group without a Primary, lead with Tertiary.** Reach for Quaternary
+  when even Tertiary feels too loud.
+
+<Divider />
+
+## States
+
+Buttons have six states. Default, Hover, Focus, and Active are interactive —
+exercise the live previews below to see them. Disabled and Loading are
+explicit modes the component renders.
+
+<ButtonStates />
+
+**Loading.** When a button kicks off async work, transition it to a disabled
+state with a 250ms ease-out. If the server hasn't responded after **500ms**,
+swap the label to a verb form (e.g. _Saving…_) and show a spinner alongside
+it. If no result has returned by **3000ms**, return the button to its default
+state and surface an error.
+
+<Divider />
+
+## Variations
+
+### Inverted
+
+When buttons sit on a dark surface — sidebar, marketing band, theme-coloured
+header — switch to the inverted appearance so contrast holds.
+
+<ButtonInverted />
+
+### Destructive
+
+Use the destructive variant for actions that are irreversible or hard to
+recover from: deleting a channel, removing a member, dropping a connection.
+Pair the destructive Primary with a non-destructive Tertiary cancel.
+
+<ButtonDestructive />
+
+### Width
+
+Buttons size to their content by default. Override the width only when the
+layout calls for it.
+
+<ButtonWidths />
+
+- **Dynamic** — the default. Width follows the label.
+- **Fixed** — pick a width when buttons need to align across rows (e.g. a
+  table column of row actions). Leading and trailing icons stay anchored to
+  the label.
+- **Full-width** — stretches to its parent. Use for sign-in flows, mobile
+  surfaces, and any narrow container where a button should fill the row.
+
+<Divider />
+
+## Positioning
+
+Action position should match the alignment of the content the action applies
+to. Within a group, the **Primary action is always right-most**.
+
+<ButtonPositioning />
+
+- **Modal** — actions right-aligned in the footer; Primary right-most.
+- **In-page, left-aligned content** — actions left; Primary right-most.
+- **In-page, centered content** — actions centered; Primary right-most.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Button specimen page](/components/button/specimen).

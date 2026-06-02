@@ -138,6 +138,13 @@
 
   // ── Modifiers ──────────────────────────────────────────────
 
+  /** Settings / console nav: label only, same row height and alignment rhythm. */
+  &--text-only {
+    .channel-sidebar-item__left {
+      gap: 0;
+    }
+  }
+
   &--active {
     background: rgba(var(--sidebar-text-rgb), 0.12);
 

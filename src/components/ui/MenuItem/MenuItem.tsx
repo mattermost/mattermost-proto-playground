@@ -29,6 +29,8 @@ export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   mentionCount?: number;
   /** Destructive (danger) styling. */
   destructive?: boolean;
+  /** Highlight row (e.g. submenu parent while child menu is open). */
+  active?: boolean;
 }
 
 /**
@@ -48,6 +50,7 @@ export default function MenuItem({
   tag = false,
   mentionCount,
   destructive = false,
+  active = false,
   className = '',
   disabled,
   type = 'button',
@@ -56,6 +59,7 @@ export default function MenuItem({
   const rootClass = [
     styles['menu-item'],
     destructive ? styles['menu-item--destructive'] : '',
+    active ? styles['menu-item--active'] : '',
     className,
   ]
     .filter(Boolean)
@@ -68,10 +72,7 @@ export default function MenuItem({
           <div className={styles['menu-item__left']}>
             <span className={styles['menu-item__leading-visual']}>
               {leadingVisual ?? (
-                <Icon
-                  glyph={<EmoticonHappyOutlineIcon />}
-                  size="16"
-                />
+                <Icon glyph={<EmoticonHappyOutlineIcon />} size="16" />
               )}
             </span>
           </div>
@@ -91,7 +92,11 @@ export default function MenuItem({
             )}
             {tag && <LabelTag label="NEW" />}
             {mentionCount != null && mentionCount > 0 && (
-              <MentionBadge count={mentionCount} location="Menu Item" size="Small" />
+              <MentionBadge
+                count={mentionCount}
+                location="Menu Item"
+                size="Small"
+              />
             )}
           </div>
           {secondaryLabel && secondaryLabelPosition === 'Below' && (
@@ -104,10 +109,17 @@ export default function MenuItem({
         </div>
         {trailingElement && (
           <div className={styles['menu-item__right']}>
-            <span className={[styles['menu-item__trailing-visual'], !trailingVisual ? styles['menu-item__trailing-visual--check'] : ''].filter(Boolean).join(' ')}>
-              {trailingVisual ?? (
-                <Icon glyph={<CheckIcon />} size="16" />
-              )}
+            <span
+              className={[
+                styles['menu-item__trailing-visual'],
+                !trailingVisual
+                  ? styles['menu-item__trailing-visual--check']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {trailingVisual ?? <Icon glyph={<CheckIcon />} size="16" />}
             </span>
           </div>
         )}

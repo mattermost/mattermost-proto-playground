@@ -1,3 +1,25 @@
+@keyframes profile-popover-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes profile-popover-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
 .profile-popover {
   position: relative;
   display: flex;
@@ -7,7 +29,12 @@
   background-color: var(--center-channel-bg);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: var(--radius-s);
-  box-shadow: var(--elevation-4);
+  box-shadow: var(--elevation-6);
+  animation: profile-popover-enter var(--duration-quick) var(--ease-entrance);
+
+  &--closing {
+    animation: profile-popover-exit var(--duration-quick) var(--ease-exit) forwards;
+  }
 
   &__role-tag {
     display: flex;
@@ -81,12 +108,35 @@
     align-items: center;
     gap: var(--spacing-m);
     overflow: hidden;
+
+    &--stacked {
+      align-items: flex-start;
+    }
   }
 
   &__meta-icon {
     display: inline-flex;
     flex-shrink: 0;
     color: var(--center-channel-color);
+  }
+
+  &__phone-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    flex: 1 0 0;
+    min-width: 0;
+
+    .profile-popover__meta-link {
+      flex: none;
+      width: 100%;
+    }
+  }
+
+  &__phone-sub {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
   &__meta-text,
@@ -108,6 +158,15 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  button.profile-popover__meta-link {
+    padding: 0;
+    background: none;
+    border: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
   }
 
   &__section-label {

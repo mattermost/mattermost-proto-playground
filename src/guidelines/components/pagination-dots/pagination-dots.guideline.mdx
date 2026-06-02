@@ -1,0 +1,72 @@
+import PaginationDots from '@/components/ui/PaginationDots/PaginationDots';
+
+Pagination Dots indicate progress through a fixed sequence of steps — most
+often a multi-step onboarding flow or a swipeable carousel. One dot per
+step, the active one filled, the rest quiet.
+
+<Divider />
+
+## Anatomy
+
+A row (or column) of small dots, one per step. The active dot is wider and
+filled; the others are circular and dim.
+
+- <Num>1</Num> **Dot** — one per step. Tap or click to jump to that step.
+- <Num>2</Num> **Active dot** — pill-shaped marker for the current step.
+
+<AnatomyStage>
+  <PaginationDots pages={4} activePage={2} />
+</AnatomyStage>
+
+Use Pagination Dots only when the user has a clear sense of how many steps
+exist and they're roughly equal in weight. For unbounded sequences, use a
+[Progress Bar](/components/progress-bar) or numbered Tabs
+instead.
+
+<Divider />
+
+## Orientation
+
+Default to horizontal. Reach for vertical only when the layout already
+flows that way (e.g. a side-rail of steps).
+
+<div style={{display:'flex',gap:'2rem',alignItems:'center',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <PaginationDots pages={4} activePage={2} orientation="Horizontal" />
+  <PaginationDots pages={4} activePage={2} orientation="Vertical" />
+</div>
+
+| Orientation | Use when                                                                   |
+| ----------- | -------------------------------------------------------------------------- |
+| Horizontal  | Default — onboarding modals, carousels, mobile flows.                      |
+| Vertical    | Sparingly — when the surrounding layout is vertical (e.g. a step rail).    |
+
+<Divider />
+
+## Style
+
+Three colour styles. Inverted is for sidebar-style chrome. On primary is for
+the Tour Point pattern and other panels on the semantic info blue, where dots
+should read with the same light contrast as primary button labels.
+
+<div style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem',background:'var(--center-channel-bg)',border:'1px solid rgba(var(--center-channel-color-rgb),0.08)',borderRadius:'8px'}}>
+  <PaginationDots pages={4} activePage={2} dotStyle="Default" />
+  <div style={{padding:'0.75rem',background:'var(--sidebar-bg)',borderRadius:'4px',display:'flex',justifyContent:'center'}}>
+    <PaginationDots pages={4} activePage={2} dotStyle="Inverted" />
+  </div>
+  <div style={{padding:'0.75rem',background:'var(--color-info)',borderRadius:'4px',display:'flex',justifyContent:'center'}}>
+    <PaginationDots pages={4} activePage={2} dotStyle="OnPrimary" />
+  </div>
+</div>
+
+| Style      | Use when                                                                       |
+| ---------- | ------------------------------------------------------------------------------ |
+| Default    | Light surfaces — modals, cards, the main content area.                         |
+| Inverted   | Dark or theme-coloured surfaces — sidebar overlays, branded onboarding panels. |
+| On primary | Info blue panels (for example Tour Point) — dots match primary button label contrast. |
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Pagination Dots specimen page](/components/pagination-dots/specimen).

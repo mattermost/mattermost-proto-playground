@@ -1,3 +1,4 @@
+import { useMemo, type ReactNode } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
@@ -6,18 +7,46 @@ import ChannelSidebarItem from '@/components/ui/ChannelSidebarItem/ChannelSideba
 import MoreUnreadsBanner from '@/components/ui/MoreUnreadsBanner/MoreUnreadsBanner';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import {
   applyChannelNameOverrides,
   buildDefaultChannelsSidebarModel,
+  type ChannelsSidebarItemModel,
   type ChannelsSidebarModel,
 } from './channelsSidebarModel';
 import styles from './ChannelsSidebar.module.scss';
 
-function SidebarHeader({ teamName }: { teamName: string }) {
+function applyChannelSidebarInteractivity(
+  model: ChannelsSidebarModel,
+  activeChannelName: string,
+  onItemClick?: (name: string) => void,
+): ChannelsSidebarModel {
+  const mapRow = (row: ChannelsSidebarItemModel) => ({
+    ...row,
+    active: row.name === activeChannelName,
+    onClick: onItemClick ? () => onItemClick(row.name) : undefined,
+  });
+  return {
+    topGroupItems: model.topGroupItems.map(mapRow),
+    groups: model.groups.map((g) => ({
+      ...g,
+      items: g.items.map(mapRow),
+    })),
+  };
+}
+
+export interface ChannelsSidebarHeaderProps {
+  teamName: string;
+}
+
+/** Team row + Add control; same markup as the top of `ChannelsSidebar`. */
+export function ChannelsSidebarHeader({ teamName }: ChannelsSidebarHeaderProps) {
   return (
     <div className={styles['channels-sidebar__header']}>
       <div className={styles['channels-sidebar__team-dropdown']}>
-        <span className={styles['channels-sidebar__team-name']}>{teamName}</span>
+        <span className={styles['channels-sidebar__team-name']}>
+          {teamName}
+        </span>
         <span className={styles['channels-sidebar__team-chevron']}>
           <ChevronDownIcon size={16} />
         </span>
@@ -35,7 +64,14 @@ function SidebarHeader({ teamName }: { teamName: string }) {
   );
 }
 
-function SidebarNavigator({ showFilter = false }: { showFilter?: boolean }) {
+export interface ChannelsSidebarNavigatorProps {
+  showFilter?: boolean;
+}
+
+/** Find channels row + optional unread filter control; same markup as `ChannelsSidebar`. */
+export function ChannelsSidebarNavigator({
+  showFilter = false,
+}: ChannelsSidebarNavigatorProps) {
   return (
     <div className={styles['channels-sidebar__navigator']}>
       {showFilter && (
@@ -52,27 +88,46 @@ function SidebarNavigator({ showFilter = false }: { showFilter?: boolean }) {
         <span className={styles['channels-sidebar__find-channels-icon']}>
           <MagnifyIcon size={16} />
         </span>
-        <span className={styles['channels-sidebar__find-channels-label']}>Find channels</span>
+        <span className={styles['channels-sidebar__find-channels-label']}>
+          Find channels
+        </span>
       </div>
     </div>
   );
 }
 
-interface SidebarCategoryProps {
+export interface ChannelsSidebarCategoryProps {
   label: string;
   showChevron?: boolean;
   showPlusButton?: boolean;
+  /** When set, shown instead of the expand chevron (e.g. System Console categories). */
+  leadingIcon?: ReactNode;
+  /** Pin category row to the top of the scroll container while scrolling (e.g. first console section). */
+  sticky?: boolean;
+  /** Full-opacity label + leading icon (System Console categories). Default: toned like channel sidebar. */
+  opaqueCategory?: boolean;
 }
 
-function SidebarCategory({
+export function ChannelsSidebarCategory({
   label,
   showChevron = true,
   showPlusButton = false,
-}: SidebarCategoryProps) {
+  leadingIcon,
+  sticky = false,
+  opaqueCategory = false,
+}: ChannelsSidebarCategoryProps) {
+  const hasLeadingIcon = Boolean(leadingIcon);
+  const showChevronRow = showChevron && !hasLeadingIcon;
+
   const categoryClass = [
     styles['channels-sidebar__category'],
-    !showChevron ? styles['channels-sidebar__category--no-chevron'] : '',
+    hasLeadingIcon ? styles['channels-sidebar__category--with-leading-icon'] : '',
+    opaqueCategory ? styles['channels-sidebar__category--opaque'] : '',
+    !showChevronRow && !hasLeadingIcon
+      ? styles['channels-sidebar__category--no-chevron']
+      : '',
     showPlusButton ? styles['channels-sidebar__category--has-action'] : '',
+    sticky ? styles['channels-sidebar__category--sticky'] : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -80,12 +135,19 @@ function SidebarCategory({
   return (
     <div className={categoryClass}>
       <div className={styles['channels-sidebar__category-left']}>
-        {showChevron && (
+        {hasLeadingIcon && (
+          <span className={styles['channels-sidebar__category-leading-icon']}>
+            {leadingIcon}
+          </span>
+        )}
+        {showChevronRow && (
           <span className={styles['channels-sidebar__category-chevron']}>
             <ChevronDownIcon size={12} />
           </span>
         )}
-        <span className={styles['channels-sidebar__category-label']}>{label}</span>
+        <span className={styles['channels-sidebar__category-label']}>
+          {label}
+        </span>
       </div>
       {showPlusButton && (
         <IconButton
@@ -103,6 +165,7 @@ export interface ChannelsSidebarProps {
   teamName?: string;
   showUnreadsCategory?: boolean;
   showFilter?: boolean;
+  showDialPad?: boolean;
   moreUnreadsAbove?: boolean;
   moreUnreadsBelow?: boolean;
   /**
@@ -111,6 +174,10 @@ export interface ChannelsSidebarProps {
    * Applies to `name` and `avatarAlt` on each item (same as the legacy hardcoded list).
    */
   channelNameOverrides?: Record<string, string>;
+  /** Match against **resolved** item names (after `channelNameOverrides`). Use '' for none. */
+  activeChannelName?: string;
+  /** Receives the row's visible `name` (after overrides). */
+  onItemClick?: (name: string) => void;
   avatarAikoTan?: string;
   avatarArjunPatel?: string;
   avatarDanielOkoro?: string;
@@ -126,9 +193,12 @@ export default function ChannelsSidebar({
   teamName = 'Contributors',
   showUnreadsCategory = false,
   showFilter = false,
+  showDialPad = false,
   moreUnreadsAbove = false,
   moreUnreadsBelow = false,
   channelNameOverrides,
+  activeChannelName = '',
+  onItemClick,
   avatarAikoTan = '',
   avatarArjunPatel = '',
   avatarDanielOkoro = '',
@@ -138,55 +208,76 @@ export default function ChannelsSidebar({
   avatarEthanBrooks = '',
   model: modelProp,
 }: ChannelsSidebarProps) {
-  const baseModel =
-    modelProp ??
-    buildDefaultChannelsSidebarModel({
-      showUnreadsCategory,
-      avatarAikoTan,
-      avatarArjunPatel,
-      avatarDanielOkoro,
-      avatarDariusCole,
-      avatarDavidLiang,
-      avatarEmmaNovak,
-      avatarEthanBrooks,
-    });
-  const model = applyChannelNameOverrides(baseModel, channelNameOverrides);
+  const model = useMemo(() => {
+    const baseModel =
+      modelProp ??
+      buildDefaultChannelsSidebarModel({
+        showUnreadsCategory,
+        showDialPad,
+        avatarAikoTan,
+        avatarArjunPatel,
+        avatarDanielOkoro,
+        avatarDariusCole,
+        avatarDavidLiang,
+        avatarEmmaNovak,
+        avatarEthanBrooks,
+      });
+    const withOverrides = applyChannelNameOverrides(baseModel, channelNameOverrides);
+    return applyChannelSidebarInteractivity(
+      withOverrides,
+      activeChannelName,
+      onItemClick,
+    );
+  }, [
+    modelProp,
+    showUnreadsCategory,
+    showDialPad,
+    channelNameOverrides,
+    activeChannelName,
+    onItemClick,
+    avatarAikoTan,
+    avatarArjunPatel,
+    avatarDanielOkoro,
+    avatarDariusCole,
+    avatarDavidLiang,
+    avatarEmmaNovak,
+    avatarEthanBrooks,
+  ]);
 
   return (
     <div className={styles['channels-sidebar']}>
-      <SidebarHeader teamName={teamName} />
-      <SidebarNavigator showFilter={showFilter} />
+      <ChannelsSidebarHeader teamName={teamName} />
+      <ChannelsSidebarNavigator showFilter={showFilter} />
 
       <div className={styles['channels-sidebar__top-group']}>
         {model.topGroupItems.map((row, i) => (
-          <ChannelSidebarItem
-            key={`top-${i}-${row.name}`}
-            {...row}
-          />
+          <ChannelSidebarItem key={`top-${i}-${row.name}`} {...row} />
         ))}
       </div>
 
       <div className={styles['channels-sidebar__scroll-view']}>
-        <div className={styles['channels-sidebar__channel-groups']}>
-          {model.groups.map((group) => (
-            <div
-              key={group.key}
-              className={styles['channels-sidebar__channel-group']}
-            >
-              <SidebarCategory
-                label={group.category.label}
-                showChevron={group.category.showChevron}
-                showPlusButton={group.category.showPlusButton}
-              />
-              {group.items.map((row, index) => (
-                <ChannelSidebarItem
-                  key={`${group.key}-${index}-${row.name}`}
-                  {...row}
+        <Scrollbars color="--sidebar-text-rgb">
+          <div className={styles['channels-sidebar__channel-groups']}>
+            {model.groups.map((group) => (
+              <div
+                key={group.key}
+                className={styles['channels-sidebar__channel-group']}
+              >
+                <ChannelsSidebarCategory
+                  label={group.category.label}
+                  showChevron={group.category.showChevron}
+                  showPlusButton={group.category.showPlusButton}
                 />
-              ))}
-            </div>
-          ))}
-        </div>
+                {group.items.map((row, index) => (
+                  <ChannelSidebarItem
+                    key={`${group.key}-${index}-${row.name}`}
+                    {...row}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        </Scrollbars>
 
         {moreUnreadsAbove && (
           <MoreUnreadsBanner

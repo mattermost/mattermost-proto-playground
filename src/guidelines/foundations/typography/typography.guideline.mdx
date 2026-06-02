@@ -1,0 +1,170 @@
+Text is an integral part of any user interface, so it's important that all
+typographic elements are designed for legibility and consistency. This section
+defines the typographic style and usage guidelines.
+
+<Divider />
+
+## Typefaces
+
+Compass uses **Metropolis** and **Open Sans** as its primary typefaces. Together
+they cover everything from chrome-level labels and body copy to large display
+headings.
+
+Use Metropolis for large headings where a more distinctive voice helps create
+structure. Use Open Sans for body copy, compact labels, dense product surfaces,
+and smaller headings where legibility matters more than display character.
+
+<TypefaceCard
+  name="Metropolis"
+  family="Metropolis, sans-serif"
+  display="Aa"
+  href="https://fontsarena.com/metropolis-by-chris-simpson/"
+  description={
+    <>
+      A modern, geometric typeface that gives large headings a clear Compass
+      voice while staying readable at product scale.
+    </>
+  }
+/>
+
+<TypefaceCard
+  name="Open Sans"
+  family="'Open Sans', sans-serif"
+  display="Aa"
+  href="https://fonts.google.com/specimen/Open+Sans"
+  description={
+    <>
+      A highly legible sans-serif for body copy, compact labels, metadata, and
+      dense interface text.
+    </>
+  }
+/>
+
+<Divider />
+
+## Type scale
+
+A type scale ensures different sizes of text work together harmoniously. Compass
+uses a **1.125 ratio** — each step is multiplied or divided by 1.125 from the
+previous size, then rounded.
+
+The base font size for the Mattermost web app is **14px**.
+
+### Line heights
+
+Body copy line heights generally use a multiplier of **1.5** based on the font
+size, with adjustments so baselines fall on a 4px grid.
+
+Heading line heights generally use a multiplier of **1.3** based on the font
+size, with adjustments for the 4px grid. Smaller headings also use the 1.5
+multiplier.
+
+Use the Specimen tab when you need the exact step values, line heights, token
+names, or copy-ready CSS.
+
+<Divider />
+
+## Headings
+
+Headings are generally used in the **semibold** weight, but can also use regular
+or light weights when typographic contrast is needed. Bold weights can be used
+in special cases to help legibility for the smallest headings.
+
+Choose heading levels by hierarchy, not by visual preference alone. A page title,
+section title, panel title, and row label should each occupy a clear step in the
+information structure. Avoid skipping to oversized headings just to create
+spacing; use layout spacing for that.
+
+<TypeStack>
+  <TypeSpecimen level={1000} kind="heading" sample="Heading 1000" compact />
+  <TypeSpecimen level={900} kind="heading" sample="Heading 900" compact />
+  <TypeSpecimen level={800} kind="heading" sample="Heading 800" compact />
+  <TypeSpecimen level={700} kind="heading" sample="Heading 700" compact />
+  <TypeSpecimen level={600} kind="heading" sample="Heading 600" compact />
+  <TypeSpecimen level={500} kind="heading" sample="Heading 500" compact />
+  <TypeSpecimen level={400} kind="heading" sample="Heading 400" compact />
+  <TypeSpecimen level={300} kind="heading" sample="Heading 300" compact />
+  <TypeSpecimen level={200} kind="heading" sample="Heading 200" compact />
+  <TypeSpecimen level={100} kind="heading" sample="Heading 100" base compact />
+  <TypeSpecimen level={75} kind="heading" sample="Heading 75" compact />
+  <TypeSpecimen level={50} kind="heading" sample="Heading 50" compact />
+  <TypeSpecimen level={25} kind="heading" sample="Heading 25" compact />
+</TypeStack>
+
+<Divider />
+
+## Body copy
+
+Body copy always uses the **regular** weight. Where emphasis is needed, the
+**semibold** weight can be used. In special cases, bold weights can be used to
+help legibility with the smallest body sizes.
+
+Use body copy for content that users need to read or scan. Use smaller steps for
+metadata, helper text, dense controls, and secondary labels. Preserve contrast by
+changing weight or color sparingly; too many typographic treatments make a dense
+interface harder to scan.
+
+<TypeStack>
+  <TypeSpecimen
+    level={300}
+    kind="body"
+    sample="Large body text for prominent explanatory copy."
+    compact
+  />
+  <TypeSpecimen
+    level={200}
+    kind="body"
+    sample="Comfortable paragraph text for readable product surfaces."
+    compact
+  />
+  <TypeSpecimen
+    level={100}
+    kind="body"
+    sample="Default body text for Mattermost web app content."
+    base
+    compact
+  />
+  <TypeSpecimen
+    level={75}
+    kind="body"
+    sample="Secondary labels, helper text, and compact descriptions."
+    compact
+  />
+  <TypeSpecimen
+    level={50}
+    kind="body"
+    sample="Metadata and dense interface text."
+    compact
+  />
+  <TypeSpecimen
+    level={25}
+    kind="body"
+    sample="Tiny supporting labels."
+    compact
+  />
+</TypeStack>
+
+<Divider />
+
+## Margins
+
+Margin refers to the space surrounding a text element. The values below are
+defaults that produce a good typographic starting point — they can be overridden
+when a specific layout requires it.
+
+### Collapsing margins
+
+Top and bottom margins of adjacent text elements collapse into a single margin
+equal to the **larger** of the two. Don't double up by setting both — pick one
+direction and let the other element drive the gap.
+
+For product UI, prefer explicit layout spacing around components and patterns.
+Use text margins as a default for prose-like content, not as a substitute for
+component layout.
+
+<Divider />
+
+## Implementation Reference
+
+For font stacks, token names, scale values, line heights, computed margin tables,
+and copy-ready CSS, use the [Typography specimen page](/foundations/typography/specimen).

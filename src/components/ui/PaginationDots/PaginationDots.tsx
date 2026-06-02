@@ -1,7 +1,7 @@
 import styles from './PaginationDots.module.scss';
 
 export type PaginationDotsOrientation = 'Horizontal' | 'Vertical';
-export type PaginationDotsStyle = 'Default' | 'Inverted';
+export type PaginationDotsStyle = 'Default' | 'Inverted' | 'OnPrimary';
 
 export interface PaginationDotsProps {
   /** Total number of pages/steps. */
@@ -20,7 +20,8 @@ export interface PaginationDotsProps {
 
 /**
  * Pagination Dots — step/progress indicator dots for multi-step flows.
- * Horizontal and vertical orientations. Default and inverted color schemes.
+ * Horizontal and vertical orientations. Default, inverted (sidebar), and
+ * on-primary (light dots on `--button-bg` / info surfaces via `--button-color`).
  * Used in onboarding wizards.
  */
 export default function PaginationDots({
@@ -33,17 +34,25 @@ export default function PaginationDots({
 }: PaginationDotsProps) {
   const isVertical = orientation === 'Vertical';
   const isInverted = dotStyle === 'Inverted';
+  const isOnPrimary = dotStyle === 'OnPrimary';
 
   const orientationClass = isVertical
     ? styles['pagination-dots--vertical']
     : styles['pagination-dots--horizontal'];
   const styleClass = isInverted
     ? styles['pagination-dots--inverted']
-    : '';
+    : isOnPrimary
+      ? styles['pagination-dots--on-primary']
+      : '';
 
   return (
     <div
-      className={[styles['pagination-dots'], orientationClass, styleClass, className]
+      className={[
+        styles['pagination-dots'],
+        orientationClass,
+        styleClass,
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
       role="tablist"

@@ -29,6 +29,24 @@
     background-color: rgba(var(--button-bg-rgb), 0.08);
   }
 
+  &--active:not(:disabled) {
+    background-color: rgba(var(--button-bg-rgb), 0.08);
+
+    .menu-item__leading-visual,
+    .menu-item__trailing-visual {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+  }
+
+  &--active:hover:not(:disabled) {
+    background-color: rgba(var(--button-bg-rgb), 0.12);
+  }
+
+  &--active:focus-visible:not(:disabled) {
+    background-color: rgba(var(--button-bg-rgb), 0.08);
+    box-shadow: inset 0 0 0 2px var(--sidebar-text-active-border);
+  }
+
   &:disabled {
     cursor: not-allowed;
 
@@ -161,11 +179,8 @@
     }
 
     &:active:not(:disabled) {
-      background: linear-gradient(
-          0deg,
-          rgba(0, 0, 0, 0.1) 0%,
-          rgba(0, 0, 0, 0.1) 100%
-        ),
+      background:
+        linear-gradient(0deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%),
         var(--color-danger);
       color: var(--button-color);
 

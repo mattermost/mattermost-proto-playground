@@ -1,0 +1,79 @@
+import FeatureDiscoveryPanel from '@/components/ui/FeatureDiscoveryPanel/FeatureDiscoveryPanel';
+import GroupsIllustration from '@/assets/illustrations/groups.svg?react';
+
+Feature Discovery Panels surface capabilities only available on a higher-tier
+SKU. They live in the System Console and are visible to admins — never to
+end users. The goal is to communicate the value of the feature, not gate the
+UI behind a paywall.
+
+<Divider />
+
+## Anatomy
+
+A two-column card at Elevation 1 with a SKU tag, title, and description on
+the left, and a supporting illustration on the right.
+
+<AnatomyStage>
+  <FeatureDiscoveryPanel
+    skuLabel="PROFESSIONAL"
+    title="Synchronise your Active Directory/LDAP groups"
+    description="Use AD/LDAP groups to organise and apply actions to multiple users at once. Manage team and channel memberships, permissions, and more."
+    primaryAction={{ children: 'Contact sales' }}
+    secondaryAction={{ emphasis: 'Tertiary', children: 'Learn more' }}
+    illustration={{
+      children: <GroupsIllustration />,
+      width: '276px',
+      height: '170px',
+      'aria-label': 'Groups illustration',
+    }}
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — surface at Elevation 1 with rounded corners.
+- <Num>2</Num> **SKU tag** — Label Tag for the tier name (`PROFESSIONAL`,
+  `ENTERPRISE`) in uppercase for scanability; keep it factual and short.
+- <Num>3</Num> **Title** — what the feature does, in Metropolis 500.
+- <Num>4</Num> **Description** — one or two sentences on the benefit.
+- <Num>5</Num> **Primary CTA** — the next step (_Contact sales_, _Start
+  trial_, _Upgrade_).
+- <Num>6</Num> **Secondary CTA** — optional Tertiary button for _Learn
+  more_ or supporting documentation.
+- <Num>7</Num> **Illustration** — optional. Reinforces the topic without
+  doing the explaining.
+
+<Divider />
+
+## Options
+
+| Variant | Use when |
+| ------- | -------- |
+| Standard | A paid feature on a higher SKU. Primary CTA is _Contact sales_ or _Upgrade_. |
+| Trial available | The admin can self-serve a trial. Primary CTA is _Start trial_, with a disclaimer. |
+| No illustration | Tight or text-heavy areas of the System Console. |
+
+<Divider />
+
+## Behaviour
+
+- **SKU tag visibility.** Hide the tag entirely when the promotion is not tier-specific.
+- **Illustration.** Omit when layout budget is tight; lean on title and CTA hierarchy instead.
+
+<Divider />
+
+## Content
+
+- **Sell the benefit, not the feature.** _Sync your AD/LDAP groups_ tells the
+  admin what they get; _enable group syncing_ tells them what to click.
+- **Be concise and scannable.** Most admins skim — title and CTA carry the
+  weight.
+- **Use action-oriented CTAs.** _Contact sales_, _Upgrade_, _Start trial_,
+  _Learn more_.
+- **Avoid fear or guilt.** Don't shame the admin for being on a lower tier —
+  describe what unlocks when they upgrade.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Feature Discovery Panel specimen page](/components/feature-discovery-panel/specimen).

@@ -1,0 +1,99 @@
+import Dropdown from '@/components/ui/Dropdown/Dropdown';
+import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+
+A Dropdown is a heading-weight trigger that opens a Popover Menu. It reads
+as a title — semibold, with a chevron — and signals "this label is also a
+control."
+
+Use a Dropdown when the label is the navigation: a channel header, a layout
+filter, a workspace switcher. Reach for a [Select](/components/select)
+in forms instead — Select is the input pattern; Dropdown is the heading
+pattern.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Bounding shape** — the trigger surface; subtle on hover,
+  more present when the menu is open.
+- <Num>2</Num> **Leading element** — optional icon or avatar that adds
+  context (a channel-type glyph, a team avatar).
+- <Num>3</Num> **Label** — the active value or section title. Semibold so
+  the whole thing reads as a heading.
+- <Num>4</Num> **Trailing chevron** — a 12px chevron that signals "opens".
+- <Num>5</Num> **Popover menu** — the menu the trigger reveals. Built from
+  Menu Items.
+
+<AnatomyStage style={{gap:'1rem',flexWrap:'wrap'}}>
+  <Dropdown padding="Compact" leadingIcon={<GlobeIcon size={16} />}>design</Dropdown>
+  <Dropdown padding="Compact" leadingIcon={<FilterVariantIcon size={16} />}>All channels</Dropdown>
+</AnatomyStage>
+
+<Divider />
+
+## Sizes
+
+Five sizes line up with surrounding type. Pick the one that matches the
+heading or filter rank.
+
+| Size    | Use when                                                  |
+| ------- | --------------------------------------------------------- |
+| X-Small | Inline filters in dense rows.                             |
+| Small   | Compact toolbars and supplemental filters.                |
+| Medium  | Default. Layout headers, channel headers.                 |
+| Large   | Page-level filters or section titles.                     |
+| X-Large | Workspace switchers and primary navigation triggers.      |
+
+<div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap',alignItems:'center'}}>
+  <Dropdown size="X-Small">X-Small</Dropdown>
+  <Dropdown size="Small">Small</Dropdown>
+  <Dropdown size="Medium">Medium</Dropdown>
+  <Dropdown size="Large">Large</Dropdown>
+  <Dropdown size="X-Large">X-Large</Dropdown>
+</div>
+
+<Divider />
+
+## States
+
+The trigger inherits the seven standard interactive states (Default, Hover,
+Focus, Active, Open, Disabled, Loading). Use the Open state to make it
+unmistakable that the menu belongs to the trigger.
+
+<div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
+  <Dropdown>Default</Dropdown>
+  <Dropdown isOpen>Open</Dropdown>
+  <Dropdown disabled>Disabled</Dropdown>
+</div>
+
+<Divider />
+
+## Inverted
+
+When the Dropdown sits on a dark surface — a themed sidebar, a dark
+header — switch to the inverted appearance so contrast holds.
+
+<div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap',padding:'1rem',background:'var(--sidebar-header-bg)',borderRadius:'8px'}}>
+  <Dropdown padding="Compact" appearance="Inverted">design</Dropdown>
+  <Dropdown padding="Compact" appearance="Inverted" isOpen>design</Dropdown>
+</div>
+
+<Divider />
+
+## Dropdown vs. Select
+
+| Use Dropdown when…                              | Use Select when…                          |
+| ----------------------------------------------- | ----------------------------------------- |
+| The trigger reads as a heading or title.        | The control sits in a form or modal.      |
+| You're letting the user filter or navigate.     | You're capturing a value to submit.       |
+| The label changes to reflect the active value.  | A bordered input style fits the layout.   |
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Dropdown specimen page](/components/dropdown/specimen). The `padding` prop
+sets trigger inset: `Tight` (default) or `Compact` for a slightly roomier
+trigger next to other controls.

@@ -54,14 +54,23 @@ export default function ImagePreview({
     return (
       <button
         type="button"
-        className={[styles['image-preview'], styles['image-preview--collapsed'], className]
+        className={[
+          styles['image-preview'],
+          styles['image-preview--collapsed'],
+          className,
+        ]
           .filter(Boolean)
           .join(' ')}
         onClick={onToggleCollapse}
         aria-label="Show image preview"
       >
         <span className={styles['image-preview__show-label']}>
-          <span className={styles['image-preview__show-icon']} aria-hidden="true">{'›'}</span>
+          <span
+            className={styles['image-preview__show-icon']}
+            aria-hidden="true"
+          >
+            {'›'}
+          </span>
           Show Image preview
         </span>
       </button>
@@ -71,7 +80,9 @@ export default function ImagePreview({
   return (
     <div className={rootClass}>
       <div className={styles['image-preview__frame']}>
-        <img src={src} alt={alt} className={styles['image-preview__img']} />
+        <div className={styles['image-preview__media']}>
+          <img src={src} alt={alt} className={styles['image-preview__img']} />
+        </div>
 
         {/* Hover action buttons */}
         <div className={styles['image-preview__actions']}>

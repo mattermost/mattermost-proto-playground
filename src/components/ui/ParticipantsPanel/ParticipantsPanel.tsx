@@ -3,6 +3,7 @@ import CloseIcon from '@mattermost/compass-icons/components/close';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import type { Participant } from '@/types/callParticipant';
 import { ParticipantListItem } from './ParticipantListItem';
 import styles from './ParticipantsPanel.module.scss';
@@ -38,7 +39,7 @@ export default function ParticipantsPanel({
         <h2 className={styles['participants-panel__title']}>Participants</h2>
         <div className={styles['participants-panel__header-actions']}>
           <Button
-            emphasis="Link"
+            emphasis="Quaternary"
             size="X-Small"
             leadingIcon={<Icon size="12" glyph={<MicrophoneOffIcon />} />}
           >
@@ -56,36 +57,38 @@ export default function ParticipantsPanel({
       </div>
 
       <div className={styles['participants-panel__scroll']}>
-        <ul className={styles['participants-panel__list']}>
-          {internal.map((p) => (
-            <ParticipantListItem
-              key={p.id}
-              participant={p}
-              isYou={p.id === currentUserId}
-            />
-          ))}
-        </ul>
+        <Scrollbars>
+          <ul className={styles['participants-panel__list']}>
+            {internal.map((p) => (
+              <ParticipantListItem
+                key={p.id}
+                participant={p}
+                isYou={p.id === currentUserId}
+              />
+            ))}
+          </ul>
 
-        {external.length > 0 && (
-          <>
-            <div
-              className={styles['participants-panel__divider']}
-              role="separator"
-            />
-            <div className={styles['participants-panel__group-title']}>
-              External Participants
-            </div>
-            <ul className={styles['participants-panel__list']}>
-              {external.map((p) => (
-                <ParticipantListItem
-                  key={p.id}
-                  participant={p}
-                  isYou={p.id === currentUserId}
-                />
-              ))}
-            </ul>
-          </>
-        )}
+          {external.length > 0 && (
+            <>
+              <div
+                className={styles['participants-panel__divider']}
+                role="separator"
+              />
+              <div className={styles['participants-panel__group-title']}>
+                External Participants
+              </div>
+              <ul className={styles['participants-panel__list']}>
+                {external.map((p) => (
+                  <ParticipantListItem
+                    key={p.id}
+                    participant={p}
+                    isYou={p.id === currentUserId}
+                  />
+                ))}
+              </ul>
+            </>
+          )}
+        </Scrollbars>
       </div>
     </aside>
   );

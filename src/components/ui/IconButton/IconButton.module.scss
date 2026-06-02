@@ -156,6 +156,14 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Forced active/pressed state — subtler than toggled.
+  // ---------------------------------------------------------------------------
+  &--active:not(:disabled) {
+    background-color: rgba(var(--center-channel-color-rgb), 0.12);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  // ---------------------------------------------------------------------------
   // Default style — toggled state
   // ---------------------------------------------------------------------------
   &--toggled {
@@ -190,6 +198,10 @@
     }
     &:active:not(:disabled):not(.icon-button--toggled) {
       background-color: rgba(var(--sidebar-text-rgb), 0.12);
+    }
+    &.icon-button--active:not(:disabled) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.12);
+      color: var(--sidebar-text);
     }
     &.icon-button--toggled {
       background-color: var(--sidebar-text);

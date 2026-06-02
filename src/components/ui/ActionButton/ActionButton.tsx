@@ -1,8 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './ActionButton.module.scss';
 
-export interface ActionButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon: ReactNode;
   label: string;
   active?: boolean;

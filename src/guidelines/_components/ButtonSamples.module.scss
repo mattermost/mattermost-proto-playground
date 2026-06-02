@@ -1,0 +1,235 @@
+@use '@/styles/mixins' as *;
+
+// ============================================================
+// Anatomy — numbered callouts pointing to each button part.
+// Pins are positioned relative to the button's bounding box.
+// Leader lines are dotted; pins are the chart's only ornament.
+// ============================================================
+$pin-line-color: rgba(var(--center-channel-color-rgb), 0.4);
+$pin-border-color: rgba(var(--center-channel-color-rgb), 0.32);
+$pin-leader-length: 24px;
+$pin-size: 24px;
+
+.anatomy {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--spacing-xl);
+  padding: 80px;
+  border-radius: 12px;
+  background-color: rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__chart {
+    position: relative;
+    display: inline-block;
+  }
+
+  &__pin {
+    position: absolute;
+    z-index: 1;
+  }
+
+  &__pin-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $pin-size;
+    height: $pin-size;
+    border-radius: 50%;
+    border: 1px solid $pin-border-color;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+  }
+
+  &__line {
+    position: absolute;
+  }
+
+  // Vertical line dropping down from a pin to the button top.
+  &__line--down {
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: $pin-leader-length;
+    border-left: 1px dotted $pin-line-color;
+  }
+
+  // Vertical line rising up from a pin to the button bottom.
+  &__line--up {
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: $pin-leader-length;
+    border-left: 1px dotted $pin-line-color;
+  }
+
+  // Horizontal line going from a pin leftward to the button's right edge.
+  &__line--left {
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+    width: $pin-leader-length;
+    height: 0;
+    border-top: 1px dotted $pin-line-color;
+  }
+
+  // ---------- pin positions, anchored to the button bounding box ----------
+  // Pin 1 — Label: above the button, horizontally centered.
+  &__pin--label {
+    bottom: calc(100% + #{$pin-leader-length});
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  // Pin 2 — Container: right of the button, vertically centered.
+  &__pin--container {
+    top: 50%;
+    left: calc(100% + #{$pin-leader-length});
+    transform: translateY(-50%);
+  }
+
+  // Pin 3 — Leading icon: below the button, anchored to leading icon's center.
+  // Large Button: padding-left = var(--spacing-xxl) (24px); leading icon size = 20px.
+  // Center of leading icon = 24 + 10 = 34px from button left.
+  &__pin--leading {
+    top: calc(100% + #{$pin-leader-length});
+    left: 34px;
+    transform: translateX(-50%);
+  }
+
+  // Pin 4 — Trailing icon: below the button, anchored to trailing icon's center.
+  &__pin--trailing {
+    top: calc(100% + #{$pin-leader-length});
+    right: 34px;
+    transform: translateX(50%);
+  }
+
+}
+
+.row {
+  @include guideline-sample-row;
+  align-items: center;
+
+  &--inverted {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-m);
+    background-color: var(--sidebar-bg);
+  }
+}
+
+.widths {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__caption {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__stage {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-l);
+
+    &--column {
+      flex-direction: column;
+      max-width: 320px;
+    }
+  }
+
+  &__fixed {
+    width: 160px;
+  }
+
+  &__full {
+    width: 100%;
+  }
+}
+
+.positioning {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+
+  &__case {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+
+    figcaption {
+      font-size: var(--font-size-75);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+  }
+
+  // Stage that contains a real Modal — soft "page" backdrop so the modal
+  // reads as floating on top of a surface.
+  &__canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxl);
+    border-radius: var(--radius-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__body-text {
+    margin: 0;
+    color: var(--center-channel-color);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+  }
+}
+
+.surface {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  padding: var(--spacing-l);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+
+  &--page {
+    background-color: rgba(var(--center-channel-color-rgb), 0.03);
+  }
+
+  &__title {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-200);
+  }
+
+  &__body {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-s);
+
+    &--start {
+      justify-content: flex-start;
+    }
+  }
+}

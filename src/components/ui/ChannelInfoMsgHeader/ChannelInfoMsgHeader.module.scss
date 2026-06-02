@@ -39,7 +39,9 @@
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.75);
     white-space: nowrap;
-    transition: background-color var(--duration-quick) var(--ease-transition), color var(--duration-quick) var(--ease-transition);
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
 
     &:hover {
       background-color: rgba(var(--center-channel-color-rgb), 0.08);

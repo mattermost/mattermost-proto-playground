@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from 'react';
+import Emoji from '@/components/ui/Emoji/Emoji';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import EmoticonPlusOutlineIcon from '@mattermost/compass-icons/components/emoticon-plus-outline';
@@ -43,35 +44,46 @@ export default function MessageActions({
   const isSearchResults = type === 'Search Results';
   const showQuickReactions = quickReactions && collapsedReplyThreads;
 
-  const rootClass = [styles['message-actions'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['message-actions'], className]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={rootClass} role="toolbar" aria-label="Message actions" {...rest}>
+    <div
+      className={rootClass}
+      role="toolbar"
+      aria-label="Message actions"
+      {...rest}
+    >
       {/* Quick reaction emojis — center channel + RHS */}
       {showQuickReactions && !isSearchResults && (
         <>
           <IconButton
             aria-label="React with thumbs up"
             size="Small"
-            icon={<Icon size="16" glyph={<span aria-hidden>👍</span>} />}
+            padding="Compact"
+            icon={<Emoji emoji="👍" size="16" variant="vivid" />}
           />
           {isCenterChannel && (
             <>
               <IconButton
                 aria-label="React with raised hands"
                 size="Small"
-                icon={<Icon size="16" glyph={<span aria-hidden>🙌</span>} />}
+                padding="Compact"
+                icon={<Emoji emoji="🙌" size="16" variant="vivid" />}
               />
               <IconButton
                 aria-label="React with OK hand"
                 size="Small"
-                icon={<Icon size="16" glyph={<span aria-hidden>👌</span>} />}
+                padding="Compact"
+                icon={<Emoji emoji="👌" size="16" variant="vivid" />}
               />
             </>
           )}
           <IconButton
             aria-label="Add reaction"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<EmoticonPlusOutlineIcon />} />}
           />
         </>
@@ -82,6 +94,7 @@ export default function MessageActions({
         <IconButton
           aria-label="More actions"
           size="Small"
+          padding="Compact"
           icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
         />
       )}
@@ -92,26 +105,31 @@ export default function MessageActions({
           <IconButton
             aria-label="Save message"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<BookmarkOutlineIcon />} />}
           />
           <IconButton
             aria-label="AI actions"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<CreationOutlineIcon />} />}
           />
           <IconButton
             aria-label="Plugin actions"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<AppsIcon />} />}
           />
           <IconButton
             aria-label="Reply in thread"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<ReplyOutlineIcon />} />}
           />
           <IconButton
             aria-label="More actions"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
           />
         </>
@@ -122,6 +140,7 @@ export default function MessageActions({
         <IconButton
           aria-label="More actions"
           size="Small"
+          padding="Compact"
           icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
         />
       )}
@@ -132,14 +151,20 @@ export default function MessageActions({
           <IconButton
             aria-label="Save message"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<BookmarkOutlineIcon />} />}
           />
           <IconButton
             aria-label="Reply in thread"
             size="Small"
+            padding="Compact"
             icon={<Icon size="16" glyph={<ReplyOutlineIcon />} />}
           />
-          <button type="button" className={styles['message-actions__jump']} aria-label="Jump to message">
+          <button
+            type="button"
+            className={styles['message-actions__jump']}
+            aria-label="Jump to message"
+          >
             Jump
           </button>
         </>

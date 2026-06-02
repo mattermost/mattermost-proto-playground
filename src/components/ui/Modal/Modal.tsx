@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useId } from 'react';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import { toKebab } from '@/utils/string';
@@ -54,10 +55,14 @@ export default function Modal({
       aria-modal="true"
       aria-labelledby={titleId}
     >
-      <div className={[
-        styles['modal__header'],
-        !headerDivider && styles['modal__header--no-divider'],
-      ].filter(Boolean).join(' ')}>
+      <div
+        className={[
+          styles['modal__header'],
+          !headerDivider && styles['modal__header--no-divider'],
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <div className={styles['modal__header-inner']}>
           {showBackButton && (
             <IconButton
@@ -67,7 +72,9 @@ export default function Modal({
             />
           )}
           <div className={styles['modal__title-group']}>
-            <h2 id={titleId} className={styles['modal__title']}>{title}</h2>
+            <h2 id={titleId} className={styles['modal__title']}>
+              {title}
+            </h2>
             {subtitle && (
               <p className={styles['modal__subtitle']}>{subtitle}</p>
             )}
@@ -82,14 +89,20 @@ export default function Modal({
       </div>
 
       <div className={styles['modal__body']}>
-        {children}
+        <Scrollbars>
+          <div className={styles['modal__body-inner']}>{children}</div>
+        </Scrollbars>
       </div>
 
       {footer && (
-        <div className={[
-          styles['modal__footer'],
-          !footerDivider && styles['modal__footer--no-divider'],
-        ].filter(Boolean).join(' ')}>
+        <div
+          className={[
+            styles['modal__footer'],
+            !footerDivider && styles['modal__footer--no-divider'],
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           {footer}
         </div>
       )}

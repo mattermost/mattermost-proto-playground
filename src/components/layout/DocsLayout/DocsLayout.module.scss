@@ -1,0 +1,23 @@
+.docs-layout {
+  display: flex;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.docs-layout__content {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+
+  // Reserve the scrollbar gutter on this scroller only — prevents horizontal
+  // page shift when navigating between long (scrolling) and short
+  // (non-scrolling) docs pages.
+  scrollbar-gutter: stable;
+
+  @include minimal-scrollbar;
+}

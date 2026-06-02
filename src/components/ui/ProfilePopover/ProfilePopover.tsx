@@ -6,6 +6,7 @@ import GithubCircleIcon from '@mattermost/compass-icons/components/github-circle
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import AtIcon from '@mattermost/compass-icons/components/at';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import Button from '@/components/ui/Button/Button';
@@ -33,6 +34,19 @@ export interface ProfilePopoverLocalTime {
   hourDifference?: string;
 }
 
+export interface ProfilePopoverPhone {
+  number: string;
+  /** Category label, e.g. "NIPR", "NIPR Conf Bridge", "SIPR Extension". */
+  label?: string;
+  /** Trunk / gateway identifier, e.g. "DSN", "DISN Gateway". */
+  sipTrunk?: string;
+  /** Per-row phone glyph; overrides the popover-level `phoneIcon` when set. */
+  icon?: ReactNode;
+  href?: string;
+  /** When provided, the number click runs this handler instead of navigating. */
+  onClick?: () => void;
+}
+
 export interface ProfilePopoverProps {
   /** Whose profile is shown. Default: 'Others'. */
   user?: ProfilePopoverUser;
@@ -48,6 +62,8 @@ export interface ProfilePopoverProps {
   title?: string;
   /** Email address. */
   email?: string;
+  /** Phone rows shown under the email. */
+  phones?: ProfilePopoverPhone[];
   /** Caption above the name, e.g. "Last online 6 hrs ago". */
   lastOnline?: string;
   /** Role tag shown at the very top, e.g. "System Admin". (Named `jobRole` to avoid clashing with the ARIA `role` attribute in JSX.) */
@@ -66,9 +82,21 @@ export interface ProfilePopoverProps {
   githubHandle?: string;
   onClose?: () => void;
   onPrimaryAction?: () => void;
-  onAddContact?: () => void;
+  /** Inserts an @mention for this user in the active channel message input. */
+  onMention?: () => void;
+  /** Opens the Add to Channel flow for this user. */
+  onAddToChannel?: () => void;
+  /** Used when `callButton` is not provided; starts a simple outbound call action. */
   onCall?: () => void;
   onSend?: () => void;
+  /** Replaces the default Call icon button in the footer when provided. */
+  callButton?: ReactNode;
+  /** Replaces the default phone glyph shown next to the phone number. */
+  phoneIcon?: ReactNode;
+  /** Animation state. Set to 'closing' to play the exit animation — listen via onAnimationEnd to unmount. */
+  state?: 'open' | 'closing';
+  /** Fires when an animation on the popover root ends (entrance or exit). */
+  onAnimationEnd?: (e: React.AnimationEvent<HTMLDivElement>) => void;
   className?: string;
 }
 
@@ -107,6 +135,7 @@ export default function ProfilePopover({
   username,
   title,
   email,
+  phones,
   lastOnline,
   jobRole,
   localTime,
@@ -117,23 +146,39 @@ export default function ProfilePopover({
   githubHandle,
   onClose,
   onPrimaryAction,
-  onAddContact,
+  onMention,
+  onAddToChannel,
   onCall,
   onSend,
+  callButton,
+  phoneIcon,
+  state = 'open',
+  onAnimationEnd,
   className = '',
 }: ProfilePopoverProps) {
   const isYou = user === 'You';
 
-  const rootClass = [styles['profile-popover'], className]
+  const rootClass = [
+    styles['profile-popover'],
+    state === 'closing' ? styles['profile-popover--closing'] : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
+  const hasPhones = Boolean(phones && phones.length > 0);
   const hasTitlesBlock =
-    Boolean(email) || Boolean(sharedOrg) || staff || coreCommitter || Boolean(githubHandle);
-  const hasSecondary = hasTitlesBlock || Boolean(localTime) || Boolean(customStatus);
+    Boolean(email) ||
+    hasPhones ||
+    Boolean(sharedOrg) ||
+    staff ||
+    coreCommitter ||
+    Boolean(githubHandle);
+  const hasSecondary =
+    hasTitlesBlock || Boolean(localTime) || Boolean(customStatus);
 
   return (
-    <div className={rootClass}>
+    <div className={rootClass} onAnimationEnd={onAnimationEnd}>
       {jobRole && (
         <div className={styles['profile-popover__role-tag']}>
           <LabelTag label={jobRole} casing="All Caps" size="X-Small" />
@@ -175,9 +220,51 @@ export default function ProfilePopover({
                   {email}
                 </MetaRow>
               )}
+              {phones?.map((p, i) => {
+                const subParts = [p.label, p.sipTrunk].filter(Boolean);
+                const subText = subParts.join(' • ');
+                return (
+                  <div
+                    key={`${p.number}-${i}`}
+                    className={[
+                      styles['profile-popover__meta-item'],
+                      styles['profile-popover__meta-item--stacked'],
+                    ].join(' ')}
+                  >
+                    <span className={styles['profile-popover__meta-icon']} aria-hidden>
+                      <Icon size="16" glyph={p.icon ?? phoneIcon ?? <PhoneIcon />} />
+                    </span>
+                    <div className={styles['profile-popover__phone-body']}>
+                      {subText && (
+                        <span className={styles['profile-popover__phone-sub']}>
+                          {subText}
+                        </span>
+                      )}
+                      {p.onClick ? (
+                        <button
+                          type="button"
+                          className={styles['profile-popover__meta-link']}
+                          onClick={p.onClick}
+                        >
+                          {p.number}
+                        </button>
+                      ) : (
+                        <a
+                          className={styles['profile-popover__meta-link']}
+                          href={p.href ?? `tel:${p.number}`}
+                        >
+                          {p.number}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
               {sharedOrg && (
                 <MetaRow
-                  icon={<Icon size="16" glyph={<CircleMultipleOutlineIcon />} />}
+                  icon={
+                    <Icon size="16" glyph={<CircleMultipleOutlineIcon />} />
+                  }
                 >
                   {sharedOrg}
                 </MetaRow>
@@ -193,9 +280,7 @@ export default function ProfilePopover({
                 </MetaRow>
               )}
               {githubHandle && (
-                <MetaRow
-                  icon={<Icon size="16" glyph={<GithubCircleIcon />} />}
-                >
+                <MetaRow icon={<Icon size="16" glyph={<GithubCircleIcon />} />}>
                   {githubHandle}
                 </MetaRow>
               )}
@@ -281,17 +366,26 @@ export default function ProfilePopover({
           ) : (
             <>
               <IconButton
-                aria-label="Add to contacts"
+                aria-label="Mention user"
                 size="Small"
-                icon={<Icon size="16" glyph={<AccountPlusOutlineIcon />} />}
-                onClick={onAddContact}
+                icon={<Icon size="16" glyph={<AtIcon />} />}
+                onClick={onMention}
               />
               <IconButton
-                aria-label="Call"
+                aria-label="Add to channel"
                 size="Small"
-                icon={<Icon size="16" glyph={<PhoneIcon />} />}
-                onClick={onCall}
+                icon={<Icon size="16" glyph={<AccountPlusOutlineIcon />} />}
+                onClick={onAddToChannel}
               />
+              {callButton ??
+                (onCall ? (
+                  <IconButton
+                    aria-label="Call"
+                    size="Small"
+                    icon={<Icon size="16" glyph={<PhoneIcon />} />}
+                    onClick={onCall}
+                  />
+                ) : null)}
             </>
           )}
         </div>

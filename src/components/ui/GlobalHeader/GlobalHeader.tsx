@@ -38,7 +38,10 @@ export interface GlobalHeaderProps {
   productSwitcherOpen?: boolean;
 }
 
-const PRODUCT_ICON: Record<GlobalHeaderProduct, ComponentType<{ size?: number }>> = {
+const PRODUCT_ICON: Record<
+  GlobalHeaderProduct,
+  ComponentType<{ size?: number }>
+> = {
   Channels: ProductChannelsIcon,
   Playbooks: ProductPlaybooksIcon,
   Boards: ProductBoardsIcon,
@@ -97,10 +100,9 @@ function Navigator() {
  * the product switcher, product branding, navigator, and session-level
  * controls (search, mentions, saved, settings, account).
  *
- * Three product variants control the layout:
- * - Channels: center search + right controls (@ mentions, saved, settings)
- * - Playbooks: right controls (tasks, help, settings)
- * - Boards: right controls (help, settings)
+ * Layout uses a three-column CSS grid for Channels (left | centered search + help | session)
+ * so session controls stay anchored to the trailing edge. Playbooks/Boards omit the center
+ * column and use two tracks (left product block | session).
  *
  * Matches Figma Global Header v1.2.1 (node 613:4135).
  */
@@ -117,7 +119,15 @@ export default function GlobalHeader({
   const isChannels = product === 'Channels';
   const showBrand = isChannels ? showChannelsBranding : true;
 
-  const rootClass = [styles['global-header'], className].filter(Boolean).join(' ');
+  const rootClass = [
+    styles['global-header'],
+    isChannels
+      ? styles['global-header--channels']
+      : styles['global-header--product-only'],
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <header className={rootClass}>
@@ -146,7 +156,10 @@ export default function GlobalHeader({
               aria-label="Search"
             />
           </div>
-          <InvertedIconButton ariaLabel="Help" glyph={<HelpCircleOutlineIcon />} />
+          <InvertedIconButton
+            ariaLabel="Help"
+            glyph={<HelpCircleOutlineIcon />}
+          />
         </div>
       )}
 
@@ -164,16 +177,33 @@ export default function GlobalHeader({
         )}
         {isChannels && (
           <>
-            <InvertedIconButton ariaLabel="Recent mentions" glyph={<AtIcon />} />
-            <InvertedIconButton ariaLabel="Saved messages" glyph={<BookmarkOutlineIcon />} />
+            <InvertedIconButton
+              ariaLabel="Recent mentions"
+              glyph={<AtIcon />}
+            />
+            <InvertedIconButton
+              ariaLabel="Saved messages"
+              glyph={<BookmarkOutlineIcon />}
+            />
           </>
         )}
         {!isChannels && (
-          <InvertedIconButton ariaLabel="Help" glyph={<HelpCircleOutlineIcon />} />
+          <InvertedIconButton
+            ariaLabel="Help"
+            glyph={<HelpCircleOutlineIcon />}
+          />
         )}
         <InvertedIconButton ariaLabel="Settings" glyph={<CogOutlineIcon />} />
-        <button className={styles['global-header__account']} aria-label="Account menu">
-          <UserAvatar src={userAvatarSrc} alt={userAvatarAlt} size="24" status />
+        <button
+          className={styles['global-header__account']}
+          aria-label="Account menu"
+        >
+          <UserAvatar
+            src={userAvatarSrc}
+            alt={userAvatarAlt}
+            size="24"
+            status
+          />
         </button>
       </div>
     </header>

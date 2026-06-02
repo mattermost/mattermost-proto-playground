@@ -1,0 +1,87 @@
+Icons carry meaning at a glance. They're load-bearing in dense UIs where space
+is tight, so each one needs to read clearly at the smallest size it'll ever
+ship at. This page covers when to use icons, the styles we ship, and the rules
+for adding new ones.
+
+<Divider />
+
+## UI icons
+
+Mattermost UI icons are based on the open-source [Material Design Icons](https://pictogrammers.com/library/mdi/)
+project. Where Material doesn't cover a need, we draw custom icons in the same
+style and contribute them back where appropriate.
+
+UI icons should:
+
+- Use simple geometry that's easy to understand at a glance.
+- Stay legible at small sizes — strip extraneous detail before you ship.
+- Pair with a text label whenever the meaning isn't unambiguous on its own.
+
+<IconShowcase />
+
+The full set, with every glyph and its token name, is on this topic's
+[Specimen tab](/foundations/iconography/specimen).
+
+<Divider />
+
+## Style: outlined preferred
+
+Outlined icons are the default. They feel lighter, work better at small sizes,
+and read consistently across themes. **Filled** variants exist but should be
+used sparingly — primarily for active states (e.g. a bookmarked item, a
+favourited channel) where the toggled-on form needs visual weight.
+
+<IconStyleCompare />
+
+<Divider />
+
+## Filetype icons
+
+Filetype icons come in two variants. The small set is for inline lists and
+attachment cards; the large set is purpose-drawn for big preview surfaces.
+Don't scale a small icon up — the proportions are tuned for its size.
+
+<FiletypeShowcase />
+
+<Divider />
+
+## Designing new icons
+
+We follow the majority of [Material Design's icon principles](https://m3.material.io/styles/icons/designing-icons).
+When drawing a new icon, start from a Material base SVG when one exists; only
+draft from scratch when it doesn't.
+
+<PrincipleList>
+  <Principle title="Fit a 20px keyline">
+    Glyphs should be designed to fit a 20×20px area inside a 24px container.
+    The 2px padding is the optical buffer that makes mixed-icon rows feel even.
+  </Principle>
+  <Principle title="2px strokes">
+    Strokes and negative space should generally be 2px thick. Drop to 1.5px
+    only for complex curves — and only when sparingly necessary.
+  </Principle>
+  <Principle title="Land on the pixel grid">
+    Anchor shapes on whole pixels. Half-pixels are allowed only when the form
+    can't be expressed cleanly otherwise.
+  </Principle>
+  <Principle title="45-degree angles">
+    Diagonals stick to 45° unless the shape genuinely demands otherwise.
+    Arbitrary angles read as noise at small sizes.
+  </Principle>
+  <Principle title="Subtract before you add">
+    If a detail isn't load-bearing for recognition, remove it. Icons fail at
+    16 px when they carry decoration meant for 64 px.
+  </Principle>
+  <Principle title="Match the family">
+    New icons must read as part of the existing set — same stroke weight, same
+    corner treatment, same level of abstraction.
+  </Principle>
+</PrincipleList>
+
+<Divider />
+
+## Tokens and implementation
+
+For every glyph, token name, and icon naming detail, go to the
+[Specimen tab](/foundations/iconography/specimen). For the Icon component specs including the full size variants, see the
+[Icon component](/components/icon).

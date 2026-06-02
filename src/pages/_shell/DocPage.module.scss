@@ -1,0 +1,422 @@
+.doc-page {
+  width: 100%;
+}
+
+.doc-page__inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--spacing-xxxxl) var(--spacing-xxxl);
+
+  // Wider container when an "On this page" rail is rendered: body keeps its
+  // readable width, TOC sits next to it at standard widths, drops out at
+  // narrow widths.
+  &--with-toc {
+    max-width: 1180px;
+  }
+}
+
+.doc-page__columns {
+  max-width: 964px;
+  margin: 0 auto;
+  display: flex;
+  gap: var(--spacing-xl);
+  // Default align-items: stretch — required so the TOC aside is as tall as
+  // the body, giving the sticky <OnThisPage> scope to stay pinned as you
+  // scroll the page.
+
+  // Pin the body to the available column width. flex-basis: 0 + min-width: 0
+  // lets it shrink under content with a wide intrinsic min-width (e.g. a
+  // dense SwatchRamp) instead of pushing the column past its max-width.
+  > .doc-page__body {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.doc-page__toc {
+  width: 240px;
+  flex-shrink: 0;
+  align-self: stretch;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.doc-page__header {
+  margin-bottom: var(--spacing-xxxl);
+  padding: var(--spacing-xxxl);
+}
+
+.doc-page__eyebrow {
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+  margin-bottom: var(--spacing-xs);
+}
+
+.doc-page__title {
+  font-size: var(--font-size-700);
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  line-height: var(--line-height-100);
+}
+
+.doc-page__body {
+  color: var(--center-channel-color);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
+  padding: var(--spacing-xxxl);
+}
+
+// Prose typography is opt-in via the `prose` prop on DocPage. Used for MDX
+// guideline pages — bare HTML tags for prose (`<h2>Sizes</h2>`, `<p>...</p>`)
+// alongside component instances.
+//
+// Every selector is gated with `:not([class])` so prose rules apply only to
+// bare HTML emitted by MDX, never to CSS-module-styled
+// elements rendered by components (e.g. Modal's classed `<h2 className="modal__title">`).
+.doc-page__prose {
+  h1:not([class]),
+  h2:not([class]),
+  h3:not([class]),
+  h4:not([class]) {
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin-top: var(--spacing-xxl);
+    margin-bottom: var(--spacing-m);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    // rehype-autolink-headings wraps headings in <a> for deep-linking.
+    // Render the anchor as a regular heading; only show the underline on hover.
+    a {
+      color: inherit;
+      text-decoration: none;
+      line-height: inherit;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  h1:not([class]) {
+    font-size: var(--font-size-1000);
+    line-height: var(--line-height-1000);
+  }
+  h2:not([class]) {
+    font-size: var(--font-size-700);
+    line-height: var(--line-height-700);
+    margin-top: var(--spacing-xxxl);
+    margin-bottom: var(--spacing-xl);
+  }
+  h3:not([class]) {
+    font-size: var(--font-size-500);
+    line-height: var(--line-height-500);
+    margin-top: var(--spacing-xxl);
+    margin-bottom: var(--spacing-l);
+  }
+  h4:not([class]) {
+    font-size: var(--font-size-300);
+    line-height: var(--line-height-300);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-m);
+  }
+
+  p:not([class]) {
+    margin-bottom: var(--spacing-m);
+  }
+
+  ul:not([class]),
+  ol:not([class]) {
+    margin-bottom: var(--spacing-m);
+  }
+
+  li:not([class]) {
+    margin-bottom: var(--spacing-xs);
+    list-style-type: disc;
+    margin-left: var(--spacing-l);
+    padding-left: var(--spacing-xxxs);
+  }
+
+  // Lists where each item is marked with a <Num> get the disc replaced by the
+  // numbered circle. The Num itself is absolutely positioned to act as the
+  // bullet; the list item gets a hanging indent so wrapped lines align with
+  // the prose. Selector is scoped under .doc-page__body so it beats the
+  // generic :not([class]) rules above on specificity.
+  ul:has(:global(.compass-num)):not([class]) {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  ul:has(:global(.compass-num)):not([class]) > li {
+    list-style-type: none;
+    margin-left: 0;
+    margin-bottom: var(--spacing-m);
+    padding-left: 30px;
+    position: relative;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    :global(.compass-num) {
+      position: absolute;
+      left: 0;
+      margin-right: 0;
+    }
+  }
+
+  a:not([class]) {
+    color: var(--link-color);
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
+    }
+  }
+
+  code:not([class]) {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    padding: var(--spacing-xxxxs) var(--spacing-xxs);
+    border-radius: var(--radius-s);
+  }
+
+  pre:not([class]) {
+    margin: var(--spacing-m) 0;
+    padding: var(--spacing-l);
+    border-radius: var(--radius-m);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    overflow-x: auto;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--center-channel-color-rgb), 0.24);
+      border-radius: 3px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+
+    code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      font-size: inherit;
+    }
+  }
+
+  table:not([class]) {
+    width: 100%;
+    margin: var(--spacing-l) 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+    // Clip cell backgrounds (e.g. thead) to the rounded outer border.
+    overflow: hidden;
+
+    th,
+    td {
+      padding: var(--spacing-xs) var(--spacing-m);
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      overflow-wrap: break-word;
+    }
+
+    thead th {
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+      font-size: var(--font-size-75);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  hr:not([class]) {
+    border: 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    margin: var(--spacing-m) 0;
+  }
+
+  strong:not([class]) {
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// Live UI embed island — stable global class `compass-doc-embed` (DocUiEmbed,
+// AnatomyStage, Preview, TopicRoute specimen wrapper). Resets doc shell type
+// scale and neutralizes `.doc-page__prose` bare-tag rules inside demos.
+:global(.compass-doc-embed) {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-200);
+  color: var(--center-channel-color);
+  min-width: 0;
+}
+
+.doc-page__prose :global(.compass-doc-embed) {
+  p:not([class]) {
+    margin-bottom: 0;
+  }
+
+  ul:not([class]),
+  ol:not([class]) {
+    margin-bottom: 0;
+  }
+
+  li:not([class]) {
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  ul:has(:global(.compass-num)):not([class]) {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+  }
+
+  ul:has(:global(.compass-num)):not([class]) > li {
+    list-style: none;
+    margin-left: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    position: static;
+
+    :global(.compass-num) {
+      position: static;
+      left: auto;
+      margin-right: 0;
+    }
+  }
+
+  h1:not([class]),
+  h2:not([class]),
+  h3:not([class]),
+  h4:not([class]) {
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      line-height: inherit;
+    }
+  }
+
+  a:not([class]) {
+    color: inherit;
+    text-decoration: inherit;
+
+    &:hover {
+      text-decoration: inherit;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  code:not([class]) {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    color: inherit;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+  }
+
+  pre:not([class]) {
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    overflow: visible;
+
+    code {
+      background: transparent;
+      padding: 0;
+      font-size: inherit;
+    }
+  }
+
+  table:not([class]) {
+    width: auto;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    font-size: inherit;
+    line-height: inherit;
+
+    th,
+    td {
+      padding: 0;
+      border: none;
+    }
+
+    thead th {
+      font-size: inherit;
+      font-weight: inherit;
+      background: transparent;
+      color: inherit;
+    }
+  }
+
+  hr:not([class]) {
+    margin: 0;
+    border: 0;
+  }
+
+  strong:not([class]) {
+    font-weight: inherit;
+  }
+}

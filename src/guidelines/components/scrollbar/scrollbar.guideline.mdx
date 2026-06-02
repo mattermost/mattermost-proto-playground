@@ -1,0 +1,95 @@
+import Scrollbar from '@/components/ui/Scrollbar/Scrollbar';
+
+Scrollbars let people move through content that exceeds the viewport while
+showing where they are in the larger whole. Compass uses a single, minimal
+treatment — a transparent track with a thin, translucent thumb — so the
+scrollbar reads as a position indicator first and a control second.
+
+The thumb auto-hides when idle and reappears on hover or while scrolling, so
+the scrollbar never competes with content for attention.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{gap:'1.5rem',flexWrap:'wrap',alignItems:'flex-start'}}>
+  <div style={{height:'160px',display:'flex',alignItems:'stretch'}}>
+    <Scrollbar orientation="Vertical" thumbSize="33%" scrollPosition={20} />
+  </div>
+  <div style={{width:'200px'}}>
+    <Scrollbar orientation="Horizontal" thumbSize="33%" scrollPosition={20} />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Track** — the transparent area that contains the thumb. Click
+  the track to jump-scroll.
+- <Num>2</Num> **Thumb** — the visible indicator. Its length shows how much
+  of the content fits in the viewport; its position shows where you are.
+  Drag to reposition.
+
+<Divider />
+
+## Variants
+
+| Variant     | Values                              | Use when                                                  |
+| ----------- | ----------------------------------- | --------------------------------------------------------- |
+| Orientation | Vertical, Horizontal                | Match the scroll direction of the container.              |
+| Thumb size  | 25%, 33%, 50%, 75% of the track     | Reflects the visible portion of the total content.        |
+| Position    | 0–100% offset along the track       | Reflects the user's current scroll offset.                |
+
+A larger thumb means more of the content is visible. When the thumb fills the
+track at 100%, hide the scrollbar — there's nothing to scroll.
+
+<Divider />
+
+## Use the Scrollbars wrapper
+
+Any scrolling region in a Compass surface should be rendered through the
+`Scrollbars` component. It wraps `simplebar-react` and renders an overlay
+scrollbar that floats above content — items always span the full width of
+the container, and the thumb never reserves a gutter that pushes layout
+around.
+
+```tsx
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+
+<Scrollbars>
+  <YourLongList />
+</Scrollbars>
+```
+
+What you get:
+
+- An overlay thumb that auto-hides when idle and reappears on hover or while
+  scrolling.
+- Cross-browser consistency — overlay behaviour, transitions, and theming
+  match in Chrome, Safari, and Firefox.
+- A translucent thumb tied to `--center-channel-color-rgb` at 24% alpha that
+  bumps to 40% on hover, so the colour adapts to light and dark surfaces.
+- A forwarded ref to the inner scrollable element for imperative
+  `.scrollTo(...)` or read access to `.scrollTop`.
+
+### Sizing
+
+`Scrollbars` fills its parent by default. In a flex column, give the parent
+`flex: 1; min-height: 0;` so the scroller can shrink correctly. For
+fixed-height surfaces like menus, pass `style={{ maxHeight }}` directly on
+the wrapper.
+
+### Theming the thumb
+
+On dark surfaces (e.g. the channel sidebar), pass `color` with the CSS
+variable name to recolour the thumb against its background:
+
+```tsx
+<Scrollbars color="--sidebar-text-rgb">
+  <ChannelList />
+</Scrollbars>
+```
+
+<Divider />
+
+## Implementation
+
+For variants, props, and copy-ready examples, see the
+[Scrollbar specimen page](/components/scrollbar/specimen).

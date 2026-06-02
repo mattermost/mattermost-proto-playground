@@ -87,7 +87,9 @@
     gap: var(--spacing-xxxs);
     padding: var(--spacing-xxxs) var(--spacing-xs);
 
-    &:has(.chip__remove) { padding-right: var(--spacing-xxs); }
+    &:has(.chip__remove) {
+      padding-right: var(--spacing-xxs);
+    }
 
     .chip__label {
       font-size: var(--font-size-25);
@@ -105,7 +107,9 @@
     gap: var(--spacing-xxxs);
     padding: var(--spacing-xxxs) var(--spacing-xs);
 
-    &:has(.chip__remove) { padding-right: var(--spacing-xxs); }
+    &:has(.chip__remove) {
+      padding-right: var(--spacing-xxs);
+    }
 
     .chip__label {
       font-size: var(--font-size-75);
@@ -122,7 +126,9 @@
     gap: var(--spacing-xxxs);
     padding: var(--spacing-xxxxs) var(--spacing-xxs);
 
-    &:has(.chip__remove) { padding-right: var(--spacing-xxxs); }
+    &:has(.chip__remove) {
+      padding-right: var(--spacing-xxxs);
+    }
 
     .chip__label {
       font-size: var(--font-size-100);
@@ -139,7 +145,9 @@
     gap: var(--spacing-xxs);
     padding: var(--spacing-xxs) var(--spacing-m);
 
-    &:has(.chip__remove) { padding-right: var(--spacing-s); }
+    &:has(.chip__remove) {
+      padding-right: var(--spacing-s);
+    }
 
     .chip__label {
       font-size: var(--font-size-100);

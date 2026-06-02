@@ -1,0 +1,95 @@
+import Tooltip from '@/components/ui/Tooltip/Tooltip';
+
+Tooltips surface short, supporting text on hover. Reach for a tooltip when
+the affordance behind it isn't fully self-explanatory — an Icon Button, a
+truncated label, a keyboard shortcut. Don't reach for one when the label is
+already on screen.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage>
+  <Tooltip label="Mute channel" hint="You won't get notifications, but you'll still see new messages." shortcutKeys={[{ label: '⌘' }, { label: 'M' }]} />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — dark, elevated surface (Elevation 3) with an
+  arrow pointing back at the trigger.
+- <Num>2</Num> **Label** — primary text; one short line.
+- <Num>3</Num> **Icon** — optional; reinforces the label when an icon adds
+  clarity.
+- <Num>4</Num> **Shortcut** — optional keyboard hint, rendered as a
+  shortcut tag stack (e.g. `⌘K`).
+- <Num>5</Num> **Hint** — optional secondary line for a brief
+  expansion or context.
+
+<Divider />
+
+## Positioning
+
+Tooltips can anchor above, below, left, or right of the trigger. The arrow
+points back at the trigger; pick the direction that has the most room and
+follows the user's reading flow.
+
+<div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem', flexWrap: 'wrap', padding: '1.5rem 0' }}>
+  <Tooltip label="Above" arrow="Bottom" />
+  <Tooltip label="Right" arrow="Left" />
+  <Tooltip label="Below" arrow="Top" />
+  <Tooltip label="Left" arrow="Right" />
+</div>
+
+<Divider />
+
+## Variants
+
+<div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem', flexWrap: 'wrap', padding: '1.5rem 0' }}>
+  <Tooltip label="Save changes" />
+  <Tooltip label="Search" shortcutKeys={[{ label: '⌘' }, { label: 'K' }]} />
+  <Tooltip label="Mute channel" hint="You won't get notifications, but you'll still see new messages." />
+</div>
+
+| Variant         | Use when                                                                          |
+| --------------- | --------------------------------------------------------------------------------- |
+| Label only      | The default. Pairs with Icon Buttons and any unlabeled control.                   |
+| Label + shortcut| The action has a keyboard shortcut worth surfacing.                               |
+| Label + hint    | The label needs a one-line clarification — what the action does, or why.         |
+
+<Divider />
+
+## Behavior
+
+- **Show** after **400ms** of hover. The delay prevents tooltips from firing
+  as the cursor sweeps across the UI.
+- **Stay** while the cursor is within the trigger area or the tooltip
+  itself.
+- **Hide** immediately on mouseout, focus loss, or `Escape`.
+- **Don't animate** the trigger — the tooltip handles its own fade/scale on
+  open.
+
+<Divider />
+
+## When not to use
+
+- **Don't repeat the button label.** A tooltip on a labelled "Save" button
+  that says "Save" adds nothing.
+- **Don't use a tooltip for critical information.** If the user must see it,
+  put it in the layout. Tooltips only fire on hover and aren't reliable for
+  touch.
+- **Don't put actions inside a tooltip.** Tooltips are passive; they
+  disappear on mouseout. Use a Popover Menu or Section Notice instead.
+
+<Divider />
+
+## Content
+
+- Keep the label to a single short line. Sentence case, no trailing period.
+- If a hint is needed, keep it to one sentence. Two lines maximum.
+- Verb forms work well for action tooltips ("Mute channel", "Copy link"),
+  noun forms for descriptive tooltips on icons ("Status: Online").
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Tooltip specimen page](/components/tooltip/specimen).

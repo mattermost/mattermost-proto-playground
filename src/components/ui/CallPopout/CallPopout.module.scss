@@ -22,7 +22,7 @@
     bottom: auto;
     left: auto;
     right: auto;
-    width: calc(100% - 160px);
+    width: calc(100% - 80px);
     height: calc(100% - 80px);
     max-width: 1440px;
     max-height: 800px;
@@ -64,11 +64,20 @@
       cursor: pointer;
       transition: filter var(--duration-quick) var(--ease-transition);
 
-      &:hover { filter: brightness(0.9); }
-      &:focus-visible { outline: 2px solid var(--button-bg); outline-offset: 2px; }
+      &:hover {
+        filter: brightness(0.9);
+      }
+      &:focus-visible {
+        outline: 2px solid var(--button-bg);
+        outline-offset: 2px;
+      }
     }
-    &--min   { background: #febc2e; }
-    &--max   { background: #28c840; }
+    &--min {
+      background: #febc2e;
+    }
+    &--max {
+      background: #28c840;
+    }
   }
 
   &__app-title {

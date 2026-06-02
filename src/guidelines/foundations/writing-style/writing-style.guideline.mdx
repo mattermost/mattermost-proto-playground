@@ -1,0 +1,190 @@
+## UX writing principles
+
+### Concise
+
+Use short words and sentences. Avoid unnecessary fluff.
+
+### Clear
+
+Always write for clarity and simplicity. Err on the side of simple language
+that can be understood by novice users, and avoid vague terms.
+
+### Consistent
+
+Be consistent with terminology across the product. Although we may have
+different terms for the same things internally, always use the same language
+to describe the same thing within the product.
+
+<Divider />
+
+## User interface text guidelines
+
+These guidelines cover two types of UI text:
+
+- Messages triggered because something happened
+- Static text on the user interface
+
+### General principles for UI text
+
+Keep in mind that your users are from all over the world and English may not
+be their primary language.
+
+Use the present tense to describe a current state or condition, and the
+future tense to state something that is very definitely going to happen.
+
+Use the active voice, except for these cases:
+
+- If you'll end up blaming the user. For example, don't say "You entered an
+  incorrect password." Instead, say "The password is incorrect."
+- If you're describing what just happened. For example, it's okay to say
+  "Your incoming webhook is set up."
+- If the subject (the doer of an action) is the Mattermost application
+  itself. For example, it's okay to say "The image is deleted" instead of
+  "The server deleted the image."
+
+If you're asking the user to do or not do something, use imperatives (command
+phrases). For example, say "Do not change the Hostname" instead of saying
+"It is not recommended to change the Hostname." Better still, explain what
+could go wrong if they do or don't do something. For example, say "Do not
+change the Hostname because _this bad thing will happen_."
+
+### Guidelines for system messages
+
+Don't blame the user. Inform them about what happened, explain why it
+happened, and suggest a way forward. Try to use complete sentences in your
+messages. A sentence phrase (an incomplete sentence) might sound okay in
+English but could present internationalization challenges.
+
+If a system message contains variables (tokens):
+
+- Do not use verbs or adjectives as variables.
+- Do not create plurals of variables by adding an `s`.
+- If the variable is a noun, use a qualifier after the variable. For example,
+  say "The `{channel_name}` channel was created" instead of saying "The
+  `{channel_name}` was created."
+
+System messages can be of the following types: notification, confirmation,
+warning, and error. The following sections contain guidelines for each type.
+
+#### Notification messages
+
+A notification message is used to inform someone about something that
+happened. Such messages do not need any user input, and they do not prevent a
+user from continuing to use Mattermost.
+
+- Use either a complete sentence or a sentence phrase.
+- If using a complete sentence, end it with a period.
+
+Examples:
+
+- Member added to channel
+- The plugin was installed.
+
+#### Confirmation messages
+
+A confirmation message is used to ask someone to confirm that they want to
+proceed with the preceding command. The user cannot continue to use
+Mattermost until a confirmation is provided.
+
+- Use complete sentences.
+- Include a question that has a Yes/No answer.
+
+Examples:
+
+- Are you sure you want to delete this channel?
+- A plugin with this ID already exists. Would you like to overwrite it?
+
+#### Warning messages
+
+A warning message is for alerting somebody about something that might go
+wrong. The user can continue using Mattermost unless the warning message
+needs explicit user input.
+
+- Use complete sentences.
+- Explain what has happened, what can happen, and what can go wrong as a
+  consequence.
+
+Examples:
+
+- The Enterprise license expires in 2 days. If you do not renew it, some
+  features will be disabled on license expiry.
+- If you claim this AD/LDAP account, you will no longer be able to log in
+  with your email.
+
+#### Error messages
+
+An error message is for telling somebody that something went wrong. Errors
+prevent a user from doing a task or accessing a feature till the error is
+resolved.
+
+- Use complete sentences.
+- If what went wrong isn't obvious, explain in one sentence.
+- If a solution or workaround isn't obvious, suggest one.
+
+Examples:
+
+- Messages must have fewer than 120 characters.
+- A connection to the marketplace server could not be established. Check
+  your settings on the System Console.
+
+<Divider />
+
+## Button labels and links
+
+Button labels should always use action words and describe the action as
+concisely as possible. They should be limited to 4 words or less. Examples:
+"Log in", "Send invitation".
+
+<Divider />
+
+## Navigation labels
+
+Navigation labels should be as short as possible and support the user in
+finding their way.
+
+<Divider />
+
+## Input labels
+
+Input labels should be as short and concise as possible and describe the
+input field.
+
+<Divider />
+
+## Capitalization
+
+### Titles
+
+Titles should use sentence case. Exceptions would be when proper nouns are
+being used.
+
+### Button labels, input labels, and navigation labels
+
+These labels should use sentence case. Exceptions would be when proper nouns
+are being used.
+
+<Divider />
+
+## Punctuation
+
+### Titles
+
+Titles should omit periods unless the headline is more than one sentence.
+
+### Paragraphs
+
+Paragraphs should always use proper punctuation.
+
+### Bullets
+
+Bullets should omit periods unless the bullet text is more than one sentence.
+
+### Button labels
+
+Button labels should always omit periods or punctuation.
+
+### Input labels
+
+Input labels should always omit periods or colons. The relationship between a
+label and the corresponding input should be made clear by the proximity and
+the layout.

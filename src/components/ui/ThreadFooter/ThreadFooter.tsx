@@ -50,11 +50,14 @@ export default function ThreadFooter({
   className = '',
   ...rest
 }: ThreadFooterProps) {
-  const rootClass = [styles['thread-footer'], className].filter(Boolean).join(' ');
+  const rootClass = [styles['thread-footer'], className]
+    .filter(Boolean)
+    .join(' ');
 
   const MAX_VISIBLE = 3;
   const visibleAvatars = avatars.slice(0, MAX_VISIBLE);
-  const overflowCount = avatars.length > MAX_VISIBLE ? avatars.length - MAX_VISIBLE : 0;
+  const overflowCount =
+    avatars.length > MAX_VISIBLE ? avatars.length - MAX_VISIBLE : 0;
 
   return (
     <div className={rootClass} {...rest}>
@@ -68,9 +71,7 @@ export default function ThreadFooter({
             />
           )}
           {badge === 'Mention' && (
-            <span className={styles['thread-footer__mention-badge']}>
-              @
-            </span>
+            <span className={styles['thread-footer__mention-badge']}>@</span>
           )}
 
           {/* Avatar stack */}
@@ -97,9 +98,14 @@ export default function ThreadFooter({
           {visibleAvatars.length === 0 && (
             <div className={styles['thread-footer__avatars']}>
               {[0, 1, 2].map((i) => (
-                <span key={i} className={styles['thread-footer__avatar-placeholder']} />
+                <span
+                  key={i}
+                  className={styles['thread-footer__avatar-placeholder']}
+                />
               ))}
-              <span className={styles['thread-footer__avatar-overflow']}>+2</span>
+              <span className={styles['thread-footer__avatar-overflow']}>
+                +2
+              </span>
             </div>
           )}
         </div>
@@ -118,9 +124,7 @@ export default function ThreadFooter({
               .join(' ')}
             onClick={onReply}
             aria-label={`${replyCount} repl${replyCount === 1 ? 'y' : 'ies'}`}
-            leadingIcon={
-              <Icon size="12" glyph={<ReplyOutlineIcon />} />
-            }
+            leadingIcon={<Icon size="12" glyph={<ReplyOutlineIcon />} />}
           >
             <span className={styles['thread-footer__btn-label']}>
               {replyCount} {replyCount === 1 ? 'reply' : 'replies'}

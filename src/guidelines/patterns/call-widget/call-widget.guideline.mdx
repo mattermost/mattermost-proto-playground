@@ -1,0 +1,129 @@
+import { CallWidgetAnatomyStage } from '@/guidelines/_components/CallWidgetGuidelineAnatomy';
+
+The Call Widget is a compact, persistent surface for an **in-progress call**. It
+keeps the active speaker, timer, channel context, and primary call actions
+available while the user moves through channels, threads, and other parts of the
+app. It sits above the main workspace (floating treatment in product; fixed for
+documentation here) and opens secondary panels for participants, device choices,
+and call details.
+
+<Divider />
+
+## Anatomy
+
+The Call Widget groups identity, timing, and controls in a single elevated card.
+
+<CallWidgetAnatomyStage />
+
+- <Num>1</Num> **Widget shell** — Rounded container with border, shadow, and
+  center-channel background so the widget reads as an overlay above the page.
+  Exposes `role="region"` and an accessible name for the active call.
+- <Num>2</Num> **Active speaker header** — Uses [User Avatar](/components/user-avatar)
+  for whoever is currently highlighted as speaking, a **talking** label (name +
+  “is talking”), a **duration** readout, and **channel context** (globe icon +
+  channel slug or name). An **Expand** [Icon Button](/components/icon-button)
+  moves the user into the full call experience (larger window or dedicated
+  surface — product-defined).
+- <Num>3</Num> **Participants control** — Shows the live participant count.
+  Activating it opens the **Participants** overlay listing everyone on the call
+  in the compact **widget** variant of the roster (avatars, mute/host cues, and
+  overflow actions per row).
+- <Num>4</Num> **Mute** — [Icon Button](/components/icon-button) toggling input
+  mute; uses destructive styling when muted so the state is obvious at a glance.
+- <Num>5</Num> **Raise hand** — Icon Button toggling raised-hand state for the
+  current user (filled vs outline icon by state).
+- <Num>6</Num> **Screen share** — Icon Button toggling whether the user is
+  presenting their screen (monitor on/off iconography).
+- <Num>7</Num> **More** — Icon Button opening the **call menu** (devices,
+  recording, chat thread entry, call info, settings). The menu uses
+  [Menu Item](/components/menu-item) rows with optional trailing chevrons for
+  nested device pickers in the full product.
+- <Num>8</Num> **Leave call** — Primary hang-up control (filled phone hang-up
+  icon); visually distinct from neutral icon buttons so ending the call is
+  deliberate.
+
+<Divider />
+
+## Overlay panels
+
+The widget mounts one overlay at a time beside or below the card (popover-style),
+with enter/exit transitions aligned to Compass popover motion.
+
+### Participants
+
+Lists all participants with presence details supported by the roster (host,
+speaking, muted, etc.). Uses the **widget** variant of the participants panel so
+density matches the floating control.
+
+### Call menu
+
+Quick paths to **audio output**, **microphone**, and **camera** (often opening
+submenus or system UI in product), plus **record call**, **show chat thread**,
+**call info**, and **additional settings**. Choosing **Call info** swaps the
+overlay to the call-info panel below instead of the menu.
+
+### Call info
+
+Summarizes how others can join: internal meeting link, optional **external
+participants** affordance with guest link, and **dial-in** number/PIN when SIP
+is available. Includes copy actions and a close control to return to the widget.
+
+<Divider />
+
+## States
+
+### Control toggles
+
+**Mute**, **raise hand**, and **screen share** use pressed/toggled Icon Button
+appearance when active. Mute additionally uses destructive emphasis while
+muted.
+
+### Participants button
+
+When the roster overlay is open, the participants trigger shows an active
+modifier and `aria-expanded="true"`.
+
+### Menu button
+
+When the call menu is open, the **More** trigger stays pressed/toggled until the
+menu closes.
+
+### Overlays
+
+Only one overlay panel should be mounted at a time in this pattern; opening
+another dismisses or replaces the previous surface so focus and motion stay
+predictable.
+
+<Divider />
+
+## Behavior
+
+### Persistent access
+
+The widget remains available while the call is active so users can mute, share,
+or leave without returning to a specific channel view.
+
+### Expand
+
+**Expand** hands off to the full call UI; the widget implementation only issues
+`onExpand` — routing is owned by the host app.
+
+### Leave
+
+**Leave call** ends the user’s participation (`onLeave`). Copy and confirmation
+rules (e.g. last person ends call) are product-level.
+
+### Motion
+
+Overlay panels use the shared popover transition hook so open/close matches
+Compass scale-and-fade timing and easing tokens.
+
+<Divider />
+
+## Accessibility
+
+- The widget root is a labelled **region** so assistive tech can jump to the
+  active call.
+- Primary actions expose clear **aria-label** values (mute/unmute, raise/lower
+  hand, share/stop, open/close menu, leave).
+- The participants control exposes **aria-expanded** when the roster is open.

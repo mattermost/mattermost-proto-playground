@@ -1,12 +1,15 @@
 import type { InputHTMLAttributes } from 'react';
-import { useState, useCallback, useId, useRef, useEffect } from 'react';
+import { useState, useCallback, useId, useRef } from 'react';
 import Button from '@/components/ui/Button/Button';
-import IconButton, { ICON_BUTTON_ICON_SIZES } from '@/components/ui/IconButton/IconButton';
+import IconButton, {
+  ICON_BUTTON_ICON_SIZES,
+} from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import CalendarOutlineIcon from '@mattermost/compass-icons/components/calendar-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import styles from './DateRangePicker.module.scss';
 
 export type DateRangePickerMode = 'date' | 'range';
@@ -34,8 +37,18 @@ export interface DateRangePickerProps extends Omit<
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 function formatDateDisplay(iso: string): string {
@@ -87,7 +100,11 @@ export default function DateRangePicker({
   const rootRef = useRef<HTMLDivElement>(null);
 
   const today = new Date();
-  const todayIso = toIso(today.getFullYear(), today.getMonth(), today.getDate());
+  const todayIso = toIso(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
 
   // Calendar display state
   const [displayYear, setDisplayYear] = useState(today.getFullYear());
@@ -103,16 +120,7 @@ export default function DateRangePicker({
   const selectedStart = startDate ?? internalStart;
   const selectedEnd = endDate ?? internalEnd;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleClickOutside(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen]);
+  useOutsideClose(rootRef, isOpen, () => setIsOpen(false));
 
   const handleToggle = useCallback(() => {
     if (!disabled) setIsOpen((o) => !o);
@@ -120,14 +128,20 @@ export default function DateRangePicker({
 
   const handlePrevMonth = useCallback(() => {
     setDisplayMonth((m) => {
-      if (m === 0) { setDisplayYear((y) => y - 1); return 11; }
+      if (m === 0) {
+        setDisplayYear((y) => y - 1);
+        return 11;
+      }
       return m - 1;
     });
   }, []);
 
   const handleNextMonth = useCallback(() => {
     setDisplayMonth((m) => {
-      if (m === 11) { setDisplayYear((y) => y + 1); return 0; }
+      if (m === 11) {
+        setDisplayYear((y) => y + 1);
+        return 0;
+      }
       return m + 1;
     });
   }, []);
@@ -137,33 +151,35 @@ export default function DateRangePicker({
     setDisplayMonth(today.getMonth());
   }, [today]);
 
-  const handleDayClick = useCallback((iso: string) => {
-    if (mode === 'date') {
-      if (onChange) {
-        onChange(iso);
-      } else {
-        setInternalDate(iso);
-      }
-      setIsOpen(false);
-    } else {
-      // range mode: first click = start, second = end
-      if (!selectedStart || (selectedStart && selectedEnd)) {
-        setInternalStart(iso);
-        setInternalEnd('');
-      } else {
-        const [s, e] = iso >= selectedStart
-          ? [selectedStart, iso]
-          : [iso, selectedStart];
-        if (onRangeChange) {
-          onRangeChange(s, e);
+  const handleDayClick = useCallback(
+    (iso: string) => {
+      if (mode === 'date') {
+        if (onChange) {
+          onChange(iso);
         } else {
-          setInternalStart(s);
-          setInternalEnd(e);
+          setInternalDate(iso);
         }
         setIsOpen(false);
+      } else {
+        // range mode: first click = start, second = end
+        if (!selectedStart || (selectedStart && selectedEnd)) {
+          setInternalStart(iso);
+          setInternalEnd('');
+        } else {
+          const [s, e] =
+            iso >= selectedStart ? [selectedStart, iso] : [iso, selectedStart];
+          if (onRangeChange) {
+            onRangeChange(s, e);
+          } else {
+            setInternalStart(s);
+            setInternalEnd(e);
+          }
+          setIsOpen(false);
+        }
       }
-    }
-  }, [mode, selectedStart, selectedEnd, onChange, onRangeChange]);
+    },
+    [mode, selectedStart, selectedEnd, onChange, onRangeChange],
+  );
 
   // Build calendar grid
   const daysInMonth = getDaysInMonth(displayYear, displayMonth);
@@ -187,14 +203,19 @@ export default function DateRangePicker({
         : '';
 
   return (
-    <div ref={rootRef} className={[styles.dateRangePicker, className].filter(Boolean).join(' ')}>
+    <div
+      ref={rootRef}
+      className={[styles.dateRangePicker, className].filter(Boolean).join(' ')}
+    >
       {/* Trigger input */}
       <div
         className={[
           styles.dateRangePicker__trigger,
           disabled ? styles['dateRangePicker--disabled'] : '',
           isOpen ? styles['dateRangePicker--open'] : '',
-        ].filter(Boolean).join(' ')}
+        ]
+          .filter(Boolean)
+          .join(' ')}
         role="button"
         aria-haspopup="dialog"
         aria-expanded={isOpen}
@@ -202,7 +223,9 @@ export default function DateRangePicker({
         tabIndex={disabled ? -1 : 0}
         id={id}
         onClick={handleToggle}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleToggle(); }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') handleToggle();
+        }}
       >
         <span className={styles.dateRangePicker__calendarIcon} aria-hidden>
           <Icon size="16" glyph={<CalendarOutlineIcon />} />
@@ -241,14 +264,24 @@ export default function DateRangePicker({
                 <IconButton
                   size="Medium"
                   padding="Compact"
-                  icon={<Icon size={ICON_BUTTON_ICON_SIZES['Medium']} glyph={<ChevronLeftIcon />} />}
+                  icon={
+                    <Icon
+                      size={ICON_BUTTON_ICON_SIZES['Medium']}
+                      glyph={<ChevronLeftIcon />}
+                    />
+                  }
                   onClick={handlePrevMonth}
                   aria-label="Previous month"
                 />
                 <IconButton
                   size="Medium"
                   padding="Compact"
-                  icon={<Icon size={ICON_BUTTON_ICON_SIZES['Medium']} glyph={<ChevronRightIcon />} />}
+                  icon={
+                    <Icon
+                      size={ICON_BUTTON_ICON_SIZES['Medium']}
+                      glyph={<ChevronRightIcon />}
+                    />
+                  }
                   onClick={handleNextMonth}
                   aria-label="Next month"
                 />
@@ -259,7 +292,9 @@ export default function DateRangePicker({
           {/* Weekday headers */}
           <div className={styles.dateRangePicker__weekdays}>
             {WEEKDAYS.map((d) => (
-              <span key={d} className={styles.dateRangePicker__weekday}>{d}</span>
+              <span key={d} className={styles.dateRangePicker__weekday}>
+                {d}
+              </span>
             ))}
           </div>
 
@@ -269,23 +304,34 @@ export default function DateRangePicker({
               <div key={wi} className={styles.dateRangePicker__week}>
                 {week.map((day, di) => {
                   if (day == null) {
-                    return <span key={di} className={styles.dateRangePicker__dayEmpty} />;
+                    return (
+                      <span
+                        key={di}
+                        className={styles.dateRangePicker__dayEmpty}
+                      />
+                    );
                   }
                   const iso = toIso(displayYear, displayMonth, day);
                   const isToday = iso === todayIso;
                   const isSelected =
                     mode === 'date'
                       ? isSameDay(iso, selectedDate)
-                      : isSameDay(iso, selectedStart) || isSameDay(iso, selectedEnd);
+                      : isSameDay(iso, selectedStart) ||
+                        isSameDay(iso, selectedEnd);
                   const isInRange =
-                    mode === 'range' && isBetween(iso, selectedStart, selectedEnd);
+                    mode === 'range' &&
+                    isBetween(iso, selectedStart, selectedEnd);
 
                   const dayClass = [
                     styles.dateRangePicker__day,
                     isSelected ? styles['dateRangePicker__day--selected'] : '',
                     isInRange ? styles['dateRangePicker__day--in-range'] : '',
-                    isToday && !isSelected ? styles['dateRangePicker__day--today'] : '',
-                  ].filter(Boolean).join(' ');
+                    isToday && !isSelected
+                      ? styles['dateRangePicker__day--today']
+                      : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
 
                   return (
                     <button

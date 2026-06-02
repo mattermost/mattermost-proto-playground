@@ -16,7 +16,7 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Inverted style modifier
+  // Inverted style modifier (sidebar / dark chrome)
   // ---------------------------------------------------------------------------
   &--inverted {
     .pagination-dots__dot {
@@ -26,6 +26,26 @@
     .pagination-dots__dot--active {
       background-color: var(--sidebar-text);
       box-shadow: 0 0 0 4px rgba(var(--sidebar-text-rgb), 0.16);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // On primary / info surfaces (Tour Point, etc.) — uses button label tokens
+  // ---------------------------------------------------------------------------
+  &--on-primary {
+    .pagination-dots__dot {
+      background-color: rgba(var(--button-color-rgb), 0.4);
+    }
+
+    .pagination-dots__dot--active {
+      background-color: var(--button-color);
+      box-shadow: 0 0 0 4px rgba(var(--button-color-rgb), 0.24);
+    }
+
+    .pagination-dots__item:focus-visible .pagination-dots__dot {
+      box-shadow:
+        0 0 0 3px var(--color-info),
+        0 0 0 5px var(--button-color);
     }
   }
 

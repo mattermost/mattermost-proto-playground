@@ -13,6 +13,8 @@ export interface IconButtonProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   'style'
 > {
+  /** When true, forces the subtler pressed/active visual (lighter than toggled). */
+  active?: boolean;
   /** Optional CSS class name. */
   className?: string;
   /** Numeric count shown inline after the icon. Figma: Count. */
@@ -54,6 +56,7 @@ export const ICON_BUTTON_ICON_SIZES: Record<
  * @see https://compass.mattermost.com (Icon Button)
  */
 export default function IconButton({
+  active = false,
   className = '',
   count,
   destructive = false,
@@ -79,6 +82,7 @@ export default function IconButton({
     : '';
   const roundedClass = rounded ? styles['icon-button--rounded'] : '';
   const toggledClass = toggled ? styles['icon-button--toggled'] : '';
+  const activeClass = active ? styles['icon-button--active'] : '';
   const hasCount = count !== undefined;
   const hasCountClass = hasCount ? styles['icon-button--has-count'] : '';
 
@@ -90,6 +94,7 @@ export default function IconButton({
     destructiveClass,
     roundedClass,
     toggledClass,
+    activeClass,
     hasCountClass,
     className,
   ]
@@ -103,6 +108,7 @@ export default function IconButton({
       disabled={disabled}
       aria-label={ariaLabel}
       aria-pressed={toggled ? true : undefined}
+      data-active={active ? 'true' : undefined}
       {...rest}
     >
       <span className={styles['icon-button__icon-slot']} aria-hidden>

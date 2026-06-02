@@ -1,11 +1,16 @@
 import type { ImgHTMLAttributes } from 'react';
 import { toKebab } from '@/utils/string';
 import Icon, { type IconSize } from '@/components/ui/Icon/Icon';
+import IconButton, {
+  ICON_BUTTON_ICON_SIZES,
+  type IconButtonSize,
+} from '@/components/ui/IconButton/IconButton';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
 import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
 import AccountIcon from '@mattermost/compass-icons/components/account-outline';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import styles from './CallParticipantAvatar.module.scss';
 
 export type CallParticipantAvatarSize = 'Large' | 'Medium' | 'Small' | 'XS';
@@ -34,6 +39,13 @@ export interface CallParticipantAvatarProps extends Omit<
   muteState?: CallParticipantMuteState;
   /** When true, shows the host label. */
   host?: boolean;
+  /**
+   * When true with `host`, shows an overflow actions control on hover / focus
+   * (host menu). Pair with `onHostControlsClick`.
+   */
+  hostControls?: boolean;
+  /** Called when the host overflow control is activated. */
+  onHostControlsClick?: () => void;
   /** When true, shows the EXTERNAL label (for external-link and dial-in participants). */
   external?: boolean;
   /** When true, shows the talking indicator ring. */
@@ -64,6 +76,8 @@ export default function CallParticipantAvatar({
   className = '',
   external = false,
   host = false,
+  hostControls = false,
+  onHostControlsClick,
   kind = 'user',
   muteState,
   name,
@@ -91,13 +105,45 @@ export default function CallParticipantAvatar({
   const px = SIZE_PX[size];
 
   const glyphSize: IconSize =
-    size === 'Large' ? '52' : size === 'Medium' ? '40' : size === 'Small' ? '32' : '28';
+    size === 'Large'
+      ? '52'
+      : size === 'Medium'
+        ? '40'
+        : size === 'Small'
+          ? '32'
+          : '28';
+
+  const hostControlsButtonSize: IconButtonSize =
+    size === 'Large' || size === 'Medium' ? 'Small' : 'X-Small';
+  const hostControlsIconSize = ICON_BUTTON_ICON_SIZES[hostControlsButtonSize];
+
+  const showHostControls = host && hostControls;
 
   return (
     <div className={rootClass}>
+      {showHostControls && (
+        <div className={styles['call-participant-avatar__host-actions']}>
+          <IconButton
+            aria-label="Host participant actions"
+            style="Inverted"
+            padding="Compact"
+            size={hostControlsButtonSize}
+            icon={
+              <Icon
+                size={hostControlsIconSize}
+                glyph={<DotsHorizontalIcon />}
+              />
+            }
+            onClick={onHostControlsClick}
+          />
+        </div>
+      )}
       <div className={styles['call-participant-avatar__container']}>
         {talking && (
-          <span className={styles['call-participant-avatar__talking-ring']} aria-hidden />
+          <span
+            className={styles['call-participant-avatar__talking-ring']}
+            aria-hidden
+          />
         )}
         {kind === 'user' ? (
           <img
@@ -170,7 +216,9 @@ export default function CallParticipantAvatar({
         <span className={styles['call-participant-avatar__name']}>{name}</span>
       )}
       {host && (
-        <span className={styles['call-participant-avatar__host-label']}>HOST</span>
+        <span className={styles['call-participant-avatar__host-label']}>
+          HOST
+        </span>
       )}
       {external && (
         <span className={styles['call-participant-avatar__host-label']}>

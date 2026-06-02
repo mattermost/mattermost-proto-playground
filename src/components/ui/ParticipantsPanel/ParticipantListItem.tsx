@@ -55,7 +55,9 @@ export function ParticipantListItem({
           <span className={fallbackClass} role="img" aria-label={name}>
             <Icon
               size="16"
-              glyph={kind === 'dial-in' ? <PhoneIcon /> : <AccountOutlineIcon />}
+              glyph={
+                kind === 'dial-in' ? <PhoneIcon /> : <AccountOutlineIcon />
+              }
             />
           </span>
         )}

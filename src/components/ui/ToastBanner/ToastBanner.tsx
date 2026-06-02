@@ -9,7 +9,12 @@ import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import styles from './ToastBanner.module.scss';
 
-export type ToastBannerType = 'General' | 'Info' | 'Success' | 'Warning' | 'Danger';
+export type ToastBannerType =
+  | 'General'
+  | 'Info'
+  | 'Success'
+  | 'Warning'
+  | 'Danger';
 
 export interface ToastBannerProps {
   className?: string;
@@ -55,13 +60,17 @@ export default function ToastBanner({
         <div className={styles['toast-banner__actions']}>
           {actionLabel != null && (
             <Button
-              appearance={type === 'Warning' ? 'Default' : 'Inverted'}
+              appearance="Default"
               emphasis="Tertiary"
               size="X-Small"
               className={[
                 styles['toast-banner__action-btn'],
-                type === 'Warning' ? styles['toast-banner__action-btn--warning'] : '',
-              ].filter(Boolean).join(' ')}
+                type === 'Warning'
+                  ? styles['toast-banner__action-btn--warning']
+                  : styles['toast-banner__action-btn--on-dark'],
+              ]
+                .filter(Boolean)
+                .join(' ')}
               onClick={onAction}
             >
               {actionLabel}
@@ -71,7 +80,14 @@ export default function ToastBanner({
             <IconButton
               aria-label="Dismiss"
               size="Small"
-              style={type === 'Warning' ? 'Default' : 'Inverted'}
+              className={[
+                styles['toast-banner__dismiss'],
+                type === 'Warning'
+                  ? styles['toast-banner__dismiss--warning']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
               icon={<Icon glyph={<CloseIcon />} size="16" />}
               onClick={onDismiss}
             />

@@ -8,9 +8,15 @@
   overflow: hidden;
 
   // ── Sizes ─────────────────────────────────────────────────
-  &--size-small  { width: 600px; }
-  &--size-medium { width: 704px; }
-  &--size-large  { width: 832px; }
+  &--size-small {
+    width: 600px;
+  }
+  &--size-medium {
+    width: 704px;
+  }
+  &--size-large {
+    width: 832px;
+  }
 
   // ── Header ────────────────────────────────────────────────
   &__header {
@@ -68,9 +74,12 @@
 
   // ── Body ──────────────────────────────────────────────────
   &__body {
-    padding: 28px var(--spacing-xxxl);
-    overflow-y: auto;
     flex: 1;
+    min-height: 0;
+  }
+
+  &__body-inner {
+    padding: 28px var(--spacing-xxxl);
   }
 
   // ── Footer ────────────────────────────────────────────────

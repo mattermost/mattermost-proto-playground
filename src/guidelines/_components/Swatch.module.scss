@@ -1,0 +1,198 @@
+.swatch {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+  overflow: hidden;
+  box-shadow: var(--elevation-1);
+
+  &__chip {
+    width: 100%;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    padding: var(--spacing-s) var(--spacing-m);
+  }
+
+  &__label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__value {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  &__token {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    line-height: var(--line-height-100);
+    word-break: break-all;
+  }
+
+  &__rgb {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    line-height: var(--line-height-100);
+  }
+
+  &--large {
+    .swatch__chip {
+      height: 160px;
+    }
+  }
+
+  &--medium {
+    .swatch__chip {
+      height: 96px;
+    }
+  }
+
+  &--small {
+    .swatch__chip {
+      height: 56px;
+    }
+    .swatch__label {
+      font-size: var(--font-size-75);
+    }
+    .swatch__value {
+      font-size: var(--font-size-50);
+    }
+    .swatch__token,
+    .swatch__rgb {
+      font-size: var(--font-size-50);
+    }
+  }
+}
+
+.swatchGrid {
+  display: grid;
+  gap: var(--spacing-l);
+  margin: var(--spacing-l) 0;
+
+  &--large {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  &--medium {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  &--small {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.ramp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: var(--spacing-l) 0;
+
+  &__label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__row {
+    display: flex;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: var(--elevation-1);
+    flex-wrap: wrap;
+  }
+
+  &__chip {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 64px;
+  }
+
+  &__swatch {
+    height: 56px;
+    width: 100%;
+  }
+
+  &__shade {
+    padding: var(--spacing-xxxs) var(--spacing-xxs);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    text-align: center;
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    padding: var(--spacing-xxs) var(--spacing-xxxs);
+    align-items: center;
+    text-align: center;
+    background-color: var(--center-channel-bg);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__token,
+  &__hex,
+  &__rgb {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    word-break: break-all;
+    max-width: 100%;
+  }
+
+  &__token {
+    color: var(--center-channel-color);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &--detail {
+    .ramp__chip {
+      flex: 0 1 auto;
+      min-width: 120px;
+    }
+
+    .ramp__row {
+      align-items: stretch;
+    }
+  }
+
+  &--small {
+    .ramp__chip {
+      min-width: 40px;
+    }
+
+    .ramp__swatch {
+      height: 36px;
+    }
+
+    .ramp__shade {
+      padding: var(--spacing-xxxxs) var(--spacing-xxxs);
+      font-size: 10px;
+    }
+  }
+
+  #{&}--detail#{&}--small {
+    .ramp__chip {
+      min-width: 104px;
+    }
+  }
+}

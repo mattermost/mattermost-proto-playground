@@ -1,0 +1,124 @@
+Layout keeps the product feeling structured and predictable across platforms
+and screen sizes. Grids, breakpoints, and persistent panels hold every surface
+together — and interaction targets keep them usable.
+
+<Divider />
+
+## Grids
+
+### 8px grid
+
+Most layout decisions snap to an 8px grid. Component widths, heights, and the
+gaps between them should land on whole multiples of 8 wherever possible.
+
+<GridOverlay size={8} caption="8px grid — the default rhythm" />
+
+### 4px grid
+
+Type, icons, and other small elements that can't comfortably hit 8px land on a
+4px grid instead. The 4px grid is a refinement, not a replacement — only step
+down when 8px doesn't fit.
+
+<GridOverlay size={4} caption="4px grid — for type, icons, and small elements" />
+
+### Vertical baseline grid
+
+A 4px baseline grid sets the vertical rhythm for type. It exists because the
+base body size (14px) has an x-height of 8px — half of that gives us a 4px
+baseline that's still flexible enough for line-height tweaks. Body line heights
+should always be a multiple of 4px; reach for 8px when nothing smaller is
+needed.
+
+### Horizontal grid
+
+A horizontal grid keeps pages feeling grounded and helps users scan content.
+Aligning content blocks to shared columns is what turns a screen full of
+elements into a layout.
+
+<Divider />
+
+## Grid anatomy
+
+<GridAnatomy />
+
+### Columns
+
+Columns span the main content region. Content blocks place into one or more
+columns. Column widths are expressed as percentages so layouts stay flexible
+across screen sizes. The number of columns is set by the breakpoint.
+
+### Gutters
+
+Gutters are the fixed-width gaps between columns that separate adjacent
+content. Gutter width is fixed within a breakpoint but can grow at larger
+breakpoints to give the layout more breathing room.
+
+### Margins
+
+Margins are the fixed-width space between the grid and the edges of the
+viewport. Like gutters, margins are fixed within a breakpoint and can grow at
+larger ones. **Margins should always be greater than or equal to the gutter.**
+
+### Layout regions
+
+A layout region is any area that holds content and aligns to the grid. Regions
+can span the full set of columns or only a subset — an _offset layout_ that
+occupies fewer columns and centers within the page.
+
+<Divider />
+
+## Fixed-width panels
+
+Persistent panels — the channel sidebar on the left, the right-hand sidebar
+when expanded — sit outside the responsive grid. The grid that drives the
+center channel is offset by each visible panel's width and recalculates its
+columns to fit the remaining space.
+
+<SidebarOffset />
+
+When both sidebars are visible the available width contracts further, and
+larger breakpoints fall back to the column count of the next smaller
+breakpoint.
+
+<SidebarOffset both />
+
+<Divider />
+
+## Breakpoints
+
+Compass ships five breakpoints based on Bootstrap's responsive scale.
+Sidebar-open variants drop the available column count one step so layouts stay
+legible when persistent panels reduce the main content width.
+
+<BreakpointTable />
+
+<Divider />
+
+## Aspect ratios
+
+Aspect ratios describe the proportion of width to height for media and image
+surfaces. Sticking to a small, shared set keeps thumbnails, embeds, and hero
+media feeling like part of the same system.
+
+<AspectRatios />
+
+<Divider />
+
+## Interaction targets
+
+An interaction target is the area of an element that responds to a click or
+tap. Adequately sized targets are critical for usability — especially on
+touch.
+
+<InteractionTargets />
+
+### Minimum click area
+
+For pointer devices, the minimum hit area is **24×24px** with at least
+**8px** between adjacent targets.
+
+### Minimum tap area
+
+For touch devices, the minimum tap area is **40×40px** with at least **8px**
+between targets. In tight regions like dense toolbars, spacing can drop to
+**4px** — but never below.

@@ -1,0 +1,92 @@
+import ProfilePopover from '@/components/ui/ProfilePopover/ProfilePopover';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+
+The Profile Popover is used to display a user's profile information when you click
+or tap on a username or avatar.
+
+<Divider />
+
+## Anatomy
+
+The Profile Popover has a number of elements. It's rare that all would show in a
+given profile card, but the diagram below displays all of the possible elements
+at once.
+
+<AnatomyStage
+  style={{
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto var(--spacing-m)',
+  }}
+>
+  <ProfilePopover
+    user="Others"
+    avatarSrc={avatarLeonard}
+    avatarAlt="Leonard Riley"
+    name="Leonard Riley"
+    username="@leonard.riley"
+    title="Lead Engineer, Enterprise"
+    email="leonard.riley@acme.com"
+    jobRole="System Admin"
+    lastOnline="Last online 6 hrs ago"
+    staff
+    sharedOrg="Acme Corp."
+    coreCommitter
+    githubHandle="lennyriley"
+    localTime={{
+      time: '10:42 PM',
+      timezone: 'EST',
+      hourDifference: '3 hrs behind',
+    }}
+    customStatus={{
+      emoji: '📅',
+      text: 'In a meeting',
+      expiresLabel: 'Until Tomorrow',
+    }}
+    onClose={() => {}}
+    onMention={() => {}}
+    onAddToChannel={() => {}}
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Role tag** — If the user is an admin or a bot, this tag shows the
+  role. For general members, the tag does not display. Uses the [Label tag](/components/label-tag)
+  component.
+- <Num>2</Num> **Close icon button** — [Icon Button](/components/icon-button) used to
+  dismiss the popover.
+- <Num>3</Num> **User avatar with status badge** — Uses the [User Avatar](/components/user-avatar)
+  component with the status badge.
+- <Num>4</Num> **Last online status** *(not available yet)* — When shipped, shows when
+  the user was last online when their status is away, offline, or DND.
+- <Num>5</Num> **Full name** *(optional)* — First and last name when set. If full name
+  is absent, the username is promoted to this title position instead.
+- <Num>6</Num> **Username** — The username from the profile (`@handle`).
+- <Num>7</Num> **Position** *(optional)* — Job title from the user's profile.
+- <Num>8</Num> **Profile attributes** *(optional)* — Additional rows (for example email,
+  organization, or plugin-provided fields) shown when present.
+- <Num>9</Num> **Local time** — The user's local time in their time zone (with optional
+  offset relative to the viewer).
+- <Num>10</Num> **Custom status** *(optional)* — When set, shows emoji and text for the
+  user's custom status.
+- <Num>11</Num> **Message button** — [Button](/components/button) that opens a direct
+  message with this user.
+- <Num>12</Num> **Mention user icon button** — [Icon Button](/components/icon-button)
+  that inserts an `@mention` in the message input for the active channel.
+- <Num>13</Num> **Add to a channel icon button** — [Icon Button](/components/icon-button)
+  that opens the Add to Channel modal.
+
+<Divider />
+
+## Your profile vs. others
+
+When you view **your own** profile card, the primary control becomes **Edit profile**
+instead of **Message**. The mention and add-to-channel actions are not shown. **Send
+message** remains available but is demoted to an **icon button** next to **Edit
+profile**.
+
+<Divider />
+
+## Elevation
+
+Profile Popovers use **Elevation 6**. See the [Elevation](/foundations/elevation)
+foundation for values and usage.

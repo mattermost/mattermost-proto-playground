@@ -1,0 +1,78 @@
+Shape is part of how the system feels. Applied consistently, it reinforces a
+sense of familiarity, trust, and reliability across the product — the same
+softness on every button, the same circle for every avatar.
+
+<Divider />
+
+## Core shapes
+
+Mattermost uses four core shapes throughout the interface. Each plays a
+distinct role in the visual hierarchy.
+
+<CoreShapes />
+
+<Divider />
+
+## Rectangle
+
+Sharp corners are reserved for **larger, more global containers** — surfaces
+that extend to the edges of the app window like the channels sidebar, the
+global header, or the channel viewport. Rectangle is the base layer of the UI;
+everything else softens away from it.
+
+<Divider />
+
+## Rounded rectangle
+
+The rounded rectangle is the most widely used shape in the system. It applies
+to **buttons, modals, popover menus, cards, banners, and most other
+interactive elements.**
+
+### Default corner radius
+
+The default corner radius is **4px**. Reach for this first — only use a larger
+radius when a specific spec calls for it, and only on larger surfaces.
+
+### Radius scale
+
+Larger containers use larger radii. The eye expects bigger surfaces to feel
+softer, and aligning containers to the same scale keeps the system coherent.
+
+<RadiusRamp />
+
+### Examples
+
+<ShapeExamples kind="rounded" />
+
+<Divider />
+
+## Pill
+
+A pill is a rounded rectangle with the radius set to **full (9999px)** — the
+long edges collapse into perfect arcs. The shape itself signals "count" or
+"status," so reserve it for elements where that meaning is appropriate.
+
+In practice, the canonical use is the Mention Badge.
+
+<ShapeExamples kind="pill" />
+
+<Divider />
+
+## Circle
+
+Circles are mostly reserved for the **Avatar** component. Keeping users on
+their own shape makes them visually distinct from the rest of the UI — a
+person is never confused for a button or a tag.
+
+A few small status indicators also use the circle: the **Status Badge** and
+the **Unread Badge**.
+
+<ShapeExamples kind="circle" />
+
+<Divider />
+
+## Tokens and implementation
+
+Each radius is exposed as a CSS custom property. For the full token list,
+copy-ready values, and which UI elements bind to which radius, see the
+[Shape specimen page](/foundations/shape/specimen).

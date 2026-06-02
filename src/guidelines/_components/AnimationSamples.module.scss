@@ -1,0 +1,189 @@
+// ============================================================
+// Keyframes — referenced by the motion-matrix demos
+// ============================================================
+@keyframes anim-slide-small {
+  from { transform: translateX(0); }
+  to   { transform: translateX(40px); }
+}
+
+@keyframes anim-slide-large {
+  from { transform: translateX(0); }
+  to   { transform: translateX(160px); }
+}
+
+@keyframes anim-entrance {
+  from { transform: translateX(-320px); opacity: 0; }
+  to   { transform: translateX(0);      opacity: 1; }
+}
+
+@keyframes anim-exit {
+  from { transform: translateX(0);      opacity: 1; }
+  to   { transform: translateX(-320px); opacity: 0; }
+}
+
+// ============================================================
+// Motion matrix — 2x2 grid of duration + easing pairings
+// ============================================================
+.motion-matrix {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-l);
+  margin: var(--spacing-l) 0;
+
+  &__cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__title {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__scenario {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__stage {
+    position: relative;
+    height: 32px;
+    padding: 0 var(--spacing-m);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+
+    // Entrance/exit chips rest at the right edge so a leftward translation
+    // covers the full visible width of the stage.
+    &--entrance,
+    &--exit {
+      justify-content: flex-end;
+    }
+  }
+
+  &__chip {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background-color: var(--button-bg);
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+
+    &--small {
+      animation-name: anim-slide-small;
+    }
+    &--large {
+      animation-name: anim-slide-large;
+    }
+    &--entrance {
+      animation-name: anim-entrance;
+      // Initial paused state should match the keyframe "from".
+      transform: translateX(-320px);
+      opacity: 0;
+    }
+    &--exit {
+      animation-name: anim-exit;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+  }
+
+  &__tokens {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+
+    code {
+      font-family: var(--font-family-mono);
+      font-size: 11px;
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+  }
+}
+
+// ============================================================
+// Popover pattern — scale + fade on open and close
+// ============================================================
+.popover-pattern {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-m);
+  padding: var(--spacing-xxl);
+  margin: var(--spacing-l) 0;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+
+  &__anchor {
+    position: relative;
+  }
+
+  &__panel {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 1;
+    min-width: 200px;
+    padding: var(--spacing-xxs) 0;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background-color: var(--center-channel-bg);
+    box-shadow: var(--elevation-3);
+    transform-origin: top left;
+
+    // Closed state — exit easing applies when --open is removed.
+    transform: scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform var(--duration-quick) var(--ease-exit),
+      opacity var(--duration-quick) var(--ease-exit);
+
+    &--open {
+      transform: scale(1);
+      opacity: 1;
+      pointer-events: auto;
+      // Entrance easing applies when --open is added.
+      transition:
+        transform var(--duration-quick) var(--ease-entrance),
+        opacity var(--duration-quick) var(--ease-entrance);
+    }
+  }
+
+  &__item {
+    padding: var(--spacing-xs) var(--spacing-l);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+    cursor: default;
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+  }
+
+  &__caption {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}

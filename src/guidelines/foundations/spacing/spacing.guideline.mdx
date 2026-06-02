@@ -1,0 +1,43 @@
+Spacing is the connective tissue of the system. Compass works from a single
+base unit and a fixed scale, so every gap, padding value, and small dimension
+shares the same rhythm across components and screens.
+
+<Divider />
+
+## Measurement units
+
+Compass uses a single base unit of measurement: **8px**. Containers, spacing,
+and component dimensions should always resolve to multiples of 8 where
+possible.
+
+For smaller elements where 8px is too coarse — type, icons, badges, and tight
+controls — drop to a **4px** sub-unit. Below that, 2px is reserved for
+hairline cases like checkbox interiors.
+
+<Divider />
+
+## Spacing scale
+
+Compass uses a fixed spacing scale. The scale is designed so that 4px and 8px
+steps are always available, with intermediate values for fine adjustments
+inside dense controls.
+
+<SpacingScale />
+
+<Divider />
+
+## Padding
+
+Padding is the space inside a container — the room around content that keeps
+text and controls off the edges. Padding values come from the same spacing
+scale; the most common choice for a card or panel is **16px**.
+
+<PaddingExample />
+
+<Divider />
+
+## Tokens and implementation
+
+Each spacing step is exposed as a CSS custom property. For the full token
+list and copy-ready values, see the
+[Spacing specimen page](/foundations/spacing/specimen).

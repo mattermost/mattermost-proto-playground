@@ -1,0 +1,176 @@
+// ============================================================
+// Curated UI icon grid
+// ============================================================
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--spacing-s);
+  margin: var(--spacing-xl) 0;
+
+  &__tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-l) var(--spacing-s);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+    transition: border-color var(--duration-quick) var(--ease-transition),
+      background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+      background-color: rgba(var(--center-channel-color-rgb), 0.02);
+    }
+  }
+
+  &__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    color: var(--center-channel-color);
+  }
+
+  &__label {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    text-align: center;
+  }
+}
+
+// ============================================================
+// Outlined vs filled comparison
+// ============================================================
+.style-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-l);
+  margin: var(--spacing-xl) 0;
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+  }
+
+  &__heading {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    line-height: var(--line-height-100);
+  }
+
+  &__row {
+    display: flex;
+    gap: var(--spacing-l);
+    margin-top: var(--spacing-s);
+  }
+
+  &__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-m);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    color: var(--center-channel-color);
+  }
+}
+
+// ============================================================
+// Filetype showcase — small + large rows
+// ============================================================
+.filetypes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  margin: var(--spacing-xl) 0;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: var(--spacing-xl);
+    align-items: center;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__label {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    line-height: var(--line-height-100);
+  }
+
+  &__icons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-l);
+  }
+
+  &__chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--center-channel-color);
+  }
+}
+
+// ============================================================
+// Design principles list
+// ============================================================
+.principle-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--spacing-l);
+  margin: var(--spacing-xl) 0;
+}
+
+.principle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-l) var(--spacing-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+
+  &__title {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__body {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.78);
+  }
+}

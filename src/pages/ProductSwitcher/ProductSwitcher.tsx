@@ -36,7 +36,7 @@ import MessageInput from '@/components/ui/MessageInput';
 import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
 import { Modal } from '@/components/ui/Modal';
-import Post from '@/components/ui/Post/Post';
+import Message from '@/components/ui/Message/Message';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
 import TextArea from '@/components/ui/TextArea/TextArea';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
@@ -234,7 +234,7 @@ function ChannelsView() {
           <div className={styles['product-switcher__messages']}>
             <MessageSeparator type="Date" label="Today" />
 
-            <Post
+            <Message
               avatarSrc={avatarSofia}
               avatarAlt="Sofia Bauer"
               username="Sofia Bauer"
@@ -244,9 +244,9 @@ function ChannelsView() {
                 Morning everyone! Reminder that the Q2 roadmap review is at
                 10:30 today.
               </p>
-            </Post>
+            </Message>
 
-            <Post
+            <Message
               avatarSrc={avatarMarco}
               avatarAlt="Marco Rinaldi"
               username="Marco Rinaldi"
@@ -257,9 +257,9 @@ function ChannelsView() {
                 love a second pair of eyes on the empty states before we
                 cut a release.
               </p>
-            </Post>
+            </Message>
 
-            <Post
+            <Message
               avatarSrc={avatarAikoTan}
               avatarAlt="Aiko Tan"
               username="Aiko Tan"
@@ -275,9 +275,9 @@ function ChannelsView() {
                 ]}
                 showAddReaction
               />
-            </Post>
+            </Message>
 
-            <Post
+            <Message
               avatarSrc={avatarArjunPatel}
               avatarAlt="Arjun Patel"
               username="Arjun Patel"
@@ -286,11 +286,11 @@ function ChannelsView() {
               <p className={styles['product-switcher__post-text']}>
                 Heads up — I'll be out Friday afternoon.
               </p>
-            </Post>
+            </Message>
 
             <MessageSeparator type="New Messages" />
 
-            <Post
+            <Message
               avatarSrc={avatarLeonard}
               avatarAlt="Leonard Riley"
               username="Leonard Riley"
@@ -299,7 +299,7 @@ function ChannelsView() {
               <p className={styles['product-switcher__post-text']}>
                 Design review is bumped to 2:00 PM today.
               </p>
-            </Post>
+            </Message>
           </div>
 
           <div className={styles['product-switcher__message-input']}>
@@ -2587,7 +2587,7 @@ function PostPreviewCard({
           )}
         </div>
       )}
-      <Post
+      <Message
         avatarSrc={post.avatarSrc}
         avatarAlt={post.avatarAlt}
         username={post.username}
@@ -2596,7 +2596,7 @@ function PostPreviewCard({
         <p className={styles['product-switcher__post-preview-body']}>
           {post.body}
         </p>
-      </Post>
+      </Message>
       {post.actions && post.actions.length > 0 && (
         <div className={styles['product-switcher__post-preview-actions']}>
           {post.actions.map((action) => (

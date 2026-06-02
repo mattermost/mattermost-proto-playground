@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -14,7 +15,13 @@ import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import styles from './ChannelHeader.module.scss';
 
-export type ChannelHeaderType = 'Channel' | 'Bot' | 'DM' | 'GM' | 'Threads' | 'Drafts';
+export type ChannelHeaderType =
+  | 'Channel'
+  | 'Bot'
+  | 'DM'
+  | 'GM'
+  | 'Threads'
+  | 'Drafts';
 
 export interface ChannelHeaderProps {
   /** Channel type variant. Default: Channel. */
@@ -38,7 +45,11 @@ export interface ChannelHeaderProps {
   /** Called when the favorite star is clicked. */
   onFavoriteClick?: () => void;
   /** Called when the channel name is clicked. */
-  onNameClick?: () => void;
+  onNameClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** Called when the Start a Call button is clicked. */
+  onCallClick?: () => void;
+  /** Replaces the default Start a Call button when provided. */
+  callButton?: ReactNode;
   /** Called when the channel info button is clicked. */
   onInfoClick?: () => void;
   /** Whether the info button is in a toggled (active) state. */
@@ -58,13 +69,16 @@ export default function ChannelHeader({
   avatarStatus = false,
   onFavoriteClick,
   onNameClick,
+  onCallClick,
+  callButton,
   onInfoClick,
   infoToggled = false,
   className = '',
 }: ChannelHeaderProps) {
   const isSimple = type === 'Threads' || type === 'Drafts';
   const showCallButton = type === 'Channel' || type === 'DM' || type === 'GM';
-  const showMembers = (type === 'Channel' || type === 'GM') && memberCount != null;
+  const showMembers =
+    (type === 'Channel' || type === 'GM') && memberCount != null;
   const showFiles = type === 'Channel' || type === 'DM' || type === 'GM';
   const showChevron = type === 'Channel' || type === 'DM' || type === 'GM';
   const hasDmAvatar = (type === 'DM' || type === 'Bot') && Boolean(avatarSrc);
@@ -73,14 +87,18 @@ export default function ChannelHeader({
     styles['channel-header'],
     isSimple ? styles['channel-header--simple'] : '',
     className,
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   if (isSimple) {
     return (
       <div className={rootClass}>
         <span className={styles['channel-header__title']}>{name}</span>
         {description && (
-          <span className={styles['channel-header__description']}>{description}</span>
+          <span className={styles['channel-header__description']}>
+            {description}
+          </span>
         )}
       </div>
     );
@@ -92,12 +110,20 @@ export default function ChannelHeader({
         <div className={styles['channel-header__top-row']}>
           <IconButton
             size="X-Small"
-            aria-label={favorited ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={
+              favorited ? 'Remove from favorites' : 'Add to favorites'
+            }
             onClick={onFavoriteClick}
             icon={
-              favorited
-                ? <span style={{ color: 'var(--button-bg)', display: 'inline-flex' }}><StarIcon size={18} /></span>
-                : <StarOutlineIcon size={18} />
+              favorited ? (
+                <span
+                  style={{ color: 'var(--button-bg)', display: 'inline-flex' }}
+                >
+                  <StarIcon size={18} />
+                </span>
+              ) : (
+                <StarOutlineIcon size={18} />
+              )
             }
           />
 
@@ -116,7 +142,9 @@ export default function ChannelHeader({
                     type="button"
                     onClick={onNameClick}
                   >
-                    <span className={styles['channel-header__name']}>{name}</span>
+                    <span className={styles['channel-header__name']}>
+                      {name}
+                    </span>
                   </button>
                   <span className={styles['channel-header__bot-tag']}>
                     <LabelTag label="BOT" casing="All Caps" />
@@ -186,16 +214,17 @@ export default function ChannelHeader({
       </div>
 
       <div className={styles['channel-header__right']}>
-        {showCallButton && (
+        {showCallButton && (callButton ?? (
           <Button
             className={styles['channel-header__call-btn']}
             emphasis="Quaternary"
             size="Small"
             leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+            onClick={onCallClick}
           >
             Start a Call
           </Button>
-        )}
+        ))}
         <IconButton
           size="Small"
           aria-label="Channel info"

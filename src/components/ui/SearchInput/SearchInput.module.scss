@@ -35,7 +35,8 @@
   }
 
   // Hide placeholder while the floating label is in the resting position to prevent overlap.
-  &:has(.searchInput__label):not(&--label-floated) .searchInput__input::placeholder {
+  &:has(.searchInput__label):not(&--label-floated)
+    .searchInput__input::placeholder {
     color: transparent;
   }
 

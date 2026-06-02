@@ -3,8 +3,10 @@ import styles from './Spinner.module.scss';
 
 export type SpinnerSize = 10 | 12 | 16 | 20 | 24 | 28 | 32;
 
-export interface SpinnerProps
-  extends Omit<HTMLAttributes<HTMLSpanElement>, 'role'> {
+export interface SpinnerProps extends Omit<
+  HTMLAttributes<HTMLSpanElement>,
+  'role'
+> {
   size?: SpinnerSize;
   inverted?: boolean;
   'aria-label'?: string;
