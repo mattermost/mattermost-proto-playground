@@ -179,6 +179,37 @@ URLs that match an entry in `src/manifests/prototypes.ts` render with **`Prototy
 4. Prefer **`SceneSwitcher`** for segmented tabs; omit **`label`** unless a caption is required; set a clear **`ariaLabel`** on the tablist.
 5. **Do not** pin the scene control with **`position: fixed`** and a viewport **`top`** offset on these pages — that sits relative to the window, not the prototype header, and will look vertically misaligned next to the back button and title.
 
+## Prototype folder structure
+
+Multi-scene prototypes should split code under `src/pages/prototypes/<slug>/` instead of growing a single page file. Follow the same layout as **Outbound Calls** and **Calls — Invite Non-Channel Members**.
+
+### Layout
+
+```
+src/pages/prototypes/<slug>/
+├── <Slug>.tsx                 # Thin orchestrator: scene state, chrome, scene switch
+├── <slug>Data.ts              # Fixture data (optional)
+├── <slug>Scenes.ts            # Scene ids + SceneSwitcher labels (optional)
+├── <Slug>.module.scss         # Shared styles for the prototype (one module is fine)
+├── components/                # Prototype-specific UI reused across scenes
+│   └── …
+└── scenes/                    # One file per scene-switcher entry point
+    └── …
+```
+
+### What goes where
+
+- **Root page component** — Owns `usePrototypeChrome()` / `SceneSwitcher`, active scene id, and any state that must persist when switching scenes (e.g. a compliance toggle). Renders the matching scene component; keep it short.
+- **`scenes/`** — Top-level views tied to the scene switcher (e.g. `WidgetScene`, `RingScene`). Each scene owns its local state and layout. If two switcher tabs share almost all state and UI (e.g. widget vs popout), one scene file with a `scene` prop is fine — do not duplicate handlers across files.
+- **`components/`** — Blocks used by more than one scene, or large enough to clutter a scene file (modals, picker bodies, debug rails, shared shells). Do **not** put design-system components here — import those from `src/components/`.
+- **Root-level helpers** — Data fixtures, scene config, channel-sidebar models, and shared types/constants that scenes and components both import.
+
+### When to skip subfolders
+
+Single-scene or very small prototypes can stay flat (one page file + optional module). Add `scenes/` and `components/` once the page grows past roughly one screen of JSX or you introduce a second scene.
+
+Use **`scenes/`**, not `views/` — that matches existing prototypes in this repo.
+
 ## Animation: easing and duration
 
 Always use the animation tokens from `tokens.scss` — never hard-code durations or easing keywords directly.
