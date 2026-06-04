@@ -1,20 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentType, ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import ProductChannelsIcon from '@mattermost/compass-icons/components/product-channels';
 import ProductBoardsIcon from '@mattermost/compass-icons/components/product-boards';
 import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
+import CodeTagsIcon from '@mattermost/compass-icons/components/code-tags';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import DownloadOutlineIcon from '@mattermost/compass-icons/components/download-outline';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-outline';
+import BookOutlineIcon from '@mattermost/compass-icons/components/book-outline';
 import TextBoxOutlineIcon from '@mattermost/compass-icons/components/text-box-outline';
-import RobotHappyIcon from '@mattermost/compass-icons/components/robot-happy';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
-import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
@@ -31,13 +33,21 @@ import ChannelsSidebar from '@/components/ui/ChannelsSidebar/ChannelsSidebar';
 import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
+import LabelTag, { type LabelTagType } from '@/components/ui/LabelTag/LabelTag';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import MessageInput from '@/components/ui/MessageInput';
 import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
 import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
 import { Modal } from '@/components/ui/Modal';
 import Message from '@/components/ui/Message/Message';
+import messageStyles from '@/components/ui/Message/Message.module.scss';
+import RightSidebar, {
+  RightSidebarHeader,
+} from '@/components/ui/RightSidebar';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
+import ThreadListItem from '@/components/ui/ThreadListItem/ThreadListItem';
+import type { UserAvatarGroupItem } from '@/components/ui/UserAvatarGroup/UserAvatarGroup';
 import TextArea from '@/components/ui/TextArea/TextArea';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
@@ -52,6 +62,41 @@ import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
 import styles from './ProductSwitcher.module.scss';
+import {
+  AgentCreateView,
+  AgentsManageView,
+  AutomationCreateView,
+  AutomationsManageView,
+  CustomPromptFormView,
+  CustomPromptsManageView,
+  DEFAULT_AUTOMATIONS,
+  DEFAULT_CUSTOM_PROMPTS,
+  DEFAULT_SUPER_AGENTS,
+  MattyCodeView,
+  MATTY_CODE_IN_PROGRESS,
+  WikiCreateView,
+  type AgentsIntent,
+  type AgentsPanel,
+  type ChannelAutomation,
+  type CustomPrompt,
+  type SuperAgent,
+  type WikiPageDraft,
+} from './productSwitcherAiFeatures';
+
+const PRODUCT_VIEW_PARAM = 'view';
+const VALID_PRODUCT_VIEWS = new Set<ProductView>([
+  'channels',
+  'boards',
+  'playbooks',
+  'agents',
+]);
+
+function readProductView(param: string | null): ProductView {
+  if (param && VALID_PRODUCT_VIEWS.has(param as ProductView)) {
+    return param as ProductView;
+  }
+  return 'channels';
+}
 
 // ----------------------------------------------------------------
 // Default Mattermost layout + Product Switcher menu (top-left).
@@ -75,11 +120,30 @@ const SWITCHER_PRODUCTS: SwitcherEntry[] = [
 ];
 
 export default function ProductSwitcher() {
-  const [view, setView] = useState<ProductView>('channels');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view = readProductView(searchParams.get(PRODUCT_VIEW_PARAM));
   const [menuOpen, setMenuOpen] = useState(false);
+  const [automations, setAutomations] =
+    useState<ChannelAutomation[]>(DEFAULT_AUTOMATIONS);
+  const [agentsIntent, setAgentsIntent] = useState<AgentsIntent>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const { mounted: menuMounted, visible: menuVisible } =
     usePopoverTransition(menuOpen);
+
+  const setView = (next: ProductView) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (next === 'channels') {
+          params.delete(PRODUCT_VIEW_PARAM);
+        } else {
+          params.set(PRODUCT_VIEW_PARAM, next);
+        }
+        return params;
+      },
+      { replace: true }
+    );
+  };
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -191,7 +255,12 @@ export default function ProductSwitcher() {
 
         <div className={styles['product-switcher__outer-panel']}>
           {view === 'agents' ? (
-            <AgentsView />
+            <AgentsView
+              intent={agentsIntent}
+              onIntentHandled={() => setAgentsIntent(null)}
+              automations={automations}
+              onAutomationsChange={setAutomations}
+            />
           ) : (
             <ChannelsView />
           )}
@@ -300,6 +369,28 @@ function ChannelsView() {
                 Design review is bumped to 2:00 PM today.
               </p>
             </Message>
+
+            <Message
+              avatarSrc={avatarDanielle}
+              avatarAlt="Matty"
+              username="Matty"
+              timestamp="11:04 AM"
+              isBot
+              botLabel="BOT"
+            >
+              <p className={styles['product-switcher__post-text']}>
+                Matty Code finished{' '}
+                <span className={styles['product-switcher__post-emphasis']}>
+                  MM-48102
+                </span>{' '}
+                — product switcher focus restore is ready for review.{' '}
+                <a href="#" className={styles['product-switcher__inline-link']}>
+                  mattermost/mattermost-webapp#15903
+                </a>{' '}
+                includes before/after screenshots and passed the CodeRabbit
+                review pass.
+              </p>
+            </Message>
           </div>
 
           <div className={styles['product-switcher__message-input']}>
@@ -321,20 +412,6 @@ interface AISidebarItem {
   /** When set, clicking this item opens that briefing conversation. */
   opens?: BriefingId;
 }
-
-const SUPER_AGENTS: AISidebarItem[] = [
-  { label: 'Create Agent', icon: AccountPlusOutlineIcon },
-  { label: 'All Agents', icon: AccountMultipleOutlineIcon },
-  { label: 'My Agents', icon: AccountOutlineIcon },
-  { label: 'Activity', icon: ClockOutlineIcon },
-];
-
-const CUSTOM_PROMPTS: AISidebarItem[] = [
-  { label: 'Daily focus brief', icon: BookmarkOutlineIcon },
-  { label: 'PR review checklist', icon: BookmarkOutlineIcon },
-  { label: 'Meeting summariser', icon: BookmarkOutlineIcon },
-  { label: 'Weekly retrospective', icon: BookmarkOutlineIcon },
-];
 
 const RECENT_CHATS: AISidebarItem[] = [
   { label: 'UI Redesign', icon: MessageTextOutlineIcon, opens: 'tasks' },
@@ -396,8 +473,18 @@ interface CustomRecap {
   tool: RecapTool;
 }
 
-function AgentsView() {
-  const [agentsTab, setAgentsTab] = useState<'ask' | 'agents'>('ask');
+function AgentsView({
+  intent,
+  onIntentHandled,
+  automations,
+  onAutomationsChange,
+}: {
+  intent: AgentsIntent | null;
+  onIntentHandled: () => void;
+  automations: ChannelAutomation[];
+  onAutomationsChange: (next: ChannelAutomation[]) => void;
+}) {
+  const [agentsPanel, setAgentsPanel] = useState<AgentsPanel>('recaps');
   const [activeId, setActiveId] = useState<BriefingId | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const messageCounter = useRef(0);
@@ -415,11 +502,48 @@ function AgentsView() {
 
   const [playbookOpen, setPlaybookOpen] = useState(false);
 
+  const [attentionInboxOpen, setAttentionInboxOpen] = useState(false);
   const [createRecapOpen, setCreateRecapOpen] = useState(false);
   const [newRecapPrompt, setNewRecapPrompt] = useState('');
   const [newRecapTool, setNewRecapTool] = useState<RecapTool>('github');
   const [customRecaps, setCustomRecaps] = useState<CustomRecap[]>([]);
   const [activeRecapId, setActiveRecapId] = useState<string | null>(null);
+  const [automationPrefill, setAutomationPrefill] = useState<string | undefined>();
+  const [promptFormTarget, setPromptFormTarget] = useState<'new' | string | null>(
+    null
+  );
+  const [activeMattyCodeTaskId, setActiveMattyCodeTaskId] = useState<string | null>(
+    null
+  );
+  const [superAgents, setSuperAgents] = useState<SuperAgent[]>(
+    DEFAULT_SUPER_AGENTS
+  );
+  const [customPrompts, setCustomPrompts] = useState<CustomPrompt[]>(
+    DEFAULT_CUSTOM_PROMPTS
+  );
+
+  useEffect(() => {
+    if (!intent) return;
+    if (intent.type === 'create-automation') {
+      setPlaybookOpen(false);
+      setActiveId(null);
+      setActiveRecapId(null);
+      setMessages([]);
+      setAutomationPrefill(intent.prefill);
+      setAgentsPanel('automation-create');
+      onIntentHandled();
+      return;
+    }
+    if (intent.type === 'open-matty-code') {
+      setPlaybookOpen(false);
+      setActiveId(null);
+      setActiveRecapId(null);
+      setMessages([]);
+      setActiveMattyCodeTaskId(null);
+      setAgentsPanel('matty-code');
+      onIntentHandled();
+    }
+  }, [intent, onIntentHandled]);
 
   const activeRecap = useMemo(
     () => customRecaps.find((r) => r.id === activeRecapId) ?? null,
@@ -496,6 +620,8 @@ function AgentsView() {
     setPlaybookOpen(false);
     setActiveId(null);
     setActiveRecapId(recap.id);
+    setPromptFormTarget(null);
+    setAgentsPanel('custom-prompts');
   };
 
   const openRecapDetail = (id: string) => {
@@ -503,6 +629,8 @@ function AgentsView() {
     setActiveId(null);
     setMessages([]);
     setActiveRecapId(id);
+    setPromptFormTarget(null);
+    setAgentsPanel('custom-prompts');
   };
 
   useEffect(() => {
@@ -524,6 +652,7 @@ function AgentsView() {
       setPlaybookOpen(true);
       setActiveId(null);
       setActiveRecapId(null);
+      setAgentsPanel('create');
       return;
     }
     // 'board' is a no-op in this prototype.
@@ -544,17 +673,23 @@ function AgentsView() {
     messageCounter.current = 0;
     setPlaybookOpen(false);
     setActiveRecapId(null);
+    setPromptFormTarget(null);
     setActiveId(id);
-    setMessages([
-      {
-        id: nextId('a'),
-        role: 'assistant',
-        text: convo.starter.text,
-        list: convo.starter.list,
-        posts: convo.starter.posts,
-        chips: convo.starter.chips,
-      },
-    ]);
+    setAgentsPanel('recaps');
+    setMessages(
+      id === 'mentions'
+        ? []
+        : [
+            {
+              id: nextId('a'),
+              role: 'assistant',
+              text: convo.starter.text,
+              list: convo.starter.list,
+              posts: convo.starter.posts,
+              chips: convo.starter.chips,
+            },
+          ]
+    );
   };
 
   const handleChip = (chip: QuickReply) => {
@@ -575,12 +710,185 @@ function AgentsView() {
     ]);
   };
 
-  const goHome = () => {
+  const goToRecaps = () => {
     setActiveId(null);
     setMessages([]);
     setPlaybookOpen(false);
     setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setActiveMattyCodeTaskId(null);
+    setAttentionInboxOpen(false);
+    setAgentsPanel('recaps');
   };
+
+  const openCreatePanel = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setActiveMattyCodeTaskId(null);
+    setMessages([]);
+    setAgentsPanel('create');
+  };
+
+  const handleCreateCardClick = (id: string) => {
+    if (id === 'agent') {
+      openAgentCreate();
+      return;
+    }
+    if (id === 'wikis') {
+      openWikiCreate();
+      return;
+    }
+    if (id === 'playbook') {
+      handleSelectCreate('playbook');
+      return;
+    }
+    if (id === 'board') {
+      handleSelectCreate('board');
+    }
+  };
+
+  const openAutomationsManage = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setMessages([]);
+    setAgentsPanel('automations');
+  };
+
+  const openAgentsManage = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setActiveMattyCodeTaskId(null);
+    setMessages([]);
+    setAgentsPanel('agents');
+  };
+
+  const openAgentCreate = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setActiveMattyCodeTaskId(null);
+    setMessages([]);
+    setAgentsPanel('agent-create');
+  };
+
+  const handleAgentCreated = (agent: SuperAgent) => {
+    setSuperAgents((prev) => [...prev, agent]);
+    setAgentsPanel('agents');
+  };
+
+  const openMattyCode = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setActiveMattyCodeTaskId(null);
+    setMessages([]);
+    setAgentsPanel('matty-code');
+  };
+
+  const openMattyCodeTask = (taskId: string) => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setMessages([]);
+    setActiveMattyCodeTaskId(taskId);
+    setAgentsPanel('matty-code');
+  };
+
+  const openAutomationCreate = (prefill?: string) => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setMessages([]);
+    setAutomationPrefill(prefill);
+    setAgentsPanel('automation-create');
+  };
+
+  const handleAutomationCreated = (automation: ChannelAutomation) => {
+    onAutomationsChange([...automations, automation]);
+    setAutomationPrefill(undefined);
+    setAgentsPanel('automations');
+  };
+
+  const openWikiCreate = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setActiveMattyCodeTaskId(null);
+    setMessages([]);
+    setAgentsPanel('wiki-create');
+  };
+
+  const handleWikiCreated = (_wiki: WikiPageDraft) => {
+    openCreatePanel();
+  };
+
+  const openCustomPromptsManage = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setPromptFormTarget(null);
+    setMessages([]);
+    setAgentsPanel('custom-prompts');
+  };
+
+  const openCustomPromptCreate = () => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setMessages([]);
+    setAgentsPanel('custom-prompts');
+    setPromptFormTarget('new');
+  };
+
+  const openCustomPromptDetail = (id: string) => {
+    setPlaybookOpen(false);
+    setActiveId(null);
+    setActiveRecapId(null);
+    setMessages([]);
+    setAgentsPanel('custom-prompts');
+    setPromptFormTarget(id);
+  };
+
+  const handleCustomPromptSave = (updated: CustomPrompt) => {
+    setCustomPrompts((prev) =>
+      prev.map((prompt) => (prompt.id === updated.id ? updated : prompt))
+    );
+  };
+
+  const handleCustomPromptFormSave = (prompt: CustomPrompt) => {
+    if (promptFormTarget === 'new') {
+      setCustomPrompts((prev) => [...prev, prompt]);
+    } else {
+      handleCustomPromptSave(prompt);
+    }
+    setPromptFormTarget(null);
+  };
+
+  const editingPrompt = useMemo(
+    () =>
+      promptFormTarget && promptFormTarget !== 'new'
+        ? customPrompts.find((prompt) => prompt.id === promptFormTarget) ?? null
+        : null,
+    [customPrompts, promptFormTarget]
+  );
+
+  const isRecapsHome =
+    agentsPanel === 'recaps' &&
+    activeId === null &&
+    !playbookOpen &&
+    !activeRecapId &&
+    !promptFormTarget;
 
   return (
     <>
@@ -645,106 +953,157 @@ function AgentsView() {
             type="button"
             className={[
               styles['product-switcher__ai-item'],
-              activeId === null && !playbookOpen && !activeRecapId
+              agentsPanel === 'create' && !playbookOpen
                 ? styles['product-switcher__ai-item--active']
                 : '',
-              styles['product-switcher__ai-item--accent'],
+              agentsPanel === 'create' && !playbookOpen
+                ? styles['product-switcher__ai-item--accent']
+                : '',
             ]
               .filter(Boolean)
               .join(' ')}
-            onClick={goHome}
+            onClick={openCreatePanel}
           >
             <span className={styles['product-switcher__ai-item-icon']}>
               <Icon size="16" glyph={<CreationOutlineIcon />} />
             </span>
             <span className={styles['product-switcher__ai-item-label']}>
-              Ask or Create
+              Create
+            </span>
+          </button>
+          <button
+            type="button"
+            className={[
+              styles['product-switcher__ai-item'],
+              isRecapsHome ? styles['product-switcher__ai-item--active'] : '',
+              isRecapsHome ? styles['product-switcher__ai-item--accent'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={goToRecaps}
+          >
+            <span className={styles['product-switcher__ai-item-icon']}>
+              <Icon size="16" glyph={<TextBoxOutlineIcon />} />
+            </span>
+            <span className={styles['product-switcher__ai-item-label']}>
+              Recaps
             </span>
           </button>
         </div>
 
         <div className={styles['product-switcher__ai-section-label']}>
-          Super Agents
+          Agents
         </div>
         <div className={styles['product-switcher__ai-list']}>
-          {SUPER_AGENTS.map(({ label, icon: ItemIcon }) => (
-            <button
-              key={label}
-              type="button"
-              className={styles['product-switcher__ai-item']}
-            >
-              <span className={styles['product-switcher__ai-item-icon']}>
-                <Icon size="16" glyph={<ItemIcon />} />
-              </span>
-              <span className={styles['product-switcher__ai-item-label']}>
-                {label}
-              </span>
-            </button>
-          ))}
+          <button
+            type="button"
+            className={[
+              styles['product-switcher__ai-item'],
+              agentsPanel === 'custom-prompts' ||
+              promptFormTarget ||
+              activeRecapId
+                ? styles['product-switcher__ai-item--active']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={openCustomPromptsManage}
+          >
+            <span className={styles['product-switcher__ai-item-icon']}>
+              <Icon size="16" glyph={<BookmarkOutlineIcon />} />
+            </span>
+            <span className={styles['product-switcher__ai-item-label']}>
+              Custom prompts
+            </span>
+          </button>
+          <button
+            type="button"
+            className={[
+              styles['product-switcher__ai-item'],
+              agentsPanel === 'automations' || agentsPanel === 'automation-create'
+                ? styles['product-switcher__ai-item--active']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={openAutomationsManage}
+          >
+            <span className={styles['product-switcher__ai-item-icon']}>
+              <Icon size="16" glyph={<LightningBoltOutlineIcon />} />
+            </span>
+            <span className={styles['product-switcher__ai-item-label']}>
+              Automations
+            </span>
+          </button>
+          <button
+            type="button"
+            className={[
+              styles['product-switcher__ai-item'],
+              agentsPanel === 'agents' || agentsPanel === 'agent-create'
+                ? styles['product-switcher__ai-item--active']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={openAgentsManage}
+          >
+            <span className={styles['product-switcher__ai-item-icon']}>
+              <Icon size="16" glyph={<AccountMultipleOutlineIcon />} />
+            </span>
+            <span className={styles['product-switcher__ai-item-label']}>
+              All agents
+            </span>
+          </button>
         </div>
 
         <div className={styles['product-switcher__ai-section-label']}>
-          Custom Prompts
+          Matty Code
         </div>
         <div className={styles['product-switcher__ai-list']}>
-          {CUSTOM_PROMPTS.map(({ label, icon: ItemIcon }) => (
+          <button
+            type="button"
+            className={[
+              styles['product-switcher__ai-item'],
+              agentsPanel === 'matty-code' && !activeMattyCodeTaskId
+                ? styles['product-switcher__ai-item--active']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={openMattyCode}
+          >
+            <span className={styles['product-switcher__ai-item-icon']}>
+              <Icon size="16" glyph={<CodeTagsIcon />} />
+            </span>
+            <span className={styles['product-switcher__ai-item-label']}>
+              Overview
+            </span>
+          </button>
+          {MATTY_CODE_IN_PROGRESS.map((task) => (
             <button
-              key={label}
+              key={task.id}
               type="button"
-              className={styles['product-switcher__ai-item']}
+              className={[
+                styles['product-switcher__ai-item'],
+                agentsPanel === 'matty-code' &&
+                activeMattyCodeTaskId === task.id
+                  ? styles['product-switcher__ai-item--active']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => openMattyCodeTask(task.id)}
+              aria-label={`${task.ticket}: ${task.title}`}
             >
               <span className={styles['product-switcher__ai-item-icon']}>
-                <Icon size="16" glyph={<ItemIcon />} />
+                <Icon size="16" glyph={<ClockOutlineIcon />} />
               </span>
               <span className={styles['product-switcher__ai-item-label']}>
-                {label}
+                {task.ticket}
               </span>
             </button>
           ))}
         </div>
-
-        {customRecaps.length > 0 && (
-          <>
-            <div className={styles['product-switcher__ai-section-label']}>
-              Recaps
-            </div>
-            <div className={styles['product-switcher__ai-list']}>
-              {customRecaps.map((recap) => {
-                const meta =
-                  RECAP_TOOLS.find((t) => t.id === recap.tool) ?? RECAP_TOOLS[0];
-                const isActive = activeRecapId === recap.id;
-                return (
-                  <button
-                    key={recap.id}
-                    type="button"
-                    className={[
-                      styles['product-switcher__ai-item'],
-                      isActive
-                        ? styles['product-switcher__ai-item--active']
-                        : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => openRecapDetail(recap.id)}
-                  >
-                    <span
-                      className={[
-                        styles['product-switcher__ai-item-icon'],
-                        styles['product-switcher__ai-item-icon--brand'],
-                      ].join(' ')}
-                      aria-hidden
-                    >
-                      {meta.glyph}
-                    </span>
-                    <span className={styles['product-switcher__ai-item-label']}>
-                      {recap.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
 
         <div className={styles['product-switcher__ai-section-label']}>
           Recent Chats
@@ -779,17 +1138,107 @@ function AgentsView() {
 
       <div className={styles['product-switcher__inner-panel']}>
         {playbookOpen ? (
-          <PlaybookGeneratorView onBack={() => setPlaybookOpen(false)} />
+          <PlaybookGeneratorView
+            onBack={() => {
+              setPlaybookOpen(false);
+              setAgentsPanel('create');
+            }}
+          />
         ) : activeRecap ? (
-          <RecapDetailView recap={activeRecap} onBack={goHome} />
+          <RecapDetailView
+            recap={activeRecap}
+            onBack={
+              agentsPanel === 'custom-prompts'
+                ? openCustomPromptsManage
+                : goToRecaps
+            }
+          />
+        ) : promptFormTarget && (promptFormTarget === 'new' || editingPrompt) ? (
+          <CustomPromptFormView
+            mode={promptFormTarget === 'new' ? 'create' : 'edit'}
+            prompt={editingPrompt ?? undefined}
+            onClose={() => setPromptFormTarget(null)}
+            onSave={handleCustomPromptFormSave}
+          />
+        ) : agentsPanel === 'custom-prompts' ? (
+          <CustomPromptsManageView
+            prompts={customPrompts}
+            recaps={customRecaps.map((recap) => {
+              const meta =
+                RECAP_TOOLS.find((t) => t.id === recap.tool) ?? RECAP_TOOLS[0];
+              return {
+                id: recap.id,
+                label: recap.label,
+                leadingVisual: meta.glyph,
+              };
+            })}
+            onBack={goToRecaps}
+            onCreatePrompt={openCustomPromptCreate}
+            onSelectPrompt={openCustomPromptDetail}
+            onSelectRecap={openRecapDetail}
+          />
+        ) : agentsPanel === 'matty-code' ? (
+          <MattyCodeView
+            taskId={activeMattyCodeTaskId}
+            onBack={goToRecaps}
+            onBackToOverview={() => setActiveMattyCodeTaskId(null)}
+            onSelectTask={openMattyCodeTask}
+          />
+        ) : agentsPanel === 'automations' ? (
+          <AutomationsManageView
+            automations={automations}
+            onAutomationsChange={onAutomationsChange}
+            onBack={goToRecaps}
+            onCreateAutomation={() => openAutomationCreate()}
+          />
+        ) : agentsPanel === 'agent-create' ? (
+          <AgentCreateView
+            onBack={openAgentsManage}
+            onCreated={handleAgentCreated}
+          />
+        ) : agentsPanel === 'agents' ? (
+          <AgentsManageView
+            agents={superAgents}
+            onBack={goToRecaps}
+            onCreateAgent={openAgentCreate}
+          />
+        ) : agentsPanel === 'automation-create' ? (
+          <AutomationCreateView
+            prefill={automationPrefill}
+            onBack={() => {
+              setAutomationPrefill(undefined);
+              openAutomationsManage();
+            }}
+            onSave={handleAutomationCreated}
+          />
+        ) : agentsPanel === 'wiki-create' ? (
+          <WikiCreateView
+            onBack={openCreatePanel}
+            onSave={handleWikiCreated}
+          />
+        ) : agentsPanel === 'recaps' && attentionInboxOpen ? (
+          <AttentionSeeAllView
+            onBack={() => setAttentionInboxOpen(false)}
+            onOpenBriefing={(id) => {
+              setAttentionInboxOpen(false);
+              openConversation(id);
+            }}
+          />
+        ) : activeConversation && activeId === 'mentions' ? (
+          <RepliesNeededView
+            conversation={activeConversation}
+            messages={messages}
+            onBack={goToRecaps}
+            onChip={handleChip}
+          />
         ) : activeConversation ? (
           <ConversationView
             conversation={activeConversation}
             messages={messages}
-            onBack={goHome}
+            onBack={goToRecaps}
             onChip={handleChip}
           />
-        ) : (
+        ) : agentsPanel === 'recaps' ? (
         <>
         <Button
           className={styles['product-switcher__recap-trigger']}
@@ -803,57 +1252,15 @@ function AgentsView() {
         <div className={styles['product-switcher__agents-center']}>
           <div className={styles['product-switcher__brand']}>
             <span className={styles['product-switcher__brand-icon']} aria-hidden>
-              <Icon size="24" glyph={<CreationOutlineIcon />} />
+              <Icon size="24" glyph={<TextBoxOutlineIcon />} />
             </span>
             <span className={styles['product-switcher__brand-name']}>
-              Agents
+              Recaps
             </span>
-          </div>
-
-          <div className={styles['product-switcher__agents-tabs']}>
-            <div
-              className={styles['product-switcher__agents-tab-list']}
-              role="tablist"
-            >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={agentsTab === 'ask'}
-                className={[
-                  styles['product-switcher__agents-tab'],
-                  agentsTab === 'ask'
-                    ? styles['product-switcher__agents-tab--active']
-                    : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                onClick={() => setAgentsTab('ask')}
-              >
-                <Icon size="12" glyph={<CreationOutlineIcon />} />
-                Ask
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={agentsTab === 'agents'}
-                className={[
-                  styles['product-switcher__agents-tab'],
-                  agentsTab === 'agents'
-                    ? styles['product-switcher__agents-tab--active']
-                    : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                onClick={() => setAgentsTab('agents')}
-              >
-                <Icon size="12" glyph={<RobotHappyIcon />} />
-                Agents
-              </button>
-            </div>
           </div>
 
           <div className={styles['product-switcher__agents-input-wrapper']}>
-            <MessageInput placeholder="From quick questions to big projects, I'm here to help you get it done." />
+            <MessageInput placeholder="Ask about today's recap or what needs your attention…" />
           </div>
 
           <div className={styles['product-switcher__for-you']}>
@@ -866,7 +1273,11 @@ function AgentsView() {
                   Here's what needs your attention today
                 </span>
               </div>
-              <Button emphasis="Tertiary" size="Small">
+              <Button
+                emphasis="Tertiary"
+                size="Small"
+                onClick={() => setAttentionInboxOpen(true)}
+              >
                 See all
               </Button>
             </div>
@@ -883,7 +1294,49 @@ function AgentsView() {
           </div>
         </div>
         </>
-        )}
+        ) : agentsPanel === 'create' ? (
+        <div className={styles['product-switcher__agents-center']}>
+          <div className={styles['product-switcher__brand']}>
+            <span className={styles['product-switcher__brand-icon']} aria-hidden>
+              <Icon size="24" glyph={<CreationOutlineIcon />} />
+            </span>
+            <span className={styles['product-switcher__brand-name']}>
+              Create
+            </span>
+          </div>
+
+          <div className={styles['product-switcher__agents-input-wrapper']}>
+            <MessageInput placeholder="Describe what you want to create…" />
+          </div>
+
+          <div className={styles['product-switcher__for-you']}>
+            <div className={styles['product-switcher__for-you-header']}>
+              <div className={styles['product-switcher__for-you-heading']}>
+                <span className={styles['product-switcher__for-you-title']}>
+                  Start something new
+                </span>
+                <span className={styles['product-switcher__for-you-subtitle']}>
+                  Pick a template or describe it in the input above
+                </span>
+              </div>
+            </div>
+
+            <div className={styles['product-switcher__agents-cards']}>
+              {CREATE_ITEMS.map((item) => (
+                <AgentCard
+                  key={item.id}
+                  icon={item.icon}
+                  tone={item.tone}
+                  eyebrow={item.eyebrow}
+                  title={item.title}
+                  subtitle={item.subtitle}
+                  onClick={() => handleCreateCardClick(item.id)}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        ) : null}
       </div>
 
       {recapModalOpen && (
@@ -1189,6 +1642,258 @@ const BRIEFING_ITEMS: BriefingItem[] = [
     title: 'Approve pricing tier',
     subtitle: 'Blocking #product release',
     sources: ['channels', 'boards'],
+  },
+];
+
+type AttentionRequestTag =
+  | 'Mention'
+  | 'Reply needed'
+  | 'Approval requested'
+  | 'Task due'
+  | 'Meeting soon'
+  | 'Decision needed'
+  | 'Blocked by you';
+
+interface AttentionItem {
+  id: string;
+  briefingId: BriefingId;
+  requestTag: AttentionRequestTag;
+  tagType: LabelTagType;
+  authorName: string;
+  channelLabel: string;
+  previewText: string;
+  timestamp: string;
+  threadTitle?: string;
+  replyCount?: number;
+  badge?: 'Mention' | 'Unread' | 'None';
+  mentionCount?: number;
+  participants?: UserAvatarGroupItem[];
+  detailTitle: string;
+  detailBody: string;
+  detailList?: DetailItem[];
+  openLabel: string;
+}
+
+const ATTENTION_ITEMS: AttentionItem[] = [
+  {
+    id: 'mention-sofia',
+    briefingId: 'mentions',
+    requestTag: 'Reply needed',
+    tagType: 'Info',
+    authorName: 'Sofia Bauer',
+    channelLabel: formatChannelLabel('town-square'),
+    previewText:
+      '@leonard reminder that the Q2 roadmap review is at 10:30 today. Agenda is in the thread below.',
+    timestamp: '9:02 AM',
+    replyCount: 7,
+    badge: 'Mention',
+    mentionCount: 1,
+    participants: [{ key: 'sofia', name: 'Sofia Bauer', src: avatarSofia }],
+    detailTitle: 'Reply to Sofia',
+    detailBody:
+      'Sofia pinged you about the Q2 roadmap review at 10:30. No decisions pending — a quick acknowledgment is enough.',
+    openLabel: 'Open replies needed',
+  },
+  {
+    id: 'mention-marco',
+    briefingId: 'mentions',
+    requestTag: 'Mention',
+    tagType: 'Info Dim',
+    authorName: 'Marco Rinaldi',
+    channelLabel: formatChannelLabel('town-square'),
+    previewText:
+      '@leonard just pushed the updated onboarding flow to staging — would love a second pair of eyes on the empty states.',
+    timestamp: '9:14 AM',
+    replyCount: 4,
+    badge: 'Mention',
+    mentionCount: 1,
+    participants: [{ key: 'marco', name: 'Marco Rinaldi', src: avatarMarco }],
+    detailTitle: "Review Marco's staging build",
+    detailBody:
+      'Marco needs design and copy feedback on onboarding empty states before the release cut.',
+    openLabel: 'Open replies needed',
+  },
+  {
+    id: 'mention-aiko',
+    briefingId: 'mentions',
+    requestTag: 'Reply needed',
+    tagType: 'Info',
+    authorName: 'Aiko Tan',
+    channelLabel: formatChannelLabel('design'),
+    previewText:
+      '@leonard can you take a look at the empty state copy when you have a sec? I think the tone is off.',
+    timestamp: 'Yesterday',
+    replyCount: 2,
+    badge: 'Mention',
+    mentionCount: 1,
+    participants: [{ key: 'aiko', name: 'Aiko Tan', src: avatarAikoTan }],
+    detailTitle: 'Empty state copy review',
+    detailBody:
+      'Aiko wants a second opinion on the no-channels-yet screen before she ships the update.',
+    openLabel: 'Open replies needed',
+  },
+  {
+    id: 'task-ui-redesign',
+    briefingId: 'tasks',
+    requestTag: 'Task due',
+    tagType: 'Warning',
+    authorName: 'Design team',
+    channelLabel: 'JIRA',
+    threadTitle: 'Review UI redesign',
+    previewText: 'Due today at 5 PM · 12 screens updated since your last pass.',
+    timestamp: 'Due 5 PM',
+    replyCount: 0,
+    participants: [],
+    detailTitle: 'Review UI redesign',
+    detailBody:
+      'Four open comments from Aiko and Sofia still need a reply or resolution before you can ship the review.',
+    detailList: [
+      {
+        primary: 'Onboarding (5 screens)',
+        secondary: 'New empty states and reordered welcome flow.',
+      },
+      {
+        primary: 'Settings (4 screens)',
+        secondary: 'Notification grouping and simplified account section.',
+      },
+    ],
+    openLabel: 'Open tasks due today',
+  },
+  {
+    id: 'task-retro',
+    briefingId: 'tasks',
+    requestTag: 'Task due',
+    tagType: 'Warning',
+    authorName: 'Leonard Riley',
+    channelLabel: 'NOTES',
+    threadTitle: 'Q2 retro notes',
+    previewText: 'Due today at 5 PM · outline ready in your drafts.',
+    timestamp: 'Due 5 PM',
+    replyCount: 0,
+    participants: [],
+    detailTitle: 'Finish Q2 retro notes',
+    detailBody:
+      'Your outline needs three wins, three risks, and next steps before you share with the team.',
+    openLabel: 'Open tasks due today',
+  },
+  {
+    id: 'standup',
+    briefingId: 'standup',
+    requestTag: 'Meeting soon',
+    tagType: 'Success',
+    authorName: 'Playbooks',
+    channelLabel: 'ENGINEERING',
+    threadTitle: 'Engineering standup',
+    previewText: 'Starts in 25 minutes · roadmap review follows at 10:30 AM.',
+    timestamp: 'In 25 min',
+    replyCount: 0,
+    participants: [],
+    detailTitle: 'Engineering standup',
+    detailBody:
+      "Matty assembled standup notes from yesterday's threads and your open work for today.",
+    detailList: [
+      {
+        primary: 'Today',
+        secondary:
+          'Pricing tier decision in #product, Q2 roadmap review, finish UI redesign review.',
+      },
+      {
+        primary: 'Blockers',
+        secondary:
+          'Waiting on design review from Aiko on 4 empty states before merging onboarding flow.',
+      },
+    ],
+    openLabel: 'Open standup prep',
+  },
+  {
+    id: 'decision-pricing',
+    briefingId: 'decision',
+    requestTag: 'Approval requested',
+    tagType: 'Danger',
+    authorName: 'Sasha Cole',
+    channelLabel: formatChannelLabel('product'),
+    previewText:
+      'Mid-tier Team plan at $12/user needs your call before Friday — blocking the Q2 release branch.',
+    timestamp: '3 days ago',
+    replyCount: 3,
+    participants: [{ key: 'sasha', name: 'Sasha Cole', src: avatarDariusCole }],
+    detailTitle: 'Approve pricing tier',
+    detailBody:
+      'You are the tiebreaker on the Team plan proposal. The release is blocked until this is decided.',
+    detailList: [
+      {
+        primary: 'Where it stands',
+        secondary: '2 in favor, 1 wants more info, you have not weighed in yet.',
+      },
+      {
+        primary: 'Recommendation',
+        secondary:
+          'Approve with a follow-up note clarifying enterprise tier limits.',
+      },
+    ],
+    openLabel: 'Open decision',
+  },
+  {
+    id: 'blocker-onboarding',
+    briefingId: 'standup',
+    requestTag: 'Blocked by you',
+    tagType: 'Warning',
+    authorName: 'Marco Rinaldi',
+    channelLabel: formatChannelLabel('town-square'),
+    threadTitle: 'Onboarding flow release',
+    previewText:
+      'Marco is waiting on your empty-state review before merging to main.',
+    timestamp: 'This morning',
+    replyCount: 1,
+    participants: [{ key: 'marco', name: 'Marco Rinaldi', src: avatarMarco }],
+    detailTitle: 'You are blocking onboarding',
+    detailBody:
+      'Marco cannot cut the release until you finish reviewing four empty states on staging.',
+    openLabel: 'Open standup prep',
+  },
+];
+
+interface CreateCardItem {
+  id: string;
+  icon: ComponentType<{ size?: number }>;
+  tone: CardTone;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+}
+
+const CREATE_ITEMS: CreateCardItem[] = [
+  {
+    id: 'agent',
+    icon: AccountPlusOutlineIcon,
+    tone: 'info',
+    eyebrow: 'Super Agent',
+    title: 'Create Agent',
+    subtitle: 'Spin up a dedicated agent with tools and a system prompt.',
+  },
+  {
+    id: 'board',
+    icon: ProductBoardsIcon,
+    tone: 'info',
+    eyebrow: 'Boards',
+    title: 'Create Board',
+    subtitle: 'Start from a blank board or describe one with AI.',
+  },
+  {
+    id: 'wikis',
+    icon: BookOutlineIcon,
+    tone: 'success',
+    eyebrow: 'Wikis',
+    title: 'Create Wikis',
+    subtitle: 'Draft a wiki page structure from notes or a brief.',
+  },
+  {
+    id: 'playbook',
+    icon: ProductPlaybooksIcon,
+    tone: 'warning',
+    eyebrow: 'Playbooks',
+    title: 'Create Playbook',
+    subtitle: 'Generate a checklist workflow from a goal or template.',
   },
 ];
 
@@ -1667,7 +2372,13 @@ const CONVERSATIONS: Record<BriefingId, BriefingConversation> = {
   },
 };
 
-interface AgentCardProps extends BriefingItem {
+interface AgentCardProps {
+  icon: ComponentType<{ size?: number }>;
+  tone: CardTone;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  sources?: SourceId[];
   onClick?: () => void;
 }
 
@@ -1677,7 +2388,7 @@ function AgentCard({
   eyebrow,
   title,
   subtitle,
-  sources,
+  sources = [],
   onClick,
 }: AgentCardProps) {
   const toneClass = styles[`product-switcher__agents-card--${tone}`];
@@ -2387,6 +3098,369 @@ function PlaybookGeneratorView({ onBack }: { onBack: () => void }) {
             ))}
           </article>
         </main>
+      </div>
+    </div>
+  );
+}
+
+function formatChannelLabel(channel?: string) {
+  if (!channel) return 'CHANNEL';
+  return channel.replace(/-/g, ' ').toUpperCase();
+}
+
+function formatChannelTitle(channel?: string) {
+  if (!channel) return 'Channel';
+  return channel
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+// ---------------------------------------------------------------------------
+// Attention inbox — See all recap items in a threads-style list.
+// ---------------------------------------------------------------------------
+
+interface AttentionSeeAllViewProps {
+  onBack: () => void;
+  onOpenBriefing: (id: BriefingId) => void;
+}
+
+function AttentionSeeAllView({ onBack, onOpenBriefing }: AttentionSeeAllViewProps) {
+  const [selectedId, setSelectedId] = useState(ATTENTION_ITEMS[0]?.id ?? '');
+  const selected =
+    ATTENTION_ITEMS.find((item) => item.id === selectedId) ?? ATTENTION_ITEMS[0];
+
+  if (!selected) return null;
+
+  return (
+    <div className={styles['product-switcher__replies-needed']}>
+      <header className={styles['product-switcher__conversation-header']}>
+        <IconButton
+          aria-label="Back to recaps"
+          size="Small"
+          icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
+          onClick={onBack}
+        />
+        <span
+          className={styles['product-switcher__conversation-topic-icon']}
+          aria-hidden
+        >
+          <Icon size="16" glyph={<TextBoxOutlineIcon />} />
+        </span>
+        <span className={styles['product-switcher__conversation-topic']}>
+          Needs your attention
+        </span>
+      </header>
+
+      <div className={styles['product-switcher__replies-split']}>
+        <div className={styles['product-switcher__replies-inbox']}>
+          <div className={styles['product-switcher__replies-list']}>
+            <Scrollbars>
+              <div className={styles['product-switcher__replies-list-inner']}>
+                {ATTENTION_ITEMS.map((item) => (
+                  <div
+                    key={item.id}
+                    className={styles['product-switcher__attention-row']}
+                  >
+                    <LabelTag
+                      label={item.requestTag}
+                      type={item.tagType}
+                      size="X-Small"
+                      className={styles['product-switcher__attention-row-tag']}
+                    />
+                    <ThreadListItem
+                      active={selectedId === item.id}
+                      badge={item.badge ?? 'None'}
+                      mentionCount={item.mentionCount}
+                      authorName={item.authorName}
+                      channelLabel={item.channelLabel}
+                      previewText={item.previewText}
+                      timestamp={item.timestamp}
+                      threadTitle={item.threadTitle}
+                      replyCount={item.replyCount ?? 0}
+                      participants={item.participants ?? []}
+                      onClick={() => setSelectedId(item.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </Scrollbars>
+          </div>
+        </div>
+
+        <RightSidebar
+          fill
+          className={styles['product-switcher__replies-thread-panel']}
+          header={
+            <RightSidebarHeader
+              title={selected.detailTitle}
+              secondaryTitle={selected.requestTag}
+            />
+          }
+          footer={
+            <div className={styles['product-switcher__attention-detail-footer']}>
+              <Button
+                emphasis="Primary"
+                size="Small"
+                onClick={() => onOpenBriefing(selected.briefingId)}
+              >
+                {selected.openLabel}
+              </Button>
+            </div>
+          }
+        >
+          <div className={styles['product-switcher__attention-detail']}>
+            <p className={styles['product-switcher__attention-detail-body']}>
+              {selected.detailBody}
+            </p>
+            {selected.detailList && selected.detailList.length > 0 && (
+              <ul className={styles['product-switcher__attention-detail-list']}>
+                {selected.detailList.map((entry) => (
+                  <li
+                    key={entry.primary}
+                    className={styles['product-switcher__attention-detail-list-item']}
+                  >
+                    <span
+                      className={
+                        styles['product-switcher__attention-detail-list-primary']
+                      }
+                    >
+                      {entry.primary}
+                    </span>
+                    {entry.secondary && (
+                      <span
+                        className={
+                          styles['product-switcher__attention-detail-list-secondary']
+                        }
+                      >
+                        {entry.secondary}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </RightSidebar>
+      </div>
+    </div>
+  );
+}
+
+const MENTION_REPLY_COUNTS = [7, 4, 2];
+
+// ---------------------------------------------------------------------------
+// Replies needed — threads-style split inbox + thread detail.
+// ---------------------------------------------------------------------------
+
+interface RepliesNeededViewProps {
+  conversation: BriefingConversation;
+  messages: ChatMessage[];
+  onBack: () => void;
+  onChip: (chip: QuickReply) => void;
+}
+
+function RepliesNeededView({
+  conversation,
+  messages,
+  onBack,
+  onChip,
+}: RepliesNeededViewProps) {
+  const posts = conversation.starter.posts ?? [];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [draftByThread, setDraftByThread] = useState<
+    Record<number, PostPreview>
+  >({});
+
+  const selectedPost = posts[selectedIndex];
+  const selectedDraft = draftByThread[selectedIndex];
+  const summaryMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === 'assistant' && message.list?.length);
+
+  const handlePostAction = (action: QuickReply) => {
+    onChip(action);
+    if (action.posts?.[0]) {
+      setDraftByThread((prev) => ({
+        ...prev,
+        [selectedIndex]: action.posts![0],
+      }));
+    }
+  };
+
+  const handleDraftAction = (action: QuickReply) => {
+    onChip(action);
+    if (action.posts?.[0]) {
+      setDraftByThread((prev) => ({
+        ...prev,
+        [selectedIndex]: action.posts![0],
+      }));
+    }
+  };
+
+  if (!selectedPost) return null;
+
+  const textClass = messageStyles['message__body-text'];
+
+  return (
+    <div className={styles['product-switcher__replies-needed']}>
+      <header className={styles['product-switcher__conversation-header']}>
+        <IconButton
+          aria-label="Back to recaps"
+          size="Small"
+          icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
+          onClick={onBack}
+        />
+        <span
+          className={styles['product-switcher__conversation-topic-icon']}
+          aria-hidden
+        >
+          <Icon size="16" glyph={<AtIcon />} />
+        </span>
+        <span className={styles['product-switcher__conversation-topic']}>
+          {conversation.topic}
+        </span>
+      </header>
+
+      <div className={styles['product-switcher__replies-split']}>
+        <div className={styles['product-switcher__replies-inbox']}>
+          <div className={styles['product-switcher__replies-list']}>
+            <Scrollbars>
+              <div className={styles['product-switcher__replies-list-inner']}>
+                {posts.map((post, index) => (
+                  <ThreadListItem
+                    key={`${post.username}-${post.timestamp}`}
+                    active={selectedIndex === index}
+                    badge="Mention"
+                    authorName={post.username}
+                    channelLabel={formatChannelLabel(post.channel)}
+                    previewText={post.body}
+                    timestamp={post.timestamp}
+                    replyCount={MENTION_REPLY_COUNTS[index] ?? 1}
+                    participants={[
+                      {
+                        key: post.username,
+                        name: post.username,
+                        src: post.avatarSrc,
+                      },
+                    ]}
+                    onClick={() => setSelectedIndex(index)}
+                  />
+                ))}
+              </div>
+            </Scrollbars>
+          </div>
+
+          <div className={styles['product-switcher__replies-inbox-footer']}>
+            {summaryMessage?.list && summaryMessage.list.length > 0 && (
+              <ul className={styles['product-switcher__replies-summary']}>
+                {summaryMessage.list.map((item) => (
+                  <li
+                    key={item.primary}
+                    className={styles['product-switcher__replies-summary-item']}
+                  >
+                    <span
+                      className={
+                        styles['product-switcher__replies-summary-primary']
+                      }
+                    >
+                      {item.primary}
+                    </span>
+                    {item.secondary && (
+                      <span
+                        className={
+                          styles['product-switcher__replies-summary-secondary']
+                        }
+                      >
+                        {item.secondary}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {conversation.starter.chips && (
+              <div className={styles['product-switcher__replies-chips']}>
+                {conversation.starter.chips.map((chip) => (
+                  <Button
+                    key={chip.label}
+                    size="Small"
+                    emphasis="Tertiary"
+                    onClick={() => onChip(chip)}
+                  >
+                    {chip.label}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <RightSidebar
+          fill
+          alignBody="end"
+          className={styles['product-switcher__replies-thread-panel']}
+          header={
+            <RightSidebarHeader
+              title="Thread"
+              secondaryTitle={formatChannelTitle(selectedPost.channel)}
+              actionLabel="Following"
+              actionActive
+            />
+          }
+          footer={
+            <div className={styles['product-switcher__replies-thread-input']}>
+              <MessageInput placeholder="Reply to this thread…" width="narrow" />
+            </div>
+          }
+        >
+          <div className={styles['product-switcher__replies-thread']}>
+            <div className={styles['product-switcher__replies-thread-messages']}>
+              <Message
+                avatarSrc={selectedPost.avatarSrc}
+                avatarAlt={selectedPost.avatarAlt}
+                username={selectedPost.username}
+                timestamp={selectedPost.timestamp}
+              >
+                <p className={textClass}>{selectedPost.body}</p>
+              </Message>
+              <MessageSeparator
+                type="Reply Count"
+                label={`${MENTION_REPLY_COUNTS[selectedIndex] ?? 1} replies`}
+              />
+              {selectedDraft && (
+                <Message
+                  avatarSrc={selectedDraft.avatarSrc}
+                  avatarAlt={selectedDraft.avatarAlt}
+                  username={selectedDraft.username}
+                  timestamp={selectedDraft.timestamp}
+                >
+                  <p className={textClass}>{selectedDraft.body}</p>
+                </Message>
+              )}
+            </div>
+            {(selectedPost.actions?.length || selectedDraft?.actions?.length) && (
+              <div className={styles['product-switcher__replies-thread-actions']}>
+                {(selectedDraft?.actions ?? selectedPost.actions ?? []).map(
+                  (action) => (
+                    <Button
+                      key={action.label}
+                      size="Small"
+                      emphasis={action.primary ? 'Primary' : 'Tertiary'}
+                      onClick={() =>
+                        selectedDraft
+                          ? handleDraftAction(action)
+                          : handlePostAction(action)
+                      }
+                    >
+                      {action.label}
+                    </Button>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        </RightSidebar>
       </div>
     </div>
   );
