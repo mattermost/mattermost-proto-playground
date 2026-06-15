@@ -54,6 +54,12 @@ export interface ChannelHeaderProps {
   onInfoClick?: () => void;
   /** Whether the info button is in a toggled (active) state. */
   infoToggled?: boolean;
+  /** Override whether the Files stat icon is shown. Defaults to on for Channel/DM/GM. */
+  showFiles?: boolean;
+  /** Extra icon buttons appended to the stat-icons row (e.g. an automations count). */
+  extraStatIcons?: ReactNode;
+  /** Extra action elements in the right group, before the call/info buttons (e.g. an Agents button). */
+  headerActions?: ReactNode;
   className?: string;
 }
 
@@ -73,13 +79,17 @@ export default function ChannelHeader({
   callButton,
   onInfoClick,
   infoToggled = false,
+  showFiles: showFilesProp,
+  extraStatIcons,
+  headerActions,
   className = '',
 }: ChannelHeaderProps) {
   const isSimple = type === 'Threads' || type === 'Drafts';
   const showCallButton = type === 'Channel' || type === 'DM' || type === 'GM';
   const showMembers =
     (type === 'Channel' || type === 'GM') && memberCount != null;
-  const showFiles = type === 'Channel' || type === 'DM' || type === 'GM';
+  const showFiles =
+    showFilesProp ?? (type === 'Channel' || type === 'DM' || type === 'GM');
   const showChevron = type === 'Channel' || type === 'DM' || type === 'GM';
   const hasDmAvatar = (type === 'DM' || type === 'Bot') && Boolean(avatarSrc);
 
@@ -205,6 +215,7 @@ export default function ChannelHeader({
                 icon={<Icon size="12" glyph={<FileTextOutlineIcon />} />}
               />
             )}
+            {extraStatIcons}
           </div>
         </div>
 
@@ -214,17 +225,19 @@ export default function ChannelHeader({
       </div>
 
       <div className={styles['channel-header__right']}>
-        {showCallButton && (callButton ?? (
-          <Button
-            className={styles['channel-header__call-btn']}
-            emphasis="Quaternary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
-            onClick={onCallClick}
-          >
-            Start a Call
-          </Button>
-        ))}
+        {headerActions}
+        {showCallButton &&
+          (callButton ?? (
+            <Button
+              className={styles['channel-header__call-btn']}
+              emphasis="Quaternary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+              onClick={onCallClick}
+            >
+              Start a Call
+            </Button>
+          ))}
         <IconButton
           size="Small"
           aria-label="Channel info"

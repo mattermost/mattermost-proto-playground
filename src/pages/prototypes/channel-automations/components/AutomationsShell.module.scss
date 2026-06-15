@@ -1,0 +1,52 @@
+@keyframes shell-popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shell-popover-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.shell {
+  &__ai-anchor {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__ai-popover {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 30;
+    transform-origin: top left;
+    animation: shell-popover-in var(--duration-quick) var(--ease-entrance);
+
+    &--exiting {
+      animation: shell-popover-out var(--duration-quick) var(--ease-exit);
+    }
+  }
+
+  &__name-popover {
+    position: fixed;
+    z-index: 40;
+    transform-origin: top left;
+    animation: shell-popover-in var(--duration-quick) var(--ease-entrance);
+
+    &--exiting {
+      animation: shell-popover-out var(--duration-quick) var(--ease-exit);
+    }
+  }
+}

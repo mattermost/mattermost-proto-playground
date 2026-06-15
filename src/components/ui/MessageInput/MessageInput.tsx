@@ -32,6 +32,8 @@ export interface MessageInputProps {
   placeholder?: string;
   showPriorityIndicator?: boolean;
   showAttachments?: boolean;
+  showFormatting?: boolean;
+  showEmoji?: boolean;
   value?: string;
   onChange?: (value: string) => void;
   onSelectionChange?: () => void;
@@ -45,6 +47,8 @@ export default function MessageInput({
   placeholder = 'Message channel…',
   showPriorityIndicator = false,
   showAttachments = false,
+  showFormatting = true,
+  showEmoji = true,
   value,
   onChange,
   onSelectionChange,
@@ -89,52 +93,58 @@ export default function MessageInput({
 
   const composerActions = (
     <>
-      <button
-        type="button"
-        className={cls(
-          'message-input__format-btn',
-          formattingOpen ? 'message-input__format-btn--active' : '',
-        )}
-        aria-label={
-          formattingOpen
-            ? 'Hide formatting toolbar'
-            : 'Show formatting toolbar'
-        }
-        aria-pressed={formattingOpen}
-        onClick={() => setFormattingOpen((prev) => !prev)}
-      >
-        <Icon glyph={<FormatLetterCaseIcon />} size="16" />
-        {isNarrowFormattingOpen ? (
-          <span className={styles['message-input__format-chevron']}>
-            <Icon glyph={<ChevronUpIcon />} size="12" />
-          </span>
-        ) : (
-          <span
-            className={cls(
-              'message-input__format-chevron',
-              formattingOpen ? 'message-input__format-chevron--rotated' : '',
-            )}
-          >
-            <Icon glyph={<ChevronDownIcon />} size="12" />
-          </span>
-        )}
-      </button>
+      {showFormatting && (
+        <button
+          type="button"
+          className={cls(
+            'message-input__format-btn',
+            formattingOpen ? 'message-input__format-btn--active' : '',
+          )}
+          aria-label={
+            formattingOpen
+              ? 'Hide formatting toolbar'
+              : 'Show formatting toolbar'
+          }
+          aria-pressed={formattingOpen}
+          onClick={() => setFormattingOpen((prev) => !prev)}
+        >
+          <Icon glyph={<FormatLetterCaseIcon />} size="16" />
+          {isNarrowFormattingOpen ? (
+            <span className={styles['message-input__format-chevron']}>
+              <Icon glyph={<ChevronUpIcon />} size="12" />
+            </span>
+          ) : (
+            <span
+              className={cls(
+                'message-input__format-chevron',
+                formattingOpen ? 'message-input__format-chevron--rotated' : '',
+              )}
+            >
+              <Icon glyph={<ChevronDownIcon />} size="12" />
+            </span>
+          )}
+        </button>
+      )}
 
-      <span
-        className={styles['message-input__actions-divider']}
-        aria-hidden
-      />
+      {showFormatting && (
+        <span
+          className={styles['message-input__actions-divider']}
+          aria-hidden
+        />
+      )}
 
       <IconButton
         icon={<Icon glyph={<PaperclipIcon />} size="16" />}
         size="Small"
         aria-label="Attach a file"
       />
-      <IconButton
-        icon={<Icon glyph={<EmoticonHappyOutlineIcon />} size="16" />}
-        size="Small"
-        aria-label="Add an emoji"
-      />
+      {showEmoji && (
+        <IconButton
+          icon={<Icon glyph={<EmoticonHappyOutlineIcon />} size="16" />}
+          size="Small"
+          aria-label="Add an emoji"
+        />
+      )}
 
       <div
         className={cls(

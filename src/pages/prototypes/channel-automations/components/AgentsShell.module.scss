@@ -1,0 +1,53 @@
+// Windowed app panel, matching ChannelShell's frame so the standalone Agents
+// view sits in the same chrome as the channel scenes — minus the sidebars.
+.agents-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 80px);
+  height: calc(100% - 80px);
+  margin: auto;
+  background: var(--sidebar-bg);
+  color: var(--center-channel-color);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: var(--elevation-6);
+  max-width: 1440px;
+  max-height: 800px;
+  min-width: 1000px;
+  min-height: 600px;
+  overflow: hidden;
+
+  &__global-header {
+    flex: 0 0 auto;
+  }
+
+  &__body {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 0 var(--spacing-xxxs) var(--spacing-xxxs);
+    background: var(--sidebar-header-bg);
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    border-radius: var(--radius-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    overflow: hidden;
+    background: var(--center-channel-bg);
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: var(--spacing-l);
+  }
+}

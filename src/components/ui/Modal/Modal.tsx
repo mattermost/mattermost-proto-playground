@@ -17,16 +17,22 @@ export interface ModalProps {
   title: ReactNode;
   /** Optional secondary line below the title. */
   subtitle?: ReactNode;
+  /** Tab navigation rendered below the title instead of a subtitle. */
+  headerTabs?: ReactNode;
   /** When true, shows a back-arrow button before the title. */
   showBackButton?: boolean;
   /** Called when the back button is clicked. */
   onBack?: () => void;
   /** Called when the × close button is clicked. */
   onClose?: () => void;
+  /** Optional trailing control rendered before the close button (e.g. a switch). */
+  headerActions?: ReactNode;
   /** Show divider between header and body. Figma: Divider = On. Default: true. */
   headerDivider?: boolean;
   /** Body content. */
   children: ReactNode;
+  /** Optional class merged onto the scrolling body inner wrapper (e.g. to reduce padding). */
+  bodyClassName?: string;
   /** Footer slot — typically a group of Buttons, right-aligned by default. */
   footer?: ReactNode;
   /** Show divider between body and footer. Figma: Divider = On. Default: true. */
@@ -37,11 +43,14 @@ export default function Modal({
   size = 'Small',
   title,
   subtitle,
+  headerTabs,
   showBackButton = false,
   onBack,
   onClose,
+  headerActions,
   headerDivider = true,
   children,
+  bodyClassName,
   footer,
   footerDivider = true,
 }: ModalProps) {
@@ -58,6 +67,7 @@ export default function Modal({
       <div
         className={[
           styles['modal__header'],
+          headerTabs != null && styles['modal__header--has-tabs'],
           !headerDivider && styles['modal__header--no-divider'],
         ]
           .filter(Boolean)
@@ -75,22 +85,35 @@ export default function Modal({
             <h2 id={titleId} className={styles['modal__title']}>
               {title}
             </h2>
-            {subtitle && (
-              <p className={styles['modal__subtitle']}>{subtitle}</p>
-            )}
+            {headerTabs != null
+              ? headerTabs
+              : subtitle && (
+                  <p className={styles['modal__subtitle']}>{subtitle}</p>
+                )}
           </div>
         </div>
-        <IconButton
-          aria-label="Close"
-          className={styles['modal__close']}
-          icon={<Icon glyph={<CloseIcon />} size="20" />}
-          onClick={onClose}
-        />
+        <div className={styles['modal__header-trailing']}>
+          {headerActions != null ? (
+            <div className={styles['modal__header-actions']}>{headerActions}</div>
+          ) : null}
+          <IconButton
+            aria-label="Close"
+            className={styles['modal__close']}
+            icon={<Icon glyph={<CloseIcon />} size="20" />}
+            onClick={onClose}
+          />
+        </div>
       </div>
 
       <div className={styles['modal__body']}>
         <Scrollbars>
-          <div className={styles['modal__body-inner']}>{children}</div>
+          <div
+            className={[styles['modal__body-inner'], bodyClassName]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {children}
+          </div>
         </Scrollbars>
       </div>
 

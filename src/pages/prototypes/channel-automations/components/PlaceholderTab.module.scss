@@ -1,0 +1,13 @@
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl) var(--spacing-l);
+
+  &__text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

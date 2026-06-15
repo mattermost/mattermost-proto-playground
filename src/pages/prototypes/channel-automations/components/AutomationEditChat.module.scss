@@ -1,0 +1,28 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+  &__log {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Anchor messages to the bottom: when sparse, margin-top:auto pushes the
+  // conversation down toward the composer; when it overflows, it scrolls.
+  &__log-inner {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__composer {
+    flex: 0 0 auto;
+    padding: var(--spacing-s) var(--spacing-xxl) 0;
+  }
+}

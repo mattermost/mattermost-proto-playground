@@ -5,6 +5,7 @@ import ProductBoardsIcon from '@mattermost/compass-icons/components/product-boar
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import ArrowRightIcon from '@mattermost/compass-icons/components/arrow-right';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
+import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import HelpCircleOutlineIcon from '@mattermost/compass-icons/components/help-circle-outline';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import AtIcon from '@mattermost/compass-icons/components/at';
@@ -17,7 +18,7 @@ import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import type { ComponentType } from 'react';
 import styles from './GlobalHeader.module.scss';
 
-export type GlobalHeaderProduct = 'Channels' | 'Playbooks' | 'Boards';
+export type GlobalHeaderProduct = 'Channels' | 'Playbooks' | 'Boards' | 'Agents';
 
 export interface GlobalHeaderProps {
   /** Optional CSS class name. */
@@ -41,6 +42,7 @@ const PRODUCT_ICON: Record<
   Channels: ProductChannelsIcon,
   Playbooks: ProductPlaybooksIcon,
   Boards: ProductBoardsIcon,
+  Agents: CreationOutlineIcon,
 };
 
 function InvertedIconButton({
@@ -102,11 +104,13 @@ export default function GlobalHeader({
   userAvatarAlt,
 }: GlobalHeaderProps) {
   const isChannels = product === 'Channels';
+  // Agents reuses the Channels three-column layout (centered search + session controls).
+  const isMessaging = product === 'Channels' || product === 'Agents';
   const showBrand = isChannels ? showChannelsBranding : true;
 
   const rootClass = [
     styles['global-header'],
-    isChannels
+    isMessaging
       ? styles['global-header--channels']
       : styles['global-header--product-only'],
     className,
@@ -125,7 +129,7 @@ export default function GlobalHeader({
         <Navigator />
       </div>
 
-      {isChannels && (
+      {isMessaging && (
         <div className={styles['global-header__center']}>
           <div className={styles['global-header__search']}>
             <span className={styles['global-header__search-icon']} aria-hidden>
@@ -157,7 +161,7 @@ export default function GlobalHeader({
             glyph={<CheckboxMultipleMarkedOutlineIcon />}
           />
         )}
-        {isChannels && (
+        {isMessaging && (
           <>
             <InvertedIconButton
               ariaLabel="Recent mentions"
@@ -169,7 +173,7 @@ export default function GlobalHeader({
             />
           </>
         )}
-        {!isChannels && (
+        {!isMessaging && (
           <InvertedIconButton
             ariaLabel="Help"
             glyph={<HelpCircleOutlineIcon />}
