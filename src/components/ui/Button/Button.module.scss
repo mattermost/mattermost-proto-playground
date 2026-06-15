@@ -43,8 +43,7 @@
   // Size modifiers
   // ---------------------------------------------------------------------------
   &--size-x-small {
-    height: 24px;
-    padding: 0 var(--spacing-m);
+    padding: var(--spacing-xxxs) var(--spacing-m);
 
     .button__label {
       font-size: var(--font-size-75);
@@ -53,7 +52,7 @@
   }
 
   &--size-small {
-    padding: var(--spacing-xxs) var(--spacing-l);
+    padding: var(--spacing-xs) var(--spacing-l);
 
     .button__label {
       font-size: var(--font-size-75);
