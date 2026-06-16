@@ -1,4 +1,4 @@
-import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
@@ -21,7 +21,7 @@ export default function AutomationNudge({
   return (
     <div className={styles['nudge']} role="note">
       <span className={styles['nudge__icon']}>
-        <Icon size="20" glyph={<CreationOutlineIcon />} />
+        <Icon size="20" glyph={<LightningBoltOutlineIcon />} />
       </span>
       <div className={styles['nudge__body']}>
         <p className={styles['nudge__title']}>
@@ -35,7 +35,7 @@ export default function AutomationNudge({
           <Button
             size="Small"
             emphasis="Tertiary"
-            leadingIcon={<Icon size="16" glyph={<CreationOutlineIcon />} />}
+            leadingIcon={<Icon size="16" glyph={<LightningBoltOutlineIcon />} />}
             onClick={onCreate}
           >
             Create an automation

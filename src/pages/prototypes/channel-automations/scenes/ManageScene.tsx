@@ -18,6 +18,8 @@ export interface ManageSceneProps {
   onEdit: (id: string) => void;
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
+  /** Return to the agents-panel scene the management view was opened from. */
+  onBack: () => void;
   onClose: () => void;
 }
 
@@ -36,6 +38,7 @@ export default function ManageScene({
   onEdit,
   onDuplicate,
   onDelete,
+  onBack,
   onClose,
 }: ManageSceneProps) {
   const isModal = presentation === 'modal';
@@ -51,6 +54,7 @@ export default function ManageScene({
         isModal ? undefined : (
           <AutomationsPanel
             automations={automations}
+            onBack={onBack}
             onClose={onClose}
             onExpand={() => onPresentationChange('modal')}
             onCreate={() => onCreate()}

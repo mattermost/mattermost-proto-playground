@@ -14,7 +14,7 @@ export type PrototypeEntry = {
 export const PROTOTYPES: PrototypeEntry[] = [
   {
     id: 'channel-automations',
-    label: 'Channel Automations',
+    label: 'Agent Automations',
     path: '/prototypes/channel-automations',
     component: ChannelAutomations,
   },

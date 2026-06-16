@@ -57,14 +57,14 @@ export default function ScriptedAgentConversation({
               {i === step && !done && (
                 <div className={styles['convo__options']}>
                   {s.options.map((opt) => (
-                    <button
+                    <Button
                       key={opt.label}
-                      type="button"
-                      className={styles['convo__chip']}
+                      emphasis="Tertiary"
+                      size="Small"
                       onClick={() => pick(opt.reply)}
                     >
                       {opt.label}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               )}

@@ -49,5 +49,9 @@
     min-height: 0;
     overflow: hidden;
     padding: var(--spacing-l);
+
+    &--flush {
+      padding: 0 var(--spacing-l);
+    }
   }
 }

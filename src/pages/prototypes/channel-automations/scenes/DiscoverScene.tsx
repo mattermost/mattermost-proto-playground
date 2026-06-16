@@ -36,7 +36,10 @@ export default function DiscoverScene({
       onOpenManage={onManage}
       rhs={
         agentsOpen ? (
-          <AgentsPanel onClose={() => setAgentsOpen(false)}>
+          <AgentsPanel
+            onClose={() => setAgentsOpen(false)}
+            onViewAutomations={onManage}
+          >
             <AgentsEmptyState onCreate={() => onCreate()} />
           </AgentsPanel>
         ) : undefined

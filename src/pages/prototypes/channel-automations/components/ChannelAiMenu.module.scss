@@ -29,6 +29,18 @@
     animation: ai-submenu-in var(--duration-quick) var(--ease-entrance);
   }
 
+  &__trailing {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__count {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
   &__generate {
     display: flex;
     align-items: center;

@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
+import { agentById } from '../channelAutomationsData';
 import EditAgentView, {
   type AgentTabKey,
 } from '../components/EditAgentView';
 import AgentAutomationsTab from '../components/AgentAutomationsTab';
 import AgentsShell from '../components/AgentsShell';
-import AutomationFormModal from '../components/AutomationFormModal';
+import AutomationFormEditor from '../components/AutomationFormEditor';
 import PlaceholderTab from '../components/PlaceholderTab';
 
 export interface AgentSceneProps {
+  agentId: string;
   automations: Automation[];
   /** Create from the form. */
   onCreate: (draft: AutomationDraft) => void;
@@ -32,6 +34,7 @@ type FormState =
  * Both surfaces write to the same shared automations list.
  */
 export default function AgentScene({
+  agentId,
   automations,
   onCreate,
   onUpdate,
@@ -40,13 +43,18 @@ export default function AgentScene({
   onDelete,
   onClose,
 }: AgentSceneProps) {
+  const agent = agentById(agentId);
   const [tab, setTab] = useState<AgentTabKey>('automations');
   const [form, setForm] = useState<FormState>(null);
+
+  const inEditor = form != null;
 
   const openEdit = (id: string) => {
     const automation = automations.find((a) => a.id === id);
     if (automation) setForm({ mode: 'edit', automation });
   };
+
+  const closeEditor = () => setForm(null);
 
   const handleSubmit = (draft: AutomationDraft) => {
     if (form?.mode === 'edit') {
@@ -58,32 +66,42 @@ export default function AgentScene({
   };
 
   return (
-    <AgentsShell
-      overlay={
-        form && (
-          <AutomationFormModal
-            initial={form.mode === 'edit' ? form.automation : undefined}
-            onSubmit={handleSubmit}
-            onClose={() => setForm(null)}
-          />
-        )
-      }
-    >
+    <AgentsShell>
       <EditAgentView
+        title={agent ? `Edit ${agent.displayName}` : 'Edit Agent'}
         activeTab={tab}
         onTabChange={setTab}
         onClose={onClose}
         onSave={onClose}
+        subview={
+          inEditor
+            ? {
+                title:
+                  form.mode === 'edit' ? 'Edit automation' : 'New automation',
+                onBack: closeEditor,
+              }
+            : undefined
+        }
+        fillBody={inEditor}
+        hideFooter={inEditor}
       >
         {tab === 'automations' ? (
-          <AgentAutomationsTab
-            automations={automations}
-            onNew={() => setForm({ mode: 'create' })}
-            onEdit={openEdit}
-            onToggle={onToggle}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
-          />
+          inEditor ? (
+            <AutomationFormEditor
+              initial={form.mode === 'edit' ? form.automation : undefined}
+              onSubmit={handleSubmit}
+              onCancel={closeEditor}
+            />
+          ) : (
+            <AgentAutomationsTab
+              automations={automations}
+              onNew={() => setForm({ mode: 'create' })}
+              onEdit={openEdit}
+              onToggle={onToggle}
+              onDuplicate={onDuplicate}
+              onDelete={onDelete}
+            />
+          )
         ) : (
           <PlaceholderTab tab={tab} />
         )}

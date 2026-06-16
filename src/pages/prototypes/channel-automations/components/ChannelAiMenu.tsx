@@ -77,7 +77,10 @@ export default function ChannelAiMenu({
       <PopoverMenuGroup
         aria-label="Automations"
         className={styles['ai-menu__automation-group']}
-        onMouseLeave={() => setSubmenuOpen(false)}
+        onMouseLeave={() => {
+          setSubmenuOpen(false);
+          setActiveOpen(false);
+        }}
       >
         <MenuItem
           leadingElement={false}
@@ -88,7 +91,10 @@ export default function ChannelAiMenu({
           trailingVisual={<Icon size="16" glyph={<ChevronRightIcon />} />}
           aria-haspopup="menu"
           aria-expanded={submenuOpen}
-          onMouseEnter={() => setSubmenuOpen(true)}
+          onMouseEnter={() => {
+            setSubmenuOpen(true);
+            setActiveOpen(false);
+          }}
           onClick={() => setSubmenuOpen((o) => !o)}
         />
 
@@ -116,27 +122,28 @@ export default function ChannelAiMenu({
             />
           </PopoverMenu>
         )}
-      </PopoverMenuGroup>
 
-      {affecting.length > 0 && (
-        <>
-          <PopoverMenuDivider />
-          <PopoverMenuGroup
-            aria-label="Active in this channel"
-            className={styles['ai-menu__automation-group']}
-            onMouseLeave={() => setActiveOpen(false)}
-          >
+        {affecting.length > 0 && (
+          <>
             <MenuItem
               leadingElement={false}
-              label="Active in this channel"
-              secondaryLabel={String(affecting.length)}
-              secondaryLabelPosition="Inline"
+              label="Automations in this channel"
               active={activeOpen}
               trailingElement
-              trailingVisual={<Icon size="16" glyph={<ChevronRightIcon />} />}
+              trailingVisual={
+                <span className={styles['ai-menu__trailing']}>
+                  <span className={styles['ai-menu__count']}>
+                    {affecting.length}
+                  </span>
+                  <Icon size="16" glyph={<ChevronRightIcon />} />
+                </span>
+              }
               aria-haspopup="menu"
               aria-expanded={activeOpen}
-              onMouseEnter={() => setActiveOpen(true)}
+              onMouseEnter={() => {
+                setActiveOpen(true);
+                setSubmenuOpen(false);
+              }}
               onClick={() => setActiveOpen((o) => !o)}
             />
 
@@ -169,9 +176,9 @@ export default function ChannelAiMenu({
                 />
               </PopoverMenu>
             )}
-          </PopoverMenuGroup>
-        </>
-      )}
+          </>
+        )}
+      </PopoverMenuGroup>
 
       <PopoverMenuDivider />
 

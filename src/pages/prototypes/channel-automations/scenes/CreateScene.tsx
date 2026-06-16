@@ -37,7 +37,7 @@ export default function CreateScene({
       onCreate={onCreate}
       onOpenManage={onManage}
       rhs={
-        <AgentsPanel onClose={onClose}>
+        <AgentsPanel onClose={onClose} onViewAutomations={onManage}>
           <ScriptedAgentConversation
             onCreate={onAddAutomation}
             onViewAutomations={onManage}

@@ -1,0 +1,58 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+
+  &__tabs {
+    margin-bottom: var(--spacing-m);
+  }
+
+  &__enabled {
+    flex: 0 0 auto;
+    width: auto;
+    align-items: center;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding-bottom: var(--spacing-l);
+
+    &-control {
+      max-width: none;
+    }
+
+    &-row {
+      display: flex;
+      gap: var(--spacing-m);
+
+      > * {
+        flex: 1 1 0;
+        min-width: 0;
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-m);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}

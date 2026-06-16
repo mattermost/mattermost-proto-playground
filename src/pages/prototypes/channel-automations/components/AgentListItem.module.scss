@@ -1,0 +1,94 @@
+.agent-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  min-height: 60px;
+  padding: 0 var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-quick) var(--ease-transition),
+    border-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-color: rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__main {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__identity {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+  }
+
+  &__username {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+  }
+
+  &__stats {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+  }
+
+  &__stat {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+  }
+
+  &__stat-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    background: var(--online-indicator);
+    flex-shrink: 0;
+  }
+
+  &__stat-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    flex-shrink: 0;
+  }
+
+  &__chevron {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

@@ -1,4 +1,4 @@
-import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import AiCopilotIntro from '@/assets/illustrations/ai-copilot-intro.svg?react';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
@@ -30,7 +30,7 @@ export default function AgentsEmptyState({ onCreate }: AgentsEmptyStateProps) {
       <Button
         emphasis="Tertiary"
         size="Small"
-        leadingIcon={<Icon size="16" glyph={<CreationOutlineIcon />} />}
+        leadingIcon={<Icon size="16" glyph={<LightningBoltOutlineIcon />} />}
         onClick={onCreate}
       >
         Create a channel automation

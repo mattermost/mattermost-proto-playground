@@ -1,6 +1,6 @@
 import type { SceneSwitcherScene } from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 
-export type SceneId = 'discover' | 'create' | 'manage' | 'agent';
+export type SceneId = 'discover' | 'create' | 'manage' | 'agents' | 'agent';
 
 /** Which container hosts the management list. */
 export type ManagePresentation = 'rhs' | 'modal';
@@ -19,5 +19,6 @@ export const SCENES: SceneSwitcherScene[] = [
   { id: 'discover', label: 'Discover' },
   { id: 'create', label: 'Create' },
   { id: 'manage', label: 'Manage' },
+  { id: 'agents', label: 'Agents' },
   { id: 'agent', label: 'Edit agent' },
 ];

@@ -14,7 +14,8 @@
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: var(--spacing-xl) var(--spacing-l) var(--spacing-xxl);
+    padding: var(--spacing-xxxl) 0 var(--spacing-xxxl);
+
   }
 
   &__head {
@@ -33,12 +34,23 @@
     color: var(--center-channel-color);
   }
 
-  &__tabs {
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  &__col--fill {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
   }
 
   &__body {
     padding-top: var(--spacing-xl);
+
+    &--fill {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: var(--spacing-m);
+    }
   }
 
   &__footer {

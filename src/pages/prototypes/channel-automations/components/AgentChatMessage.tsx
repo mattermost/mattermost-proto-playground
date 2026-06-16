@@ -20,8 +20,8 @@ export function AgentMessage({ children, timestamp = TIMESTAMP }: ChatMessagePro
   return (
     <Message
       avatarSrc={AGENT.avatarSrc}
-      avatarAlt={AGENT.name}
-      username={AGENT.name}
+      avatarAlt={AGENT.displayName}
+      username={AGENT.displayName}
       timestamp={timestamp}
       isBot
       botLabel="AGENT"

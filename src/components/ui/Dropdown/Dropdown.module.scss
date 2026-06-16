@@ -13,7 +13,14 @@
   font-weight: var(--font-weight-semibold);
   color: var(--center-channel-color);
   transition: background-color var(--duration-quick) var(--ease-transition);
+  gap: 0;
   padding: 0;
+
+  // Button composes its own size padding/gap; Dropdown owns trigger layout.
+  #{&}#{&} {
+    gap: 0;
+    padding: 0;
+  }
 
   &:hover:not(:disabled) {
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
@@ -39,10 +46,11 @@
   // Elements
   // ---------------------------------------------------------------------------
 
-  // `button__label` is display: contents; label and chevron sit in `__trigger`
-  // so Button icon-slot `gap` does not sit between them (Figma label–chevron).
-  :global(.button__label) {
+  // `button__label` is display: contents; Dropdown owns trigger typography.
+  #{&}#{&} [class*='button__label'] {
     display: contents;
+    font-size: unset;
+    line-height: unset;
   }
 
   &__trigger {
@@ -92,7 +100,7 @@
   // Size modifiers
   // (Figma sizes: X-Small=11px/tracking, Small=12px, Medium=14px, Large=16px, X-Large=28px)
   // ---------------------------------------------------------------------------
-  &--size-x-small {
+  &--size-x-small#{&}#{&} {
     padding-left: var(--spacing-xxxs);
     padding-right: var(--spacing-xxxxs);
 
@@ -116,7 +124,7 @@
     }
   }
 
-  &--size-small {
+  &--size-small#{&}#{&} {
     padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs)
       var(--spacing-xxxs);
 
@@ -139,7 +147,7 @@
     }
   }
 
-  &--size-medium {
+  &--size-medium#{&}#{&} {
     padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs)
       var(--spacing-xxxs);
 
@@ -167,12 +175,12 @@
     }
   }
 
-  &--size-medium#{&}--padding-compact {
+  &--size-medium#{&}#{&}--padding-compact {
     padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
       var(--spacing-xs);
   }
 
-  &--size-large {
+  &--size-large#{&}#{&} {
     padding: var(--spacing-xxxxs) var(--spacing-xxxs) var(--spacing-xxxxs)
       var(--spacing-xxs);
 
@@ -196,7 +204,7 @@
     }
   }
 
-  &--size-x-large {
+  &--size-x-large#{&}#{&} {
     padding: 0 var(--spacing-xxs) 0 var(--spacing-xs);
 
     .dropdown__trigger {

@@ -6,6 +6,7 @@ import IconButton from '@/components/ui/IconButton/IconButton';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import Tabs from '@/components/ui/Tabs/Tabs';
 import type { TabItem } from '@/components/ui/Tabs/Tabs';
+import agentsViewTabs from './agentsViewTabs.module.scss';
 import styles from './EditAgentView.module.scss';
 
 export type AgentTabKey = 'configuration' | 'access' | 'automations' | 'mcps';
@@ -18,14 +19,25 @@ const TABS: TabItem[] = [
 ];
 
 export interface EditAgentViewProps {
+  /** Page title shown beside the back button. */
+  title?: string;
   activeTab: AgentTabKey;
   onTabChange: (key: AgentTabKey) => void;
-  /** Back arrow + Cancel both return to the agents list (Discover scene here). */
+  /** Back arrow + Cancel both return to the agents index. */
   onClose: () => void;
   /** Save commits the agent; in this prototype changes already apply live. */
   onSave: () => void;
   /** Active tab content. */
   children: ReactNode;
+  /** When set, replaces the Edit Agent header and tab strip for a drill-in step. */
+  subview?: {
+    title: string;
+    onBack: () => void;
+  };
+  /** Let the tab body fill remaining height (for chat editors). */
+  fillBody?: boolean;
+  /** Hide the agent-level Cancel / Save footer. */
+  hideFooter?: boolean;
 }
 
 /**
@@ -34,49 +46,86 @@ export interface EditAgentViewProps {
  * tab strip, the active tab body, and a Cancel / Save footer.
  */
 export default function EditAgentView({
+  title = 'Edit Agent',
   activeTab,
   onTabChange,
   onClose,
   onSave,
   children,
+  subview,
+  fillBody = false,
+  hideFooter = false,
 }: EditAgentViewProps) {
+  const colClass = [
+    styles['edit-agent__col'],
+    fillBody ? styles['edit-agent__col--fill'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const bodyClass = [
+    styles['edit-agent__body'],
+    fillBody ? styles['edit-agent__body--fill'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const main = (
+    <div className={colClass}>
+      {subview ? (
+        <div className={styles['edit-agent__head']}>
+          <IconButton
+            size="Small"
+            aria-label="Back to agent settings"
+            onClick={subview.onBack}
+            icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
+          />
+          <h1 className={styles['edit-agent__title']}>{subview.title}</h1>
+        </div>
+      ) : (
+        <>
+          <div className={styles['edit-agent__head']}>
+            <IconButton
+              size="Small"
+              aria-label="Back to agents"
+              onClick={onClose}
+              icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
+            />
+            <h1 className={styles['edit-agent__title']}>{title}</h1>
+          </div>
+
+          <Tabs
+            className={agentsViewTabs['agents-view-tabs']}
+            tabs={TABS}
+            activeKey={activeTab}
+            onChange={(key) => onTabChange(key as AgentTabKey)}
+            ariaLabel="Agent settings"
+          />
+        </>
+      )}
+
+      <div className={bodyClass}>{children}</div>
+    </div>
+  );
+
   return (
     <div className={styles['edit-agent']}>
       <div className={styles['edit-agent__scroll']}>
-        <Scrollbars>
-          <div className={styles['edit-agent__col']}>
-            <div className={styles['edit-agent__head']}>
-              <IconButton
-                size="Small"
-                aria-label="Back to agents"
-                onClick={onClose}
-                icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
-              />
-              <h1 className={styles['edit-agent__title']}>Edit Agent</h1>
-            </div>
+        {fillBody ? main : <Scrollbars>{main}</Scrollbars>}
+      </div>
 
-            <Tabs
-              className={styles['edit-agent__tabs']}
-              tabs={TABS}
-              activeKey={activeTab}
-              onChange={(key) => onTabChange(key as AgentTabKey)}
-            />
-
-            <div className={styles['edit-agent__body']}>{children}</div>
+      {!hideFooter && (
+        <div className={styles['edit-agent__footer']}>
+          <div className={styles['edit-agent__footer-col']}>
+            <Button emphasis="Tertiary" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button emphasis="Primary" onClick={onSave}>
+              Save
+            </Button>
           </div>
-        </Scrollbars>
-      </div>
-
-      <div className={styles['edit-agent__footer']}>
-        <div className={styles['edit-agent__footer-col']}>
-          <Button emphasis="Tertiary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button emphasis="Primary" onClick={onSave}>
-            Save
-          </Button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

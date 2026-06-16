@@ -18,6 +18,7 @@ import {
 import DiscoverScene from './scenes/DiscoverScene';
 import CreateScene from './scenes/CreateScene';
 import ManageScene from './scenes/ManageScene';
+import AgentsIndexScene from './scenes/AgentsIndexScene';
 import AgentScene from './scenes/AgentScene';
 import ExploreAlternatesControl from './components/ExploreAlternatesControl';
 import styles from './ChannelAutomations.module.scss';
@@ -33,6 +34,10 @@ export default function ChannelAutomations() {
     useState<HeaderEntryPoint>('agents-menu');
   const [managePresentation, setManagePresentation] =
     useState<ManagePresentation>('rhs');
+  // Which scene opened the management view, so the Automations RHS back button
+  // can return to that agents-panel starting point.
+  const [manageOrigin, setManageOrigin] = useState<SceneId>('discover');
+  const [selectedAgentId, setSelectedAgentId] = useState('matty');
 
   useEffect(() => {
     setCenterSlot(
@@ -97,8 +102,19 @@ export default function ChannelAutomations() {
   // In this prototype, "Create" / "Edit" both land in the scripted Agent flow.
   // The selected automation type is accepted by callers but not branched on yet.
   const goCreate = () => setScene('create');
-  const goManage = () => setScene('manage');
   const goDiscover = () => setScene('discover');
+
+  const goManageFrom = (origin: SceneId) => {
+    setManageOrigin(origin);
+    setScene('manage');
+  };
+  const goBackFromManage = () => setScene(manageOrigin);
+
+  const goAgents = () => setScene('agents');
+  const goEditAgent = (agentId: string) => {
+    setSelectedAgentId(agentId);
+    setScene('agent');
+  };
 
   return (
     <div className={styles['channel-automations']}>
@@ -108,7 +124,7 @@ export default function ChannelAutomations() {
           headerEntryPoint={headerEntryPoint}
           showAlternates={showAlternates}
           onCreate={goCreate}
-          onManage={goManage}
+          onManage={() => goManageFrom('discover')}
         />
       )}
 
@@ -119,7 +135,7 @@ export default function ChannelAutomations() {
           showAlternates={showAlternates}
           onCreate={goCreate}
           onAddAutomation={addScriptedAutomation}
-          onManage={goManage}
+          onManage={() => goManageFrom('create')}
           onClose={goDiscover}
         />
       )}
@@ -136,19 +152,25 @@ export default function ChannelAutomations() {
           onEdit={() => goCreate()}
           onDuplicate={duplicateAutomation}
           onDelete={deleteAutomation}
+          onBack={goBackFromManage}
           onClose={goDiscover}
         />
       )}
 
+      {scene === 'agents' && (
+        <AgentsIndexScene onSelectAgent={goEditAgent} />
+      )}
+
       {scene === 'agent' && (
         <AgentScene
+          agentId={selectedAgentId}
           automations={automations}
           onCreate={createAutomation}
           onUpdate={updateAutomation}
           onToggle={toggleAutomation}
           onDuplicate={duplicateAutomation}
           onDelete={deleteAutomation}
-          onClose={goDiscover}
+          onClose={goAgents}
         />
       )}
 

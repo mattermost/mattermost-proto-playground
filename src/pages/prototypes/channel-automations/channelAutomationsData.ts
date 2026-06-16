@@ -5,6 +5,7 @@ import avatarArjun from '@/assets/avatars/Arjun Patel.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMatty from '@/assets/avatars/Matty.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
 
 /** The four automation kinds the Agent can build. */
 export type AutomationType =
@@ -443,10 +444,69 @@ export const CHANNEL_MESSAGES: ChannelMessage[] = [
   },
 ];
 
-export const AGENT = {
-  name: 'Matty',
-  avatarSrc: avatarMatty,
-};
+export interface Agent {
+  id: string;
+  /** Display name shown in lists and headers, e.g. "DevOps Agent". */
+  displayName: string;
+  /** Mention handle without the @ prefix. */
+  username: string;
+  avatarSrc: string;
+  activeMcps: number;
+  toolCount: number;
+  /** When true, the agent appears under the "Your agents" tab. */
+  ownedByCurrentUser?: boolean;
+}
+
+export const AGENTS: Agent[] = [
+  {
+    id: 'matty',
+    displayName: 'Matty',
+    username: 'matty',
+    avatarSrc: avatarMatty,
+    activeMcps: 3,
+    toolCount: 12,
+    ownedByCurrentUser: true,
+  },
+  {
+    id: 'devops',
+    displayName: 'DevOps Agent',
+    username: 'devops-agent',
+    avatarSrc: avatarArjun,
+    activeMcps: 4,
+    toolCount: 16,
+  },
+  {
+    id: 'cloudops',
+    displayName: 'CloudOps Agent',
+    username: 'cloudops-agent',
+    avatarSrc: avatarEthan,
+    activeMcps: 8,
+    toolCount: 24,
+  },
+  {
+    id: 'insights',
+    displayName: 'Data Insights Agent',
+    username: 'insights-agent',
+    avatarSrc: avatarAiko,
+    activeMcps: 5,
+    toolCount: 20,
+  },
+  {
+    id: 'tracker',
+    displayName: 'Project Tracker Agent',
+    username: 'task-agent',
+    avatarSrc: avatarSofia,
+    activeMcps: 2,
+    toolCount: 7,
+  },
+];
+
+/** The default agent used in channel RHS panels and automation fixtures. */
+export const AGENT = AGENTS[0];
+
+export function agentById(id: string): Agent | undefined {
+  return AGENTS.find((a) => a.id === id);
+}
 
 /** The current user, shown as the author of replies in agent chats. */
 export const CURRENT_USER = {

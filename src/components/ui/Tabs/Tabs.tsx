@@ -23,6 +23,8 @@ export interface TabsProps {
   className?: string;
   /** Optional trailing controls rendered to the right of the tabs. */
   controls?: ReactNode;
+  /** Accessible name for the tab list. */
+  ariaLabel?: string;
 }
 
 /**
@@ -35,12 +37,17 @@ export default function Tabs({
   onChange,
   className = '',
   controls,
+  ariaLabel,
 }: TabsProps) {
   const rootClass = [styles.tabs, className].filter(Boolean).join(' ');
 
   return (
     <div className={rootClass}>
-      <div className={styles['tabs__tab-list']} role="tablist">
+      <div
+        className={styles['tabs__tab-list']}
+        role="tablist"
+        aria-label={ariaLabel}
+      >
         {tabs.map((tab) => {
           const isActive = tab.key === activeKey;
           const tabClass = [

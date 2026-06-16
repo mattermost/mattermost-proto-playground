@@ -10,6 +10,8 @@ export interface AgentsShellProps {
   sidebar?: ReactNode;
   /** Layered surface over the shell (e.g. a modal). */
   overlay?: ReactNode;
+  /** Remove inner padding so list views can align to the shell edge. */
+  flushContent?: boolean;
 }
 
 /**
@@ -17,7 +19,14 @@ export interface AgentsShellProps {
  * over a full-bleed main content area — the same windowed panel as the channel
  * scenes, without the team/channel sidebars.
  */
-export default function AgentsShell({ children, sidebar, overlay }: AgentsShellProps) {
+export default function AgentsShell({ children, sidebar, overlay, flushContent = false }: AgentsShellProps) {
+  const contentClass = [
+    styles['agents-shell__content'],
+    flushContent ? styles['agents-shell__content--flush'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div className={styles['agents-shell']}>
       <div className={styles['agents-shell__global-header']}>
@@ -30,7 +39,7 @@ export default function AgentsShell({ children, sidebar, overlay }: AgentsShellP
 
       <div className={styles['agents-shell__body']}>
         <div className={styles['agents-shell__inner']}>
-          <div className={styles['agents-shell__content']}>{children}</div>
+          <div className={contentClass}>{children}</div>
           {sidebar}
         </div>
       </div>

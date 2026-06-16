@@ -13,6 +13,8 @@ export interface RightSidebarHeaderProps {
   title: string;
   /** Secondary title shown to the right of a vertical divider (e.g. parent channel name). */
   secondaryTitle?: string;
+  /** Custom secondary column content; takes precedence over `secondaryTitle`. */
+  secondaryContent?: ReactNode;
   /** Optional tag rendered next to the title (e.g. "BETA"). */
   labelTag?: string;
   /** Tag visual style. Default: Info. */
@@ -37,6 +39,7 @@ export interface RightSidebarHeaderProps {
 export default function RightSidebarHeader({
   title,
   secondaryTitle,
+  secondaryContent,
   labelTag,
   labelTagType = 'Info',
   leadingIcon,
@@ -82,11 +85,13 @@ export default function RightSidebarHeader({
             </span>
           )}
         </div>
-        {secondaryTitle && (
+        {(secondaryContent != null || secondaryTitle) && (
           <div className={styles['right-sidebar-header__secondary']}>
-            <span className={styles['right-sidebar-header__secondary-text']}>
-              {secondaryTitle}
-            </span>
+            {secondaryContent ?? (
+              <span className={styles['right-sidebar-header__secondary-text']}>
+                {secondaryTitle}
+              </span>
+            )}
           </div>
         )}
       </div>

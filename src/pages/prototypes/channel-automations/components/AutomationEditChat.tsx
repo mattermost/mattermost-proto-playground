@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import CheckIcon from '@mattermost/compass-icons/components/check';
+import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
 import MessageInput from '@/components/ui/MessageInput';
 import {
@@ -9,7 +10,7 @@ import {
   type ScheduleFrequency,
   type TriggerConfig,
 } from '../channelAutomationsData';
-import type { FormPatch, FormValues } from './AutomationFormModal';
+import type { FormPatch, FormValues } from './automationFormTypes';
 import { AgentMessage, ChatText, UserMessage } from './AgentChatMessage';
 import convo from './ScriptedAgentConversation.module.scss';
 import styles from './AutomationEditChat.module.scss';
@@ -342,8 +343,8 @@ function Chip({
   onClick: () => void;
 }) {
   return (
-    <button type="button" className={convo['convo__chip']} onClick={onClick}>
+    <Button emphasis="Tertiary" size="Small" onClick={onClick}>
       {children}
-    </button>
+    </Button>
   );
 }

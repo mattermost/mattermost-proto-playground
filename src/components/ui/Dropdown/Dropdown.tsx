@@ -1,11 +1,19 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import Button from '@/components/ui/Button/Button';
+import Button, { type ButtonSize } from '@/components/ui/Button/Button';
 import { toKebab } from '@/utils/string';
 import Icon from '@/components/ui/Icon/Icon';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import styles from './Dropdown.module.scss';
 
 export type DropdownSize = 'X-Small' | 'Small' | 'Medium' | 'Large' | 'X-Large';
+
+const DROPDOWN_BUTTON_SIZE: Record<DropdownSize, ButtonSize> = {
+  'X-Small': 'X-Small',
+  Small: 'Small',
+  Medium: 'Medium',
+  Large: 'Large',
+  'X-Large': 'Large',
+};
 export type DropdownAppearance = 'Default' | 'Inverted';
 export type DropdownPadding = 'Tight' | 'Compact';
 
@@ -70,7 +78,7 @@ export default function Dropdown({
     <Button
       className={rootClass}
       emphasis="Quaternary"
-      size="Medium"
+      size={DROPDOWN_BUTTON_SIZE[size]}
       type={type}
       disabled={disabled}
       aria-expanded={isOpen}
