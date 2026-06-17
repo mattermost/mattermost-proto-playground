@@ -1,13 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
+import MenuItem from '@/components/ui/MenuItem/MenuItem';
+import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import SearchInput from '@/components/ui/SearchInput/SearchInput';
-import Tabs from '@/components/ui/Tabs/Tabs';
-import type { Agent } from '../channelAutomationsData';
+import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import AutomationsTabs from './AutomationsTabs';
+import { AGENTS, type Agent } from '../channelAutomationsData';
 import AgentListItem from './AgentListItem';
 import styles from './AgentsIndexView.module.scss';
 
@@ -21,6 +25,7 @@ const TABS = [
 export interface AgentsIndexViewProps {
   agents: Agent[];
   onSelectAgent: (id: string) => void;
+  onNewAutomation: (agentId: string) => void;
 }
 
 /**
@@ -30,9 +35,14 @@ export interface AgentsIndexViewProps {
 export default function AgentsIndexView({
   agents,
   onSelectAgent,
+  onNewAutomation,
 }: AgentsIndexViewProps) {
   const [tab, setTab] = useState<AgentsTabKey>('all');
   const [query, setQuery] = useState('');
+  const [agentPickerOpen, setAgentPickerOpen] = useState(false);
+  const agentPickerRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClose(agentPickerRef, agentPickerOpen, () => setAgentPickerOpen(false));
 
   const filteredAgents = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -59,23 +69,57 @@ export default function AgentsIndexView({
         </header>
 
         <div className={styles['agents-index__toolbar']}>
-          <Tabs
+          <AutomationsTabs
             tabs={TABS.map((item) => ({ key: item.key, label: item.label }))}
             activeKey={tab}
             onChange={(key) => setTab(key as AgentsTabKey)}
             ariaLabel="Agents filter"
           />
           <div className={styles['agents-index__actions']}>
-            <Button
-              size="Small"
-              emphasis="Tertiary"
-              leadingIcon={
-                <Icon size="12" glyph={<LightningBoltOutlineIcon />} />
-              }
-              trailingIcon={<Icon size="12" glyph={<ChevronDownIcon />} />}
+            <div
+              ref={agentPickerRef}
+              className={styles['agents-index__agent-picker']}
             >
-              New automation
-            </Button>
+              <Button
+                size="Small"
+                emphasis="Tertiary"
+                aria-haspopup="listbox"
+                aria-expanded={agentPickerOpen}
+                aria-label="New automation"
+                leadingIcon={
+                  <Icon size="12" glyph={<LightningBoltOutlineIcon />} />
+                }
+                trailingIcon={<Icon size="12" glyph={<ChevronDownIcon />} />}
+                onClick={() => setAgentPickerOpen((open) => !open)}
+              >
+                New automation
+              </Button>
+              {agentPickerOpen && (
+                <PopoverMenu
+                  className={styles['agents-index__agent-picker-menu']}
+                  role="listbox"
+                  aria-label="Choose agent"
+                >
+                  {AGENTS.map((agent) => (
+                    <MenuItem
+                      key={agent.id}
+                      label={agent.displayName}
+                      leadingVisual={
+                        <UserAvatar
+                          src={agent.avatarSrc}
+                          alt={agent.displayName}
+                          size="16"
+                        />
+                      }
+                      onClick={() => {
+                        setAgentPickerOpen(false);
+                        onNewAutomation(agent.id);
+                      }}
+                    />
+                  ))}
+                </PopoverMenu>
+              )}
+            </div>
             <Button
               size="Small"
               emphasis="Primary"

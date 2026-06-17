@@ -14,6 +14,7 @@ export interface FormValues {
   keyword: string;
   instructions: string;
   enabled: boolean;
+  channelId: string;
 }
 
 export type FormPatch = (changes: Partial<FormValues>) => void;

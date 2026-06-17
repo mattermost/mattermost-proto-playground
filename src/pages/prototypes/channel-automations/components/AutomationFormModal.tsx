@@ -1,0 +1,68 @@
+import { useState } from 'react';
+import Modal from '@/components/ui/Modal/Modal';
+import type { Automation, AutomationDraft } from '../channelAutomationsData';
+import AutomationFormEditor, {
+  EDITOR_VIEW_TABS,
+  type EditorView,
+} from './AutomationFormEditor';
+import AutomationsTabs from './AutomationsTabs';
+import styles from './AutomationFormModal.module.scss';
+
+export interface AutomationFormModalProps {
+  /** When provided, the modal opens in edit mode pre-filled from this automation. */
+  initial?: Automation;
+  onSubmit: (draft: AutomationDraft) => void;
+  onClose: () => void;
+}
+
+/**
+ * Modal host for the automation create/edit editor in the Agents scene. Wraps
+ * the self-contained AutomationFormEditor in a fixed-height dialog so the
+ * Chat/Settings views never resize the surface.
+ */
+export default function AutomationFormModal({
+  initial,
+  onSubmit,
+  onClose,
+}: AutomationFormModalProps) {
+  const isEdit = initial != null;
+  const title = isEdit ? 'Edit automation' : 'New automation';
+  const [view, setView] = useState<EditorView>('chat');
+
+  const headerBottom = (
+    <AutomationsTabs
+      tabs={EDITOR_VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
+      activeKey={view}
+      onChange={(id) => setView(id as EditorView)}
+      ariaLabel="Automation editor view"
+      showDivider={false}
+      inset
+    />
+  );
+
+  return (
+    <div className={styles['layer']}>
+      <div className={styles['layer__backdrop']} aria-hidden onClick={onClose} />
+      <div className={styles['layer__modal']}>
+        <Modal
+          size="Medium"
+          title={title}
+          onClose={onClose}
+          headerBottom={headerBottom}
+          headerDivider={false}
+          bodyClassName={styles['modal-body']}
+        >
+          <AutomationFormEditor
+            initial={initial}
+            onSubmit={onSubmit}
+            onCancel={onClose}
+            showViewTabs={false}
+            showEnabledSwitch={false}
+            view={view}
+            onViewChange={setView}
+          />
+        </Modal>
+      </div>
+    </div>
+  );
+}

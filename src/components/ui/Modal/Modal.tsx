@@ -19,6 +19,8 @@ export interface ModalProps {
   subtitle?: ReactNode;
   /** Tab navigation rendered below the title instead of a subtitle. */
   headerTabs?: ReactNode;
+  /** Full-width row below the title row, still inside the header (e.g. a tab bar). */
+  headerBottom?: ReactNode;
   /** When true, shows a back-arrow button before the title. */
   showBackButton?: boolean;
   /** Called when the back button is clicked. */
@@ -44,6 +46,7 @@ export default function Modal({
   title,
   subtitle,
   headerTabs,
+  headerBottom,
   showBackButton = false,
   onBack,
   onClose,
@@ -57,6 +60,41 @@ export default function Modal({
   const titleId = useId();
   const sizeClass = styles[`modal--size-${toKebab(size)}`];
 
+  const headerMain = (
+    <>
+      <div className={styles['modal__header-inner']}>
+        {showBackButton && (
+          <IconButton
+            aria-label="Go back"
+            icon={<Icon glyph={<ArrowLeftIcon />} size="20" />}
+            onClick={onBack}
+          />
+        )}
+        <div className={styles['modal__title-group']}>
+          <h2 id={titleId} className={styles['modal__title']}>
+            {title}
+          </h2>
+          {headerTabs != null
+            ? headerTabs
+            : subtitle && (
+                <p className={styles['modal__subtitle']}>{subtitle}</p>
+              )}
+        </div>
+      </div>
+      <div className={styles['modal__header-trailing']}>
+        {headerActions != null ? (
+          <div className={styles['modal__header-actions']}>{headerActions}</div>
+        ) : null}
+        <IconButton
+          aria-label="Close"
+          className={styles['modal__close']}
+          icon={<Icon glyph={<CloseIcon />} size="20" />}
+          onClick={onClose}
+        />
+      </div>
+    </>
+  );
+
   return (
     <div
       className={[styles.modal, sizeClass].filter(Boolean).join(' ')}
@@ -68,41 +106,20 @@ export default function Modal({
         className={[
           styles['modal__header'],
           headerTabs != null && styles['modal__header--has-tabs'],
+          headerBottom != null && styles['modal__header--with-bottom'],
           !headerDivider && styles['modal__header--no-divider'],
         ]
           .filter(Boolean)
           .join(' ')}
       >
-        <div className={styles['modal__header-inner']}>
-          {showBackButton && (
-            <IconButton
-              aria-label="Go back"
-              icon={<Icon glyph={<ArrowLeftIcon />} size="20" />}
-              onClick={onBack}
-            />
-          )}
-          <div className={styles['modal__title-group']}>
-            <h2 id={titleId} className={styles['modal__title']}>
-              {title}
-            </h2>
-            {headerTabs != null
-              ? headerTabs
-              : subtitle && (
-                  <p className={styles['modal__subtitle']}>{subtitle}</p>
-                )}
-          </div>
-        </div>
-        <div className={styles['modal__header-trailing']}>
-          {headerActions != null ? (
-            <div className={styles['modal__header-actions']}>{headerActions}</div>
-          ) : null}
-          <IconButton
-            aria-label="Close"
-            className={styles['modal__close']}
-            icon={<Icon glyph={<CloseIcon />} size="20" />}
-            onClick={onClose}
-          />
-        </div>
+        {headerBottom != null ? (
+          <>
+            <div className={styles['modal__header-row']}>{headerMain}</div>
+            <div className={styles['modal__header-bottom']}>{headerBottom}</div>
+          </>
+        ) : (
+          headerMain
+        )}
       </div>
 
       <div className={styles['modal__body']}>

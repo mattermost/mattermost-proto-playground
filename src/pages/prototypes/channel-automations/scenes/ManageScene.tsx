@@ -1,82 +1,101 @@
+import { useState } from 'react';
 import AutomationsShell from '../components/AutomationsShell';
 import AutomationsPanel from '../components/AutomationsPanel';
-import AutomationsModal from '../components/AutomationsModal';
-import type { Automation, AutomationType } from '../channelAutomationsData';
+import AutomationDeleteModal from '../components/AutomationDeleteModal';
 import type {
-  HeaderEntryPoint,
-  ManagePresentation,
-} from '../channelAutomationsScenes';
+  Automation,
+  AutomationDraft,
+} from '../channelAutomationsData';
 
 export interface ManageSceneProps {
   automations: Automation[];
-  headerEntryPoint: HeaderEntryPoint;
-  showAlternates: boolean;
-  presentation: ManagePresentation;
-  onPresentationChange: (value: ManagePresentation) => void;
-  onCreate: (type?: AutomationType) => void;
+  onCreateAutomation: (draft: AutomationDraft) => void;
+  onUpdate: (id: string, draft: AutomationDraft) => void;
   onToggle: (id: string, enabled: boolean) => void;
-  onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
   /** Return to the agents-panel scene the management view was opened from. */
   onBack: () => void;
   onClose: () => void;
+  onManageAgents: () => void;
 }
 
-/**
- * Manage scene — the management list, rendered either in the RHS panel
- * (default) or the modal variant for comparison.
- */
+/** Manage scene — the management list in the RHS panel. */
 export default function ManageScene({
   automations,
-  headerEntryPoint,
-  showAlternates,
-  presentation,
-  onPresentationChange,
-  onCreate,
+  onCreateAutomation,
+  onUpdate,
   onToggle,
-  onEdit,
-  onDuplicate,
   onDelete,
   onBack,
   onClose,
+  onManageAgents,
 }: ManageSceneProps) {
-  const isModal = presentation === 'modal';
+  const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Automation | null>(null);
+  const editing =
+    editingId != null
+      ? automations.find((a) => a.id === editingId) ?? null
+      : null;
+
+  const closeEditor = () => {
+    setCreating(false);
+    setEditingId(null);
+  };
+
+  const openCreate = () => {
+    setEditingId(null);
+    setCreating(true);
+  };
+
+  const openEdit = (id: string) => {
+    setCreating(false);
+    setEditingId(id);
+  };
+
+  const openDeleteConfirm = (id: string) => {
+    const automation = automations.find((a) => a.id === id);
+    if (automation) setDeleteTarget(automation);
+  };
+
+  const closeDeleteConfirm = () => setDeleteTarget(null);
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      onDelete(deleteTarget.id);
+    }
+    closeDeleteConfirm();
+  };
 
   return (
     <AutomationsShell
-      automations={automations}
-      headerEntryPoint={headerEntryPoint}
-      showAlternates={showAlternates}
-      onCreate={onCreate}
-      onOpenManage={() => onPresentationChange(presentation)}
-      rhs={
-        isModal ? undefined : (
-          <AutomationsPanel
-            automations={automations}
-            onBack={onBack}
-            onClose={onClose}
-            onExpand={() => onPresentationChange('modal')}
-            onCreate={() => onCreate()}
-            onToggle={onToggle}
-            onEdit={onEdit}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
+      onCreate={openCreate}
+      onOpenManage={() => {}}
+      onManageAgents={onManageAgents}
+      overlay={
+        deleteTarget && (
+          <AutomationDeleteModal
+            automationName={deleteTarget.name}
+            onConfirm={confirmDelete}
+            onClose={closeDeleteConfirm}
           />
         )
       }
-      overlay={
-        isModal ? (
-          <AutomationsModal
-            automations={automations}
-            onClose={onClose}
-            onCreate={() => onCreate()}
-            onToggle={onToggle}
-            onEdit={onEdit}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
-          />
-        ) : undefined
+      rhs={
+        <AutomationsPanel
+          automations={automations}
+          creating={creating}
+          editing={editing}
+          onBackFromEditor={closeEditor}
+          onCreateSubmit={onCreateAutomation}
+          onUpdate={onUpdate}
+          onBack={onBack}
+          onClose={onClose}
+          onCreate={openCreate}
+          onToggle={onToggle}
+          onEdit={openEdit}
+          onRequestDelete={openDeleteConfirm}
+        />
       }
     />
   );

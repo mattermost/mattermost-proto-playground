@@ -3,23 +3,26 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--spacing-s);
-    padding: var(--spacing-xxs);
+    padding: var(--spacing-xs);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
   }
 
   &__subbar-actions {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xxxs);
+    padding: 0 var(--spacing-xxxs);
     flex-shrink: 0;
   }
 
-  &__tab {
+  // Figma `.AI Copilot Header` subtle buttons (`4311-35530`).
+  &__subbar-btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xxs);
-    padding: var(--spacing-xxs) var(--spacing-m);
+    justify-content: center;
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-xxxs) var(--spacing-xs);
     border: none;
     background: transparent;
     border-radius: var(--radius-s);
@@ -33,32 +36,6 @@
 
     &:hover {
       background: rgba(var(--center-channel-color-rgb), 0.08);
-    }
-  }
-
-  &__chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxxs);
-    padding: 2px var(--spacing-xs) 2px var(--spacing-xxs);
-    border: none;
-    background: rgba(var(--center-channel-color-rgb), 0.08);
-    border-radius: var(--radius-s);
-    color: var(--center-channel-color);
-    font-family: inherit;
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-75);
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    transition: background-color var(--duration-quick) var(--ease-transition);
-
-    &:hover {
-      background: rgba(var(--center-channel-color-rgb), 0.12);
-    }
-
-    &:last-child {
-      padding-right: var(--spacing-xxxs);
     }
   }
 

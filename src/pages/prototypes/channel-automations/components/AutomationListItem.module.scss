@@ -54,13 +54,6 @@
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
-  &__meta {
-    margin: 0;
-    font-size: var(--font-size-25);
-    line-height: var(--line-height-25);
-    color: rgba(var(--center-channel-color-rgb), 0.56);
-  }
-
   &__actions {
     display: flex;
     align-items: center;

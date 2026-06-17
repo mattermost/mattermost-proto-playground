@@ -51,6 +51,31 @@
         margin-bottom: 0;
       }
     }
+
+    &--with-bottom {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      border-bottom: none;
+
+      .modal__header-row {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--spacing-s);
+        padding: var(--spacing-xxl) var(--spacing-xxxl) var(--spacing-xs);
+      }
+
+      .modal__header-bottom {
+        flex-shrink: 0;
+        width: 100%;
+        border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+      }
+    }
+  }
+
+  &__header-row {
+    display: contents;
   }
 
   &__header-inner {

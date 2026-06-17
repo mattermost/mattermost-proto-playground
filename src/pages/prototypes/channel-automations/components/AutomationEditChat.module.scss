@@ -1,28 +1,50 @@
 .chat {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   height: 100%;
   min-height: 0;
 
   &__log {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
   }
 
-  // Anchor messages to the bottom: when sparse, margin-top:auto pushes the
-  // conversation down toward the composer; when it overflows, it scrolls.
   &__log-inner {
     margin-top: auto;
     display: flex;
+    flex: 0 0 auto;
     flex-direction: column;
-    gap: var(--spacing-s);
+    gap: 0;
+    width: 100%;
   }
 
   &__composer {
     flex: 0 0 auto;
-    padding: var(--spacing-s) var(--spacing-xxl) 0;
+    padding: 0 var(--spacing-xxl) var(--spacing-xxl);
+  }
+
+  &__check {
+    display: inline-flex;
+    vertical-align: text-bottom;
+    margin-right: var(--spacing-xxs);
+    color: var(--color-success);
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-s);
   }
 }

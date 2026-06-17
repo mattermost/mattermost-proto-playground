@@ -13,8 +13,7 @@ export interface AutomationsListProps {
   onCreate: () => void;
   onToggle: (id: string, enabled: boolean) => void;
   onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
-  onDelete: (id: string) => void;
+  onRequestDelete: (id: string) => void;
 }
 
 /**
@@ -27,8 +26,7 @@ export default function AutomationsList({
   onCreate,
   onToggle,
   onEdit,
-  onDuplicate,
-  onDelete,
+  onRequestDelete,
 }: AutomationsListProps) {
   if (automations.length === 0) {
     return (
@@ -69,8 +67,7 @@ export default function AutomationsList({
             automation={automation}
             onToggle={onToggle}
             onEdit={onEdit}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
+            onRequestDelete={onRequestDelete}
           />
         ))}
       </div>

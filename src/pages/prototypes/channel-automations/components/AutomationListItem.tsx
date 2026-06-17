@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
-import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
@@ -20,16 +19,14 @@ export interface AutomationListItemProps {
   automation: Automation;
   onToggle: (id: string, enabled: boolean) => void;
   onEdit: (id: string) => void;
-  onDuplicate: (id: string) => void;
-  onDelete: (id: string) => void;
+  onRequestDelete: (id: string) => void;
 }
 
 export default function AutomationListItem({
   automation,
   onToggle,
   onEdit,
-  onDuplicate,
-  onDelete,
+  onRequestDelete,
 }: AutomationListItemProps) {
   const meta = AUTOMATION_TYPE_META[automation.type];
   const [menuOpen, setMenuOpen] = useState(false);
@@ -56,12 +53,6 @@ export default function AutomationListItem({
         <p className={styles['item__name']}>{automation.name}</p>
         <p className={styles['item__trigger']}>
           {meta.label} · {automation.trigger}
-        </p>
-        <p className={styles['item__meta']}>
-          {automation.lastRun
-            ? `Last run ${automation.lastRun}`
-            : 'Hasn’t run yet'}{' '}
-          · Created by {automation.createdBy}
         </p>
       </div>
 
@@ -94,14 +85,6 @@ export default function AutomationListItem({
                 }}
               />
               <MenuItem
-                label="Duplicate"
-                leadingVisual={<Icon size="16" glyph={<ContentCopyIcon />} />}
-                onClick={() => {
-                  close();
-                  onDuplicate(automation.id);
-                }}
-              />
-              <MenuItem
                 label="Delete"
                 destructive
                 leadingVisual={
@@ -109,7 +92,7 @@ export default function AutomationListItem({
                 }
                 onClick={() => {
                   close();
-                  onDelete(automation.id);
+                  onRequestDelete(automation.id);
                 }}
               />
             </PopoverMenu>

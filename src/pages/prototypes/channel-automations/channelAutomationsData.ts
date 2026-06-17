@@ -20,7 +20,7 @@ export type AutomationIconKey = 'clock' | 'recap' | 'responder' | 'custom';
 export interface AutomationTypeMeta {
   type: AutomationType;
   label: string;
-  /** Short label used in the "Create an automation" submenu. */
+  /** Label used in the Automations submenu create actions. */
   menuLabel: string;
   description: string;
   iconKey: AutomationIconKey;
@@ -103,7 +103,7 @@ export const TRIGGER_PICKER_OPTIONS: TriggerPickerOptionMeta[] = [
   },
   {
     id: 'message',
-    label: 'When a message is posted in a channel',
+    label: 'A message is posted in a channel',
     description: 'Start when a new message is posted in this channel',
   },
   {
@@ -130,9 +130,9 @@ export const TRIGGER_PICKER_META: Record<
 );
 
 export const SCHEDULE_FREQUENCY_LABELS: Record<ScheduleFrequency, string> = {
-  weekdays: 'Every weekday',
+  weekdays: 'Weekdays',
   daily: 'Every day',
-  weekly: 'Every Monday',
+  weekly: 'Mondays',
   monthly: 'On the 1st of each month',
 };
 
@@ -147,7 +147,7 @@ export const SCHEDULE_TIMES = [
 export const EVENT_TYPE_LABELS: Record<EventType, string> = {
   mention: 'When the agent is @mentioned',
   keyword: 'When a keyword is posted',
-  message: 'When a message is posted in a channel',
+  message: 'A message is posted in a channel',
   join: 'Someone joins a channel',
   'channel-created': 'A new channel is created',
 };
@@ -195,6 +195,10 @@ export function applyTriggerPickerOption(option: TriggerPickerOption): {
     return { kind: 'event', event: 'join' };
   }
   return { kind: 'event', event: 'channel-created' };
+}
+
+export function triggerPickerNeedsChannel(option: TriggerPickerOption | null): boolean {
+  return option === 'message' || option === 'join';
 }
 
 /** Build the human-readable trigger summary shown in lists. */
@@ -247,48 +251,14 @@ export const ACTIVE_CHANNEL: ChannelContext = {
   attributes: ['design'],
 };
 
-/** Why an automation's scope reaches a given channel. */
-export type ScopeReason = 'channel' | 'team' | 'attribute';
-
-export interface ScopeMatch {
-  reason: ScopeReason;
-  /** Short label for the badge, e.g. "This channel", "Team · Contributors". */
-  label: string;
-}
-
-/** Resolve whether — and why — an automation's scope reaches the channel. */
-export function scopeMatch(
-  scope: AutomationScope,
-  channel: ChannelContext,
-): ScopeMatch | null {
-  if (scope.channelIds?.includes(channel.id)) {
-    return { reason: 'channel', label: 'This channel' };
-  }
-  if (scope.teamIds?.includes(channel.teamId)) {
-    return { reason: 'team', label: `Team · ${channel.teamName}` };
-  }
-  const attribute = scope.attributes?.find((a) => channel.attributes.includes(a));
-  if (attribute) {
-    return { reason: 'attribute', label: `Attribute · ${attribute}` };
-  }
-  return null;
-}
-
-export interface AffectingAutomation {
-  automation: Automation;
-  match: ScopeMatch;
-}
-
-/** Automations whose scope reaches the channel, paired with the match reason. */
-export function automationsAffecting(
-  automations: Automation[],
-  channel: ChannelContext,
-): AffectingAutomation[] {
-  return automations.flatMap((automation) => {
-    const match = scopeMatch(automation.scope, channel);
-    return match ? [{ automation, match }] : [];
-  });
-}
+/** Channels offered when a trigger applies to a specific channel. */
+export const AUTOMATION_CHANNEL_OPTIONS = [
+  { id: 'ux-design', label: 'UX Design' },
+  { id: 'ui-redesign', label: 'UI Redesign' },
+  { id: 'orion', label: 'Orion' },
+  { id: 'release-discussion', label: 'Release Discussion' },
+  { id: 'softphone-ux', label: 'softphone-ux' },
+] as const;
 
 export interface Automation {
   id: string;
@@ -296,7 +266,7 @@ export interface Automation {
   type: AutomationType;
   /** Structured trigger — drives both the summary and the edit form. */
   triggerConfig: TriggerConfig;
-  /** Human-readable trigger summary, e.g. "Every weekday at 9:00 AM". */
+  /** Human-readable trigger summary, e.g. "Weekdays at 9:00 AM". */
   trigger: string;
   /** Natural-language instructions the agent runs when the automation fires. */
   instructions: string;
@@ -314,6 +284,8 @@ export interface AutomationDraft {
   triggerConfig: TriggerConfig;
   instructions: string;
   enabled: boolean;
+  /** Channel the trigger watches, when the trigger type requires one. */
+  triggerChannelId?: string;
 }
 
 /** Assemble a full automation from a form draft. */
@@ -325,8 +297,9 @@ export function draftToAutomation(draft: AutomationDraft, id: string): Automatio
     triggerConfig: draft.triggerConfig,
     trigger: triggerSummary(draft.triggerConfig),
     instructions: draft.instructions.trim(),
-    // New automations default to the channel they're created in.
-    scope: { channelIds: [ACTIVE_CHANNEL.id] },
+    scope: draft.triggerChannelId
+      ? { channelIds: [draft.triggerChannelId] }
+      : { channelIds: [ACTIVE_CHANNEL.id] },
     enabled: draft.enabled,
     lastRun: null,
     createdBy: 'You',
@@ -343,6 +316,9 @@ export function applyDraft(automation: Automation, draft: AutomationDraft): Auto
     trigger: triggerSummary(draft.triggerConfig),
     instructions: draft.instructions.trim(),
     enabled: draft.enabled,
+    ...(draft.triggerChannelId
+      ? { scope: { channelIds: [draft.triggerChannelId] } }
+      : {}),
   };
 }
 
@@ -353,7 +329,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     name: 'Daily standup prompt',
     type: 'recurring-post',
     triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
-    trigger: 'Every weekday at 9:00 AM',
+    trigger: 'Weekdays at 9:00 AM',
     instructions:
       'Post a friendly reminder asking the team to drop their standup update in the thread before 10:00 AM.',
     enabled: true,
@@ -366,7 +342,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     name: 'Weekly design digest',
     type: 'recurring-post',
     triggerConfig: { kind: 'schedule', frequency: 'weekly', time: '8:00 AM' },
-    trigger: 'Every Monday at 8:00 AM',
+    trigger: 'Mondays at 8:00 AM',
     instructions:
       'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',
     enabled: true,
@@ -512,87 +488,4 @@ export function agentById(id: string): Agent | undefined {
 export const CURRENT_USER = {
   name: 'You',
   avatarSrc: avatarEmma,
-};
-
-/* ------------------------------------------------------------------ */
-/* Scripted "create with an Agent" conversation                       */
-/* ------------------------------------------------------------------ */
-
-export interface ConversationOption {
-  /** Label shown on the reply chip. */
-  label: string;
-  /** Message text echoed as the user's reply when chosen. */
-  reply: string;
-}
-
-export interface ConversationStep {
-  /** The Agent's prompt for this step. */
-  agent: string;
-  /** Reply options the user can pick to advance. */
-  options: ConversationOption[];
-}
-
-/**
- * A canned flow that walks the user through building a recurring standup
- * reminder. Each pick advances one step; the final step assembles the
- * automation that gets added to the managed list.
- */
-export const CREATE_SCRIPT: ConversationStep[] = [
-  {
-    agent:
-      'Happy to set up an automation for the UX Design channel. What would you like it to do?',
-    options: [
-      {
-        label: 'Post a recurring reminder',
-        reply: 'Post a recurring reminder to this channel.',
-      },
-      {
-        label: 'Recap activity each week',
-        reply: 'Summarize what happened in the channel each week.',
-      },
-      {
-        label: "Auto-reply when I'm away",
-        reply: "Automatically reply when I'm mentioned after hours.",
-      },
-    ],
-  },
-  {
-    agent: 'Got it — a recurring post. What should the message say?',
-    options: [
-      {
-        label: 'Standup reminder',
-        reply:
-          'Reminder: drop your standup update in the thread before 10:00 AM 🧵',
-      },
-      {
-        label: 'Design review nudge',
-        reply:
-          'Heads up: design review at 2:00 PM today. Add items to the agenda.',
-      },
-    ],
-  },
-  {
-    agent: 'Nice. When should I post it?',
-    options: [
-      { label: 'Every weekday at 9 AM', reply: 'Every weekday at 9:00 AM.' },
-      { label: 'Mondays at 9 AM', reply: 'Mondays at 9:00 AM.' },
-    ],
-  },
-];
-
-/** Message body the produced automation will post. */
-export const SCRIPTED_RESULT_MESSAGE =
-  'Reminder: drop your standup update in the thread before 10:00 AM 🧵';
-
-/** The automation the scripted flow produces once all steps are answered. */
-export const SCRIPTED_RESULT: Omit<Automation, 'id'> = {
-  name: 'Standup reminder',
-  type: 'recurring-post',
-  triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
-  trigger: 'Every weekday at 9:00 AM',
-  instructions: SCRIPTED_RESULT_MESSAGE,
-  scope: { channelIds: ['ux-design'] },
-  enabled: true,
-  lastRun: null,
-  createdBy: 'You + Matty (Agent)',
 };

@@ -1,0 +1,72 @@
+// Underline tab strip (Figma TabAlt `4340-122579`).
+.automations-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &--no-divider {
+    border-bottom: none;
+  }
+
+  &--inset {
+    .automations-tabs__list {
+      padding-left: var(--spacing-xl);
+      padding-right: var(--spacing-xl);
+    }
+  }
+
+  &--rhs-inset {
+    .automations-tabs__list {
+      padding-left: var(--spacing-s);
+    }
+
+    .automations-tabs__tab {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+      padding: var(--spacing-s) var(--spacing-xs) var(--spacing-s);
+    }
+  }
+
+  &__list {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  &__tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-s);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+    transition:
+      color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(&--active) {
+      color: rgba(var(--center-channel-color-rgb), 0.8);
+    }
+
+    &--active {
+      color: var(--link-color);
+      box-shadow: inset 0 -2px 0 var(--link-color);
+    }
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    flex-shrink: 0;
+  }
+}

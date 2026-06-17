@@ -1,0 +1,41 @@
+.engine-dropdown {
+  position: relative;
+  flex-shrink: 0;
+
+  // Matches AgentsPanel `agents__subbar-btn` (Figma subtle button `4311-35530`).
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    font-family: inherit;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--open {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 30;
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+  }
+}

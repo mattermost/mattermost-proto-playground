@@ -2,16 +2,18 @@ import { useState } from 'react';
 import Button from '@/components/ui/Button/Button';
 import Select from '@/components/ui/Select/Select';
 import Switch from '@/components/ui/Switch/Switch';
-import Tabs from '@/components/ui/Tabs/Tabs';
 import TextArea from '@/components/ui/TextArea/TextArea';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import {
+  ACTIVE_CHANNEL,
+  AUTOMATION_CHANNEL_OPTIONS,
   EVENT_TYPE_LABELS,
   SCHEDULE_FREQUENCY_LABELS,
   SCHEDULE_TIMES,
   applyTriggerPickerOption,
   triggerConfigToPickerOption,
+  triggerPickerNeedsChannel,
   type Automation,
   type AutomationDraft,
   type EventType,
@@ -22,24 +24,37 @@ import {
 } from '../channelAutomationsData';
 import type { FormPatch, FormValues } from './automationFormTypes';
 import AutomationEditChat from './AutomationEditChat';
+import AutomationsTabs from './AutomationsTabs';
 import TriggerPicker from './TriggerPicker';
-import agentsViewTabs from './agentsViewTabs.module.scss';
 import styles from './AutomationFormEditor.module.scss';
 
 export type { FormPatch, FormValues } from './automationFormTypes';
 
 type EditorView = 'form' | 'chat';
 
-const VIEW_TABS = [
-  { id: 'chat', label: 'Chat' },
-  { id: 'form', label: 'Form' },
+export type { EditorView };
+
+export const EDITOR_VIEW_TABS = [
+  { id: 'chat' as const, label: 'Chat' },
+  { id: 'form' as const, label: 'Settings' },
 ];
+
+const VIEW_TABS = EDITOR_VIEW_TABS;
 
 export interface AutomationFormEditorProps {
   /** When provided, the editor opens in edit mode pre-filled from this automation. */
   initial?: Automation;
   onSubmit: (draft: AutomationDraft) => void;
   onCancel: () => void;
+  /** When false, hides Chat/Settings tabs and keeps the chat editor. Default: true. */
+  showViewTabs?: boolean;
+  /** When false, hides Cancel/Save on the Settings tab. Default: true. */
+  showFooter?: boolean;
+  /** When false, hides the Enabled switch. Default: true. */
+  showEnabledSwitch?: boolean;
+  /** Controlled Chat/Settings view — used when tabs render in the modal header. */
+  view?: EditorView;
+  onViewChange?: (view: EditorView) => void;
 }
 
 const SCHEDULE_FREQUENCIES = Object.keys(
@@ -54,6 +69,11 @@ export default function AutomationFormEditor({
   initial,
   onSubmit,
   onCancel,
+  showViewTabs = true,
+  showFooter = true,
+  showEnabledSwitch = true,
+  view: controlledView,
+  onViewChange,
 }: AutomationFormEditorProps) {
   const isEdit = initial != null;
   const initialTrigger = initial?.triggerConfig;
@@ -75,10 +95,17 @@ export default function AutomationFormEditor({
   const [keyword, setKeyword] = useState(
     initialTrigger?.kind === 'event' ? (initialTrigger.keyword ?? '') : '',
   );
+  const [channelId, setChannelId] = useState(
+    initial?.scope.channelIds?.[0] ?? ACTIVE_CHANNEL.id,
+  );
   const [instructions, setInstructions] = useState(initial?.instructions ?? '');
   const [enabled, setEnabled] = useState(initial?.enabled ?? true);
 
-  const [view, setView] = useState<EditorView>('chat');
+  const [internalView, setInternalView] = useState<EditorView>(() =>
+    !showViewTabs && initial != null ? 'form' : 'chat',
+  );
+  const view = controlledView ?? internalView;
+  const setView = onViewChange ?? setInternalView;
 
   const values: FormValues = {
     name,
@@ -87,6 +114,7 @@ export default function AutomationFormEditor({
     time,
     event,
     keyword,
+    channelId,
     instructions,
     enabled,
   };
@@ -96,6 +124,7 @@ export default function AutomationFormEditor({
     if (changes.frequency !== undefined) setFrequency(changes.frequency);
     if (changes.time !== undefined) setTime(changes.time);
     if (changes.keyword !== undefined) setKeyword(changes.keyword);
+    if (changes.channelId !== undefined) setChannelId(changes.channelId);
     if (changes.instructions !== undefined) setInstructions(changes.instructions);
     if (changes.enabled !== undefined) setEnabled(changes.enabled);
 
@@ -148,111 +177,150 @@ export default function AutomationFormEditor({
             event,
             ...(event === 'keyword' ? { keyword: keyword.trim() } : {}),
           };
-    onSubmit({ name, triggerConfig, instructions, enabled });
+    onSubmit({
+      name,
+      triggerConfig,
+      instructions,
+      enabled,
+      ...(triggerPickerNeedsChannel(triggerPicker)
+        ? { triggerChannelId: channelId }
+        : {}),
+    });
   };
+
+  const enabledSwitch = showEnabledSwitch ? (
+    <Switch
+      className={styles['editor__enabled']}
+      checked={enabled}
+      onChange={(e) => setEnabled(e.target.checked)}
+      semiBold
+    >
+      Enabled
+    </Switch>
+  ) : null;
+
+  const toolbar = showViewTabs ? (
+    <AutomationsTabs
+      className={styles['editor__tabs']}
+      tabs={VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
+      activeKey={view}
+      onChange={(id) => setView(id as EditorView)}
+      ariaLabel="Automation editor view"
+      controls={enabledSwitch}
+      rhsInset
+    />
+  ) : null;
+
+  const body = (
+    <div className={styles['editor__body']}>
+      {view === 'chat' ? (
+        <AutomationEditChat
+          values={values}
+          patch={patch}
+          onReviewInForm={() => setView('form')}
+          onSave={handleSubmit}
+          canSave={isValid}
+          saveLabel={isEdit ? 'Save changes' : 'Add automation'}
+          isEdit={isEdit}
+          automationType={initial?.type}
+        />
+      ) : (
+        <div className={styles['editor__scroll']}>
+          <Scrollbars>
+            <div className={styles['editor__form']}>
+              <TextInput
+                className={styles['editor__form-control']}
+                label="Automation name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+
+              <TriggerPicker
+                className={styles['editor__form-control']}
+                value={triggerPicker}
+                fallbackLabel={triggerFallbackLabel}
+                onChange={handleTriggerPickerChange}
+              />
+
+              {triggerPicker === 'schedule' ? (
+                <div className={styles['editor__form-row']}>
+                  <Select
+                    className={styles['editor__form-control']}
+                    label="Frequency"
+                    value={frequency}
+                    onChange={(e) =>
+                      setFrequency(e.target.value as ScheduleFrequency)
+                    }
+                  >
+                    {SCHEDULE_FREQUENCIES.map((f) => (
+                      <option key={f} value={f}>
+                        {SCHEDULE_FREQUENCY_LABELS[f]}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    className={styles['editor__form-control']}
+                    label="Time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                  >
+                    {SCHEDULE_TIMES.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              ) : null}
+
+              {triggerPickerNeedsChannel(triggerPicker) ? (
+                <Select
+                  className={styles['editor__form-control']}
+                  label="Channel"
+                  value={channelId}
+                  onChange={(e) => setChannelId(e.target.value)}
+                >
+                  {AUTOMATION_CHANNEL_OPTIONS.map((channel) => (
+                    <option key={channel.id} value={channel.id}>
+                      {channel.label}
+                    </option>
+                  ))}
+                </Select>
+              ) : null}
+
+              <TextArea
+                className={styles['editor__form-control']}
+                label="Instructions"
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+                rows={5}
+                maxLength={500}
+              />
+            </div>
+          </Scrollbars>
+        </div>
+      )}
+    </div>
+  );
+
+  const footerVisible = view === 'form';
+
+  const footer = showFooter && footerVisible ? (
+    <div className={styles['editor__footer']}>
+      <Button emphasis="Tertiary" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button emphasis="Primary" disabled={!isValid} onClick={handleSubmit}>
+        {isEdit ? 'Save changes' : 'Add automation'}
+      </Button>
+    </div>
+  ) : null;
 
   return (
     <div className={styles['editor']}>
-      <Tabs
-        className={[agentsViewTabs['agents-view-tabs'], styles['editor__tabs']]
-          .filter(Boolean)
-          .join(' ')}
-        tabs={VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
-        activeKey={view}
-        onChange={(id) => setView(id as EditorView)}
-        ariaLabel="Automation editor view"
-        controls={
-          <Switch
-            className={styles['editor__enabled']}
-            checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-            semiBold
-          >
-            Enabled
-          </Switch>
-        }
-      />
-
-      <div className={styles['editor__body']}>
-        {view === 'chat' ? (
-          <AutomationEditChat
-            values={values}
-            patch={patch}
-            onReviewInForm={() => setView('form')}
-            isEdit={isEdit}
-          />
-        ) : (
-          <div className={styles['editor__scroll']}>
-            <Scrollbars>
-              <div className={styles['editor__form']}>
-                <TextInput
-                  className={styles['editor__form-control']}
-                  label="Automation name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-
-                <TriggerPicker
-                  className={styles['editor__form-control']}
-                  value={triggerPicker}
-                  fallbackLabel={triggerFallbackLabel}
-                  onChange={handleTriggerPickerChange}
-                />
-
-                {triggerPicker === 'schedule' ? (
-                  <div className={styles['editor__form-row']}>
-                    <Select
-                      className={styles['editor__form-control']}
-                      label="Frequency"
-                      value={frequency}
-                      onChange={(e) =>
-                        setFrequency(e.target.value as ScheduleFrequency)
-                      }
-                    >
-                      {SCHEDULE_FREQUENCIES.map((f) => (
-                        <option key={f} value={f}>
-                          {SCHEDULE_FREQUENCY_LABELS[f]}
-                        </option>
-                      ))}
-                    </Select>
-                    <Select
-                      className={styles['editor__form-control']}
-                      label="Time"
-                      value={time}
-                      onChange={(e) => setTime(e.target.value)}
-                    >
-                      {SCHEDULE_TIMES.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </Select>
-                  </div>
-                ) : null}
-
-                <TextArea
-                  className={styles['editor__form-control']}
-                  label="Instructions"
-                  value={instructions}
-                  onChange={(e) => setInstructions(e.target.value)}
-                  rows={5}
-                  maxLength={500}
-                  showCharacterCount
-                />
-              </div>
-            </Scrollbars>
-          </div>
-        )}
-      </div>
-
-      <div className={styles['editor__footer']}>
-        <Button emphasis="Tertiary" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button emphasis="Primary" disabled={!isValid} onClick={handleSubmit}>
-          {isEdit ? 'Save changes' : 'Add automation'}
-        </Button>
-      </div>
+      {toolbar}
+      {body}
+      {footer}
     </div>
   );
 }

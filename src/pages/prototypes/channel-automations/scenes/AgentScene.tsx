@@ -6,18 +6,20 @@ import EditAgentView, {
 } from '../components/EditAgentView';
 import AgentAutomationsTab from '../components/AgentAutomationsTab';
 import AgentsShell from '../components/AgentsShell';
-import AutomationFormEditor from '../components/AutomationFormEditor';
+import AutomationDeleteModal from '../components/AutomationDeleteModal';
+import AutomationFormModal from '../components/AutomationFormModal';
 import PlaceholderTab from '../components/PlaceholderTab';
 
 export interface AgentSceneProps {
   agentId: string;
+  /** When true, opens the new-automation modal on the Automations tab on mount. */
+  openCreateOnMount?: boolean;
   automations: Automation[];
   /** Create from the form. */
   onCreate: (draft: AutomationDraft) => void;
   /** Save edits to an existing automation. */
   onUpdate: (id: string, draft: AutomationDraft) => void;
   onToggle: (id: string, enabled: boolean) => void;
-  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
   /** Leave the edit-agent view (back / cancel / save). */
   onClose: () => void;
@@ -35,23 +37,38 @@ type FormState =
  */
 export default function AgentScene({
   agentId,
+  openCreateOnMount = false,
   automations,
   onCreate,
   onUpdate,
   onToggle,
-  onDuplicate,
   onDelete,
   onClose,
 }: AgentSceneProps) {
   const agent = agentById(agentId);
   const [tab, setTab] = useState<AgentTabKey>('automations');
-  const [form, setForm] = useState<FormState>(null);
-
-  const inEditor = form != null;
+  const [form, setForm] = useState<FormState>(() =>
+    openCreateOnMount ? { mode: 'create' } : null,
+  );
+  const [deleteTarget, setDeleteTarget] = useState<Automation | null>(null);
 
   const openEdit = (id: string) => {
     const automation = automations.find((a) => a.id === id);
     if (automation) setForm({ mode: 'edit', automation });
+  };
+
+  const openDeleteConfirm = (id: string) => {
+    const automation = automations.find((a) => a.id === id);
+    if (automation) setDeleteTarget(automation);
+  };
+
+  const closeDeleteConfirm = () => setDeleteTarget(null);
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      onDelete(deleteTarget.id);
+    }
+    closeDeleteConfirm();
   };
 
   const closeEditor = () => setForm(null);
@@ -66,42 +83,41 @@ export default function AgentScene({
   };
 
   return (
-    <AgentsShell>
+    <AgentsShell
+      overlay={
+        <>
+          {form && (
+            <AutomationFormModal
+              initial={form.mode === 'edit' ? form.automation : undefined}
+              onSubmit={handleSubmit}
+              onClose={closeEditor}
+            />
+          )}
+          {deleteTarget && (
+            <AutomationDeleteModal
+              automationName={deleteTarget.name}
+              onConfirm={confirmDelete}
+              onClose={closeDeleteConfirm}
+            />
+          )}
+        </>
+      }
+    >
       <EditAgentView
         title={agent ? `Edit ${agent.displayName}` : 'Edit Agent'}
         activeTab={tab}
         onTabChange={setTab}
         onClose={onClose}
         onSave={onClose}
-        subview={
-          inEditor
-            ? {
-                title:
-                  form.mode === 'edit' ? 'Edit automation' : 'New automation',
-                onBack: closeEditor,
-              }
-            : undefined
-        }
-        fillBody={inEditor}
-        hideFooter={inEditor}
       >
         {tab === 'automations' ? (
-          inEditor ? (
-            <AutomationFormEditor
-              initial={form.mode === 'edit' ? form.automation : undefined}
-              onSubmit={handleSubmit}
-              onCancel={closeEditor}
-            />
-          ) : (
-            <AgentAutomationsTab
-              automations={automations}
-              onNew={() => setForm({ mode: 'create' })}
-              onEdit={openEdit}
-              onToggle={onToggle}
-              onDuplicate={onDuplicate}
-              onDelete={onDelete}
-            />
-          )
+          <AgentAutomationsTab
+            automations={automations}
+            onNew={() => setForm({ mode: 'create' })}
+            onEdit={openEdit}
+            onToggle={onToggle}
+            onRequestDelete={openDeleteConfirm}
+          />
         ) : (
           <PlaceholderTab tab={tab} />
         )}

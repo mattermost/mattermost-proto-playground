@@ -2,7 +2,6 @@ import { useState } from 'react';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import SendIcon from '@mattermost/compass-icons/components/send';
-import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import TextInput from '@/components/ui/TextInput/TextInput';
@@ -14,37 +13,43 @@ import PopoverMenu, {
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import {
   AUTOMATION_TYPE_META,
-  AUTOMATION_TYPES,
-  type AffectingAutomation,
   type AutomationType,
 } from '../channelAutomationsData';
-import { automationGlyph } from './automationIcons';
+import AgentEngineDropdown from './AgentEngineDropdown';
 import styles from './ChannelAiMenu.module.scss';
 
+/** Create actions in the Automations submenu (Figma `4265-40105`). */
+const CREATE_MENU_ORDER: AutomationType[] = [
+  'custom',
+  'recurring-post',
+  'recap',
+  'auto-responder',
+];
+
 export interface ChannelAiMenuProps {
-  automationCount: number;
-  /** Automations whose scope reaches the active channel, with the match reason. */
-  affecting: AffectingAutomation[];
   onSelectType: (type: AutomationType) => void;
   onViewAutomations: () => void;
+  onManageAgents: () => void;
 }
 
 /**
- * The channel-header Agents menu (Figma `4258-42989`): an ask-input, a
- * Summarize group, the "Create an automation [NEW]" submenu, a "View
- * automations" row that surfaces the count, and a generation-engine selector.
+ * The channel-header Agents menu (Figma `4258-42989`): an agent selector,
+ * an ask-input, a Summarize group, and an Automations submenu [NEW].
  */
 export default function ChannelAiMenu({
-  automationCount,
-  affecting,
   onSelectType,
   onViewAutomations,
+  onManageAgents,
 }: ChannelAiMenuProps) {
-  const [submenuOpen, setSubmenuOpen] = useState(false);
-  const [activeOpen, setActiveOpen] = useState(false);
+  const [automationsOpen, setAutomationsOpen] = useState(false);
 
   return (
     <PopoverMenu className={styles['ai-menu']}>
+      <div className={styles['ai-menu__generate']}>
+        <span className={styles['ai-menu__generate-label']}>Agent</span>
+        <AgentEngineDropdown />
+      </div>
+
       <div className={styles['ai-menu__ask']}>
         <TextInput
           aria-label="Ask Agents about this channel"
@@ -77,121 +82,50 @@ export default function ChannelAiMenu({
       <PopoverMenuGroup
         aria-label="Automations"
         className={styles['ai-menu__automation-group']}
-        onMouseLeave={() => {
-          setSubmenuOpen(false);
-          setActiveOpen(false);
-        }}
+        onMouseLeave={() => setAutomationsOpen(false)}
       >
         <MenuItem
           leadingElement={false}
-          label="Create an automation"
+          label="Automations"
           tag
-          active={submenuOpen}
+          active={automationsOpen}
           trailingElement
           trailingVisual={<Icon size="16" glyph={<ChevronRightIcon />} />}
           aria-haspopup="menu"
-          aria-expanded={submenuOpen}
-          onMouseEnter={() => {
-            setSubmenuOpen(true);
-            setActiveOpen(false);
-          }}
-          onClick={() => setSubmenuOpen((o) => !o)}
+          aria-expanded={automationsOpen}
+          onMouseEnter={() => setAutomationsOpen(true)}
+          onClick={() => setAutomationsOpen((open) => !open)}
         />
 
-        {submenuOpen && (
+        {automationsOpen && (
           <PopoverMenu variant="child" className={styles['ai-menu__submenu']}>
-            {AUTOMATION_TYPES.map((meta) => (
-              <MenuItem
-                key={meta.type}
-                label={meta.menuLabel}
-                leadingVisual={
-                  <Icon size="16" glyph={automationGlyph(meta.iconKey)} />
-                }
-                onClick={() => onSelectType(meta.type)}
-              />
-            ))}
-            <PopoverMenuDivider />
-            <MenuItem
-              label="View automations in this channel"
-              leadingVisual={
-                <Icon size="16" glyph={<FormatListBulletedIcon />} />
-              }
-              secondaryLabel={String(automationCount)}
-              secondaryLabelPosition="Inline"
-              onClick={onViewAutomations}
-            />
-          </PopoverMenu>
-        )}
-
-        {affecting.length > 0 && (
-          <>
             <MenuItem
               leadingElement={false}
               label="Automations in this channel"
-              active={activeOpen}
-              trailingElement
-              trailingVisual={
-                <span className={styles['ai-menu__trailing']}>
-                  <span className={styles['ai-menu__count']}>
-                    {affecting.length}
-                  </span>
-                  <Icon size="16" glyph={<ChevronRightIcon />} />
-                </span>
-              }
-              aria-haspopup="menu"
-              aria-expanded={activeOpen}
-              onMouseEnter={() => {
-                setActiveOpen(true);
-                setSubmenuOpen(false);
-              }}
-              onClick={() => setActiveOpen((o) => !o)}
+              onClick={onViewAutomations}
             />
 
-            {activeOpen && (
-              <PopoverMenu variant="child" className={styles['ai-menu__submenu']}>
-                {affecting.map(({ automation, match }) => (
-                  <MenuItem
-                    key={automation.id}
-                    label={automation.name}
-                    leadingVisual={
-                      <Icon
-                        size="16"
-                        glyph={automationGlyph(
-                          AUTOMATION_TYPE_META[automation.type].iconKey,
-                        )}
-                      />
-                    }
-                    secondaryLabel={match.label}
-                    secondaryLabelPosition="Below"
-                    onClick={onViewAutomations}
-                  />
-                ))}
-                <PopoverMenuDivider />
-                <MenuItem
-                  leadingElement={false}
-                  label="View all automations"
-                  secondaryLabel={String(automationCount)}
-                  secondaryLabelPosition="Inline"
-                  onClick={onViewAutomations}
-                />
-              </PopoverMenu>
-            )}
-          </>
+            <PopoverMenuDivider />
+
+            {CREATE_MENU_ORDER.map((type) => (
+              <MenuItem
+                key={type}
+                leadingElement={false}
+                label={AUTOMATION_TYPE_META[type].menuLabel}
+                onClick={() => onSelectType(type)}
+              />
+            ))}
+
+            <PopoverMenuDivider />
+
+            <MenuItem
+              leadingElement={false}
+              label="Manage agents"
+              onClick={onManageAgents}
+            />
+          </PopoverMenu>
         )}
       </PopoverMenuGroup>
-
-      <PopoverMenuDivider />
-
-      <div className={styles['ai-menu__generate']}>
-        <span className={styles['ai-menu__generate-label']}>Generate with</span>
-        <select
-          className={styles['ai-menu__generate-select']}
-          defaultValue="openai"
-        >
-          <option value="openai">OpenAI</option>
-          <option value="anthropic">Anthropic</option>
-        </select>
-      </div>
     </PopoverMenu>
   );
 }

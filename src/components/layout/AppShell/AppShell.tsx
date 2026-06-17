@@ -12,8 +12,11 @@ export default function AppShell() {
   const prototypeEntry = getPrototypeByPath(pathname);
   const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
 
+  // Clear the slot when leaving a prototype route. Do not clear on mount — the
+  // page's useEffect runs after this and would lose a race to a later pathname
+  // tick that re-runs this effect (e.g. after refresh / basename normalization).
   useEffect(() => {
-    setPrototypeCenterSlot(null);
+    return () => setPrototypeCenterSlot(null);
   }, [pathname]);
 
   return (

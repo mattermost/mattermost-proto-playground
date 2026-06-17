@@ -46,6 +46,8 @@ export default function TriggerPicker({
 
   const selectedMeta = value != null ? TRIGGER_PICKER_OPTIONS.find((o) => o.id === value) : null;
   const displayLabel = selectedMeta?.label ?? fallbackLabel;
+  const TriggerIcon =
+    value != null ? OPTION_ICONS[value] : LightningBoltOutlineIcon;
 
   const close = () => setOpen(false);
 
@@ -67,7 +69,7 @@ export default function TriggerPicker({
         onClick={() => setOpen((current) => !current)}
       >
         <span className={styles['trigger-picker__leading']} aria-hidden>
-          <Icon size="16" glyph={<LightningBoltOutlineIcon />} />
+          <Icon size="16" glyph={<TriggerIcon />} />
         </span>
         <span className={styles['trigger-picker__label']}>
           {displayLabel != null ? (
@@ -75,15 +77,9 @@ export default function TriggerPicker({
               {displayLabel}
             </span>
           ) : (
-            <>
-              <span className={styles['trigger-picker__label-emphasis']}>
-                Choose a trigger
-              </span>
-              <span className={styles['trigger-picker__label-rest']}>
-                {' '}
-                to start the automation
-              </span>
-            </>
+            <span className={styles['trigger-picker__label-emphasis']}>
+              What starts the automation?
+            </span>
           )}
         </span>
         <span
@@ -95,7 +91,7 @@ export default function TriggerPicker({
             .join(' ')}
           aria-hidden
         >
-          <Icon size="12" glyph={<ChevronDownIcon />} />
+          <Icon size="16" glyph={<ChevronDownIcon />} />
         </span>
       </button>
 
@@ -111,10 +107,9 @@ export default function TriggerPicker({
               <MenuItem
                 key={option.id}
                 label={option.label}
-                secondaryLabel={option.description}
                 active={value === option.id}
                 trailingElement={value === option.id}
-                leadingVisual={<Icon size="20" glyph={<OptionIcon />} />}
+                leadingVisual={<Icon size="16" glyph={<OptionIcon />} />}
                 onClick={() => {
                   onChange(option.id);
                   close();

@@ -17,7 +17,7 @@ export default function AgentSelector({ className }: AgentSelectorProps) {
       className={className}
       size="Small"
       aria-label={`Agent: ${AGENT.displayName}`}
-      leadingIcon={<UserAvatar src={AGENT.avatarSrc} alt={AGENT.displayName} size="20" />}
+      leadingIcon={<UserAvatar src={AGENT.avatarSrc} alt={AGENT.displayName} size="16" />}
     >
       {AGENT.displayName}
     </Dropdown>

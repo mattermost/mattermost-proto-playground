@@ -1,48 +1,44 @@
+import type { AutomationDraft } from '../channelAutomationsData';
 import AutomationsShell from '../components/AutomationsShell';
-import AgentsPanel from '../components/AgentsPanel';
-import ScriptedAgentConversation from '../components/ScriptedAgentConversation';
-import type { Automation, AutomationType } from '../channelAutomationsData';
-import type { HeaderEntryPoint } from '../channelAutomationsScenes';
+import AutomationsPanel from '../components/AutomationsPanel';
 
 export interface CreateSceneProps {
-  automations: Automation[];
-  headerEntryPoint: HeaderEntryPoint;
-  showAlternates: boolean;
-  /** Re-entering the create flow from a header/menu entry point. */
-  onCreate: (type?: AutomationType) => void;
-  /** Add the scripted automation to the managed list. */
-  onAddAutomation: () => void;
+  onCreateAutomation: (draft: AutomationDraft) => void;
   onManage: () => void;
+  onManageAgents: () => void;
   onClose: () => void;
 }
 
 /**
- * Create scene — the Agents RHS runs the scripted builder conversation; on
- * finish it adds a real automation and links to the management surface.
+ * Create scene — opens the inline automation editor in the RHS, matching the
+ * manage and discover create flows.
  */
 export default function CreateScene({
-  automations,
-  headerEntryPoint,
-  showAlternates,
-  onCreate,
-  onAddAutomation,
+  onCreateAutomation,
   onManage,
+  onManageAgents,
   onClose,
 }: CreateSceneProps) {
   return (
     <AutomationsShell
-      automations={automations}
-      headerEntryPoint={headerEntryPoint}
-      showAlternates={showAlternates}
-      onCreate={onCreate}
+      onCreate={() => {}}
       onOpenManage={onManage}
+      onManageAgents={onManageAgents}
       rhs={
-        <AgentsPanel onClose={onClose} onViewAutomations={onManage}>
-          <ScriptedAgentConversation
-            onCreate={onAddAutomation}
-            onViewAutomations={onManage}
-          />
-        </AgentsPanel>
+        <AutomationsPanel
+          automations={[]}
+          creating
+          onBackFromEditor={onClose}
+          onCreateSubmit={(draft) => {
+            onCreateAutomation(draft);
+            onClose();
+          }}
+          onClose={onClose}
+          onCreate={() => {}}
+          onToggle={() => {}}
+          onEdit={() => {}}
+          onRequestDelete={() => {}}
+        />
       }
     />
   );

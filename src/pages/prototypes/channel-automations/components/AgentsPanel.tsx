@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import RestoreIcon from '@mattermost/compass-icons/components/restore';
+import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import Icon from '@/components/ui/Icon/Icon';
@@ -36,20 +36,20 @@ export default function AgentsPanel({
       />
 
       <div className={styles['agents__subbar']}>
-        <button type="button" className={styles['agents__tab']}>
-          <Icon size="12" glyph={<RestoreIcon />} />
+        <button type="button" className={styles['agents__subbar-btn']}>
+          <Icon size="12" glyph={<ClockOutlineIcon />} />
           <span>Chat history</span>
         </button>
         <div className={styles['agents__subbar-actions']}>
           <button
             type="button"
-            className={styles['agents__chip']}
+            className={styles['agents__subbar-btn']}
             onClick={onViewAutomations}
           >
             <Icon size="12" glyph={<LightningBoltOutlineIcon />} />
             <span>Automations</span>
           </button>
-          <button type="button" className={styles['agents__chip']}>
+          <button type="button" className={styles['agents__subbar-btn']}>
             <span>Tools</span>
             <Icon size="12" glyph={<ChevronDownIcon />} />
           </button>

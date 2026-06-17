@@ -12,8 +12,7 @@ export interface AgentAutomationsTabProps {
   /** Open the edit form for an automation. */
   onEdit: (id: string) => void;
   onToggle: (id: string, enabled: boolean) => void;
-  onDuplicate: (id: string) => void;
-  onDelete: (id: string) => void;
+  onRequestDelete: (id: string) => void;
 }
 
 /**
@@ -26,8 +25,7 @@ export default function AgentAutomationsTab({
   onNew,
   onEdit,
   onToggle,
-  onDuplicate,
-  onDelete,
+  onRequestDelete,
 }: AgentAutomationsTabProps) {
   if (automations.length === 0) {
     return (
@@ -37,8 +35,9 @@ export default function AgentAutomationsTab({
           Create automations that run on a schedule or in response to events.
         </p>
         <Button
+          size="Small"
           emphasis="Tertiary"
-          leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+          leadingIcon={<Icon size="12" glyph={<PlusIcon />} />}
           onClick={onNew}
         >
           New automation
@@ -57,8 +56,9 @@ export default function AgentAutomationsTab({
           </p>
         </div>
         <Button
+          size="Small"
           emphasis="Tertiary"
-          leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+          leadingIcon={<Icon size="12" glyph={<PlusIcon />} />}
           onClick={onNew}
         >
           New automation
@@ -72,8 +72,7 @@ export default function AgentAutomationsTab({
             automation={automation}
             onToggle={onToggle}
             onEdit={onEdit}
-            onDuplicate={onDuplicate}
-            onDelete={onDelete}
+            onRequestDelete={onRequestDelete}
           />
         ))}
       </div>

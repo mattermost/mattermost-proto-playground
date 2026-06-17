@@ -36,8 +36,7 @@
     justify-content: space-between;
     gap: var(--spacing-s);
     width: 100%;
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    padding-bottom: 0;
   }
 
   &__actions {
@@ -45,6 +44,20 @@
     align-items: center;
     gap: var(--spacing-xs);
     flex-shrink: 0;
+  }
+
+  &__agent-picker {
+    position: relative;
+  }
+
+  &__agent-picker-menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    right: 0;
+    z-index: 30;
+    width: max-content;
+    min-width: 220px;
+    max-width: none;
   }
 
   &__body {

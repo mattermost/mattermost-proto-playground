@@ -38,15 +38,4 @@
       animation: shell-popover-out var(--duration-quick) var(--ease-exit);
     }
   }
-
-  &__name-popover {
-    position: fixed;
-    z-index: 40;
-    transform-origin: top left;
-    animation: shell-popover-in var(--duration-quick) var(--ease-entrance);
-
-    &--exiting {
-      animation: shell-popover-out var(--duration-quick) var(--ease-exit);
-    }
-  }
 }

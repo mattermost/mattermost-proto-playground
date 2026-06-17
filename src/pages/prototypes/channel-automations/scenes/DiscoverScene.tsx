@@ -1,49 +1,62 @@
 import { useState } from 'react';
+import type { AutomationDraft } from '../channelAutomationsData';
 import AutomationsShell from '../components/AutomationsShell';
 import AgentsPanel from '../components/AgentsPanel';
 import AgentsEmptyState from '../components/AgentsEmptyState';
-import type { Automation, AutomationType } from '../channelAutomationsData';
-import type { HeaderEntryPoint } from '../channelAutomationsScenes';
+import AutomationsPanel from '../components/AutomationsPanel';
 
 export interface DiscoverSceneProps {
-  automations: Automation[];
-  headerEntryPoint: HeaderEntryPoint;
-  showAlternates: boolean;
-  onCreate: (type?: AutomationType) => void;
+  onCreateAutomation: (draft: AutomationDraft) => void;
   onManage: () => void;
+  onManageAgents: () => void;
 }
 
-/**
- * Discover scene — the channel with the three featured entry points live
- * (header Agents menu, automations count icon, Agents RHS empty-state CTA),
- * plus the toggleable alternates.
- */
+/** Discover scene — channel with the Agents menu and RHS empty-state CTA. */
 export default function DiscoverScene({
-  automations,
-  headerEntryPoint,
-  showAlternates,
-  onCreate,
+  onCreateAutomation,
   onManage,
+  onManageAgents,
 }: DiscoverSceneProps) {
   const [agentsOpen, setAgentsOpen] = useState(true);
+  const [creating, setCreating] = useState(false);
 
-  return (
-    <AutomationsShell
-      automations={automations}
-      headerEntryPoint={headerEntryPoint}
-      showAlternates={showAlternates}
-      onCreate={onCreate}
-      onOpenManage={onManage}
-      rhs={
-        agentsOpen ? (
+  const openCreate = () => setCreating(true);
+  const closeCreate = () => setCreating(false);
+
+  const rhs = !agentsOpen
+    ? undefined
+    : creating
+      ? (
+          <AutomationsPanel
+            automations={[]}
+            creating
+            onBackFromEditor={closeCreate}
+            onCreateSubmit={(draft) => {
+              onCreateAutomation(draft);
+              closeCreate();
+            }}
+            onClose={() => setAgentsOpen(false)}
+            onCreate={openCreate}
+            onToggle={() => {}}
+            onEdit={() => {}}
+            onRequestDelete={() => {}}
+          />
+        )
+      : (
           <AgentsPanel
             onClose={() => setAgentsOpen(false)}
             onViewAutomations={onManage}
           >
-            <AgentsEmptyState onCreate={() => onCreate()} />
+            <AgentsEmptyState onCreate={openCreate} />
           </AgentsPanel>
-        ) : undefined
-      }
+        );
+
+  return (
+    <AutomationsShell
+      onCreate={openCreate}
+      onOpenManage={onManage}
+      onManageAgents={onManageAgents}
+      rhs={rhs}
     />
   );
 }

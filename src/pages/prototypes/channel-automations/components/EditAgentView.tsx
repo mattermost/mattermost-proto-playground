@@ -4,14 +4,13 @@ import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import Tabs from '@/components/ui/Tabs/Tabs';
-import type { TabItem } from '@/components/ui/Tabs/Tabs';
-import agentsViewTabs from './agentsViewTabs.module.scss';
+import AutomationsTabs from './AutomationsTabs';
+import type { AutomationsTabItem } from './AutomationsTabs';
 import styles from './EditAgentView.module.scss';
 
 export type AgentTabKey = 'configuration' | 'access' | 'automations' | 'mcps';
 
-const TABS: TabItem[] = [
+const TABS: AutomationsTabItem[] = [
   { key: 'configuration', label: 'Configuration' },
   { key: 'access', label: 'Access' },
   { key: 'automations', label: 'Automations' },
@@ -94,8 +93,7 @@ export default function EditAgentView({
             <h1 className={styles['edit-agent__title']}>{title}</h1>
           </div>
 
-          <Tabs
-            className={agentsViewTabs['agents-view-tabs']}
+          <AutomationsTabs
             tabs={TABS}
             activeKey={activeTab}
             onChange={(key) => onTabChange(key as AgentTabKey)}
