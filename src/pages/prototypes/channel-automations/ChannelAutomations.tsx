@@ -10,7 +10,6 @@ import {
 } from './channelAutomationsData';
 import { SCENES, type SceneId } from './channelAutomationsScenes';
 import DiscoverScene from './scenes/DiscoverScene';
-import CreateScene from './scenes/CreateScene';
 import ManageScene from './scenes/ManageScene';
 import AgentsIndexScene from './scenes/AgentsIndexScene';
 import AgentScene from './scenes/AgentScene';
@@ -91,15 +90,6 @@ export default function ChannelAutomations() {
           onCreateAutomation={createAutomation}
           onManage={() => goManageFrom('discover')}
           onManageAgents={goAgents}
-        />
-      )}
-
-      {scene === 'create' && (
-        <CreateScene
-          onCreateAutomation={createAutomation}
-          onManage={() => goManageFrom('create')}
-          onManageAgents={goAgents}
-          onClose={goDiscover}
         />
       )}
 

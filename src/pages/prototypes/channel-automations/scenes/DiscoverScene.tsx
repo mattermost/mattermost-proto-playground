@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { AutomationDraft } from '../channelAutomationsData';
+import type { AutomationDraft, AutomationType } from '../channelAutomationsData';
 import AutomationsShell from '../components/AutomationsShell';
 import AgentsPanel from '../components/AgentsPanel';
 import AgentsEmptyState from '../components/AgentsEmptyState';
@@ -19,9 +19,16 @@ export default function DiscoverScene({
 }: DiscoverSceneProps) {
   const [agentsOpen, setAgentsOpen] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [createType, setCreateType] = useState<AutomationType | undefined>();
 
-  const openCreate = () => setCreating(true);
-  const closeCreate = () => setCreating(false);
+  const openCreate = (type?: AutomationType) => {
+    setCreateType(type);
+    setCreating(true);
+  };
+  const closeCreate = () => {
+    setCreating(false);
+    setCreateType(undefined);
+  };
 
   const rhs = !agentsOpen
     ? undefined
@@ -30,6 +37,7 @@ export default function DiscoverScene({
           <AutomationsPanel
             automations={[]}
             creating
+            createType={createType}
             onBackFromEditor={closeCreate}
             onCreateSubmit={(draft) => {
               onCreateAutomation(draft);
@@ -47,7 +55,7 @@ export default function DiscoverScene({
             onClose={() => setAgentsOpen(false)}
             onViewAutomations={onManage}
           >
-            <AgentsEmptyState onCreate={openCreate} />
+            <AgentsEmptyState onCreate={() => openCreate()} />
           </AgentsPanel>
         );
 

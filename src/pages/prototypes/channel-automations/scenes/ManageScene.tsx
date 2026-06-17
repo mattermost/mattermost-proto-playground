@@ -5,6 +5,7 @@ import AutomationDeleteModal from '../components/AutomationDeleteModal';
 import type {
   Automation,
   AutomationDraft,
+  AutomationType,
 } from '../channelAutomationsData';
 
 export interface ManageSceneProps {
@@ -31,6 +32,7 @@ export default function ManageScene({
   onManageAgents,
 }: ManageSceneProps) {
   const [creating, setCreating] = useState(false);
+  const [createType, setCreateType] = useState<AutomationType | undefined>();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Automation | null>(null);
   const editing =
@@ -40,16 +42,19 @@ export default function ManageScene({
 
   const closeEditor = () => {
     setCreating(false);
+    setCreateType(undefined);
     setEditingId(null);
   };
 
-  const openCreate = () => {
+  const openCreate = (type?: AutomationType) => {
     setEditingId(null);
+    setCreateType(type);
     setCreating(true);
   };
 
   const openEdit = (id: string) => {
     setCreating(false);
+    setCreateType(undefined);
     setEditingId(id);
   };
 
@@ -85,6 +90,7 @@ export default function ManageScene({
         <AutomationsPanel
           automations={automations}
           creating={creating}
+          createType={createType}
           editing={editing}
           onBackFromEditor={closeEditor}
           onCreateSubmit={onCreateAutomation}

@@ -1,7 +1,11 @@
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import { RightSidebarHeader } from '@/components/ui/RightSidebar';
 import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
-import type { Automation, AutomationDraft } from '../channelAutomationsData';
+import type {
+  Automation,
+  AutomationDraft,
+  AutomationType,
+} from '../channelAutomationsData';
 import AgentSelector from './AgentSelector';
 import AutomationFormEditor from './AutomationFormEditor';
 import AutomationsList from './AutomationsList';
@@ -11,6 +15,8 @@ export interface AutomationsPanelProps {
   automations: Automation[];
   /** When true, shows the inline create editor. */
   creating?: boolean;
+  /** Seeds the create editor when opened from the Agents menu. */
+  createType?: AutomationType;
   /** When set, shows the inline edit editor for this automation. */
   editing?: Automation | null;
   onBackFromEditor?: () => void;
@@ -19,7 +25,7 @@ export interface AutomationsPanelProps {
   /** Return to the agents panel the list was opened from. */
   onBack?: () => void;
   onClose: () => void;
-  onCreate: () => void;
+  onCreate: (type?: AutomationType) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onEdit: (id: string) => void;
   onRequestDelete: (id: string) => void;
@@ -29,6 +35,7 @@ export interface AutomationsPanelProps {
 export default function AutomationsPanel({
   automations,
   creating = false,
+  createType,
   editing,
   onBackFromEditor,
   onCreateSubmit,
@@ -68,7 +75,9 @@ export default function AutomationsPanel({
         {inEditor && onBackFromEditor ? (
           <div className={styles['panel__editor']}>
             <AutomationFormEditor
+              key={creating ? `create-${createType ?? 'blank'}` : editing?.id}
               initial={editing ?? undefined}
+              createType={creating ? createType : undefined}
               onSubmit={handleSubmit}
               onCancel={onBackFromEditor}
               showEnabledSwitch={false}

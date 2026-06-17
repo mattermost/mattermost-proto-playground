@@ -12,10 +12,12 @@ import {
   SCHEDULE_FREQUENCY_LABELS,
   SCHEDULE_TIMES,
   applyTriggerPickerOption,
+  seedForAutomationType,
   triggerConfigToPickerOption,
   triggerPickerNeedsChannel,
   type Automation,
   type AutomationDraft,
+  type AutomationType,
   type EventType,
   type ScheduleFrequency,
   type TriggerConfig,
@@ -28,8 +30,6 @@ import AutomationsTabs from './AutomationsTabs';
 import TriggerPicker from './TriggerPicker';
 import styles from './AutomationFormEditor.module.scss';
 
-export type { FormPatch, FormValues } from './automationFormTypes';
-
 type EditorView = 'form' | 'chat';
 
 export type { EditorView };
@@ -39,11 +39,11 @@ export const EDITOR_VIEW_TABS = [
   { id: 'form' as const, label: 'Settings' },
 ];
 
-const VIEW_TABS = EDITOR_VIEW_TABS;
-
 export interface AutomationFormEditorProps {
   /** When provided, the editor opens in edit mode pre-filled from this automation. */
   initial?: Automation;
+  /** When creating, seeds defaults from an Agents-menu automation type. */
+  createType?: AutomationType;
   onSubmit: (draft: AutomationDraft) => void;
   onCancel: () => void;
   /** When false, hides Chat/Settings tabs and keeps the chat editor. Default: true. */
@@ -67,6 +67,7 @@ const SCHEDULE_FREQUENCIES = Object.keys(
  */
 export default function AutomationFormEditor({
   initial,
+  createType,
   onSubmit,
   onCancel,
   showViewTabs = true,
@@ -76,9 +77,10 @@ export default function AutomationFormEditor({
   onViewChange,
 }: AutomationFormEditorProps) {
   const isEdit = initial != null;
-  const initialTrigger = initial?.triggerConfig;
+  const seed = !isEdit && createType ? seedForAutomationType(createType) : null;
+  const initialTrigger = initial?.triggerConfig ?? seed?.triggerConfig;
 
-  const [name, setName] = useState(initial?.name ?? '');
+  const [name, setName] = useState(initial?.name ?? seed?.name ?? '');
   const [triggerPicker, setTriggerPicker] = useState<TriggerPickerOption | null>(
     () => triggerConfigToPickerOption(initialTrigger),
   );
@@ -98,7 +100,9 @@ export default function AutomationFormEditor({
   const [channelId, setChannelId] = useState(
     initial?.scope.channelIds?.[0] ?? ACTIVE_CHANNEL.id,
   );
-  const [instructions, setInstructions] = useState(initial?.instructions ?? '');
+  const [instructions, setInstructions] = useState(
+    initial?.instructions ?? seed?.instructions ?? '',
+  );
   const [enabled, setEnabled] = useState(initial?.enabled ?? true);
 
   const [internalView, setInternalView] = useState<EditorView>(() =>
@@ -202,7 +206,7 @@ export default function AutomationFormEditor({
   const toolbar = showViewTabs ? (
     <AutomationsTabs
       className={styles['editor__tabs']}
-      tabs={VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
+      tabs={EDITOR_VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
       activeKey={view}
       onChange={(id) => setView(id as EditorView)}
       ariaLabel="Automation editor view"
@@ -222,7 +226,7 @@ export default function AutomationFormEditor({
           canSave={isValid}
           saveLabel={isEdit ? 'Save changes' : 'Add automation'}
           isEdit={isEdit}
-          automationType={initial?.type}
+          automationType={initial?.type ?? createType}
         />
       ) : (
         <div className={styles['editor__scroll']}>

@@ -28,15 +28,6 @@ export interface EditAgentViewProps {
   onSave: () => void;
   /** Active tab content. */
   children: ReactNode;
-  /** When set, replaces the Edit Agent header and tab strip for a drill-in step. */
-  subview?: {
-    title: string;
-    onBack: () => void;
-  };
-  /** Let the tab body fill remaining height (for chat editors). */
-  fillBody?: boolean;
-  /** Hide the agent-level Cancel / Save footer. */
-  hideFooter?: boolean;
 }
 
 /**
@@ -51,79 +42,44 @@ export default function EditAgentView({
   onClose,
   onSave,
   children,
-  subview,
-  fillBody = false,
-  hideFooter = false,
 }: EditAgentViewProps) {
-  const colClass = [
-    styles['edit-agent__col'],
-    fillBody ? styles['edit-agent__col--fill'] : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const bodyClass = [
-    styles['edit-agent__body'],
-    fillBody ? styles['edit-agent__body--fill'] : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const main = (
-    <div className={colClass}>
-      {subview ? (
-        <div className={styles['edit-agent__head']}>
-          <IconButton
-            size="Small"
-            aria-label="Back to agent settings"
-            onClick={subview.onBack}
-            icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
-          />
-          <h1 className={styles['edit-agent__title']}>{subview.title}</h1>
-        </div>
-      ) : (
-        <>
-          <div className={styles['edit-agent__head']}>
-            <IconButton
-              size="Small"
-              aria-label="Back to agents"
-              onClick={onClose}
-              icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
-            />
-            <h1 className={styles['edit-agent__title']}>{title}</h1>
-          </div>
-
-          <AutomationsTabs
-            tabs={TABS}
-            activeKey={activeTab}
-            onChange={(key) => onTabChange(key as AgentTabKey)}
-            ariaLabel="Agent settings"
-          />
-        </>
-      )}
-
-      <div className={bodyClass}>{children}</div>
-    </div>
-  );
-
   return (
     <div className={styles['edit-agent']}>
       <div className={styles['edit-agent__scroll']}>
-        {fillBody ? main : <Scrollbars>{main}</Scrollbars>}
+        <Scrollbars>
+          <div className={styles['edit-agent__col']}>
+            <div className={styles['edit-agent__head']}>
+              <IconButton
+                size="Small"
+                aria-label="Back to agents"
+                onClick={onClose}
+                icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
+              />
+              <h1 className={styles['edit-agent__title']}>{title}</h1>
+            </div>
+
+            <AutomationsTabs
+              tabs={TABS}
+              activeKey={activeTab}
+              onChange={(key) => onTabChange(key as AgentTabKey)}
+              ariaLabel="Agent settings"
+            />
+
+            <div className={styles['edit-agent__body']}>{children}</div>
+          </div>
+        </Scrollbars>
       </div>
 
-      {!hideFooter && (
-        <div className={styles['edit-agent__footer']}>
-          <div className={styles['edit-agent__footer-col']}>
-            <Button emphasis="Tertiary" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button emphasis="Primary" onClick={onSave}>
-              Save
-            </Button>
-          </div>
+      <div className={styles['edit-agent__footer']}>
+        <div className={styles['edit-agent__footer-col']}>
+          <Button emphasis="Tertiary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button emphasis="Primary" onClick={onSave}>
+            Save
+          </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

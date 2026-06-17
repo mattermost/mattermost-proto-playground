@@ -1,10 +1,9 @@
 import type { SceneSwitcherScene } from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 
-export type SceneId = 'discover' | 'create' | 'manage' | 'agents' | 'agent';
+export type SceneId = 'discover' | 'manage' | 'agents' | 'agent';
 
 export const SCENES: SceneSwitcherScene[] = [
   { id: 'discover', label: 'Discover' },
-  { id: 'create', label: 'Create' },
   { id: 'manage', label: 'Manage' },
   { id: 'agents', label: 'Agents' },
   { id: 'agent', label: 'Edit agent' },

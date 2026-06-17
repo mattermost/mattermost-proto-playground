@@ -66,6 +66,44 @@ export const AUTOMATION_TYPE_META: Record<AutomationType, AutomationTypeMeta> =
     {} as Record<AutomationType, AutomationTypeMeta>,
   );
 
+/** Default draft fields when creating from an Agents-menu automation type. */
+export interface AutomationTypeSeed {
+  name: string;
+  triggerConfig: TriggerConfig;
+  instructions: string;
+}
+
+export function seedForAutomationType(type: AutomationType): AutomationTypeSeed {
+  const meta = AUTOMATION_TYPE_META[type];
+
+  switch (type) {
+    case 'recurring-post':
+      return {
+        name: meta.label,
+        triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+        instructions: meta.description,
+      };
+    case 'recap':
+      return {
+        name: meta.label,
+        triggerConfig: { kind: 'schedule', frequency: 'weekly', time: '8:00 AM' },
+        instructions: meta.description,
+      };
+    case 'auto-responder':
+      return {
+        name: meta.label,
+        triggerConfig: { kind: 'event', event: 'mention' },
+        instructions: meta.description,
+      };
+    case 'custom':
+      return {
+        name: '',
+        triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+        instructions: '',
+      };
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /* Trigger model — every automation runs either on a schedule or in    */
 /* response to an event (Cursor-style). The structured config lets the */
