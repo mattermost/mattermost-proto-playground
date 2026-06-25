@@ -56,9 +56,20 @@ function PermutationGrid({
       {EMPHASES.map((emphasis) => (
         <div
           key={emphasis}
-          style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+            alignItems: 'center',
+          }}
         >
-          <span style={{ width: 96, fontSize: 12, color: 'var(--color-text-secondary)' }}>
+          <span
+            style={{
+              width: 96,
+              fontSize: 12,
+              color: 'var(--center-channel-color)',
+            }}
+          >
             {emphasis}
           </span>
           {SIZES.map((size) => (
@@ -84,7 +95,11 @@ export const AllVariants: Story = {
     <div style={{ display: 'grid', gap: 32 }}>
       <section>
         <h3 style={{ marginBottom: 12 }}>Default</h3>
-        <PermutationGrid appearance="Default" destructive={false} disabled={false} />
+        <PermutationGrid
+          appearance="Default"
+          destructive={false}
+          disabled={false}
+        />
       </section>
       <section>
         <h3 style={{ marginBottom: 12 }}>Destructive</h3>
@@ -102,7 +117,11 @@ export const AllVariants: Story = {
         }}
       >
         <h3 style={{ marginBottom: 12 }}>Inverted</h3>
-        <PermutationGrid appearance="Inverted" destructive={false} disabled={false} />
+        <PermutationGrid
+          appearance="Inverted"
+          destructive={false}
+          disabled={false}
+        />
       </section>
     </div>
   ),

@@ -49,7 +49,7 @@ export const AllSizes: Story = {
             display: 'grid',
             gap: 8,
             justifyItems: 'center',
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
             fontSize: 12,
           }}
         >

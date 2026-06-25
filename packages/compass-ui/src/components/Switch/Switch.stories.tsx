@@ -54,7 +54,7 @@ export const AllVariants: Story = {
           style={{
             width: 128,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           States
@@ -76,7 +76,7 @@ export const AllVariants: Story = {
           style={{
             width: 128,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           Sizes
@@ -99,7 +99,7 @@ export const AllVariants: Story = {
           style={{
             width: 128,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           Secondary label
@@ -127,7 +127,7 @@ export const AllVariants: Story = {
           style={{
             width: 128,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           Semi-bold & disabled

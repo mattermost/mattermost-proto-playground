@@ -31,7 +31,12 @@ export const AllVariants: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 20, width: 360 }}>
       <div style={{ display: 'grid', gap: 8 }}>
-        <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+        <span
+          style={{
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
           Values
         </span>
         {[0, 35, 70, 100].map((value) => (
@@ -39,14 +44,24 @@ export const AllVariants: Story = {
         ))}
       </div>
       <div style={{ display: 'grid', gap: 8 }}>
-        <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+        <span
+          style={{
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
           Sizes
         </span>
         <ProgressBar value={60} size="Small" aria-label="Small 60%" />
         <ProgressBar value={60} size="Large" aria-label="Large 60%" />
       </div>
       <div style={{ display: 'grid', gap: 8 }}>
-        <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>
+        <span
+          style={{
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
           Semantic colors
         </span>
         <ProgressBar value={30} semanticColors aria-label="30% success" />

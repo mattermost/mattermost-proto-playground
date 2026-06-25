@@ -53,7 +53,7 @@ export const AllVariants: Story = {
           style={{
             width: 112,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           States
@@ -78,7 +78,7 @@ export const AllVariants: Story = {
           style={{
             width: 112,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           Sizes
@@ -101,7 +101,7 @@ export const AllVariants: Story = {
           style={{
             width: 112,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           Invalid
@@ -128,7 +128,7 @@ export const AllVariants: Story = {
           style={{
             width: 112,
             fontSize: 12,
-            color: 'var(--color-text-secondary)',
+            color: 'var(--center-channel-color)',
           }}
         >
           Disabled
