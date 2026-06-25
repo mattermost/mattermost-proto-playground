@@ -1,7 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import FormatBoldIcon from '@mattermost/compass-icons/components/format-bold';
 import Tooltip from './Tooltip';
-import Icon from '../Icon/Icon';
 import type { TooltipArrow } from './Tooltip';
 
 const ARROWS: TooltipArrow[] = ['Top', 'Right', 'Bottom', 'Left'];
@@ -29,7 +27,6 @@ export const WithShortcut: Story = {
   args: {
     label: 'Bold',
     arrow: 'Bottom',
-    icon: <Icon glyph={<FormatBoldIcon />} size="16" />,
     shortcutKeys: [{ label: 'Cmd' }, { label: 'B' }],
   },
 };
