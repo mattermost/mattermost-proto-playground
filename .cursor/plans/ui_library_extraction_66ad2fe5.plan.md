@@ -3,7 +3,7 @@ name: UI Library Extraction
 overview: "Split mattermost-proto-playground into three near-term repositories: a publishable UI library (`@mattermost/compass-ui`), a design-system docs site (no prototypes), and a prototypes catalog for flow experiments. A separate GitHub template repo is deferred — the catalog's `example-flow` and CLAUDE.md cover new-prototype needs for now. React 18 peer deps; Storybook in the library repo; path toward Mattermost webapp adoption."
 todos:
   - id: phase0-spike
-    content: Create mattermost-compass-ui repo; spike Button + tokens build (ESM/CJS + CSS); validate npm pack in webapp/channels
+    content: Create mattermost-compass-ui repo; spike Button + tokens build (ESM/CJS + CSS); validate npm pack in compass-docs and proto-playground (Vite consumers first)
     status: pending
   - id: phase1-tier1
     content: Migrate Tier 0 (tokens/themes) + Tier 1 primitives, hooks, toKebab; add root barrel + CI publish pipeline
@@ -169,7 +169,7 @@ Do this before moving files. **This phase is fully reversible** — abandon by d
   - Library bundler: **Vite library mode** (team already uses Vite) or **tsup** — pick one after spike
   - CSS strategy: compile SCSS modules → single consumable CSS file + preserve hashed class names
   - Dual format: **ESM + CJS** (Mattermost webapp uses npm workspaces + webpack)
-3. **Validate in webapp sandbox**: install the packed tarball into `webapp/channels` and render `<Button>` with `@import '@mattermost/compass-ui/styles'`. Fail fast on webpack/CSS issues before migrating 80 components.
+3. **Validate in Vite consumers first**: install the packed tarball (or `file:../`) into **mattermost-compass-docs** and **mattermost-proto-playground** and render `<Button>` with `import '@mattermost/compass-ui/styles'`. Both use the same Vite + React stack as this repo today — fail fast on CSS module / token issues before migrating 80 components. **Mattermost webapp (`webapp/channels`) is a later target** (Phase 6); webpack compatibility can be spiked separately when ready.
 
 **Critical technical constraints discovered in this repo:**
 
@@ -400,7 +400,7 @@ flowchart LR
 | Risk                                       | Mitigation                                                                             |
 | ------------------------------------------ | -------------------------------------------------------------------------------------- |
 | CSS variables missing in webapp            | Ship explicit styles entry; document required `data-theme`; integration test in webapp |
-| Webpack vs Vite CSS module mismatch        | Phase 0 spike with `npm pack` into webapp                                              |
+| Webpack vs Vite CSS module mismatch        | Validate in Vite first (docs/playground); webapp webpack spike deferred to Phase 6       |
 | React 19 vs 18 drift                       | Standardize on 18 now across library, docs, and catalog                                |
 | Specimen ↔ Storybook duplication           | Storybook = source of truth for variants; specimens become thin imports                |
 | Large pattern components with fixture data | Tier 3 gated on prop refactors                                                         |
@@ -414,7 +414,7 @@ flowchart LR
 
 | Week    | Milestone                                                                   |
 | ------- | --------------------------------------------------------------------------- |
-| 1       | UI library repo + Tier 0/1 + build + webapp spike                           |
+| 1       | UI library repo + Tier 0/1 + build + validate in docs/playground (Vite)   |
 | 2       | Storybook for Tier 1 + publish v0.1.0-alpha                                 |
 | 3       | Tier 2/3 + docs repo cutover (prototypes removed)                           |
 | 4       | Prototypes catalog (`mattermost-proto-playground`)                          |
