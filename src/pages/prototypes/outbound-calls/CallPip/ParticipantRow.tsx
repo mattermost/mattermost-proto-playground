@@ -1,9 +1,10 @@
+import type { MouseEvent } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import { Icon } from '@mattermost/compass-ui';
+import { IconButton } from '@mattermost/compass-ui';
+import { MenuItem } from '@mattermost/compass-ui';
+import { UserAvatar } from '@mattermost/compass-ui';
 import type { BridgedStatus } from '@/types/outboundCall';
 import styles from '../OutboundCalls.module.scss';
 
@@ -46,7 +47,7 @@ export function CallPipParticipantRow({
       className={styles['pip__participant-remove']}
       disabled={removeDisabled}
       icon={<Icon glyph={<PhoneHangupIcon />} size="16" />}
-      onClick={(e) => {
+      onClick={(e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
         onRemove();
       }}

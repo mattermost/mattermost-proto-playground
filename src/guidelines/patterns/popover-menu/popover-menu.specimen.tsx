@@ -35,12 +35,12 @@ import SortAlphabeticalAscendingIcon from '@mattermost/compass-icons/components/
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import TranslateIcon from '@mattermost/compass-icons/components/translate';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu, {
+import { Icon } from '@mattermost/compass-ui';
+import { MenuItem } from '@mattermost/compass-ui';
+import {
   PopoverMenuDivider,
   PopoverMenuGroup,
-} from '@/components/ui/PopoverMenu';
+  PopoverMenu} from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/patterns.module.scss';
 
 function messageMenuShortcutLabel(text: string, danger?: boolean) {

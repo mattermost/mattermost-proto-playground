@@ -13,7 +13,7 @@ import {
 } from '@/manifests/topicSeriesOrder';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/GuidelineNextTopicCard';
-import Tabs from '@/components/ui/Tabs/Tabs';
+import { Tabs } from '@mattermost/compass-ui';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
 import DocUiEmbed from '@/pages/_shell/DocUiEmbed';

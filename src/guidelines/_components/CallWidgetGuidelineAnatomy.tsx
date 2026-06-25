@@ -1,4 +1,4 @@
-import CallWidget from '@/components/ui/CallWidget';
+import { CallWidget } from '@mattermost/compass-ui';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import type { Participant } from '@/types/callParticipant';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';

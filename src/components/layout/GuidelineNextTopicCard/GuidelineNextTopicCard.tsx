@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import ArrowRightIcon from '@mattermost/compass-icons/components/arrow-right';
 import type { Topic } from '@/manifests/topics';
-import Icon, { SVG_SIZE_MAP } from '@/components/ui/Icon/Icon';
+import { SVG_SIZE_MAP , Icon} from '@mattermost/compass-ui';
 import styles from './GuidelineNextTopicCard.module.scss';
 
 interface GuidelineNextTopicCardProps {

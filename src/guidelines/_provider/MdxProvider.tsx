@@ -61,8 +61,8 @@ import { AdminConsoleSidebarAnatomyStage } from '@/guidelines/_components/AdminC
 import Num from '@/guidelines/_components/Num';
 import MdxAnchor from '@/guidelines/_components/MdxAnchor';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
-import Divider from '@/components/ui/Divider/Divider';
-import Chip from '@/components/ui/Chip/Chip';
+import { Divider } from '@mattermost/compass-ui';
+import { Chip } from '@mattermost/compass-ui';
 import GuidelineSampleRow from '@/guidelines/_components/GuidelineSampleRow';
 import DocUiEmbed from '@/pages/_shell/DocUiEmbed';
 

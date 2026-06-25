@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton, {
+import { Icon } from '@mattermost/compass-ui';
+import {
   ICON_BUTTON_ICON_SIZES,
-} from '@/components/ui/IconButton/IconButton';
-import Button from '@/components/ui/Button/Button';
+  IconButton} from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui';
 import styles from './AnimationSamples.module.scss';
 
 interface MatrixCell {

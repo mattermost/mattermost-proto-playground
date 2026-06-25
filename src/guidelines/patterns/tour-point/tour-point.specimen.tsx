@@ -1,5 +1,5 @@
-import TourPoint from '@/components/ui/TourPoint/TourPoint';
-import type { TourPointPointerPosition } from '@/components/ui/TourPoint/TourPoint';
+import { TourPoint } from '@mattermost/compass-ui';
+import type { TourPointPointerPosition } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/patterns.module.scss';
 
 const POINTER_VARIANTS: TourPointPointerPosition[] = [
@@ -16,7 +16,7 @@ const POINTER_VARIANTS: TourPointPointerPosition[] = [
 function labelFor(position: TourPointPointerPosition) {
   return position
     .split('-')
-    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .map((word: string) => word[0].toUpperCase() + word.slice(1))
     .join(' ');
 }
 

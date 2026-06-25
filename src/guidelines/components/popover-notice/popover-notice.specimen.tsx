@@ -1,4 +1,4 @@
-import PopoverNotice from '@/components/ui/PopoverNotice/PopoverNotice';
+import { PopoverNotice } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function PopoverNoticeLibrary() {

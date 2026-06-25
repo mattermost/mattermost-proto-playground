@@ -1,5 +1,5 @@
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import LabelTag from '@/components/ui/LabelTag/LabelTag';
+import { LabelTag } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function LabelTagLibrary() {

@@ -1,4 +1,4 @@
-import ToastBanner from '@/components/ui/ToastBanner/ToastBanner';
+import { ToastBanner } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ToastBannerLibrary() {

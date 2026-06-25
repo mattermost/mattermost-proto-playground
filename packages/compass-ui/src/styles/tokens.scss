@@ -1,0 +1,381 @@
+// ============================================================
+// Foundation Design Tokens — CSS Custom Properties
+// ============================================================
+
+:root {
+  // --- Neutral ---
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f4f4f6;
+  --color-neutral-100: #e8e9ed;
+  --color-neutral-150: #dddfe4;
+  --color-neutral-200: #d1d4db;
+  --color-neutral-250: #c6c9d2;
+  --color-neutral-300: #babec9;
+  --color-neutral-350: #afb3c0;
+  --color-neutral-400: #a4a9b7;
+  --color-neutral-450: #989dae;
+  --color-neutral-500: #8d93a5;
+  --color-neutral-550: #82889c;
+  --color-neutral-600: #767d93;
+  --color-neutral-650: #6c7389;
+  --color-neutral-700: #63697e;
+  --color-neutral-750: #5a6072;
+  --color-neutral-800: #505667;
+  --color-neutral-850: #484d5b;
+  --color-neutral-900: #3f4350;
+  --color-neutral-950: #363a45;
+  --color-neutral-1000: #2d3039;
+  --color-neutral-1050: #24262e;
+  --color-neutral-1100: #1b1d22;
+  --color-neutral-1150: #121317;
+  --color-neutral-1200: #090a0b;
+
+  // --- Blue ---
+  --color-blue-100: #a5bef3;
+  --color-blue-200: #81a3ef;
+  --color-blue-300: #5d89ea;
+  --color-blue-400: #386fe5;
+  --color-blue-500: #1c58d9;
+  --color-blue-600: #174ab5;
+  --color-blue-700: #133a91;
+  --color-blue-800: #0e2b6c;
+
+  // --- Cyan ---
+  --color-cyan-100: #a2d6f6;
+  --color-cyan-200: #7cc5f3;
+  --color-cyan-300: #57b5f0;
+  --color-cyan-400: #32a4ec;
+  --color-cyan-500: #1592e0;
+  --color-cyan-600: #1279ba;
+  --color-cyan-700: #0e6295;
+  --color-cyan-800: #0b4970;
+
+  // --- Green ---
+  --color-green-100: #b3e5d1;
+  --color-green-200: #94dbbf;
+  --color-green-300: #75d1ac;
+  --color-green-400: #57c79a;
+  --color-green-500: #3db887;
+  --color-green-600: #339970;
+  --color-green-700: #297a5a;
+  --color-green-800: #1f5c43;
+
+  // --- Indigo ---
+  --color-indigo-100: #7492d2;
+  --color-indigo-200: #3c64b9;
+  --color-indigo-300: #32539a;
+  --color-indigo-400: #28427b;
+  --color-indigo-500: #1e325c;
+  --color-indigo-600: #14213e;
+  --color-indigo-700: #0f1a2e;
+  --color-indigo-800: #0a111f;
+
+  // --- Orange ---
+  --color-orange-100: #f6c9a2;
+  --color-orange-200: #f2b47e;
+  --color-orange-300: #ef9e57;
+  --color-orange-400: #ec8832;
+  --color-orange-500: #e07315;
+  --color-orange-600: #ba6012;
+  --color-orange-700: #954d0e;
+  --color-orange-800: #703a0b;
+
+  // --- Purple ---
+  --color-purple-100: #b7bae1;
+  --color-purple-200: #9a9ed5;
+  --color-purple-300: #7e83c9;
+  --color-purple-400: #6167bd;
+  --color-purple-500: #484fad;
+  --color-purple-600: #3c4290;
+  --color-purple-700: #303573;
+  --color-purple-800: #242856;
+
+  // --- Red ---
+  --color-red-100: #ebadae;
+  --color-red-200: #e28d8e;
+  --color-red-300: #da6c6e;
+  --color-red-400: #d24b4e;
+  --color-red-500: #c43133;
+  --color-red-600: #a3292b;
+  --color-red-700: #832122;
+  --color-red-800: #621819;
+
+  // --- Teal ---
+  --color-teal-100: #a4f4f4;
+  --color-teal-200: #7ff0f0;
+  --color-teal-300: #5becec;
+  --color-teal-400: #36e7e7;
+  --color-teal-500: #1adbdb;
+  --color-teal-600: #15b7b7;
+  --color-teal-700: #119292;
+  --color-teal-800: #0d6e6e;
+
+  // --- Yellow ---
+  --color-yellow-100: #ffe099;
+  --color-yellow-200: #ffd470;
+  --color-yellow-300: #ffc847;
+  --color-yellow-400: #ffbc1f;
+  --color-yellow-500: #f5ab00;
+  --color-yellow-600: #cc8f00;
+  --color-yellow-700: #a37200;
+  --color-yellow-800: #7a5600;
+
+  // ============================================================
+  // RGB values (for rgba(var(--color-*-rgb), <alpha>))
+  // ============================================================
+  // --- Neutral ---
+  --color-neutral-0-rgb: 255, 255, 255;
+  --color-neutral-50-rgb: 244, 244, 246;
+  --color-neutral-100-rgb: 232, 233, 237;
+  --color-neutral-150-rgb: 221, 223, 228;
+  --color-neutral-200-rgb: 209, 212, 219;
+  --color-neutral-250-rgb: 198, 201, 210;
+  --color-neutral-300-rgb: 186, 190, 201;
+  --color-neutral-350-rgb: 175, 179, 192;
+  --color-neutral-400-rgb: 164, 169, 183;
+  --color-neutral-450-rgb: 152, 157, 174;
+  --color-neutral-500-rgb: 141, 147, 165;
+  --color-neutral-550-rgb: 130, 136, 156;
+  --color-neutral-600-rgb: 118, 125, 147;
+  --color-neutral-650-rgb: 108, 115, 137;
+  --color-neutral-700-rgb: 99, 105, 126;
+  --color-neutral-750-rgb: 90, 96, 114;
+  --color-neutral-800-rgb: 80, 86, 103;
+  --color-neutral-850-rgb: 72, 77, 91;
+  --color-neutral-900-rgb: 63, 67, 80;
+  --color-neutral-950-rgb: 54, 58, 69;
+  --color-neutral-1000-rgb: 45, 48, 57;
+  --color-neutral-1050-rgb: 36, 38, 46;
+  --color-neutral-1100-rgb: 27, 29, 34;
+  --color-neutral-1150-rgb: 18, 19, 23;
+  --color-neutral-1200-rgb: 9, 10, 11;
+
+  // --- Blue ---
+  --color-blue-100-rgb: 165, 190, 243;
+  --color-blue-200-rgb: 129, 163, 239;
+  --color-blue-300-rgb: 93, 137, 234;
+  --color-blue-400-rgb: 56, 111, 229;
+  --color-blue-500-rgb: 28, 88, 217;
+  --color-blue-600-rgb: 23, 74, 181;
+  --color-blue-700-rgb: 19, 58, 145;
+  --color-blue-800-rgb: 14, 43, 108;
+
+  // --- Cyan ---
+  --color-cyan-100-rgb: 162, 214, 246;
+  --color-cyan-200-rgb: 124, 197, 243;
+  --color-cyan-300-rgb: 87, 181, 240;
+  --color-cyan-400-rgb: 50, 164, 236;
+  --color-cyan-500-rgb: 21, 146, 224;
+  --color-cyan-600-rgb: 18, 121, 186;
+  --color-cyan-700-rgb: 14, 98, 149;
+  --color-cyan-800-rgb: 11, 73, 112;
+
+  // --- Green ---
+  --color-green-100-rgb: 179, 229, 209;
+  --color-green-200-rgb: 148, 219, 191;
+  --color-green-300-rgb: 117, 209, 172;
+  --color-green-400-rgb: 87, 199, 154;
+  --color-green-500-rgb: 61, 184, 135;
+  --color-green-600-rgb: 51, 153, 112;
+  --color-green-700-rgb: 41, 122, 90;
+  --color-green-800-rgb: 31, 92, 67;
+
+  // --- Indigo ---
+  --color-indigo-100-rgb: 116, 146, 210;
+  --color-indigo-200-rgb: 60, 100, 185;
+  --color-indigo-300-rgb: 50, 83, 154;
+  --color-indigo-400-rgb: 40, 66, 123;
+  --color-indigo-500-rgb: 30, 50, 92;
+  --color-indigo-600-rgb: 20, 33, 62;
+  --color-indigo-700-rgb: 15, 26, 46;
+  --color-indigo-800-rgb: 10, 17, 31;
+
+  // --- Orange ---
+  --color-orange-100-rgb: 246, 201, 162;
+  --color-orange-200-rgb: 242, 180, 126;
+  --color-orange-300-rgb: 239, 158, 87;
+  --color-orange-400-rgb: 236, 136, 50;
+  --color-orange-500-rgb: 224, 115, 21;
+  --color-orange-600-rgb: 186, 96, 18;
+  --color-orange-700-rgb: 149, 77, 14;
+  --color-orange-800-rgb: 112, 58, 11;
+
+  // --- Purple ---
+  --color-purple-100-rgb: 183, 186, 225;
+  --color-purple-200-rgb: 154, 158, 213;
+  --color-purple-300-rgb: 126, 131, 201;
+  --color-purple-400-rgb: 97, 103, 189;
+  --color-purple-500-rgb: 72, 79, 173;
+  --color-purple-600-rgb: 60, 66, 144;
+  --color-purple-700-rgb: 48, 53, 115;
+  --color-purple-800-rgb: 36, 40, 86;
+
+  // --- Red ---
+  --color-red-100-rgb: 235, 173, 174;
+  --color-red-200-rgb: 226, 141, 142;
+  --color-red-300-rgb: 218, 108, 110;
+  --color-red-400-rgb: 210, 75, 78;
+  --color-red-500-rgb: 196, 49, 51;
+  --color-red-600-rgb: 163, 41, 43;
+  --color-red-700-rgb: 131, 33, 34;
+  --color-red-800-rgb: 98, 24, 25;
+
+  // --- Teal ---
+  --color-teal-100-rgb: 164, 244, 244;
+  --color-teal-200-rgb: 127, 240, 240;
+  --color-teal-300-rgb: 91, 236, 236;
+  --color-teal-400-rgb: 54, 231, 231;
+  --color-teal-500-rgb: 26, 219, 219;
+  --color-teal-600-rgb: 21, 183, 183;
+  --color-teal-700-rgb: 17, 146, 146;
+  --color-teal-800-rgb: 13, 110, 110;
+
+  // --- Yellow ---
+  --color-yellow-100-rgb: 255, 224, 153;
+  --color-yellow-200-rgb: 255, 212, 112;
+  --color-yellow-300-rgb: 255, 200, 71;
+  --color-yellow-400-rgb: 255, 188, 31;
+  --color-yellow-500-rgb: 245, 171, 0;
+  --color-yellow-600-rgb: 204, 143, 0;
+  --color-yellow-700-rgb: 163, 114, 0;
+  --color-yellow-800-rgb: 122, 86, 0;
+
+  // ============================================================
+  // Typography (foundation)
+  // ============================================================
+  // Font family
+  --font-family-heading: 'Metropolis', sans-serif;
+  --font-family-body: 'Open Sans', sans-serif;
+  --font-family-base: var(--font-family-body);
+  --font-family-mono: 'Menlo', monospace;
+
+  // Font size (scale 25–1000)
+  --font-size-25: 10px;
+  --font-size-50: 11px;
+  --font-size-75: 12px;
+  --font-size-100: 14px;
+  --font-size-200: 16px;
+  --font-size-300: 18px;
+  --font-size-400: 20px;
+  --font-size-500: 22px;
+  --font-size-600: 25px;
+  --font-size-700: 28px;
+  --font-size-800: 32px;
+  --font-size-900: 36px;
+  --font-size-1000: 40px;
+
+  // Font weight
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  // Line height (scale 25–1000)
+  --line-height-25: 16px;
+  --line-height-50: 16px;
+  --line-height-75: 16px;
+  --line-height-100: 20px;
+  --line-height-200: 24px;
+  --line-height-300: 24px;
+  --line-height-400: 28px;
+  --line-height-500: 28px;
+  --line-height-600: 30px;
+  --line-height-700: 36px;
+  --line-height-800: 40px;
+  --line-height-900: 44px;
+  --line-height-1000: 48px;
+
+  // Letter spacing
+  --letter-spacing-tight-2: -2px;
+  --letter-spacing-tight-1: -1px;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide-1: 1px;
+  --letter-spacing-wide-2: 2px;
+
+  // ============================================================
+  // Spacing
+  // ============================================================
+  --spacing-xxxxs: 2px;
+  --spacing-xxxs: 4px;
+  --spacing-xxs: 6px;
+  --spacing-xs: 8px;
+  --spacing-s: 10px;
+  --spacing-m: 12px;
+  --spacing-l: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 24px;
+  --spacing-xxxl: 32px;
+  --spacing-xxxxl: 40px;
+  --spacing-xxxxxl: 48px;
+
+  // ============================================================
+  // Border Radius
+  // ============================================================
+  --radius-xs: 2px;
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  // ============================================================
+  // Elevations (W3C design tokens format)
+  // ============================================================
+  --elevation-1: 0 2px 3px 0 #00000014; // Subtle - hover, small dropdowns
+  --elevation-2: 0 4px 6px 0 #0000001f; // Low - buttons, chips, small cards
+  --elevation-3: 0 6px 14px 0 #0000001f; // Medium - cards, menus, tooltips
+  --elevation-4: 0 8px 24px 0 #0000001f; // High - modals, popovers, floating panels
+  --elevation-5: 0 12px 32px 0 #0000001f; // Higher - dialogs, drawers
+  --elevation-6: 0 20px 32px 0 #0000001f; // Highest - full-screen overlays
+
+  // ============================================================
+  // Animation
+  // ============================================================
+  --duration-quick: 150ms;
+  --duration-moderate: 300ms;
+  --ease-transition: ease-in-out; // element already on screen
+  --ease-entrance: ease-out; // element entering
+  --ease-exit: ease-in; // element leaving
+
+  // ============================================================
+  // Icon sizes (Mattermost Icon component scale)
+  // ============================================================
+  --icon-size-10: 10px;
+  --icon-size-12: 12px;
+  --icon-size-16: 16px;
+  --icon-size-20: 20px;
+  --icon-size-24: 24px;
+  --icon-size-28: 28px;
+  --icon-size-32: 32px;
+  --icon-size-40: 40px;
+  --icon-size-52: 52px;
+  --icon-size-64: 64px;
+  --icon-size-104: 104px;
+
+  // ============================================================
+  // Semantic colors
+  // ============================================================
+  --color-info: var(--color-blue-400);
+  --color-info-rgb: var(--color-blue-400-rgb);
+  --color-success: var(--color-green-500);
+  --color-success-rgb: var(--color-green-500-rgb);
+  --color-warning: var(--color-yellow-600);
+  --color-warning-rgb: var(--color-yellow-600-rgb);
+  --color-danger: var(--color-red-500);
+  --color-danger-rgb: var(--color-red-500-rgb);
+
+  // ============================================================
+  // Attachment Card file-type accent colors
+  // ============================================================
+  --attachment-blue: var(--color-blue-300); // word, image, video, audio
+  --attachment-green: var(--color-green-600); // excel
+  --attachment-red: var(--color-red-500); // pdf
+  --attachment-orange: var(--color-orange-500); // powerpoint
+
+  // ============================================================
+  // Z-index
+  // ============================================================
+  --z-sidebar: 100;
+  --z-modal: 200;
+  --z-tooltip: 300;
+}

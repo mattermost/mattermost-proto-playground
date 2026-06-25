@@ -1,24 +1,24 @@
 import { useState } from 'react';
-import Button from '@/components/ui/Button/Button';
-import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
-import ChannelShell from '@/components/ui/ChannelShell/ChannelShell';
-import MessageInput from '@/components/ui/MessageInput';
-import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Message from '@/components/ui/Message/Message';
-import { Modal } from '@/components/ui/Modal';
+import { Button } from '@mattermost/compass-ui';
+import { ChannelHeader } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-ui';
+import { MessageInput } from '@mattermost/compass-ui';
+import { MessageReactions } from '@mattermost/compass-ui';
+import { MessageSeparator } from '@mattermost/compass-ui';
+import { Message } from '@mattermost/compass-ui';
+import { Modal } from '@mattermost/compass-ui';
 import {
   RightSidebarChannelInfo,
   RightSidebarHeader,
-} from '@/components/ui/RightSidebar';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+} from '@mattermost/compass-ui';
+import { Scrollbars } from '@mattermost/compass-ui';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { shellStyles } from '@mattermost/compass-ui';
 import styles from './modal.specimen.module.scss';
 
 export default function ModalLayout() {

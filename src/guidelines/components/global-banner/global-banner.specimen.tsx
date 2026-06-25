@@ -1,4 +1,4 @@
-import GlobalBanner from '@/components/ui/GlobalBanner/GlobalBanner';
+import { GlobalBanner } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function GlobalBannerLibrary() {

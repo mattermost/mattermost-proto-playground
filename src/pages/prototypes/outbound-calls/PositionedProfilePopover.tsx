@@ -3,7 +3,7 @@
  * channel/DM anchor. See root CLAUDE.md (Profile popover + positioning).
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import ProfilePopover from '@/components/ui/ProfilePopover/ProfilePopover';
+import { ProfilePopover } from '@mattermost/compass-ui';
 import { phoneGlyphFor } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
 import { PopoverCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import type { Contact, StartCallAction } from '@/types/outboundCall';
