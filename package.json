@@ -9,6 +9,7 @@
   "scripts": {
     "generate:compass-icons": "node scripts/gen-compass-icon-manifest.mjs",
     "prebuild": "npm run generate:compass-icons && npm run build:ui",
+    "predev": "node scripts/ensure-compass-ui.mjs",
     "build:ui": "npm run build --workspace=@mattermost/compass-ui",
     "dev": "vite",
     "build": "tsc -b && vite build",

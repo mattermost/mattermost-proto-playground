@@ -16,8 +16,14 @@
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
     },
-    "./styles": "./dist/compass-ui.css",
-    "./component-styles": "./dist/index.css"
+    "./styles": {
+      "import": "./dist/compass-ui.css",
+      "default": "./dist/compass-ui.css"
+    },
+    "./component-styles": {
+      "import": "./dist/index.css",
+      "default": "./dist/index.css"
+    }
   },
   "files": [
     "dist"
