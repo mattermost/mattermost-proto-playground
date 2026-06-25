@@ -113,7 +113,7 @@ export const AllVariants: Story = {
         style={{
           padding: 16,
           borderRadius: 8,
-          background: 'var(--color-sidebar-bg)',
+          background: 'var(--sidebar-header-bg)',
         }}
       >
         <h3 style={{ marginBottom: 12 }}>Inverted</h3>
