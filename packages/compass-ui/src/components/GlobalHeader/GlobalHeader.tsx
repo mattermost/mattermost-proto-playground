@@ -28,10 +28,10 @@ export interface GlobalHeaderProps {
   showChannelsBranding?: boolean;
   /** When true, shows the Upgrade button in the right controls. */
   showUpgradeButton?: boolean;
-  /** URL for the signed-in user avatar. */
-  userAvatarSrc: string;
+  /** URL for the signed-in user avatar. Omit for initials fallback. */
+  userAvatarSrc?: string;
   /** Alt text for the signed-in user avatar. */
-  userAvatarAlt: string;
+  userAvatarAlt?: string;
 }
 
 const PRODUCT_ICON: Record<
@@ -99,7 +99,7 @@ export default function GlobalHeader({
   showChannelsBranding = true,
   showUpgradeButton = false,
   userAvatarSrc,
-  userAvatarAlt,
+  userAvatarAlt = 'User',
 }: GlobalHeaderProps) {
   const isChannels = product === 'Channels';
   const showBrand = isChannels ? showChannelsBranding : true;
