@@ -43,7 +43,7 @@ npm run storybook     # component catalog on :6006
 ## Package layout
 
 - `dist/index.js` / `dist/index.cjs` — component bundle (ESM + CJS)
-- `dist/compass-ui.css` — tokens, themes, reset, and base body styles
+- `dist/compass-ui.css` — tokens, themes, reset, and base typography styles
 - `dist/index.css` — component CSS modules (injected at build; also available as `./component-styles`)
 
 ## Storybook
