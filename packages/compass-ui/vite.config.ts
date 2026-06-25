@@ -34,14 +34,22 @@ export default defineConfig({
       fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
-      external: [
-        'react',
-        'react-dom',
-        'react/jsx-runtime',
-        /^@mattermost\/compass-icons/,
-        'simplebar-react',
-        /^simplebar-react\//,
-      ],
+      external: (id) => {
+        if (id === 'react' || id === 'react-dom' || id === 'react/jsx-runtime') {
+          return true;
+        }
+        if (/^@mattermost\/compass-icons/.test(id)) {
+          return true;
+        }
+        if (id === 'simplebar-react') {
+          return true;
+        }
+        // Bundle simplebar CSS into component-styles; externalize JS subpaths only.
+        if (/^simplebar-react\//.test(id) && !id.endsWith('.css')) {
+          return true;
+        }
+        return false;
+      },
     },
     cssCodeSplit: false,
     sourcemap: true,

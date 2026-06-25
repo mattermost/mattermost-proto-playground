@@ -10,21 +10,30 @@ export default function ScrollbarLibrary() {
       <div className={styles['components__button-block']}>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>Vertical</span>
-          <Scrollbar
-            orientation="Vertical"
-            thumbSize="25%"
-            scrollPosition={0}
-          />
-          <Scrollbar
-            orientation="Vertical"
-            thumbSize="33%"
-            scrollPosition={50}
-          />
-          <Scrollbar
-            orientation="Vertical"
-            thumbSize="50%"
-            scrollPosition={100}
-          />
+          <div
+            style={{
+              height: 160,
+              display: 'flex',
+              alignItems: 'stretch',
+              gap: 'var(--spacing-m)',
+            }}
+          >
+            <Scrollbar
+              orientation="Vertical"
+              thumbSize="25%"
+              scrollPosition={0}
+            />
+            <Scrollbar
+              orientation="Vertical"
+              thumbSize="33%"
+              scrollPosition={50}
+            />
+            <Scrollbar
+              orientation="Vertical"
+              thumbSize="50%"
+              scrollPosition={100}
+            />
+          </div>
         </div>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>
