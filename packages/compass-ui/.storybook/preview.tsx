@@ -13,6 +13,7 @@ const THEMES = ['denim', 'sapphire', 'quartz', 'indigo', 'onyx'] as const;
 const preview: Preview = {
   parameters: {
     layout: 'padded',
+    backgrounds: { disable: true },
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
   },
   globalTypes: {
@@ -30,6 +31,8 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       document.documentElement.setAttribute('data-theme', context.globals.theme);
+      document.documentElement.style.backgroundColor = 'var(--center-channel-bg)';
+      document.body.style.backgroundColor = 'var(--center-channel-bg)';
       return <Story />;
     },
   ],

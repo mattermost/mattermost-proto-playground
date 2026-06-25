@@ -43,7 +43,7 @@ npm run storybook     # component catalog on :6006
 ## Package layout
 
 - `dist/index.js` / `dist/index.cjs` — component bundle (ESM + CJS)
-- `dist/compass-ui.css` — tokens, themes, reset
+- `dist/compass-ui.css` — tokens, themes, reset, and base typography styles
 - `dist/index.css` — component CSS modules (injected at build; also available as `./component-styles`)
 
 ## Storybook
@@ -53,3 +53,11 @@ Storybook is the source of truth for component variants. Specimens in the docs s
 ```bash
 npm run storybook --workspace=@mattermost/compass-ui
 ```
+
+### Authoring stories
+
+- Keep story-only labels, headings, and wrapper backgrounds theme-aware. Use `var(--center-channel-color)` for text labels and `var(--center-channel-bg)` for preview surfaces.
+- Use `var(--sidebar-header-bg)` for inverted story surfaces.
+- Use `rgba(var(--center-channel-color-rgb), <alpha>)` only when a secondary text or border treatment intentionally needs opacity.
+- Avoid neutral-only text tokens such as `--color-neutral-*` or `--color-text-secondary` in stories unless the component API specifically demonstrates a neutral palette token.
+- Native `h1`-`h6` elements use the Compass heading font through `@mattermost/compass-ui/styles`; story body text inherits the Compass body font.

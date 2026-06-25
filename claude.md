@@ -243,6 +243,16 @@ transition: opacity var(--duration-quick) var(--ease-exit);
 
 For info/success/warning/danger states, always use the semantic tokens from `tokens.scss` — never raw palette tokens (e.g. `--color-blue-400`) or Mattermost theme vars (e.g. `--error-text`, `--away-indicator`).
 
+## Storybook story theme tokens
+
+When adding or editing `packages/compass-ui/**/*.stories.tsx`, keep story-only chrome theme-aware:
+
+- Story labels and demo text should use `var(--center-channel-color)`, not neutral-derived tokens like `--color-neutral-*` or `--color-text-secondary`.
+- Preview surfaces and wrappers should use `var(--center-channel-bg)`.
+- Inverted story surfaces should use `var(--sidebar-header-bg)`.
+- Use `rgba(var(--center-channel-color-rgb), <alpha>)` for intentionally secondary text, borders, or subtle fills.
+- Let `@mattermost/compass-ui/styles` provide the base body font and native heading font. Do not hardcode font families in stories.
+
 
 | Semantic token    | RGB counterpart       | Value                |
 | ----------------- | --------------------- | -------------------- |
