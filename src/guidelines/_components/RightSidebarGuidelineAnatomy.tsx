@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import RightSidebar, { RightSidebarHeader } from '@/components/ui/RightSidebar';
+import { RightSidebarHeader , RightSidebar} from '@mattermost/compass-ui';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 
 const shellStyle: CSSProperties = {

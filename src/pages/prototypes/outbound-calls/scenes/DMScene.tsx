@@ -1,12 +1,13 @@
-import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Message from '@/components/ui/Message/Message';
+import type { MouseEvent } from 'react';
+import { ChannelHeader } from '@mattermost/compass-ui';
+import { MessageSeparator } from '@mattermost/compass-ui';
+import { Message } from '@mattermost/compass-ui';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import layoutStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { layoutStyles } from '@mattermost/compass-ui';
 
 export function DMScene({
   onOpenProfile,
@@ -53,7 +54,7 @@ export function DMScene({
         description={contact.title}
         avatarSrc={contact.avatar}
         avatarStatus={contact.online}
-        onNameClick={(e) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
+        onNameClick={(e: MouseEvent<HTMLElement>) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
         callButton={
           <SegmentedCallButton
             actions={actions}

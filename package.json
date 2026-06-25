@@ -3,20 +3,26 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "generate:compass-icons": "node scripts/gen-compass-icon-manifest.mjs",
-    "prebuild": "npm run generate:compass-icons",
+    "prebuild": "npm run generate:compass-icons && npm run build:ui",
+    "build:ui": "npm run build --workspace=@mattermost/compass-ui",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "storybook": "npm run storybook --workspace=@mattermost/compass-ui"
   },
   "dependencies": {
     "@fontsource/metropolis": "^5.2.5",
     "@fontsource/open-sans": "^5.2.7",
     "@mattermost/compass-icons": "^0.1.53",
+    "@mattermost/compass-ui": "workspace:*",
     "@mdx-js/react": "^3.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

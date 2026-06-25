@@ -1,4 +1,4 @@
-import Divider from '@/components/ui/Divider/Divider';
+import { Divider } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function DividerLibrary() {

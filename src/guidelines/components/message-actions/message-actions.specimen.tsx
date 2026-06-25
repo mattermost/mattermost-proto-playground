@@ -1,4 +1,4 @@
-import MessageActions from '@/components/ui/MessageActions/MessageActions';
+import { MessageActions } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function MessageActionsLibrary() {

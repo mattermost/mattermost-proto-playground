@@ -1,5 +1,5 @@
-import Scrollbar from '@/components/ui/Scrollbar/Scrollbar';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+import { Scrollbar } from '@mattermost/compass-ui';
+import { Scrollbars } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ScrollbarLibrary() {

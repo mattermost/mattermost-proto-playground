@@ -1,6 +1,6 @@
-import TextInput from '@/components/ui/TextInput/TextInput';
+import { TextInput } from '@mattermost/compass-ui';
 import { sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
-import type { ReactNode } from 'react';
+import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react';
 import styles from './OutboundCalls.module.scss';
 
 export const KEYPAD_KEYS: { key: string; sub?: string }[] = [
@@ -39,8 +39,8 @@ export function KeypadInput({
       className={inputClassName ?? styles['keypad__input']}
       size="Small"
       value={value}
-      onChange={(e) => onChange(sanitizeDigits(e.target.value))}
-      onKeyDown={(e) => {
+      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(sanitizeDigits(e.target.value))}
+      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
         if (onEnter && e.key === 'Enter') {
           e.preventDefault();
           onEnter();

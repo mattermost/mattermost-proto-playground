@@ -1,8 +1,8 @@
 import {
   ChannelsSidebarNavigator,
   type ChannelsSidebarNavigatorProps,
-} from '@/components/ui/ChannelsSidebar/ChannelsSidebar';
-import styles from '@/components/ui/ChannelsSidebar/ChannelsSidebar.module.scss';
+  channelsSidebarStyles as styles,
+} from '@mattermost/compass-ui';
 
 /**
  * Sidebar chrome strip with only the navigator row — for guideline previews.

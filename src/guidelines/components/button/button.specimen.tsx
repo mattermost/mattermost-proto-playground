@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import Button from '@/components/ui/Button/Button';
+import { Button } from '@mattermost/compass-ui';
 import type {
   ButtonAppearance,
   ButtonEmphasis,
   ButtonSize,
-} from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
+} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 const EMPHASES: ButtonEmphasis[] = [

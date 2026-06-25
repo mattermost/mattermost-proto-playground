@@ -1,4 +1,4 @@
-import Switch from '@/components/ui/Switch/Switch';
+import { Switch } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function SwitchLibrary() {

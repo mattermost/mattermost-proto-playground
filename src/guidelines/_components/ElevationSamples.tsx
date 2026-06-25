@@ -9,9 +9,9 @@ import ArrowUpIcon from '@mattermost/compass-icons/components/arrow-up';
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ArrowDownIcon from '@mattermost/compass-icons/components/arrow-down';
-import Chip from '@/components/ui/Chip/Chip';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
+import { Chip } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { MenuItem } from '@mattermost/compass-ui';
 import styles from './ElevationSamples.module.scss';
 
 export interface ElevationStep {

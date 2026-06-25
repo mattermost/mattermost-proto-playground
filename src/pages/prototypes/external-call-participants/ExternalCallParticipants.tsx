@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import MessageInput from '@/components/ui/MessageInput';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Message from '@/components/ui/Message/Message';
-import CallPopout from '@/components/ui/CallPopout/CallPopout';
-import CallWidget from '@/components/ui/CallWidget/CallWidget';
+import { MessageInput } from '@mattermost/compass-ui';
+import { MessageSeparator } from '@mattermost/compass-ui';
+import { Message } from '@mattermost/compass-ui';
+import { CallPopout } from '@mattermost/compass-ui';
+import { CallWidget } from '@mattermost/compass-ui';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+import { Scrollbars } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import type { Participant } from '@/types/callParticipant';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { shellStyles } from '@mattermost/compass-ui';
 import {
   DIAL_IN_NUMBER,
   DIAL_IN_PIN,

@@ -1,4 +1,4 @@
-import Checkbox from '@/components/ui/Checkbox/Checkbox';
+import { Checkbox } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function CheckboxLibrary() {

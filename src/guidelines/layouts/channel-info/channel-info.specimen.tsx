@@ -1,21 +1,21 @@
-import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
-import ChannelShell from '@/components/ui/ChannelShell/ChannelShell';
-import MessageInput from '@/components/ui/MessageInput';
-import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Message from '@/components/ui/Message/Message';
-import RightSidebar, {
+import { ChannelHeader } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-ui';
+import { MessageInput } from '@mattermost/compass-ui';
+import { MessageReactions } from '@mattermost/compass-ui';
+import { MessageSeparator } from '@mattermost/compass-ui';
+import { Message } from '@mattermost/compass-ui';
+import {
   RightSidebarChannelInfo,
   RightSidebarHeader,
-} from '@/components/ui/RightSidebar';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+  RightSidebar} from '@mattermost/compass-ui';
+import { Scrollbars } from '@mattermost/compass-ui';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { shellStyles } from '@mattermost/compass-ui';
 
 export default function ChannelInfoLayout() {
   return (

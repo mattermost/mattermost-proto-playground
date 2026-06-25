@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import ArrowRightIcon from '@mattermost/compass-icons/components/arrow-right';
-import Icon from '@/components/ui/Icon/Icon';
-import Button from '@/components/ui/Button/Button';
-import TextInput from '@/components/ui/TextInput/TextInput';
+import { Icon } from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui';
+import { TextInput } from '@mattermost/compass-ui';
 import welcomeBg from '@/assets/illustrations/call-welcome-bg.svg';
 import styles from './WelcomeScene.module.scss';
 
@@ -50,7 +49,7 @@ export default function WelcomeScene({ channelName, onJoin }: WelcomeSceneProps)
             className={styles['welcome__input']}
             placeholder="Your name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           />
           <Button
             type="submit"

@@ -5,7 +5,7 @@ import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import ActionButton from '@/components/ui/ActionButton/ActionButton';
+import { ActionButton } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ActionButtonLibrary() {
