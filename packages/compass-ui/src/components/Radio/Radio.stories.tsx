@@ -1,40 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Checkbox from './Checkbox';
-import type { CheckboxSize } from './Checkbox';
+import Radio from './Radio';
+import type { RadioSize } from './Radio';
 
-const SIZES: CheckboxSize[] = ['Small', 'Medium', 'Large'];
+const SIZES: RadioSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Checkbox',
-  component: Checkbox,
+  title: 'Components/Radio',
+  component: Radio,
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
   },
-} satisfies Meta<typeof Checkbox>;
+} satisfies Meta<typeof Radio>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Unchecked: Story = {
+export const Default: Story = {
   args: {
-    children: 'Remember me',
-    checked: false,
+    children: 'Option',
+    name: 'radio-default',
+    size: 'Medium',
+    value: 'option',
   },
 };
 
 export const Checked: Story = {
   args: {
-    children: 'Remember me',
-    checked: true,
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    children: 'Unavailable option',
-    checked: false,
-    disabled: true,
+    children: 'Selected option',
+    defaultChecked: true,
+    name: 'radio-checked',
+    size: 'Medium',
+    value: 'selected',
   },
 };
 
@@ -51,20 +48,22 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 88,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
         >
-          States
+          Group
         </span>
-        <Checkbox size="Medium">Unchecked</Checkbox>
-        <Checkbox size="Medium" defaultChecked>
-          Checked
-        </Checkbox>
-        <Checkbox size="Medium" indeterminate>
-          Indeterminate
-        </Checkbox>
+        <Radio name="radio-group" value="a" size="Medium">
+          Option A
+        </Radio>
+        <Radio name="radio-group" value="b" defaultChecked size="Medium">
+          Option B
+        </Radio>
+        <Radio name="radio-group" value="c" size="Medium">
+          Option C
+        </Radio>
       </div>
       <div
         style={{
@@ -76,7 +75,7 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 88,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
@@ -84,9 +83,15 @@ export const AllVariants: Story = {
           Sizes
         </span>
         {SIZES.map((size) => (
-          <Checkbox key={size} size={size} defaultChecked={size !== 'Small'}>
+          <Radio
+            key={size}
+            name="radio-sizes"
+            value={size.toLowerCase()}
+            defaultChecked={size === 'Medium'}
+            size={size}
+          >
             {size}
-          </Checkbox>
+          </Radio>
         ))}
       </div>
       <div
@@ -99,22 +104,24 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 88,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
         >
           Invalid
         </span>
-        <Checkbox size="Medium" valid={false}>
+        <Radio name="radio-invalid" value="unchecked" valid={false}>
           Unchecked invalid
-        </Checkbox>
-        <Checkbox size="Medium" defaultChecked valid={false}>
+        </Radio>
+        <Radio
+          name="radio-invalid"
+          value="checked"
+          defaultChecked
+          valid={false}
+        >
           Checked invalid
-        </Checkbox>
-        <Checkbox size="Medium" indeterminate valid={false}>
-          Indeterminate invalid
-        </Checkbox>
+        </Radio>
       </div>
       <div
         style={{
@@ -126,22 +133,19 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 88,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
         >
           Disabled
         </span>
-        <Checkbox size="Medium" disabled>
+        <Radio name="radio-disabled" value="unchecked" disabled>
           Disabled unchecked
-        </Checkbox>
-        <Checkbox size="Medium" defaultChecked disabled>
+        </Radio>
+        <Radio name="radio-disabled" value="checked" defaultChecked disabled>
           Disabled checked
-        </Checkbox>
-        <Checkbox size="Medium" indeterminate disabled>
-          Disabled indeterminate
-        </Checkbox>
+        </Radio>
       </div>
     </div>
   ),

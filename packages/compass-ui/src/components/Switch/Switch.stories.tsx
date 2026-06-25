@@ -1,40 +1,41 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Checkbox from './Checkbox';
-import type { CheckboxSize } from './Checkbox';
+import Switch from './Switch';
+import type { SwitchSize } from './Switch';
 
-const SIZES: CheckboxSize[] = ['Small', 'Medium', 'Large'];
+const SIZES: SwitchSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Checkbox',
-  component: Checkbox,
+  title: 'Components/Switch',
+  component: Switch,
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
   },
-} satisfies Meta<typeof Checkbox>;
+} satisfies Meta<typeof Switch>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Unchecked: Story = {
+export const Default: Story = {
   args: {
-    children: 'Remember me',
-    checked: false,
+    children: 'Enable notifications',
+    size: 'Medium',
   },
 };
 
 export const Checked: Story = {
   args: {
-    children: 'Remember me',
-    checked: true,
+    children: 'Enable notifications',
+    defaultChecked: true,
+    size: 'Medium',
   },
 };
 
-export const Disabled: Story = {
+export const WithSecondaryLabel: Story = {
   args: {
-    children: 'Unavailable option',
-    checked: false,
-    disabled: true,
+    children: 'Thread replies',
+    secondaryLabel: 'Notify me about replies to threads I follow',
+    size: 'Medium',
   },
 };
 
@@ -51,20 +52,17 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 128,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
         >
           States
         </span>
-        <Checkbox size="Medium">Unchecked</Checkbox>
-        <Checkbox size="Medium" defaultChecked>
+        <Switch size="Medium">Unchecked</Switch>
+        <Switch size="Medium" defaultChecked>
           Checked
-        </Checkbox>
-        <Checkbox size="Medium" indeterminate>
-          Indeterminate
-        </Checkbox>
+        </Switch>
       </div>
       <div
         style={{
@@ -76,7 +74,7 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 128,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
@@ -84,9 +82,9 @@ export const AllVariants: Story = {
           Sizes
         </span>
         {SIZES.map((size) => (
-          <Checkbox key={size} size={size} defaultChecked={size !== 'Small'}>
+          <Switch key={size} size={size} defaultChecked={size !== 'Small'}>
             {size}
-          </Checkbox>
+          </Switch>
         ))}
       </div>
       <div
@@ -99,22 +97,23 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 128,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
         >
-          Invalid
+          Secondary label
         </span>
-        <Checkbox size="Medium" valid={false}>
-          Unchecked invalid
-        </Checkbox>
-        <Checkbox size="Medium" defaultChecked valid={false}>
-          Checked invalid
-        </Checkbox>
-        <Checkbox size="Medium" indeterminate valid={false}>
-          Indeterminate invalid
-        </Checkbox>
+        <Switch size="Medium" secondaryLabel="Optional description text">
+          Label
+        </Switch>
+        <Switch
+          size="Medium"
+          defaultChecked
+          secondaryLabel="Optional description"
+        >
+          Label
+        </Switch>
       </div>
       <div
         style={{
@@ -126,22 +125,22 @@ export const AllVariants: Story = {
       >
         <span
           style={{
-            width: 112,
+            width: 128,
             fontSize: 12,
             color: 'var(--color-text-secondary)',
           }}
         >
-          Disabled
+          Semi-bold & disabled
         </span>
-        <Checkbox size="Medium" disabled>
+        <Switch size="Medium" semiBold>
+          Semi-bold label
+        </Switch>
+        <Switch size="Medium" disabled>
           Disabled unchecked
-        </Checkbox>
-        <Checkbox size="Medium" defaultChecked disabled>
+        </Switch>
+        <Switch size="Medium" defaultChecked disabled>
           Disabled checked
-        </Checkbox>
-        <Checkbox size="Medium" indeterminate disabled>
-          Disabled indeterminate
-        </Checkbox>
+        </Switch>
       </div>
     </div>
   ),
