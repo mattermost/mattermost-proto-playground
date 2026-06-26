@@ -50,7 +50,9 @@ function Row({
         style={{
           width: 136,
           fontSize: 12,
-          color: 'var(--center-channel-color)',
+          color: inverted
+            ? 'var(--sidebar-text)'
+            : 'var(--center-channel-color)',
         }}
       >
         {label}

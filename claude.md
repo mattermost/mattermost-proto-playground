@@ -249,7 +249,7 @@ When adding or editing `packages/compass-ui/**/*.stories.tsx`, keep story-only c
 
 - Story labels and demo text should use `var(--center-channel-color)`, not neutral-derived tokens like `--color-neutral-*` or `--color-text-secondary`.
 - Preview surfaces and wrappers should use `var(--center-channel-bg)`.
-- Inverted story surfaces should use `var(--sidebar-header-bg)`.
+- Inverted story surfaces should use `var(--sidebar-header-bg)`, and labels inside those surfaces should use `var(--sidebar-text)`.
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` for intentionally secondary text, borders, or subtle fills.
 - Let `@mattermost/compass-ui/styles` provide the base body font and native heading font. Do not hardcode font families in stories.
 
