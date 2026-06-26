@@ -46,6 +46,12 @@
   background: var(--center-channel-bg) !important;
 }
 
+.sbdocs-preview > :first-child:not(.docs-story) {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: var(--center-channel-bg) !important;
+  color: var(--center-channel-color) !important;
+}
+
 .docs-story > div {
   background: var(--center-channel-bg) !important;
 }
@@ -80,6 +86,49 @@
 .docblock-argstable textarea {
   color: var(--center-channel-color);
   font-family: var(--font-family-base);
+}
+
+.docblock-argstable input:not([type='range']),
+.docblock-argstable select,
+.docblock-argstable textarea,
+.docblock-argstable button {
+  border-color: rgba(var(--center-channel-color-rgb), 0.16) !important;
+  background: var(--center-channel-bg) !important;
+  box-shadow: none !important;
+}
+
+.docblock-argstable input::placeholder,
+.docblock-argstable textarea::placeholder {
+  color: rgba(var(--center-channel-color-rgb), 0.48);
+}
+
+.docblock-argstable input[type='range'] {
+  accent-color: var(--button-bg);
+}
+
+.docblock-argstable button:disabled,
+.docblock-argstable input:disabled,
+.docblock-argstable select:disabled,
+.docblock-argstable textarea:disabled {
+  border-color: rgba(var(--center-channel-color-rgb), 0.08) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.04) !important;
+  color: rgba(var(--center-channel-color-rgb), 0.48) !important;
+}
+
+.docblock-argstable option {
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+}
+
+.docblock-argstable code,
+.docblock-argstable [title='Reset controls'] {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+}
+
+.sbdocs-preview > :first-child:not(.docs-story) button {
+  color: var(--center-channel-color) !important;
 }
 
 .docblock-code-toggle,
