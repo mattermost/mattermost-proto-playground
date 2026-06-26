@@ -92,9 +92,17 @@
 .docblock-argstable select,
 .docblock-argstable textarea,
 .docblock-argstable button {
-  border-color: rgba(var(--center-channel-color-rgb), 0.16) !important;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16) !important;
+  border-radius: 4px;
   background: var(--center-channel-bg) !important;
   box-shadow: none !important;
+}
+
+.docblock-argstable input:not([type='range']):focus,
+.docblock-argstable select:focus,
+.docblock-argstable textarea:focus {
+  border-color: var(--button-bg) !important;
+  outline: none;
 }
 
 .docblock-argstable input::placeholder,
@@ -110,7 +118,7 @@
 .docblock-argstable input:disabled,
 .docblock-argstable select:disabled,
 .docblock-argstable textarea:disabled {
-  border-color: rgba(var(--center-channel-color-rgb), 0.08) !important;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08) !important;
   background: rgba(var(--center-channel-color-rgb), 0.04) !important;
   color: rgba(var(--center-channel-color-rgb), 0.48) !important;
 }
@@ -122,7 +130,7 @@
 
 .docblock-argstable code,
 .docblock-argstable [title='Reset controls'] {
-  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
   background: rgba(var(--center-channel-color-rgb), 0.06) !important;
   color: var(--center-channel-color) !important;
 }
