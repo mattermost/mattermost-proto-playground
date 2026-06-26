@@ -5,7 +5,7 @@ import type { SwitchSize } from './Switch';
 const SIZES: SwitchSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Switch',
+  title: 'Components/Forms and Input/Switch',
   component: Switch,
   tags: ['autodocs'],
   argTypes: {

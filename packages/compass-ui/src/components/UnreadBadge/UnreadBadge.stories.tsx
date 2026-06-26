@@ -7,7 +7,7 @@ const SIZES: UnreadBadgeSize[] = ['6', '8'];
 const CONTEXTS: UnreadBadgeContext[] = ['Team Icon', 'Icon Button'];
 
 const meta = {
-  title: 'Components/UnreadBadge',
+  title: 'Components/Status Indicators/Unread Badge',
   component: UnreadBadge,
   tags: ['autodocs'],
   argTypes: {

@@ -19,7 +19,7 @@ const SIZES: IconSize[] = [
 ];
 
 const meta = {
-  title: 'Components/Icon',
+  title: 'Components/Images and Icons/Icon',
   component: Icon,
   tags: ['autodocs'],
   argTypes: {

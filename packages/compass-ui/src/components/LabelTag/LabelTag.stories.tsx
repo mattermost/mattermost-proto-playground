@@ -16,7 +16,7 @@ const SIZES: LabelTagSize[] = ['X-Small', 'Small'];
 const CASINGS: LabelTagCasing[] = ['Title Case', 'All Caps'];
 
 const meta = {
-  title: 'Components/LabelTag',
+  title: 'Components/Status Indicators/Label Tag',
   component: LabelTag,
   tags: ['autodocs'],
   argTypes: {

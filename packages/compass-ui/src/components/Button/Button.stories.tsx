@@ -14,7 +14,7 @@ const EMPHASES: ButtonEmphasis[] = [
 const SIZES: ButtonSize[] = ['X-Small', 'Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Button',
+  title: 'Components/Actions/Button',
   component: Button,
   tags: ['autodocs'],
   argTypes: {

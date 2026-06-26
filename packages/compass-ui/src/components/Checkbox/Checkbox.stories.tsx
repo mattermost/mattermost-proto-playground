@@ -5,7 +5,7 @@ import type { CheckboxSize } from './Checkbox';
 const SIZES: CheckboxSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Checkbox',
+  title: 'Components/Forms and Input/Checkbox',
   component: Checkbox,
   tags: ['autodocs'],
   argTypes: {

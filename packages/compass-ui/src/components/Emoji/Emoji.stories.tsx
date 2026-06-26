@@ -17,7 +17,7 @@ const SIZES: EmojiSize[] = [
 ];
 
 const meta = {
-  title: 'Components/Emoji',
+  title: 'Components/Images and Icons/Emoji',
   component: Emoji,
   tags: ['autodocs'],
   argTypes: {

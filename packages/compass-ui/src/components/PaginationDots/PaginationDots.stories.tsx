@@ -11,7 +11,7 @@ const ORIENTATIONS: PaginationDotsOrientation[] = ['Horizontal', 'Vertical'];
 const DOT_STYLES: PaginationDotsStyle[] = ['Default', 'Inverted', 'OnPrimary'];
 
 const meta = {
-  title: 'Components/PaginationDots',
+  title: 'Components/Progress Indicators/Pagination Dots',
   component: PaginationDots,
   tags: ['autodocs'],
   argTypes: {

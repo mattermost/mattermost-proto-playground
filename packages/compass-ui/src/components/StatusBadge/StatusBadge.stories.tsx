@@ -18,7 +18,7 @@ const STATUSES: StatusBadgeStatus[] = [
 ];
 
 const meta = {
-  title: 'Components/StatusBadge',
+  title: 'Components/Status Indicators/Status Badge',
   component: StatusBadge,
   tags: ['autodocs'],
   argTypes: {

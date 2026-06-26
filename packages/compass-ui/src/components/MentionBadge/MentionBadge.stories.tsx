@@ -13,7 +13,7 @@ const SIZES: MentionBadgeSize[] = ['Small', 'Medium', 'Large'];
 const COUNTS = [1, 22, 100];
 
 const meta = {
-  title: 'Components/MentionBadge',
+  title: 'Components/Status Indicators/Mention Badge',
   component: MentionBadge,
   tags: ['autodocs'],
   argTypes: {
