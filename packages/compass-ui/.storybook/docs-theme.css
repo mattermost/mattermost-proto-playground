@@ -5,6 +5,16 @@
   font-family: var(--font-family-base);
 }
 
+.sbdocs-wrapper :where(strong, b) {
+  font-weight: var(--font-weight-semibold);
+}
+
+.sbdocs-content th,
+.docblock-argstable th,
+.docblock-argstable tbody td:first-child {
+  font-weight: var(--font-weight-semibold) !important;
+}
+
 .sbdocs-content {
   max-width: 960px;
 }
@@ -120,7 +130,7 @@
 
 .docblock-argstable label:has(> input[type='checkbox'][role='switch']) > span {
   color: rgba(var(--center-channel-color-rgb), 0.72) !important;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .docblock-argstable
