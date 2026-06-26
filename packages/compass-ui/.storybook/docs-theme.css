@@ -1,0 +1,102 @@
+.sbdocs-wrapper,
+.sbdocs-content {
+  background: var(--center-channel-bg) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-base);
+}
+
+.sbdocs-content {
+  max-width: 960px;
+}
+
+.sbdocs-content h1,
+.sbdocs-content h2,
+.sbdocs-content h3,
+.sbdocs-content h4,
+.sbdocs-content h5,
+.sbdocs-content h6 {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-heading);
+}
+
+.sbdocs-content p,
+.sbdocs-content li,
+.sbdocs-content td,
+.sbdocs-content th {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-base);
+}
+
+.sbdocs-content a {
+  color: var(--link-color);
+}
+
+.sbdocs-content hr {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12);
+}
+
+.sbdocs-content blockquote {
+  border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.docs-story,
+.sbdocs-preview {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: var(--center-channel-bg) !important;
+}
+
+.docs-story > div {
+  background: var(--center-channel-bg) !important;
+}
+
+.docblock-argstable,
+.sbdocs-table {
+  color: var(--center-channel-color) !important;
+}
+
+.docblock-argstable table,
+.sbdocs-table {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+}
+
+.docblock-argstable thead,
+.sbdocs-table thead {
+  background: rgba(var(--center-channel-color-rgb), 0.04) !important;
+}
+
+.docblock-argstable th,
+.docblock-argstable td,
+.sbdocs-table th,
+.sbdocs-table td {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: var(--center-channel-bg) !important;
+  color: var(--center-channel-color) !important;
+}
+
+.docblock-argstable button,
+.docblock-argstable input,
+.docblock-argstable select,
+.docblock-argstable textarea {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-base);
+}
+
+.docblock-code-toggle,
+.docblock-source {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.04) !important;
+  color: var(--center-channel-color) !important;
+}
+
+.sbdocs-content code,
+.sbdocs-content pre {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12);
+  background: rgba(var(--center-channel-color-rgb), 0.06);
+  color: var(--center-channel-color);
+  font-family: var(--font-family-mono);
+}
+
+.sbdocs-content pre code {
+  background: transparent;
+}

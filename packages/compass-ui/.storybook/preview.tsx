@@ -7,6 +7,7 @@ import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/600.css';
 import '@fontsource/open-sans/700.css';
 import '../src/styles/entry.scss';
+import './docs-theme.css';
 
 const THEMES = ['denim', 'sapphire', 'quartz', 'indigo', 'onyx'] as const;
 
@@ -30,8 +31,12 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      document.documentElement.setAttribute('data-theme', context.globals.theme);
-      document.documentElement.style.backgroundColor = 'var(--center-channel-bg)';
+      document.documentElement.setAttribute(
+        'data-theme',
+        context.globals.theme,
+      );
+      document.documentElement.style.backgroundColor =
+        'var(--center-channel-bg)';
       document.body.style.backgroundColor = 'var(--center-channel-bg)';
       return <Story />;
     },

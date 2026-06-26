@@ -61,3 +61,4 @@ npm run storybook --workspace=@mattermost/compass-ui
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` only when a secondary text or border treatment intentionally needs opacity.
 - Avoid neutral-only text tokens such as `--color-neutral-*` or `--color-text-secondary` in stories unless the component API specifically demonstrates a neutral palette token.
 - Native `h1`-`h6` elements use the Compass heading font through `@mattermost/compass-ui/styles`; story body text inherits the Compass body font.
+- Storybook Docs tab chrome is themed in `.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.

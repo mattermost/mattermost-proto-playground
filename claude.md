@@ -252,6 +252,7 @@ When adding or editing `packages/compass-ui/**/*.stories.tsx`, keep story-only c
 - Inverted story surfaces should use `var(--sidebar-header-bg)`, and labels inside those surfaces should use `var(--sidebar-text)`.
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` for intentionally secondary text, borders, or subtle fills.
 - Let `@mattermost/compass-ui/styles` provide the base body font and native heading font. Do not hardcode font families in stories.
+- Storybook Docs tab chrome is themed in `packages/compass-ui/.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.
 
 
 | Semantic token    | RGB counterpart       | Value                |
