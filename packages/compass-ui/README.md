@@ -56,7 +56,8 @@ npm run storybook --workspace=@mattermost/compass-ui
 
 ### Authoring stories
 
-- Mirror the guidelines sidebar hierarchy in story `title`s: `Components/{section}/{name}` (e.g. `'Components/Actions/Button'`). Keep `src/storybook/titles.ts` in sync with `src/manifests/sections.ts`; use matching string literals in `meta.title`.
+- Mirror the guidelines sidebar hierarchy in story `title`s: `Components/{section}/{name}` and `Foundations/{section}/{name}`. Keep `src/storybook/titles.ts` aligned with `src/manifests/sections.ts`; use matching string literals in `meta.title` (or `<Meta title="..." />` for MDX stories).
+- Foundation stories live in `src/foundations/` and import specimens or guideline MDX from `src/guidelines/foundations/` via Storybook aliases configured in `.storybook/main.ts`.
 - Keep story-only labels, headings, and wrapper backgrounds theme-aware. Use `var(--center-channel-color)` for text labels and `var(--center-channel-bg)` for preview surfaces.
 - Use `var(--sidebar-header-bg)` for inverted story surfaces, and `var(--sidebar-text)` for labels inside those surfaces.
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` only when a secondary text or border treatment intentionally needs opacity.

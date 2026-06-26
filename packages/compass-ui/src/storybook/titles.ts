@@ -38,3 +38,27 @@ export const TITLE_STATUS_STATUS_BADGE =
   'Components/Status Indicators/Status Badge';
 export const TITLE_STATUS_UNREAD_BADGE =
   'Components/Status Indicators/Unread Badge';
+
+export const TITLE_OVERVIEW_WHY_COMPASS = 'Foundations/Overview/Why Compass';
+export const TITLE_OVERVIEW_PRINCIPLES = 'Foundations/Overview/Design Principles';
+export const TITLE_OVERVIEW_SYSTEM_HIERARCHY =
+  'Foundations/Overview/System Hierarchy';
+
+export const TITLE_STYLE_COLOR = 'Foundations/Style/Color';
+export const TITLE_STYLE_THEMES = 'Foundations/Style/Themes';
+export const TITLE_STYLE_TYPOGRAPHY = 'Foundations/Style/Typography';
+export const TITLE_STYLE_ICONOGRAPHY = 'Foundations/Style/Iconography';
+export const TITLE_STYLE_SHAPE = 'Foundations/Style/Shape';
+export const TITLE_STYLE_ELEVATION = 'Foundations/Style/Elevation';
+export const TITLE_STYLE_SPACING = 'Foundations/Style/Spacing';
+export const TITLE_STYLE_LAYOUT = 'Foundations/Style/Layout';
+export const TITLE_STYLE_ANIMATION = 'Foundations/Style/Animation';
+
+export const TITLE_GUIDELINES_WRITING_STYLE =
+  'Foundations/Guidelines/Writing Style';
+export const TITLE_GUIDELINES_USABILITY_HEURISTICS =
+  'Foundations/Guidelines/Usability Heuristics';
+export const TITLE_GUIDELINES_SYSTEM_FEEDBACK =
+  'Foundations/Guidelines/System Feedback';
+export const TITLE_GUIDELINES_ACCESSIBILITY =
+  'Foundations/Guidelines/Accessibility Guidelines';

@@ -20,5 +20,5 @@
     "noUnusedParameters": false
   },
   "include": ["src"],
-  "exclude": ["**/*.stories.tsx"]
+  "exclude": ["**/*.stories.tsx", "src/foundations/**"]
 }

@@ -1,6 +1,8 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import path from 'path';
 
+const repoSrc = path.resolve(__dirname, '../../../src');
+
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(ts|tsx)'],
   addons: ['@storybook/addon-essentials', '@storybook/addon-interactions'],
@@ -10,10 +12,21 @@ const config: StorybookConfig = {
   },
   async viteFinal(viteConfig) {
     viteConfig.resolve ??= {};
-    viteConfig.resolve.alias = {
-      ...viteConfig.resolve.alias,
-      '@': path.resolve(__dirname, '../src'),
-    };
+    const compassSrc = path.resolve(__dirname, '../src');
+    viteConfig.resolve.alias = [
+      { find: '@/guidelines', replacement: path.join(repoSrc, 'guidelines') },
+      { find: '@/styles', replacement: path.join(repoSrc, 'styles') },
+      { find: '@/contexts', replacement: path.join(repoSrc, 'contexts') },
+      { find: '@', replacement: compassSrc },
+      ...(Array.isArray(viteConfig.resolve.alias)
+        ? viteConfig.resolve.alias
+        : viteConfig.resolve.alias
+          ? Object.entries(viteConfig.resolve.alias).map(([find, replacement]) => ({
+              find,
+              replacement,
+            }))
+          : []),
+    ];
     viteConfig.css ??= {};
     viteConfig.css.preprocessorOptions = {
       scss: {
