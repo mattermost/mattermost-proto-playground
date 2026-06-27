@@ -16,59 +16,55 @@
 }
 
 /*
- * Doc prose typography — scoped so it does not override component module
- * styles inside live previews (.docs-story). Unguarded `.sbdocs-content h2`
- * / `p` selectors beat CSS-module classes (e.g. TourPoint title, Permalink
- * Preview footer) because tag+class beats class-only.
+ * Doc prose typography — theme Storybook-generated copy without overriding
+ * Compass CSS-module classes inside previews. Tag+class selectors such as
+ * `.sbdocs-content h2` beat single-class modules (e.g. `.tour-point__title`);
+ * skip any element whose class follows our BEM `__` convention.
  */
-@scope (.sbdocs-content) to (.docs-story) {
-  :where(h1, h2, h3, h4, h5, h6) {
-    color: var(--center-channel-color);
-    font-family: var(--font-family-heading);
-  }
-
-  :where(p, li, td, th) {
-    color: var(--center-channel-color);
-    font-family: var(--font-family-base);
-  }
-
-  :where(a) {
-    color: var(--link-color);
-  }
-
-  :where(hr) {
-    border-color: rgba(var(--center-channel-color-rgb), 0.12);
-  }
-
-  :where(blockquote) {
-    border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  :where(code, kbd, samp) {
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
-    background: rgba(var(--center-channel-color-rgb), 0.06) !important;
-    color: var(--center-channel-color) !important;
-    font-family: var(--font-family-mono) !important;
-  }
-
-  :where(pre) {
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
-    background: rgba(var(--center-channel-color-rgb), 0.06) !important;
-    color: var(--center-channel-color) !important;
-    font-family: var(--font-family-mono) !important;
-  }
-
-  pre code {
-    border: none !important;
-    background: transparent !important;
-  }
+.sbdocs-content :where(h1, h2, h3, h4, h5, h6):not([class*='__']) {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-heading);
 }
 
-@scope (.sbdocs-wrapper) to (.docs-story) {
-  :where(strong, b) {
-    font-weight: var(--font-weight-semibold);
-  }
+.sbdocs-content :where(p, li, td, th):not([class*='__']) {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-base);
+}
+
+.sbdocs-content :where(a):not([class*='__']) {
+  color: var(--link-color);
+}
+
+.sbdocs-content :where(hr):not([class*='__']) {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12);
+}
+
+.sbdocs-content :where(blockquote):not([class*='__']) {
+  border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.sbdocs-content :where(code, kbd, samp):not([class*='__']) {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.sbdocs-content :where(pre):not([class*='__']) {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.sbdocs-content pre:not([class*='__']) code {
+  border: none !important;
+  background: transparent !important;
+}
+
+.sbdocs-wrapper :where(strong, b):not([class*='__']) {
+  font-weight: var(--font-weight-semibold);
 }
 
 .docs-story,
