@@ -84,8 +84,6 @@ export const TITLE_CARDS_LINK_PREVIEW =
 export const TITLE_CARDS_PERMALINK_PREVIEW =
   'Components/Cards and Previews/Permalink Preview';
 
-export const TITLE_NAVIGATION_APP_BAR_ITEM =
-  'Components/Navigation/App Bar Item';
 export const TITLE_NAVIGATION_CHANNEL_SIDEBAR_ITEM =
   'Components/Navigation/Channel Sidebar Item';
 export const TITLE_NAVIGATION_MENU_ITEM = 'Components/Navigation/Menu Item';
