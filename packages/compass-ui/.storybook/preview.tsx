@@ -16,6 +16,16 @@ const preview: Preview = {
     layout: 'padded',
     backgrounds: { disable: true },
     controls: { matchers: { color: /(background|color)$/i, date: /Date$/i } },
+    options: {
+      storySort: {
+        order: [
+          'Foundations',
+          ['Overview', 'Style', 'Guidelines'],
+          'Components',
+          '*',
+        ],
+      },
+    },
   },
   globalTypes: {
     theme: {
