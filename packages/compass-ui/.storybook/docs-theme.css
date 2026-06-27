@@ -5,10 +5,6 @@
   font-family: var(--font-family-base);
 }
 
-.sbdocs-wrapper :where(strong, b) {
-  font-weight: var(--font-weight-semibold);
-}
-
 .sbdocs-content th,
 .docblock-argstable th,
 .docblock-argstable tbody td:first-child {
@@ -19,35 +15,60 @@
   max-width: 960px;
 }
 
-.sbdocs-content h1,
-.sbdocs-content h2,
-.sbdocs-content h3,
-.sbdocs-content h4,
-.sbdocs-content h5,
-.sbdocs-content h6 {
-  color: var(--center-channel-color);
-  font-family: var(--font-family-heading);
+/*
+ * Doc prose typography — scoped so it does not override component module
+ * styles inside live previews (.docs-story). Unguarded `.sbdocs-content h2`
+ * / `p` selectors beat CSS-module classes (e.g. TourPoint title, Permalink
+ * Preview footer) because tag+class beats class-only.
+ */
+@scope (.sbdocs-content) to (.docs-story) {
+  :where(h1, h2, h3, h4, h5, h6) {
+    color: var(--center-channel-color);
+    font-family: var(--font-family-heading);
+  }
+
+  :where(p, li, td, th) {
+    color: var(--center-channel-color);
+    font-family: var(--font-family-base);
+  }
+
+  :where(a) {
+    color: var(--link-color);
+  }
+
+  :where(hr) {
+    border-color: rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  :where(blockquote) {
+    border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  :where(code, kbd, samp) {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+    background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+    color: var(--center-channel-color) !important;
+    font-family: var(--font-family-mono) !important;
+  }
+
+  :where(pre) {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+    background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+    color: var(--center-channel-color) !important;
+    font-family: var(--font-family-mono) !important;
+  }
+
+  pre code {
+    border: none !important;
+    background: transparent !important;
+  }
 }
 
-.sbdocs-content p,
-.sbdocs-content li,
-.sbdocs-content td,
-.sbdocs-content th {
-  color: var(--center-channel-color);
-  font-family: var(--font-family-base);
-}
-
-.sbdocs-content a {
-  color: var(--link-color);
-}
-
-.sbdocs-content hr {
-  border-color: rgba(var(--center-channel-color-rgb), 0.12);
-}
-
-.sbdocs-content blockquote {
-  border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
-  color: rgba(var(--center-channel-color-rgb), 0.72);
+@scope (.sbdocs-wrapper) to (.docs-story) {
+  :where(strong, b) {
+    font-weight: var(--font-weight-semibold);
+  }
 }
 
 .docs-story,
@@ -203,19 +224,4 @@
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
   background: rgba(var(--center-channel-color-rgb), 0.04) !important;
   color: var(--center-channel-color) !important;
-}
-
-.sbdocs-content code,
-.sbdocs-content pre,
-.sbdocs-content kbd,
-.sbdocs-content samp {
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
-  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
-  color: var(--center-channel-color) !important;
-  font-family: var(--font-family-mono) !important;
-}
-
-.sbdocs-content pre code {
-  border: none !important;
-  background: transparent !important;
 }
