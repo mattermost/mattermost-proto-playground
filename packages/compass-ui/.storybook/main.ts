@@ -16,6 +16,7 @@ const config: StorybookConfig = {
     viteConfig.resolve.alias = [
       { find: '@/guidelines', replacement: path.join(repoSrc, 'guidelines') },
       { find: '@/styles', replacement: path.join(repoSrc, 'styles') },
+      { find: '@/assets', replacement: path.join(repoSrc, 'assets') },
       { find: '@/contexts', replacement: path.join(repoSrc, 'contexts') },
       { find: '@', replacement: compassSrc },
       ...(Array.isArray(viteConfig.resolve.alias)
