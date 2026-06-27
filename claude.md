@@ -247,8 +247,8 @@ For info/success/warning/danger states, always use the semantic tokens from `tok
 
 When adding or editing `packages/compass-ui/**/*.stories.tsx`, keep story-only chrome theme-aware:
 
-- Story `title`s should mirror the guidelines sidebar: `Components/{section}/{name}` and `Foundations/{section}/{name}`. Keep `packages/compass-ui/src/storybook/titles.ts` aligned with `src/manifests/sections.ts` and use the matching string literal in `meta.title` or MDX `<Meta title="..." />`.
-- Foundation stories import guideline specimens and MDX from `src/guidelines/foundations/`; shared MDX components are mapped in `src/foundations/_components/GuidelineStory.tsx`.
+- Story `title`s should mirror the guidelines sidebar: `Components/{section}/{name}` and `Foundations/Style/{name}` for foundation specimens. Keep `packages/compass-ui/src/storybook/titles.ts` aligned with `src/manifests/sections.ts` and use the matching string literal in `meta.title`.
+- Foundation Storybook entries import specimens only from `src/guidelines/foundations/`; do not port guideline MDX prose into Storybook.
 - Story labels and demo text should use `var(--center-channel-color)`, not neutral-derived tokens like `--color-neutral-*` or `--color-text-secondary`.
 - Preview surfaces and wrappers should use `var(--center-channel-bg)`.
 - Inverted story surfaces should use `var(--sidebar-header-bg)`, and labels inside those surfaces should use `var(--sidebar-text)`.
