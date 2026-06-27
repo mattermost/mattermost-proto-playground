@@ -1,14 +1,29 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Specimen from '@/guidelines/foundations/animation/animation.specimen';
+import {
+  AnimationDurationsContent,
+  AnimationEasingsContent,
+} from '@/guidelines/foundations/animation/animation.specimen';
 
 const meta = {
   title: 'Foundations/Style/Animation',
-  parameters: { layout: 'padded' },
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component: 'Duration and easing tokens for motion.',
+      },
+    },
+  },
 } satisfies Meta;
 
 export default meta;
 type Story = StoryObj;
 
-export const Docs: Story = {
-  render: () => <Specimen />,
+export const Durations: Story = {
+  render: () => <AnimationDurationsContent />,
+};
+
+export const Easings: Story = {
+  render: () => <AnimationEasingsContent />,
 };

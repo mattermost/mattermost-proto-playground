@@ -1,14 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Specimen from '@/guidelines/foundations/elevation/elevation.specimen';
+import { ElevationScaleContent } from '@/guidelines/foundations/elevation/elevation.specimen';
 
 const meta = {
   title: 'Foundations/Style/Elevation',
-  parameters: { layout: 'padded' },
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component: 'Shadow tokens for layered surfaces.',
+      },
+    },
+  },
 } satisfies Meta;
 
 export default meta;
 type Story = StoryObj;
 
-export const Docs: Story = {
-  render: () => <Specimen />,
+export const Scale: Story = {
+  render: () => <ElevationScaleContent />,
 };

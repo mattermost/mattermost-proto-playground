@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react';
+import { FoundationLayout } from '../src/foundations/_components/FoundationLayout';
 import '@fontsource/metropolis/400.css';
 import '@fontsource/metropolis/500.css';
 import '@fontsource/metropolis/600.css';
@@ -48,6 +49,16 @@ const preview: Preview = {
       document.documentElement.style.backgroundColor =
         'var(--center-channel-bg)';
       document.body.style.backgroundColor = 'var(--center-channel-bg)';
+
+      const isFoundation = context.title?.startsWith('Foundations/') ?? false;
+      if (isFoundation) {
+        return (
+          <FoundationLayout>
+            <Story />
+          </FoundationLayout>
+        );
+      }
+
       return <Story />;
     },
   ],

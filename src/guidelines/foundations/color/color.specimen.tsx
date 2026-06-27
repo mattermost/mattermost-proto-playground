@@ -58,7 +58,7 @@ const PALETTES: { label: string; base: string; shades: number[] }[] = [
   },
 ];
 
-export default function ColorLibrary() {
+export function ColorPalettesContent() {
   return (
     <>
       {PALETTES.map(({ label, base, shades }) => (
@@ -79,4 +79,8 @@ export default function ColorLibrary() {
       ))}
     </>
   );
+}
+
+export default function ColorLibrary() {
+  return <ColorPalettesContent />;
 }

@@ -1,14 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Specimen from '@/guidelines/foundations/themes/themes.specimen';
+import { ThemeTokensContent } from '@/guidelines/foundations/themes/themes.specimen';
 
 const meta = {
   title: 'Foundations/Style/Themes',
-  parameters: { layout: 'padded' },
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component: 'Role-based theme tokens across every built-in Compass theme.',
+      },
+    },
+  },
 } satisfies Meta;
 
 export default meta;
 type Story = StoryObj;
 
-export const Docs: Story = {
-  render: () => <Specimen />,
+export const ThemeTokens: Story = {
+  render: () => <ThemeTokensContent />,
 };
