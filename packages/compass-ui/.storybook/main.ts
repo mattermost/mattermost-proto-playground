@@ -1,5 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import path from 'path';
+import svgr from 'vite-plugin-svgr';
 
 const repoSrc = path.resolve(__dirname, '../../../src');
 
@@ -11,6 +12,8 @@ const config: StorybookConfig = {
     options: {},
   },
   async viteFinal(viteConfig) {
+    viteConfig.plugins = [...(viteConfig.plugins ?? []), svgr()];
+
     viteConfig.resolve ??= {};
     const compassSrc = path.resolve(__dirname, '../src');
     viteConfig.resolve.alias = [
