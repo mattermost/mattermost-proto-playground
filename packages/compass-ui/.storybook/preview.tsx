@@ -23,6 +23,7 @@ const preview: Preview = {
           'Foundations',
           ['Style'],
           'Components',
+          'Patterns',
           '*',
         ],
       },

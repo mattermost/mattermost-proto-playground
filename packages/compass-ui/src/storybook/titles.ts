@@ -20,10 +20,29 @@ export const TITLE_FORMS_TEXT_INPUT = 'Components/Forms and Input/Text Input';
 
 export const TITLE_IMAGES_EMOJI = 'Components/Images and Icons/Emoji';
 export const TITLE_IMAGES_ICON = 'Components/Images and Icons/Icon';
+export const TITLE_IMAGES_ILLUSTRATION = 'Components/Images and Icons/Illustration';
+export const TITLE_IMAGES_TEAM_AVATAR = 'Components/Images and Icons/Team Avatar';
+export const TITLE_IMAGES_USER_AVATAR = 'Components/Images and Icons/User Avatar';
+export const TITLE_IMAGES_USER_AVATAR_GROUP =
+  'Components/Images and Icons/User Avatar Group';
 
 export const TITLE_LAYOUT_DIVIDER = 'Components/Layout and Containers/Divider';
+export const TITLE_LAYOUT_EMPTY_STATE = 'Components/Layout and Containers/Empty State';
+export const TITLE_LAYOUT_SCROLLBAR = 'Components/Layout and Containers/Scrollbar';
+export const TITLE_LAYOUT_SCROLLBARS = 'Components/Layout and Containers/Scrollbars';
+export const TITLE_LAYOUT_TABS = 'Components/Layout and Containers/Tabs';
 
+export const TITLE_OVERLAYS_POPOVER_NOTICE =
+  'Components/Overlays and Layering/Popover Notice';
 export const TITLE_OVERLAYS_TOOLTIP = 'Components/Overlays and Layering/Tooltip';
+
+export const TITLE_FEEDBACK_SECTION_NOTICE =
+  'Components/Feedback and Notices/Section Notice';
+
+export const TITLE_FORMS_CHIP = 'Components/Forms and Input/Chip';
+export const TITLE_FORMS_DATE_RANGE_PICKER =
+  'Components/Forms and Input/Date Range Picker';
+export const TITLE_FORMS_DROPDOWN = 'Components/Forms and Input/Dropdown';
 
 export const TITLE_PROGRESS_PAGINATION_DOTS =
   'Components/Progress Indicators/Pagination Dots';
@@ -34,10 +53,17 @@ export const TITLE_PROGRESS_SPINNER = 'Components/Progress Indicators/Spinner';
 export const TITLE_STATUS_LABEL_TAG = 'Components/Status Indicators/Label Tag';
 export const TITLE_STATUS_MENTION_BADGE =
   'Components/Status Indicators/Mention Badge';
+export const TITLE_STATUS_REACTION_PILL =
+  'Components/Status Indicators/Reaction Pill';
+export const TITLE_STATUS_RECORDING_PILL =
+  'Components/Status Indicators/Recording Pill';
 export const TITLE_STATUS_STATUS_BADGE =
   'Components/Status Indicators/Status Badge';
+export const TITLE_STATUS_TAGS = 'Components/Status Indicators/Tags';
 export const TITLE_STATUS_UNREAD_BADGE =
   'Components/Status Indicators/Unread Badge';
+
+export const TITLE_PATTERNS_MODAL = 'Patterns/Modal';
 
 export const TITLE_STYLE_COLOR = 'Foundations/Style/Color';
 export const TITLE_STYLE_THEMES = 'Foundations/Style/Themes';
