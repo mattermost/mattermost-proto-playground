@@ -8,7 +8,7 @@ import Icon from '../Icon/Icon';
 const SIZES: SelectSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Select',
+  title: 'Components/Forms and Input/Select',
   component: Select,
   tags: ['autodocs'],
   argTypes: {

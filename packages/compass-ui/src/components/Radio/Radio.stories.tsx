@@ -5,7 +5,7 @@ import type { RadioSize } from './Radio';
 const SIZES: RadioSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Radio',
+  title: 'Components/Forms and Input/Radio',
   component: Radio,
   tags: ['autodocs'],
   argTypes: {

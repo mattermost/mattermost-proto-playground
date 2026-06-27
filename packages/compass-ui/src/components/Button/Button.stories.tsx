@@ -14,7 +14,7 @@ const EMPHASES: ButtonEmphasis[] = [
 const SIZES: ButtonSize[] = ['X-Small', 'Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/Button',
+  title: 'Components/Actions/Button',
   component: Button,
   tags: ['autodocs'],
   argTypes: {
@@ -46,10 +46,12 @@ function PermutationGrid({
   appearance,
   destructive,
   disabled,
+  labelColor = 'var(--center-channel-color)',
 }: {
   appearance: ButtonAppearance;
   destructive: boolean;
   disabled: boolean;
+  labelColor?: string;
 }) {
   return (
     <div style={{ display: 'grid', gap: 12 }}>
@@ -67,7 +69,7 @@ function PermutationGrid({
             style={{
               width: 96,
               fontSize: 12,
-              color: 'var(--center-channel-color)',
+              color: labelColor,
             }}
           >
             {emphasis}
@@ -116,11 +118,14 @@ export const AllVariants: Story = {
           background: 'var(--sidebar-header-bg)',
         }}
       >
-        <h3 style={{ marginBottom: 12 }}>Inverted</h3>
+        <h3 style={{ marginBottom: 12, color: 'var(--sidebar-text)' }}>
+          Inverted
+        </h3>
         <PermutationGrid
           appearance="Inverted"
           destructive={false}
           disabled={false}
+          labelColor="var(--sidebar-text)"
         />
       </section>
     </div>

@@ -4,7 +4,7 @@ import IconButton from './IconButton';
 import Icon from '../Icon/Icon';
 
 const meta = {
-  title: 'Components/IconButton',
+  title: 'Components/Actions/Icon Button',
   component: IconButton,
   tags: ['autodocs'],
 } satisfies Meta<typeof IconButton>;

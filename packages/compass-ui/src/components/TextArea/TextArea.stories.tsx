@@ -6,7 +6,7 @@ import type { TextAreaSize } from './TextArea';
 const SIZES: TextAreaSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/TextArea',
+  title: 'Components/Forms and Input/Text Area',
   component: TextArea,
   tags: ['autodocs'],
   argTypes: {

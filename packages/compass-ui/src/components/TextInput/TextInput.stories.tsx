@@ -8,7 +8,7 @@ import Icon from '../Icon/Icon';
 const SIZES: TextInputSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/TextInput',
+  title: 'Components/Forms and Input/Text Input',
   component: TextInput,
   tags: ['autodocs'],
   argTypes: {

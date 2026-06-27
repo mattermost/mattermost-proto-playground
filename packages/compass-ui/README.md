@@ -56,8 +56,11 @@ npm run storybook --workspace=@mattermost/compass-ui
 
 ### Authoring stories
 
+- Mirror the guidelines sidebar hierarchy in story `title`s: `Components/{section}/{name}` and `Foundations/Style/{name}` for foundation specimens. Keep `src/storybook/titles.ts` aligned with `src/manifests/sections.ts`; use matching string literals in `meta.title`.
+- Foundation stories in `src/foundations/style/` import named `*Content` exports from guideline specimens, use `tags: ['autodocs']` with inline `meta.title`, and rely on the shared `FoundationLayout` decorator in `.storybook/preview.tsx`. Prose guidelines stay on the docs site.
 - Keep story-only labels, headings, and wrapper backgrounds theme-aware. Use `var(--center-channel-color)` for text labels and `var(--center-channel-bg)` for preview surfaces.
-- Use `var(--sidebar-header-bg)` for inverted story surfaces.
+- Use `var(--sidebar-header-bg)` for inverted story surfaces, and `var(--sidebar-text)` for labels inside those surfaces.
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` only when a secondary text or border treatment intentionally needs opacity.
 - Avoid neutral-only text tokens such as `--color-neutral-*` or `--color-text-secondary` in stories unless the component API specifically demonstrates a neutral palette token.
 - Native `h1`-`h6` elements use the Compass heading font through `@mattermost/compass-ui/styles`; story body text inherits the Compass body font.
+- Storybook Docs tab chrome and Docs controls are themed in `.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.

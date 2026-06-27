@@ -5,7 +5,7 @@ import type { TooltipArrow } from './Tooltip';
 const ARROWS: TooltipArrow[] = ['Top', 'Right', 'Bottom', 'Left'];
 
 const meta = {
-  title: 'Components/Tooltip',
+  title: 'Components/Overlays and Layering/Tooltip',
   component: Tooltip,
   tags: ['autodocs'],
   argTypes: {

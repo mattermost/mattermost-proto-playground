@@ -247,11 +247,14 @@ For info/success/warning/danger states, always use the semantic tokens from `tok
 
 When adding or editing `packages/compass-ui/**/*.stories.tsx`, keep story-only chrome theme-aware:
 
+- Story `title`s should mirror the guidelines sidebar: `Components/{section}/{name}` and `Foundations/Style/{name}` for foundation specimens. Keep `packages/compass-ui/src/storybook/titles.ts` aligned with `src/manifests/sections.ts` and use the matching string literal in `meta.title`.
+- Foundation Storybook entries import named `*Content` exports from guideline specimens (visual reference only). Use `tags: ['autodocs']`, inline string-literal titles, and meaningful story names (`Palettes`, `Scale`, …). Do not port guideline MDX prose into Storybook.
 - Story labels and demo text should use `var(--center-channel-color)`, not neutral-derived tokens like `--color-neutral-*` or `--color-text-secondary`.
 - Preview surfaces and wrappers should use `var(--center-channel-bg)`.
-- Inverted story surfaces should use `var(--sidebar-header-bg)`.
+- Inverted story surfaces should use `var(--sidebar-header-bg)`, and labels inside those surfaces should use `var(--sidebar-text)`.
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` for intentionally secondary text, borders, or subtle fills.
 - Let `@mattermost/compass-ui/styles` provide the base body font and native heading font. Do not hardcode font families in stories.
+- Storybook Docs tab chrome and Docs controls are themed in `packages/compass-ui/.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.
 
 
 | Semantic token    | RGB counterpart       | Value                |

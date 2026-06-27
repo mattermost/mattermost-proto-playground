@@ -7,7 +7,7 @@ import type { SearchInputSize } from './SearchInput';
 const SIZES: SearchInputSize[] = ['Small', 'Medium', 'Large'];
 
 const meta = {
-  title: 'Components/SearchInput',
+  title: 'Components/Forms and Input/Search Input',
   component: SearchInput,
   tags: ['autodocs'],
   argTypes: {
