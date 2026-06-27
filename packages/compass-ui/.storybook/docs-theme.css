@@ -5,10 +5,6 @@
   font-family: var(--font-family-base);
 }
 
-.sbdocs-wrapper :where(strong, b) {
-  font-weight: var(--font-weight-semibold);
-}
-
 .sbdocs-content th,
 .docblock-argstable th,
 .docblock-argstable tbody td:first-child {
@@ -19,35 +15,56 @@
   max-width: 960px;
 }
 
-.sbdocs-content h1,
-.sbdocs-content h2,
-.sbdocs-content h3,
-.sbdocs-content h4,
-.sbdocs-content h5,
-.sbdocs-content h6 {
+/*
+ * Doc prose typography — theme Storybook-generated copy without overriding
+ * Compass CSS-module classes inside previews. Tag+class selectors such as
+ * `.sbdocs-content h2` beat single-class modules (e.g. `.tour-point__title`);
+ * skip any element whose class follows our BEM `__` convention.
+ */
+.sbdocs-content :where(h1, h2, h3, h4, h5, h6):not([class*='__']) {
   color: var(--center-channel-color);
   font-family: var(--font-family-heading);
 }
 
-.sbdocs-content p,
-.sbdocs-content li,
-.sbdocs-content td,
-.sbdocs-content th {
+.sbdocs-content :where(p, li, td, th):not([class*='__']) {
   color: var(--center-channel-color);
   font-family: var(--font-family-base);
 }
 
-.sbdocs-content a {
+.sbdocs-content :where(a):not([class*='__']) {
   color: var(--link-color);
 }
 
-.sbdocs-content hr {
+.sbdocs-content :where(hr):not([class*='__']) {
   border-color: rgba(var(--center-channel-color-rgb), 0.12);
 }
 
-.sbdocs-content blockquote {
+.sbdocs-content :where(blockquote):not([class*='__']) {
   border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
   color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.sbdocs-content :where(code, kbd, samp):not([class*='__']) {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.sbdocs-content :where(pre):not([class*='__']) {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.sbdocs-content pre:not([class*='__']) code {
+  border: none !important;
+  background: transparent !important;
+}
+
+.sbdocs-wrapper :where(strong, b):not([class*='__']) {
+  font-weight: var(--font-weight-semibold);
 }
 
 .docs-story,
@@ -203,19 +220,4 @@
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
   background: rgba(var(--center-channel-color-rgb), 0.04) !important;
   color: var(--center-channel-color) !important;
-}
-
-.sbdocs-content code,
-.sbdocs-content pre,
-.sbdocs-content kbd,
-.sbdocs-content samp {
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
-  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
-  color: var(--center-channel-color) !important;
-  font-family: var(--font-family-mono) !important;
-}
-
-.sbdocs-content pre code {
-  border: none !important;
-  background: transparent !important;
 }

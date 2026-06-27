@@ -3,6 +3,15 @@
  * (see src/manifests/sections.ts). Reference when adding stories — meta.title
  * must use the matching string literal (Storybook requires static titles).
  */
+export const TITLE_BANNERS_GLOBAL_BANNER = 'Components/Banners/Global Banner';
+export const TITLE_BANNERS_MORE_UNREADS_BANNER =
+  'Components/Banners/More Unreads Banner';
+export const TITLE_BANNERS_NEW_MESSAGE_BANNER =
+  'Components/Banners/New Message Banner';
+export const TITLE_BANNERS_SEARCH_TIP_BANNER =
+  'Components/Banners/Search Tip Banner';
+export const TITLE_BANNERS_TOAST_BANNER = 'Components/Banners/Toast Banner';
+
 export const TITLE_ACTIONS_ACTION_BUTTON = 'Components/Actions/Action Button';
 export const TITLE_ACTIONS_BUTTON = 'Components/Actions/Button';
 export const TITLE_ACTIONS_ICON_BUTTON = 'Components/Actions/Icon Button';
@@ -62,6 +71,26 @@ export const TITLE_STATUS_STATUS_BADGE =
 export const TITLE_STATUS_TAGS = 'Components/Status Indicators/Tags';
 export const TITLE_STATUS_UNREAD_BADGE =
   'Components/Status Indicators/Unread Badge';
+
+export const TITLE_CALLS_CALL_PARTICIPANT_AVATAR =
+  'Components/Calls/Call Participant Avatar';
+
+export const TITLE_CARDS_ATTACHMENT_CARD =
+  'Components/Cards and Previews/Attachment Card';
+export const TITLE_CARDS_IMAGE_PREVIEW =
+  'Components/Cards and Previews/Image Preview';
+export const TITLE_CARDS_LINK_PREVIEW =
+  'Components/Cards and Previews/Link Preview';
+export const TITLE_CARDS_PERMALINK_PREVIEW =
+  'Components/Cards and Previews/Permalink Preview';
+
+export const TITLE_NAVIGATION_CHANNEL_SIDEBAR_ITEM =
+  'Components/Navigation/Channel Sidebar Item';
+export const TITLE_NAVIGATION_MENU_ITEM = 'Components/Navigation/Menu Item';
+
+export const TITLE_PATTERNS_POPOVER_MENU = 'Patterns/Popover Menu';
+export const TITLE_PATTERNS_PROFILE_POPOVER = 'Patterns/Profile Popover';
+export const TITLE_PATTERNS_TOUR_POINT = 'Patterns/Onboarding/Tour Point';
 
 export const TITLE_PATTERNS_MODAL = 'Patterns/Modal';
 

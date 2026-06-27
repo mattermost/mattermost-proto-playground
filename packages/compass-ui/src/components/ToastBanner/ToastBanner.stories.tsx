@@ -1,0 +1,104 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import ToastBanner from './ToastBanner';
+import type { ToastBannerType } from './ToastBanner';
+
+const TYPES: ToastBannerType[] = [
+  'General',
+  'Info',
+  'Success',
+  'Warning',
+  'Danger',
+];
+
+const meta = {
+  title: 'Components/Banners/Toast Banner',
+  component: ToastBanner,
+  tags: ['autodocs'],
+  argTypes: {
+    type: { control: 'select', options: TYPES },
+  },
+} satisfies Meta<typeof ToastBanner>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const General: Story = {
+  args: {
+    message: 'Link copied to clipboard.',
+    type: 'General',
+    onDismiss: fn(),
+  },
+};
+
+export const Success: Story = {
+  args: {
+    message: 'Message saved successfully.',
+    type: 'Success',
+    onDismiss: fn(),
+  },
+};
+
+export const WithAction: Story = {
+  args: {
+    message: 'Failed to send message. Please try again.',
+    type: 'Danger',
+    actionLabel: 'Retry',
+    onAction: fn(),
+    onDismiss: fn(),
+  },
+};
+
+export const Warning: Story = {
+  args: {
+    message: 'Your session will expire in 5 minutes.',
+    type: 'Warning',
+    onDismiss: fn(),
+  },
+};
+
+export const Info: Story = {
+  args: {
+    message: 'New update available. Refresh to apply.',
+    type: 'Info',
+    actionLabel: 'Refresh',
+    onAction: fn(),
+    onDismiss: fn(),
+  },
+};
+
+export const AllVariants: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gap: 12, maxWidth: 480 }}>
+      <ToastBanner
+        message="Link copied to clipboard."
+        type="General"
+        onDismiss={fn()}
+      />
+      <ToastBanner
+        message="Message saved successfully."
+        type="Success"
+        onDismiss={fn()}
+      />
+      <ToastBanner
+        message="Failed to send message. Please try again."
+        type="Danger"
+        actionLabel="Retry"
+        onAction={fn()}
+        onDismiss={fn()}
+      />
+      <ToastBanner
+        message="Your session will expire in 5 minutes."
+        type="Warning"
+        onDismiss={fn()}
+      />
+      <ToastBanner
+        message="New update available. Refresh to apply."
+        type="Info"
+        actionLabel="Refresh"
+        onAction={fn()}
+        onDismiss={fn()}
+      />
+    </div>
+  ),
+};
