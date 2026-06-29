@@ -41,7 +41,7 @@
     align-items: center;
     gap: var(--spacing-m);
     min-width: 0;
-    padding: 18px var(--spacing-xl);
+    padding: var(--spacing-m) var(--spacing-xl);
   }
 
   &__intro {
@@ -71,5 +71,7 @@
     align-items: center;
     gap: var(--spacing-xs);
     flex-shrink: 0;
+    height: var(--spacing-xxxl);
+    margin-right: calc(-1 * var(--spacing-xs));
   }
 }

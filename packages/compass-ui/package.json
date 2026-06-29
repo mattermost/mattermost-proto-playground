@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "build": "vite build && sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map",
-    "dev": "vite build --watch",
+    "dev": "sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map && vite build --watch",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

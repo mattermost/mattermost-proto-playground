@@ -53,5 +53,7 @@ export default defineConfig({
     },
     cssCodeSplit: false,
     sourcemap: true,
+    // Sass writes dist/compass-ui.css separately; don't wipe it on watch rebuilds.
+    emptyOutDir: false,
   },
 });

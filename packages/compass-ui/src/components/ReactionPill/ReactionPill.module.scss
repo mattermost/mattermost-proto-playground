@@ -19,6 +19,7 @@
     flex-shrink: 0;
     font-size: var(--font-size-75);
     line-height: 1;
+    margin-left: var(--spacing-xxxxs);
   }
 
   &__label {
@@ -35,6 +36,7 @@
     padding: var(--spacing-xxxxs);
     flex-shrink: 0;
     color: var(--button-color, var(--color-neutral-0));
+    margin-left: var(--spacing-xxxxs);
   }
 
   &__trailing-icon {
@@ -55,7 +57,7 @@
     .reaction-pill__inner {
       gap: var(--spacing-xxxs);
       padding: var(--spacing-xxxxs) var(--spacing-s) var(--spacing-xxxxs)
-        var(--spacing-xxxs);
+        var(--spacing-xs);
     }
 
     .reaction-pill__emoji {
@@ -73,7 +75,7 @@
     .reaction-pill__inner {
       gap: 5px;
       padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
-        var(--spacing-xxxs);
+        var(--spacing-xs);
     }
 
     .reaction-pill__emoji {
@@ -90,7 +92,7 @@
     .reaction-pill__inner {
       gap: var(--spacing-xxs);
       padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-xxs)
-        var(--spacing-s);
+        var(--spacing-m);
     }
 
     .reaction-pill__emoji {

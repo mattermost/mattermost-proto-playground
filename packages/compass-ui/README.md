@@ -37,8 +37,13 @@ From the monorepo root:
 
 ```bash
 npm run build:ui      # build the library
+npm run dev:all       # watch-rebuild UI + docs site (guidelines/specimens)
 npm run storybook     # component catalog on :6006
 ```
+
+When editing components under `packages/compass-ui/`, Storybook reads source directly.
+The docs site reads the built `dist/` output — use `dev:all` (or `dev:ui` in a second terminal
+alongside `npm run dev`) so SCSS changes appear without manual rebuilds.
 
 ## Package layout
 
