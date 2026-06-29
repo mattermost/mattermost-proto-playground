@@ -29,6 +29,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    watch: {
+      // Rebuilds from `npm run dev:ui` write to packages/compass-ui/dist — pick them up here.
+      ignored: ['!**/packages/compass-ui/dist/**'],
+    },
+  },
   css: {
     preprocessorOptions: {
       scss: {
@@ -37,6 +43,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['@mattermost/compass-ui'],
+    // Don't pre-bundle the workspace package; read dist/ on each reload so watch rebuilds apply.
+    exclude: ['@mattermost/compass-ui'],
   },
 });
