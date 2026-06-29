@@ -103,6 +103,9 @@ export const TITLE_MESSAGING_THREAD_FOOTER =
 export const TITLE_MESSAGING_THREAD_LIST_ITEM =
   'Components/Messaging/Thread List Item';
 
+export const TITLE_PATTERNS_MESSAGE = 'Patterns/Message';
+export const TITLE_PATTERNS_MESSAGE_INPUT = 'Patterns/Message Input';
+
 export const TITLE_PATTERNS_POPOVER_MENU = 'Patterns/Popover Menu';
 export const TITLE_PATTERNS_PROFILE_POPOVER = 'Patterns/Profile Popover';
 export const TITLE_PATTERNS_TOUR_POINT = 'Patterns/Onboarding/Tour Point';
