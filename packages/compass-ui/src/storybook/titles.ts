@@ -88,6 +88,21 @@ export const TITLE_NAVIGATION_CHANNEL_SIDEBAR_ITEM =
   'Components/Navigation/Channel Sidebar Item';
 export const TITLE_NAVIGATION_MENU_ITEM = 'Components/Navigation/Menu Item';
 
+export const TITLE_MESSAGING_CHANNEL_INFO_MSG_HEADER =
+  'Components/Messaging/Channel Info Msg Header';
+export const TITLE_MESSAGING_MESSAGE_ACTIONS =
+  'Components/Messaging/Message Actions';
+export const TITLE_MESSAGING_MESSAGE_HEADER =
+  'Components/Messaging/Message Header';
+export const TITLE_MESSAGING_MESSAGE_REACTIONS =
+  'Components/Messaging/Message Reactions';
+export const TITLE_MESSAGING_MESSAGE_SEPARATOR =
+  'Components/Messaging/Message Separator';
+export const TITLE_MESSAGING_THREAD_FOOTER =
+  'Components/Messaging/Thread Footer';
+export const TITLE_MESSAGING_THREAD_LIST_ITEM =
+  'Components/Messaging/Thread List Item';
+
 export const TITLE_PATTERNS_POPOVER_MENU = 'Patterns/Popover Menu';
 export const TITLE_PATTERNS_PROFILE_POPOVER = 'Patterns/Profile Popover';
 export const TITLE_PATTERNS_TOUR_POINT = 'Patterns/Onboarding/Tour Point';
