@@ -2,8 +2,9 @@
 // Block — label wrapper (flex: label(s) + switch)
 // ---------------------------------------------------------------------------
 .switch {
-  display: inline-flex;
+  display: flex;
   align-items: flex-start;
+  width: 100%;
   gap: var(--spacing-m);
   font-family: var(--font-family-body);
   color: var(--center-channel-color);
