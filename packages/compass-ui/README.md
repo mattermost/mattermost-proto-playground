@@ -64,3 +64,14 @@ npm run storybook --workspace=@mattermost/compass-ui
 - Avoid neutral-only text tokens such as `--color-neutral-*` or `--color-text-secondary` in stories unless the component API specifically demonstrates a neutral palette token.
 - Native `h1`-`h6` elements use the Compass heading font through `@mattermost/compass-ui/styles`; story body text inherits the Compass body font.
 - Storybook Docs tab chrome and Docs controls are themed in `.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.
+
+## Integration and releases
+
+- [INTEGRATION.md](./INTEGRATION.md) — Vite + webapp consumer setup
+- [CHANGELOG.md](./CHANGELOG.md) — release history
+
+Validate a publishable tarball from the monorepo root:
+
+```bash
+npm run smoke-test:ui
+```
