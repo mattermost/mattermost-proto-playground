@@ -18,7 +18,7 @@ import {
   AutomationsIndexScene,
 } from './scenes/AutomationsProductScenes';
 import { EXTENDED_SCENES, type ExtendedSceneId } from './extendedScenes';
-import styles from './StandaloneAutomations.module.scss';
+import frameStyles from '@/pages/prototypes/channel-automations/PrototypeAppFrame.module.scss';
 
 export default function StandaloneAutomations() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -111,7 +111,7 @@ export default function StandaloneAutomations() {
   };
 
   return (
-    <div className={styles['standalone-automations']}>
+    <div className={frameStyles['prototype-app-frame']}>
       {scene === 'discover' && (
         <DiscoverScene
           automations={automations}

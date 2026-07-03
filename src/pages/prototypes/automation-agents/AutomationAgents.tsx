@@ -22,7 +22,7 @@ import {
   AutomationEntitiesIndexScene,
   AutomationEntityEditScene,
 } from './scenes/AutomationsProductScenes';
-import styles from './AutomationAgents.module.scss';
+import frameStyles from '@/pages/prototypes/channel-automations/PrototypeAppFrame.module.scss';
 
 export default function AutomationAgents() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -118,7 +118,7 @@ export default function AutomationAgents() {
   };
 
   return (
-    <div className={styles['automation-agents']}>
+    <div className={frameStyles['prototype-app-frame']}>
       {scene === 'discover' && (
         <DiscoverScene
           automations={automationsList}

@@ -13,7 +13,7 @@ import DiscoverScene from './scenes/DiscoverScene';
 import ManageScene from './scenes/ManageScene';
 import AgentsIndexScene from './scenes/AgentsIndexScene';
 import AgentScene from './scenes/AgentScene';
-import styles from './ChannelAutomations.module.scss';
+import styles from './PrototypeAppFrame.module.scss';
 
 export default function ChannelAutomations() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -87,7 +87,7 @@ export default function ChannelAutomations() {
   };
 
   return (
-    <div className={styles['channel-automations']}>
+    <div className={styles['prototype-app-frame']}>
       {scene === 'discover' && (
         <DiscoverScene
           onCreateAutomation={createAutomation}
