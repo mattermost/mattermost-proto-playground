@@ -12,8 +12,9 @@
 // ---------------------------------------------------------------------------
 .checkbox {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  width: 100%;
   gap: var(--spacing-s);
   font-family: var(--font-family-body);
   color: var(--center-channel-color);

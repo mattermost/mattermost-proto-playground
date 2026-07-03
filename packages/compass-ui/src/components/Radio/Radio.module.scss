@@ -3,8 +3,9 @@
 // ---------------------------------------------------------------------------
 .radio {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  width: 100%;
   gap: var(--spacing-xs);
   font-family: var(--font-family-body);
   color: var(--center-channel-color);
