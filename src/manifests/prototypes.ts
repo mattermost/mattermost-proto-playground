@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react';
 import ChannelAutomations from '@/pages/prototypes/channel-automations/ChannelAutomations';
+import StandaloneAutomations from '@/pages/prototypes/standalone-automations/StandaloneAutomations';
+import AutomationAgents from '@/pages/prototypes/automation-agents/AutomationAgents';
 import ExampleFlow from '@/pages/prototypes/example-flow/ExampleFlow';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -14,9 +16,21 @@ export type PrototypeEntry = {
 export const PROTOTYPES: PrototypeEntry[] = [
   {
     id: 'channel-automations',
-    label: 'Agent Automations',
+    label: 'Automations within Agents',
     path: '/prototypes/channel-automations',
     component: ChannelAutomations,
+  },
+  {
+    id: 'standalone-automations',
+    label: 'Standalone Automations',
+    path: '/prototypes/standalone-automations',
+    component: StandaloneAutomations,
+  },
+  {
+    id: 'automation-agents',
+    label: 'Automations are agents',
+    path: '/prototypes/automation-agents',
+    component: AutomationAgents,
   },
   {
     id: 'example-flow',

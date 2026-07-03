@@ -9,8 +9,8 @@
 
   &__header {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-s);
+    flex-direction: column;
+    gap: var(--spacing-xxs);
     padding: var(--spacing-l) 0;
   }
 
@@ -31,12 +31,18 @@
   }
 
   &__toolbar {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--spacing-s);
     width: 100%;
-    padding-bottom: 0;
+  }
+
+  &__tabs {
+    width: 100%;
+
+    :global(.tabs__controls) {
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: flex-end;
+      gap: var(--spacing-s);
+    }
   }
 
   &__actions {
@@ -67,13 +73,15 @@
   }
 
   &__search {
+    flex: 1 1 280px;
+    min-width: 280px;
     max-width: none;
   }
 
   &__list {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
   &__empty {

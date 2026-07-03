@@ -12,7 +12,7 @@ import AtIcon from '@mattermost/compass-icons/components/at';
 import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-outline';
 import CheckboxMultipleMarkedOutlineIcon from '@mattermost/compass-icons/components/checkbox-multiple-marked-outline';
 import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
+import Icon, { type IconSize } from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import type { ComponentType } from 'react';
@@ -63,12 +63,17 @@ function InvertedIconButton({
   );
 }
 
+const PRODUCT_ICON_SIZE: Partial<Record<GlobalHeaderProduct, IconSize>> = {
+  Agents: '16',
+};
+
 function ProductBrand({ product }: { product: GlobalHeaderProduct }) {
   const ProductIcon = PRODUCT_ICON[product];
+  const iconSize = PRODUCT_ICON_SIZE[product] ?? '20';
   return (
     <div className={styles['global-header__product']}>
       <span className={styles['global-header__product-icon']} aria-hidden>
-        <Icon size="20" glyph={<ProductIcon />} />
+        <Icon size={iconSize} glyph={<ProductIcon />} />
       </span>
       <span className={styles['global-header__product-name']}>{product}</span>
     </div>

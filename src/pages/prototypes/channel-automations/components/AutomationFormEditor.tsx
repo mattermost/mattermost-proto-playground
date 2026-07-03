@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import Button from '@/components/ui/Button/Button';
 import Select from '@/components/ui/Select/Select';
 import Switch from '@/components/ui/Switch/Switch';
@@ -8,23 +8,31 @@ import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import {
   ACTIVE_CHANNEL,
   AUTOMATION_CHANNEL_OPTIONS,
+  AUTOMATION_PLAYBOOK_OPTIONS,
+  DEFAULT_OWNED_AGENT_ID,
   EVENT_TYPE_LABELS,
   SCHEDULE_FREQUENCY_LABELS,
   SCHEDULE_TIMES,
   applyTriggerPickerOption,
+  buildTriggerConfig,
+  defaultOwnedAgent,
+  playbookEventToPickerOption,
   seedForAutomationType,
   triggerConfigToPickerOption,
   triggerPickerNeedsChannel,
+  triggerPickerNeedsPlaybook,
   type Automation,
   type AutomationDraft,
+  type AutomationEntity,
   type AutomationType,
   type EventType,
+  type PlaybookEventType,
   type ScheduleFrequency,
-  type TriggerConfig,
   type TriggerKind,
   type TriggerPickerOption,
 } from '../channelAutomationsData';
-import type { FormPatch, FormValues } from './automationFormTypes';
+import type { EditorKind, FormPatch, FormValues } from './automationFormTypes';
+import AgentPickerField from './AgentPickerField';
 import AutomationEditChat from './AutomationEditChat';
 import AutomationsTabs from './AutomationsTabs';
 import TriggerPicker from './TriggerPicker';
@@ -40,47 +48,68 @@ export const EDITOR_VIEW_TABS = [
 ];
 
 export interface AutomationFormEditorProps {
-  /** When provided, the editor opens in edit mode pre-filled from this automation. */
   initial?: Automation;
-  /** When creating, seeds defaults from an Agents-menu automation type. */
+  initialEntity?: AutomationEntity;
   createType?: AutomationType;
   onSubmit: (draft: AutomationDraft) => void;
   onCancel: () => void;
-  /** When false, hides Chat/Settings tabs and keeps the chat editor. Default: true. */
   showViewTabs?: boolean;
-  /** When false, hides Cancel/Save on the Settings tab. Default: true. */
   showFooter?: boolean;
-  /** When false, hides the Enabled switch. Default: true. */
   showEnabledSwitch?: boolean;
-  /** Controlled Chat/Settings view — used when tabs render in the modal header. */
+  showAgentPicker?: boolean;
+  contextAgentId?: string;
+  editorKind?: EditorKind;
   view?: EditorView;
   onViewChange?: (view: EditorView) => void;
+}
+
+export interface AutomationFormEditorHandle {
+  submit: () => void;
 }
 
 const SCHEDULE_FREQUENCIES = Object.keys(
   SCHEDULE_FREQUENCY_LABELS,
 ) as ScheduleFrequency[];
 
-/**
- * Create / edit editor for an agent automation, rendered as a drill-in subview
- * inside the Edit Agent Automations tab.
- */
-export default function AutomationFormEditor({
+const AutomationFormEditor = forwardRef<
+  AutomationFormEditorHandle,
+  AutomationFormEditorProps
+>(function AutomationFormEditor(
+  {
   initial,
+  initialEntity,
   createType,
   onSubmit,
   onCancel,
   showViewTabs = true,
   showFooter = true,
   showEnabledSwitch = true,
+  showAgentPicker = false,
+  contextAgentId,
+  editorKind = 'assignment',
   view: controlledView,
   onViewChange,
-}: AutomationFormEditorProps) {
-  const isEdit = initial != null;
+  },
+  ref,
+) {
+  const isEdit = initial != null || initialEntity != null;
   const seed = !isEdit && createType ? seedForAutomationType(createType) : null;
-  const initialTrigger = initial?.triggerConfig ?? seed?.triggerConfig;
+  const source = initial ?? initialEntity;
+  const initialTrigger = source?.triggerConfig ?? seed?.triggerConfig;
 
-  const [name, setName] = useState(initial?.name ?? seed?.name ?? '');
+  const [agentId, setAgentId] = useState(
+    initial?.agentId ?? contextAgentId ?? DEFAULT_OWNED_AGENT_ID,
+  );
+  const [displayName, setDisplayName] = useState(
+    initialEntity?.displayName ?? 'New automation',
+  );
+  const [username, setUsername] = useState(
+    initialEntity?.username ?? 'new-automation',
+  );
+  const [avatarSrc, setAvatarSrc] = useState(
+    initialEntity?.avatarSrc ?? defaultOwnedAgent().avatarSrc,
+  );
+  const [name, setName] = useState(source?.name ?? seed?.name ?? '');
   const [triggerPicker, setTriggerPicker] = useState<TriggerPickerOption | null>(
     () => triggerConfigToPickerOption(initialTrigger),
   );
@@ -97,49 +126,89 @@ export default function AutomationFormEditor({
   const [keyword, setKeyword] = useState(
     initialTrigger?.kind === 'event' ? (initialTrigger.keyword ?? '') : '',
   );
+  const [playbookEvent, setPlaybookEvent] = useState<PlaybookEventType>(
+    initialTrigger?.kind === 'playbook-event'
+      ? initialTrigger.event
+      : 'run-started',
+  );
+  const [playbookId, setPlaybookId] = useState(
+    initialTrigger?.kind === 'playbook-event'
+      ? (initialTrigger.playbookId ?? '')
+      : '',
+  );
   const [channelId, setChannelId] = useState(
-    initial?.scope.channelIds?.[0] ?? ACTIVE_CHANNEL.id,
+    source?.scope.channelIds?.[0] ?? ACTIVE_CHANNEL.id,
+  );
+  const [teamId, setTeamId] = useState(
+    source?.scope.teamIds?.[0] ?? '',
   );
   const [instructions, setInstructions] = useState(
-    initial?.instructions ?? seed?.instructions ?? '',
+    source?.instructions ?? seed?.instructions ?? '',
   );
-  const [enabled, setEnabled] = useState(initial?.enabled ?? true);
+  const [enabled, setEnabled] = useState(source?.enabled ?? true);
 
   const [internalView, setInternalView] = useState<EditorView>(() =>
-    !showViewTabs && initial != null ? 'form' : 'chat',
+    !showViewTabs && isEdit ? 'form' : 'chat',
   );
   const view = controlledView ?? internalView;
   const setView = onViewChange ?? setInternalView;
 
   const values: FormValues = {
+    agentId,
     name,
     kind,
     frequency,
     time,
     event,
     keyword,
+    playbookEvent,
+    playbookId,
     channelId,
+    teamId,
     instructions,
     enabled,
+    displayName,
+    username,
+    avatarSrc,
   };
 
   const patch: FormPatch = (changes) => {
+    if (changes.agentId !== undefined) setAgentId(changes.agentId);
     if (changes.name !== undefined) setName(changes.name);
+    if (changes.displayName !== undefined) setDisplayName(changes.displayName);
+    if (changes.username !== undefined) setUsername(changes.username);
+    if (changes.avatarSrc !== undefined) setAvatarSrc(changes.avatarSrc);
     if (changes.frequency !== undefined) setFrequency(changes.frequency);
     if (changes.time !== undefined) setTime(changes.time);
     if (changes.keyword !== undefined) setKeyword(changes.keyword);
-    if (changes.channelId !== undefined) setChannelId(changes.channelId);
+    if (changes.playbookEvent !== undefined) setPlaybookEvent(changes.playbookEvent);
+    if (changes.playbookId !== undefined) setPlaybookId(changes.playbookId);
+    if (changes.channelId !== undefined) {
+      setChannelId(changes.channelId);
+      if (changes.channelId) setTeamId('');
+    }
+    if (changes.teamId !== undefined) {
+      setTeamId(changes.teamId);
+      if (changes.teamId) setChannelId('');
+    }
     if (changes.instructions !== undefined) setInstructions(changes.instructions);
     if (changes.enabled !== undefined) setEnabled(changes.enabled);
 
     const nextKind = changes.kind ?? kind;
     const nextEvent = changes.event ?? event;
+    const nextPlaybookEvent = changes.playbookEvent ?? playbookEvent;
     if (changes.kind !== undefined) setKind(changes.kind);
     if (changes.event !== undefined) setEvent(changes.event);
 
-    if (changes.kind !== undefined || changes.event !== undefined) {
+    if (
+      changes.kind !== undefined ||
+      changes.event !== undefined ||
+      changes.playbookEvent !== undefined
+    ) {
       if (nextKind === 'schedule') {
         setTriggerPicker('schedule');
+      } else if (nextKind === 'playbook-event') {
+        setTriggerPicker(playbookEventToPickerOption(nextPlaybookEvent));
       } else if (nextEvent === 'message' || nextEvent === 'keyword') {
         setTriggerPicker('message');
       } else if (nextEvent === 'join') {
@@ -154,16 +223,21 @@ export default function AutomationFormEditor({
 
   const hasTrigger =
     triggerPicker != null || (kind === 'event' && event === 'mention');
+  const agentValid = !showAgentPicker || agentId.length > 0;
   const isValid =
     name.trim().length > 0 &&
     instructions.trim().length > 0 &&
-    hasTrigger;
+    hasTrigger &&
+    agentValid;
 
   const handleTriggerPickerChange = (option: TriggerPickerOption) => {
     const next = applyTriggerPickerOption(option);
     setTriggerPicker(option);
     setKind(next.kind);
     setEvent(next.event);
+    if (next.kind === 'playbook-event') {
+      setPlaybookEvent(next.playbookEvent);
+    }
   };
 
   const triggerFallbackLabel =
@@ -171,26 +245,56 @@ export default function AutomationFormEditor({
       ? EVENT_TYPE_LABELS.mention
       : undefined;
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!isValid) return;
-    const triggerConfig: TriggerConfig =
-      kind === 'schedule'
-        ? { kind: 'schedule', frequency, time }
-        : {
-            kind: 'event',
-            event,
-            ...(event === 'keyword' ? { keyword: keyword.trim() } : {}),
-          };
+    const triggerConfig = buildTriggerConfig({
+      kind,
+      frequency,
+      time,
+      event,
+      keyword,
+      playbookEvent,
+      playbookId,
+    });
     onSubmit({
       name,
       triggerConfig,
       instructions,
       enabled,
-      ...(triggerPickerNeedsChannel(triggerPicker)
-        ? { triggerChannelId: channelId }
+      agentId: showAgentPicker || editorKind === 'assignment' ? agentId : undefined,
+      ...(editorKind === 'entity'
+        ? { displayName, username, avatarSrc }
+        : {}),
+      ...(teamId ? { triggerTeamId: teamId } : {}),
+      ...(kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker)
+        ? { triggerChannelId: channelId || ACTIVE_CHANNEL.id }
         : {}),
     });
-  };
+  }, [
+    isValid,
+    kind,
+    frequency,
+    time,
+    event,
+    keyword,
+    playbookEvent,
+    playbookId,
+    onSubmit,
+    name,
+    instructions,
+    enabled,
+    showAgentPicker,
+    editorKind,
+    agentId,
+    displayName,
+    username,
+    avatarSrc,
+    teamId,
+    triggerPicker,
+    channelId,
+  ]);
+
+  useImperativeHandle(ref, () => ({ submit: handleSubmit }), [handleSubmit]);
 
   const enabledSwitch = showEnabledSwitch ? (
     <Switch
@@ -226,7 +330,10 @@ export default function AutomationFormEditor({
           canSave={isValid}
           saveLabel={isEdit ? 'Save changes' : 'Add automation'}
           isEdit={isEdit}
-          automationType={initial?.type ?? createType}
+          automationType={initial?.type ?? initialEntity?.type ?? createType}
+          contextAgentId={contextAgentId}
+          editorKind={editorKind}
+          requireAgentId={showAgentPicker}
         />
       ) : (
         <div className={styles['editor__scroll']}>
@@ -238,6 +345,31 @@ export default function AutomationFormEditor({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
+
+              {showAgentPicker ? (
+                <AgentPickerField
+                  className={styles['editor__form-control']}
+                  value={agentId}
+                  onChange={setAgentId}
+                />
+              ) : null}
+
+              {editorKind === 'entity' ? (
+                <>
+                  <TextInput
+                    className={styles['editor__form-control']}
+                    label="Display name"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                  />
+                  <TextInput
+                    className={styles['editor__form-control']}
+                    label="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </>
+              ) : null}
 
               <TriggerPicker
                 className={styles['editor__form-control']}
@@ -277,7 +409,7 @@ export default function AutomationFormEditor({
                 </div>
               ) : null}
 
-              {triggerPickerNeedsChannel(triggerPicker) ? (
+              {kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker) ? (
                 <Select
                   className={styles['editor__form-control']}
                   label="Channel"
@@ -287,6 +419,22 @@ export default function AutomationFormEditor({
                   {AUTOMATION_CHANNEL_OPTIONS.map((channel) => (
                     <option key={channel.id} value={channel.id}>
                       {channel.label}
+                    </option>
+                  ))}
+                </Select>
+              ) : null}
+
+              {triggerPickerNeedsPlaybook(triggerPicker) ? (
+                <Select
+                  className={styles['editor__form-control']}
+                  label="Playbook"
+                  value={playbookId}
+                  onChange={(e) => setPlaybookId(e.target.value)}
+                >
+                  <option value="">Any playbook</option>
+                  {AUTOMATION_PLAYBOOK_OPTIONS.map((playbook) => (
+                    <option key={playbook.id} value={playbook.id}>
+                      {playbook.label}
                     </option>
                   ))}
                 </Select>
@@ -327,4 +475,6 @@ export default function AutomationFormEditor({
       {footer}
     </div>
   );
-}
+});
+
+export default AutomationFormEditor;

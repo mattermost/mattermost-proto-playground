@@ -1,27 +1,30 @@
 import type { ReactNode } from 'react';
 import Message from '@/components/ui/Message/Message';
-import { AGENT, CURRENT_USER } from '../channelAutomationsData';
+import { CURRENT_USER, type Agent } from '../channelAutomationsData';
 import styles from './AgentChatMessage.module.scss';
 
 const TIMESTAMP = 'Just now';
 
 export interface ChatMessageProps {
   children: ReactNode;
-  /** Override the timestamp shown next to the author. */
+  agent?: Agent;
   timestamp?: string;
 }
 
-/**
- * Agent-authored chat message. All agent conversations (the create flow and the
- * automation editor) render through the shared `Message` component so chat
- * messages match the product's message styling everywhere.
- */
-export function AgentMessage({ children, timestamp = TIMESTAMP }: ChatMessageProps) {
+export function AgentMessage({
+  children,
+  agent,
+  timestamp = TIMESTAMP,
+}: ChatMessageProps) {
+  const displayName = agent?.displayName ?? 'Agent';
+  const avatarAlt = agent?.displayName ?? 'Agent';
+
   return (
     <Message
-      avatarSrc={AGENT.avatarSrc}
-      avatarAlt={AGENT.displayName}
-      username={AGENT.displayName}
+      avatarSrc={agent?.avatarSrc}
+      avatarFallbackColor={agent?.avatarFallbackColor}
+      avatarAlt={avatarAlt}
+      username={displayName}
       timestamp={timestamp}
       isBot
       botLabel="AGENT"
@@ -32,7 +35,6 @@ export function AgentMessage({ children, timestamp = TIMESTAMP }: ChatMessagePro
   );
 }
 
-/** User-authored reply in an agent chat. */
 export function UserMessage({ children, timestamp = TIMESTAMP }: ChatMessageProps) {
   return (
     <Message
@@ -47,7 +49,6 @@ export function UserMessage({ children, timestamp = TIMESTAMP }: ChatMessageProp
   );
 }
 
-/** Standard text body for a chat message (matches message typography). */
 export function ChatText({ children }: { children: ReactNode }) {
   return <p className={styles['text']}>{children}</p>;
 }

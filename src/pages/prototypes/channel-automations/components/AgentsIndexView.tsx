@@ -9,23 +9,25 @@ import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import SearchInput from '@/components/ui/SearchInput/SearchInput';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import Tabs from '@/components/ui/Tabs/Tabs';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import AutomationsTabs from './AutomationsTabs';
-import { AGENTS, type Agent } from '../channelAutomationsData';
+import { AGENTS, agentAvatarProps, type Agent } from '../channelAutomationsData';
 import AgentListItem from './AgentListItem';
 import styles from './AgentsIndexView.module.scss';
 
 type AgentsTabKey = 'all' | 'yours';
 
 const TABS = [
-  { key: 'all', label: 'All agents' },
-  { key: 'yours', label: 'Your agents' },
+  { key: 'all', label: 'All' },
+  { key: 'yours', label: 'Yours' },
 ] as const;
 
 export interface AgentsIndexViewProps {
   agents: Agent[];
   onSelectAgent: (id: string) => void;
   onNewAutomation: (agentId: string) => void;
+  onRequestDelete?: (id: string) => void;
+  showNewAutomation?: boolean;
 }
 
 /**
@@ -36,6 +38,8 @@ export default function AgentsIndexView({
   agents,
   onSelectAgent,
   onNewAutomation,
+  onRequestDelete,
+  showNewAutomation = true,
 }: AgentsIndexViewProps) {
   const [tab, setTab] = useState<AgentsTabKey>('all');
   const [query, setQuery] = useState('');
@@ -64,83 +68,85 @@ export default function AgentsIndexView({
         <header className={styles['agents-index__header']}>
           <h1 className={styles['agents-index__title']}>Agents</h1>
           <p className={styles['agents-index__subtitle']}>
-            Here are the agents you have access to
+            AI agents with dedicated identity, access, and connected tools
           </p>
         </header>
 
         <div className={styles['agents-index__toolbar']}>
-          <AutomationsTabs
+          <Tabs
+            className={styles['agents-index__tabs']}
             tabs={TABS.map((item) => ({ key: item.key, label: item.label }))}
             activeKey={tab}
             onChange={(key) => setTab(key as AgentsTabKey)}
             ariaLabel="Agents filter"
-          />
-          <div className={styles['agents-index__actions']}>
-            <div
-              ref={agentPickerRef}
-              className={styles['agents-index__agent-picker']}
-            >
-              <Button
-                size="Small"
-                emphasis="Tertiary"
-                aria-haspopup="listbox"
-                aria-expanded={agentPickerOpen}
-                aria-label="New automation"
-                leadingIcon={
-                  <Icon size="12" glyph={<LightningBoltOutlineIcon />} />
-                }
-                trailingIcon={<Icon size="12" glyph={<ChevronDownIcon />} />}
-                onClick={() => setAgentPickerOpen((open) => !open)}
-              >
-                New automation
-              </Button>
-              {agentPickerOpen && (
-                <PopoverMenu
-                  className={styles['agents-index__agent-picker-menu']}
-                  role="listbox"
-                  aria-label="Choose agent"
-                >
-                  {AGENTS.map((agent) => (
-                    <MenuItem
-                      key={agent.id}
-                      label={agent.displayName}
-                      leadingVisual={
-                        <UserAvatar
-                          src={agent.avatarSrc}
-                          alt={agent.displayName}
-                          size="16"
-                        />
+            controls={
+              <>
+                <SearchInput
+                  className={styles['agents-index__search']}
+                  size="Medium"
+                  placeholder="Search Agents"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onClear={() => setQuery('')}
+                  aria-label="Search agents"
+                />
+                <div className={styles['agents-index__actions']}>
+                  {showNewAutomation ? (
+                  <div
+                    ref={agentPickerRef}
+                    className={styles['agents-index__agent-picker']}
+                  >
+                    <Button
+                      size="Medium"
+                      emphasis="Tertiary"
+                      aria-haspopup="listbox"
+                      aria-expanded={agentPickerOpen}
+                      aria-label="New automation"
+                      leadingIcon={
+                        <Icon size="16" glyph={<LightningBoltOutlineIcon />} />
                       }
-                      onClick={() => {
-                        setAgentPickerOpen(false);
-                        onNewAutomation(agent.id);
-                      }}
-                    />
-                  ))}
-                </PopoverMenu>
-              )}
-            </div>
-            <Button
-              size="Small"
-              emphasis="Primary"
-              leadingIcon={<Icon size="12" glyph={<PlusIcon />} />}
-            >
-              New agent
-            </Button>
-          </div>
+                      trailingIcon={<Icon size="16" glyph={<ChevronDownIcon />} />}
+                      onClick={() => setAgentPickerOpen((open) => !open)}
+                    >
+                      New automation
+                    </Button>
+                    {agentPickerOpen && (
+                      <PopoverMenu
+                        className={styles['agents-index__agent-picker-menu']}
+                        role="listbox"
+                        aria-label="Choose agent"
+                      >
+                        {AGENTS.map((agent) => (
+                          <MenuItem
+                            key={agent.id}
+                            label={agent.displayName}
+                            leadingVisual={
+                              <UserAvatar size="16" {...agentAvatarProps(agent)} />
+                            }
+                            onClick={() => {
+                              setAgentPickerOpen(false);
+                              onNewAutomation(agent.id);
+                            }}
+                          />
+                        ))}
+                      </PopoverMenu>
+                    )}
+                  </div>
+                  ) : null}
+                  <Button
+                    emphasis="Primary"
+                    size="Medium"
+                    leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+                  >
+                    New agent
+                  </Button>
+                </div>
+              </>
+            }
+          />
         </div>
 
         <div className={styles['agents-index__body']}>
-          <SearchInput
-            className={styles['agents-index__search']}
-            size="Medium"
-            placeholder="Search Agents"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onClear={() => setQuery('')}
-            aria-label="Search agents"
-          />
-
           {filteredAgents.length === 0 ? (
             <p className={styles['agents-index__empty']}>
               No agents match your search.
@@ -151,7 +157,8 @@ export default function AgentsIndexView({
                 <AgentListItem
                   key={agent.id}
                   agent={agent}
-                  onSelect={onSelectAgent}
+                  onEdit={onSelectAgent}
+                  onRequestDelete={onRequestDelete}
                 />
               ))}
             </div>

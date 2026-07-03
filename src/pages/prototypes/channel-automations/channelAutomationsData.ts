@@ -6,6 +6,7 @@ import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMatty from '@/assets/avatars/Matty.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
+import type { UserAvatarFallbackColor } from '@/components/ui/UserAvatar/UserAvatar';
 
 /** The four automation kinds the Agent can build. */
 export type AutomationType =
@@ -110,7 +111,7 @@ export function seedForAutomationType(type: AutomationType): AutomationTypeSeed 
 /* create/edit form round-trip; `trigger` is the derived summary.      */
 /* ------------------------------------------------------------------ */
 
-export type TriggerKind = 'schedule' | 'event';
+export type TriggerKind = 'schedule' | 'event' | 'playbook-event';
 
 export type ScheduleFrequency = 'weekdays' | 'daily' | 'weekly' | 'monthly';
 export type EventType =
@@ -120,39 +121,91 @@ export type EventType =
   | 'join'
   | 'channel-created';
 
+export type PlaybookEventType =
+  | 'run-started'
+  | 'run-finished'
+  | 'task-checked'
+  | 'task-unchecked';
+
 /** Trigger types offered in the create/edit picker. */
 export type TriggerPickerOption =
   | 'schedule'
   | 'message'
   | 'join'
-  | 'channel-created';
+  | 'channel-created'
+  | 'playbook-run-started'
+  | 'playbook-run-finished'
+  | 'playbook-task-checked'
+  | 'playbook-task-unchecked';
+
+export type TriggerPickerGroupId = 'schedule' | 'channels' | 'playbooks';
 
 export interface TriggerPickerOptionMeta {
   id: TriggerPickerOption;
   label: string;
   description: string;
+  group: TriggerPickerGroupId;
 }
+
+export interface TriggerPickerGroupMeta {
+  id: TriggerPickerGroupId;
+  label: string;
+}
+
+export const TRIGGER_PICKER_GROUPS: TriggerPickerGroupMeta[] = [
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'channels', label: 'Channels' },
+  { id: 'playbooks', label: 'Playbooks' },
+];
 
 export const TRIGGER_PICKER_OPTIONS: TriggerPickerOptionMeta[] = [
   {
     id: 'schedule',
     label: 'At a scheduled date and time',
     description: 'Start this action based on a scheduled date or time',
+    group: 'schedule',
   },
   {
     id: 'message',
     label: 'A message is posted in a channel',
     description: 'Start when a new message is posted in this channel',
+    group: 'channels',
   },
   {
     id: 'join',
     label: 'Someone joins a channel',
     description: 'Start when a new member joins this channel',
+    group: 'channels',
   },
   {
     id: 'channel-created',
     label: 'A new channel is created',
     description: 'Start when a new channel is created in the team',
+    group: 'channels',
+  },
+  {
+    id: 'playbook-run-started',
+    label: 'A playbook run starts',
+    description: 'Start when someone kicks off a playbook run',
+    group: 'playbooks',
+  },
+  {
+    id: 'playbook-run-finished',
+    label: 'A playbook run finishes',
+    description: 'Start when a playbook run is marked complete',
+    group: 'playbooks',
+  },
+  {
+    id: 'playbook-task-checked',
+    label: 'A playbook task is checked',
+    description: 'Start when someone checks off a task in a run',
+    group: 'playbooks',
+  },
+  {
+    id: 'playbook-task-unchecked',
+    label: 'A playbook task is unchecked',
+    description: 'Start when someone clears a checked task in a run',
+    group: 'playbooks',
   },
 ];
 
@@ -190,6 +243,29 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
   'channel-created': 'A new channel is created',
 };
 
+export const PLAYBOOK_EVENT_LABELS: Record<PlaybookEventType, string> = {
+  'run-started': 'When a playbook run starts',
+  'run-finished': 'When a playbook run finishes',
+  'task-checked': 'When a playbook task is checked',
+  'task-unchecked': 'When a playbook task is unchecked',
+};
+
+export interface AutomationPlaybookOption {
+  id: string;
+  label: string;
+}
+
+/** Playbooks offered when configuring a playbook trigger. */
+export const AUTOMATION_PLAYBOOK_OPTIONS: AutomationPlaybookOption[] = [
+  { id: 'incident-response', label: 'Incident response' },
+  { id: 'release-checklist', label: 'Release checklist' },
+  { id: 'team-onboarding', label: 'Team onboarding' },
+];
+
+export function playbookLabelById(id: string): string {
+  return AUTOMATION_PLAYBOOK_OPTIONS.find((playbook) => playbook.id === id)?.label ?? id;
+}
+
 export interface ScheduleTrigger {
   kind: 'schedule';
   frequency: ScheduleFrequency;
@@ -204,7 +280,54 @@ export interface EventTrigger {
   keyword?: string;
 }
 
-export type TriggerConfig = ScheduleTrigger | EventTrigger;
+export interface PlaybookEventTrigger {
+  kind: 'playbook-event';
+  event: PlaybookEventType;
+  /** When omitted, the trigger applies to any playbook. */
+  playbookId?: string;
+}
+
+export type TriggerConfig = ScheduleTrigger | EventTrigger | PlaybookEventTrigger;
+
+const PLAYBOOK_PICKER_TO_EVENT: Record<
+  Extract<
+    TriggerPickerOption,
+    | 'playbook-run-started'
+    | 'playbook-run-finished'
+    | 'playbook-task-checked'
+    | 'playbook-task-unchecked'
+  >,
+  PlaybookEventType
+> = {
+  'playbook-run-started': 'run-started',
+  'playbook-run-finished': 'run-finished',
+  'playbook-task-checked': 'task-checked',
+  'playbook-task-unchecked': 'task-unchecked',
+};
+
+export function playbookEventToPickerOption(
+  event: PlaybookEventType,
+): TriggerPickerOption {
+  switch (event) {
+    case 'run-started':
+      return 'playbook-run-started';
+    case 'run-finished':
+      return 'playbook-run-finished';
+    case 'task-checked':
+      return 'playbook-task-checked';
+    default:
+      return 'playbook-task-unchecked';
+  }
+}
+
+export function triggerPickerIsPlaybook(option: TriggerPickerOption | null): boolean {
+  return (
+    option === 'playbook-run-started' ||
+    option === 'playbook-run-finished' ||
+    option === 'playbook-task-checked' ||
+    option === 'playbook-task-unchecked'
+  );
+}
 
 /** Map structured trigger config to the picker option, when supported. */
 export function triggerConfigToPickerOption(
@@ -212,6 +335,9 @@ export function triggerConfigToPickerOption(
 ): TriggerPickerOption | null {
   if (config == null) return null;
   if (config.kind === 'schedule') return 'schedule';
+  if (config.kind === 'playbook-event') {
+    return playbookEventToPickerOption(config.event);
+  }
   if (config.event === 'message' || config.event === 'keyword') return 'message';
   if (config.event === 'join') return 'join';
   if (config.event === 'channel-created') return 'channel-created';
@@ -222,27 +348,76 @@ export function triggerConfigToPickerOption(
 export function applyTriggerPickerOption(option: TriggerPickerOption): {
   kind: TriggerKind;
   event: EventType;
+  playbookEvent: PlaybookEventType;
 } {
   if (option === 'schedule') {
-    return { kind: 'schedule', event: 'mention' };
+    return { kind: 'schedule', event: 'mention', playbookEvent: 'run-started' };
   }
   if (option === 'message') {
-    return { kind: 'event', event: 'message' };
+    return { kind: 'event', event: 'message', playbookEvent: 'run-started' };
   }
   if (option === 'join') {
-    return { kind: 'event', event: 'join' };
+    return { kind: 'event', event: 'join', playbookEvent: 'run-started' };
   }
-  return { kind: 'event', event: 'channel-created' };
+  if (option === 'channel-created') {
+    return { kind: 'event', event: 'channel-created', playbookEvent: 'run-started' };
+  }
+  if (triggerPickerIsPlaybook(option)) {
+    return {
+      kind: 'playbook-event',
+      event: 'mention',
+      playbookEvent: PLAYBOOK_PICKER_TO_EVENT[option],
+    };
+  }
+  return { kind: 'event', event: 'channel-created', playbookEvent: 'run-started' };
 }
 
 export function triggerPickerNeedsChannel(option: TriggerPickerOption | null): boolean {
   return option === 'message' || option === 'join';
 }
 
+export function triggerPickerNeedsPlaybook(option: TriggerPickerOption | null): boolean {
+  return triggerPickerIsPlaybook(option);
+}
+
+export function buildTriggerConfig(params: {
+  kind: TriggerKind;
+  frequency: ScheduleFrequency;
+  time: string;
+  event: EventType;
+  keyword: string;
+  playbookEvent: PlaybookEventType;
+  playbookId: string;
+}): TriggerConfig {
+  if (params.kind === 'schedule') {
+    return {
+      kind: 'schedule',
+      frequency: params.frequency,
+      time: params.time,
+    };
+  }
+  if (params.kind === 'playbook-event') {
+    return {
+      kind: 'playbook-event',
+      event: params.playbookEvent,
+      ...(params.playbookId ? { playbookId: params.playbookId } : {}),
+    };
+  }
+  return {
+    kind: 'event',
+    event: params.event,
+    ...(params.event === 'keyword' ? { keyword: params.keyword.trim() } : {}),
+  };
+}
+
 /** Build the human-readable trigger summary shown in lists. */
 export function triggerSummary(t: TriggerConfig): string {
   if (t.kind === 'schedule') {
     return `${SCHEDULE_FREQUENCY_LABELS[t.frequency]} at ${t.time}`;
+  }
+  if (t.kind === 'playbook-event') {
+    const label = PLAYBOOK_EVENT_LABELS[t.event];
+    return t.playbookId ? `${label} · ${playbookLabelById(t.playbookId)}` : label;
   }
   if (t.event === 'keyword') {
     return t.keyword
@@ -254,7 +429,9 @@ export function triggerSummary(t: TriggerConfig): string {
 
 /** Pick the list-item icon/category from the trigger kind. */
 export function triggerToType(t: TriggerConfig): AutomationType {
-  return t.kind === 'schedule' ? 'recurring-post' : 'auto-responder';
+  if (t.kind === 'schedule') return 'recurring-post';
+  if (t.kind === 'playbook-event') return 'custom';
+  return 'auto-responder';
 }
 
 /* ------------------------------------------------------------------ */
@@ -290,16 +467,51 @@ export const ACTIVE_CHANNEL: ChannelContext = {
 };
 
 /** Channels offered when a trigger applies to a specific channel. */
+export type AutomationChannelType = 'public' | 'private';
+
 export const AUTOMATION_CHANNEL_OPTIONS = [
-  { id: 'ux-design', label: 'UX Design' },
-  { id: 'ui-redesign', label: 'UI Redesign' },
-  { id: 'orion', label: 'Orion' },
-  { id: 'release-discussion', label: 'Release Discussion' },
-  { id: 'softphone-ux', label: 'softphone-ux' },
+  { id: 'ux-design', label: 'UX Design', type: 'public' as const },
+  { id: 'ui-redesign', label: 'UI Redesign', type: 'public' as const },
+  { id: 'orion', label: 'Orion', type: 'private' as const },
+  { id: 'release-discussion', label: 'Release Discussion', type: 'public' as const },
+  { id: 'softphone-ux', label: 'softphone-ux', type: 'private' as const },
 ] as const;
+
+/** Teams offered when a trigger applies team-wide. */
+export const AUTOMATION_TEAM_OPTIONS = [
+  { id: 'contributors', label: 'Contributors' },
+  { id: 'staff', label: 'Staff' },
+] as const;
+
+export function channelLabelById(channelId: string): string {
+  return (
+    AUTOMATION_CHANNEL_OPTIONS.find((channel) => channel.id === channelId)
+      ?.label ?? channelId
+  );
+}
+
+export function teamLabelById(teamId: string): string {
+  return (
+    AUTOMATION_TEAM_OPTIONS.find((team) => team.id === teamId)?.label ?? teamId
+  );
+}
+
+export function draftScope(
+  draft: Pick<AutomationDraft, 'triggerChannelId' | 'triggerTeamId'>,
+): AutomationScope {
+  if (draft.triggerTeamId) {
+    return { teamIds: [draft.triggerTeamId] };
+  }
+  if (draft.triggerChannelId) {
+    return { channelIds: [draft.triggerChannelId] };
+  }
+  return { channelIds: [ACTIVE_CHANNEL.id] };
+}
 
 export interface Automation {
   id: string;
+  /** Agent that runs this automation (Options 1 & 2). */
+  agentId: string;
   name: string;
   type: AutomationType;
   /** Structured trigger — drives both the summary and the edit form. */
@@ -314,33 +526,45 @@ export interface Automation {
   /** Last run summary, or null when it hasn't run yet. */
   lastRun: string | null;
   createdBy: string;
+  /** When true, the automation appears under the "Your automations" tab. */
+  ownedByCurrentUser?: boolean;
 }
 
 /** The editable shape produced by the create/edit form. */
 export interface AutomationDraft {
+  agentId?: string;
+  displayName?: string;
+  username?: string;
+  avatarSrc?: string;
   name: string;
   triggerConfig: TriggerConfig;
   instructions: string;
   enabled: boolean;
-  /** Channel the trigger watches, when the trigger type requires one. */
   triggerChannelId?: string;
+  triggerTeamId?: string;
 }
 
 /** Assemble a full automation from a form draft. */
-export function draftToAutomation(draft: AutomationDraft, id: string): Automation {
+export function draftToAutomation(
+  draft: AutomationDraft,
+  id: string,
+  defaultAgentId: string = DEFAULT_OWNED_AGENT_ID,
+): Automation {
+  const agentId = draft.agentId ?? defaultAgentId;
+  const agent = agentById(agentId);
   return {
     id,
+    agentId,
     name: draft.name.trim(),
     type: triggerToType(draft.triggerConfig),
     triggerConfig: draft.triggerConfig,
     trigger: triggerSummary(draft.triggerConfig),
     instructions: draft.instructions.trim(),
-    scope: draft.triggerChannelId
-      ? { channelIds: [draft.triggerChannelId] }
-      : { channelIds: [ACTIVE_CHANNEL.id] },
+    scope: draftScope(draft),
     enabled: draft.enabled,
     lastRun: null,
-    createdBy: 'You',
+    createdBy: agent ? `${agent.displayName} (Agent)` : 'You',
+    ownedByCurrentUser: true,
   };
 }
 
@@ -348,34 +572,45 @@ export function draftToAutomation(draft: AutomationDraft, id: string): Automatio
 export function applyDraft(automation: Automation, draft: AutomationDraft): Automation {
   return {
     ...automation,
+    ...(draft.agentId != null ? { agentId: draft.agentId } : {}),
     name: draft.name.trim(),
     type: triggerToType(draft.triggerConfig),
     triggerConfig: draft.triggerConfig,
     trigger: triggerSummary(draft.triggerConfig),
     instructions: draft.instructions.trim(),
     enabled: draft.enabled,
-    ...(draft.triggerChannelId
-      ? { scope: { channelIds: [draft.triggerChannelId] } }
+    ...(draft.triggerChannelId || draft.triggerTeamId
+      ? { scope: draftScope(draft) }
       : {}),
   };
+}
+
+export function automationsForAgent(
+  automations: Automation[],
+  agentId: string,
+): Automation[] {
+  return automations.filter((a) => a.agentId === agentId);
 }
 
 export const INITIAL_AUTOMATIONS: Automation[] = [
   {
     id: 'standup',
+    agentId: 'matty',
     scope: { channelIds: ['ux-design'] },
-    name: 'Daily standup prompt',
+    name: 'Daily standup reminder',
     type: 'recurring-post',
     triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
-    trigger: 'Weekdays at 9:00 AM',
+    trigger: 'Daily, 9:00 AM',
     instructions:
       'Post a friendly reminder asking the team to drop their standup update in the thread before 10:00 AM.',
     enabled: true,
     lastRun: 'Today at 9:00 AM',
-    createdBy: 'Matty (Agent)',
+    createdBy: 'Leonard Riley',
+    ownedByCurrentUser: true,
   },
   {
     id: 'weekly-digest',
+    agentId: 'matty',
     scope: { teamIds: ['contributors'] },
     name: 'Weekly design digest',
     type: 'recurring-post',
@@ -385,10 +620,12 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
       'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',
     enabled: true,
     lastRun: 'Mon at 8:00 AM',
-    createdBy: 'Matty (Agent)',
+    createdBy: 'Leonard Riley',
+    ownedByCurrentUser: true,
   },
   {
     id: 'after-hours',
+    agentId: 'matty',
     scope: { attributes: ['design'] },
     name: 'After-hours auto-reply',
     type: 'auto-responder',
@@ -398,7 +635,26 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
       'Reply letting the sender know the team is offline and will respond during business hours.',
     enabled: false,
     lastRun: null,
-    createdBy: 'Matty (Agent)',
+    createdBy: 'Leonard Riley',
+    ownedByCurrentUser: true,
+  },
+  {
+    id: 'release-playbook',
+    agentId: 'devops',
+    scope: { teamIds: ['contributors'] },
+    name: 'Release playbook finished',
+    type: 'custom',
+    triggerConfig: {
+      kind: 'playbook-event',
+      event: 'run-finished',
+      playbookId: 'release-checklist',
+    },
+    trigger: 'When a playbook run finishes · Release checklist',
+    instructions:
+      'Post a summary in the release channel with run outcomes, blockers, and follow-ups.',
+    enabled: true,
+    lastRun: 'Yesterday at 4:12 PM',
+    createdBy: 'DevOps Agent (Agent)',
   },
 ];
 
@@ -464,11 +720,24 @@ export interface Agent {
   displayName: string;
   /** Mention handle without the @ prefix. */
   username: string;
-  avatarSrc: string;
+  avatarSrc?: string;
+  avatarFallbackColor?: UserAvatarFallbackColor;
   activeMcps: number;
   toolCount: number;
   /** When true, the agent appears under the "Your agents" tab. */
   ownedByCurrentUser?: boolean;
+}
+
+export function agentAvatarProps(
+  agent: Pick<Agent, 'displayName' | 'avatarSrc' | 'avatarFallbackColor'>,
+) {
+  return {
+    alt: agent.displayName,
+    name: agent.displayName,
+    ...(agent.avatarSrc
+      ? { src: agent.avatarSrc }
+      : { fallbackColor: agent.avatarFallbackColor }),
+  };
 }
 
 export const AGENTS: Agent[] = [
@@ -485,7 +754,7 @@ export const AGENTS: Agent[] = [
     id: 'devops',
     displayName: 'DevOps Agent',
     username: 'devops-agent',
-    avatarSrc: avatarArjun,
+    avatarFallbackColor: 'Blue',
     activeMcps: 4,
     toolCount: 16,
   },
@@ -493,7 +762,7 @@ export const AGENTS: Agent[] = [
     id: 'cloudops',
     displayName: 'CloudOps Agent',
     username: 'cloudops-agent',
-    avatarSrc: avatarEthan,
+    avatarFallbackColor: 'Cyan',
     activeMcps: 8,
     toolCount: 24,
   },
@@ -501,7 +770,7 @@ export const AGENTS: Agent[] = [
     id: 'insights',
     displayName: 'Data Insights Agent',
     username: 'insights-agent',
-    avatarSrc: avatarAiko,
+    avatarFallbackColor: 'Purple',
     activeMcps: 5,
     toolCount: 20,
   },
@@ -509,7 +778,7 @@ export const AGENTS: Agent[] = [
     id: 'tracker',
     displayName: 'Project Tracker Agent',
     username: 'task-agent',
-    avatarSrc: avatarSofia,
+    avatarFallbackColor: 'Orange',
     activeMcps: 2,
     toolCount: 7,
   },
@@ -518,8 +787,262 @@ export const AGENTS: Agent[] = [
 /** The default agent used in channel RHS panels and automation fixtures. */
 export const AGENT = AGENTS[0];
 
+/** Default owned agent for chat persona fallback (Option 2). */
+export const DEFAULT_OWNED_AGENT_ID = 'matty';
+
 export function agentById(id: string): Agent | undefined {
   return AGENTS.find((a) => a.id === id);
+}
+
+export function defaultOwnedAgent(): Agent {
+  return agentById(DEFAULT_OWNED_AGENT_ID) ?? AGENT;
+}
+
+/* ------------------------------------------------------------------ */
+/* Option 3 — automation-as-agent entities                            */
+/* ------------------------------------------------------------------ */
+
+export interface AutomationEntity {
+  id: string;
+  displayName: string;
+  username: string;
+  avatarSrc: string;
+  activeMcps: number;
+  toolCount: number;
+  enabled: boolean;
+  name: string;
+  type: AutomationType;
+  triggerConfig: TriggerConfig;
+  trigger: string;
+  instructions: string;
+  scope: AutomationScope;
+  lastRun: string | null;
+  /** When true, the automation appears under the "Your automations" tab. */
+  ownedByCurrentUser?: boolean;
+}
+
+export interface AutomationEntityDraft {
+  displayName: string;
+  username: string;
+  avatarSrc: string;
+  activeMcps: number;
+  toolCount: number;
+  enabled: boolean;
+  name: string;
+  triggerConfig: TriggerConfig;
+  instructions: string;
+  triggerChannelId?: string;
+  triggerTeamId?: string;
+}
+
+export function automationToEntity(automation: Automation, agent: Agent): AutomationEntity {
+  return {
+    id: automation.id,
+    displayName: automation.name,
+    username: agent.username,
+    avatarSrc: agent.avatarSrc ?? '',
+    activeMcps: agent.activeMcps,
+    toolCount: agent.toolCount,
+    enabled: automation.enabled,
+    name: automation.name,
+    type: automation.type,
+    triggerConfig: automation.triggerConfig,
+    trigger: automation.trigger,
+    instructions: automation.instructions,
+    scope: automation.scope,
+    lastRun: automation.lastRun,
+  };
+}
+
+export function draftToAutomationEntity(
+  draft: AutomationDraft,
+  id: string,
+): AutomationEntity {
+  const displayName =
+    draft.displayName?.trim() || draft.name.trim() || 'New automation';
+  return {
+    id,
+    displayName,
+    username: draft.username?.trim() || `automation-${id}`,
+    avatarSrc: draft.avatarSrc ?? avatarMatty,
+    activeMcps: 2,
+    toolCount: 8,
+    enabled: draft.enabled,
+    name: draft.name.trim() || displayName,
+    type: triggerToType(draft.triggerConfig),
+    triggerConfig: draft.triggerConfig,
+    trigger: triggerSummary(draft.triggerConfig),
+    instructions: draft.instructions.trim(),
+    scope: draftScope(draft),
+    lastRun: null,
+    ownedByCurrentUser: true,
+  };
+}
+
+export function applyEntityDraftFromAutomationDraft(
+  entity: AutomationEntity,
+  draft: AutomationDraft,
+): AutomationEntity {
+  return applyEntityDraft(entity, {
+    displayName: draft.displayName ?? entity.displayName,
+    username: draft.username ?? entity.username,
+    avatarSrc: draft.avatarSrc ?? entity.avatarSrc,
+    activeMcps: entity.activeMcps,
+    toolCount: entity.toolCount,
+    enabled: draft.enabled,
+    name: draft.name,
+    triggerConfig: draft.triggerConfig,
+    instructions: draft.instructions,
+    triggerChannelId: draft.triggerChannelId,
+    triggerTeamId: draft.triggerTeamId,
+  });
+}
+
+export function applyEntityDraft(
+  entity: AutomationEntity,
+  draft: AutomationEntityDraft,
+): AutomationEntity {
+  return {
+    ...entity,
+    displayName: draft.displayName.trim() || entity.displayName,
+    username: draft.username.trim() || entity.username,
+    avatarSrc: draft.avatarSrc,
+    activeMcps: draft.activeMcps,
+    toolCount: draft.toolCount,
+    enabled: draft.enabled,
+    name: draft.name.trim() || draft.displayName.trim(),
+    type: triggerToType(draft.triggerConfig),
+    triggerConfig: draft.triggerConfig,
+    trigger: triggerSummary(draft.triggerConfig),
+    instructions: draft.instructions.trim(),
+    ...(draft.triggerChannelId || draft.triggerTeamId
+      ? { scope: draftScope(draft) }
+      : {}),
+  };
+}
+
+export function entityToAgent(entity: AutomationEntity): Agent {
+  return {
+    id: entity.id,
+    displayName: entity.displayName,
+    username: entity.username,
+    avatarSrc: entity.avatarSrc,
+    activeMcps: entity.activeMcps,
+    toolCount: entity.toolCount,
+  };
+}
+
+export function emptyAutomationEntityDraft(): AutomationEntityDraft {
+  return {
+    displayName: 'New automation',
+    username: 'new-automation',
+    avatarSrc: avatarMatty,
+    activeMcps: 2,
+    toolCount: 8,
+    enabled: true,
+    name: '',
+    triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+    instructions: '',
+  };
+}
+
+export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
+  {
+    id: 'entity-standup',
+    displayName: 'Daily standup reminder',
+    username: 'standup-bot',
+    avatarSrc: avatarMatty,
+    activeMcps: 3,
+    toolCount: 12,
+    enabled: true,
+    name: 'Daily standup reminder',
+    type: 'recurring-post',
+    triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+    trigger: 'Daily, 9:00 AM',
+    instructions:
+      'Post a friendly reminder asking the team to drop their standup update in the thread before 10:00 AM.',
+    scope: { channelIds: ['ux-design'] },
+    lastRun: 'Today at 9:00 AM',
+    ownedByCurrentUser: true,
+  },
+  {
+    id: 'entity-digest',
+    displayName: 'Weekly design digest',
+    username: 'digest-bot',
+    avatarSrc: avatarAiko,
+    activeMcps: 5,
+    toolCount: 20,
+    enabled: true,
+    name: 'Weekly design digest',
+    type: 'recap',
+    triggerConfig: { kind: 'schedule', frequency: 'weekly', time: '8:00 AM' },
+    trigger: 'Mondays at 8:00 AM',
+    instructions:
+      'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',
+    scope: { teamIds: ['contributors'] },
+    lastRun: 'Mon at 8:00 AM',
+  },
+  {
+    id: 'entity-after-hours',
+    displayName: 'After-hours auto-reply',
+    username: 'after-hours-bot',
+    avatarSrc: avatarEthan,
+    activeMcps: 2,
+    toolCount: 6,
+    enabled: false,
+    name: 'After-hours auto-reply',
+    type: 'auto-responder',
+    triggerConfig: { kind: 'event', event: 'mention' },
+    trigger: 'When the agent is @mentioned',
+    instructions:
+      'Reply letting the sender know the team is offline and will respond during business hours.',
+    scope: { attributes: ['design'] },
+    lastRun: null,
+    ownedByCurrentUser: true,
+  },
+  {
+    id: 'entity-incident-playbook',
+    displayName: 'Incident playbook started',
+    username: 'incident-playbook',
+    avatarSrc: avatarMarco,
+    activeMcps: 4,
+    toolCount: 14,
+    enabled: true,
+    name: 'Incident playbook started',
+    type: 'custom',
+    triggerConfig: {
+      kind: 'playbook-event',
+      event: 'run-started',
+      playbookId: 'incident-response',
+    },
+    trigger: 'When a playbook run starts · Incident response',
+    instructions:
+      'Announce the new incident run, link the playbook, and ask for a severity update in thread.',
+    scope: { teamIds: ['contributors'] },
+    lastRun: 'Today at 11:05 AM',
+  },
+];
+
+export function automationEntityById(id: string): AutomationEntity | undefined {
+  return INITIAL_AUTOMATION_ENTITIES.find((e) => e.id === id);
+}
+
+/** Map an automation-entity to the list/automation shape for shared RHS UI. */
+export function entityAsAutomation(entity: AutomationEntity): Automation {
+  return {
+    id: entity.id,
+    agentId: entity.id,
+    name: entity.name,
+    type: entity.type,
+    triggerConfig: entity.triggerConfig,
+    trigger: entity.trigger,
+    instructions: entity.instructions,
+    scope: entity.scope,
+    enabled: entity.enabled,
+    lastRun: entity.lastRun,
+    createdBy: entity.displayName,
+    ownedByCurrentUser: entity.ownedByCurrentUser,
+  };
 }
 
 /** The current user, shown as the author of replies in agent chats. */

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { AutomationDraft, AutomationType } from '../channelAutomationsData';
+import type { AutomationsPanelOptions } from '../panelOptions';
 import AutomationsShell from '../components/AutomationsShell';
 import AgentsPanel from '../components/AgentsPanel';
 import AgentsEmptyState from '../components/AgentsEmptyState';
@@ -9,6 +10,8 @@ export interface DiscoverSceneProps {
   onCreateAutomation: (draft: AutomationDraft) => void;
   onManage: () => void;
   onManageAgents: () => void;
+  panelOptions?: AutomationsPanelOptions;
+  automations?: import('../channelAutomationsData').Automation[];
 }
 
 /** Discover scene — channel with the Agents menu and RHS empty-state CTA. */
@@ -16,6 +19,8 @@ export default function DiscoverScene({
   onCreateAutomation,
   onManage,
   onManageAgents,
+  panelOptions,
+  automations = [],
 }: DiscoverSceneProps) {
   const [agentsOpen, setAgentsOpen] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -35,7 +40,7 @@ export default function DiscoverScene({
     : creating
       ? (
           <AutomationsPanel
-            automations={[]}
+            automations={automations}
             creating
             createType={createType}
             onBackFromEditor={closeCreate}
@@ -48,6 +53,7 @@ export default function DiscoverScene({
             onToggle={() => {}}
             onEdit={() => {}}
             onRequestDelete={() => {}}
+            {...panelOptions}
           />
         )
       : (

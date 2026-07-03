@@ -7,6 +7,7 @@ import type {
   AutomationDraft,
   AutomationType,
 } from '../channelAutomationsData';
+import type { AutomationsPanelOptions } from '../panelOptions';
 
 export interface ManageSceneProps {
   automations: Automation[];
@@ -14,10 +15,11 @@ export interface ManageSceneProps {
   onUpdate: (id: string, draft: AutomationDraft) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onDelete: (id: string) => void;
-  /** Return to the agents-panel scene the management view was opened from. */
   onBack: () => void;
   onClose: () => void;
   onManageAgents: () => void;
+  panelOptions?: AutomationsPanelOptions;
+  getEditingEntity?: (id: string) => import('../channelAutomationsData').AutomationEntity | null;
 }
 
 /** Manage scene — the management list in the RHS panel. */
@@ -30,6 +32,8 @@ export default function ManageScene({
   onBack,
   onClose,
   onManageAgents,
+  panelOptions,
+  getEditingEntity,
 }: ManageSceneProps) {
   const [creating, setCreating] = useState(false);
   const [createType, setCreateType] = useState<AutomationType | undefined>();
@@ -38,6 +42,10 @@ export default function ManageScene({
   const editing =
     editingId != null
       ? automations.find((a) => a.id === editingId) ?? null
+      : null;
+  const editingEntity =
+    editingId != null && getEditingEntity
+      ? getEditingEntity(editingId)
       : null;
 
   const closeEditor = () => {
@@ -91,7 +99,8 @@ export default function ManageScene({
           automations={automations}
           creating={creating}
           createType={createType}
-          editing={editing}
+          editing={editingEntity ? null : editing}
+          editingEntity={editingEntity}
           onBackFromEditor={closeEditor}
           onCreateSubmit={onCreateAutomation}
           onUpdate={onUpdate}
@@ -101,6 +110,7 @@ export default function ManageScene({
           onToggle={onToggle}
           onEdit={openEdit}
           onRequestDelete={openDeleteConfirm}
+          {...panelOptions}
         />
       }
     />

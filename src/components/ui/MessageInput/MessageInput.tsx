@@ -36,6 +36,7 @@ export interface MessageInputProps {
   showEmoji?: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  onSubmit?: () => void;
   onSelectionChange?: () => void;
   inputRef?: React.RefObject<HTMLTextAreaElement | null>;
   /** `narrow` matches the Figma Message Input “Narrow” / right-sidebar layout. */
@@ -51,6 +52,7 @@ export default function MessageInput({
   showEmoji = true,
   value,
   onChange,
+  onSubmit,
   onSelectionChange,
   inputRef,
   width = 'wide',
@@ -157,6 +159,9 @@ export default function MessageInput({
           className={styles['message-input__send-main']}
           aria-label="Send message"
           disabled={!hasSendValue}
+          onClick={() => {
+            if (hasSendValue) onSubmit?.();
+          }}
         >
           <Icon glyph={<SendIcon />} size="16" />
         </button>
@@ -230,8 +235,12 @@ export default function MessageInput({
             onInput={handleInput}
             onSelect={onSelectionChange}
             onKeyUp={onSelectionChange}
-            onClick={onSelectionChange}
-            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (hasSendValue) onSubmit?.();
+              }
+            }}
           />
         </div>
 

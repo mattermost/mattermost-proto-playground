@@ -10,6 +10,7 @@ export interface AutomationSummaryCardProps {
   name: string;
   type: AutomationType;
   when: string;
+  where?: string | null;
   posts: string;
 }
 
@@ -18,6 +19,7 @@ export default function AutomationSummaryCard({
   name,
   type,
   when,
+  where,
   posts,
 }: AutomationSummaryCardProps) {
   const meta = AUTOMATION_TYPE_META[type];
@@ -38,6 +40,12 @@ export default function AutomationSummaryCard({
           <dt className={styles['card__label']}>When</dt>
           <dd className={styles['card__value']}>{when}</dd>
         </div>
+        {where ? (
+          <div className={styles['card__row']}>
+            <dt className={styles['card__label']}>Where</dt>
+            <dd className={styles['card__value']}>{where}</dd>
+          </div>
+        ) : null}
         <div className={styles['card__row']}>
           <dt className={styles['card__label']}>Posts</dt>
           <dd className={styles['card__value']}>{posts}</dd>

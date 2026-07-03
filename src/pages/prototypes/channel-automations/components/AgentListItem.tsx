@@ -1,28 +1,43 @@
-import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import { useRef, useState } from 'react';
+import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
+import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
+import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import Icon from '@/components/ui/Icon/Icon';
+import IconButton from '@/components/ui/IconButton/IconButton';
+import MenuItem from '@/components/ui/MenuItem/MenuItem';
+import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { Agent } from '../channelAutomationsData';
+import { agentAvatarProps } from '../channelAutomationsData';
 import styles from './AgentListItem.module.scss';
 
 export interface AgentListItemProps {
   agent: Agent;
-  onSelect: (id: string) => void;
+  onEdit: (id: string) => void;
+  onRequestDelete?: (id: string) => void;
 }
 
-/**
- * Agent row in the Agents index list (Figma `4312-17844` Service Header).
- * Opens the agent configuration view when selected.
- */
-export default function AgentListItem({ agent, onSelect }: AgentListItemProps) {
+export default function AgentListItem({
+  agent,
+  onEdit,
+  onRequestDelete,
+}: AgentListItemProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClose(menuRef, menuOpen, () => setMenuOpen(false));
+
+  const close = () => setMenuOpen(false);
+
   return (
-    <button
-      type="button"
+    <div
       className={styles['agent-item']}
-      onClick={() => onSelect(agent.id)}
+      onClick={() => onEdit(agent.id)}
     >
       <div className={styles['agent-item__main']}>
         <div className={styles['agent-item__identity']}>
-          <UserAvatar src={agent.avatarSrc} alt={agent.displayName} size="24" />
+          <UserAvatar size="24" {...agentAvatarProps(agent)} />
           <p className={styles['agent-item__name']}>{agent.displayName}</p>
           <p className={styles['agent-item__username']}>
             (@{agent.username})
@@ -41,9 +56,47 @@ export default function AgentListItem({ agent, onSelect }: AgentListItemProps) {
         </div>
       </div>
 
-      <span className={styles['agent-item__chevron']} aria-hidden>
-        <Icon size="16" glyph={<ChevronRightIcon />} />
-      </span>
-    </button>
+      <div
+        className={styles['agent-item__actions']}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div ref={menuRef} className={styles['agent-item__menu-anchor']}>
+          <IconButton
+            size="Small"
+            aria-label="Agent options"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            active={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
+            icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+          />
+          {menuOpen && (
+            <PopoverMenu className={styles['agent-item__menu']}>
+              <MenuItem
+                label="Edit"
+                leadingVisual={<Icon size="16" glyph={<PencilOutlineIcon />} />}
+                onClick={() => {
+                  close();
+                  onEdit(agent.id);
+                }}
+              />
+              {onRequestDelete ? (
+                <MenuItem
+                  label="Delete"
+                  destructive
+                  leadingVisual={
+                    <Icon size="16" glyph={<TrashCanOutlineIcon />} />
+                  }
+                  onClick={() => {
+                    close();
+                    onRequestDelete(agent.id);
+                  }}
+                />
+              ) : null}
+            </PopoverMenu>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

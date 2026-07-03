@@ -17,9 +17,10 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 704px;
+    max-width: 832px;
     // Fixed height so the chat view never resizes the modal.
-    height: 560px;
+    height: min(720px, calc(100vh - var(--spacing-xl) * 2));
+    min-height: 600px;
     max-height: 100%;
 
     > * {

@@ -1,137 +1,78 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import Button from '@/components/ui/Button/Button';
 import Icon from '@/components/ui/Icon/Icon';
 import MessageInput from '@/components/ui/MessageInput';
 import {
-  SCHEDULE_FREQUENCY_LABELS,
-  SCHEDULE_TIMES,
   triggerSummary,
   triggerToType,
+  buildTriggerConfig,
   type AutomationType,
-  type ScheduleFrequency,
-  type TriggerConfig,
 } from '../channelAutomationsData';
-import type { FormPatch, FormValues } from './automationFormTypes';
+import type { EditorKind, FormPatch, FormValues } from './automationFormTypes';
+import {
+  advanceAfterStep,
+  getStepSelection,
+  promptForStep,
+  scopeSummaryFromValues,
+  type ChatScriptOption,
+  type CreateScriptStep,
+} from './automationChatScript';
 import { AgentMessage, ChatText, UserMessage } from './AgentChatMessage';
 import AutomationSummaryCard from './AutomationSummaryCard';
+import ChatSelectionOptions from './ChatSelectionOptions';
+import ChatTypingIndicator from './ChatTypingIndicator';
+import { parseEditIntent } from './parseEditIntent';
+import { resolveChatAgent } from './resolveChatAgent';
+import { useScriptedChatQueue } from './useScriptedChatQueue';
 import styles from './AutomationEditChat.module.scss';
 
 export interface AutomationEditChatProps {
-  /** Current draft, shared with the form view. */
   values: FormValues;
-  /** Apply a partial change to the shared draft. */
   patch: FormPatch;
-  /** Return to the form view (e.g. to review changes before saving). */
   onReviewInForm: () => void;
-  /** Commit the shared draft (create or save). */
   onSave: () => void;
-  /** When false, the in-chat save action stays disabled. */
   canSave?: boolean;
   saveLabel?: string;
-  /** When editing, the chat opens with the automation summary card. */
   isEdit?: boolean;
-  /** Automation kind — used for the edit summary card icon and label. */
   automationType?: AutomationType;
+  contextAgentId?: string;
+  editorKind?: EditorKind;
+  requireAgentId?: boolean;
 }
 
-/** Build a TriggerConfig from the shared draft values. */
-function valuesToTrigger(values: FormValues): TriggerConfig {
-  return values.kind === 'schedule'
-    ? { kind: 'schedule', frequency: values.frequency, time: values.time }
-    : {
-        kind: 'event',
-        event: values.event,
-        ...(values.event === 'keyword' ? { keyword: values.keyword } : {}),
-      };
+function valuesToTrigger(values: FormValues) {
+  return buildTriggerConfig({
+    kind: values.kind,
+    frequency: values.frequency,
+    time: values.time,
+    event: values.event,
+    keyword: values.keyword,
+    playbookEvent: values.playbookEvent,
+    playbookId: values.playbookId,
+  });
 }
 
-type Bubble =
-  | {
-      from: 'agent';
-      text: ReactNode;
-      card?: {
-        name: string;
-        type: AutomationType;
-        when: string;
-        posts: string;
-      };
-    }
-  | { from: 'user'; text: string };
+function skipTargetStep(
+  step: CreateScriptStep,
+  values: FormValues,
+): CreateScriptStep {
+  switch (step) {
+    case 'idea':
+      return 'trigger';
+    case 'schedule-frequency':
+      return 'schedule-time';
+    case 'schedule-time':
+      return 'channel';
+    case 'channel':
+      return values.event === 'message' ? 'keyword' : 'done';
+    case 'playbook':
+      return 'done';
+    default:
+      return 'done';
+  }
+}
 
-type Menu = 'ideas' | 'root' | 'time' | 'freq' | 'instructions' | 'name';
-
-const FREQUENCIES = Object.keys(
-  SCHEDULE_FREQUENCY_LABELS,
-) as ScheduleFrequency[];
-
-const INSTRUCTION_SUGGESTIONS = [
-  'Reminder: please share your standup in the thread before 10:00 AM. Keep it short — progress, plan, and any blockers. 🧵',
-  'Good morning! Drop today’s standup in the thread: what you shipped, what’s next, and anything blocking you.',
-];
-
-const NAME_SUGGESTIONS = ['Daily standup reminder', 'Standup nudge', 'Morning check-in'];
-
-// Starting points offered when creating a new automation. Each seeds the whole
-// draft (name, trigger, instructions); the user can then refine via chat or form.
-const AUTOMATION_IDEAS: {
-  label: string;
-  confirm: string;
-  values: Partial<FormValues>;
-}[] = [
-  {
-    label: 'Daily standup reminder',
-    confirm: 'a daily standup reminder that posts every weekday at 9:00 AM',
-    values: {
-      name: 'Daily standup reminder',
-      kind: 'schedule',
-      frequency: 'weekdays',
-      time: '9:00 AM',
-      instructions:
-        'Post a reminder asking the team to share their standup update in the thread before 10:00 AM.',
-    },
-  },
-  {
-    label: 'Weekly channel recap',
-    confirm: 'a weekly recap that posts every Monday at 8:00 AM',
-    values: {
-      name: 'Weekly channel recap',
-      kind: 'schedule',
-      frequency: 'weekly',
-      time: '8:00 AM',
-      instructions:
-        'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',
-    },
-  },
-  {
-    label: 'Welcome new members',
-    confirm: 'a welcome message sent whenever someone joins the channel',
-    values: {
-      name: 'Welcome new members',
-      kind: 'event',
-      event: 'join',
-      instructions:
-        'Greet new members, share the channel’s purpose, and point them to the pinned resources.',
-    },
-  },
-  {
-    label: 'After-hours auto-reply',
-    confirm: 'an auto-reply for when the agent is mentioned after hours',
-    values: {
-      name: 'After-hours auto-reply',
-      kind: 'event',
-      event: 'mention',
-      instructions:
-        'Let the sender know the team is offline and will respond during business hours.',
-    },
-  },
-];
-
-/**
- * Scripted "edit with the agent" assistant. The Chat side of the automation
- * editor: quick-edit prompts that patch the same draft the form edits, so
- * flipping back to Form reflects the changes and Save commits them.
- */
 export default function AutomationEditChat({
   values,
   patch,
@@ -141,7 +82,11 @@ export default function AutomationEditChat({
   saveLabel = 'Add automation',
   isEdit = false,
   automationType,
+  contextAgentId,
+  editorKind = 'assignment',
+  requireAgentId = false,
 }: AutomationEditChatProps) {
+  const chatAgent = resolveChatAgent(values, { editorKind, contextAgentId });
   const summaryType =
     automationType ?? triggerToType(valuesToTrigger(values));
 
@@ -150,277 +95,272 @@ export default function AutomationEditChat({
     values.name.trim().length > 0 &&
     values.instructions.trim().length > 0;
 
+  const scopeSummary = scopeSummaryFromValues(values);
+
   const draftCard = {
     name: values.name || 'Untitled automation',
     type: summaryType,
     when: triggerSummary(valuesToTrigger(values)),
+    where: scopeSummary,
     posts: values.instructions,
   };
 
-  const [log, setLog] = useState<Bubble[]>(() => {
-    if (!isEdit) {
-      return [
-        {
-          from: 'agent',
-          text: (
-            <>
-              What would you like this automation to do? Pick an idea to start
-              from, or describe your own.
-            </>
-          ),
-        },
-      ];
-    }
-    return [
-      {
-        from: 'agent',
-        text: <>Here’s how this automation is set up. What would you like to change?</>,
-        card: {
-          name: values.name || 'Untitled automation',
-          type: summaryType,
-          when: triggerSummary(valuesToTrigger(values)),
-          posts: values.instructions,
-        },
-      },
-    ];
-  });
-  const [menu, setMenu] = useState<Menu>(isEdit ? 'root' : 'ideas');
+  const [createStep, setCreateStep] = useState<CreateScriptStep>('idea');
+  const [composer, setComposer] = useState('');
+  const { displayed: log, isTyping, enqueue } = useScriptedChatQueue();
+  const logRef = useRef<HTMLDivElement>(null);
+  const bootstrappedRef = useRef(false);
 
-  const push = (...bubbles: Bubble[]) => setLog((prev) => [...prev, ...bubbles]);
+  useEffect(() => {
+    if (bootstrappedRef.current) return;
+    bootstrappedRef.current = true;
 
-  const choose = (userText: string, agentReply: ReactNode, next: Menu) => {
-    push({ from: 'user', text: userText }, { from: 'agent', text: agentReply });
-    setMenu(next);
-  };
-
-  const apply = (userText: string, confirm: ReactNode, change: () => void) => {
-    change();
-    push(
-      { from: 'user', text: userText },
-      {
+    if (isEdit) {
+      enqueue({
         from: 'agent',
         text: (
           <>
-            <span className={styles['chat__check']}>
-              <Icon size="16" glyph={<CheckIcon />} />
-            </span>
-            {confirm}
+            Here’s how this automation is set up. What would you like to change?
           </>
         ),
-      },
-    );
-    setMenu('root');
+      });
+      return;
+    }
+
+    enqueue({
+      from: 'agent',
+      text: (
+        <>
+          What kind of automation would you like to create? There are a lot of
+          possibilities. Below are some suggestions to get you started, but feel
+          free to write your own.
+        </>
+      ),
+    });
+  }, [enqueue, isEdit]);
+
+  useEffect(() => {
+    const el = logRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+  }, [log, isTyping, createStep]);
+
+  const recordSelection = (option: ChatScriptOption) => {
+    if (Object.keys(option.patch).length > 0) {
+      patch(option.patch);
+    }
+    enqueue({ from: 'user', text: option.label });
   };
 
-  const renderOptions = () => {
-    switch (menu) {
-      case 'ideas':
-        return (
-          <div className={styles['chat__options']}>
-            {AUTOMATION_IDEAS.map((idea) => (
-              <Chip
-                key={idea.label}
-                onClick={() =>
-                  apply(
-                    idea.label,
-                    <>
-                      Nice — I’ve drafted {idea.confirm}. Review it in settings, or
-                      tell me what to tweak.
-                    </>,
-                    () => patch(idea.values),
-                  )
-                }
-              >
-                {idea.label}
-              </Chip>
-            ))}
-          </div>
-        );
-      case 'root':
-        return (
-          <>
-            {!isEdit && hasDraft ? (
-              <div className={styles['chat__actions']}>
-                <Button
-                  emphasis="Primary"
-                  size="Small"
-                  disabled={!canSave}
-                  onClick={onSave}
-                >
-                  {saveLabel}
-                </Button>
-              </div>
-            ) : null}
-            <div className={styles['chat__options']}>
-              <Chip
-                onClick={() =>
-                  choose(
-                    'Reword the instructions',
-                    'Here are a couple of options — pick one:',
-                    'instructions',
-                  )
-                }
-              >
-                Reword the instructions
-              </Chip>
-              <Chip
-                onClick={() =>
-                  choose('Change the time', 'When should it run?', 'time')
-                }
-              >
-                Change the time
-              </Chip>
-              <Chip
-                onClick={() =>
-                  choose('Change how often it runs', 'How often?', 'freq')
-                }
-              >
-                Change frequency
-              </Chip>
-              <Chip onClick={() => choose('Rename it', 'Pick a name:', 'name')}>
-                Rename it
-              </Chip>
-              <Chip onClick={onReviewInForm}>Review settings →</Chip>
-            </div>
-          </>
-        );
-      case 'time':
-        return (
-          <div className={styles['chat__options']}>
-            {SCHEDULE_TIMES.map((t) => (
-              <Chip
-                key={t}
-                onClick={() =>
-                  apply(t, <>Done — it’ll now run at {t}.</>, () =>
-                    patch({ kind: 'schedule', time: t }),
-                  )
-                }
-              >
-                {t}
-              </Chip>
-            ))}
-          </div>
-        );
-      case 'freq':
-        return (
-          <div className={styles['chat__options']}>
-            {FREQUENCIES.map((f) => (
-              <Chip
-                key={f}
-                onClick={() =>
-                  apply(
-                    SCHEDULE_FREQUENCY_LABELS[f],
-                    <>
-                      Got it — now set to “{SCHEDULE_FREQUENCY_LABELS[f].toLowerCase()}”.
-                    </>,
-                    () => patch({ kind: 'schedule', frequency: f }),
-                  )
-                }
-              >
-                {SCHEDULE_FREQUENCY_LABELS[f]}
-              </Chip>
-            ))}
-          </div>
-        );
-      case 'instructions':
-        return (
-          <div className={styles['chat__options']}>
-            {INSTRUCTION_SUGGESTIONS.map((text, i) => (
-              <Chip
-                key={i}
-                onClick={() =>
-                  apply(`Use option ${i + 1}`, <>Updated the instructions.</>, () =>
-                    patch({ instructions: text }),
-                  )
-                }
-              >
-                {text.length > 56 ? `${text.slice(0, 56)}…` : text}
-              </Chip>
-            ))}
-          </div>
-        );
-      case 'name':
-        return (
-          <div className={styles['chat__options']}>
-            {NAME_SUGGESTIONS.map((n) => (
-              <Chip
-                key={n}
-                onClick={() =>
-                  apply(n, <>Renamed to “{n}”.</>, () => patch({ name: n }))
-                }
-              >
-                {n}
-              </Chip>
-            ))}
-          </div>
-        );
-      default:
-        return null;
+  const confirmDraft = (message?: string) => {
+    enqueue({
+      from: 'agent',
+      text: (
+        <>
+          <span className={styles['chat__check']}>
+            <Icon size="16" glyph={<CheckIcon />} />
+          </span>
+          {message ?? 'Got it — review settings below or tell me what to tweak.'}
+        </>
+      ),
+    });
+  };
+
+  const goToStep = (step: CreateScriptStep) => {
+    setCreateStep(step);
+    const prompt = promptForStep(step);
+    if (prompt) {
+      enqueue({ from: 'agent', text: prompt });
     }
   };
 
+  const finishCreateFlow = () => {
+    setCreateStep('done');
+    confirmDraft();
+  };
+
+  const handleStepAccept = (step: CreateScriptStep, option: ChatScriptOption) => {
+    if (option.id === 'something-else') {
+      if (step === 'idea') {
+        goToStep('trigger');
+        return;
+      }
+      setCreateStep('done');
+      return;
+    }
+
+    const merged: FormValues = { ...values, ...option.patch };
+    recordSelection(option);
+    const next = advanceAfterStep(step, merged, option);
+
+    if (next === 'done') {
+      finishCreateFlow();
+      return;
+    }
+
+    goToStep(next);
+  };
+
+  const handleStepSkip = (step: CreateScriptStep) => {
+    const next = skipTargetStep(step, values);
+    if (next === 'done') {
+      setCreateStep('done');
+      return;
+    }
+    goToStep(next);
+  };
+
+  const handleSend = () => {
+    const text = composer.trim();
+    if (!text) return;
+    setComposer('');
+
+    if (isEdit) {
+      const intent = parseEditIntent(text);
+      enqueue({ from: 'user', text });
+      if (intent) {
+        patch(intent);
+        enqueue({
+          from: 'agent',
+          text: (
+            <>
+              <span className={styles['chat__check']}>
+                <Icon size="16" glyph={<CheckIcon />} />
+              </span>
+              Updated — check the summary below or open Settings for details.
+            </>
+          ),
+        });
+      } else {
+        enqueue({
+          from: 'agent',
+          text: 'Try asking to rename it, change the time, update the channel, or revise the instructions.',
+        });
+      }
+      return;
+    }
+
+    enqueue({ from: 'user', text });
+    patch({ instructions: text });
+    enqueue({
+      from: 'agent',
+      text: 'Updated the instructions. Review settings or save when you’re ready.',
+    });
+  };
+
+  const stepSelection = getStepSelection(createStep);
+
+  const showSave =
+    !isEdit &&
+    createStep === 'done' &&
+    hasDraft &&
+    (!requireAgentId || Boolean(values.agentId));
+
+  const lastIndex = log.length - 1;
+  const showInteractiveChrome = !isTyping;
+
   return (
     <div className={styles['chat']}>
-      <div className={styles['chat__log']}>
+      <div ref={logRef} className={styles['chat__log']}>
         <div className={styles['chat__log-inner']}>
           {log.map((b, i) => {
-            const isLast = i === log.length - 1;
+            const isLast = i === lastIndex;
             if (b.from === 'agent') {
-              const showDraftCard = isLast && hasDraft && b.card == null;
               return (
-                <AgentMessage key={i}>
-                  <ChatText>{b.text}</ChatText>
-                  {b.card ? (
-                    <AutomationSummaryCard
-                      name={b.card.name}
-                      type={b.card.type}
-                      when={b.card.when}
-                      posts={b.card.posts}
-                    />
-                  ) : null}
-                  {showDraftCard ? (
-                    <AutomationSummaryCard
-                      name={draftCard.name}
-                      type={draftCard.type}
-                      when={draftCard.when}
-                      posts={draftCard.posts}
-                    />
-                  ) : null}
-                  {isLast ? renderOptions() : null}
-                </AgentMessage>
+                <div key={b.id} className={styles['chat__bubble']}>
+                  <AgentMessage agent={chatAgent}>
+                    <ChatText>{b.text}</ChatText>
+                    {isLast && !isEdit && showInteractiveChrome && stepSelection ? (
+                      <ChatSelectionOptions
+                        title={stepSelection.title}
+                        options={stepSelection.options}
+                        onAccept={(option) => handleStepAccept(createStep, option)}
+                        onSkip={() => handleStepSkip(createStep)}
+                        ariaLabel={stepSelection.ariaLabel}
+                        className={styles['chat__selection']}
+                        variant={stepSelection.variant}
+                        selectLabel={stepSelection.selectLabel}
+                      />
+                    ) : null}
+                    {showInteractiveChrome &&
+                    (isEdit || (isLast && hasDraft)) &&
+                    (isEdit || createStep === 'done') ? (
+                      <div className={styles['chat__addon']}>
+                        <AutomationSummaryCard
+                          name={draftCard.name}
+                          type={draftCard.type}
+                          when={draftCard.when}
+                          where={draftCard.where}
+                          posts={draftCard.posts}
+                        />
+                      </div>
+                    ) : null}
+                    {isLast && showSave && showInteractiveChrome ? (
+                      <div
+                        className={[
+                          styles['chat__addon'],
+                          styles['chat__actions'],
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                      >
+                        <Button
+                          emphasis="Primary"
+                          size="Small"
+                          disabled={!canSave}
+                          onClick={onSave}
+                        >
+                          {saveLabel}
+                        </Button>
+                        <Button
+                          emphasis="Tertiary"
+                          size="Small"
+                          onClick={onReviewInForm}
+                        >
+                          Review settings
+                        </Button>
+                      </div>
+                    ) : null}
+                  </AgentMessage>
+                </div>
               );
             }
             return (
-              <UserMessage key={i}>
-                <ChatText>{b.text}</ChatText>
-              </UserMessage>
+              <div key={b.id} className={styles['chat__bubble']}>
+                <UserMessage>
+                  <ChatText>{b.text}</ChatText>
+                </UserMessage>
+              </div>
             );
           })}
+
+          {isTyping ? (
+            <div
+              className={[
+                styles['chat__bubble'],
+                styles['chat__bubble--typing'],
+              ].join(' ')}
+            >
+              <AgentMessage agent={chatAgent}>
+                <ChatTypingIndicator />
+              </AgentMessage>
+            </div>
+          ) : null}
         </div>
       </div>
 
       <div className={styles['chat__composer']}>
         <MessageInput
-          placeholder="Reply to Matty…"
+          className={styles['chat__message-input']}
+          placeholder={`Reply to ${chatAgent.displayName}…`}
           width="narrow"
           showFormatting={false}
           showEmoji={false}
+          value={composer}
+          onChange={setComposer}
+          onSubmit={handleSend}
         />
       </div>
     </div>
-  );
-}
-
-function Chip({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
-  onClick: () => void;
-}) {
-  return (
-    <Button emphasis="Tertiary" size="Small" onClick={onClick}>
-      {children}
-    </Button>
   );
 }

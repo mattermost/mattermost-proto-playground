@@ -80,13 +80,14 @@
     }
   }
 
+  &__menu-portal {
+    position: fixed;
+    z-index: 1200;
+  }
+
   &__menu {
-    position: absolute;
-    top: calc(100% + var(--spacing-xxs));
-    left: 0;
-    right: 0;
-    z-index: 20;
     width: 100%;
     max-width: none;
+    min-width: 0;
   }
 }

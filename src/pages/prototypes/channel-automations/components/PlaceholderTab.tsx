@@ -1,19 +1,19 @@
 import type { AgentTabKey } from './EditAgentView';
 import styles from './PlaceholderTab.module.scss';
 
-const TAB_LABELS: Record<Exclude<AgentTabKey, 'automations'>, string> = {
+const TAB_LABELS: Record<Exclude<AgentTabKey, 'automations' | 'chat'>, string> = {
   configuration: 'Configuration',
   access: 'Access',
   mcps: 'MCPs',
 };
 
 export interface PlaceholderTabProps {
-  tab: Exclude<AgentTabKey, 'automations'>;
+  tab: Exclude<AgentTabKey, 'automations' | 'chat'>;
 }
 
 /**
- * Out-of-scope tabs for this prototype. The Automations tab is the focus;
- * the others show a brief note so the tab strip stays navigable.
+ * Out-of-scope tabs for this prototype. Access and MCPs have dedicated views;
+ * configuration on the agent edit screen uses this placeholder.
  */
 export default function PlaceholderTab({ tab }: PlaceholderTabProps) {
   return (

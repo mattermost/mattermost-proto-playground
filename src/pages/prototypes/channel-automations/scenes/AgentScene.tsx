@@ -1,28 +1,29 @@
 import { useState } from 'react';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
-import { agentById } from '../channelAutomationsData';
-import EditAgentView, {
-  type AgentTabKey,
-} from '../components/EditAgentView';
+import {
+  agentById,
+  automationsForAgent,
+} from '../channelAutomationsData';
+import EditAgentView, { type AgentTabKey } from '../components/EditAgentView';
+import AccessTab from '../components/AccessTab';
 import AgentAutomationsTab from '../components/AgentAutomationsTab';
 import AgentsShell from '../components/AgentsShell';
 import AutomationDeleteModal from '../components/AutomationDeleteModal';
 import AutomationFormModal from '../components/AutomationFormModal';
+import McpsTab from '../components/McpsTab';
 import PlaceholderTab from '../components/PlaceholderTab';
 
 export interface AgentSceneProps {
   agentId: string;
-  /** When true, opens the new-automation modal on the Automations tab on mount. */
   openCreateOnMount?: boolean;
   automations: Automation[];
-  /** Create from the form. */
   onCreate: (draft: AutomationDraft) => void;
-  /** Save edits to an existing automation. */
   onUpdate: (id: string, draft: AutomationDraft) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onDelete: (id: string) => void;
-  /** Leave the edit-agent view (back / cancel / save). */
   onClose: () => void;
+  showAutomationsTab?: boolean;
+  onGoAutomations?: () => void;
 }
 
 type FormState =
@@ -30,11 +31,6 @@ type FormState =
   | { mode: 'edit'; automation: Automation }
   | null;
 
-/**
- * Edit Agent scene — the agent settings view whose Automations tab is the
- * second place (alongside the chat RHS) where channel automations are created.
- * Both surfaces write to the same shared automations list.
- */
 export default function AgentScene({
   agentId,
   openCreateOnMount = false,
@@ -44,21 +40,26 @@ export default function AgentScene({
   onToggle,
   onDelete,
   onClose,
+  showAutomationsTab = true,
+  onGoAutomations,
 }: AgentSceneProps) {
   const agent = agentById(agentId);
-  const [tab, setTab] = useState<AgentTabKey>('automations');
+  const agentAutomations = automationsForAgent(automations, agentId);
+  const [tab, setTab] = useState<AgentTabKey>(
+    showAutomationsTab ? 'automations' : 'configuration',
+  );
   const [form, setForm] = useState<FormState>(() =>
-    openCreateOnMount ? { mode: 'create' } : null,
+    openCreateOnMount && showAutomationsTab ? { mode: 'create' } : null,
   );
   const [deleteTarget, setDeleteTarget] = useState<Automation | null>(null);
 
   const openEdit = (id: string) => {
-    const automation = automations.find((a) => a.id === id);
+    const automation = agentAutomations.find((a) => a.id === id);
     if (automation) setForm({ mode: 'edit', automation });
   };
 
   const openDeleteConfirm = (id: string) => {
-    const automation = automations.find((a) => a.id === id);
+    const automation = agentAutomations.find((a) => a.id === id);
     if (automation) setDeleteTarget(automation);
   };
 
@@ -74,21 +75,34 @@ export default function AgentScene({
   const closeEditor = () => setForm(null);
 
   const handleSubmit = (draft: AutomationDraft) => {
+    const withAgent = { ...draft, agentId: draft.agentId ?? agentId };
     if (form?.mode === 'edit') {
-      onUpdate(form.automation.id, draft);
+      onUpdate(form.automation.id, withAgent);
     } else {
-      onCreate(draft);
+      onCreate(withAgent);
     }
     setForm(null);
   };
 
   return (
     <AgentsShell
+      flushContent
+      productNav={
+        onGoAutomations
+          ? {
+              active: 'agents',
+              onChange: (tab) => {
+                if (tab === 'automations') onGoAutomations();
+              },
+            }
+          : undefined
+      }
       overlay={
         <>
           {form && (
             <AutomationFormModal
               initial={form.mode === 'edit' ? form.automation : undefined}
+              contextAgentId={agentId}
               onSubmit={handleSubmit}
               onClose={closeEditor}
             />
@@ -109,18 +123,26 @@ export default function AgentScene({
         onTabChange={setTab}
         onClose={onClose}
         onSave={onClose}
+        showAutomationsTab={showAutomationsTab}
       >
-        {tab === 'automations' ? (
+        {tab === 'automations' && showAutomationsTab ? (
           <AgentAutomationsTab
-            automations={automations}
+            automations={agentAutomations}
             onNew={() => setForm({ mode: 'create' })}
             onEdit={openEdit}
             onToggle={onToggle}
             onRequestDelete={openDeleteConfirm}
           />
-        ) : (
+        ) : tab === 'access' ? (
+          <AccessTab />
+        ) : tab === 'mcps' ? (
+          <McpsTab
+            activeMcps={agent?.activeMcps}
+            toolCount={agent?.toolCount}
+          />
+        ) : tab === 'configuration' ? (
           <PlaceholderTab tab={tab} />
-        )}
+        ) : null}
       </EditAgentView>
     </AgentsShell>
   );

@@ -32,7 +32,7 @@
 
   &__inner {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     height: 100%;
     min-width: 0;
@@ -41,6 +41,13 @@
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     overflow: hidden;
     background: var(--center-channel-bg);
+  }
+
+  &__product-nav {
+    flex: 0 0 auto;
+    padding: 0 var(--spacing-m);
+    background-color: var(--center-channel-bg);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
   &__content {
@@ -52,6 +59,14 @@
 
     &--flush {
       padding: 0 var(--spacing-l);
+    }
+
+    &--with-product-nav {
+      padding-top: 0;
+
+      &.agents-shell__content--flush {
+        padding-top: 0;
+      }
     }
   }
 }

@@ -9,8 +9,9 @@ import AutomationsTabs from './AutomationsTabs';
 import styles from './AutomationFormModal.module.scss';
 
 export interface AutomationFormModalProps {
-  /** When provided, the modal opens in edit mode pre-filled from this automation. */
   initial?: Automation;
+  contextAgentId?: string;
+  showAgentPicker?: boolean;
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
 }
@@ -22,6 +23,8 @@ export interface AutomationFormModalProps {
  */
 export default function AutomationFormModal({
   initial,
+  contextAgentId,
+  showAgentPicker = false,
   onSubmit,
   onClose,
 }: AutomationFormModalProps) {
@@ -45,7 +48,7 @@ export default function AutomationFormModal({
       <div className={styles['layer__backdrop']} aria-hidden onClick={onClose} />
       <div className={styles['layer__modal']}>
         <Modal
-          size="Medium"
+          size="Large"
           title={title}
           onClose={onClose}
           headerBottom={headerBottom}
@@ -58,6 +61,8 @@ export default function AutomationFormModal({
             onCancel={onClose}
             showViewTabs={false}
             showEnabledSwitch={false}
+            showAgentPicker={showAgentPicker}
+            contextAgentId={contextAgentId}
             view={view}
             onViewChange={setView}
           />

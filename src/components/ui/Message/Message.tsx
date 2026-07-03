@@ -1,4 +1,5 @@
 import React from 'react';
+import type { UserAvatarFallbackColor } from '@/components/ui/UserAvatar/UserAvatar';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import MessageHeader from '@/components/ui/MessageHeader/MessageHeader';
 import MessageActions from '@/components/ui/MessageActions/MessageActions';
@@ -7,7 +8,8 @@ import PinnedSavedIndicators from '@/components/ui/PinnedSavedIndicators/PinnedS
 import styles from './Message.module.scss';
 
 type MessageProps = {
-  avatarSrc: string;
+  avatarSrc?: string;
+  avatarFallbackColor?: UserAvatarFallbackColor;
   avatarAlt: string;
   username: string;
   timestamp: string;
@@ -38,6 +40,7 @@ type MessageProps = {
 
 export default function Message({
   avatarSrc,
+  avatarFallbackColor,
   avatarAlt,
   username,
   timestamp,
@@ -63,7 +66,13 @@ export default function Message({
       )}
       <div className={styles['message__layout']}>
         <div className={styles['message__avatar-col']}>
-          <UserAvatar src={avatarSrc} alt={avatarAlt} size="32" />
+          <UserAvatar
+            src={avatarSrc}
+            alt={avatarAlt}
+            name={username}
+            fallbackColor={avatarFallbackColor}
+            size="32"
+          />
         </div>
         <div className={styles['message__content']}>
           <div className={styles['message__header-row']}>

@@ -11,6 +11,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
   }
 
   &__log-inner {
@@ -22,9 +23,45 @@
     width: 100%;
   }
 
+  &__bubble {
+    animation: chat-bubble-enter var(--duration-quick) var(--ease-entrance);
+
+    &--typing {
+      animation: chat-typing-enter var(--duration-quick) var(--ease-entrance);
+    }
+  }
+
+  &__selection {
+    animation: chat-selection-enter var(--duration-moderate) var(--ease-entrance)
+      backwards;
+    animation-delay: 120ms;
+  }
+
+  &__addon {
+    animation: chat-addon-enter var(--duration-quick) var(--ease-entrance)
+      backwards;
+    animation-delay: 100ms;
+  }
+
   &__composer {
     flex: 0 0 auto;
-    padding: 0 var(--spacing-xxl) var(--spacing-xxl);
+    padding: var(--spacing-m) var(--spacing-xxl) var(--spacing-l);
+    background-color: var(--center-channel-bg);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__message-input {
+    :global(.message-input__body) {
+      padding: var(--spacing-xs) var(--spacing-m);
+    }
+
+    :global(.message-input--width-narrow .message-input__container) {
+      padding-bottom: calc(var(--spacing-xxxxl) - var(--spacing-xxs));
+    }
+
+    :global(.message-input__narrow-chrome) {
+      height: var(--spacing-xxxxl);
+    }
   }
 
   &__check {
@@ -34,17 +71,58 @@
     color: var(--color-success);
   }
 
-  &__options {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-xs);
-  }
-
   &__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-xs);
     margin-top: var(--spacing-s);
+  }
+}
+
+@keyframes chat-bubble-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chat-typing-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chat-selection-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes chat-addon-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

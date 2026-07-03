@@ -51,7 +51,10 @@ export default function ChannelAutomations() {
 
   const createAutomation = (draft: AutomationDraft) => {
     setAutomations((prev) => [
-      draftToAutomation(draft, `auto-${Date.now()}`),
+      draftToAutomation(
+        { ...draft, agentId: draft.agentId ?? selectedAgentId },
+        `auto-${Date.now()}`,
+      ),
       ...prev,
     ]);
   };

@@ -4,39 +4,42 @@ import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
 import type {
   Automation,
   AutomationDraft,
+  AutomationEntity,
   AutomationType,
 } from '../channelAutomationsData';
 import AgentSelector from './AgentSelector';
 import AutomationFormEditor from './AutomationFormEditor';
 import AutomationsList from './AutomationsList';
+import type { EditorKind } from './automationFormTypes';
 import styles from './AutomationsPanel.module.scss';
 
 export interface AutomationsPanelProps {
   automations: Automation[];
-  /** When true, shows the inline create editor. */
   creating?: boolean;
-  /** Seeds the create editor when opened from the Agents menu. */
   createType?: AutomationType;
-  /** When set, shows the inline edit editor for this automation. */
   editing?: Automation | null;
+  editingEntity?: AutomationEntity | null;
   onBackFromEditor?: () => void;
   onCreateSubmit?: (draft: AutomationDraft) => void;
   onUpdate?: (id: string, draft: AutomationDraft) => void;
-  /** Return to the agents panel the list was opened from. */
   onBack?: () => void;
   onClose: () => void;
   onCreate: (type?: AutomationType) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onEdit: (id: string) => void;
   onRequestDelete: (id: string) => void;
+  showAgentSelector?: boolean;
+  showAgentPicker?: boolean;
+  contextAgentId?: string;
+  editorKind?: EditorKind;
 }
 
-/** RHS container for the management list and inline create/edit views. */
 export default function AutomationsPanel({
   automations,
   creating = false,
   createType,
   editing,
+  editingEntity,
   onBackFromEditor,
   onCreateSubmit,
   onUpdate,
@@ -46,11 +49,15 @@ export default function AutomationsPanel({
   onToggle,
   onEdit,
   onRequestDelete,
+  showAgentSelector = true,
+  showAgentPicker = false,
+  contextAgentId,
+  editorKind = 'assignment',
 }: AutomationsPanelProps) {
-  const inEditor = creating || editing != null;
+  const inEditor = creating || editing != null || editingEntity != null;
   const headerTitle = creating
     ? 'New automation'
-    : editing
+    : editing || editingEntity
       ? 'Edit automation'
       : 'Automations';
 
@@ -59,6 +66,8 @@ export default function AutomationsPanel({
       onCreateSubmit(draft);
     } else if (editing && onUpdate) {
       onUpdate(editing.id, draft);
+    } else if (editingEntity && onUpdate) {
+      onUpdate(editingEntity.id, draft);
     }
     onBackFromEditor?.();
   };
@@ -67,7 +76,11 @@ export default function AutomationsPanel({
     <aside className={shellStyles['channel-shell__right-sidebar']}>
       <RightSidebarHeader
         title={headerTitle}
-        secondaryContent={<AgentSelector />}
+        secondaryContent={
+          showAgentSelector ? (
+            <AgentSelector agentId={contextAgentId} />
+          ) : undefined
+        }
         onBack={inEditor ? onBackFromEditor : onBack}
         onClose={onClose}
       />
@@ -75,12 +88,20 @@ export default function AutomationsPanel({
         {inEditor && onBackFromEditor ? (
           <div className={styles['panel__editor']}>
             <AutomationFormEditor
-              key={creating ? `create-${createType ?? 'blank'}` : editing?.id}
+              key={
+                creating
+                  ? `create-${createType ?? 'blank'}`
+                  : (editing?.id ?? editingEntity?.id)
+              }
               initial={editing ?? undefined}
+              initialEntity={editingEntity ?? undefined}
               createType={creating ? createType : undefined}
               onSubmit={handleSubmit}
               onCancel={onBackFromEditor}
               showEnabledSwitch={false}
+              showAgentPicker={showAgentPicker}
+              contextAgentId={contextAgentId}
+              editorKind={editorKind}
             />
           </div>
         ) : (
