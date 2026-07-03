@@ -15,7 +15,7 @@ import Button from '@/components/Button/Button';
 import Icon, { type IconSize } from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import styles from './GlobalHeader.module.scss';
 
 export type GlobalHeaderProduct = 'Channels' | 'Playbooks' | 'Boards' | 'Agents';
@@ -50,7 +50,7 @@ function InvertedIconButton({
   glyph,
 }: {
   ariaLabel: string;
-  glyph: React.ReactNode;
+  glyph: ReactNode;
 }) {
   return (
     <IconButton
