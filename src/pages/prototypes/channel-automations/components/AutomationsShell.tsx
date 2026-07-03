@@ -1,17 +1,9 @@
+import { ChannelHeader, ChannelShell, Icon, IconButton, Message, MessageInput, MessageReactions, MessageSeparator, Scrollbars } from '@mattermost/compass-ui';
 import { useRef, useState, type ReactNode } from 'react';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
-import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
-import ChannelShell from '@/components/ui/ChannelShell/ChannelShell';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import Message from '@/components/ui/Message/Message';
-import MessageInput from '@/components/ui/MessageInput';
-import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { shellStyles } from '@mattermost/compass-ui';
 import {
   CHANNEL_MESSAGES,
   type AutomationType,

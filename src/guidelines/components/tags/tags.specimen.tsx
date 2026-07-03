@@ -1,4 +1,4 @@
-import Tags from '@/components/ui/Tags/Tags';
+import { Tags } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function TagsLibrary() {

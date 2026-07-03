@@ -1,0 +1,223 @@
+.sbdocs-wrapper,
+.sbdocs-content {
+  background: var(--center-channel-bg) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-base);
+}
+
+.sbdocs-content th,
+.docblock-argstable th,
+.docblock-argstable tbody td:first-child {
+  font-weight: var(--font-weight-semibold) !important;
+}
+
+.sbdocs-content {
+  max-width: 960px;
+}
+
+/*
+ * Doc prose typography — theme Storybook-generated copy without overriding
+ * Compass CSS-module classes inside previews. Tag+class selectors such as
+ * `.sbdocs-content h2` beat single-class modules (e.g. `.tour-point__title`);
+ * skip any element whose class follows our BEM `__` convention.
+ */
+.sbdocs-content :where(h1, h2, h3, h4, h5, h6):not([class*='__']) {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-heading);
+}
+
+.sbdocs-content :where(p, li, td, th):not([class*='__']) {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-base);
+}
+
+.sbdocs-content :where(a):not([class*='__']) {
+  color: var(--link-color);
+}
+
+.sbdocs-content :where(hr):not([class*='__']) {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12);
+}
+
+.sbdocs-content :where(blockquote):not([class*='__']) {
+  border-left-color: rgba(var(--center-channel-color-rgb), 0.24);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.sbdocs-content :where(code, kbd, samp):not([class*='__']) {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.sbdocs-content :where(pre):not([class*='__']) {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.sbdocs-content pre:not([class*='__']) code {
+  border: none !important;
+  background: transparent !important;
+}
+
+.sbdocs-wrapper :where(strong, b):not([class*='__']) {
+  font-weight: var(--font-weight-semibold);
+}
+
+.docs-story,
+.sbdocs-preview {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: var(--center-channel-bg) !important;
+}
+
+.sbdocs-preview > :first-child:not(.docs-story) {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: var(--center-channel-bg) !important;
+  color: var(--center-channel-color) !important;
+}
+
+.docs-story > div {
+  background: var(--center-channel-bg) !important;
+}
+
+.docblock-argstable,
+.sbdocs-table {
+  color: var(--center-channel-color) !important;
+}
+
+.docblock-argstable table,
+.sbdocs-table {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+}
+
+.docblock-argstable thead,
+.sbdocs-table thead {
+  background: rgba(var(--center-channel-color-rgb), 0.04) !important;
+}
+
+.docblock-argstable th,
+.docblock-argstable td,
+.sbdocs-table th,
+.sbdocs-table td {
+  border-color: rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: var(--center-channel-bg) !important;
+  color: var(--center-channel-color) !important;
+}
+
+.docblock-argstable button,
+.docblock-argstable input,
+.docblock-argstable select,
+.docblock-argstable textarea {
+  color: var(--center-channel-color);
+  font-family: var(--font-family-base);
+}
+
+.docblock-argstable input:not([type='range']):not([type='checkbox']),
+.docblock-argstable select,
+.docblock-argstable textarea,
+.docblock-argstable button {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16) !important;
+  border-radius: 4px;
+  background: var(--center-channel-bg) !important;
+  box-shadow: none !important;
+}
+
+.docblock-argstable input:not([type='range']):not([type='checkbox']):focus,
+.docblock-argstable select:focus,
+.docblock-argstable textarea:focus {
+  border-color: var(--button-bg) !important;
+  outline: none;
+}
+
+.docblock-argstable label:has(> input[type='checkbox'][role='switch']) {
+  background: rgba(var(--center-channel-color-rgb), 0.08) !important;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16) !important;
+  border-radius: 3em;
+  padding: 1px;
+}
+
+.docblock-argstable label:has(> input[type='checkbox'][role='switch']) input[type='checkbox'] {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.docblock-argstable label:has(> input[type='checkbox'][role='switch']) > span {
+  color: rgba(var(--center-channel-color-rgb), 0.72) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.docblock-argstable
+  label:has(> input[type='checkbox'][role='switch'])
+  input:checked
+  ~ span:last-of-type,
+.docblock-argstable
+  label:has(> input[type='checkbox'][role='switch'])
+  input:not(:checked)
+  ~ span:first-of-type {
+  background: var(--button-bg) !important;
+  color: var(--button-color) !important;
+  box-shadow: none !important;
+}
+
+.docblock-argstable input::placeholder,
+.docblock-argstable textarea::placeholder {
+  color: rgba(var(--center-channel-color-rgb), 0.48);
+}
+
+.docblock-argstable input[type='range'] {
+  accent-color: var(--button-bg);
+}
+
+.docblock-argstable button:disabled,
+.docblock-argstable input:disabled,
+.docblock-argstable select:disabled,
+.docblock-argstable textarea:disabled {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.04) !important;
+  color: rgba(var(--center-channel-color-rgb), 0.48) !important;
+}
+
+.docblock-argstable option {
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+}
+
+.docblock-argstable code,
+.docblock-argstable [title='Reset controls'],
+.docblock-argstable td div span,
+.docblock-argstable .sbdocs-expandable,
+.docblock-argstable .sbdocs-expandable span {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.06) !important;
+  color: var(--center-channel-color) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.docblock-argstable tbody td:first-child > span[title='Required'] {
+  border: none !important;
+  background: transparent !important;
+  color: var(--error-text) !important;
+  font-family: var(--font-family-mono) !important;
+}
+
+.docblock-argstable td div button {
+  border: none !important;
+  background: transparent !important;
+  color: var(--link-color) !important;
+  box-shadow: none !important;
+}
+
+.sbdocs-preview > :first-child:not(.docs-story) button {
+  color: var(--center-channel-color) !important;
+}
+
+.docblock-code-toggle,
+.docblock-source {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12) !important;
+  background: rgba(var(--center-channel-color-rgb), 0.04) !important;
+  color: var(--center-channel-color) !important;
+}

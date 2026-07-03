@@ -1,10 +1,5 @@
-import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
-import Button from '@/components/ui/Button/Button';
-import Select from '@/components/ui/Select/Select';
-import Switch from '@/components/ui/Switch/Switch';
-import TextArea from '@/components/ui/TextArea/TextArea';
-import TextInput from '@/components/ui/TextInput/TextInput';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+import { Button, Scrollbars, Select, Switch, TextArea, TextInput } from '@mattermost/compass-ui';
+import { forwardRef, useCallback, useImperativeHandle, useState, type ChangeEvent } from 'react';
 import {
   ACTIVE_CHANNEL,
   AUTOMATION_CHANNEL_OPTIONS,
@@ -300,7 +295,7 @@ const AutomationFormEditor = forwardRef<
     <Switch
       className={styles['editor__enabled']}
       checked={enabled}
-      onChange={(e) => setEnabled(e.target.checked)}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => setEnabled(e.target.checked)}
       semiBold
     >
       Enabled
@@ -343,7 +338,7 @@ const AutomationFormEditor = forwardRef<
                 className={styles['editor__form-control']}
                 label="Automation name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
               />
 
               {showAgentPicker ? (
@@ -360,13 +355,13 @@ const AutomationFormEditor = forwardRef<
                     className={styles['editor__form-control']}
                     label="Display name"
                     value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setDisplayName(e.target.value)}
                   />
                   <TextInput
                     className={styles['editor__form-control']}
                     label="Username"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                   />
                 </>
               ) : null}
@@ -384,7 +379,7 @@ const AutomationFormEditor = forwardRef<
                     className={styles['editor__form-control']}
                     label="Frequency"
                     value={frequency}
-                    onChange={(e) =>
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                       setFrequency(e.target.value as ScheduleFrequency)
                     }
                   >
@@ -398,7 +393,7 @@ const AutomationFormEditor = forwardRef<
                     className={styles['editor__form-control']}
                     label="Time"
                     value={time}
-                    onChange={(e) => setTime(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLSelectElement>) => setTime(e.target.value)}
                   >
                     {SCHEDULE_TIMES.map((t) => (
                       <option key={t} value={t}>
@@ -414,7 +409,7 @@ const AutomationFormEditor = forwardRef<
                   className={styles['editor__form-control']}
                   label="Channel"
                   value={channelId}
-                  onChange={(e) => setChannelId(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setChannelId(e.target.value)}
                 >
                   {AUTOMATION_CHANNEL_OPTIONS.map((channel) => (
                     <option key={channel.id} value={channel.id}>
@@ -429,7 +424,7 @@ const AutomationFormEditor = forwardRef<
                   className={styles['editor__form-control']}
                   label="Playbook"
                   value={playbookId}
-                  onChange={(e) => setPlaybookId(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setPlaybookId(e.target.value)}
                 >
                   <option value="">Any playbook</option>
                   {AUTOMATION_PLAYBOOK_OPTIONS.map((playbook) => (
@@ -444,7 +439,7 @@ const AutomationFormEditor = forwardRef<
                 className={styles['editor__form-control']}
                 label="Instructions"
                 value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
                 rows={5}
                 maxLength={500}
               />

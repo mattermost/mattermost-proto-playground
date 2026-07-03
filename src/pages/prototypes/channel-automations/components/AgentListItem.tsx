@@ -1,12 +1,8 @@
+import { Icon, IconButton, MenuItem, PopoverMenu, UserAvatar } from '@mattermost/compass-ui';
 import { useRef, useState } from 'react';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { Agent } from '../channelAutomationsData';
 import { agentAvatarProps } from '../channelAutomationsData';

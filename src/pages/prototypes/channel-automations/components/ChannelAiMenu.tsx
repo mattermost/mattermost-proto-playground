@@ -1,16 +1,14 @@
+import { Icon, IconButton, MenuItem, TextInput } from '@mattermost/compass-ui';
 import { useState } from 'react';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import SendIcon from '@mattermost/compass-icons/components/send';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import TextInput from '@/components/ui/TextInput/TextInput';
-import PopoverMenu, {
+import {
+  PopoverMenu,
   PopoverMenuDivider,
   PopoverMenuGroup,
   PopoverMenuGroupTitle,
-} from '@/components/ui/PopoverMenu/PopoverMenu';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
+} from '@mattermost/compass-ui';
 import {
   AUTOMATION_TYPE_META,
   type AutomationType,

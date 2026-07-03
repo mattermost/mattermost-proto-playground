@@ -1,5 +1,4 @@
-import Dropdown from '@/components/ui/Dropdown/Dropdown';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import { Dropdown, UserAvatar } from '@mattermost/compass-ui';
 import { AGENT, agentAvatarProps, agentById } from '../channelAutomationsData';
 
 export interface AgentSelectorProps {

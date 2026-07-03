@@ -1,4 +1,4 @@
-import LinkPreview from '@/components/ui/LinkPreview/LinkPreview';
+import { LinkPreview } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function LinkPreviewLibrary() {

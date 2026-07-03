@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
-import DialpadIcon from '@/components/icons/DialpadIcon';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import TextInput from '@/components/ui/TextInput/TextInput';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
+import { DialpadIcon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { IconButton } from '@mattermost/compass-ui';
+import { TextInput } from '@mattermost/compass-ui';
+import { UserAvatar } from '@mattermost/compass-ui';
 import { KeypadGrid } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
 import { CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import { formatRecentDuration, sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
@@ -61,8 +61,8 @@ export function RhsDialer({
             className={styles['rhs__phone-field']}
             size="Large"
             value={typed}
-            onChange={(e) => setTyped(sanitizeDigits(e.target.value))}
-            onKeyDown={(e) => {
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setTyped(sanitizeDigits(e.target.value))}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
                 dial();

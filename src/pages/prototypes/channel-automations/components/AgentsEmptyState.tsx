@@ -1,8 +1,6 @@
+import { Button, Icon, Illustration } from '@mattermost/compass-ui';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import AiCopilotIntro from '@/assets/illustrations/ai-copilot-intro.svg?react';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import Illustration from '@/components/ui/Illustration/Illustration';
 import styles from './AgentsEmptyState.module.scss';
 
 export interface AgentsEmptyStateProps {

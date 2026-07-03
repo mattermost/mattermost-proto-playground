@@ -1,5 +1,5 @@
+import { Modal } from '@mattermost/compass-ui';
 import { useState } from 'react';
-import Modal from '@/components/ui/Modal/Modal';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
 import AutomationFormEditor, {
   EDITOR_VIEW_TABS,

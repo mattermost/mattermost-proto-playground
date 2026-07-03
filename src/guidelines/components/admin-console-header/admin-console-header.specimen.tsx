@@ -1,4 +1,4 @@
-import AdminConsoleHeader from '@/components/ui/AdminConsoleHeader/AdminConsoleHeader';
+import { AdminConsoleHeader } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function AdminConsoleHeaderLibrary() {

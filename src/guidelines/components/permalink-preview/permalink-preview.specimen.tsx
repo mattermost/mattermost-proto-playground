@@ -1,6 +1,6 @@
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import PermalinkPreview from '@/components/ui/PermalinkPreview/PermalinkPreview';
+import { PermalinkPreview } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function PermalinkPreviewLibrary() {

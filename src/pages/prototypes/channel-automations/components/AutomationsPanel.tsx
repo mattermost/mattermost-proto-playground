@@ -1,6 +1,6 @@
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import { RightSidebarHeader } from '@/components/ui/RightSidebar';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { Scrollbars } from '@mattermost/compass-ui';
+import { RightSidebarHeader } from '@mattermost/compass-ui';
+import { shellStyles } from '@mattermost/compass-ui';
 import type {
   Automation,
   AutomationDraft,

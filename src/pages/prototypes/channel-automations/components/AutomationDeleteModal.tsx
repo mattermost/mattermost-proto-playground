@@ -1,5 +1,4 @@
-import Button from '@/components/ui/Button/Button';
-import Modal from '@/components/ui/Modal/Modal';
+import { Button, Modal } from '@mattermost/compass-ui';
 import styles from './AutomationDeleteModal.module.scss';
 
 export interface AutomationDeleteModalProps {

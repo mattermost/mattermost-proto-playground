@@ -1,5 +1,5 @@
 import sampleImage from '@/assets/images/sample-image.jpg';
-import ImagePreview from '@/components/ui/ImagePreview/ImagePreview';
+import { ImagePreview } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ImagePreviewLibrary() {

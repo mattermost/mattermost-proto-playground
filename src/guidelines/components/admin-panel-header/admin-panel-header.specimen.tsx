@@ -1,11 +1,11 @@
 import { useId, useState, type ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import AdminPanelHeader, {
+import {
   type AdminPanelExpandedState,
-} from '@/components/ui/AdminPanelHeader/AdminPanelHeader';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
+  AdminPanelHeader} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { IconButton } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 function HeaderChrome({ children }: { children: ReactNode }) {
@@ -90,7 +90,7 @@ export default function AdminPanelHeaderLibrary() {
             expandable
             isExpanded={expanded === 'Expanded'}
             onToggleExpand={() =>
-              setExpanded((s) => (s === 'Expanded' ? 'Collapsed' : 'Expanded'))
+              setExpanded((s: AdminPanelExpandedState) => (s === 'Expanded' ? 'Collapsed' : 'Expanded'))
             }
             showDivider={expanded === 'Expanded'}
             headerActions={

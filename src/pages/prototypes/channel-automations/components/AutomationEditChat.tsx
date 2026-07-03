@@ -1,8 +1,6 @@
+import { Button, Icon, MessageInput } from '@mattermost/compass-ui';
 import { useEffect, useRef, useState } from 'react';
 import CheckIcon from '@mattermost/compass-icons/components/check';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import MessageInput from '@/components/ui/MessageInput';
 import {
   triggerSummary,
   triggerToType,

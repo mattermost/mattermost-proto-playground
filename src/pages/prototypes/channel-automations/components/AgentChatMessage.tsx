@@ -1,5 +1,5 @@
+import { Message } from '@mattermost/compass-ui';
 import type { ReactNode } from 'react';
-import Message from '@/components/ui/Message/Message';
 import { CURRENT_USER, type Agent } from '../channelAutomationsData';
 import styles from './AgentChatMessage.module.scss';
 

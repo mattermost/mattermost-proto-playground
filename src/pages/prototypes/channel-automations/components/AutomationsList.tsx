@@ -1,9 +1,7 @@
+import { Button, EmptyState, Icon } from '@mattermost/compass-ui';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import AiCopilotIntro from '@/assets/illustrations/ai-copilot-intro.svg?react';
-import Button from '@/components/ui/Button/Button';
-import EmptyState from '@/components/ui/EmptyState/EmptyState';
-import Icon from '@/components/ui/Icon/Icon';
 import type { Automation } from '../channelAutomationsData';
 import AutomationListItem from './AutomationListItem';
 import styles from './AutomationsList.module.scss';

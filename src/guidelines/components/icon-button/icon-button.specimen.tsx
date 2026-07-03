@@ -1,11 +1,11 @@
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import IconButton, {
+import {
   ICON_BUTTON_ICON_SIZES,
   type IconButtonPadding,
   type IconButtonSize,
   type IconButtonStyle,
-} from '@/components/ui/IconButton/IconButton';
-import Icon from '@/components/ui/Icon/Icon';
+  IconButton} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 const SIZES: IconButtonSize[] = ['X-Small', 'Small', 'Medium', 'Large'];

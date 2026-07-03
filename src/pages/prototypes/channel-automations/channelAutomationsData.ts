@@ -6,7 +6,7 @@ import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMatty from '@/assets/avatars/Matty.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
-import type { UserAvatarFallbackColor } from '@/components/ui/UserAvatar/UserAvatar';
+import type { UserAvatarFallbackColor } from '@mattermost/compass-ui';
 
 /** The four automation kinds the Agent can build. */
 export type AutomationType =

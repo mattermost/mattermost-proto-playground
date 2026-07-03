@@ -1,8 +1,6 @@
+import { Icon, MenuItem, PopoverMenu } from '@mattermost/compass-ui';
 import { useRef, useState } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { AGENT, AGENTS } from '../channelAutomationsData';
 import styles from './AgentEngineDropdown.module.scss';

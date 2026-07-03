@@ -1,4 +1,4 @@
-import PaginationDots from '@/components/ui/PaginationDots/PaginationDots';
+import { PaginationDots } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function PaginationDotsLibrary() {

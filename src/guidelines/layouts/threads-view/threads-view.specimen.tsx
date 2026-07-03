@@ -1,20 +1,21 @@
 import { useMemo, useState } from 'react';
 import PlaylistCheckIcon from '@mattermost/compass-icons/components/playlist-check';
-import ChannelShell from '@/components/ui/ChannelShell/ChannelShell';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import MessageInput from '@/components/ui/MessageInput';
-import RightSidebar, {
+import { ChannelShell } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { IconButton } from '@mattermost/compass-ui';
+import { MessageInput } from '@mattermost/compass-ui';
+import {
   RightSidebarHeader,
   RightSidebarThread,
-} from '@/components/ui/RightSidebar';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import Tabs from '@/components/ui/Tabs/Tabs';
-import ThreadListItem from '@/components/ui/ThreadListItem/ThreadListItem';
+  RightSidebar} from '@mattermost/compass-ui';
+import { Scrollbars } from '@mattermost/compass-ui';
+import { Tabs } from '@mattermost/compass-ui';
+import { ThreadListItem } from '@mattermost/compass-ui';
 import {
   buildDefaultChannelsSidebarModel,
   type ChannelsSidebarModel,
-} from '@/components/ui/ChannelsSidebar/channelsSidebarModel';
+} from '@mattermost/compass-ui';
+import { RIGHT_SIDEBAR_THREAD_DEMO_MESSAGES } from '@/fixtures/rightSidebarThreadDemo';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
@@ -25,7 +26,7 @@ import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { shellStyles } from '@mattermost/compass-ui';
 import inboxStyles from './threads-view.specimen.module.scss';
 
 type ThreadsTab = 'all' | 'unreads';
@@ -92,7 +93,7 @@ export default function ThreadsViewLayout() {
                   { key: 'unreads', label: 'Unreads' },
                 ]}
                 activeKey={tab}
-                onChange={(key) => {
+                onChange={(key: string) => {
                   if (key === 'all' || key === 'unreads') {
                     setTab(key);
                     setSelectedIndex(0);
@@ -215,7 +216,7 @@ export default function ThreadsViewLayout() {
               </div>
             }
           >
-            <RightSidebarThread />
+            <RightSidebarThread messages={RIGHT_SIDEBAR_THREAD_DEMO_MESSAGES} />
           </RightSidebar>
         </div>
       }

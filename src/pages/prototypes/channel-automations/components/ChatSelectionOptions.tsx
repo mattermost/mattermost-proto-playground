@@ -1,12 +1,8 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Button, Icon, MenuItem, PopoverMenu, SearchInput } from '@mattermost/compass-ui';
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { createPortal } from 'react-dom';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
-import SearchInput from '@/components/ui/SearchInput/SearchInput';
 import type { AutomationChannelType } from '../channelAutomationsData';
 import type { ChatScriptOption } from './automationChatScript';
 import styles from './ChatSelectionOptions.module.scss';
@@ -216,7 +212,7 @@ export default function ChatSelectionOptions({
                 setOpen(true);
                 updateMenuPosition();
               }}
-              onChange={(e) => handleQueryChange(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => handleQueryChange(e.target.value)}
               onClear={() => {
                 setQuery('');
                 setSelectedId(null);

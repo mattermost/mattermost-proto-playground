@@ -1,14 +1,14 @@
 import { useId } from 'react';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import AdminPanelFooter from '@/components/ui/AdminPanelFooter/AdminPanelFooter';
-import AdminConsoleHeader from '@/components/ui/AdminConsoleHeader/AdminConsoleHeader';
-import AdminPanel from '@/components/ui/AdminPanel/AdminPanel';
-import AdminConsoleSidebar from '@/components/ui/AdminConsoleSidebar/AdminConsoleSidebar';
-import Radio from '@/components/ui/Radio/Radio';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import Select from '@/components/ui/Select/Select';
-import TextInput from '@/components/ui/TextInput/TextInput';
-import { defaultAdminConsoleSidebarGroups } from '@/components/ui/AdminConsoleSidebar/adminConsoleSidebarModel';
+import { AdminPanelFooter } from '@mattermost/compass-ui';
+import { AdminConsoleHeader } from '@mattermost/compass-ui';
+import { AdminPanel } from '@mattermost/compass-ui';
+import { AdminConsoleSidebar } from '@mattermost/compass-ui';
+import { Radio } from '@mattermost/compass-ui';
+import { Scrollbars } from '@mattermost/compass-ui';
+import { Select } from '@mattermost/compass-ui';
+import { TextInput } from '@mattermost/compass-ui';
+import { defaultAdminConsoleSidebarGroups } from '@mattermost/compass-ui';
 import styles from './admin-console.specimen.module.scss';
 
 const DOC_PRIORITY =

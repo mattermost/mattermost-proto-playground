@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import DialpadIcon from '@/components/icons/DialpadIcon';
-import Icon from '@/components/ui/Icon/Icon';
-import ChannelsSidebar from '@/components/ui/ChannelsSidebar/ChannelsSidebar';
-import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
-import TeamSidebar from '@/components/ui/TeamSidebar/TeamSidebar';
+import { DialpadIcon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { ChannelsSidebar } from '@mattermost/compass-ui';
+import { GlobalHeader } from '@mattermost/compass-ui';
+import { TeamSidebar } from '@mattermost/compass-ui';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
 import { CallPip } from '@/pages/prototypes/outbound-calls/CallPip/CallPip';
@@ -430,7 +430,7 @@ export default function OutboundCalls() {
                 avatarDavidLiang={avatarDavidLiang}
                 avatarEmmaNovak={avatarEmmaNovak}
                 avatarEthanBrooks={avatarEthanBrooks}
-                onItemClick={(name) => {
+                onItemClick={(name: string) => {
                   if (name === 'op-nightingale') setScene('channel');
                   else if (name === 'Aiko Tan') setScene('dm');
                   else if (name === 'Dial Pad') setScene('dialer');

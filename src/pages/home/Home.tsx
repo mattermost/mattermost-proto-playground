@@ -1,7 +1,7 @@
 import type { ComponentType, SVGProps } from 'react';
 import { Link } from 'react-router-dom';
-import Illustration from '@/components/ui/Illustration/Illustration';
-import btnStyles from '@/components/ui/Button/Button.module.scss';
+import { Illustration } from '@mattermost/compass-ui';
+import { btnStyles } from '@mattermost/compass-ui';
 import LayoutPreview from '@/guidelines/_components/LayoutPreview';
 import FoundationsCardArt from '@/assets/home/card-foundations.svg?react';
 import ComponentsCardArt from '@/assets/home/card-components.svg?react';

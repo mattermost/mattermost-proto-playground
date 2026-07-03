@@ -1,4 +1,4 @@
-import Icon from '@/components/ui/Icon/Icon';
+import { Icon } from '@mattermost/compass-ui';
 import {
   AUTOMATION_TYPE_META,
   type AutomationType,

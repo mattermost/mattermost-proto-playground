@@ -1,10 +1,6 @@
-import { useMemo, useState } from 'react';
+import { Button, Icon, Scrollbars, SearchInput, Tabs } from '@mattermost/compass-ui';
+import { useMemo, useState, type ChangeEvent } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import SearchInput from '@/components/ui/SearchInput/SearchInput';
-import Tabs from '@/components/ui/Tabs/Tabs';
 import type { AutomationEntity } from '../channelAutomationsData';
 import AutomationEntityListItem from './AutomationEntityListItem';
 import styles from './AutomationsIndexView.module.scss';
@@ -63,7 +59,7 @@ export default function AutomationEntitiesIndexView({
             className={styles['automations-index__tabs']}
             tabs={TABS.map((item) => ({ key: item.key, label: item.label }))}
             activeKey={tab}
-            onChange={(key) => setTab(key as AutomationsTabKey)}
+            onChange={(key: string) => setTab(key as AutomationsTabKey)}
             ariaLabel="Automations filter"
             controls={
               <>
@@ -72,7 +68,7 @@ export default function AutomationEntitiesIndexView({
                   size="Medium"
                   placeholder="Search automations"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                   onClear={() => setQuery('')}
                   aria-label="Search automations"
                 />

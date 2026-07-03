@@ -1,3 +1,4 @@
+import { Icon, MenuItem } from '@mattermost/compass-ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
@@ -9,13 +10,12 @@ import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/light
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
 import ProductChannelsIcon from '@mattermost/compass-icons/components/product-channels';
 import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu, {
+import {
+  PopoverMenu,
   PopoverMenuGroup,
   PopoverMenuGroupTitle,
   PopoverMenuScroll,
-} from '@/components/ui/PopoverMenu/PopoverMenu';
+} from '@mattermost/compass-ui';
 import {
   TRIGGER_PICKER_GROUPS,
   TRIGGER_PICKER_OPTIONS,

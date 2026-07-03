@@ -1,13 +1,13 @@
 import type { MouseEvent, ReactNode } from 'react';
-import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
-import MessageInput from '@/components/ui/MessageInput';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Message from '@/components/ui/Message/Message';
+import { ChannelHeader } from '@mattermost/compass-ui';
+import { MessageInput } from '@mattermost/compass-ui';
+import { MessageSeparator } from '@mattermost/compass-ui';
+import { Message } from '@mattermost/compass-ui';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import layoutStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { layoutStyles } from '@mattermost/compass-ui';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({

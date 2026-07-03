@@ -1,9 +1,6 @@
+import { Button, Icon, IconButton, Scrollbars } from '@mattermost/compass-ui';
 import { useState } from 'react';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
 import AutomationFormEditor, {
   EDITOR_VIEW_TABS,

@@ -1,12 +1,8 @@
-import { useRef, useState } from 'react';
+import { Icon, IconButton, MenuItem, PopoverMenu, Switch } from '@mattermost/compass-ui';
+import { useRef, useState, type ChangeEvent } from 'react';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import Switch from '@/components/ui/Switch/Switch';
-import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
   AUTOMATION_TYPE_META,
@@ -82,7 +78,7 @@ export default function AutomationEntityListItem({
         <Switch
           size="Small"
           checked={entity.enabled}
-          onChange={(e) => onToggle(entity.id, e.target.checked)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onToggle(entity.id, e.target.checked)}
           aria-label={`${entity.enabled ? 'Disable' : 'Enable'} ${entity.displayName}`}
         />
 

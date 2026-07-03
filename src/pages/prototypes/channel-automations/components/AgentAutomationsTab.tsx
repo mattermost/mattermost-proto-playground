@@ -1,6 +1,5 @@
+import { Button, Icon } from '@mattermost/compass-ui';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
 import type { Automation } from '../channelAutomationsData';
 import AutomationListItem from './AutomationListItem';
 import styles from './AgentAutomationsTab.module.scss';

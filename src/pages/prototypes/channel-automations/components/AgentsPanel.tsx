@@ -1,12 +1,10 @@
+import { Icon, MessageInput, Scrollbars } from '@mattermost/compass-ui';
 import type { ReactNode } from 'react';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
-import Icon from '@/components/ui/Icon/Icon';
-import MessageInput from '@/components/ui/MessageInput';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import { RightSidebarHeader } from '@/components/ui/RightSidebar';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { RightSidebarHeader } from '@mattermost/compass-ui';
+import { shellStyles } from '@mattermost/compass-ui';
 import AgentSelector from './AgentSelector';
 import styles from './AgentsPanel.module.scss';
 

@@ -1,6 +1,6 @@
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import Icon from '@/components/ui/Icon/Icon';
+import { Icon } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 const SIZE_DEMOS: { size: '16' | '20' | '24' | '28' | '32' | '40' | '52' | '64' }[] = [
@@ -38,7 +38,7 @@ export default function IconLibrary() {
         <p className={styles['components__paragraph']}>Import a glyph by name and pass it to the <code>Icon</code> wrapper:</p>
         <pre className={styles['components__code-block']}>
           <code>{`import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import Icon from '@/components/ui/Icon/Icon';
+import { Icon } from '@mattermost/compass-ui';
 
 <Icon glyph={<GlobeIcon />} size="24" />`}</code>
         </pre>

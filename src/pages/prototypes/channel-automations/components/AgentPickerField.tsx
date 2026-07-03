@@ -1,9 +1,6 @@
+import { Icon, MenuItem, PopoverMenu, UserAvatar } from '@mattermost/compass-ui';
 import { useId, useRef, useState } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { AGENTS, agentAvatarProps, agentById, defaultOwnedAgent } from '../channelAutomationsData';
 import styles from './AgentPickerField.module.scss';

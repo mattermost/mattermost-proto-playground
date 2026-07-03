@@ -1,5 +1,5 @@
+import { GlobalHeader } from '@mattermost/compass-ui';
 import type { ReactNode } from 'react';
-import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import AutomationsTabs from './AutomationsTabs';
 import styles from './AgentsShell.module.scss';

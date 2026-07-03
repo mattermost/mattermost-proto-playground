@@ -1,15 +1,8 @@
-import { useMemo, useRef, useState } from 'react';
+import { Button, Icon, MenuItem, PopoverMenu, Scrollbars, SearchInput, Tabs, UserAvatar } from '@mattermost/compass-ui';
+import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
-import SearchInput from '@/components/ui/SearchInput/SearchInput';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import Tabs from '@/components/ui/Tabs/Tabs';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { AGENTS, agentAvatarProps, type Agent } from '../channelAutomationsData';
 import AgentListItem from './AgentListItem';
@@ -77,7 +70,7 @@ export default function AgentsIndexView({
             className={styles['agents-index__tabs']}
             tabs={TABS.map((item) => ({ key: item.key, label: item.label }))}
             activeKey={tab}
-            onChange={(key) => setTab(key as AgentsTabKey)}
+            onChange={(key: string) => setTab(key as AgentsTabKey)}
             ariaLabel="Agents filter"
             controls={
               <>
@@ -86,7 +79,7 @@ export default function AgentsIndexView({
                   size="Medium"
                   placeholder="Search Agents"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                   onClear={() => setQuery('')}
                   aria-label="Search agents"
                 />
