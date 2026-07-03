@@ -2,10 +2,9 @@
 // Block — Select (Figma v2.0.1). Full-featured form select with floating label.
 // ---------------------------------------------------------------------------
 .select {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 300px;
 
   // ---------------------------------------------------------------------------
   // Wrapper (bordered container)

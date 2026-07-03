@@ -3,11 +3,10 @@
 // Calendar popover for single date or date range selection.
 // ---------------------------------------------------------------------------
 .dateRangePicker {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   position: relative;
   width: 100%;
-  max-width: 300px;
 
   // ---------------------------------------------------------------------------
   // Trigger / input row

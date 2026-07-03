@@ -3,10 +3,9 @@
 // Text input with leading magnifier icon. Optional clear button when filled.
 // ---------------------------------------------------------------------------
 .searchInput {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 300px;
 
   // ---------------------------------------------------------------------------
   // Wrapper (bordered container)
