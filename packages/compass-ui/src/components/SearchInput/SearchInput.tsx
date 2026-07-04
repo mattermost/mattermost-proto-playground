@@ -1,12 +1,19 @@
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import { forwardRef, useId, useState, useCallback } from 'react';
 import { toKebab } from '@/utils/string';
+import type { IconSize } from '@/components/Icon/Icon';
 import Icon from '@/components/Icon/Icon';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import styles from './SearchInput.module.scss';
 
 export type SearchInputSize = 'Small' | 'Medium' | 'Large';
+
+const ICON_SIZE_MAP: Record<SearchInputSize, IconSize> = {
+  Small: '12',
+  Medium: '16',
+  Large: '20',
+};
 
 export interface SearchInputProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -84,13 +91,19 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
     const sizeClass = styles[`searchInput--size-${toKebab(size)}`];
     const labelFloatedClass =
       label != null && labelFloated ? styles['searchInput--label-floated'] : '';
-    const filledClass = hasValue ? styles['searchInput--filled'] : '';
+    const hasLeadingClass = styles['searchInput--has-leading-icon'];
+    const hasTrailingClass =
+      hasValue && onClear != null
+        ? styles['searchInput--has-trailing-icon']
+        : '';
+    const iconSize = ICON_SIZE_MAP[size];
 
     const rootClass = [
       styles.searchInput,
       sizeClass,
       labelFloatedClass,
-      filledClass,
+      hasLeadingClass,
+      hasTrailingClass,
       className,
     ]
       .filter(Boolean)
@@ -105,8 +118,8 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
             </label>
           )}
           <div className={styles.searchInput__inner}>
-            <span className={styles.searchInput__searchIcon} aria-hidden>
-              <Icon size="16" glyph={<MagnifyIcon />} />
+            <span className={styles.searchInput__leadingIcon} aria-hidden>
+              <Icon size={iconSize} glyph={<MagnifyIcon />} />
             </span>
             <input
               ref={ref}
@@ -123,15 +136,17 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
               {...rest}
             />
             {hasValue && onClear != null && (
-              <button
-                type="button"
-                className={styles.searchInput__clearButton}
-                onClick={onClear}
-                aria-label="Clear search"
-                tabIndex={-1}
-              >
-                <Icon size="16" glyph={<CloseCircleIcon />} />
-              </button>
+              <span className={styles.searchInput__trailingIcon}>
+                <button
+                  type="button"
+                  className={styles.searchInput__clearButton}
+                  onClick={onClear}
+                  aria-label="Clear search"
+                  tabIndex={-1}
+                >
+                  <Icon size={iconSize} glyph={<CloseCircleIcon />} />
+                </button>
+              </span>
             )}
           </div>
         </div>
