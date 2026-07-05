@@ -7,25 +7,25 @@ import InformationOutlineIcon from '@mattermost/compass-icons/components/informa
 import Button from '@/components/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import styles from './ToastBanner.module.scss';
+import styles from './Toast.module.scss';
 
-export type ToastBannerType =
+export type ToastType =
   | 'General'
   | 'Info'
   | 'Success'
   | 'Warning'
   | 'Danger';
 
-export interface ToastBannerProps {
+export interface ToastProps {
   className?: string;
   message: string;
-  type?: ToastBannerType;
+  type?: ToastType;
   actionLabel?: string;
   onAction?: () => void;
   onDismiss?: () => void;
 }
 
-const TYPE_ICONS: Record<ToastBannerType, ReactNode> = {
+const TYPE_ICONS: Record<ToastType, ReactNode> = {
   General: <AlertCircleOutlineIcon />,
   Info: <InformationOutlineIcon />,
   Success: <CheckIcon />,
@@ -33,39 +33,30 @@ const TYPE_ICONS: Record<ToastBannerType, ReactNode> = {
   Warning: <AlertCircleOutlineIcon />,
 };
 
-export default function ToastBanner({
+export default function Toast({
   className = '',
   message,
   type = 'General',
   actionLabel,
   onAction,
   onDismiss,
-}: ToastBannerProps) {
-  const typeClass = styles[`toast-banner--type-${type.toLowerCase()}`];
-  const rootClass = [styles['toast-banner'], typeClass, className]
-    .filter(Boolean)
-    .join(' ');
+}: ToastProps) {
+  const typeClass = styles[`toast--type-${type.toLowerCase()}`];
+  const rootClass = [styles.toast, typeClass, className].filter(Boolean).join(' ');
 
   return (
     <div className={rootClass} role="status" aria-live="polite">
-      <div className={styles['toast-banner__content']}>
-        <span className={styles['toast-banner__icon']} aria-hidden>
+      <div className={styles['toast__content']}>
+        <span className={styles['toast__icon']} aria-hidden>
           <Icon glyph={TYPE_ICONS[type]} size="16" />
         </span>
-        <span className={styles['toast-banner__message']}>{message}</span>
+        <span className={styles['toast__message']}>{message}</span>
         {actionLabel != null && (
           <Button
             appearance="Default"
             emphasis="Tertiary"
             size="X-Small"
-            className={[
-              styles['toast-banner__action-btn'],
-              type === 'Warning'
-                ? styles['toast-banner__action-btn--warning']
-                : styles['toast-banner__action-btn--on-dark'],
-            ]
-              .filter(Boolean)
-              .join(' ')}
+            className={styles['toast__action-btn--on-dark']}
             onClick={onAction}
           >
             {actionLabel}
@@ -76,12 +67,7 @@ export default function ToastBanner({
         <IconButton
           aria-label="Dismiss"
           size="Small"
-          className={[
-            styles['toast-banner__dismiss'],
-            type === 'Warning' ? styles['toast-banner__dismiss--warning'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={styles['toast__dismiss']}
           icon={<Icon glyph={<CloseIcon />} size="16" />}
           onClick={onDismiss}
         />

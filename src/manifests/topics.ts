@@ -671,12 +671,12 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/thread-list-item/thread-list-item.specimen'),
   },
   {
-    slug: 'toast-banner',
+    slug: 'toast',
     name: 'Toast',
     category: 'components',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/toast-banner/toast-banner.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/toast-banner/toast-banner.specimen'),
+    guidelinePage: () => import('@/guidelines/components/toast/toast.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/components/toast/toast.specimen'),
   },
   {
     slug: 'tooltip',

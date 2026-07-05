@@ -1,4 +1,4 @@
-.toast-banner {
+.toast {
   display: inline-flex;
   gap: var(--spacing-xxs);
   align-items: center;
@@ -37,13 +37,8 @@
     text-overflow: ellipsis;
   }
 
-  &__action-btn {
-    flex-shrink: 0;
-  }
-
-  // Palette ink on saturated / dark toast surfaces — not Button Inverted
-  // (sidebar tokens), which breaks on themes such as Quartz.
   &__action-btn--on-dark {
+    flex-shrink: 0;
     background-color: rgba(var(--color-neutral-0-rgb), 0.08) !important;
     color: var(--color-neutral-0) !important;
     border-color: transparent !important;
@@ -68,23 +63,6 @@
     }
   }
 
-  &__action-btn--warning {
-    background-color: rgba(var(--color-neutral-900-rgb), 0.08) !important;
-    color: var(--color-neutral-900) !important;
-
-    &:hover:not(:disabled) {
-      background-color: rgba(var(--color-neutral-900-rgb), 0.12) !important;
-    }
-
-    &:active:not(:disabled) {
-      background-color: rgba(var(--color-neutral-900-rgb), 0.16) !important;
-    }
-
-    &:focus-visible {
-      box-shadow: 0 0 0 2px rgba(var(--color-neutral-900-rgb), 0.4) !important;
-    }
-  }
-
   &__dismiss {
     flex-shrink: 0;
     color: rgba(var(--color-neutral-0-rgb), 0.92) !important;
@@ -105,46 +83,19 @@
     }
   }
 
-  &__dismiss--warning {
-    color: rgba(var(--color-neutral-900-rgb), 0.92) !important;
-
-    &:hover:not(:disabled) {
-      background-color: rgba(var(--color-neutral-900-rgb), 0.12) !important;
-      color: var(--color-neutral-900) !important;
-    }
-
-    &:active:not(:disabled) {
-      background-color: rgba(var(--color-neutral-900-rgb), 0.2) !important;
-      color: var(--color-neutral-900) !important;
-    }
-
-    &:focus-visible {
-      outline: none !important;
-      box-shadow: 0 0 0 2px rgba(var(--color-neutral-900-rgb), 0.4) !important;
-    }
-  }
-
   &--type-info {
-    background-color: var(--color-cyan-500);
+    background-color: var(--color-info);
   }
 
   &--type-success {
-    background-color: var(--color-green-600);
+    background-color: var(--color-success);
   }
 
   &--type-danger {
-    background-color: var(--color-red-500);
+    background-color: var(--color-danger);
   }
 
   &--type-warning {
-    background-color: var(--color-yellow-400);
-
-    .toast-banner__icon {
-      color: var(--color-neutral-900);
-    }
-
-    .toast-banner__message {
-      color: var(--color-neutral-900);
-    }
+    background-color: var(--color-warning);
   }
 }

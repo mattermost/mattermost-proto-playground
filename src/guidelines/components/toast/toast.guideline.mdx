@@ -1,4 +1,4 @@
-import { ToastBanner } from '@mattermost/compass-ui';
+import { Toast } from '@mattermost/compass-ui';
 
 Toasts notify the user that an action has completed or surface a brief
 message about a system process. They sit on top of the workflow without
@@ -11,7 +11,7 @@ after a short duration.
 
 <AnatomyStage>
   <div style={{ width: '100%', maxWidth: '480px' }}>
-    <ToastBanner
+    <Toast
       type="General"
       message="New update available. Refresh to apply."
       actionLabel="Refresh"
@@ -47,11 +47,11 @@ Pick the type that matches the message's meaning, not the colour you want.
 | Danger   | An error or failure. Always pair with a recovery action when one exists.          |
 
 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '480px' }}>
-  <ToastBanner type="General" message="Link copied to clipboard." onDismiss={() => {}} />
-  <ToastBanner type="Info" message="New update available. Refresh to apply." actionLabel="Refresh" onAction={() => {}} onDismiss={() => {}} />
-  <ToastBanner type="Success" message="Message saved successfully." onDismiss={() => {}} />
-  <ToastBanner type="Warning" message="Your session will expire in 5 minutes." onDismiss={() => {}} />
-  <ToastBanner type="Danger" message="Failed to send message. Please try again." actionLabel="Retry" onAction={() => {}} onDismiss={() => {}} />
+  <Toast type="General" message="Link copied to clipboard." onDismiss={() => {}} />
+  <Toast type="Info" message="New update available. Refresh to apply." actionLabel="Refresh" onAction={() => {}} onDismiss={() => {}} />
+  <Toast type="Success" message="Message saved successfully." onDismiss={() => {}} />
+  <Toast type="Warning" message="Your session will expire in 5 minutes." onDismiss={() => {}} />
+  <Toast type="Danger" message="Failed to send message. Please try again." actionLabel="Retry" onAction={() => {}} onDismiss={() => {}} />
 </div>
 
 <Divider />
@@ -92,4 +92,4 @@ Pick the type that matches the message's meaning, not the colour you want.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Toast specimen page](/components/toast-banner/specimen).
+[Toast specimen page](/components/toast/specimen).

@@ -80,7 +80,7 @@ export * from './components/TextArea/index';
 export * from './components/TextInput/index';
 export * from './components/ThreadFooter/index';
 export * from './components/ThreadListItem/index';
-export * from './components/ToastBanner/index';
+export * from './components/Toast/index';
 export * from './components/Tooltip/index';
 export * from './components/TourPoint/index';
 export * from './components/UnreadBadge/index';

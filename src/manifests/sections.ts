@@ -91,7 +91,7 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
         'error-message',
         'popover-notice',
         'section-notice',
-        'toast-banner',
+        'toast',
         'tooltip',
       ],
     },

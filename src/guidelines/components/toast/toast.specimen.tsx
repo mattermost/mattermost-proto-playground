@@ -1,33 +1,33 @@
-import { ToastBanner } from '@mattermost/compass-ui';
+import { Toast } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
-export default function ToastBannerLibrary() {
+export default function ToastLibrary() {
   return (
     <>
       <div className={styles['components__button-block']}>
-        <ToastBanner
+        <Toast
           message="Link copied to clipboard."
           type="General"
           onDismiss={() => {}}
         />
-        <ToastBanner
+        <Toast
           message="Message saved successfully."
           type="Success"
           onDismiss={() => {}}
         />
-        <ToastBanner
+        <Toast
           message="Failed to send message. Please try again."
           type="Danger"
           actionLabel="Retry"
           onAction={() => {}}
           onDismiss={() => {}}
         />
-        <ToastBanner
+        <Toast
           message="Your session will expire in 5 minutes."
           type="Warning"
           onDismiss={() => {}}
         />
-        <ToastBanner
+        <Toast
           message="New update available. Refresh to apply."
           type="Info"
           actionLabel="Refresh"
