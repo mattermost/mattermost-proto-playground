@@ -58,7 +58,7 @@ export const TITLE_PROGRESS_PROGRESS_BAR =
   'Components/Progress Indicators/Progress Bar';
 export const TITLE_PROGRESS_SPINNER = 'Components/Progress Indicators/Spinner';
 
-export const TITLE_STATUS_LABEL_TAG = 'Components/Status Indicators/Label Tag';
+export const TITLE_STATUS_TAG = 'Components/Status Indicators/Tag';
 export const TITLE_STATUS_SHORTCUT_TAG =
   'Components/Status Indicators/Shortcut Tag';
 export const TITLE_STATUS_MENTION_BADGE =
@@ -69,7 +69,6 @@ export const TITLE_CALLS_RECORDING_PILL =
   'Components/Calls/Recording Pill';
 export const TITLE_STATUS_STATUS_BADGE =
   'Components/Status Indicators/Status Badge';
-export const TITLE_STATUS_TAGS = 'Components/Status Indicators/Tags';
 export const TITLE_STATUS_UNREAD_BADGE =
   'Components/Status Indicators/Unread Badge';
 

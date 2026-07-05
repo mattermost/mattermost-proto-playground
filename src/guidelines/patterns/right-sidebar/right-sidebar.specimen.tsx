@@ -37,7 +37,7 @@ export default function RightSidebarLibrary() {
         <p className={styles['patterns__variant-label']}>
           Header — with label tag
         </p>
-        <RightSidebarHeader title="Apps" labelTag="BETA" onClose={() => {}} />
+        <RightSidebarHeader title="Apps" tag="BETA" onClose={() => {}} />
 
         <p className={styles['patterns__variant-label']}>
           Header — with leading avatar + action

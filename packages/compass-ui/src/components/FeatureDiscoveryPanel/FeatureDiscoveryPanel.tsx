@@ -3,7 +3,7 @@ import type { ButtonProps } from '@/components/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import Illustration from '@/components/Illustration/Illustration';
 import type { IllustrationProps } from '@/components/Illustration/Illustration';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import styles from './FeatureDiscoveryPanel.module.scss';
 
@@ -49,7 +49,7 @@ export default function FeatureDiscoveryPanel({
         <div className={styles['feature-discovery-panel__text']}>
           <div className={styles['feature-discovery-panel__title-group']}>
             {skuLabel != null && (
-              <LabelTag
+              <Tag
                 label={skuLabel}
                 casing="All Caps"
                 leadingIcon={<Icon size="10" glyph={<MattermostIcon />} />}

@@ -4,7 +4,7 @@ import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizo
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
 import type { Participant } from '@/types/callParticipant';
@@ -68,9 +68,9 @@ export function ParticipantListItem({
         {isYou && (
           <span className={styles['participants-panel__you']}>(you)</span>
         )}
-        {host && <LabelTag label="HOST" size="X-Small" casing="All Caps" />}
+        {host && <Tag label="HOST" size="X-Small" casing="All Caps" />}
         {external && (
-          <LabelTag label="EXTERNAL" size="X-Small" casing="All Caps" />
+          <Tag label="EXTERNAL" size="X-Small" casing="All Caps" />
         )}
       </div>
 

@@ -16,7 +16,7 @@ import FileWordOutlineLargeIcon from '@mattermost/compass-icons/components/file-
 import FileZipOutlineLargeIcon from '@mattermost/compass-icons/components/file-zip-outline-large';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import styles from './AttachmentCard.module.scss';
 
 export type AttachmentCardFileType =
@@ -160,7 +160,7 @@ export default function AttachmentCard({
                   </span>
                 ) : (
                   <>
-                    {channelTag && <LabelTag label={channelTag} />}
+                    {channelTag && <Tag label={channelTag} />}
                     {fileMeta && (
                       <div className={styles['attachment-card__details']}>
                         <span>{fileMeta}</span>

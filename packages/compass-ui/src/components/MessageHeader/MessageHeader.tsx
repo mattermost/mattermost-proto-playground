@@ -1,4 +1,4 @@
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import styles from './MessageHeader.module.scss';
 
 type MessageHeaderProps = {
@@ -17,7 +17,7 @@ export default function MessageHeader({
   return (
     <div className={styles['message-header']}>
       <span className={styles['message-header__username']}>{username}</span>
-      {isBot && <LabelTag label={botLabel} />}
+      {isBot && <Tag label={botLabel} />}
       <span className={styles['message-header__timestamp']}>{timestamp}</span>
     </div>
   );

@@ -151,13 +151,7 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Status Indicators',
-      slugs: [
-        'label-tag',
-        'mention-badge',
-        'status-badge',
-        'tags',
-        'unread-badge',
-      ],
+      slugs: ['tag', 'mention-badge', 'status-badge', 'unread-badge'],
     },
   ],
   patterns: [

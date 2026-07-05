@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import Icon from '@/components/Icon/Icon';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import MentionBadge from '@/components/MentionBadge/MentionBadge';
 import styles from './MenuItem.module.scss';
 
@@ -90,7 +90,7 @@ export default function MenuItem({
                 {customStatusEmoji}
               </span>
             )}
-            {tag && <LabelTag label="NEW" />}
+            {tag && <Tag label="NEW" />}
             {mentionCount != null && mentionCount > 0 && (
               <MentionBadge
                 count={mentionCount}

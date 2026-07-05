@@ -51,6 +51,7 @@
   // Slightly stronger thumb when the user is dragging or hovering the track.
   :global(.simplebar-track:hover .simplebar-scrollbar)::before,
   :global(.simplebar-scrollbar.simplebar-hover)::before {
+    opacity: 1;
     background-color: rgba(
       var(--scrollbar-color, var(--center-channel-color-rgb)),
       0.4

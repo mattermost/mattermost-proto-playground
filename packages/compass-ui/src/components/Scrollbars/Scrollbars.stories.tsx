@@ -18,12 +18,16 @@ export const Default: Story = {
       style={{
         width: 280,
         height: 200,
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+        overflow: 'hidden',
         border: '1px solid rgba(var(--center-channel-color-rgb), 0.16)',
         borderRadius: 'var(--radius-s)',
         background: 'var(--center-channel-bg)',
       }}
     >
-      <Scrollbars>
+      <Scrollbars alwaysVisible>
         <ul
           style={{
             margin: 0,
@@ -52,11 +56,15 @@ export const SidebarSurface: Story = {
       style={{
         width: 240,
         height: 180,
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+        overflow: 'hidden',
         borderRadius: 'var(--radius-s)',
         background: 'var(--sidebar-header-bg)',
       }}
     >
-      <Scrollbars color="--sidebar-text-rgb">
+      <Scrollbars alwaysVisible color="--sidebar-text-rgb">
         <ul
           style={{
             margin: 0,

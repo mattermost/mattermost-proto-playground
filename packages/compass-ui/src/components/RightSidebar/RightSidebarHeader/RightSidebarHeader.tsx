@@ -4,8 +4,8 @@ import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '@/components/LabelTag/LabelTag';
-import type { LabelTagType } from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
+import type { TagType } from '@/components/Tag/Tag';
 import styles from './RightSidebarHeader.module.scss';
 
 export interface RightSidebarHeaderProps {
@@ -14,9 +14,9 @@ export interface RightSidebarHeaderProps {
   /** Secondary title shown to the right of a vertical divider (e.g. parent channel name). */
   secondaryTitle?: string;
   /** Optional tag rendered next to the title (e.g. "BETA"). */
-  labelTag?: string;
+  tag?: string;
   /** Tag visual style. Default: Info. */
-  labelTagType?: LabelTagType;
+  tagType?: TagType;
   /** Optional leading element shown before the title — typically a UserAvatar or Icon. */
   leadingIcon?: ReactNode;
   /** When set, shows a back button and calls this on click. */
@@ -37,8 +37,8 @@ export interface RightSidebarHeaderProps {
 export default function RightSidebarHeader({
   title,
   secondaryTitle,
-  labelTag,
-  labelTagType = 'Info',
+  tag,
+  tagType = 'Info',
   leadingIcon,
   onBack,
   onExpand,
@@ -71,11 +71,11 @@ export default function RightSidebarHeader({
             </span>
           )}
           <span className={styles['right-sidebar-header__title']}>{title}</span>
-          {labelTag && (
+          {tag && (
             <span className={styles['right-sidebar-header__tag']}>
-              <LabelTag
-                label={labelTag}
-                type={labelTagType}
+              <Tag
+                label={tag}
+                type={tagType}
                 size="X-Small"
                 casing="All Caps"
               />
