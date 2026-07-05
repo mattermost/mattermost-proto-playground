@@ -1,10 +1,32 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import sampleImage from '@/assets/images/sample-image.jpg';
 import ImagePreview from './ImagePreview';
-import type { ImagePreviewAspectRatio } from './ImagePreview';
+import type { ImagePreviewAspectRatio, ImagePreviewProps } from './ImagePreview';
 
 const RATIOS: ImagePreviewAspectRatio[] = ['16:9', '4:3', '1:1'];
+
+function InteractiveImagePreview({
+  defaultCollapsed = false,
+  onCopyLink = fn(),
+  onDownload = fn(),
+  ...props
+}: Omit<ImagePreviewProps, 'collapsed' | 'onToggleCollapse'> & {
+  defaultCollapsed?: boolean;
+}) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+
+  return (
+    <ImagePreview
+      {...props}
+      collapsed={collapsed}
+      onCopyLink={onCopyLink}
+      onDownload={onDownload}
+      onToggleCollapse={() => setCollapsed((value) => !value)}
+    />
+  );
+}
 
 const meta = {
   title: 'Components/Cards and Previews/Image Preview',
@@ -19,31 +41,29 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  render: (args) => <InteractiveImagePreview {...args} />,
   args: {
     src: sampleImage,
     alt: 'Sample image',
-    onCopyLink: fn(),
-    onDownload: fn(),
-    onToggleCollapse: fn(),
   },
 };
 
 export const Square: Story = {
+  render: (args) => <InteractiveImagePreview {...args} />,
   args: {
     src: sampleImage,
     alt: 'Square image',
     aspectRatio: '1:1',
-    onCopyLink: fn(),
-    onDownload: fn(),
   },
 };
 
 export const Collapsed: Story = {
+  render: (args) => (
+    <InteractiveImagePreview {...args} defaultCollapsed />
+  ),
   args: {
     src: sampleImage,
     alt: 'Collapsed image',
-    collapsed: true,
-    onToggleCollapse: fn(),
   },
 };
 
@@ -60,12 +80,9 @@ export const AllVariants: Story = {
         >
           16:9
         </h3>
-        <ImagePreview
+        <InteractiveImagePreview
           src={sampleImage}
           alt="Sample image"
-          onCopyLink={fn()}
-          onDownload={fn()}
-          onToggleCollapse={fn()}
         />
       </section>
       <section>
@@ -78,12 +95,10 @@ export const AllVariants: Story = {
         >
           1:1
         </h3>
-        <ImagePreview
+        <InteractiveImagePreview
           src={sampleImage}
           alt="Square image"
           aspectRatio="1:1"
-          onCopyLink={fn()}
-          onDownload={fn()}
         />
       </section>
       <section>
@@ -96,11 +111,10 @@ export const AllVariants: Story = {
         >
           Collapsed
         </h3>
-        <ImagePreview
+        <InteractiveImagePreview
           src={sampleImage}
           alt="Collapsed image"
-          collapsed
-          onToggleCollapse={fn()}
+          defaultCollapsed
         />
       </section>
     </div>

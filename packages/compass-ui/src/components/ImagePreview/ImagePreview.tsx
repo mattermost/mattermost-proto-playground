@@ -1,7 +1,10 @@
 import Icon from '@/components/Icon/Icon';
+import IconButton from '@/components/IconButton/IconButton';
+import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
 import DownloadOutlineIcon from '@mattermost/compass-icons/components/download-outline';
-import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import MenuDownIcon from '@mattermost/compass-icons/components/menu-down';
+import MenuRightIcon from '@mattermost/compass-icons/components/menu-right';
 import styles from './ImagePreview.module.scss';
 
 export type ImagePreviewAspectRatio = '16:9' | '4:3' | '1:1';
@@ -40,6 +43,9 @@ export default function ImagePreview({
   aspectRatio = '16:9',
   className = '',
 }: ImagePreviewProps) {
+  const frameTransition = usePopoverTransition(!collapsed);
+  const labelTransition = usePopoverTransition(collapsed);
+
   const rootClass = [
     styles['image-preview'],
     collapsed ? styles['image-preview--collapsed'] : '',
@@ -50,74 +56,82 @@ export default function ImagePreview({
     .filter(Boolean)
     .join(' ');
 
-  if (collapsed) {
-    return (
-      <button
-        type="button"
-        className={[
-          styles['image-preview'],
-          styles['image-preview--collapsed'],
-          className,
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        onClick={onToggleCollapse}
-        aria-label="Show image preview"
-      >
-        <span className={styles['image-preview__show-label']}>
-          <span
-            className={styles['image-preview__show-icon']}
-            aria-hidden="true"
-          >
-            {'›'}
-          </span>
-          Show Image preview
-        </span>
-      </button>
-    );
-  }
-
   return (
     <div className={rootClass}>
-      <div className={styles['image-preview__frame']}>
-        <div className={styles['image-preview__media']}>
-          <img src={src} alt={alt} className={styles['image-preview__img']} />
-        </div>
-
-        {/* Hover action buttons */}
-        <div className={styles['image-preview__actions']}>
-          {onCopyLink != null && (
-            <button
-              type="button"
-              className={styles['image-preview__action-btn']}
-              onClick={onCopyLink}
-              aria-label="Copy link"
-            >
-              <Icon size="16" glyph={<LinkVariantIcon />} />
-            </button>
-          )}
-          {onDownload != null && (
-            <button
-              type="button"
-              className={styles['image-preview__action-btn']}
-              onClick={onDownload}
-              aria-label="Download"
-            >
-              <Icon size="16" glyph={<DownloadOutlineIcon />} />
-            </button>
-          )}
-        </div>
-
-        {/* Collapse toggle */}
-        {onToggleCollapse != null && (
+      <div className={styles['image-preview__stage']}>
+        {labelTransition.mounted && (
           <button
             type="button"
-            className={styles['image-preview__collapse-btn']}
+            className={[
+              styles['image-preview__collapsed-trigger'],
+              labelTransition.visible
+                ? styles['image-preview__collapsed-trigger--visible']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
             onClick={onToggleCollapse}
-            aria-label="Collapse image preview"
+            aria-label="Show image preview"
           >
-            <Icon size="16" glyph={<ChevronDownIcon />} />
+            <span className={styles['image-preview__show-label']}>
+              <span
+                className={styles['image-preview__show-icon']}
+                aria-hidden="true"
+              >
+                <Icon size="12" glyph={<MenuRightIcon />} />
+              </span>
+              Show Image preview
+            </span>
           </button>
+        )}
+
+        {frameTransition.mounted && (
+          <div
+            className={[
+              styles['image-preview__frame'],
+              frameTransition.visible
+                ? styles['image-preview__frame--visible']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            <div className={styles['image-preview__media']}>
+              <img src={src} alt={alt} className={styles['image-preview__img']} />
+            </div>
+
+            <div className={styles['image-preview__actions']}>
+              {onCopyLink != null && (
+                <IconButton
+                  size="Small"
+                  padding="Compact"
+                  aria-label="Copy link"
+                  icon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+                  onClick={onCopyLink}
+                />
+              )}
+              {onDownload != null && (
+                <IconButton
+                  size="Small"
+                  padding="Compact"
+                  aria-label="Download"
+                  icon={<Icon size="16" glyph={<DownloadOutlineIcon />} />}
+                  onClick={onDownload}
+                />
+              )}
+            </div>
+
+            {onToggleCollapse != null && (
+              <button
+                type="button"
+                className={styles['image-preview__collapse-btn']}
+                onClick={onToggleCollapse}
+                aria-label="Collapse image preview"
+              >
+                <Icon size="16" glyph={<MenuDownIcon />} />
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>

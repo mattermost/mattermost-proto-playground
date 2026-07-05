@@ -1,5 +1,27 @@
+import { useState } from 'react';
 import { LinkPreview } from '@mattermost/compass-ui';
+import sampleImage from '@/assets/images/sample-image.jpg';
 import styles from '@/styles/library-demo/components.module.scss';
+
+function InteractiveLargeImagePreview({
+  defaultCollapsed = false,
+}: {
+  defaultCollapsed?: boolean;
+}) {
+  const [imageCollapsed, setImageCollapsed] = useState(defaultCollapsed);
+
+  return (
+    <LinkPreview
+      imageSrc={sampleImage}
+      imageAlt="Preview image"
+      imageSize="large"
+      imageCollapsed={imageCollapsed}
+      onToggleImageCollapse={() => setImageCollapsed((value) => !value)}
+      onCopyImageLink={() => {}}
+      onDownloadImage={() => {}}
+    />
+  );
+}
 
 export default function LinkPreviewLibrary() {
   return (
@@ -10,12 +32,26 @@ export default function LinkPreviewLibrary() {
           <LinkPreview />
         </div>
         <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Custom</span>
+          <span className={styles['components__instance-label']}>
+            Small image
+          </span>
           <LinkPreview
-            siteName="GitHub"
-            title="mattermost/mattermost - Open source platform for developer collaboration"
-            description="Mattermost is written in Golang and React. Open source, self-hosted Slack-alternative."
+            imageSrc={sampleImage}
+            imageAlt="Preview image"
+            imageSize="small"
           />
+        </div>
+        <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>
+            Large image
+          </span>
+          <InteractiveLargeImagePreview />
+        </div>
+        <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>
+            Collapsed large image
+          </span>
+          <InteractiveLargeImagePreview defaultCollapsed />
         </div>
       </div>
     </>
