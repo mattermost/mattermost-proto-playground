@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import path from 'path';
+import { ensureCompassUiStyles } from './vite-plugin-ensure-compass-ui-styles';
 
 const compassUiDist = path.resolve(__dirname, 'packages/compass-ui/dist');
 
@@ -16,7 +17,7 @@ function compassUiDistReload(): Plugin {
     clearTimeout(reloadTimer);
     reloadTimer = setTimeout(() => {
       server.ws.send({ type: 'full-reload', path: '*' });
-    }, 200);
+    }, 500);
   };
 
   return {
@@ -51,6 +52,7 @@ export default defineConfig({
     },
     react({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
     svgr(),
+    ensureCompassUiStyles(),
     compassUiDistReload(),
   ],
   resolve: {

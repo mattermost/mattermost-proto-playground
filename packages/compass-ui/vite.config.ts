@@ -3,13 +3,13 @@ import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import path from 'path';
-
-const isWatchBuild = process.argv.includes('--watch');
+import { compassUiGlobalStyles } from './vite-plugin-global-styles';
 
 export default defineConfig({
   plugins: [
     react(),
     libInjectCss(),
+    compassUiGlobalStyles(),
     dts({
       include: ['src'],
       exclude: ['**/*.stories.tsx', 'src/styles/entry.scss'],
@@ -29,8 +29,7 @@ export default defineConfig({
     },
   },
   build: {
-    // Watch rebuilds must not wipe dist/ — compass-ui.css is written by Sass, not Vite.
-    emptyOutDir: !isWatchBuild,
+    emptyOutDir: true,
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'CompassUI',
