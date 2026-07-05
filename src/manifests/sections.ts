@@ -88,7 +88,7 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Feedback and Notices',
-      slugs: ['error-message', 'section-notice'],
+      slugs: ['error-message', 'popover-notice', 'section-notice', 'tooltip'],
     },
     {
       label: 'Forms and Input',
@@ -135,10 +135,6 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     {
       label: 'Navigation',
       slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
-    },
-    {
-      label: 'Overlays and Layering',
-      slugs: ['popover-notice', 'tooltip'],
     },
     {
       label: 'Progress Indicators',

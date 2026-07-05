@@ -11,7 +11,7 @@ const VARIANTS: PopoverNoticeVariant[] = [
 ];
 
 const meta = {
-  title: 'Components/Overlays and Layering/Popover Notice',
+  title: 'Components/Feedback and Notices/Popover Notice',
   component: PopoverNotice,
   tags: ['autodocs'],
   argTypes: {

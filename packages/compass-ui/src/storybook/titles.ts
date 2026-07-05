@@ -18,6 +18,11 @@ export const TITLE_ACTIONS_ICON_BUTTON = 'Components/Actions/Icon Button';
 
 export const TITLE_FEEDBACK_ERROR_MESSAGE =
   'Components/Feedback and Notices/Error Message';
+export const TITLE_FEEDBACK_POPOVER_NOTICE =
+  'Components/Feedback and Notices/Popover Notice';
+export const TITLE_FEEDBACK_SECTION_NOTICE =
+  'Components/Feedback and Notices/Section Notice';
+export const TITLE_FEEDBACK_TOOLTIP = 'Components/Feedback and Notices/Tooltip';
 
 export const TITLE_FORMS_CHECKBOX = 'Components/Forms and Input/Checkbox';
 export const TITLE_FORMS_RADIO = 'Components/Forms and Input/Radio';
@@ -41,12 +46,6 @@ export const TITLE_LAYOUT_SCROLLBAR = 'Components/Layout and Containers/Scrollba
 export const TITLE_LAYOUT_SCROLLBARS = 'Components/Layout and Containers/Scrollbars';
 export const TITLE_LAYOUT_TABS = 'Components/Layout and Containers/Tabs';
 
-export const TITLE_OVERLAYS_POPOVER_NOTICE =
-  'Components/Overlays and Layering/Popover Notice';
-export const TITLE_OVERLAYS_TOOLTIP = 'Components/Overlays and Layering/Tooltip';
-
-export const TITLE_FEEDBACK_SECTION_NOTICE =
-  'Components/Feedback and Notices/Section Notice';
 
 export const TITLE_FORMS_CHIP = 'Components/Forms and Input/Chip';
 export const TITLE_FORMS_DATE_RANGE_PICKER =
