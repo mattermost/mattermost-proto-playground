@@ -1,5 +1,11 @@
-import type { InputHTMLAttributes, ReactNode } from 'react';
-import { forwardRef, useId, useState, useCallback } from 'react';
+import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
+import {
+  forwardRef,
+  useId,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 import { toKebab } from '@/utils/string';
 import type { IconSize } from '@/components/Icon/Icon';
 import Icon from '@/components/Icon/Icon';
@@ -25,7 +31,7 @@ export interface SearchInputProps extends Omit<
   label?: ReactNode;
   /** Size variant. Default: Medium. */
   size?: SearchInputSize;
-  /** Optional clear/trailing icon to show when field has a value. */
+  /** Called when the clear button is pressed. Omit to use built-in clearing. */
   onClear?: () => void;
 }
 
@@ -55,6 +61,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
   ) {
     const generatedId = useId();
     const id = idProp ?? generatedId;
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const isControlled = valueProp !== undefined;
     const [uncontrolledValue, setUncontrolledValue] = useState(
@@ -81,21 +88,57 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       [onBlur],
     );
     const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
+      (e: ChangeEvent<HTMLInputElement>) => {
         if (!isControlled) setUncontrolledValue(e.target.value);
         onChange?.(e);
       },
       [isControlled, onChange],
     );
 
+    const setInputRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        inputRef.current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref],
+    );
+
+    const handleClear = useCallback(() => {
+      if (disabled) return;
+
+      if (onClear) {
+        onClear();
+        inputRef.current?.focus();
+        return;
+      }
+
+      const input = inputRef.current;
+      if (input == null) return;
+
+      input.value = '';
+      if (!isControlled) setUncontrolledValue('');
+
+      onChange?.({
+        target: input,
+        currentTarget: input,
+      } as ChangeEvent<HTMLInputElement>);
+
+      input.focus();
+    }, [disabled, isControlled, onChange, onClear]);
+
+    const showClearButton = hasValue && !disabled;
+
     const sizeClass = styles[`searchInput--size-${toKebab(size)}`];
     const labelFloatedClass =
       label != null && labelFloated ? styles['searchInput--label-floated'] : '';
     const hasLeadingClass = styles['searchInput--has-leading-icon'];
-    const hasTrailingClass =
-      hasValue && onClear != null
-        ? styles['searchInput--has-trailing-icon']
-        : '';
+    const hasTrailingClass = showClearButton
+      ? styles['searchInput--has-trailing-icon']
+      : '';
     const iconSize = ICON_SIZE_MAP[size];
 
     const rootClass = [
@@ -122,7 +165,7 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
               <Icon size={iconSize} glyph={<MagnifyIcon />} />
             </span>
             <input
-              ref={ref}
+              ref={setInputRef}
               id={id}
               type="search"
               className={styles.searchInput__input}
@@ -135,12 +178,12 @@ const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
               onChange={handleChange}
               {...rest}
             />
-            {hasValue && onClear != null && (
+            {showClearButton && (
               <span className={styles.searchInput__trailingIcon}>
                 <button
                   type="button"
                   className={styles.searchInput__clearButton}
-                  onClick={onClear}
+                  onClick={handleClear}
                   aria-label="Clear search"
                   tabIndex={-1}
                 >

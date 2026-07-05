@@ -6,7 +6,7 @@ const SIZES: ReactionPillSize[] = ['Small', 'Medium', 'Large'];
 const TYPES: ReactionPillType[] = ['Reaction', 'Hand Raise', 'Other'];
 
 const meta = {
-  title: 'Components/Status Indicators/Reaction Pill',
+  title: 'Components/Calls/Reaction Pill',
   component: ReactionPill,
   tags: ['autodocs'],
   argTypes: {

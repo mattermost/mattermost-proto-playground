@@ -6,7 +6,7 @@ import type { RecordingPillState } from './RecordingPill';
 const STATES: RecordingPillState[] = ['Initializing', 'Recording', 'Hover'];
 
 const meta = {
-  title: 'Components/Status Indicators/Recording Pill',
+  title: 'Components/Calls/Recording Pill',
   component: RecordingPill,
   tags: ['autodocs'],
   argTypes: {

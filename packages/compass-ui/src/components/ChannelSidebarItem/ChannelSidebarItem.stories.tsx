@@ -97,7 +97,7 @@ export const Active: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ ...sidebarSurface, display: 'grid', gap: 24 }}>
+    <div style={{ display: 'grid', gap: 24 }}>
       <section>
         <span style={labelStyle}>Leading visuals</span>
         <div style={{ display: 'grid', gap: 2 }}>

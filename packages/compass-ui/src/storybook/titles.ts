@@ -63,10 +63,10 @@ export const TITLE_STATUS_SHORTCUT_TAG =
   'Components/Status Indicators/Shortcut Tag';
 export const TITLE_STATUS_MENTION_BADGE =
   'Components/Status Indicators/Mention Badge';
-export const TITLE_STATUS_REACTION_PILL =
-  'Components/Status Indicators/Reaction Pill';
-export const TITLE_STATUS_RECORDING_PILL =
-  'Components/Status Indicators/Recording Pill';
+export const TITLE_CALLS_REACTION_PILL =
+  'Components/Calls/Reaction Pill';
+export const TITLE_CALLS_RECORDING_PILL =
+  'Components/Calls/Recording Pill';
 export const TITLE_STATUS_STATUS_BADGE =
   'Components/Status Indicators/Status Badge';
 export const TITLE_STATUS_TAGS = 'Components/Status Indicators/Tags';
