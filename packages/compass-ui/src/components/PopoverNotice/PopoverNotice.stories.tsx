@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
+import { ShortcutTagGroup } from '@/components/ShortcutTag/ShortcutTag';
 import PopoverNotice from './PopoverNotice';
 import type { PopoverNoticeVariant } from './PopoverNotice';
 
@@ -32,8 +33,8 @@ export const Default: Story = {
     ],
     children: (
       <>
-        Press <kbd>Ctrl+K</kbd> to open the quick switcher and jump to any
-        channel.
+        Press <ShortcutTagGroup labels={['Ctrl', 'K']} /> to open the quick
+        switcher and jump to any channel.
       </>
     ),
   },
@@ -46,7 +47,8 @@ export const Info: Story = {
     onClose: fn(),
     children: (
       <>
-        The quick switcher is now opened with <kbd>Ctrl+K</kbd>.
+        The quick switcher is now opened with{' '}
+        <ShortcutTagGroup labels={['Ctrl', 'K']} />.
       </>
     ),
   },
@@ -105,7 +107,8 @@ export const AllVariants: Story = {
           { label: 'Dismiss', emphasis: 'tertiary' },
         ]}
       >
-        Press <kbd>Ctrl+K</kbd> to open the quick switcher.
+        Press <ShortcutTagGroup labels={['Ctrl', 'K']} /> to open the quick
+        switcher.
       </PopoverNotice>
       {VARIANTS.map((variant) => (
         <PopoverNotice

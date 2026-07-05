@@ -59,6 +59,8 @@ export const TITLE_PROGRESS_PROGRESS_BAR =
 export const TITLE_PROGRESS_SPINNER = 'Components/Progress Indicators/Spinner';
 
 export const TITLE_STATUS_LABEL_TAG = 'Components/Status Indicators/Label Tag';
+export const TITLE_STATUS_SHORTCUT_TAG =
+  'Components/Status Indicators/Shortcut Tag';
 export const TITLE_STATUS_MENTION_BADGE =
   'Components/Status Indicators/Mention Badge';
 export const TITLE_STATUS_REACTION_PILL =
