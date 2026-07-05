@@ -8,6 +8,29 @@ const meta = {
   title: 'Components/Layout and Containers/Scrollbar',
   component: Scrollbar,
   tags: ['autodocs'],
+  decorators: [
+    (Story, { args }) => {
+      if (args.orientation === 'Horizontal') {
+        return (
+          <div style={{ maxWidth: 320 }}>
+            <Story />
+          </div>
+        );
+      }
+
+      return (
+        <div
+          style={{
+            height: 160,
+            display: 'flex',
+            alignItems: 'stretch',
+          }}
+        >
+          <Story />
+        </div>
+      );
+    },
+  ],
   argTypes: {
     orientation: {
       control: 'select',

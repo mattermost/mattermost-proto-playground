@@ -62,7 +62,7 @@ export default function MessageActions({
             aria-label="React with thumbs up"
             size="Small"
             padding="Compact"
-            icon={<Emoji emoji="👍" size="16" variant="vivid" />}
+            icon={<Emoji emoji="👍" size="16" />}
           />
           {isCenterChannel && (
             <>
@@ -70,13 +70,13 @@ export default function MessageActions({
                 aria-label="React with raised hands"
                 size="Small"
                 padding="Compact"
-                icon={<Emoji emoji="🙌" size="16" variant="vivid" />}
+                icon={<Emoji emoji="🙌" size="16" />}
               />
               <IconButton
                 aria-label="React with OK hand"
                 size="Small"
                 padding="Compact"
-                icon={<Emoji emoji="👌" size="16" variant="vivid" />}
+                icon={<Emoji emoji="👌" size="16" />}
               />
             </>
           )}

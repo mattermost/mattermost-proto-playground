@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Icon from './Icon';
 import type { IconSize } from './Icon';
@@ -57,15 +56,6 @@ export const AllSizes: Story = {
           <span>{size}</span>
         </div>
       ))}
-    </div>
-  ),
-};
-
-export const DefaultGlyph: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-      <Icon size="24" />
-      <Icon glyph={<EmoticonHappyOutlineIcon />} size="32" />
     </div>
   ),
 };

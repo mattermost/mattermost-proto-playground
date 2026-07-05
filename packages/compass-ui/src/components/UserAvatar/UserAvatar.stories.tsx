@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
-import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import type { ReactNode } from 'react';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
@@ -18,6 +17,31 @@ const FALLBACK_COLORS: UserAvatarFallbackColor[] = [
   'Green',
   'Orange',
 ];
+
+const labelStyle = {
+  width: '100%',
+  fontSize: 12,
+  color: 'var(--center-channel-color)',
+  marginBottom: 8,
+} as const;
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div style={{ display: 'grid', gap: 8 }}>
+      <span style={labelStyle}>{label}</span>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 16,
+          alignItems: 'center',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const meta = {
   title: 'Components/Images and Icons/User Avatar',
@@ -95,14 +119,51 @@ export const FallbackColors: Story = {
   ),
 };
 
-export const Gallery: Story = {
+export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-      <UserAvatar alt="Leonard Riley" src={avatarLeonard} size="24" />
-      <UserAvatar alt="Danielle Okoro" src={avatarDanielle} size="32" />
-      <UserAvatar alt="Marco Rinaldi" src={avatarMarco} size="48" status />
-      <UserAvatar alt="Emma Novak" src={avatarEmma} size="64" />
-      <UserAvatar alt="Sofia Bauer" src={avatarSofia} size="96" status />
+    <div style={{ display: 'grid', gap: 24 }}>
+      <Row label="Image">
+        {IMAGE_SIZES.map((size) => (
+          <UserAvatar
+            key={size}
+            alt="Leonard Riley"
+            src={avatarLeonard}
+            size={size}
+          />
+        ))}
+      </Row>
+      <Row label="Image with status">
+        {IMAGE_SIZES.map((size) => (
+          <UserAvatar
+            key={size}
+            alt="Sofia Bauer"
+            src={avatarSofia}
+            size={size}
+            status
+          />
+        ))}
+      </Row>
+      <Row label="Fallback">
+        {IMAGE_SIZES.map((size) => (
+          <UserAvatar
+            key={size}
+            alt="Danielle Okoro"
+            name="Danielle Okoro"
+            size={size}
+          />
+        ))}
+      </Row>
+      <Row label="Fallback colors">
+        {FALLBACK_COLORS.map((fallbackColor) => (
+          <UserAvatar
+            key={fallbackColor}
+            alt="Sample User"
+            name="Sample User"
+            fallbackColor={fallbackColor}
+            size="40"
+          />
+        ))}
+      </Row>
     </div>
   ),
 };

@@ -1,16 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import LightbulbOutlineIcon from '@mattermost/compass-icons/components/lightbulb-outline';
-import Icon from '../Icon/Icon';
+import { ShortcutTagGroup } from '@/components/ShortcutTag/ShortcutTag';
 import SectionNotice from './SectionNotice';
 import type { SectionNoticeType } from './SectionNotice';
 
 const TYPES: SectionNoticeType[] = [
   'Info',
+  'Success',
   'Warning',
   'Danger',
-  'Success',
-  'Hint',
 ];
 
 const meta = {
@@ -25,88 +23,98 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Default: Story = {
+  args: {
+    title: 'Keyboard shortcut',
+    description: (
+      <>
+        Press <ShortcutTagGroup labels={['Ctrl', 'K']} /> to open the quick
+        switcher and jump to any channel.
+      </>
+    ),
+    primaryButtonLabel: 'Got it',
+    onPrimaryAction: fn(),
+    secondaryButtonLabel: 'Dismiss',
+    onSecondaryAction: fn(),
+    onDismiss: fn(),
+  },
+};
+
 export const Info: Story = {
   args: {
+    title: 'Keyboard shortcut updated',
     type: 'Info',
-    title: 'Email notifications are enabled.',
-    description: 'You will receive notifications at your registered email address.',
-  },
-};
-
-export const Warning: Story = {
-  args: {
-    type: 'Warning',
-    title: 'Your session will expire soon.',
-    description: 'Save your work before the session ends.',
-    primaryButtonLabel: 'Extend session',
-    onPrimaryAction: fn(),
-  },
-};
-
-export const Danger: Story = {
-  args: {
-    type: 'Danger',
-    title: 'This action cannot be undone.',
-    description: 'Deleting this workspace will permanently remove all data.',
-    primaryButtonLabel: 'Delete',
-    onPrimaryAction: fn(),
-    secondaryButtonLabel: 'Cancel',
-    onSecondaryAction: fn(),
+    description: (
+      <>
+        The quick switcher is now opened with{' '}
+        <ShortcutTagGroup labels={['Ctrl', 'K']} />.
+      </>
+    ),
+    onDismiss: fn(),
   },
 };
 
 export const Success: Story = {
   args: {
+    title: 'Changes saved',
     type: 'Success',
-    title: 'Configuration saved successfully.',
+    description: 'Your notification preferences have been updated.',
+    primaryButtonLabel: 'Got it',
+    onPrimaryAction: fn(),
     onDismiss: fn(),
   },
 };
 
-export const Hint: Story = {
+export const Warning: Story = {
   args: {
-    type: 'Hint',
-    title: 'Tip: You can drag and drop files to upload them.',
-    icon: <Icon size="20" glyph={<LightbulbOutlineIcon />} />,
+    title: 'Session expiring soon',
+    type: 'Warning',
+    description: 'You will be signed out in 5 minutes due to inactivity.',
+    primaryButtonLabel: 'Stay signed in',
+    onPrimaryAction: fn(),
+    secondaryButtonLabel: 'Dismiss',
+    onSecondaryAction: fn(),
     onDismiss: fn(),
   },
 };
 
-export const AllTypes: Story = {
+export const Danger: Story = {
+  args: {
+    title: 'Permission required',
+    type: 'Danger',
+    description: "You don't have access to post in this channel.",
+    primaryButtonLabel: 'Review permissions',
+    onPrimaryAction: fn(),
+    onDismiss: fn(),
+  },
+};
+
+export const AllVariants: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 16, maxWidth: 640 }}>
       <SectionNotice
-        type="Info"
-        title="Email notifications are enabled."
-        description="You will receive notifications at your registered email address."
-      />
-      <SectionNotice
-        type="Warning"
-        title="Your session will expire soon."
-        description="Save your work before the session ends."
-        primaryButtonLabel="Extend session"
+        title="Keyboard shortcut"
+        description={
+          <>
+            Press <ShortcutTagGroup labels={['Ctrl', 'K']} /> to open the quick
+            switcher.
+          </>
+        }
+        primaryButtonLabel="Got it"
         onPrimaryAction={fn()}
-      />
-      <SectionNotice
-        type="Danger"
-        title="This action cannot be undone."
-        description="Deleting this workspace will permanently remove all data."
-        primaryButtonLabel="Delete"
-        onPrimaryAction={fn()}
-        secondaryButtonLabel="Cancel"
+        secondaryButtonLabel="Dismiss"
         onSecondaryAction={fn()}
-      />
-      <SectionNotice
-        type="Success"
-        title="Configuration saved successfully."
         onDismiss={fn()}
       />
-      <SectionNotice
-        type="Hint"
-        title="Tip: You can drag and drop files to upload them."
-        icon={<Icon size="20" glyph={<LightbulbOutlineIcon />} />}
-        onDismiss={fn()}
-      />
+      {TYPES.map((type) => (
+        <SectionNotice
+          key={type}
+          type={type}
+          title={`${type} variant`}
+          description={`Example ${type.toLowerCase()} section notice content.`}
+          onDismiss={fn()}
+        />
+      ))}
     </div>
   ),
 };

@@ -22,7 +22,6 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
-    variant: { control: 'select', options: ['default', 'vivid'] },
   },
 } satisfies Meta<typeof Emoji>;
 
@@ -33,14 +32,6 @@ export const Default: Story = {
   args: {
     emoji: '🎉',
     size: '24',
-  },
-};
-
-export const Vivid: Story = {
-  args: {
-    emoji: '👍',
-    size: '16',
-    variant: 'vivid',
   },
 };
 
@@ -64,37 +55,6 @@ export const AllSizes: Story = {
           <span>{size}</span>
         </div>
       ))}
-    </div>
-  ),
-};
-
-export const Variants: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-      <div
-        style={{
-          display: 'grid',
-          gap: 8,
-          justifyItems: 'center',
-          color: 'var(--center-channel-color)',
-          fontSize: 12,
-        }}
-      >
-        <Emoji emoji="👍" size="16" />
-        <span>default</span>
-      </div>
-      <div
-        style={{
-          display: 'grid',
-          gap: 8,
-          justifyItems: 'center',
-          color: 'var(--center-channel-color)',
-          fontSize: 12,
-        }}
-      >
-        <Emoji emoji="👍" size="16" variant="vivid" />
-        <span>vivid</span>
-      </div>
     </div>
   ),
 };
