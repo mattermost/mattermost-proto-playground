@@ -13,7 +13,11 @@ import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import styles from './CallParticipantAvatar.module.scss';
 
-export type CallParticipantAvatarSize = 'Large' | 'Medium' | 'Small' | 'XS';
+export type CallParticipantAvatarSize =
+  | 'X-Small'
+  | 'Small'
+  | 'Medium'
+  | 'Large';
 
 export type CallParticipantMuteState = 'muted' | 'unmuted';
 
@@ -40,11 +44,11 @@ export interface CallParticipantAvatarProps extends Omit<
   /** When true, shows the host label. */
   host?: boolean;
   /**
-   * When true with `host`, shows an overflow actions control on hover / focus
-   * (host menu). Pair with `onHostControlsClick`.
+   * When true, shows an overflow actions control on hover / focus. Default: true.
+   * Pair with `onHostControlsClick`.
    */
   hostControls?: boolean;
-  /** Called when the host overflow control is activated. */
+  /** Called when the overflow control is activated. */
   onHostControlsClick?: () => void;
   /** When true, shows the EXTERNAL label (for external-link and dial-in participants). */
   external?: boolean;
@@ -58,10 +62,10 @@ export interface CallParticipantAvatarProps extends Omit<
 
 /** Image pixel sizes per Figma size variant. */
 const SIZE_PX: Record<CallParticipantAvatarSize, number> = {
-  Large: 120,
-  Medium: 96,
+  'X-Small': 56,
   Small: 72,
-  XS: 56,
+  Medium: 96,
+  Large: 120,
 };
 
 /**
@@ -76,7 +80,7 @@ export default function CallParticipantAvatar({
   className = '',
   external = false,
   host = false,
-  hostControls = false,
+  hostControls = true,
   onHostControlsClick,
   kind = 'user',
   muteState,
@@ -117,14 +121,14 @@ export default function CallParticipantAvatar({
     size === 'Large' || size === 'Medium' ? 'Small' : 'X-Small';
   const hostControlsIconSize = ICON_BUTTON_ICON_SIZES[hostControlsButtonSize];
 
-  const showHostControls = host && hostControls;
+  const showHostControls = hostControls;
 
   return (
     <div className={rootClass}>
       {showHostControls && (
         <div className={styles['call-participant-avatar__host-actions']}>
           <IconButton
-            aria-label="Host participant actions"
+            aria-label="Participant actions"
             style="Inverted"
             padding="Compact"
             size={hostControlsButtonSize}
