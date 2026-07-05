@@ -672,7 +672,7 @@ export const TOPICS: Topic[] = [
   },
   {
     slug: 'toast-banner',
-    name: 'Toast Banner',
+    name: 'Toast',
     category: 'components',
     status: 'stable',
     guidelinePage: () => import('@/guidelines/components/toast-banner/toast-banner.guideline.mdx'),

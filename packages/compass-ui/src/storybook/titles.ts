@@ -10,7 +10,6 @@ export const TITLE_BANNERS_NEW_MESSAGE_BANNER =
   'Components/Banners/New Message Banner';
 export const TITLE_BANNERS_SEARCH_TIP_BANNER =
   'Components/Banners/Search Tip Banner';
-export const TITLE_BANNERS_TOAST_BANNER = 'Components/Banners/Toast Banner';
 
 export const TITLE_ACTIONS_ACTION_BUTTON = 'Components/Actions/Action Button';
 export const TITLE_ACTIONS_BUTTON = 'Components/Actions/Button';
@@ -22,6 +21,7 @@ export const TITLE_FEEDBACK_POPOVER_NOTICE =
   'Components/Feedback and Notices/Popover Notice';
 export const TITLE_FEEDBACK_SECTION_NOTICE =
   'Components/Feedback and Notices/Section Notice';
+export const TITLE_FEEDBACK_TOAST = 'Components/Feedback and Notices/Toast';
 export const TITLE_FEEDBACK_TOOLTIP = 'Components/Feedback and Notices/Tooltip';
 
 export const TITLE_FORMS_CHECKBOX = 'Components/Forms and Input/Checkbox';

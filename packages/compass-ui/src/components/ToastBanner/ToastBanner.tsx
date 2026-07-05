@@ -46,8 +46,6 @@ export default function ToastBanner({
     .filter(Boolean)
     .join(' ');
 
-  const showActions = actionLabel != null || onDismiss != null;
-
   return (
     <div className={rootClass} role="status" aria-live="polite">
       <div className={styles['toast-banner__content']}>
@@ -55,44 +53,38 @@ export default function ToastBanner({
           <Icon glyph={TYPE_ICONS[type]} size="16" />
         </span>
         <span className={styles['toast-banner__message']}>{message}</span>
+        {actionLabel != null && (
+          <Button
+            appearance="Default"
+            emphasis="Tertiary"
+            size="X-Small"
+            className={[
+              styles['toast-banner__action-btn'],
+              type === 'Warning'
+                ? styles['toast-banner__action-btn--warning']
+                : styles['toast-banner__action-btn--on-dark'],
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            onClick={onAction}
+          >
+            {actionLabel}
+          </Button>
+        )}
       </div>
-      {showActions && (
-        <div className={styles['toast-banner__actions']}>
-          {actionLabel != null && (
-            <Button
-              appearance="Default"
-              emphasis="Tertiary"
-              size="X-Small"
-              className={[
-                styles['toast-banner__action-btn'],
-                type === 'Warning'
-                  ? styles['toast-banner__action-btn--warning']
-                  : styles['toast-banner__action-btn--on-dark'],
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={onAction}
-            >
-              {actionLabel}
-            </Button>
-          )}
-          {onDismiss != null && (
-            <IconButton
-              aria-label="Dismiss"
-              size="Small"
-              className={[
-                styles['toast-banner__dismiss'],
-                type === 'Warning'
-                  ? styles['toast-banner__dismiss--warning']
-                  : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              icon={<Icon glyph={<CloseIcon />} size="16" />}
-              onClick={onDismiss}
-            />
-          )}
-        </div>
+      {onDismiss != null && (
+        <IconButton
+          aria-label="Dismiss"
+          size="Small"
+          className={[
+            styles['toast-banner__dismiss'],
+            type === 'Warning' ? styles['toast-banner__dismiss--warning'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          icon={<Icon glyph={<CloseIcon />} size="16" />}
+          onClick={onDismiss}
+        />
       )}
     </div>
   );

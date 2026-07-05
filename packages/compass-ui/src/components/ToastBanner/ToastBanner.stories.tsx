@@ -12,7 +12,7 @@ const TYPES: ToastBannerType[] = [
 ];
 
 const meta = {
-  title: 'Components/Banners/Toast Banner',
+  title: 'Components/Feedback and Notices/Toast',
   component: ToastBanner,
   tags: ['autodocs'],
   argTypes: {
@@ -69,7 +69,14 @@ export const Info: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'grid', gap: 12, maxWidth: 480 }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 12,
+      }}
+    >
       <ToastBanner
         message="Link copied to clipboard."
         type="General"

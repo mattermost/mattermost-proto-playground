@@ -61,7 +61,6 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
         'more-unreads-banner',
         'new-message-banner',
         'search-tip-banner',
-        'toast-banner',
       ],
     },
     {
@@ -88,7 +87,13 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Feedback and Notices',
-      slugs: ['error-message', 'popover-notice', 'section-notice', 'tooltip'],
+      slugs: [
+        'error-message',
+        'popover-notice',
+        'section-notice',
+        'toast-banner',
+        'tooltip',
+      ],
     },
     {
       label: 'Forms and Input',

@@ -1,12 +1,13 @@
 .toast-banner {
   display: inline-flex;
+  gap: var(--spacing-xxs);
   align-items: center;
+  width: fit-content;
+  max-width: 440px;
   padding: var(--spacing-xxxs);
   background-color: var(--color-neutral-900);
   border-radius: var(--radius-s);
   box-shadow: var(--elevation-2);
-  min-width: 280px;
-  max-width: 440px;
 
   &__content {
     display: flex;
@@ -14,10 +15,7 @@
     gap: var(--spacing-xs);
     height: 32px;
     padding-left: var(--spacing-xs);
-    padding-right: var(--spacing-m);
-    flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
   }
 
   &__icon {
@@ -28,6 +26,8 @@
   }
 
   &__message {
+    flex: 0 1 auto;
+    min-width: 0;
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-100);
@@ -37,15 +37,8 @@
     text-overflow: ellipsis;
   }
 
-  &__actions {
-    display: flex;
-    align-items: center;
-    height: 32px;
-    flex-shrink: 0;
-  }
-
   &__action-btn {
-    margin-right: var(--spacing-xxxs);
+    flex-shrink: 0;
   }
 
   // Palette ink on saturated / dark toast surfaces — not Button Inverted
@@ -93,6 +86,7 @@
   }
 
   &__dismiss {
+    flex-shrink: 0;
     color: rgba(var(--color-neutral-0-rgb), 0.92) !important;
 
     &:hover:not(:disabled) {
