@@ -3,7 +3,7 @@ import Button from '@/components/Button/Button';
 import type { ButtonProps } from '@/components/Button/Button';
 import Illustration from '@/components/Illustration/Illustration';
 import type { IllustrationProps } from '@/components/Illustration/Illustration';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import styles from './EmptyState.module.scss';
 
 export interface EmptyStateProps {
@@ -33,7 +33,7 @@ export default function EmptyState({
   className = '',
 }: EmptyStateProps) {
   return (
-    <Scrollbars
+    <Scrollbar
       className={[styles['empty-state'], className].filter(Boolean).join(' ')}
     >
       <div className={styles['empty-state__container']}>
@@ -54,6 +54,6 @@ export default function EmptyState({
           </div>
         )}
       </div>
-    </Scrollbars>
+    </Scrollbar>
   );
 }

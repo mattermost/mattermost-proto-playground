@@ -1,5 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import styles from './PopoverMenu.module.scss';
 
 export interface PopoverMenuProps extends HTMLAttributes<HTMLDivElement> {
@@ -53,14 +53,14 @@ export function PopoverMenuScroll({
   const maxH =
     typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight;
   return (
-    <Scrollbars
+    <Scrollbar
       className={[styles['popover-menu__scroll'], className]
         .filter(Boolean)
         .join(' ')}
       style={{ maxHeight: maxH }}
     >
       {children}
-    </Scrollbars>
+    </Scrollbar>
   );
 }
 

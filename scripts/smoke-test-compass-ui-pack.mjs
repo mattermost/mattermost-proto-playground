@@ -90,7 +90,7 @@ function writeConsumer(tempDir, tarballPath) {
     `import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import { Button, Icon, Scrollbars } from '@mattermost/compass-ui';
+import { Button, Icon, Scrollbar } from '@mattermost/compass-ui';
 import '@mattermost/compass-ui/styles';
 import '@mattermost/compass-ui/component-styles';
 
@@ -101,13 +101,13 @@ function App() {
       <Button emphasis="Primary">Compass UI</Button>
       <Button leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}>With icon</Button>
       <div style={{ width: 240, height: 120, marginTop: 16, border: '1px solid #ccc' }}>
-        <Scrollbars>
+        <Scrollbar>
           <ul style={{ margin: 0, padding: 8 }}>
             {items.map((label) => (
               <li key={label}>{label}</li>
             ))}
           </ul>
-        </Scrollbars>
+        </Scrollbar>
       </div>
     </div>
   );

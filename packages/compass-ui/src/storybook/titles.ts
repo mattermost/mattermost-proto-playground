@@ -43,7 +43,6 @@ export const TITLE_IMAGES_USER_AVATAR_GROUP =
 export const TITLE_LAYOUT_DIVIDER = 'Components/Layout and Containers/Divider';
 export const TITLE_LAYOUT_EMPTY_STATE = 'Components/Layout and Containers/Empty State';
 export const TITLE_LAYOUT_SCROLLBAR = 'Components/Layout and Containers/Scrollbar';
-export const TITLE_LAYOUT_SCROLLBARS = 'Components/Layout and Containers/Scrollbars';
 export const TITLE_LAYOUT_TABS = 'Components/Layout and Containers/Tabs';
 
 

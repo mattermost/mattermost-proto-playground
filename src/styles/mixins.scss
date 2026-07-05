@@ -58,7 +58,7 @@
 // (AppShell content, DocsLayout main pane) where descendants rely on
 // `position: sticky` needing a native scrolling ancestor — SimpleBar's
 // wrapper/mask/offset chain breaks sticky positioning. Component-level
-// scrolling should use `<Scrollbars>` instead.
+// scrolling should use `<Scrollbar>` instead.
 @mixin minimal-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;

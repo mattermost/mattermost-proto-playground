@@ -5,7 +5,7 @@ import { MessageInput } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
 import { Message } from '@mattermost/compass-ui';
 import { CallWidget } from '@mattermost/compass-ui';
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
@@ -78,7 +78,7 @@ export default function CallWidgetLayout() {
       }
     >
       <div className={shellStyles['channel-shell__messages']}>
-        <Scrollbars>
+        <Scrollbar>
           <div className={shellStyles['channel-shell__messages-list']}>
             <MessageSeparator type="Date" label="Today" />
 
@@ -107,7 +107,7 @@ export default function CallWidgetLayout() {
               </p>
             </Message>
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       <div className={shellStyles['channel-shell__message-input']}>

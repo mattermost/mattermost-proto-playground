@@ -1,109 +1,151 @@
+import { useEffect, useRef } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Scrollbar from './Scrollbar';
-import type { ScrollbarOrientation, ScrollbarThumbSize } from './Scrollbar';
 
-const THUMB_SIZES: ScrollbarThumbSize[] = ['25%', '33%', '50%', '75%'];
+const ITEMS = Array.from({ length: 24 }, (_, i) => i + 1);
+
+const listStyle = {
+  margin: 0,
+  padding: 'var(--spacing-s) var(--spacing-m)',
+  listStyle: 'none',
+  display: 'flex',
+  flexDirection: 'column' as const,
+  gap: 'var(--spacing-xs)',
+  color: 'var(--center-channel-color)',
+  fontSize: 'var(--font-size-100)',
+  lineHeight: 'var(--line-height-100)',
+};
+
+const scrollShellStyle = {
+  width: 280,
+  height: 200,
+  display: 'flex',
+  flexDirection: 'column' as const,
+  minHeight: 0,
+  overflow: 'hidden',
+  border: '1px solid rgba(var(--center-channel-color-rgb), 0.16)',
+  borderRadius: 'var(--radius-s)',
+  background: 'var(--center-channel-bg)',
+};
+
+function ScrollList({
+  scrollPercent = 0,
+  color,
+}: {
+  scrollPercent?: number;
+  color?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) {
+      return;
+    }
+
+    const maxScroll = node.scrollHeight - node.clientHeight;
+    node.scrollTop = (scrollPercent / 100) * maxScroll;
+  }, [scrollPercent]);
+
+  return (
+    <Scrollbar ref={ref} alwaysVisible color={color}>
+      <ul style={listStyle}>
+        {ITEMS.map((n) => (
+          <li key={n}>Item {n}</li>
+        ))}
+      </ul>
+    </Scrollbar>
+  );
+}
 
 const meta = {
   title: 'Components/Layout and Containers/Scrollbar',
   component: Scrollbar,
   tags: ['autodocs'],
-  decorators: [
-    (Story, { args }) => {
-      if (args.orientation === 'Horizontal') {
-        return (
-          <div style={{ maxWidth: 320 }}>
-            <Story />
-          </div>
-        );
-      }
-
-      return (
-        <div
-          style={{
-            height: 160,
-            display: 'flex',
-            alignItems: 'stretch',
-          }}
-        >
-          <Story />
-        </div>
-      );
-    },
-  ],
   argTypes: {
-    orientation: {
-      control: 'select',
-      options: ['Vertical', 'Horizontal'] satisfies ScrollbarOrientation[],
-    },
-    thumbSize: { control: 'select', options: THUMB_SIZES },
-    scrollPosition: { control: { type: 'range', min: 0, max: 100, step: 1 } },
+    color: { control: 'text' },
+    alwaysVisible: { control: 'boolean' },
   },
 } satisfies Meta<typeof Scrollbar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Vertical: Story = {
+export const Default: Story = {
   args: {
-    orientation: 'Vertical',
-    thumbSize: '25%',
-    scrollPosition: 0,
+    alwaysVisible: true,
   },
-};
-
-export const Horizontal: Story = {
-  args: {
-    orientation: 'Horizontal',
-    thumbSize: '50%',
-    scrollPosition: 50,
-  },
-};
-
-export const VerticalPositions: Story = {
-  render: () => (
-    <div
-      style={{
-        height: 160,
-        display: 'flex',
-        alignItems: 'stretch',
-        gap: 16,
-      }}
-    >
-      <Scrollbar orientation="Vertical" thumbSize="25%" scrollPosition={0} />
-      <Scrollbar orientation="Vertical" thumbSize="33%" scrollPosition={50} />
-      <Scrollbar orientation="Vertical" thumbSize="50%" scrollPosition={100} />
+  render: ({ alwaysVisible, color }) => (
+    <div style={scrollShellStyle}>
+      <Scrollbar alwaysVisible={alwaysVisible} color={color}>
+        <ul style={listStyle}>
+          {ITEMS.map((n) => (
+            <li key={n}>Item {n}</li>
+          ))}
+        </ul>
+      </Scrollbar>
     </div>
   ),
 };
 
-export const HorizontalPositions: Story = {
+export const SidebarSurface: Story = {
   render: () => (
-    <div style={{ display: 'grid', gap: 16, maxWidth: 320 }}>
-      <Scrollbar orientation="Horizontal" thumbSize="25%" scrollPosition={0} />
-      <Scrollbar orientation="Horizontal" thumbSize="50%" scrollPosition={50} />
+    <div
+      style={{
+        width: 240,
+        height: 180,
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+        overflow: 'hidden',
+        borderRadius: 'var(--radius-s)',
+        background: 'var(--sidebar-header-bg)',
+      }}
+    >
+      <Scrollbar alwaysVisible color="--sidebar-text-rgb">
+        <ul
+          style={{
+            ...listStyle,
+            color: 'var(--sidebar-text)',
+          }}
+        >
+          {ITEMS.map((n) => (
+            <li key={n}>Channel item {n}</li>
+          ))}
+        </ul>
+      </Scrollbar>
     </div>
   ),
 };
 
-export const ThumbSizes: Story = {
+export const ScrollPositions: Story = {
   render: () => (
     <div
       style={{
-        height: 160,
         display: 'flex',
         alignItems: 'stretch',
-        gap: 16,
+        gap: 'var(--spacing-m)',
       }}
     >
-      {THUMB_SIZES.map((thumbSize) => (
-        <Scrollbar
-          key={thumbSize}
-          orientation="Vertical"
-          thumbSize={thumbSize}
-          scrollPosition={25}
-        />
+      {[0, 50, 100].map((scrollPercent) => (
+        <div key={scrollPercent} style={{ ...scrollShellStyle, height: 160 }}>
+          <ScrollList scrollPercent={scrollPercent} />
+        </div>
       ))}
+    </div>
+  ),
+};
+
+export const AutoHide: Story = {
+  render: () => (
+    <div style={scrollShellStyle}>
+      <Scrollbar>
+        <ul style={listStyle}>
+          {ITEMS.map((n) => (
+            <li key={n}>Item {n}</li>
+          ))}
+        </ul>
+      </Scrollbar>
     </div>
   ),
 };

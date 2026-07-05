@@ -8,7 +8,7 @@ import {
   RightSidebarChannelInfo,
   RightSidebarHeader,
   RightSidebar} from '@mattermost/compass-ui';
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
@@ -49,7 +49,7 @@ export default function ChannelInfoLayout() {
     >
       <>
         <div className={shellStyles['channel-shell__messages']}>
-          <Scrollbars>
+          <Scrollbar>
             <div className={shellStyles['channel-shell__messages-list']}>
               <MessageSeparator type="Date" label="Today" />
 
@@ -135,7 +135,7 @@ export default function ChannelInfoLayout() {
                 </p>
               </Message>
             </div>
-          </Scrollbars>
+          </Scrollbar>
         </div>
 
         <div className={shellStyles['channel-shell__message-input']}>

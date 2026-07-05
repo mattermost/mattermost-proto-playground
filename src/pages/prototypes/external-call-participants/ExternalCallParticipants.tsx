@@ -5,7 +5,7 @@ import { Message } from '@mattermost/compass-ui';
 import { CallPopout } from '@mattermost/compass-ui';
 import { CallWidget } from '@mattermost/compass-ui';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
@@ -151,7 +151,7 @@ export default function ExternalCallParticipants() {
       }
     >
       <div className={shellStyles['channel-shell__messages']}>
-        <Scrollbars>
+        <Scrollbar>
           <div className={shellStyles['channel-shell__messages-list']}>
             <MessageSeparator type="Date" label="Today" />
 
@@ -180,7 +180,7 @@ export default function ExternalCallParticipants() {
               </p>
             </Message>
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       <div className={shellStyles['channel-shell__message-input']}>

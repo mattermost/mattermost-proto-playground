@@ -62,7 +62,6 @@ export * from './components/ReactionPill/index';
 export * from './components/RecordingPill/index';
 export * from './components/RightSidebar/index';
 export * from './components/Scrollbar/index';
-export * from './components/Scrollbars/index';
 export * from './components/SearchInput/index';
 export * from './components/SearchTipBanner/index';
 export * from './components/ShortcutTag/index';
