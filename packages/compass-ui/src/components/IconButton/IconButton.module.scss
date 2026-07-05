@@ -2,7 +2,10 @@
 // Block
 // ---------------------------------------------------------------------------
 .icon-button {
+  --icon-button-focus-ring-color: var(--button-bg);
+
   box-sizing: border-box;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -13,13 +16,37 @@
   transition:
     background-color var(--duration-quick) var(--ease-transition),
     border-color var(--duration-quick) var(--ease-transition),
-    color var(--duration-quick) var(--ease-transition),
-    box-shadow var(--duration-quick) var(--ease-transition);
+    color var(--duration-quick) var(--ease-transition);
   background-color: transparent;
   color: rgba(var(--center-channel-color-rgb), 0.64);
 
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 0 0 0 2px var(--icon-button-focus-ring-color);
+    opacity: 0;
+    transform: scale(0.94);
+    transition:
+      opacity var(--duration-quick) var(--ease-entrance),
+      transform var(--duration-quick) var(--ease-entrance);
+  }
+
   &:focus-visible {
     outline: none;
+  }
+
+  &:focus-visible:not(:disabled)::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &:not(:focus-visible)::after {
+    transition:
+      opacity var(--duration-quick) var(--ease-exit),
+      transform var(--duration-quick) var(--ease-exit);
   }
 
   &:disabled {
@@ -27,17 +54,14 @@
     opacity: 0.5;
   }
 
-  &:hover:not(:disabled) {
+  &:hover:not(:disabled):not(:active):not(.icon-button--active):not(.icon-button--toggled) {
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
   &:active:not(:disabled):not(.icon-button--toggled) {
-    background-color: rgba(var(--center-channel-color-rgb), 0.12);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--button-bg);
+    background-color: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--link-color);
   }
 
   // ---------------------------------------------------------------------------
@@ -159,25 +183,60 @@
   // Forced active/pressed state — subtler than toggled.
   // ---------------------------------------------------------------------------
   &--active:not(:disabled) {
-    background-color: rgba(var(--center-channel-color-rgb), 0.12);
-    color: rgba(var(--center-channel-color-rgb), 0.75);
+    background-color: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--link-color);
+
+    &:hover:not(:disabled):not(:active) {
+      background-color: rgba(var(--button-bg-rgb), 0.12);
+      color: var(--link-color);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(var(--button-bg-rgb), 0.16);
+      color: var(--link-color);
+    }
   }
 
   // ---------------------------------------------------------------------------
   // Default style — toggled state
   // ---------------------------------------------------------------------------
   &--toggled {
+    --icon-button-focus-ring-inner: var(--center-channel-bg);
+    --icon-button-focus-ring-outer: var(--button-bg);
+
     background-color: var(--button-bg);
     color: var(--button-color);
+
+    &:hover:not(:disabled):not(:active) {
+      background:
+        linear-gradient(
+          0deg,
+          rgba(var(--color-neutral-1100-rgb), 0.08) 0%,
+          rgba(var(--color-neutral-1100-rgb), 0.08) 100%
+        ),
+        var(--button-bg);
+      color: var(--button-color);
+    }
+
+    &:active:not(:disabled) {
+      background:
+        linear-gradient(
+          0deg,
+          rgba(var(--color-neutral-1100-rgb), 0.16) 0%,
+          rgba(var(--color-neutral-1100-rgb), 0.16) 100%
+        ),
+        var(--button-bg);
+      color: var(--button-color);
+    }
 
     .icon-button__unread-badge {
       box-shadow: 0 0 0 2px var(--button-bg);
     }
 
-    &:focus-visible {
+    &::after {
       box-shadow:
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--button-bg);
+        0 0 0 3px var(--icon-button-focus-ring-inner),
+        0 0 0 5px var(--icon-button-focus-ring-outer);
     }
   }
 
@@ -192,47 +251,65 @@
       box-shadow: 0 0 0 2px var(--sidebar-header-bg);
     }
 
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not(:active):not(.icon-button--toggled):not(.icon-button--active) {
       background-color: rgba(var(--sidebar-text-rgb), 0.08);
       color: var(--sidebar-text);
     }
     &:active:not(:disabled):not(.icon-button--toggled) {
-      background-color: rgba(var(--sidebar-text-rgb), 0.12);
+      background-color: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--link-color);
     }
+
     &.icon-button--active:not(:disabled) {
-      background-color: rgba(var(--sidebar-text-rgb), 0.12);
-      color: var(--sidebar-text);
+      background-color: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--link-color);
+
+      &:hover:not(:disabled):not(:active) {
+        background-color: rgba(var(--button-bg-rgb), 0.12);
+        color: var(--link-color);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(var(--button-bg-rgb), 0.16);
+        color: var(--link-color);
+      }
     }
     &.icon-button--toggled {
+      --icon-button-focus-ring-inner: var(--sidebar-bg);
+      --icon-button-focus-ring-outer: var(--button-bg);
+
       background-color: var(--sidebar-text);
       color: var(--sidebar-bg);
+
+      &:hover:not(:disabled):not(:active) {
+        background-color: rgba(var(--sidebar-text-rgb), 0.92);
+        color: var(--sidebar-bg);
+      }
+
+      &:active:not(:disabled) {
+        background-color: rgba(var(--sidebar-text-rgb), 0.88);
+        color: var(--sidebar-bg);
+      }
 
       .icon-button__unread-badge {
         box-shadow: 0 0 0 2px var(--sidebar-text);
       }
     }
-    &:focus-visible {
-      box-shadow:
-        0 0 0 3px var(--sidebar-bg),
-        0 0 0 5px var(--button-bg);
-    }
 
     // Inverted + destructive
     &.icon-button--destructive {
+      --icon-button-focus-ring-color: var(--color-danger);
+
       background-color: transparent;
       color: var(--color-danger);
 
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(:active) {
         background-color: rgba(var(--color-danger-rgb), 0.08);
         color: var(--color-danger);
       }
       &:active:not(:disabled):not(.icon-button--toggled) {
         background-color: rgba(var(--color-danger-rgb), 0.16);
-      }
-      &:focus-visible {
-        box-shadow:
-          0 0 0 3px var(--sidebar-bg),
-          0 0 0 5px var(--color-danger);
+        color: var(--color-danger);
       }
     }
   }
@@ -242,20 +319,18 @@
   // Transparent background with danger-color icon; tinted bg on hover/active.
   // ---------------------------------------------------------------------------
   &--destructive {
+    --icon-button-focus-ring-color: var(--color-danger);
+
     background-color: transparent;
     color: var(--color-danger);
 
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not(:active) {
       background-color: rgba(var(--color-danger-rgb), 0.08);
       color: var(--color-danger);
     }
     &:active:not(:disabled):not(.icon-button--toggled) {
       background-color: rgba(var(--color-danger-rgb), 0.16);
-    }
-    &:focus-visible {
-      box-shadow:
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--color-danger);
+      color: var(--color-danger);
     }
   }
 }

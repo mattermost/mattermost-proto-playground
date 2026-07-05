@@ -4,6 +4,8 @@ import dts from 'vite-plugin-dts';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import path from 'path';
 
+const isWatchBuild = process.argv.includes('--watch');
+
 export default defineConfig({
   plugins: [
     react(),
@@ -27,6 +29,8 @@ export default defineConfig({
     },
   },
   build: {
+    // Watch rebuilds must not wipe dist/ — compass-ui.css is written by Sass, not Vite.
+    emptyOutDir: !isWatchBuild,
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'CompassUI',
