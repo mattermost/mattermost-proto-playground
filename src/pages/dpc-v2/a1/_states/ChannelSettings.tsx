@@ -33,16 +33,20 @@ import CloseIcon from '@mattermost/compass-icons/components/close';
 import EyeOutlineIcon from '@mattermost/compass-icons/components/eye-outline';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
-import PlusIcon from '@mattermost/compass-icons/components/plus';
 import CheckIcon from '@mattermost/compass-icons/components/check';
-import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import Switch from '@/components/ui/Switch/Switch';
 import Button from '@/components/ui/Button/Button';
+import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
+import EmptyState from '@/components/ui/EmptyState/EmptyState';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import TextArea from '@/components/ui/TextArea/TextArea';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Icon from '@/components/ui/Icon/Icon';
 import { usePersona } from '@/pages/dpc/shared';
+import AppOverlay from '../_components/AppOverlay';
+import DpcAppShell, { shellStyles } from '../_components/DpcAppShell';
+import ScreenCanvas from '../_components/ScreenCanvas';
 import type { A1V2StoreApi, ConfirmScenario } from '../useA1V2Store';
 import styles from './ChannelSettings.module.scss';
 
@@ -119,7 +123,7 @@ export default function ChannelSettings({ store }: ChannelSettingsProps) {
     setDiscoverableLocal(state.channelDiscoverable);
   };
 
-  return (
+  const settingsDialog = (
     <section
       className={styles['v2-channel-settings']}
       aria-label="Channel Settings (V2)"
@@ -246,6 +250,71 @@ export default function ChannelSettings({ store }: ChannelSettingsProps) {
       </div>
     </section>
   );
+
+  return (
+    <ScreenCanvas
+      eyebrow="§3.1"
+      title="Channel Settings — Info tab"
+      subtitle="Channel Settings modal renders over the real channel chrome. The Discoverable toggle (with lock-plus 16px and live preview chip) is the focus surface."
+      canvas={
+        <DpcAppShell
+          focusChannelName={focusChannel.displayName}
+          focusIsDiscoverable={state.channelDiscoverable}
+          channelHeader={
+            <ChannelHeader
+              type="Channel"
+              name={focusChannel.displayName}
+              description={focusChannel.purpose}
+              memberCount={focusChannel.memberCount}
+              pinnedCount={2}
+            />
+          }
+          overlay={<AppOverlay maxWidth={960}>{settingsDialog}</AppOverlay>}
+        >
+          <div className={shellStyles['channel-shell__messages']}>
+            <Scrollbars>
+              <div className={shellStyles['channel-shell__messages-list']}>
+                <EmptyState
+                  title="Settings modal is the focus"
+                  description="The underlying channel chrome shows context: the focus channel is active in the LHS sidebar with the lock-plus glyph."
+                />
+              </div>
+            </Scrollbars>
+          </div>
+        </DpcAppShell>
+      }
+      reviewSummary="Saving a toggle change opens the Confirm-and-Commit modal (§3.2). Disable bypasses the modal in V1; V2 routes Disable through the modal as Template 4 (disable-with-pending)."
+      reviewItems={[
+        {
+          heading: 'Help text restored (2026-05-18 stakeholder feedback)',
+          body: (
+            <p>
+              Help text restored per 2026-05-18 stakeholder feedback. Selected
+              Option 3 because it names the discovery surfaces explicitly
+              (Browse Channels, channel switcher, shared permalinks) — the same
+              vocabulary the Confirm-and-Commit modal uses, keeping the admin's
+              mental model consistent. The parenthetical in the title
+              ("Users can request to join") is a shorthand summary; the help
+              text carries the load-bearing "still private + message contents
+              stay hidden" guarantee admins need to commit confidently.
+            </p>
+          ),
+        },
+        {
+          heading: 'Why lock-plus stays inside the modal (Change 2 exception)',
+          body: (
+            <p>
+              The Settings Info tab keeps the lock-plus glyph adjacent to the
+              toggle label because the icon is load-bearing for explanation at
+              the configuration surface. The subtle-by-default treatment from
+              KD-26 applies to LHS / Browse / Switcher rows, not to admin
+              configuration surfaces.
+            </p>
+          ),
+        },
+      ]}
+    />
+  );
 }
 
 interface InfoTabProps {
@@ -258,7 +327,6 @@ interface InfoTabProps {
 
 function InfoTab({
   channelName,
-  memberCount,
   isPrivate,
   discoverable,
   onDiscoverableChange,
@@ -301,47 +369,30 @@ function InfoTab({
       <div className={styles['v2-channel-settings__discoverable']}>
         <div className={styles['v2-channel-settings__discoverable-text']}>
           <span className={styles['v2-channel-settings__discoverable-title']}>
-            Discoverable
-          </span>
-          <span className={styles['v2-channel-settings__discoverable-help']}>
-            Let non-members find this channel by name, purpose, and member
-            count. If access rules are configured, qualifying users can join
-            directly. Otherwise, they can request to join.
+            Discoverable (Users can request to join)
           </span>
           {/*
-            Member-count exposure (KD-2 revised / NFR-1 revised).
-            Renders the exact preview-format end users will see so the admin
-            can audit the disclosure at toggle-time.
+            Per stakeholder feedback 2026-05-18:
+            - Help text restored beneath the toggle title. Title parenthetical
+              ("Users can request to join") is a summary; it does NOT carry the
+              load-bearing "still private + what's exposed" guarantee that
+              admins need to make this decision confidently.
+            - Selected Option 3 (names the surfaces explicitly: Browse Channels,
+              the channel switcher, and shared permalinks). The surface
+              vocabulary matches the consequence copy in the Confirm-and-Commit
+              modal (§3.2), so the admin's mental model stays consistent
+              across the toggle → commit transition. "Message contents stay
+              hidden until they join" is the anti-misread guarantee.
+            - The matched-user preview chip (channel name + member-count) was
+              removed in the prior pass — the same disclosure is shown
+              contextually in the Confirm-and-Commit modal where it's
+              load-bearing for the admin's commit decision.
           */}
-          {discoverable && (
-            <div
-              className={styles['v2-channel-settings__preview-chip']}
-              aria-label="Pre-join preview that non-members will see"
-            >
-              <span className={styles['v2-channel-settings__preview-chip-icon']}>
-                <LockOutlineIcon size={14} />
-                <PlusIcon
-                  size={10}
-                  className={styles['v2-channel-settings__preview-chip-plus']}
-                />
-              </span>
-              <span
-                className={styles['v2-channel-settings__preview-chip-name']}
-              >
-                {channelName}
-              </span>
-              <span
-                className={styles['v2-channel-settings__preview-chip-sep']}
-                aria-hidden
-              />
-              <span
-                className={styles['v2-channel-settings__preview-chip-count']}
-              >
-                <Icon size="12" glyph={<AccountMultipleOutlineIcon />} />
-                {memberCount} members
-              </span>
-            </div>
-          )}
+          <span className={styles['v2-channel-settings__discoverable-help']}>
+            Non-members can see this channel in Browse Channels, the channel
+            switcher, and shared permalinks. Message contents stay hidden
+            until they join.
+          </span>
         </div>
         <Switch
           size="Medium"
@@ -349,7 +400,7 @@ function InfoTab({
           onChange={(e) =>
             onDiscoverableChange((e.target as HTMLInputElement).checked)
           }
-          aria-label="Discoverable"
+          aria-label="Discoverable (Users can request to join)"
         />
       </div>
 

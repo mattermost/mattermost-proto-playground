@@ -1,0 +1,163 @@
+.rsm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  // Standard prototype backdrop tint (matches dpc/a2, dpc/a3, D2Modal).
+  background: rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-l);
+  animation: rsm-fade-in var(--duration-quick) var(--ease-entrance);
+}
+
+.rsm-wrap {
+  max-width: 720px;
+  width: 100%;
+}
+
+.rsm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__hint {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-style: italic;
+  }
+
+  &__code {
+    font-family: var(--font-family-mono);
+    font-style: normal;
+    font-size: var(--font-size-75);
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+    padding: var(--spacing-xxxxs) var(--spacing-xxxs);
+    border-radius: var(--radius-s);
+  }
+
+  // ---------------------------------------------------------------------------
+  // List of value rows. No tied-band grouping post 2026-05-22 sync.
+  // ---------------------------------------------------------------------------
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__row-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+    &--drop-target {
+      border-color: var(--button-bg);
+      background: rgba(var(--button-bg-rgb), 0.04);
+    }
+
+    &--dragging {
+      opacity: 0.5;
+    }
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 20px 1fr 130px 24px;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
+  }
+
+  &__row-error {
+    padding: 0 var(--spacing-xs) var(--spacing-xxs);
+    font-size: var(--font-size-50);
+    color: var(--color-danger);
+  }
+
+  &__drag {
+    cursor: grab;
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+    display: inline-flex;
+    align-items: center;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__label-cell {
+    min-width: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Rank stepper trio: [↑] [numeric input] [↓] — keyboard-equivalent
+  // alternative to the drag handle (WCAG 2.5.7).
+  // ---------------------------------------------------------------------------
+  &__rank-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__rank-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Per-value remove. Disabled with tooltip when attribute is policy-referenced.
+  // ---------------------------------------------------------------------------
+  &__remove-wrap {
+    position: relative;
+    display: inline-flex;
+
+    &:hover .rsm__remove-tooltip,
+    &:focus-within .rsm__remove-tooltip {
+      opacity: 1;
+    }
+  }
+
+  &__remove-tooltip {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + var(--spacing-xxs));
+    transform: translateY(-50%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+    z-index: 1;
+  }
+
+  // ---------------------------------------------------------------------------
+  // "Add value" button alignment slot.
+  // ---------------------------------------------------------------------------
+  &__add {
+    display: flex;
+    align-items: center;
+  }
+
+  // sr-only utility — hide visually, keep accessible to assistive tech.
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@keyframes rsm-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

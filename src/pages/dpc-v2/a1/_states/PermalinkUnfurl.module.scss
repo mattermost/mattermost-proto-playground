@@ -1,39 +1,24 @@
+// PermalinkUnfurl — DPC V2 A1
+// BEM block: v2-permalink-unfurl
+//
+// Unfurl card spec per Figma 4888:52863 ("Message Attachment"):
+//   white bg, 1px border @ center-channel-color/12, 4px radius,
+//   Elevation 1 shadow. The card hosts two padded sections separated
+//   by a FULL-WIDTH divider (the divider is a sibling of the sections,
+//   not nested inside them, so it extends edge-to-edge across the card).
+//   Section padding: 16px V / 19px L / 16px R.
+//   Eyebrow SemiBold 11px uppercase 64%, channel-name Metropolis
+//   SemiBold 16/24, italic body 14/20 @ 80%, Tertiary button.
 .v2-permalink-unfurl {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-l);
-  padding: var(--spacing-l);
-  background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: var(--radius-m);
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--spacing-m);
-    flex-wrap: wrap;
-  }
-
-  &__title {
-    margin: 0 0 var(--spacing-xxs) 0;
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__subtitle {
-    margin: 0;
-    max-width: 56ch;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-    line-height: 1.4;
-  }
+  gap: var(--spacing-m);
+  width: 100%;
+  min-width: 0;
 
   &__mode-switch {
     display: inline-flex;
+    align-self: flex-start;
     background: rgba(var(--center-channel-color-rgb), 0.04);
     border-radius: var(--radius-s);
     padding: 2px;
@@ -67,197 +52,92 @@
     }
   }
 
-  &__message {
-    display: flex;
-    gap: var(--spacing-s);
-    padding: var(--spacing-m);
-    background: var(--center-channel-bg);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-    border-radius: var(--radius-s);
-  }
-
-  &__message-body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  &__message-meta {
-    display: flex;
-    gap: var(--spacing-xs);
-    align-items: baseline;
-  }
-
-  &__message-author {
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__message-time {
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.56);
-  }
-
-  &__message-text {
-    margin: 0;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    color: var(--center-channel-color);
-    line-height: 1.45;
-  }
-
+  // Inline permalink rendered inside the parent Message body.
   &__permalink {
-    margin: 0;
-    font-family: var(--font-family-monospace, monospace);
-    font-size: var(--font-size-75);
     color: var(--link-color);
     word-break: break-all;
+    text-decoration: underline;
   }
 
+  // -- Unfurl card --
+  // The card itself has zero inner padding — its direct children are
+  // (a) two padded `__card-section` blocks and (b) a `__card-divider`
+  // that spans the full card width because it has no horizontal padding
+  // wrapping it.
   &__card {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-m);
-    background: rgba(var(--center-channel-color-rgb), 0.02);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    border-left: 3px solid var(--link-color);
+    margin-top: var(--spacing-xs);
+    max-width: 560px;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     border-radius: var(--radius-s);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
   }
 
-  &__card-head {
+  &__card-section {
     display: flex;
+    flex-direction: column;
     gap: var(--spacing-xs);
-    align-items: center;
+    padding: 16px 16px 16px 19px;
   }
 
   &__card-eyebrow {
     font-family: var(--font-family-body);
-    font-size: var(--font-size-50);
+    font-size: 11px;
     font-weight: var(--font-weight-semibold);
+    line-height: 16px;
+    letter-spacing: 0.11px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__card-name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+  }
+
+  &__card-lock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: rgba(var(--center-channel-color-rgb), 0.72);
+    flex-shrink: 0;
   }
 
   &__card-name {
     margin: 0;
     font-family: var(--font-family-heading);
-    font-size: var(--font-size-200);
+    font-size: 16px;
     font-weight: var(--font-weight-semibold);
+    line-height: 24px;
     color: var(--center-channel-color);
   }
 
-  &__card-count {
+  // Full-width divider — sibling of `__card-section` blocks, no horizontal
+  // padding wrapping it, so the 1px line runs edge-to-edge across the card.
+  &__card-divider {
+    width: 100%;
+    height: 1px;
     margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxs);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    border: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
   }
 
-  &__card-purpose {
+  &__card-body {
     margin: 0;
     font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    color: var(--center-channel-color);
-    line-height: 1.45;
-  }
-
-  &__card-help {
-    margin: var(--spacing-xs) 0 0 0;
-    padding-top: var(--spacing-xs);
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
+    font-size: 14px;
     font-style: italic;
-    color: rgba(var(--center-channel-color-rgb), 0.64);
+    line-height: 20px;
+    color: rgba(var(--center-channel-color-rgb), 0.8);
   }
 
   &__card-actions {
     display: flex;
-    justify-content: flex-end;
-    margin-top: var(--spacing-xs);
-  }
-
-  &__lockplus {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--link-color);
-  }
-
-  &__lockplus-lock {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__lockplus-plus {
-    position: absolute;
-    bottom: -2px;
-    right: -3px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--center-channel-bg);
-    border-radius: 50%;
-    color: var(--link-color);
-  }
-
-  &__security-note {
-    border: 1px dashed rgba(var(--color-warning-rgb), 0.5);
-    border-radius: var(--radius-s);
-    background: rgba(var(--color-warning-rgb), 0.04);
-    padding: var(--spacing-m);
-    font-family: var(--font-family-monospace, monospace);
-  }
-
-  &__security-note-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    margin-bottom: var(--spacing-xs);
-  }
-
-  &__security-note-label {
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-warning);
-  }
-
-  &__security-note-body {
-    margin: 0 0 var(--spacing-s) 0;
-    font-family: var(--font-family-monospace, monospace);
-    font-size: var(--font-size-75);
-    line-height: 1.5;
-    color: var(--center-channel-color);
-  }
-
-  &__security-note-list {
-    margin: 0 0 var(--spacing-s) 0;
-    padding-left: var(--spacing-l);
-    font-family: var(--font-family-monospace, monospace);
-    font-size: var(--font-size-75);
-    line-height: 1.6;
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &__security-note-foot {
-    margin: 0;
-    font-family: var(--font-family-monospace, monospace);
-    font-size: var(--font-size-50);
-    color: rgba(var(--center-channel-color-rgb), 0.56);
+    margin-top: var(--spacing-xxs);
   }
 }

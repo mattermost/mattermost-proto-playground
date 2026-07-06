@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, type ReactNode } from 'react';
 import AlertCircleOutlineIcon from '@mattermost/compass-icons/components/alert-circle-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
@@ -34,6 +34,10 @@ export interface MessageInputProps {
   showAttachments?: boolean;
   /** `narrow` matches the Figma Message Input “Narrow” / right-sidebar layout. */
   width?: MessageInputWidth;
+  /** Flat top edge when an attribute rail sits directly above the composer. */
+  stackedBelowRail?: boolean;
+  /** Optional controls rendered inside the action row, left of the Aa button. */
+  leadingActions?: ReactNode;
 }
 
 export default function MessageInput({
@@ -42,6 +46,8 @@ export default function MessageInput({
   showPriorityIndicator = false,
   showAttachments = false,
   width = 'wide',
+  stackedBelowRail = false,
+  leadingActions,
 }: MessageInputProps) {
   const [text, setText] = useState('');
   const [formattingOpen, setFormattingOpen] = useState(false);
@@ -56,14 +62,17 @@ export default function MessageInput({
 
   const hasSendValue = text.trim().length > 0;
 
-  const cls = (base: string, mod?: string) =>
-    [styles[base], mod ? styles[mod] : ''].filter(Boolean).join(' ');
+  const cls = (base: string, ...mods: (string | false | undefined)[]) =>
+    [styles[base], ...mods.map((m) => (m ? styles[m] : ''))]
+      .filter(Boolean)
+      .join(' ');
 
   const isNarrowFormattingOpen = width === 'narrow' && formattingOpen;
   const showWideFormattingBar = formattingOpen && width === 'wide';
 
   const composerActions = (
     <>
+      {leadingActions}
       <button
         type="button"
         className={cls(
@@ -151,6 +160,7 @@ export default function MessageInput({
         className={cls(
           'message-input__container',
           formattingOpen ? 'message-input__container--formatting-open' : '',
+          stackedBelowRail ? 'message-input__container--stacked-below-rail' : '',
         )}
       >
         {/* Preview button — fades in when formatting is open */}
@@ -171,6 +181,7 @@ export default function MessageInput({
           className={cls(
             'message-input__body',
             formattingOpen ? 'message-input__body--formatting-open' : '',
+            leadingActions ? 'message-input__body--leading-actions' : '',
           )}
         >
           {showPriorityIndicator && (

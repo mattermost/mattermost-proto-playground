@@ -1,0 +1,27 @@
+.dd {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__label {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__select {
+    display: flex;
+    min-width: 220px;
+    max-width: 280px;
+  }
+
+  &__panel {
+    padding-top: var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}

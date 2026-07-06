@@ -37,6 +37,8 @@ export interface ConsolePanelHeaderProps {
   expanded?: boolean;
   /** Callback when the expand toggle is clicked. */
   onExpandToggle?: (expanded: boolean) => void;
+  /** Optional trailing content in the actions cluster (before expand chevron). */
+  trailing?: ReactNode;
   /** Optional CSS class name. */
   className?: string;
 }
@@ -65,6 +67,7 @@ export default function ConsolePanelHeader({
   expandable = false,
   expanded: expandedProp,
   onExpandToggle,
+  trailing,
   className = '',
 }: ConsolePanelHeaderProps) {
   const [internalExpanded, setInternalExpanded] = useState(true);
@@ -76,7 +79,8 @@ export default function ConsolePanelHeader({
     onExpandToggle?.(next);
   };
 
-  const hasActions = showSwitch || buttonLabel != null || expandable;
+  const hasActions =
+    showSwitch || buttonLabel != null || trailing != null || expandable;
 
   const rootClass = [styles['console-panel-header'], className]
     .filter(Boolean)
@@ -150,6 +154,7 @@ export default function ConsolePanelHeader({
                 {buttonLabel}
               </Button>
             )}
+            {trailing}
             {expandable && (
               <IconButton
                 size="Medium"

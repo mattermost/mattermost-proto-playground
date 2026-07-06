@@ -1,0 +1,13 @@
+.setter__locked {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  max-width: 640px;
+}
+
+.setter__hint {
+  margin: 0;
+  font-size: var(--font-size-75);
+  line-height: 1.4;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}

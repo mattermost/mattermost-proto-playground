@@ -1,0 +1,190 @@
+@use '@/styles/tokens.scss' as *;
+
+.n01 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--center-channel-bg);
+
+  &__top-bar {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    background: var(--sidebar-header-bg);
+    color: var(--sidebar-text);
+    padding: 0 var(--spacing-m);
+    gap: var(--spacing-m);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+    flex-shrink: 0;
+  }
+
+  &__team-dropdown {
+    position: relative;
+  }
+
+  &__team-button {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--sidebar-text);
+    padding: 4px 10px;
+    border-radius: var(--radius-s);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.10);
+    }
+  }
+
+  &__team-cls {
+    color: white;
+    font-size: 9px;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: 8px;
+  }
+
+  &__team-name { color: white; }
+  &__team-caret { opacity: 0.64; font-size: 10px; }
+
+  &__team-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: var(--radius-s);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    padding: var(--spacing-xs);
+    z-index: 100;
+    min-width: 220px;
+  }
+
+  &__team-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-size: 13px;
+    color: var(--center-channel-color);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__products {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+  }
+
+  &__product {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.64);
+    padding: 6px 14px;
+    border-radius: var(--radius-s);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+    }
+
+    &--active {
+      background: rgba(255, 255, 255, 0.14);
+      color: white;
+      border-bottom-color: rgba(255, 255, 255, 0.72);
+    }
+  }
+
+  &__product-glyph { font-size: 14px; }
+
+  &__utilities {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__search {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.64);
+    padding: 4px 10px;
+    border-radius: var(--radius-s);
+    font-size: 12px;
+    width: 200px;
+    display: flex;
+    gap: var(--spacing-xs);
+    cursor: text;
+
+    span { opacity: 0.7; }
+  }
+
+  &__icon {
+    width: 28px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    opacity: 0.72;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      opacity: 1;
+    }
+  }
+
+  &__avatar {
+    width: 28px; height: 28px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.16);
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+
+  &__lhs {
+    width: 264px;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.16);
+  }
+
+  &__center {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+}

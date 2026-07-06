@@ -1,0 +1,30 @@
+.app-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+
+  &--top {
+    align-items: flex-start;
+    padding-top: var(--spacing-xxxxl);
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    pointer-events: auto;
+  }
+}

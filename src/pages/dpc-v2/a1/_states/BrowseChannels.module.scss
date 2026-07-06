@@ -2,17 +2,26 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
+  max-height: min(640px, calc(100vh - 200px));
   background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: var(--radius-l);
   overflow: hidden;
+  box-shadow: var(--elevation-6);
+
+  &__list-wrap {
+    flex: 1 1 auto;
+    min-height: 200px;
+    max-height: 420px;
+    overflow: hidden;
+  }
 
   &__header {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-m);
-    padding: var(--spacing-l) var(--spacing-xl);
+    padding: var(--spacing-l) 32px;
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   }
 
@@ -37,10 +46,17 @@
     gap: var(--spacing-s);
   }
 
-  &__chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
+  // The shared `TextInput` block caps itself at `max-width: 300px` so it doesn't
+  // bleed across arbitrary surfaces. Inside the Browse Channels modal the search
+  // field is meant to fill the full body width (minus the modal's 32px side
+  // padding), so we lift the cap on the wrapper.
+  &__search {
+    width: 100%;
+
+    > * {
+      width: 100%;
+      max-width: none;
+    }
   }
 
   &__filter-row {
@@ -48,7 +64,13 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-s);
-    padding: var(--spacing-xs) var(--spacing-xl);
+    padding: var(--spacing-s) 32px;
+  }
+
+  &__filter-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
   }
 
   &__result-count {
@@ -132,7 +154,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-m);
-    padding: var(--spacing-xs) var(--spacing-xl);
+    padding: var(--spacing-xs) 32px;
     background: var(--center-channel-bg);
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.04);
     transition: background-color var(--duration-quick) var(--ease-transition);

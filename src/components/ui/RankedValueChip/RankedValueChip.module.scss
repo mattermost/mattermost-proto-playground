@@ -1,0 +1,23 @@
+.ranked-value-chip {
+  // The base Chip carries its own surface, padding, and font tokens. This
+  // wrapper only contributes (1) the inline rank LabelTag layout placement
+  // (LEFT of the label per 2026-05-22 sync) and (2) the active-ring affordance
+  // when the chip's editor popover is open.
+
+  &__rank {
+    margin-right: var(--spacing-xxs);
+    // The inline LabelTag inside a chip should not inherit anything from the
+    // chip's tone. Force it to a neutral palette regardless of context.
+    background-color: rgba(var(--center-channel-color-rgb), 0.16);
+    color: var(--center-channel-color);
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &--active {
+    box-shadow: 0 0 0 2px var(--button-bg);
+  }
+}

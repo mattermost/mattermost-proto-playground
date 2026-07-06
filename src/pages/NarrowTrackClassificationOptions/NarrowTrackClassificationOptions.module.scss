@@ -1,0 +1,223 @@
+// Comparison-harness chrome. The harness (.ntc__harness) is intentionally
+// styled to read as tooling — NOT product — so it is unmistakably outside the
+// emulated product viewport (.ntc__viewport), which renders pristine System
+// Console UI. Theme CSS variables only; no hardcoded colors.
+
+.ntc {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--center-channel-bg);
+}
+
+// ── Harness chrome (reviewer-facing, left rail) ──────────────────────────────
+.ntc__harness {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  padding: var(--spacing-l);
+  overflow-y: auto;
+  border-right: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+  background-color: rgba(var(--center-channel-color-rgb), 0.03);
+  @include minimal-scrollbar;
+}
+
+.ntc__harness-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+
+.ntc__kicker {
+  margin: 0;
+  font-size: var(--font-size-25);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+.ntc__harness-title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+}
+
+.ntc__harness-sub {
+  margin: 0;
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.ntc__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.ntc__group-label {
+  margin: 0;
+  font-size: var(--font-size-25);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+// Segmented control (Approach, State).
+.ntc__seg {
+  display: flex;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-xxs);
+  border-radius: var(--radius-m);
+  background-color: rgba(var(--center-channel-color-rgb), 0.06);
+}
+
+.ntc__seg-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-xs) var(--spacing-s);
+  border: none;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &--active {
+    background-color: var(--button-bg);
+    color: var(--button-color);
+
+    &:hover {
+      background-color: var(--button-bg);
+    }
+  }
+}
+
+// Vertical list (Surface).
+.ntc__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+
+.ntc__list-btn {
+  text-align: left;
+  padding: var(--spacing-xs) var(--spacing-s);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--center-channel-color);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+  }
+
+  &--active {
+    border-color: var(--button-bg);
+    background-color: rgba(var(--button-bg-rgb), 0.08);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+.ntc__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--spacing-xs);
+  margin-left: var(--spacing-xs);
+  border-radius: var(--radius-full);
+  background-color: var(--button-bg);
+  color: var(--button-color);
+  font-size: var(--font-size-25);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ntc__philosophy {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-75);
+  line-height: 1.5;
+  color: rgba(var(--center-channel-color-rgb), 0.82);
+}
+
+.ntc__hint {
+  margin: 0;
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.ntc__notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-m);
+  border-radius: var(--radius-m);
+  background-color: rgba(var(--center-channel-color-rgb), 0.05);
+}
+
+.ntc__note-title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+}
+
+.ntc__note-meta {
+  margin: 0;
+  font-size: var(--font-size-25);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+.ntc__note-body {
+  margin: var(--spacing-xxs) 0 0;
+  font-size: var(--font-size-75);
+  line-height: 1.55;
+  color: rgba(var(--center-channel-color-rgb), 0.82);
+}
+
+.ntc__footnote {
+  margin: auto 0 0;
+  font-size: var(--font-size-25);
+  color: rgba(var(--center-channel-color-rgb), 0.48);
+}
+
+// ── Product viewport (pristine) ──────────────────────────────────────────────
+.ntc__viewport {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--center-channel-bg);
+}
+
+.ntc__console {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ntc__center {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+}

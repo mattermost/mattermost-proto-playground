@@ -1,121 +1,7 @@
 .v2-in-channel-sys-msg {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-l);
-  padding: var(--spacing-l);
-  background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: var(--radius-m);
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--spacing-m);
-    flex-wrap: wrap;
-  }
-
-  &__title {
-    margin: 0 0 var(--spacing-xxs) 0;
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__subtitle {
-    margin: 0;
-    max-width: 56ch;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-    line-height: 1.4;
-  }
-
-  &__channel {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    border-radius: var(--radius-s);
-    overflow: hidden;
-  }
-
-  &__channel-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xxs);
-    padding: var(--spacing-s) var(--spacing-m);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  }
-
-  &__channel-name {
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__channel-purpose {
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-  }
-
-  &__feed {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-s);
-    padding: var(--spacing-m);
-    background: var(--center-channel-bg);
-  }
-
-  &__msg {
-    display: flex;
-    gap: var(--spacing-xs);
-    align-items: baseline;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    line-height: 1.45;
-    color: var(--center-channel-color);
-  }
-
-  &__msg-time {
-    font-family: var(--font-family-monospace, monospace);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.48);
-    flex-shrink: 0;
-  }
-
-  &__msg-author {
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-    flex-shrink: 0;
-  }
-
-  &__msg-body {
-    color: var(--center-channel-color);
-  }
-
-  &__post {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  &__post-rail {
-    display: flex;
-    gap: var(--spacing-xs);
-    align-items: baseline;
-  }
-
-  &__post-author {
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-    font-style: italic;
-  }
+  // The wrapped feed message now uses the `Message` component for the
+  // avatar + author rail, so this module only needs to dress the post
+  // card itself.
 
   &__post-card {
     display: flex;
@@ -126,13 +12,18 @@
     border: 1px solid rgba(var(--color-info-rgb), 0.24);
     border-left: 3px solid var(--color-info);
     border-radius: var(--radius-s);
-  }
+    margin-top: var(--spacing-xxs);
 
-  &__post--resolved &__post-card {
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-    border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.32);
-    opacity: 0.85;
+    &--resolved {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+      border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.32);
+      opacity: 0.85;
+    }
+
+    &--resolved .v2-in-channel-sys-msg__post-eyebrow {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
   }
 
   &__post-eyebrow {
@@ -145,10 +36,6 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--color-info);
-  }
-
-  &__post--resolved &__post-eyebrow {
-    color: rgba(var(--center-channel-color-rgb), 0.56);
   }
 
   &__post-body {
@@ -201,31 +88,5 @@
     background: var(--center-channel-bg);
     border-radius: 50%;
     color: var(--color-info);
-  }
-
-  &__note {
-    border: 1px dashed rgba(var(--color-info-rgb), 0.5);
-    border-radius: var(--radius-s);
-    background: rgba(var(--color-info-rgb), 0.04);
-    padding: var(--spacing-m);
-  }
-
-  &__note-label {
-    display: block;
-    margin-bottom: var(--spacing-xs);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--color-info);
-  }
-
-  &__note-body {
-    margin: 0;
-    font-family: var(--font-family-monospace, monospace);
-    font-size: var(--font-size-75);
-    line-height: 1.5;
-    color: var(--center-channel-color);
   }
 }

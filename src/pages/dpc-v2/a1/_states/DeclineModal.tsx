@@ -1,53 +1,63 @@
 /**
- * DPC V2 A1 — DeclineModal (LOAD-BEARING, NEW in V2; Wave 2D implementation).
+ * DPC V2 A1 — DeclineModal (refactored May 2026).
  *
- * §3.15 two-step neutral-register decline. OPEN-E Pattern B winner:
+ * Renders as a modal OVER a real `ChannelShell` so reviewers see how the
+ * dialog sits against the underlying members panel + channel chrome.
  *
- *   Step 1 — Modal open
- *     • Title: "Decline join request"
- *     • Body: "@user requested to join this channel. They'll receive a DM
- *       letting them know their request was declined."
- *     • Optional TextArea reason (max 500), placeholder
- *       "Reason (optional, shared with requester)" with N/500 counter.
- *     • Footer: Tertiary "Cancel" + Primary "Decline" — NEUTRAL emphasis,
- *       NOT destructive red (the entire reason OPEN-E exists).
- *   Step 2 — Confirmation toast
- *     • "Request declined" toast surface, rendered adjacent to the form.
+ * The §3.15 contract is unchanged:
+ *   Step 1 — "Decline join request" modal, neutral Primary button.
+ *   Step 2 — Confirmation toast (auto-dismisses).
  *
- * The modal also shows an adjacent DM preview pane so reviewers can read
- * the with-reason / without-reason DM templates side-by-side with the
- * reason input.
+ * Per Change 3: the "DM PREVIEW · WHAT @USER WILL RECEIVE" block that
+ * previously sat inside the modal body has been moved out of the
+ * product UI into the Review notes below the canvas. The dev note about
+ * "Channel name intentionally omitted in §3.15.5..." has likewise been
+ * moved out. The modal's body now contains only product UI: the
+ * requester strip, the reason TextArea, the character counter, and the
+ * neutral Primary button.
  *
- * Trigger contract — this component is rendered passively at the prototype
- * root; PendingRequestsRail (Wave 2C) calls store.openDeclineModal() on Deny
- * click and InChannelAdminSysMsg's "Decline…" button also routes through
- * the store. We expose a local "Reset" affordance so a reviewer can scrub
- * between steps without re-triggering the seed request.
+ * The modal renders on its own canvas because the only way to reach it
+ * from the rail is to click Deny — so this screen is the modal-as-focus
+ * with the rail visible behind it.
  */
 import { useEffect } from 'react';
 import Button from '@/components/ui/Button/Button';
+import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
+import EmptyState from '@/components/ui/EmptyState/EmptyState';
+import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import Modal from '@/components/ui/Modal/Modal';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import TextArea from '@/components/ui/TextArea/TextArea';
 import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import { SUPPORTING_USERS } from '@/pages/dpc/shared';
+import AppOverlay from '../_components/AppOverlay';
+import DpcAppShell, { shellStyles } from '../_components/DpcAppShell';
+import ScreenCanvas from '../_components/ScreenCanvas';
 import type { A1V2StoreApi } from '../useA1V2Store';
 import styles from './DeclineModal.module.scss';
 
 export interface DeclineModalProps {
   store: A1V2StoreApi;
+  /**
+   * When true, render inside a `ScreenCanvas` with a `ChannelShell`
+   * background — used as a standalone review surface. When false
+   * (default), render as a page-level overlay that floats over the
+   * prototype canvas when triggered by Deny click.
+   */
+  standalone?: boolean;
 }
 
 const REASON_MAX = 500;
 
-export default function DeclineModal({ store }: DeclineModalProps) {
+export default function DeclineModal({
+  store,
+  standalone = false,
+}: DeclineModalProps) {
   const { state } = store;
   const open = state.declineModalOpen;
   const step = state.declineModalStep;
   const reason = state.declineModalReason;
 
-  // Find the targeted pending request (fall back to first seed row when
-  // the request was already cleared so the preview never goes blank).
   const target =
     state.pendingRequests.find((r) => r.id === state.declineModalRequestId) ??
     state.pendingRequests[0] ??
@@ -59,8 +69,6 @@ export default function DeclineModal({ store }: DeclineModalProps) {
   const requesterAvatar = target?.requesterAvatarUrl ?? fallbackRequester.avatarUrl;
   const channelName = store.focusChannel.displayName;
 
-  // Auto-clear the optimistic "Step 2 — confirm" view after 4s so the
-  // toast doesn't linger forever in the demo.
   useEffect(() => {
     if (step !== 'confirm') return;
     const timer = window.setTimeout(() => {
@@ -69,18 +77,13 @@ export default function DeclineModal({ store }: DeclineModalProps) {
     return () => window.clearTimeout(timer);
   }, [step, store]);
 
-  if (!open) return null;
+  if (!open && !standalone) return null;
 
   const handleDecline = () => {
     if (!target) {
-      // No real request to decline; just advance to the toast step for the
-      // demo flow.
       store.setDeclineStep('confirm');
       return;
     }
-    // denyRequest commits and resets the modal flags (see reducer); for the
-    // V2 demo we want a brief Step 2 acknowledgment, so we set the step
-    // before dispatching.
     store.setDeclineStep('confirm');
     window.setTimeout(() => {
       store.denyRequest('ops.coord', target.id, reason || undefined);
@@ -91,147 +94,183 @@ export default function DeclineModal({ store }: DeclineModalProps) {
   const counterAmber = reason.length >= 450 && reason.length < REASON_MAX;
   const counterFull = reason.length >= REASON_MAX;
 
-  return (
-    <div
-      className={styles['v2-decline-modal__overlay']}
-      role="presentation"
-      onClick={(e) => {
-        // Per §3.15.3 — click-outside is a NO-OP (prevents slip-cancel
-        // mid-typing). We still surface the click outline visually.
-        if (e.target === e.currentTarget) {
-          // intentional no-op; modal stays open.
-        }
-      }}
+  const dialog = (
+    <Modal
+      size="Medium"
+      title="Decline join request"
+      subtitle={`@${requesterUsername} requested to join #${channelName}`}
+      onClose={() => store.closeDeclineModal()}
+      footer={
+        step === 'reason' ? (
+          <div className={styles['v2-decline-modal__footer']}>
+            <Button
+              emphasis="Tertiary"
+              size="Medium"
+              onClick={() => store.closeDeclineModal()}
+            >
+              Cancel
+            </Button>
+            <Button emphasis="Primary" size="Medium" onClick={handleDecline}>
+              Decline
+            </Button>
+          </div>
+        ) : (
+          <div className={styles['v2-decline-modal__footer']}>
+            <Button
+              emphasis="Tertiary"
+              size="Medium"
+              onClick={() => store.closeDeclineModal()}
+            >
+              Close
+            </Button>
+          </div>
+        )
+      }
     >
-      <div className={styles['v2-decline-modal__shell']}>
-        <Modal
-          size="Medium"
-          title="Decline join request"
-          subtitle={`@${requesterUsername} requested to join #${channelName}`}
-          onClose={() => store.closeDeclineModal()}
-          footer={
-            step === 'reason' ? (
-              <div className={styles['v2-decline-modal__footer']}>
-                <Button
-                  emphasis="Tertiary"
-                  size="Medium"
-                  onClick={() => store.closeDeclineModal()}
+      {step === 'reason' ? (
+        <div className={styles['v2-decline-modal__body']}>
+          <div className={styles['v2-decline-modal__requester']}>
+            <UserAvatar
+              alt={requesterName}
+              name={requesterName}
+              src={requesterAvatar}
+              size="40"
+            />
+            <div className={styles['v2-decline-modal__requester-meta']}>
+              <p className={styles['v2-decline-modal__requester-name']}>
+                {requesterName}{' '}
+                <span
+                  className={styles['v2-decline-modal__requester-handle']}
                 >
-                  Cancel
-                </Button>
-                <Button
-                  emphasis="Primary"
-                  size="Medium"
-                  onClick={handleDecline}
-                >
-                  Decline
-                </Button>
-              </div>
-            ) : (
-              <div className={styles['v2-decline-modal__footer']}>
-                <Button
-                  emphasis="Tertiary"
-                  size="Medium"
-                  onClick={() => store.closeDeclineModal()}
-                >
-                  Close
-                </Button>
-              </div>
-            )
-          }
-        >
-          {step === 'reason' ? (
-            <div className={styles['v2-decline-modal__body']}>
-              <div className={styles['v2-decline-modal__requester']}>
-                <UserAvatar
-                  alt={requesterName}
-                  name={requesterName}
-                  src={requesterAvatar}
-                  size="40"
-                />
-                <div className={styles['v2-decline-modal__requester-meta']}>
-                  <p className={styles['v2-decline-modal__requester-name']}>
-                    {requesterName}{' '}
-                    <span
-                      className={styles['v2-decline-modal__requester-handle']}
-                    >
-                      @{requesterUsername}
-                    </span>
-                  </p>
-                  <p className={styles['v2-decline-modal__requester-body']}>
-                    @{requesterUsername} requested to join this channel.
-                    They&apos;ll receive a DM letting them know their request
-                    was declined.
-                  </p>
-                </div>
-              </div>
-
-              <div className={styles['v2-decline-modal__reason']}>
-                <TextArea
-                  size="Medium"
-                  placeholder="Reason (optional, shared with requester)"
-                  rows={4}
-                  maxLength={REASON_MAX}
-                  value={reason}
-                  onChange={(e) => store.setDeclineReason(e.target.value)}
-                  aria-label="Decline reason (optional, shared with requester). 500 character maximum."
-                />
-                <div
-                  className={[
-                    styles['v2-decline-modal__counter'],
-                    counterAmber
-                      ? styles['v2-decline-modal__counter--warn']
-                      : '',
-                    counterFull
-                      ? styles['v2-decline-modal__counter--full']
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  aria-live="polite"
-                >
-                  {counterLabel}
-                </div>
-              </div>
-
-              <DmPreviewPane
-                hasReason={reason.trim().length > 0}
-                reason={reason}
-                requesterUsername={requesterUsername}
-                channelName={channelName}
-              />
-
-              <p className={styles['v2-decline-modal__note']}>
-                Per §3.15.3 — primary <strong>Decline</strong> uses neutral
-                emphasis, <strong>not</strong> destructive red. Destructive
-                styling primes a defensive copy register; neutral matches the
-                admin-routine register for decline-volume channels. Click
-                outside is a no-op to prevent slip-cancel.
+                  @{requesterUsername}
+                </span>
+              </p>
+              <p className={styles['v2-decline-modal__requester-body']}>
+                @{requesterUsername} requested to join this channel.
+                They&apos;ll receive a DM letting them know their request
+                was declined.
               </p>
             </div>
-          ) : (
-            <div className={styles['v2-decline-modal__confirm']}>
-              <LabelTag
-                label="Request declined"
-                type="Success"
-                size="Small"
-                casing="Title Case"
-              />
-              <p className={styles['v2-decline-modal__confirm-body']}>
-                Request from <strong>@{requesterUsername}</strong> to join{' '}
-                <strong>#{channelName}</strong> has been declined. A DM has
-                been sent to the requester
-                {reason.trim() ? ' with your reason.' : ' without a reason.'}{' '}
-                Audit event <code>request_declined</code> emitted per FR-13.
-              </p>
-              <p className={styles['v2-decline-modal__confirm-foot']}>
-                This dialog will close automatically.
-              </p>
+          </div>
+
+          <div className={styles['v2-decline-modal__reason']}>
+            <TextArea
+              size="Medium"
+              placeholder="Reason (optional, shared with requester)"
+              rows={4}
+              maxLength={REASON_MAX}
+              value={reason}
+              onChange={(e) => store.setDeclineReason(e.target.value)}
+              aria-label="Decline reason (optional, shared with requester). 500 character maximum."
+            />
+            <div
+              className={[
+                styles['v2-decline-modal__counter'],
+                counterAmber
+                  ? styles['v2-decline-modal__counter--warn']
+                  : '',
+                counterFull
+                  ? styles['v2-decline-modal__counter--full']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              aria-live="polite"
+            >
+              {counterLabel}
             </div>
-          )}
-        </Modal>
+          </div>
+        </div>
+      ) : (
+        <div className={styles['v2-decline-modal__confirm']}>
+          <LabelTag
+            label="Request declined"
+            type="Success"
+            size="Small"
+            casing="Title Case"
+          />
+          <p className={styles['v2-decline-modal__confirm-body']}>
+            @{requesterUsername} has been notified.
+          </p>
+          <p className={styles['v2-decline-modal__confirm-foot']}>
+            This dialog will close automatically.
+          </p>
+        </div>
+      )}
+    </Modal>
+  );
+
+  if (!standalone) {
+    return (
+      <div
+        className={styles['v2-decline-modal__page-overlay']}
+        role="presentation"
+      >
+        {dialog}
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <ScreenCanvas
+      eyebrow="§3.15"
+      title="Decline modal — two-step neutral register"
+      subtitle="Modal over a real channel — Primary uses neutral emphasis (not destructive red) per the OPEN-E winner."
+      canvas={
+        <DpcAppShell
+          focusChannelName={channelName}
+          focusIsDiscoverable
+          focusHasPendingDot
+          channelHeader={
+            <ChannelHeader
+              type="Channel"
+              name={channelName}
+              description={store.focusChannel.purpose}
+              memberCount={store.focusChannel.memberCount}
+              pinnedCount={2}
+              infoToggled
+            />
+          }
+          overlay={<AppOverlay maxWidth={760}>{dialog}</AppOverlay>}
+        >
+          <div className={shellStyles['channel-shell__messages']}>
+            <Scrollbars>
+              <div className={shellStyles['channel-shell__messages-list']}>
+                <EmptyState
+                  title="Decline modal is the focus"
+                  description="The modal is anchored over the channel. Click outside is a no-op (prevents slip-cancel mid-typing)."
+                />
+              </div>
+            </Scrollbars>
+          </div>
+        </DpcAppShell>
+      }
+      reviewSummary='Primary "Decline" uses neutral emphasis, not destructive red. Destructive styling primes a defensive copy register; neutral matches the admin-routine register for decline-volume channels. Click-outside is a no-op (§3.15.3) to prevent slip-cancel.'
+      reviewItems={[
+        {
+          heading: 'DM preview — what @' + requesterUsername + ' will receive',
+          body: (
+            <DmPreviewPane
+              hasReason={reason.trim().length > 0}
+              reason={reason}
+              requesterUsername={requesterUsername}
+              channelName={channelName}
+            />
+          ),
+        },
+        {
+          heading: 'Channel name omission (§3.15.5)',
+          body: (
+            <p>
+              Channel name is intentionally omitted from the production DM
+              template to preserve silent-channel-existence in the S1 fallback
+              case. Here <code>#{channelName}</code> is shown in the preview
+              for reviewer context only — the real DM does not include it.
+            </p>
+          ),
+        },
+      ]}
+    />
   );
 }
 
@@ -249,11 +288,8 @@ function DmPreviewPane({
   channelName,
 }: DmPreviewPaneProps) {
   return (
-    <aside
-      className={styles['v2-decline-modal__dm']}
-      aria-label="DM preview as the requester will receive it"
-    >
-      <header className={styles['v2-decline-modal__dm-header']}>
+    <div className={styles['v2-decline-modal__dm']}>
+      <div className={styles['v2-decline-modal__dm-header']}>
         <span className={styles['v2-decline-modal__dm-label']}>
           DM preview · what @{requesterUsername} will receive
         </span>
@@ -263,7 +299,7 @@ function DmPreviewPane({
           size="X-Small"
           casing="Title Case"
         />
-      </header>
+      </div>
       <div className={styles['v2-decline-modal__dm-bubble']}>
         <p className={styles['v2-decline-modal__dm-line']}>
           Your request to join this <strong>Discoverable</strong> channel was
@@ -278,11 +314,9 @@ function DmPreviewPane({
           </p>
         ) : null}
       </div>
-      <p className={styles['v2-decline-modal__dm-foot']}>
-        Channel name is intentionally omitted in §3.15.5 to preserve
-        silent-channel-existence in the S1 fallback case; here #{channelName}{' '}
-        is shown in the preview for reviewer context only.
+      <p className={styles['v2-decline-modal__dm-meta']}>
+        Production template omits <code>#{channelName}</code> per §3.15.5.
       </p>
-    </aside>
+    </div>
   );
 }

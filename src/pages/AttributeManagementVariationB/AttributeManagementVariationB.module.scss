@@ -1,0 +1,38 @@
+.page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xxxl) var(--spacing-xxxl);
+  display: flex;
+  flex-direction: column;
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__empty {
+    padding: var(--spacing-xxxl) var(--spacing-xl);
+    text-align: center;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+  }
+
+  &__empty-msg {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__inline-link {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--button-bg);
+    font-family: var(--font-family-body);
+    font-size: inherit;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

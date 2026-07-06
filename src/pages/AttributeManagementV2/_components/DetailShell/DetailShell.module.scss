@@ -1,0 +1,89 @@
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-l) 0 var(--spacing-xxxxl);
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    width: fit-content;
+    padding: var(--spacing-xxs) var(--spacing-s);
+    margin-left: calc(var(--spacing-s) * -1);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--button-bg);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      outline: none;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+  }
+
+  &__titleblock {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-700);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+    color: var(--center-channel-color);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__overflow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      color: var(--center-channel-color);
+      outline: none;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxl);
+  }
+}

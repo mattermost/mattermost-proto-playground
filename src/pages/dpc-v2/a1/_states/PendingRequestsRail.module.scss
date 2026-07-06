@@ -1,14 +1,14 @@
 .v2-pending-rail {
+  // Slot inside ChannelShell `trailing` — width inherited from
+  // channel-shell__right-sidebar (400px on desktop).
   display: flex;
   flex-direction: column;
-  width: 400px;
-  max-width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: var(--radius-l);
-  overflow: hidden;
 
   &__header {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -49,6 +49,7 @@
   }
 
   &__subheader {
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -69,34 +70,14 @@
   }
 
   &__search {
+    flex: 0 0 auto;
     padding: 0 var(--spacing-l) var(--spacing-s) var(--spacing-l);
   }
 
   &__body {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
     padding-bottom: var(--spacing-l);
-
-    scrollbar-width: thin;
-    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(var(--center-channel-color-rgb), 0.24);
-      border-radius: 3px;
-      border: 2px solid transparent;
-      background-clip: content-box;
-      transition: background-color var(--duration-quick) var(--ease-transition);
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(var(--center-channel-color-rgb), 0.4);
-    }
   }
 
   &__section {

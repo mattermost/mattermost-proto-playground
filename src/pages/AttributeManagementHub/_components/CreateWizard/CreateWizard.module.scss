@@ -1,0 +1,211 @@
+.wizard {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+
+  &__scrim {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+    animation: wizard-fade var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    animation: wizard-pop var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__steps {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding-bottom: var(--spacing-l);
+    margin-bottom: var(--spacing-l);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex-wrap: wrap;
+  }
+
+  &__step {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+
+    &--active {
+      color: var(--center-channel-color);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    &--done {
+      color: var(--color-success);
+    }
+  }
+
+  &__step-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    font-size: var(--font-size-75);
+  }
+
+  &__step-label {
+    font-size: var(--font-size-100);
+  }
+
+  &__body {
+    min-height: 220px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__mode {
+    display: flex;
+    gap: var(--spacing-l);
+  }
+
+  &__radio,
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+    cursor: pointer;
+  }
+
+  &__add {
+    display: flex;
+    gap: var(--spacing-s);
+  }
+
+  &__value-list,
+  &__reuse-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__value-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xs) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__reuse-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+  }
+
+  &__reuse-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__reuse-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__reuse-meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-l);
+  }
+
+  &__review {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__review-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__review-key {
+    width: 120px;
+    flex: 0 0 auto;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__review-val {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__review-chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xxs);
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}
+
+@keyframes wizard-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wizard-pop {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}

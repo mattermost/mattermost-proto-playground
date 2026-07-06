@@ -1,0 +1,69 @@
+// Shared members-button-with-pending-dot — see MembersIconWithDot.tsx
+// for anatomy rationale. Single source of truth for the channel-header
+// 6px theme-aware pending dot (Figma 4888:61576 Unread Badge pattern).
+.members-icon-with-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--center-channel-color);
+  }
+
+  // Content flex frame — Figma "Content" frame. Position: relative so
+  // the absolutely-positioned dot resolves left / top against this frame
+  // (icon's top-left after the button's 6px padding).
+  &__content {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  // 12px square wrapping the account-outline icon — matches Figma "Icon
+  // Container" frame.
+  &__icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    line-height: 0;
+  }
+
+  &__count {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // 6px pending-request dot — Figma 4888:61576 Unread Badge pattern.
+  // top -2px / left 8px relative to the Content flex frame — the dot
+  // sits over the top-right corner of the 12px icon, overlapping ~4px
+  // and extending ~2px past the right edge. Color via
+  // --sidebar-text-active-border so it adapts across all 5 themes
+  // (denim / sapphire / quartz / indigo / onyx) — same token as the LHS
+  // row dot (§3.24).
+  &__dot {
+    position: absolute;
+    top: -2px;
+    left: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--sidebar-text-active-border);
+    pointer-events: none;
+    z-index: 1;
+  }
+}

@@ -1,0 +1,140 @@
+.audit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+
+  &__toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+  }
+
+  &__lede {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    max-width: 64ch;
+    line-height: 1.5;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    overflow: hidden;
+    font-family: var(--font-family-body);
+
+    th,
+    td {
+      padding: var(--spacing-m) var(--spacing-l);
+      text-align: left;
+      font-size: var(--font-size-75);
+      vertical-align: middle;
+    }
+
+    th {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      font-weight: var(--font-weight-semibold);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      font-size: var(--font-size-50);
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+      &:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    tbody tr:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.02);
+    }
+  }
+
+  &__name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__type {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__applies {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__reason {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__reason-caveat {
+    display: block;
+    margin-top: var(--spacing-xxs);
+    font-size: var(--font-size-50);
+    line-height: 1.4;
+    color: var(--color-warning);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    height: 22px;
+    padding: 0 var(--spacing-s);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+
+    &--yes {
+      background: rgba(var(--color-success-rgb), 0.12);
+      color: var(--color-success);
+    }
+
+    &--no {
+      background: rgba(var(--color-danger-rgb), 0.10);
+      color: var(--color-danger);
+    }
+
+    // Eligible-by-rule but caveated (stale/failed source, or free text).
+    &--caveat {
+      background: rgba(var(--color-warning-rgb), 0.14);
+      color: var(--color-warning);
+    }
+  }
+
+  &__badge-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  // Compact caveat pill shown right after the Yes/No badge.
+  &__caveat {
+    display: inline-flex;
+    align-items: center;
+    margin-left: var(--spacing-xs);
+    height: 20px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+
+    &--warn {
+      background: rgba(var(--color-warning-rgb), 0.12);
+      color: var(--color-warning);
+    }
+
+    &--danger {
+      background: rgba(var(--color-danger-rgb), 0.10);
+      color: var(--color-danger);
+    }
+  }
+}

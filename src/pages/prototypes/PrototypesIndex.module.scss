@@ -1,30 +1,263 @@
-.prototypes-index__list {
-  list-style: none;
-  padding: 0;
-  margin: var(--spacing-xl) 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-s);
+// =============================================================================
+// Prototypes index page
+// =============================================================================
 
-  li {
-    padding: var(--spacing-m) 0;
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  }
+.prototypes-index {
+  // intentionally empty — all layout controlled by doc-shell wrappers
+}
 
-  a {
-    font-size: var(--font-size-200);
-    font-weight: var(--font-weight-semibold);
-    color: var(--link-color);
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
-    }
+// ── Section ──────────────────────────────────────────────────────────────────
+
+.prototypes-index__section {
+  margin-top: var(--spacing-xxxl);
+
+  & + & {
+    margin-top: var(--spacing-xxxxl);
   }
 }
+
+.prototypes-index__section-heading {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-300);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  margin: 0 0 var(--spacing-l);
+}
+
+.prototypes-index__section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-m);
+  margin-bottom: var(--spacing-l);
+
+  .prototypes-index__section-heading {
+    margin: 0;
+  }
+}
+
+// ── Recently Updated — 4-column feature card grid ────────────────────────────
+
+.prototypes-index__recent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-l);
+
+  @media (max-width: 840px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Feature card (Recently Updated strip) ────────────────────────────────────
+
+.prototypes-index__feature-card {
+  --proto-accent: rgba(var(--center-channel-color-rgb), 0.32);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-l);
+  background-color: var(--center-channel-bg);
+  color: var(--center-channel-color);
+  text-decoration: none;
+  overflow: hidden;
+  transition:
+    border-color var(--duration-quick) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition),
+    transform var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    border-color: rgba(var(--center-channel-color-rgb), 0.20);
+    box-shadow: var(--elevation-2);
+    transform: translateY(-2px);
+
+    .prototypes-index__card-arrow {
+      transform: translateX(3px);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
+  }
+}
+
+// ── All-prototypes grid ───────────────────────────────────────────────────────
+
+.prototypes-index__group {
+  margin-top: var(--spacing-xxl);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.prototypes-index__group-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+  margin-bottom: var(--spacing-m);
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}
+
+.prototypes-index__group-title {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.prototypes-index__group-count {
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.52);
+  white-space: nowrap;
+}
+
+.prototypes-index__cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-m);
+
+  @media (max-width: 720px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Standard card (grouped sections) ─────────────────────────────────────────
+
+.prototypes-index__card {
+  --proto-accent: rgba(var(--center-channel-color-rgb), 0.32);
+
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.10);
+  border-radius: var(--radius-m);
+  background-color: var(--center-channel-bg);
+  color: var(--center-channel-color);
+  text-decoration: none;
+  overflow: hidden;
+  transition:
+    border-color var(--duration-quick) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition),
+    background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    border-color: rgba(var(--center-channel-color-rgb), 0.18);
+    box-shadow: var(--elevation-1);
+    background-color: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
+  }
+}
+
+// ── Shared card internals ─────────────────────────────────────────────────────
+
+.prototypes-index__card-accent {
+  display: block;
+  height: 3px;
+  background-color: var(--proto-accent);
+  flex-shrink: 0;
+}
+
+.prototypes-index__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-m);
+  flex: 1;
+
+  .prototypes-index__feature-card & {
+    padding: var(--spacing-l);
+    gap: var(--spacing-xs);
+  }
+}
+
+.prototypes-index__card-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-full);
+  background-color: rgba(var(--center-channel-color-rgb), 0.07);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-bottom: var(--spacing-xxs);
+}
+
+.prototypes-index__card-title {
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  line-height: var(--line-height-100);
+
+  .prototypes-index__feature-card & {
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+  }
+}
+
+.prototypes-index__card-desc {
+  font-size: var(--font-size-75);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.68);
+  flex: 1;
+
+  // Clamp to 3 lines in standard cards
+  .prototypes-index__card & {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.prototypes-index__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-xs);
+}
+
+.prototypes-index__card-date {
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.48);
+
+  .prototypes-index__card & {
+    margin-top: var(--spacing-xs);
+  }
+}
+
+.prototypes-index__card-arrow {
+  font-size: var(--font-size-200);
+  color: rgba(var(--center-channel-color-rgb), 0.40);
+  transition: transform var(--duration-quick) var(--ease-transition);
+  line-height: 1;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
 
 .prototypes-index__empty {
   padding: var(--spacing-l);

@@ -1,0 +1,51 @@
+.stack {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxxs);
+
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    cursor: pointer;
+    transition:
+      background var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+      outline: none;
+    }
+
+    &--health {
+      color: var(--color-warning);
+
+      &:hover,
+      &:focus-visible {
+        background: rgba(var(--color-warning-rgb), 0.08);
+        color: var(--color-warning);
+      }
+    }
+
+    &--governance {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+
+    &--relationship {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    &--overflow {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+}

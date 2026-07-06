@@ -1,0 +1,39 @@
+/**
+ * Channel Settings scene — wraps the real channel layout (ChannelShell) with
+ * the ChannelSettingsModal open over it. Owns: positioning anchor for the
+ * modal scrim, the reopen affordance, and ambient scene background.
+ */
+.channel-settings-scene {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--sidebar-header-bg);
+
+  &__reopen {
+    position: absolute;
+    top: var(--spacing-xl);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    appearance: none;
+    background: var(--button-bg);
+    color: var(--button-color);
+    border: none;
+    padding: var(--spacing-s) var(--spacing-l);
+    border-radius: var(--radius-s);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    box-shadow: var(--elevation-3);
+
+    &:hover {
+      filter: brightness(0.95);
+    }
+  }
+}

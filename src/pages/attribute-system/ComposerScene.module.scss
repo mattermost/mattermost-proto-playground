@@ -1,0 +1,351 @@
+/**
+ * ComposerScene — owns the rail slot above MessageInput, the Option B
+ * AttributesButton overlay, and the Option B popover surface.
+ *
+ * Co-locates styles for ComposerAttrStrip and AttributesButton since they
+ * are page-local pieces that only render inside ComposerScene.
+ */
+
+// ─── Channel ceiling row above messages (preserves design §2 header chip) ─
+.composer-scene {
+  display: contents;
+
+  &__ceiling-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 16px 4px;
+    padding: 6px 10px;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+    align-self: flex-start;
+  }
+
+  &__ceiling-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+
+  &__ceiling-meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+
+  // ─── Composer foot — rail tucks behind MessageInput like a bottom sheet ─
+  &__foot {
+    position: relative;
+    flex: 0 0 auto;
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
+  }
+
+  &__rail-slot {
+    position: relative;
+    z-index: 1;
+    margin-bottom: -10px;
+    margin-left: -1px;
+    width: calc(100% + 2px);
+    padding: 0;
+    overflow: visible;
+  }
+
+  // Sheet peeks above the input: rounded top, flat bottom hidden under input.
+  &__rail-anchor {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 28px;
+    padding: 3px 8px 11px;
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    border: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-bottom: none;
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+    overflow: visible;
+  }
+
+  &__rail-label {
+    flex: none;
+    align-self: center;
+    margin-right: 4px;
+    padding-right: 8px;
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: rgba(var(--center-channel-color-rgb), 0.44);
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__input-slot {
+    position: relative;
+    z-index: 2;
+    background: var(--center-channel-bg);
+    padding-top: 1px;
+  }
+
+  // ─── Chip anchor — provides positioning context for the picker popover ─
+  &__chip-anchor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  // ─── Picker popover — default opens below; `--above` for rail chips ───
+  &__picker-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 40;
+    transform-origin: top left;
+    animation: composer-scene-popover-in var(--duration-quick)
+      var(--ease-entrance) forwards;
+
+    &--above {
+      top: auto;
+      bottom: calc(100% + 6px);
+      z-index: 50;
+      transform-origin: bottom left;
+    }
+  }
+
+  // ─── Option B attributes button — inline in MessageInput action row ─
+  &__attrs-button-slot {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 30;
+  }
+
+  &__attrs-popover {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    z-index: 40;
+    min-width: 320px;
+    max-width: 360px;
+    padding: 10px 0 6px;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.14),
+      0 2px 4px rgba(0, 0, 0, 0.08);
+    transform-origin: bottom left;
+    animation: composer-scene-popover-in var(--duration-quick)
+      var(--ease-entrance) forwards;
+  }
+
+  &__popover-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px 8px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__popover-title {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__popover-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__popover-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__popover-row {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+  }
+
+  &__popover-name {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.8);
+  }
+
+  &__popover-asterisk {
+    margin-left: 2px;
+    color: var(--color-danger);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__popover-value {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__popover-affordance {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+
+  &__popover-locked {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__popover-footer {
+    margin: 6px 0 0;
+    padding: 8px 14px 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// ─── ComposerAttrStrip — the rail itself ──────────────────────────────
+.composer-attr-strip {
+  display: flex;
+  align-items: center;
+  min-height: 22px;
+  width: 100%;
+  font-family: var(--font-family-body);
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+  }
+
+  // Optional surface variant — currently unused, but provides hook for
+  // future "rail-with-background" demos without rewriting consumers.
+  &--surface {
+    padding: 4px 8px;
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+    border-radius: var(--radius-m);
+  }
+
+  &__sr-error {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+// ─── AttributesButton — Option B trigger beside Send ──────────────────
+.attributes-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-l);
+  cursor: pointer;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  transition:
+    background-color var(--duration-quick) var(--ease-transition),
+    border-color var(--duration-quick) var(--ease-transition);
+
+  &:hover,
+  &:focus-visible {
+    border-color: rgba(var(--center-channel-color-rgb), 0.24);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &--active {
+    border-color: rgba(var(--center-channel-color-rgb), 0.32);
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+  }
+
+  &--edited {
+    color: var(--center-channel-color);
+  }
+
+  &--error {
+    border-color: rgba(var(--color-danger-rgb), 0.4);
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__shield {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__label {
+    color: inherit;
+  }
+
+  &__edited {
+    display: inline-flex;
+    align-items: center;
+    color: var(--button-bg);
+  }
+}
+
+// ─── Popover entrance animation (popover-panel spec) ──────────────────
+@keyframes composer-scene-popover-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .composer-scene__picker-popover,
+  .composer-scene__attrs-popover {
+    animation: none;
+  }
+}

@@ -1,0 +1,103 @@
+.remove-flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+
+  &__dots {
+    align-self: center;
+  }
+
+  &__copy {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100, 20px);
+    color: rgba(var(--center-channel-color-rgb), 0.88);
+  }
+
+  &__choice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-m);
+    cursor: pointer;
+  }
+
+  &__choice-label {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__choice-note {
+    display: block;
+    margin-top: 2px;
+    font-size: var(--font-size-75);
+    line-height: 16px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__field-label {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  // Footer with the download checkbox on the left, actions on the right.
+  &__footer {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    width: 100%;
+  }
+
+  &__footer-check {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+    cursor: pointer;
+  }
+
+  &__footer-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__status {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+  }
+
+  &__status-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__status-head {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__status-note {
+    font-size: var(--font-size-75);
+    line-height: 16px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

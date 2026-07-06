@@ -1,5 +1,7 @@
 .v2-confirm-modal {
-  &__overlay {
+  // Page-level overlay (runtime behaviour when the modal is triggered
+  // from Channel Settings → openToggleConfirm).
+  &__page-overlay {
     position: absolute;
     inset: 0;
     display: flex;
@@ -7,18 +9,25 @@
     justify-content: center;
     padding: var(--spacing-xxxxl) var(--spacing-xl);
     background: rgba(var(--center-channel-color-rgb), 0.4);
-    z-index: 10;
+    z-index: 40;
     overflow: auto;
   }
 
+  &__canvas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  // Scenario chip selector — REVIEWER AID, lives outside the modal body
+  // per Change 3 so reviewers don't mistake it for product UI.
   &__scenario-picker {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
     padding: var(--spacing-s) var(--spacing-m);
-    margin-bottom: var(--spacing-m);
-    background: rgba(var(--button-bg-rgb), 0.04);
-    border: 1px dashed rgba(var(--button-bg-rgb), 0.24);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     border-radius: var(--radius-s);
   }
 
@@ -186,7 +195,8 @@
 
   &__bullets {
     margin: 0;
-    padding-left: var(--spacing-l);
+    padding-left: 0;
+    list-style-position: inside;
     font-family: var(--font-family-body);
     font-size: var(--font-size-100);
     line-height: var(--line-height-200);

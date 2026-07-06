@@ -1,0 +1,566 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Channel Attributes scene — Direction C ("Quick-toggle columns + tabbed
+   Configure modal"). High-craft rebuild.
+
+   The table chrome (gaTable, gaCell, gaAdd, widePanel, modalOverlay) is reused
+   read-only from AttributeSystem.module.scss so density and rhythm stay
+   consistent with the User Attributes and Global Attributes surfaces. Only
+   the column-promoted controls and the per-row Configure affordances are
+   defined here.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ─── Header copy alignment with ChannelSettings reference ──────────────── */
+
+.propertyCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  min-width: 0;
+}
+
+.propertyCell__name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+}
+
+.propertyCell__required {
+  color: var(--button-bg);
+  font-weight: var(--font-weight-semibold);
+  margin-left: 1px;
+  user-select: none;
+}
+
+/* ─── Compact column header ─────────────────────────────────────────────── */
+
+.colHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxxs);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* Column widths — Property / Type / Values stretch; quick-toggle columns
+   pin to predictable widths so the row settles into a calm grid. */
+.col--required {
+  width: 64px;
+  text-align: center;
+}
+.col--show {
+  width: 88px;
+  text-align: center;
+}
+.col--open {
+  width: 88px;
+  text-align: center;
+}
+.col--inherit {
+  width: 232px;
+  text-align: left;
+}
+.col--cog {
+  width: 168px;
+  text-align: left;
+}
+
+/* ─── Centered switch cells (Required / Show / Open) ───────────────────── */
+
+.switchCell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ─── 3-state inheritance segmented control ────────────────────────────── */
+
+.inheritSegment {
+  display: grid;
+  grid-template-columns: minmax(48px, 1fr) minmax(64px, 1fr) minmax(96px, 1.35fr);
+  align-items: stretch;
+  width: 100%;
+  min-width: 220px;
+  height: 28px;
+  padding: 2px;
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.06);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  gap: 1px;
+
+  &__btn {
+    appearance: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+    padding: 0 var(--spacing-xs);
+    border-radius: calc(var(--radius-s) - 2px);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+    white-space: nowrap;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    transition:
+      background var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 1px;
+    }
+
+    &--active,
+    &--active:hover {
+      background: var(--center-channel-bg);
+      color: var(--button-bg);
+      box-shadow:
+        0 0 0 1px rgba(var(--button-bg-rgb), 0.24),
+        var(--elevation-1);
+    }
+  }
+}
+
+/* When the attribute does not apply to Posts, surface a muted "—" with
+   a hover tooltip explaining why. */
+.inheritUnavailable {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-100);
+  color: rgba(var(--center-channel-color-rgb), 0.4);
+  cursor: default;
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-s);
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 2px;
+  }
+
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    z-index: 30;
+    width: 220px;
+    padding: var(--spacing-xs) var(--spacing-m);
+    background: rgba(var(--center-channel-color-rgb), 0.92);
+    color: var(--center-channel-bg);
+    border-radius: var(--radius-s);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    box-shadow: var(--elevation-3);
+    pointer-events: none;
+    animation: ch-popover-in var(--duration-quick) var(--ease-entrance);
+  }
+}
+
+/* ─── Configure cog + summary subtext + lifecycle "..." ───────────────── */
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+}
+
+.cog {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cog__row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+}
+
+.cog__button {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  height: 28px;
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-s);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  transition:
+    background var(--duration-quick) var(--ease-transition),
+    border-color var(--duration-quick) var(--ease-transition),
+    color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--button-bg-rgb), 0.06);
+    border-color: rgba(var(--button-bg-rgb), 0.18);
+    color: var(--button-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 1px;
+  }
+
+  &__icon {
+    display: inline-flex;
+    color: currentColor;
+  }
+
+  &__label {
+    display: inline-flex;
+  }
+}
+
+.cog__summary {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  line-height: 1.4;
+  color: rgba(var(--center-channel-color-rgb), 0.5);
+  margin-left: var(--spacing-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 156px;
+}
+
+.cog__summary-sep {
+  margin: 0 4px;
+  color: rgba(var(--center-channel-color-rgb), 0.32);
+}
+
+/* ─── Configure modal — internal layout (the Modal chrome itself is the
+       shared design-system component) ───────────────────────────────────── */
+
+.cfgTabs {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 0 0 var(--spacing-l);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  margin-bottom: var(--spacing-l);
+}
+
+.cfgTab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  height: 32px;
+  padding: 0 var(--spacing-m);
+  border-radius: var(--radius-s);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  transition:
+    background var(--duration-quick) var(--ease-transition),
+    color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+    color: var(--center-channel-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 2px;
+  }
+
+  &--active,
+  &--active:hover {
+    background: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--button-bg);
+  }
+}
+
+.cfgSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.cfgFieldset {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.cfgLegend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxs);
+  padding: 0;
+  margin: 0;
+
+  &__title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__helper {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+.cfgRadioList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cfgRadioRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-s);
+  padding: var(--spacing-s) var(--spacing-m);
+  border-radius: var(--radius-s);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background: var(--center-channel-bg);
+  cursor: pointer;
+  transition:
+    background var(--duration-quick) var(--ease-transition),
+    border-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+    border-color: rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &--selected,
+  &--selected:hover {
+    background: rgba(var(--button-bg-rgb), 0.04);
+    border-color: rgba(var(--button-bg-rgb), 0.32);
+  }
+
+  &__radio {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__desc {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+.cfgSummaryBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-m);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+
+  &__title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__token {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px var(--spacing-xs);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+}
+
+.cfgApplyNote {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  line-height: 1.45;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  margin-right: auto;
+}
+
+/* ─── Hybrid: simpler row + grouped sections in the modal ──────────────── */
+
+.hybridConfigureBtn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  height: 28px;
+  padding: 0 var(--spacing-s);
+  border-radius: var(--radius-s);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  transition:
+    background var(--duration-quick) var(--ease-transition),
+    border-color var(--duration-quick) var(--ease-transition),
+    color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--button-bg-rgb), 0.06);
+    border-color: rgba(var(--button-bg-rgb), 0.24);
+    color: var(--button-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 1px;
+  }
+}
+
+.cfgGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+}
+
+.cfgGroup__title {
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cfgQuickRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-l);
+  padding: var(--spacing-s) 0;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__helper {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__control {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* ─── Classification values cell (multi-pill row) ──────────────────────── */
+
+.classificationValues {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xxs);
+}
+
+/* Positioning context for the `…` IconButton + AttributeRowMenu pair. */
+.menuAnchor {
+  position: relative;
+  display: inline-flex;
+}
+
+@keyframes ch-popover-in {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

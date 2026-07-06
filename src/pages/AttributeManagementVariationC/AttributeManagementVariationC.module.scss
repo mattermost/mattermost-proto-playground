@@ -1,0 +1,20 @@
+.page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xxxl) var(--spacing-xxxl);
+  display: flex;
+  flex-direction: column;
+
+  &__inline-link {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--button-bg);
+    font-family: var(--font-family-body);
+    font-size: inherit;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

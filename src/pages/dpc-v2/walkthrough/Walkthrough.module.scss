@@ -1,0 +1,779 @@
+.walkthrough {
+  width: 100%;
+  // Match the DpcAppShell pattern: a bounded min-height so the app chrome
+  // sits well inside PrototypeShell's centered canvas. ChannelShell needs
+  // ~680px to render the sidebar + main + RHS columns at full height.
+  min-height: 720px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+  font-family: var(--font-family-body);
+
+  // ── Composite lock-plus glyph ──────────────────────────────────────────
+  &__lockplus {
+    position: relative;
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    color: rgba(var(--sidebar-text-rgb), 0.64);
+
+    .channel-sidebar-item--active & {
+      color: var(--sidebar-text);
+    }
+  }
+
+  &__lockplus-plus {
+    position: absolute;
+    right: -2px;
+    top: -2px;
+    background: var(--sidebar-bg);
+    border-radius: 50%;
+    color: inherit;
+  }
+
+  // ── Pending-requests dot (LHS sidebar row) ─────────────────────────────
+  &__pending-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sidebar-text-active-border);
+    flex-shrink: 0;
+  }
+
+  &__mention {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 9px;
+    background: var(--mention-bg, var(--sidebar-text-active-border));
+    color: var(--mention-color, var(--sidebar-bg));
+    font-family: var(--font-family-mono);
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // ── Sidebar category labels ───────────────────────────────────────────
+  &__category {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px 4px;
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+    font-family: var(--font-family-body);
+    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__category-chevron {
+    display: inline-flex;
+    color: inherit;
+  }
+
+  &__category-label {
+    flex: 1;
+  }
+
+  &__category-action {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    color: inherit;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.12);
+      color: var(--sidebar-text);
+    }
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 8px;
+  }
+
+  // ── Floating "Channel Settings" pill (interactive demo channel only) ──
+  &__settings-fab {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--button-bg, var(--color-info));
+    color: var(--button-color, var(--center-channel-bg));
+    border: 0;
+    border-radius: 6px;
+    font-family: var(--font-family-body);
+    font-size: 13px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: all var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      filter: brightness(0.95);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+    }
+
+    &:active {
+      filter: brightness(0.9);
+    }
+  }
+
+  // ── Overlay backdrop (Browse + Switcher + Settings overlays) ──────────
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.48);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 1000;
+    padding: 80px 24px 24px;
+    animation: walkthrough-overlay-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+
+  // ── Browse Channels modal ────────────────────────────────────────────
+  &__browse-modal {
+    width: 100%;
+    max-width: 760px;
+    max-height: calc(100vh - 120px);
+    background: var(--center-channel-bg);
+    border-radius: 8px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__browse-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__browse-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: 22px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__browse-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__browse-search {
+    padding: 12px 24px;
+  }
+
+  &__browse-filter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 24px 12px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__browse-count {
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__browse-list-wrap {
+    flex: 1;
+    min-height: 0;
+    padding: 0 12px;
+  }
+
+  &__browse-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__browse-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 4px;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  &__browse-row-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__browse-row-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__browse-row-name {
+    font-family: var(--font-family-body);
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__browse-row-bottom {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-family-body);
+    font-size: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    flex-wrap: wrap;
+  }
+
+  &__browse-indicator-joined {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 6px;
+    background: rgba(var(--color-success-rgb), 0.12);
+    color: var(--color-success);
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__browse-indicator-pending {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 6px;
+    background: rgba(var(--color-info-rgb), 0.12);
+    color: var(--color-info);
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__browse-member-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__browse-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(var(--center-channel-color-rgb), 0.32);
+    display: inline-block;
+  }
+
+  &__browse-purpose {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // ── Channel switcher modal ───────────────────────────────────────────
+  &__switcher {
+    width: 100%;
+    max-width: 580px;
+    max-height: calc(100vh - 160px);
+    background: var(--center-channel-bg);
+    border-radius: 8px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__switcher-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__switcher-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: 18px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__switcher-search {
+    padding: 12px 20px;
+  }
+
+  &__switcher-body {
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__switcher-section {
+    padding: 4px 12px 12px;
+  }
+
+  &__switcher-heading {
+    margin: 0;
+    padding: 8px 8px 4px;
+    font-family: var(--font-family-body);
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__switcher-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-within {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+
+      .walkthrough__switcher-row-team {
+        display: none;
+      }
+    }
+
+    &:hover .walkthrough__switcher-row-tail button,
+    &:focus-within .walkthrough__switcher-row-tail button {
+      display: inline-flex;
+    }
+  }
+
+  &__switcher-row-icon {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__switcher-row-name {
+    flex: 1;
+    font-family: var(--font-family-body);
+    font-size: 14px;
+    color: var(--center-channel-color);
+  }
+
+  &__switcher-row-tail {
+    display: inline-flex;
+    align-items: center;
+
+    button {
+      display: none;
+    }
+  }
+
+  &__switcher-row-team {
+    font-family: var(--font-family-body);
+    font-size: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__switcher-empty {
+    padding: 24px 16px;
+  }
+
+  // ── Channel Settings — tabbed modal (matches Figma 4202:106049) ──────
+  &__settings-modal {
+    width: 100%;
+    max-width: 920px;
+    height: 640px;
+    background: var(--center-channel-bg);
+    border-radius: 8px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__settings-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: 22px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  &__settings-sub {
+    padding-left: 16px;
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    font-family: var(--font-family-body);
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__settings-shell {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 236px 1fr;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__settings-sidebar {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 2px;
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &__settings-tab {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    padding: 8px 12px;
+    text-align: left;
+    font-family: var(--font-family-body);
+    font-size: 14px;
+    color: var(--center-channel-color);
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb, 28, 88, 217), 0.12);
+      color: var(--button-bg, var(--color-info));
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__settings-main {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__settings-content {
+    padding: 24px 32px 32px;
+  }
+
+  &__settings-row {
+    display: flex;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m) 0;
+    align-items: flex-start;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+    &:first-child {
+      border-top: 0;
+    }
+  }
+
+  &__settings-row-text {
+    flex: 1;
+  }
+
+  &__settings-row-label {
+    font-family: var(--font-family-body);
+    font-size: 14px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin-bottom: 4px;
+  }
+
+  &__settings-row-help {
+    font-family: var(--font-family-body);
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__settings-footer-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  // ── Info tab ─────────────────────────────────────────────────────────
+  &__info-tab {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  // ── Membership Policies tab ──────────────────────────────────────────
+  &__policies-tab {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+
+  &__policies-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__policies-section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__policies-section-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: 16px;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__policies-section-help {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 13px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__policies-table {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  &__policies-table-header {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 2fr 32px;
+    gap: 12px;
+    padding: 8px 14px;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-family: var(--font-family-body);
+    font-size: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    text-transform: none;
+  }
+
+  &__policies-table-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 2fr 32px;
+    gap: 12px;
+    padding: 10px 14px;
+    align-items: center;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.04);
+    font-family: var(--font-family-body);
+    font-size: 14px;
+    color: var(--center-channel-color);
+
+    &:last-of-type {
+      border-bottom: 0;
+    }
+  }
+
+  &__policies-cell-attr {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__policies-cell-drag {
+    color: rgba(var(--center-channel-color-rgb), 0.32);
+    cursor: grab;
+    font-size: 12px;
+    letter-spacing: -2px;
+  }
+
+  &__policies-cell-op {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-family: var(--font-family-mono);
+    font-size: 13px;
+  }
+
+  &__policies-cell-values {
+    color: var(--center-channel-color);
+  }
+
+  &__policies-cell-remove {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(var(--color-danger-rgb), 0.72);
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--color-danger-rgb), 0.08);
+      color: var(--color-danger);
+    }
+  }
+
+  &__policies-table-add {
+    padding: 6px 10px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.04);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &__policies-help-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-m);
+  }
+
+  &__policies-help-text {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    max-width: 480px;
+  }
+
+  &__policies-divider {
+    border: 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    margin: 0;
+  }
+
+  &__policies-autoadd {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__policies-autoadd-help {
+    margin: 0 0 0 26px;
+    font-family: var(--font-family-body);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  // ── Non-member empty state ───────────────────────────────────────────
+  &__non-member {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px;
+  }
+
+  // ── Toast ────────────────────────────────────────────────────────────
+  &__toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1200;
+  }
+
+  // ── Reviewer toolbar (bottom-right; hidden in production) ────────────
+  &__reviewer-toolbar {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(20, 20, 19, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.88);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.32);
+  }
+
+  &__reviewer-toolbar-label {
+    color: rgba(255, 255, 255, 0.64);
+  }
+
+  &__reviewer-toolbar-select {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.32);
+    }
+  }
+}
+
+@keyframes walkthrough-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

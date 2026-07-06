@@ -1,0 +1,106 @@
+/**
+ * AttributeChipPicker — anchored listbox surface for AttributeChip and the
+ * Option B AttributesButton popover. Compass popover open/close animation
+ * (scale 90% → 100%, fade) is applied by the anchor wrapper in ComposerScene.
+ */
+
+.attribute-chip-picker {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 6px 0;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-family-body);
+
+  &__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+    outline: none;
+    white-space: nowrap;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus {
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    &--selected {
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    color: var(--button-bg);
+    flex: 0 0 14px;
+  }
+
+  &__label {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  &__source {
+    flex-shrink: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+
+  &__divider {
+    height: 1px;
+    margin: 6px 0;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--button-bg);
+    text-align: left;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(var(--button-bg-rgb), 0.08);
+    }
+  }
+
+  &__footer {
+    margin: 0;
+    padding: 6px 12px 4px;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: 1.4;
+  }
+}

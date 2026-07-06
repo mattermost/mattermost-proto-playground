@@ -1,0 +1,320 @@
+.console {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    width: 100%;
+    max-width: 1180px;
+    box-sizing: border-box;
+    padding: var(--spacing-xl) var(--spacing-xxl) var(--spacing-xxxl);
+  }
+}
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+
+  &__def {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__def-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    align-items: start;
+    gap: var(--spacing-m);
+  }
+
+  &__def-key {
+    padding-top: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__def-input {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  &__elig {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__elig-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+
+    &--yes {
+      color: var(--color-success);
+    }
+
+    &--no {
+      color: var(--color-warning);
+    }
+  }
+
+  &__elig-why {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__resources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-m);
+  }
+
+  &__resource {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    min-width: 150px;
+
+    &--on {
+      border-color: rgba(var(--button-bg-rgb), 0.4);
+      background: rgba(var(--button-bg-rgb), 0.04);
+    }
+  }
+
+  &__single {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__single-note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__owners {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-s);
+  }
+
+  &__owners-empty {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__source {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    align-items: flex-start;
+  }
+
+  &__source-status {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// ── Streamlined values editor ────────────────────────────────────────────────
+.sv {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__tree,
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) 0;
+  }
+
+  &__empty {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  &__twist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--center-channel-color);
+    cursor: pointer;
+  }
+
+  &__twist-spacer {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+  }
+
+  &__reorder {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__label {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__child-add {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+  }
+
+  &__link-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--color-info-rgb), 0.24);
+    border-radius: var(--radius-m);
+    background: rgba(var(--color-info-rgb), 0.04);
+  }
+
+  &__link-icon {
+    display: inline-flex;
+    color: var(--color-info);
+  }
+
+  &__link-text {
+    flex: 1 1 auto;
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    max-width: 480px;
+  }
+
+  &__footer {
+    display: flex;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-xs);
+  }
+}
+
+// ── Inline create ────────────────────────────────────────────────────────────
+.create {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__row {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    align-items: start;
+    gap: var(--spacing-m);
+  }
+
+  &__key {
+    padding-top: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__input {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  &__error {
+    margin: 0 0 0 calc(100px + var(--spacing-m));
+    font-size: var(--font-size-75);
+    color: var(--color-danger);
+  }
+
+  &__values {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+  }
+
+  &__value-add {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    max-width: 360px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-s);
+  }
+}

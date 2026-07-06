@@ -7,6 +7,8 @@ import styles from './ConsolePageHeader.module.scss';
 export interface ConsolePageHeaderProps {
   /** Page title text. */
   title: string;
+  /** Optional secondary line below the title (e.g. attribute metadata). */
+  subtitle?: string;
   /** Show the back button on the left. */
   backButton?: boolean;
   /** Callback when the back button is clicked. */
@@ -31,6 +33,7 @@ export interface ConsolePageHeaderProps {
  */
 export default function ConsolePageHeader({
   title,
+  subtitle,
   backButton = false,
   onBack,
   tag,
@@ -55,7 +58,14 @@ export default function ConsolePageHeader({
           </div>
         )}
         <div className={styles['console-page-header__title-area']}>
-          <h1 className={styles['console-page-header__title']}>{title}</h1>
+          <div className={styles['console-page-header__title-stack']}>
+            <h1 className={styles['console-page-header__title']}>{title}</h1>
+            {subtitle != null && (
+              <p className={styles['console-page-header__subtitle']}>
+                {subtitle}
+              </p>
+            )}
+          </div>
           {tag != null && (
             <span className={styles['console-page-header__tag']}>{tag}</span>
           )}

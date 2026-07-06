@@ -1,0 +1,126 @@
+@use '@/styles/tokens.scss' as *;
+
+.ps {
+  height: 100%;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  padding: var(--spacing-m) var(--spacing-xs);
+  overflow-y: auto;
+
+  &__team-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xs) var(--spacing-s);
+    margin-bottom: var(--spacing-s);
+  }
+
+  &__team-name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__team-cls {
+    color: white;
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-s);
+    margin: 0 var(--spacing-xs) var(--spacing-m);
+    font-size: 12px;
+  }
+
+  &__search-icon { opacity: 0.56; }
+  &__search-placeholder { opacity: 0.56; flex: 1; }
+
+  &__section {
+    font-size: 10px;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.48);
+    padding: var(--spacing-s) var(--spacing-s) var(--spacing-xxs);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--spacing-xxs);
+  }
+
+  &__item {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.72);
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 4px var(--spacing-s);
+    border-radius: var(--radius-s);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+    }
+
+    &--active {
+      background: rgba(255, 255, 255, 0.14);
+      color: white;
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__item-glyph {
+    width: 16px;
+    text-align: center;
+    opacity: 0.72;
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  &__item-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-presence {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  &__item-cls {
+    font-size: 9px;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 8px;
+  }
+
+  &__item-badge {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.56);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 6px;
+    border-radius: 8px;
+  }
+}

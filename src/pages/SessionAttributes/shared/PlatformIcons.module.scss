@@ -1,0 +1,37 @@
+.platform-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+
+    &--available {
+      color: var(--color-success);
+    }
+
+    &--caveats {
+      color: var(--color-warning);
+    }
+
+    &--unavailable {
+      color: rgba(var(--center-channel-color-rgb), 0.32);
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 50% 2px auto;
+        height: 1px;
+        background: currentColor;
+        transform: rotate(-20deg);
+        transform-origin: center;
+      }
+    }
+  }
+}

@@ -1,0 +1,668 @@
+// =============================================================================
+// MaskingNoticeOptions — prototype page styles
+// Comparison of copy + visual treatments for the PR 36517 masked-policy notice.
+// =============================================================================
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxl);
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--spacing-xxxl) var(--spacing-xxl);
+  color: var(--center-channel-color);
+}
+
+// -----------------------------------------------------------------------------
+// Hero
+// -----------------------------------------------------------------------------
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+}
+
+.eyebrow {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-800);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-800);
+  color: var(--center-channel-color);
+}
+
+.lede {
+  margin: 0;
+  max-width: 720px;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-300);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+// -----------------------------------------------------------------------------
+// Controls
+// -----------------------------------------------------------------------------
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-l) var(--spacing-xl);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-m);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+
+  &__label {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}
+
+.toggle {
+  display: inline-flex;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  background: var(--center-channel-bg);
+  overflow: hidden;
+
+  &__btn {
+    padding: var(--spacing-xs) var(--spacing-m);
+    background: transparent;
+    border: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    cursor: pointer;
+
+    &--active {
+      background: var(--button-bg);
+      color: var(--button-color);
+    }
+
+    & + & {
+      border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+}
+
+.select {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  padding: var(--spacing-xs) var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+  min-width: 320px;
+}
+
+// -----------------------------------------------------------------------------
+// Preview shell (console-style chrome)
+// -----------------------------------------------------------------------------
+
+.preview-shell {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--color-neutral-50);
+
+  &__chrome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-s) var(--spacing-l);
+    background: var(--color-neutral-1100);
+    color: rgba(255, 255, 255, 0.72);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__breadcrumb {
+    letter-spacing: 0.3px;
+  }
+
+  &__body {
+    padding: var(--spacing-xl) var(--spacing-xxl) var(--spacing-xxl);
+    background: var(--color-neutral-50);
+  }
+}
+
+.preview-policy-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+  margin-bottom: var(--spacing-xl);
+
+  &__back {
+    font-size: var(--font-size-100);
+    color: var(--link-color);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Editor mock (Simple + Advanced shared)
+// -----------------------------------------------------------------------------
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  background: var(--center-channel-bg);
+  border-radius: var(--radius-m);
+  padding: var(--spacing-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-l);
+  }
+
+  &__title {
+    margin: 0 0 var(--spacing-xxs);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__helper {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    code {
+      font-family: var(--font-family-mono, monospace);
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+  }
+
+  &__cel-wrap {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-s);
+
+    &--bordered {
+      border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+      overflow: hidden;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Rule table mock
+// -----------------------------------------------------------------------------
+
+.rule-table {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  overflow: hidden;
+
+  &__head {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 40px;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-l);
+    background: var(--color-neutral-50);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  &__add {
+    padding: var(--spacing-s) var(--spacing-l);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}
+
+.rule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 40px;
+  gap: var(--spacing-m);
+  align-items: center;
+  padding: var(--spacing-s) var(--spacing-l);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+
+    &:last-of-type {
+      flex-wrap: wrap;
+    }
+  }
+
+  &__delete {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    padding: var(--spacing-xxs);
+    border-radius: var(--radius-s);
+
+    &:hover {
+      color: var(--color-danger);
+      background: rgba(var(--color-danger-rgb), 0.08);
+    }
+  }
+
+  &--locked {
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+
+    .rule-row__cell {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+  }
+}
+
+.masked-chip {
+  font-family: var(--font-family-mono, monospace);
+  letter-spacing: 0.5px;
+  background: rgba(var(--center-channel-color-rgb), 0.12);
+  cursor: default;
+}
+
+// -----------------------------------------------------------------------------
+// CEL editor mock (Monaco-like)
+// -----------------------------------------------------------------------------
+
+.cel-editor {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-neutral-0);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+
+  &--readonly {
+    border: 0;
+    border-radius: 0;
+  }
+
+  &__code {
+    margin: 0;
+    padding: var(--spacing-m);
+    font-family: var(--font-family-mono, 'SFMono-Regular', Consolas, monospace);
+    font-size: var(--font-size-100);
+    line-height: 1.6;
+    color: var(--center-channel-color);
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+
+  &__var {
+    color: var(--color-blue-500);
+  }
+
+  &__str {
+    color: var(--color-green-600);
+  }
+
+  &__masked {
+    color: var(--color-red-400);
+    background: rgba(var(--color-red-400-rgb), 0.08);
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+
+  &__status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xxs) var(--spacing-s);
+    background: var(--color-green-100);
+    color: var(--color-green-800);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__valid {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__loc {
+    font-family: var(--font-family-mono, monospace);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Editor strip (Option 4 — recommended)
+// -----------------------------------------------------------------------------
+
+.editor-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-m);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  font-size: var(--font-size-100);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+
+  &__lhs {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__brief {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__action {
+    background: transparent;
+    border: 0;
+    color: var(--link-color);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    padding: 0;
+    font-size: var(--font-size-100);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &--icon-only {
+    justify-content: flex-start;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Inline note (Option 3 — differentiate)
+// -----------------------------------------------------------------------------
+
+.inline-note {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-s);
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+// -----------------------------------------------------------------------------
+// Legacy second banner (current implementation, for comparison)
+// -----------------------------------------------------------------------------
+
+.legacy-second-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  padding: var(--spacing-s) var(--spacing-m);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-s);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-size: var(--font-size-100);
+
+  // The original implementation uses a red icon on neutral background — mimic.
+  > :first-child {
+    color: var(--color-red-400);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Notes / annotations
+// -----------------------------------------------------------------------------
+
+.note {
+  padding: var(--spacing-m) var(--spacing-l);
+  border-left: 3px solid var(--color-info, var(--color-blue-500));
+  background: rgba(var(--color-info-rgb, var(--color-blue-500-rgb)), 0.04);
+  font-size: var(--font-size-100);
+  color: rgba(var(--center-channel-color-rgb), 0.88);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+}
+
+// -----------------------------------------------------------------------------
+// Matrix (all copy options side by side)
+// -----------------------------------------------------------------------------
+
+.section-title {
+  margin: 0 0 var(--spacing-xs);
+  font-size: var(--font-size-400);
+  font-weight: var(--font-weight-semibold);
+}
+
+.section-lede {
+  margin: 0 0 var(--spacing-xl);
+  font-size: var(--font-size-100);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  max-width: 720px;
+}
+
+.matrix {
+  display: flex;
+  flex-direction: column;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-xl);
+
+    @media (min-width: 720px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-l);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+
+    &--selected {
+      border-color: var(--button-bg);
+      box-shadow: 0 0 0 3px rgba(var(--button-bg-rgb), 0.16);
+    }
+  }
+
+  &__card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__card-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__card-pick {
+    background: transparent;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    padding: var(--spacing-xxs) var(--spacing-s);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--button-bg);
+      color: var(--button-bg);
+    }
+  }
+
+  &__card-note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-style: italic;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Modal mock (Surface 3 — defensive 403 modal)
+// -----------------------------------------------------------------------------
+
+.modal-mock {
+  background: var(--center-channel-bg);
+  border-radius: var(--radius-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  max-width: 520px;
+  margin: 0 auto;
+  overflow: hidden;
+
+  &__header {
+    padding: var(--spacing-l) var(--spacing-xl);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__body {
+    padding: var(--spacing-l) var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+
+    p {
+      margin: 0;
+      font-size: var(--font-size-100);
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__footer {
+    padding: var(--spacing-m) var(--spacing-xl);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Final recommendation block
+// -----------------------------------------------------------------------------
+
+.recommendation {
+  display: flex;
+  flex-direction: column;
+
+  &__heading {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__subheading {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__frame {
+    padding: var(--spacing-l);
+    background: var(--color-neutral-50);
+    border-radius: var(--radius-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-xl);
+
+    @media (min-width: 1024px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Tooltip rendering (Surface 2)
+// Statically positions a tooltip below the disabled button/menu-item so the
+// pattern is visible in the prototype without requiring hover.
+// -----------------------------------------------------------------------------
+
+.tooltip-frame {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 160px;
+  padding-top: var(--spacing-l);
+}
+
+.tooltip-anchor {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-m);
+
+  &__tip {
+    // Render the tooltip statically below the anchor so the prototype shows
+    // the pattern by default. Production tooltips appear on hover/focus.
+    display: inline-block;
+  }
+}
+
+.menu-item-mock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  padding: var(--spacing-xs) var(--spacing-m);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  color: rgba(var(--center-channel-color-rgb), 0.48);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  cursor: not-allowed;
+}

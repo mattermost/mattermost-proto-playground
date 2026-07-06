@@ -1,0 +1,111 @@
+.values {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    align-items: center;
+  }
+
+  &__empty {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__tree {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-xs) 0;
+    min-height: 36px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__twist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+  }
+
+  &__twist-spacer {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+  }
+
+  &__label {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__row-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__child-add {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-s) 0;
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__shared {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--color-info-rgb), 0.24);
+    border-radius: var(--radius-m);
+    background: rgba(var(--color-info-rgb), 0.04);
+  }
+
+  &__shared-icon {
+    display: inline-flex;
+    color: var(--color-info);
+  }
+
+  &__shared-text {
+    flex: 1 1 auto;
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+  }
+
+  &__footer {
+    display: flex;
+    gap: var(--spacing-s);
+  }
+}

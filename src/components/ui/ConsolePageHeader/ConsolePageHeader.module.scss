@@ -30,6 +30,14 @@
     min-width: 0;
   }
 
+  &__title-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
   &__title {
     margin: 0;
     font-family: var(--font-family-heading);
@@ -37,6 +45,17 @@
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-500);
     color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -1,0 +1,329 @@
+.policy-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+
+  // ---------------------------------------------------------------------------
+  // Top label row: "Membership policy name:" + text input + helper
+  // ---------------------------------------------------------------------------
+  &__name {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--spacing-l);
+    align-items: flex-start;
+  }
+
+  &__name-label {
+    padding-top: var(--spacing-s);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__name-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    max-width: 640px;
+  }
+
+  &__name-help {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: var(--line-height-75);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Section panel (Membership rules / Assigned channels)
+  // ---------------------------------------------------------------------------
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+  }
+
+  &__section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+  }
+
+  &__section-titles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__section-title {
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin: 0;
+    line-height: var(--line-height-200);
+  }
+
+  &__section-subtitle {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: var(--line-height-100);
+    margin: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Membership rules table region
+  // ---------------------------------------------------------------------------
+  &__rules {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__rules-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+  }
+
+  &__rules-head-title {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__mode {
+    display: inline-flex;
+    padding: var(--spacing-xxxxs);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    gap: var(--spacing-xxxxs);
+  }
+
+  &__mode-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxs) var(--spacing-s);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 1px;
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+
+      &:hover {
+        background: rgba(var(--button-bg-rgb), 0.12);
+        color: var(--button-bg);
+      }
+    }
+  }
+
+  &__mode-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__mode-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+  }
+
+  &__rules-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  &__rules-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    padding-top: var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__rules-footnote {
+    flex: 1;
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: var(--line-height-75);
+    max-width: 640px;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Per-rule value cell (Operator dropdown + chips)
+  // ---------------------------------------------------------------------------
+  &__rule-value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-m);
+    width: 100%;
+  }
+
+  &__rule-operator {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  &__rule-operator-menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 100;
+    transform-origin: top left;
+    animation: policy-editor-menu-in var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__rule-chips {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  &__rule-add-value {
+    appearance: none;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.32);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-100);
+    line-height: 1;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+      border-color: rgba(var(--center-channel-color-rgb), 0.48);
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__operator-symbol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: inherit;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Advanced mode
+  // ---------------------------------------------------------------------------
+  &__advanced {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__advanced-input {
+    width: 100%;
+    min-height: 96px;
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.32);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    resize: vertical;
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 1px;
+    }
+  }
+
+  &__advanced-help {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    line-height: var(--line-height-75);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Assigned channels
+  // ---------------------------------------------------------------------------
+  &__channels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__channels-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__channels-search {
+    flex: 1;
+    max-width: 320px;
+  }
+
+  &__channels-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__channels-empty-text {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+}
+
+@keyframes policy-editor-menu-in {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -19,6 +19,11 @@
     &--formatting-open {
       padding-bottom: var(--spacing-xxxxxl);
     }
+
+    &--stacked-below-rail {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
   }
 
   &__preview-btn {
@@ -58,6 +63,14 @@
     transition: padding-right var(--duration-quick) var(--ease-transition);
 
     &--formatting-open {
+      padding-right: var(--spacing-xxxxxl);
+    }
+
+    &--leading-actions {
+      padding-right: 400px;
+    }
+
+    &--leading-actions.message-input__body--formatting-open {
       padding-right: var(--spacing-xxxxxl);
     }
   }

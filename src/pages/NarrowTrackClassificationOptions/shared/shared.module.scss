@@ -1,0 +1,223 @@
+// Shared product-canvas styles for the narrow-track surface screens.
+// Theme CSS variables only; no hardcoded colors. These render pristine
+// System Console chrome — no harness/spec residue lives here.
+
+.canvas {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background-color: var(--center-channel-bg);
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    @include minimal-scrollbar;
+  }
+
+  &__page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--spacing-l) var(--spacing-xl) var(--spacing-xxl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+// Read-only externally-managed value with an accessible lock indicator (FR-9).
+.managed-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-s);
+  border-radius: var(--radius-s);
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  color: var(--center-channel-color);
+  font-size: var(--font-size-100);
+
+  &__lock {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__note {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// Peer provenance rows for V-1 dual-source display (FR-1). Co-equal — no
+// primary emphasis on either row.
+.provenance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// Value scale list for the link surface (disable-not-delete, FR-1).
+.scale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  &__name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--center-channel-color);
+  }
+
+  &__row--disabled &__name {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__state {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// Coverage readout (Approach A, Surface 2) — SM-2 post-hoc coverage count.
+.coverage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  &__figures {
+    display: flex;
+    gap: var(--spacing-l);
+  }
+
+  &__figure {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__value {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__label {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// Guided-guardrail acknowledgement block (Approach B, Surface 2).
+.ack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+}
+
+// Delegation summary rows (Surface 4).
+.delegates {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+  }
+
+  &__who {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    color: var(--center-channel-color);
+  }
+
+  &__role {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+// Live-evaluated policy label (Surface 5, all approaches).
+.live-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+// Removal notice — end-user facing. Approach B tunes this to be concise and
+// field-legible; A renders a verbose panel; C a standard notification row.
+.removal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  max-width: 520px;
+
+  &--concise {
+    max-width: 420px;
+  }
+
+  &__meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__detail {
+    color: var(--center-channel-color);
+  }
+}

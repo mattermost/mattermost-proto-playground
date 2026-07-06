@@ -1,0 +1,90 @@
+@use '@/styles/tokens.scss' as *;
+
+.cwt {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--center-channel-bg);
+
+  &__strip {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: var(--spacing-xs) var(--spacing-m) 0;
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+
+  &__tab {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    padding: var(--spacing-xs) var(--spacing-m);
+    border-radius: 6px 6px 0 0;
+    font-size: 12px;
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: background var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      color: var(--center-channel-color);
+    }
+
+    &--active {
+      background: var(--center-channel-bg);
+      color: var(--button-bg);
+      border-bottom-color: var(--button-bg);
+    }
+  }
+
+  &__tab-glyph {
+    font-size: 12px;
+  }
+
+  &__tab-label {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__tab-product {
+    font-size: 10px;
+    font-weight: var(--font-weight-regular);
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-left: var(--spacing-xxs);
+  }
+
+  &__tab-add {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    align-self: center;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}

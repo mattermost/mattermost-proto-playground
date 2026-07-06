@@ -56,6 +56,8 @@ export interface ChannelShellProps {
   floating?: ReactNode;
   /** Layered surface over the shell (e.g. call popout). */
   overlay?: ReactNode;
+  /** Scrim + modal confined to the inner panel (center + trailing), not sidebars. */
+  innerPanelOverlay?: ReactNode;
   className?: string;
 }
 
@@ -75,6 +77,7 @@ export default function ChannelShell({
   channelsSidebar,
   floating,
   overlay,
+  innerPanelOverlay,
   className = '',
 }: ChannelShellProps) {
   const rootClass = [styles['channel-shell'], className].filter(Boolean).join(' ');
@@ -123,9 +126,21 @@ export default function ChannelShell({
           </div>
 
           {useInnerOnly ? (
-            <div className={styles['channel-shell__inner-panel']}>{innerContent}</div>
+            <div className={styles['channel-shell__inner-panel']}>
+              {innerPanelOverlay != null && (
+                <div className={styles['channel-shell__inner-overlay']}>
+                  {innerPanelOverlay}
+                </div>
+              )}
+              {innerContent}
+            </div>
           ) : (
             <div className={styles['channel-shell__inner-panel']}>
+              {innerPanelOverlay != null && (
+                <div className={styles['channel-shell__inner-overlay']}>
+                  {innerPanelOverlay}
+                </div>
+              )}
               <div className={styles['channel-shell__center']}>
                 {channelHeader}
                 {children}

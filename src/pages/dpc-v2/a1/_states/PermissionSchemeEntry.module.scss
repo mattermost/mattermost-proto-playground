@@ -1,36 +1,32 @@
 .v2-perm-scheme {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-m);
-  padding: var(--spacing-l);
   background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: var(--radius-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-l);
+  overflow: hidden;
 
-  &__header {
+  // System-console title bar — distinguishes this surface from a
+  // channel-shell view so reviewers don't mistake it for in-channel UI.
+  &__console-bar {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xxs);
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s) var(--spacing-l);
+    background: var(--sidebar-header-bg, var(--sidebar-bg));
+    color: var(--sidebar-header-text-color, var(--sidebar-text));
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   }
 
-  &__title {
-    margin: 0;
+  &__console-label {
     font-family: var(--font-family-heading);
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__subtitle {
-    margin: 0;
-    max-width: 72ch;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-    line-height: 1.45;
+    letter-spacing: 0.02em;
   }
 
   &__breadcrumb {
+    margin: var(--spacing-m) var(--spacing-l) 0;
     padding: var(--spacing-xs) var(--spacing-s);
     background: rgba(var(--center-channel-color-rgb), 0.04);
     border-radius: var(--radius-s);
@@ -44,9 +40,14 @@
     flex-direction: column;
     gap: var(--spacing-s);
     padding: var(--spacing-m);
+    margin: var(--spacing-m) var(--spacing-l) 0;
     background: rgba(var(--center-channel-color-rgb), 0.02);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     border-radius: var(--radius-s);
+
+    &:last-child {
+      margin-bottom: var(--spacing-l);
+    }
   }
 
   &__entry-head {

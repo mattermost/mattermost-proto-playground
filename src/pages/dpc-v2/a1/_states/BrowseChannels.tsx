@@ -1,25 +1,18 @@
 /**
- * DPC V2 A1 — Browse Channels (Wave 2C).
+ * DPC V2 A1 — BrowseChannels (refactored May 2026).
  *
- * Forked from V1 with §3.3 V2 deltas:
+ * Renders the Browse Channels modal OVER a real `ChannelShell` so the
+ * underlying LHS sidebar is visible behind the modal backdrop. The
+ * modal is the focus; the shell is contextual chrome.
  *
- *   1. Filter-chip row promoted to a first-class chip group:
- *      - "My Pending Requests"  (FR-27 / KD-3)
- *      - "Discoverable private channels" (FR-27 / KD-28)
- *      - "Hide joined" (v1 carry-forward, ON by default in V2 per §3.3.3)
+ * Per Change 2: row prefixes for Discoverable private channels use ONLY
+ * the bare composite lock-plus icon — no "Discoverable" LabelTag overlay.
+ * The icon shape (lock + plus, WCAG 1.4.1 shape distinction) is the
+ * subtle indicator (KD-26).
  *
- *   2. Each Discoverable private channel row renders a composite **lock-plus**
- *      glyph (FR-15 / OPEN-D winner) in the row prefix. Non-discoverable
- *      private rows fall back to the plain lock; public rows render `#`.
- *
- *   3. Hover-action variants carry forward verbatim (Join · Request to Join ·
- *      View). The "Pending" disabled variant from v1 stays the same; clicking
- *      it currently routes through RequestToJoinModal preview-step like V1.
- *
- * The optional `rejoinMode` prop scopes the list to channels the persona
- * previously left (powers the L&R overlay surface) — kept for parity with V1.
+ * The "Hide joined" filter is ON by default per §3.3.3.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
@@ -30,16 +23,21 @@ import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/acc
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import Button from '@/components/ui/Button/Button';
-import Chip from '@/components/ui/Chip/Chip';
+import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
+import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import EmptyState from '@/components/ui/EmptyState/EmptyState';
 import Icon from '@/components/ui/Icon/Icon';
 import IconButton from '@/components/ui/IconButton/IconButton';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import {
   CHANNELS,
   usePersona,
   type ChannelFixture,
 } from '@/pages/dpc/shared';
+import AppOverlay from '../_components/AppOverlay';
+import DpcAppShell, { shellStyles } from '../_components/DpcAppShell';
+import ScreenCanvas from '../_components/ScreenCanvas';
 import type { A1V2StoreApi } from '../useA1V2Store';
 import styles from './BrowseChannels.module.scss';
 
@@ -53,7 +51,6 @@ interface BrowseChannel extends ChannelFixture {
   recommended?: boolean;
 }
 
-// Extra catalogue rows so the Browse list reads like the Figma reference.
 const EXTRA_CHANNELS: BrowseChannel[] = [
   {
     id: 'ch-ext-001',
@@ -130,22 +127,33 @@ const EXTRA_CHANNELS: BrowseChannel[] = [
   },
 ];
 
+type ChannelTypeFilter =
+  | 'all'
+  | 'public'
+  | 'private'
+  | 'discoverable'
+  | 'pending';
+
 export default function BrowseChannels({
   store,
   rejoinMode = false,
 }: BrowseChannelsProps) {
   const { state } = store;
-  const { persona } = usePersona();
+  const { persona, personaInfo } = usePersona();
   const [query, setQuery] = useState('');
-  const [hideJoined, setHideJoined] = useState(true); // §3.3.3 — ON by default in V2.
-  const [dpcOnly, setDpcOnly] = useState(false);
-  const [pendingFilter, setPendingFilter] = useState(rejoinMode);
-  const [channelType, setChannelType] = useState<'all' | 'public' | 'private'>(
-    'all',
+  const [hideJoined, setHideJoined] = useState(true);
+  const [channelType, setChannelType] = useState<ChannelTypeFilter>(
+    rejoinMode ? 'pending' : 'all',
   );
-  const [, setActiveRequestChannelId] = useState<string | null>(null);
 
   const isGuest = persona === 'guest';
+
+  // v2.3 — guest-filter telemetry (aggregate; T-1 mitigation). Fire once
+  // per guest-mount of the Browse surface.
+  useEffect(() => {
+    if (isGuest) store.recordGuestFilter('browse');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isGuest]);
 
   const allChannels: BrowseChannel[] = [
     ...CHANNELS.filter(
@@ -154,18 +162,25 @@ export default function BrowseChannels({
     ...EXTRA_CHANNELS,
   ];
 
-  const pendingCount = state.myPendingRequests.length;
-
   const rows = allChannels.filter((c) => {
     if (isGuest) return false;
     if (rejoinMode && !state.rejoinableChannels.includes(c.id)) return false;
-    if (channelType !== 'all' && c.kind !== channelType) return false;
-    if (hideJoined && state.joinedChannels.includes(c.id)) return false;
-    if (dpcOnly && !(c.kind === 'private' && c.discoverable)) return false;
-    if (pendingFilter) {
+
+    // Channel type dropdown — single filter, mutually-exclusive options.
+    if (channelType === 'public' && c.kind !== 'public') return false;
+    if (channelType === 'private' && c.kind !== 'private') return false;
+    if (
+      channelType === 'discoverable' &&
+      !(c.kind === 'private' && c.discoverable)
+    ) {
+      return false;
+    }
+    if (channelType === 'pending') {
       const myReq = store.myPendingRequestForChannel(c.id, persona);
       if (!myReq) return false;
     }
+
+    if (hideJoined && state.joinedChannels.includes(c.id)) return false;
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       if (
@@ -178,7 +193,7 @@ export default function BrowseChannels({
     return true;
   });
 
-  return (
+  const modalContent = (
     <section
       className={styles['v2-browse-channels']}
       aria-label={rejoinMode ? 'Channels you can rejoin' : 'Browse Channels'}
@@ -199,51 +214,14 @@ export default function BrowseChannels({
             />
           </div>
         </div>
-        <TextInput
-          size="Medium"
-          placeholder="Search channels"
-          leadingIcon={<Icon size="16" glyph={<MagnifyIcon />} />}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-
-        {/* V2 filter-chip row. */}
-        <div
-          className={styles['v2-browse-channels__chips']}
-          role="group"
-          aria-label="Filter channels"
-        >
-          <Chip
-            size="Small"
-            as="button"
-            tone={pendingFilter ? 'info' : 'neutral'}
-            colored={pendingFilter}
-            onClick={() => setPendingFilter((v) => !v)}
-            aria-pressed={pendingFilter}
-          >
-            My Pending Requests{pendingCount > 0 ? ` (${pendingCount})` : ''}
-          </Chip>
-          <Chip
-            size="Small"
-            as="button"
-            tone={dpcOnly ? 'info' : 'neutral'}
-            colored={dpcOnly}
-            leadingIcon={<LockOutlineIcon />}
-            onClick={() => setDpcOnly((v) => !v)}
-            aria-pressed={dpcOnly}
-          >
-            Discoverable private channels
-          </Chip>
-          <Chip
-            size="Small"
-            as="button"
-            tone={hideJoined ? 'info' : 'neutral'}
-            colored={hideJoined}
-            onClick={() => setHideJoined((v) => !v)}
-            aria-pressed={hideJoined}
-          >
-            Hide joined
-          </Chip>
+        <div className={styles['v2-browse-channels__search']}>
+          <TextInput
+            size="Medium"
+            placeholder="Search channels"
+            leadingIcon={<Icon size="16" glyph={<MagnifyIcon />} />}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
         </div>
       </header>
 
@@ -251,41 +229,119 @@ export default function BrowseChannels({
         <span className={styles['v2-browse-channels__result-count']}>
           {rows.length} result{rows.length === 1 ? '' : 's'}
         </span>
-        <ChannelTypeDropdown value={channelType} onChange={setChannelType} />
+        <div className={styles['v2-browse-channels__filter-right']}>
+          <ChannelTypeDropdown value={channelType} onChange={setChannelType} />
+          <Checkbox
+            size="Small"
+            checked={hideJoined}
+            onChange={(e) => setHideJoined(e.target.checked)}
+          >
+            Hide joined
+          </Checkbox>
+        </div>
       </div>
 
-      {isGuest ? (
-        <EmptyState
-          title="No discoverable channels in this team yet."
-          description="Same response shape regardless of role — guest filter applied server-side (NFR-2)."
-        />
-      ) : rows.length === 0 ? (
-        <EmptyState
-          title={
-            pendingFilter
-              ? "You don't have any pending requests."
-              : rejoinMode
-                ? "You haven't left any discoverable channels yet."
-                : dpcOnly
-                  ? 'No discoverable channels match the filter.'
-                  : 'No discoverable channels in this team yet.'
-          }
-        />
-      ) : (
-        <ul className={styles['v2-browse-channels__list']}>
-          {rows.map((c) => (
-            <BrowseRow
-              key={c.id}
-              channel={c}
-              isJoined={state.joinedChannels.includes(c.id)}
-              hasPending={store.hasPendingForChannel(c.id, persona)}
-              onClick={() => setActiveRequestChannelId(c.id)}
+      <div className={styles['v2-browse-channels__list-wrap']}>
+        <Scrollbars>
+          {isGuest ? (
+            <EmptyState
+              title="No discoverable channels in this team yet."
+              description="Same response shape regardless of role — guest filter applied server-side (NFR-2)."
             />
-          ))}
-        </ul>
-      )}
-
+          ) : rows.length === 0 ? (
+            <EmptyState
+              title={
+                channelType === 'pending'
+                  ? "You don't have any pending requests."
+                  : rejoinMode
+                    ? "You haven't left any discoverable channels yet."
+                    : channelType === 'discoverable'
+                      ? 'No discoverable channels match the filter.'
+                      : 'No discoverable channels in this team yet.'
+              }
+            />
+          ) : (
+            <ul className={styles['v2-browse-channels__list']}>
+              {rows.map((c) => (
+                <BrowseRow
+                  key={c.id}
+                  channel={c}
+                  isJoined={state.joinedChannels.includes(c.id)}
+                  hasPending={store.hasPendingForChannel(c.id, persona)}
+                  onRequest={() => store.openRequestToJoin(c.id)}
+                  onWithdraw={() => {
+                    const req = store.myPendingRequestForChannel(
+                      c.id,
+                      persona,
+                    );
+                    if (req)
+                      store.withdrawRequest(personaInfo.username, req.id);
+                  }}
+                />
+              ))}
+            </ul>
+          )}
+        </Scrollbars>
+      </div>
     </section>
+  );
+
+  return (
+    <ScreenCanvas
+      eyebrow="§3.3"
+      title="Browse Channels modal"
+      subtitle="Modal over a real ChannelShell — the underlying LHS sidebar stays visible behind the backdrop. Row prefixes for Discoverable private channels use the bare lock-plus icon only (no LabelTag)."
+      canvas={
+        <DpcAppShell
+          focusChannelName="general"
+          focusIsDiscoverable={false}
+          channelHeader={
+            <ChannelHeader
+              type="Channel"
+              name="general"
+              description="Team-wide announcements and broad coordination."
+              memberCount={142}
+              pinnedCount={3}
+            />
+          }
+          overlay={<AppOverlay maxWidth={760}>{modalContent}</AppOverlay>}
+        >
+          <div className={shellStyles['channel-shell__messages']}>
+            <Scrollbars>
+              <div className={shellStyles['channel-shell__messages-list']}>
+                <EmptyState title="" description="" />
+              </div>
+            </Scrollbars>
+          </div>
+        </DpcAppShell>
+      }
+      reviewSummary='The "Hide joined" filter is ON by default per §3.3.3. The lock-plus prefix is the only Discoverable indicator on rows (Change 2: no LabelTag overlay).'
+      reviewItems={[
+        {
+          heading: 'Row prefix vocabulary',
+          body: (
+            <p>
+              Public rows: <code>#</code> (globe glyph). Private rows
+              (non-discoverable): plain lock. Discoverable private rows: the
+              composite lock-plus glyph at 16px, low-emphasis foreground. The
+              icon shape itself carries the meaning — KD-26 subtle, WCAG 1.4.1
+              shape distinction.
+            </p>
+          ),
+        },
+        {
+          heading: 'Guest persona',
+          body: (
+            <p>
+              Server-side guest filter (NFR-2) means guests see the same
+              zero-result response shape as a non-guest with no eligible
+              channels. No distinguishable error, no enumeration vector — T-1
+              mitigation per PRD §9.
+            </p>
+          ),
+        },
+      ]}
+    />
   );
 }
 
@@ -293,28 +349,37 @@ interface BrowseRowProps {
   channel: BrowseChannel;
   isJoined: boolean;
   hasPending: boolean;
-  onClick: () => void;
+  onRequest: () => void;
+  onWithdraw: () => void;
 }
 
-function BrowseRow({ channel, isJoined, hasPending, onClick }: BrowseRowProps) {
+function BrowseRow({
+  channel,
+  isJoined,
+  hasPending,
+  onRequest,
+  onWithdraw,
+}: BrowseRowProps) {
   const isPrivate = channel.kind === 'private';
   const isDiscoverable = isPrivate && channel.discoverable;
 
-  const variant: 'join' | 'view' | 'request' = isJoined
+  const variant: 'join' | 'view' | 'request' | 'pending' = isJoined
     ? 'view'
-    : isDiscoverable
-      ? 'request'
-      : 'join';
+    : hasPending
+      ? 'pending'
+      : isDiscoverable
+        ? 'request'
+        : 'join';
 
   const handleAction = () => {
-    if (variant === 'request') onClick();
+    if (variant === 'request') onRequest();
+    else if (variant === 'pending') onWithdraw();
   };
 
   return (
     <li className={styles['v2-browse-channels__row']}>
       <div className={styles['v2-browse-channels__row-content']}>
         <div className={styles['v2-browse-channels__row-top']}>
-          {/* Row prefix icon — composite lock-plus for DPC rows. */}
           {isDiscoverable ? (
             <span
               className={styles['v2-browse-channels__row-icon']}
@@ -403,15 +468,23 @@ function BrowseRow({ channel, isJoined, hasPending, onClick }: BrowseRowProps) {
       </div>
       <div className={styles['v2-browse-channels__row-action']}>
         <Button
-          emphasis={variant === 'view' ? 'Secondary' : 'Primary'}
+          emphasis={
+            variant === 'view'
+              ? 'Secondary'
+              : variant === 'pending'
+                ? 'Tertiary'
+                : 'Primary'
+          }
           size="Small"
           onClick={handleAction}
         >
           {variant === 'view'
             ? 'View'
-            : variant === 'request'
-              ? 'Request to Join'
-              : 'Join'}
+            : variant === 'pending'
+              ? 'Withdraw'
+              : variant === 'request'
+                ? 'Request to join'
+                : 'Join'}
         </Button>
       </div>
     </li>
@@ -419,17 +492,19 @@ function BrowseRow({ channel, isJoined, hasPending, onClick }: BrowseRowProps) {
 }
 
 interface ChannelTypeDropdownProps {
-  value: 'all' | 'public' | 'private';
-  onChange: (next: 'all' | 'public' | 'private') => void;
+  value: ChannelTypeFilter;
+  onChange: (next: ChannelTypeFilter) => void;
 }
 
 const TYPE_OPTIONS: Array<{
-  key: ChannelTypeDropdownProps['value'];
+  key: ChannelTypeFilter;
   label: string;
 }> = [
   { key: 'all', label: 'All' },
   { key: 'public', label: 'Public' },
   { key: 'private', label: 'Private' },
+  { key: 'discoverable', label: 'Discoverable private channels' },
+  { key: 'pending', label: 'My pending requests' },
 ];
 
 function ChannelTypeDropdown({ value, onChange }: ChannelTypeDropdownProps) {

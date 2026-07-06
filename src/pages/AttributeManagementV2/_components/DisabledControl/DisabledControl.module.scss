@@ -1,0 +1,25 @@
+.disabled {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-xs);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: help;
+  }
+}

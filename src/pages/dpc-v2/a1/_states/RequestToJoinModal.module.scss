@@ -1,26 +1,49 @@
 .v2-request-modal {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-s);
-  padding: var(--spacing-l);
-  background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: var(--radius-m);
-
-  &__header {
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
   }
 
-  &__placeholder {
-    padding: var(--spacing-m);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border-radius: var(--radius-s);
+  &__copy {
+    margin: 0;
     font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-    font-style: italic;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+
+    strong {
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    gap: var(--spacing-s);
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  // v2.3 — page-level overlay backdrop (runtime mode triggered by row clicks).
+  &__page-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.48);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: var(--spacing-l);
+    animation: v2-request-modal__overlay-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+}
+
+@keyframes v2-request-modal__overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

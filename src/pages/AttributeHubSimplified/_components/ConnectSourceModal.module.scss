@@ -1,0 +1,138 @@
+.connect {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+
+  &__scrim {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+    animation: connect-fade var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    animation: connect-pop var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  &__option-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+  }
+
+  &__option-name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__option-desc {
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    margin: 0;
+  }
+
+  &__detail-row {
+    display: grid;
+    grid-template-columns: 112px 1fr;
+    gap: var(--spacing-s);
+    align-items: start;
+
+    dt {
+      margin: 0;
+      font-size: var(--font-size-75);
+      font-weight: var(--font-weight-semibold);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      line-height: 20px;
+    }
+
+    dd {
+      margin: 0;
+      font-size: var(--font-size-75);
+      line-height: 1.45;
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__detail-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__map {
+    font-family: var(--font-family-code, monospace);
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+  }
+
+  &__warning {
+    color: var(--color-warning);
+  }
+}
+
+@keyframes connect-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes connect-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

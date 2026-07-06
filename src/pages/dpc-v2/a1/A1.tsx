@@ -1,29 +1,21 @@
 /**
- * DPC V2 A1 — Revised Baseline + Confirm-and-Commit (Phase 2-6 re-run).
+ * DPC V2 A1 — Revised Baseline + Confirm-and-Commit (refactored May 2026).
  *
- * Wave 1 scaffolding. The orchestrator mounts every required state surface so
- * Wave 2 can fill in the implementations without further routing work.
+ * Layout is now a vertical scroll of full-width "screens", each
+ * rendering inside a `ScreenCanvas` with its own product chrome (a
+ * real `ChannelShell` where the state warrants it). Reviewers see each
+ * surface exactly as it lives in product, then a "Review notes" block
+ * below each canvas calls out the load-bearing details that previously
+ * sat inside the UI as dashed-border meta-annotations (Change 3).
  *
- * Layout (per Phase 5 V2 contract):
- *   ┌─────────────────────────────────────────────────────────────────┐
- *   │ ScenarioHeader (persona + viewport + ABAC policy picker)        │
- *   ├─────────────────────────────────────────────────────────────────┤
- *   │ Optional toast (post-save / session-expiry rejection)           │
- *   ├──────────────────────────┬──────────────────────────────────────┤
- *   │ Left column              │ Right column                         │
- *   │  Persona-aware primary   │  Persona-aware supporting surfaces   │
- *   ├─────────────────────────────────────────────────────────────────┤
- *   │ Cross-surface showcase row (V2)                                 │
- *   │  PermalinkUnfurl · ChannelSwitcher · IndicatorShowcase ·        │
- *   │  PermissionSchemeEntry · LhsPendingDot · ChannelHeaderIndicator │
- *   │  · InChannelAdminSysMsg                                         │
- *   └─────────────────────────────────────────────────────────────────┘
+ * Per-persona filtering still applies: each persona only sees the
+ * screens that match its viewpoint. The mobile cutline for admin
+ * surfaces (KD-8) is preserved.
  *
- * Mobile: collapses to single column; admin surfaces hide with the same
- * "Web-only at launch (KD-8)" notice carried over from V1.
- *
- * Modals (ConfirmCommitModal, DeclineModal) render as absolute-positioned
- * overlays anchored to the prototype canvas.
+ * ConfirmCommitModal and DeclineModal continue to render as page-level
+ * overlays when triggered through the store; their standalone canvas
+ * entries (re)appear in the showcase row so reviewers can scrub all
+ * scenario templates without firing the trigger.
  */
 import { useEffect, useMemo } from 'react';
 import {
@@ -45,10 +37,9 @@ import RejoinableChannelsSurface from './_states/RejoinableChannelsSurface';
 import PermalinkUnfurl from './_states/PermalinkUnfurl';
 import ChannelSwitcher from './_states/ChannelSwitcher';
 import InChannelAdminSysMsg from './_states/InChannelAdminSysMsg';
-import LhsPendingDot from './_states/LhsPendingDot';
+import PendingRequestIndicators from './_states/PendingRequestIndicators';
 import DeclineModal from './_states/DeclineModal';
 import PermissionSchemeEntry from './_states/PermissionSchemeEntry';
-import ChannelHeaderIndicator from './_states/ChannelHeaderIndicator';
 import IndicatorShowcase from './_states/IndicatorShowcase';
 import { useA1V2Store, type A1V2StoreApi } from './useA1V2Store';
 import styles from './A1.module.scss';
@@ -65,63 +56,58 @@ function A1V2Inner({ store }: { store: A1V2StoreApi }) {
     return () => window.clearTimeout(t);
   }, [store, store.state.recentlySaved]);
 
-  const adminSurfacesHiddenOnMobile = isMobile && persona === 'channel-admin';
+  // v2 VP-5 mobile parity expansion: SG1 toggle + SG2 modal + SG5 panel +
+  // SG12 modal all ship at 360px parity. Only the System Console Permission
+  // Scheme editor remains web-only, so we gate just system-admin on mobile.
+  const adminSurfacesHiddenOnMobile = isMobile && persona === 'system-admin';
 
-  // Layout per persona. Mobile collapses to single column.
-  const { leftColumn, rightColumn } = useMemo(() => {
+  // Persona-aware screen stack. Each entry is rendered full-width in a
+  // single vertical column so the underlying ChannelShell chrome has
+  // room to breathe.
+  const screens = useMemo(() => {
     switch (persona) {
       case 'channel-admin':
-        return {
-          leftColumn: (
-            <>
-              <ChannelSettings store={store} />
-              <ChannelHeaderIndicator store={store} />
-              <InChannelAdminSysMsg store={store} />
-            </>
-          ),
-          rightColumn: (
-            <>
-              <LhsPendingDot store={store} />
-              <PendingRequestsRail store={store} />
-              <AuditPanel store={store} />
-            </>
-          ),
-        };
+        return (
+          <>
+            <ChannelSettings store={store} />
+            <ConfirmCommitModal store={store} standalone />
+            <PendingRequestIndicators store={store} />
+            <PendingRequestsRail store={store} />
+            <DeclineModal store={store} standalone />
+            <InChannelAdminSysMsg store={store} />
+            <PermalinkUnfurl store={store} />
+            <ChannelSwitcher store={store} />
+            <IndicatorShowcase store={store} />
+            <AuditPanel store={store} />
+          </>
+        );
       case 'end-user-tenured':
-        return {
-          leftColumn: (
-            <>
-              <BrowseChannels store={store} />
-              <RejoinableChannelsSurface store={store} />
-              <ChannelHeaderIndicator store={store} />
-            </>
-          ),
-          rightColumn: (
-            <>
-              <DmNotificationPreview store={store} />
-              <RequestToJoinModal store={store} />
-            </>
-          ),
-        };
+        return (
+          <>
+            <BrowseChannels store={store} />
+            <PermalinkUnfurl store={store} />
+            <ChannelSwitcher store={store} />
+            <RejoinableChannelsSurface store={store} />
+            <RequestToJoinModal store={store} standalone />
+            <DmNotificationPreview store={store} />
+            <IndicatorShowcase store={store} />
+          </>
+        );
       case 'end-user-newer':
-        return {
-          leftColumn: (
-            <>
-              <BrowseChannels store={store} />
-              <ChannelHeaderIndicator store={store} />
-            </>
-          ),
-          rightColumn: (
-            <>
-              <DmNotificationPreview store={store} />
-              <RequestToJoinModal store={store} />
-            </>
-          ),
-        };
+        return (
+          <>
+            <BrowseChannels store={store} />
+            <PermalinkUnfurl store={store} />
+            <ChannelSwitcher store={store} />
+            <RequestToJoinModal store={store} standalone />
+            <DmNotificationPreview store={store} />
+            <IndicatorShowcase store={store} />
+          </>
+        );
       case 'guest':
-        return {
-          leftColumn: <BrowseChannels store={store} />,
-          rightColumn: (
+        return (
+          <>
+            <BrowseChannels store={store} />
             <SectionNotice
               type="Info"
               title="Server-side guest filter (NFR-2)"
@@ -133,23 +119,19 @@ function A1V2Inner({ store }: { store: A1V2StoreApi }) {
                 </>
               }
             />
-          ),
-        };
+          </>
+        );
       case 'system-admin':
-        return {
-          leftColumn: (
-            <>
-              <AuditPanel store={store} />
-              <PermissionSchemeEntry store={store} />
-            </>
-          ),
-          rightColumn: (
-            <>
-              <PendingRequestsRail store={store} />
-              <LhsPendingDot store={store} />
-            </>
-          ),
-        };
+        return (
+          <>
+            <PermissionSchemeEntry store={store} />
+            <AuditPanel store={store} />
+            <PendingRequestIndicators store={store} />
+            <PendingRequestsRail store={store} />
+            <ConfirmCommitModal store={store} standalone />
+            <DeclineModal store={store} standalone />
+          </>
+        );
     }
   }, [persona, store]);
 
@@ -177,39 +159,26 @@ function A1V2Inner({ store }: { store: A1V2StoreApi }) {
         <div className={styles['dpc-a1-v2__mobile-admin-notice']}>
           <SectionNotice
             type="Info"
-            title="Web-only at launch (KD-8)"
+            title="Permission Scheme editor — web-only (System Console)"
             description={
               <>
-                The Discoverable toggle and Pending Requests queue are admin
-                surfaces and are not part of v1 mobile parity (FR-16 / NFR-8).
-                Switch the viewport back to Desktop · 1280 to exercise the
-                Confirm-and-Commit flow.
+                v2 expanded mobile parity (VP-5). The Discoverable toggle,
+                Confirm-and-Commit modal, Pending Requests panel, and Decline
+                modal all ship at 360px parity. The remaining web-only cutline
+                is the Permission Scheme editor — it lives in System Console.
+                Switch to Desktop · 1280 to see the system-admin advisory.
               </>
             }
           />
         </div>
       ) : (
-        <>
-          <div className={styles['dpc-a1-v2__columns']}>
-            <div className={styles['dpc-a1-v2__left']}>{leftColumn}</div>
-            <div className={styles['dpc-a1-v2__right']}>{rightColumn}</div>
-          </div>
-
-          {/* V2 cross-surface showcase row — visible for every non-guest
-              persona so reviewers can audit the new surfaces in one scroll. */}
-          {persona !== 'guest' && (
-            <div className={styles['dpc-a1-v2__showcase']}>
-              <PermalinkUnfurl store={store} />
-              <ChannelSwitcher store={store} />
-              <IndicatorShowcase store={store} />
-            </div>
-          )}
-        </>
+        <div className={styles['dpc-a1-v2__stack']}>{screens}</div>
       )}
 
-      {/* Modals — anchored to the prototype canvas. */}
+      {/* Page-level modal overlays — render when triggered via store. */}
       <ConfirmCommitModal store={store} />
       <DeclineModal store={store} />
+      <RequestToJoinModal store={store} />
     </div>
   );
 }

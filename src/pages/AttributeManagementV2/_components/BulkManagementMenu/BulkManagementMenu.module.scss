@@ -1,0 +1,19 @@
+.bulk {
+  position: relative;
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    right: 0;
+    z-index: 30;
+    min-width: 280px;
+  }
+
+  &__notice {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: 20px;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}

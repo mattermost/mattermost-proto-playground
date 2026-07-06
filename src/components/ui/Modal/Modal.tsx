@@ -90,7 +90,13 @@ export default function Modal({
               {title}
             </h2>
             {subtitle && (
-              <p className={styles['modal__subtitle']}>{subtitle}</p>
+              <>
+                <span
+                  className={styles['modal__title-separator']}
+                  aria-hidden
+                />
+                <p className={styles['modal__subtitle']}>{subtitle}</p>
+              </>
             )}
           </div>
         </div>

@@ -5,7 +5,8 @@
  *
  *   1. enable-typical       — Private + no ABAC (Template 1, §3.2.2):
  *                             "All N team members can find..." → Primary
- *                             "Make Discoverable for N team members"
+ *                             "Make Discoverable" (generic per 2026-05-18;
+ *                             count surfaced in body, not CTA)
  *   2. enable-empty         — Private + ABAC + 0 matches (Template 5, §3.2.6):
  *                             warning + "Make Discoverable anyway"
  *   3. enable-slow          — Slow-path skeleton (Template 6, §3.2.7):
@@ -33,8 +34,6 @@
  *   • No auto-focus on Primary — Phase 4 §7.3 dismissal-fatigue mitigation.
  */
 import { useEffect } from 'react';
-import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
-import PlusIcon from '@mattermost/compass-icons/components/plus';
 import ShieldOutlineIcon from '@mattermost/compass-icons/components/shield-outline';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
@@ -43,17 +42,31 @@ import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline
 import EmailOutlineIcon from '@mattermost/compass-icons/components/email-outline';
 import Modal from '@/components/ui/Modal/Modal';
 import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import Spinner from '@/components/ui/Spinner/Spinner';
-import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
+import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
 import Chip from '@/components/ui/Chip/Chip';
+import EmptyState from '@/components/ui/EmptyState/EmptyState';
+import Icon from '@/components/ui/Icon/Icon';
+import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
+import Spinner from '@/components/ui/Spinner/Spinner';
+import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
 import { SUPPORTING_USERS, usePersona } from '@/pages/dpc/shared';
+import AppOverlay from '../_components/AppOverlay';
+import DpcAppShell, { shellStyles } from '../_components/DpcAppShell';
+import ScreenCanvas from '../_components/ScreenCanvas';
 import type { A1V2StoreApi, ConfirmScenario } from '../useA1V2Store';
 import styles from './ConfirmCommitModal.module.scss';
 
 export interface ConfirmCommitModalProps {
   store: A1V2StoreApi;
+  /**
+   * When true, the modal is rendered inside a `ScreenCanvas` wrapper with
+   * its own `ChannelShell` background — used as a standalone review surface
+   * (Wave 2C). When false (default), it renders as a page-level overlay,
+   * which is the runtime behavior when the underlying Channel Settings
+   * toggle fires `openToggleConfirm`.
+   */
+  standalone?: boolean;
 }
 
 const PREVIEW_LIMIT = 10; // §3.2.3 first-10 preview + overflow.
@@ -67,7 +80,10 @@ const SCENARIO_OPTIONS: Array<{ key: ConfirmScenario; label: string }> = [
   { key: 'policy-change-impact', label: '4b · Policy change' },
 ];
 
-export default function ConfirmCommitModal({ store }: ConfirmCommitModalProps) {
+export default function ConfirmCommitModal({
+  store,
+  standalone = false,
+}: ConfirmCommitModalProps) {
   const { state, policy, focusChannel } = store;
   const { personaInfo } = usePersona();
 
@@ -91,7 +107,9 @@ export default function ConfirmCommitModal({ store }: ConfirmCommitModalProps) {
     store,
   ]);
 
-  if (!state.pendingToggle) return null;
+  // Page-level overlay mode (default): only render when the toggle was
+  // actually triggered via store.openToggleConfirm.
+  if (!standalone && !state.pendingToggle) return null;
 
   const isDisableScenario =
     state.confirmScenario === 'disable-with-pending' ||
@@ -105,11 +123,15 @@ export default function ConfirmCommitModal({ store }: ConfirmCommitModalProps) {
     }
   };
 
-  return (
-    <div className={styles['v2-confirm-modal__overlay']} role="presentation">
-      <Modal
+  const modalNode = (
+    <Modal
         size="Medium"
-        title={renderTitle(state.confirmScenario, policy.matchedCount, focusChannel.memberCount)}
+        title={renderTitle(state.confirmScenario)}
+        // Per Figma 4886:51404 — channel name lives in the Modal header as a
+        // subtitle next to the title (separated by a vertical line). The
+        // previous in-body lock-plus + name + purpose row has been removed;
+        // the body now focuses on consequence message + matched-user preview.
+        subtitle={`#${focusChannel.displayName}`}
         onClose={() => store.cancelToggle(personaInfo.username)}
         footer={renderFooter({
           scenario: state.confirmScenario,
@@ -127,50 +149,6 @@ export default function ConfirmCommitModal({ store }: ConfirmCommitModalProps) {
           },
         })}
       >
-        {/* Reviewer scenario selector — V2-only affordance. */}
-        <div
-          className={styles['v2-confirm-modal__scenario-picker']}
-          aria-label="Scenario template selector (reviewer aid)"
-        >
-          <span className={styles['v2-confirm-modal__scenario-picker-label']}>
-            Scenario template
-          </span>
-          <div className={styles['v2-confirm-modal__scenario-picker-chips']}>
-            {SCENARIO_OPTIONS.map((opt) => (
-              <Chip
-                key={opt.key}
-                size="Small"
-                as="button"
-                tone={state.confirmScenario === opt.key ? 'info' : 'neutral'}
-                colored={state.confirmScenario === opt.key}
-                onClick={() => store.setConfirmScenario(opt.key)}
-              >
-                {opt.label}
-              </Chip>
-            ))}
-          </div>
-        </div>
-
-        {/* Channel identity row — lock-plus composite glyph for enable
-            scenarios; plain lock for disable scenarios per §3.2.5. */}
-        <div className={styles['v2-confirm-modal__channel-row']}>
-          <span className={styles['v2-confirm-modal__channel-icon']}>
-            <LockOutlineIcon size={20} />
-            {!isDisableScenario && (
-              <PlusIcon
-                size={12}
-                className={styles['v2-confirm-modal__channel-icon-plus']}
-              />
-            )}
-          </span>
-          <span className={styles['v2-confirm-modal__channel-name']}>
-            {focusChannel.displayName}
-          </span>
-          <span className={styles['v2-confirm-modal__channel-purpose']}>
-            {focusChannel.purpose}
-          </span>
-        </div>
-
         {state.modalSessionExpired && (
           <div
             className={styles['v2-confirm-modal__error-banner']}
@@ -191,48 +169,200 @@ export default function ConfirmCommitModal({ store }: ConfirmCommitModalProps) {
           focusChannelMemberCount: focusChannel.memberCount,
           pendingCount: state.pendingRequests.length,
         })}
-
-        {/* Demo control: V-A1-2 stale-state path. */}
-        {!state.modalSessionExpired && !isDisableScenario && (
-          <div className={styles['v2-confirm-modal__demo-control']}>
-            <button
-              type="button"
-              className={styles['v2-confirm-modal__demo-link']}
-              onClick={() => store.simulateSessionExpiry()}
-            >
-              Demo: simulate session expiry (V-A1-2 stale-state path)
-            </button>
-          </div>
-        )}
       </Modal>
-    </div>
+  );
+
+  const canShowSessionExpiry = !state.modalSessionExpired && !isDisableScenario;
+
+  if (!standalone) {
+    // Runtime page-level overlay — render the modal in a fixed backdrop
+    // so it floats over the whole prototype canvas (matches the previous
+    // behaviour when triggered from Channel Settings → openToggleConfirm).
+    return (
+      <div
+        className={styles['v2-confirm-modal__page-overlay']}
+        role="presentation"
+      >
+        {modalNode}
+      </div>
+    );
+  }
+
+  return (
+    <ScreenCanvas
+      eyebrow="§3.2"
+      title="Confirm-and-Commit modal"
+      subtitle="Six scenario templates per §3.2. The chip strip selects which template renders; the modal is the focus surface."
+      canvas={
+        <div className={styles['v2-confirm-modal__canvas']}>
+          {/* Scenario chip selector lives ABOVE the modal canvas — it is
+              a reviewer aid, not product UI. */}
+          <div
+            className={styles['v2-confirm-modal__scenario-picker']}
+            aria-label="Scenario template selector (reviewer aid)"
+          >
+            <span
+              className={styles['v2-confirm-modal__scenario-picker-label']}
+            >
+              Scenario template (reviewer aid — not product UI)
+            </span>
+            <div
+              className={styles['v2-confirm-modal__scenario-picker-chips']}
+            >
+              {SCENARIO_OPTIONS.map((opt) => (
+                <Chip
+                  key={opt.key}
+                  size="Small"
+                  as="button"
+                  tone={
+                    state.confirmScenario === opt.key ? 'info' : 'neutral'
+                  }
+                  colored={state.confirmScenario === opt.key}
+                  onClick={() => store.setConfirmScenario(opt.key)}
+                >
+                  {opt.label}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
+          <DpcAppShell
+            focusChannelName={focusChannel.displayName}
+            focusIsDiscoverable
+            channelHeader={
+              <ChannelHeader
+                type="Channel"
+                name={focusChannel.displayName}
+                description={focusChannel.purpose}
+                memberCount={focusChannel.memberCount}
+                pinnedCount={2}
+              />
+            }
+            overlay={<AppOverlay maxWidth={760}>{modalNode}</AppOverlay>}
+          >
+            <div className={shellStyles['channel-shell__messages']}>
+              <Scrollbars>
+                <div className={shellStyles['channel-shell__messages-list']}>
+                  <EmptyState
+                    title="Confirm modal is the focus"
+                    description="The chip strip above selects which of the six templates renders inside the modal."
+                  />
+                </div>
+              </Scrollbars>
+            </div>
+          </DpcAppShell>
+        </div>
+      }
+      reviewSummary="No auto-focus on Primary — Phase 4 §7.3 dismissal-fatigue mitigation. Cancel emits discoverable.toggle.cancelled audit; Primary path emits discoverable.toggle.enabled or .disabled."
+      reviewItems={[
+        {
+          heading: 'Channel context moved to Modal header (Figma 4886:51404)',
+          body: (
+            <p>
+              The channel name lives in the Modal <code>subtitle</code> slot
+              alongside the title (separated by a vertical line). The previous
+              in-body lock-plus + channel-name + purpose row has been removed
+              from every template — the body now focuses on the consequence
+              message, matched-user preview, and footer buttons.
+            </p>
+          ),
+        },
+        {
+          heading: 'Slow-path UX (NFR-5 boundary demo)',
+          body: (
+            <p>
+              The <code>enable-slow</code> template shows a spinner +
+              "Calculating…" skeleton; Primary is disabled until 800ms after
+              open. Once resolved, the matched-user grid renders and Primary
+              becomes <code>Make Discoverable</code> (generic — matched-user
+              count + carousel live in the body, not the CTA, per 2026-05-18
+              feedback).
+            </p>
+          ),
+        },
+        {
+          heading: 'CTAs simplified (2026-05-18 stakeholder feedback)',
+          body: (
+            <p>
+              CTAs simplified per 2026-05-18 stakeholder feedback —
+              matched-user count is shown in the body (carousel + "+N more"
+              overflow + cardinality sentence); the CTA stays generic to avoid
+              noise. Templates 3 (auto-add ON) and 5 (0 matches) retain{' '}
+              <code>Make Discoverable anyway</code> because they're warning
+              scenarios where the admin is overriding a guard — the "anyway"
+              token carries the override semantics. Template 4 (disable) and
+              Template 4b (policy-change) use <code>Disable Discoverable</code>
+              {' '}without counts (already correct). Template 6 (slow-path
+              loading) shows a disabled <code>Make Discoverable</code> until
+              the cohort resolves.
+            </p>
+          ),
+        },
+        {
+          heading: 'Reviewer demo control — stale state (V-A1-2)',
+          body: (
+            <>
+              <p>
+                The session-expiry simulator is intentionally outside the
+                modal body in this refactor — it is a reviewer aid, not
+                product UI.
+              </p>
+              {canShowSessionExpiry && (
+                <button
+                  type="button"
+                  className={styles['v2-confirm-modal__demo-link']}
+                  onClick={() => store.simulateSessionExpiry()}
+                >
+                  Simulate session expiry now
+                </button>
+              )}
+            </>
+          ),
+        },
+        {
+          heading: 'Lock-plus glyph removed from the modal body',
+          body: (
+            <p>
+              The earlier channel-identity row inside the modal body has been
+              retired in favor of the Modal subtitle pattern. The lock-plus
+              composite glyph stays in the Channel Settings header, Browse
+              channel rows, and the channel switcher per KD-26 subtle-by-
+              default — within the modal itself, the title + subtitle and the
+              consequence copy are enough to anchor what the channel is.
+            </p>
+          ),
+        },
+      ]}
+    />
   );
 }
 
 // ── Title resolution ────────────────────────────────────────────────────────
 
-function renderTitle(
-  scenario: ConfirmScenario,
-  matchedCount: number,
-  teamMemberCount: number,
-): string {
+function renderTitle(scenario: ConfirmScenario): string {
+  // Each template gets its own title. The channel name moves to the Modal's
+  // subtitle slot (rendered next to the title per Figma 4886:51404).
   switch (scenario) {
     case 'enable-typical':
-      return `Make this channel discoverable to ${teamMemberCount} team members?`;
+      // Template 1 — Private + no ABAC.
+      return 'Make this channel discoverable?';
     case 'enable-empty':
-      return 'No users currently match the access rules';
+      // Template 5 — ABAC rules exist but 0 matches.
+      return 'Make this channel discoverable?';
     case 'enable-slow':
-      return 'Make this channel discoverable';
+      // Template 6 — Slow path (large cohort).
+      return 'Make this channel discoverable?';
     case 'enable-large-jump':
-      return `Auto-add is on — Discoverable is redundant`;
+      // Template 3 — ABAC + auto-add ON (redundancy).
+      return 'Discoverable has limited effect here';
     case 'disable-with-pending':
-      return 'Turn off Discoverable for this channel?';
+      // Template 4 — Toggle OFF.
+      return 'Disable Discoverable?';
     case 'policy-change-impact':
-      return 'Turn off Discoverable for this channel?';
+      // Template 4b — Toggle OFF, no pending.
+      return 'Disable Discoverable?';
     default:
-      return matchedCount > 0
-        ? `Make this channel discoverable to ${matchedCount} matching users?`
-        : 'Make this channel discoverable';
+      return 'Make this channel discoverable?';
   }
 }
 
@@ -345,65 +475,87 @@ function TemplateSlow({
   const overflow = Math.max(0, policy.matchedCount - sample.length);
 
   return (
-    <Section title="Who can find this channel" icon={<AccountMultipleOutlineIcon />}>
-      <div
-        className={styles['v2-confirm-modal__panel']}
-        aria-live="polite"
-        aria-busy={loading}
-      >
+    <>
+      <p className={styles['v2-confirm-modal__lede']}>
+        When you make this discoverable,{' '}
         {loading ? (
-          <div className={styles['v2-confirm-modal__slow']}>
-            <div className={styles['v2-confirm-modal__slow-header']}>
-              <Spinner size={16} aria-label="Calculating matched users" />
-              <span>Calculating who can see this channel…</span>
-            </div>
-            <div className={styles['v2-confirm-modal__skeleton-rows']}>
-              <span className={styles['v2-confirm-modal__skeleton-row']} />
-              <span className={styles['v2-confirm-modal__skeleton-row']} />
-              <span className={styles['v2-confirm-modal__skeleton-row']} />
-              <span className={styles['v2-confirm-modal__skeleton-row']} />
-            </div>
-          </div>
+          <>the users matching</>
         ) : (
           <>
-            <p className={styles['v2-confirm-modal__panel-text']}>
-              <strong>{policy.matchedCount} users</strong> matching access
-              rules can find and join this channel directly.
-            </p>
-            <div className={styles['v2-confirm-modal__matched-grid']}>
-              {sample.map((u) => (
-                <span
-                  key={u.id}
-                  className={styles['v2-confirm-modal__matched-user']}
-                >
-                  <UserAvatar
-                    src={u.avatarUrl}
-                    alt={u.displayName}
-                    name={u.displayName}
-                    size="20"
-                  />
-                  <span className={styles['v2-confirm-modal__matched-name']}>
-                    @{u.username}
-                  </span>
-                </span>
-              ))}
-              {overflow > 0 && (
-                <span className={styles['v2-confirm-modal__overflow']}>
-                  + {overflow} more
-                </span>
-              )}
-            </div>
-            <p className={styles['v2-confirm-modal__panel-aside']}>
-              Guests excluded (server-side).
-            </p>
+            the <strong>{policy.matchedCount} users</strong> matching
           </>
-        )}
-      </div>
-    </Section>
+        )}{' '}
+        your access rules will see the channel and can request to join. Since
+        this is a private channel, all join requests still require your
+        approval.
+      </p>
+      <Section title="Who can find this channel" icon={<AccountMultipleOutlineIcon />}>
+        <div
+          className={styles['v2-confirm-modal__panel']}
+          aria-live="polite"
+          aria-busy={loading}
+        >
+          {loading ? (
+            <div className={styles['v2-confirm-modal__slow']}>
+              <div className={styles['v2-confirm-modal__slow-header']}>
+                <Spinner size={16} aria-label="Calculating matched users" />
+                <span>Calculating who can see this channel…</span>
+              </div>
+              <div className={styles['v2-confirm-modal__skeleton-rows']}>
+                <span className={styles['v2-confirm-modal__skeleton-row']} />
+                <span className={styles['v2-confirm-modal__skeleton-row']} />
+                <span className={styles['v2-confirm-modal__skeleton-row']} />
+                <span className={styles['v2-confirm-modal__skeleton-row']} />
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className={styles['v2-confirm-modal__panel-text']}>
+                <strong>{policy.matchedCount} users</strong> matching access
+                rules can find this channel and request to join.
+              </p>
+              <div className={styles['v2-confirm-modal__matched-grid']}>
+                {sample.map((u) => (
+                  <span
+                    key={u.id}
+                    className={styles['v2-confirm-modal__matched-user']}
+                  >
+                    <UserAvatar
+                      src={u.avatarUrl}
+                      alt={u.displayName}
+                      name={u.displayName}
+                      size="20"
+                    />
+                    <span className={styles['v2-confirm-modal__matched-name']}>
+                      @{u.username}
+                    </span>
+                  </span>
+                ))}
+                {overflow > 0 && (
+                  <span className={styles['v2-confirm-modal__overflow']}>
+                    + {overflow} more
+                  </span>
+                )}
+              </div>
+              <p className={styles['v2-confirm-modal__panel-aside']}>
+                Guests excluded (server-side).
+              </p>
+            </>
+          )}
+        </div>
+      </Section>
+      <Section title="How users get in" icon={<AccountPlusOutlineIcon />}>
+        <p className={styles['v2-confirm-modal__section-body']}>
+          <strong>Matching users request to join.</strong> Because this is a
+          private channel, every join request still needs your approval —
+          matching the policy only grants visibility, not direct access.
+        </p>
+      </Section>
+    </>
   );
 }
 
-// Template 3 — Auto-add ON redundancy warning. §3.2.4.
+// Template 3 — Auto-add ON redundancy warning. §3.2.4 / v2.3 §5.2 T3.
 function TemplateAutoAdd({ matchedCount }: { matchedCount: number }) {
   const displayCount = matchedCount > 0 ? matchedCount : 47;
   return (
@@ -419,10 +571,13 @@ function TemplateAutoAdd({ matchedCount }: { matchedCount: number }) {
           </>
         }
       />
-      <Section title="If you make this channel discoverable anyway" icon={<ShieldOutlineIcon />}>
+      <Section
+        title="If you make this channel discoverable anyway"
+        icon={<ShieldOutlineIcon />}
+      >
         <ul className={styles['v2-confirm-modal__bullets']}>
-          <li>Matching users (already members) won't see any change.</li>
-          <li>Non-matching users still won't see the channel.</li>
+          <li>Matching users (already members) won&apos;t see any change.</li>
+          <li>Non-matching users still won&apos;t see the channel.</li>
           <li>
             The channel will be marked Discoverable in audit logs and
             channel-state metadata.
@@ -433,7 +588,7 @@ function TemplateAutoAdd({ matchedCount }: { matchedCount: number }) {
   );
 }
 
-// Template 4 — Disable with pending requests. §3.2.5.
+// Template 4 — Disable with pending requests. §3.2.5 / v2.3 §5.2 T4 cascade.
 function TemplateDisableWithPending({
   pendingCount,
 }: {
@@ -453,8 +608,7 @@ function TemplateDisableWithPending({
             <strong>
               {safeCount} pending request{safeCount === 1 ? '' : 's'}
             </strong>{' '}
-            will be withdrawn. Requesters will receive a DM letting them know
-            the channel is no longer discoverable.
+            will be withdrawn. Each requester gets a DM explaining why.
           </p>
         </div>
       </Section>
@@ -515,6 +669,10 @@ function renderFooter({
   // Template 3 inverts emphasis: Cancel is Primary; "Make Discoverable anyway"
   // is Secondary. Tertiary "Disable auto-add first" is exposed.
   if (scenario === 'enable-large-jump') {
+    // Inverted emphasis. Cancel is Primary; "Make Discoverable anyway" is
+    // Secondary (outlined); "Disable auto-add first" is Tertiary. The override
+    // semantics are carried by the "anyway" copy + the Cancel being the
+    // emphasized action.
     return (
       <div className={styles['v2-confirm-modal__footer']}>
         <Button emphasis="Tertiary" size="Medium" onClick={onDisableAutoAdd}>
@@ -539,21 +697,26 @@ function renderFooter({
           Cancel
         </Button>
         <Button emphasis="Primary" size="Medium" onClick={onConfirm}>
-          Disable Discoverable
+          Turn off Discoverable
         </Button>
       </div>
     );
   }
 
   // Enable scenarios — primary label resolution.
+  // Per 2026-05-18 stakeholder feedback: CTAs are generic ("Make Discoverable")
+  // rather than count-bearing. The matched-user count + avatar carousel inside
+  // the modal body remains the matched-user disclosure surface; the CTA stays
+  // generic to avoid noise. Template 5 (enable-empty) keeps "anyway" because
+  // it's a warning scenario where the admin is overriding a "0 matches" guard.
   let primaryLabel = 'Make Discoverable';
-  if (scenario === 'enable-typical') {
-    primaryLabel = `Make Discoverable for ${focusChannelMemberCount} team members`;
-  } else if (scenario === 'enable-slow' && !loading) {
-    primaryLabel = `Make Discoverable for ${policy.matchedCount} users`;
-  } else if (scenario === 'enable-empty') {
+  if (scenario === 'enable-empty') {
     primaryLabel = 'Make Discoverable anyway';
   }
+  // Reference unused args to keep the signature intact; the count + matched
+  // count are still surfaced in the body (not the CTA).
+  void focusChannelMemberCount;
+  void policy;
 
   return (
     <div className={styles['v2-confirm-modal__footer']}>

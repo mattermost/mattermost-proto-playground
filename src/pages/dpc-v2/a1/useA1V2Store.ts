@@ -41,14 +41,40 @@ export type AbacPolicyKey = 'empty' | 'typical' | 'slow';
  * Six scenario templates surfaced by the V2 Confirm-and-Commit modal.
  * Wave 2 will render distinct headline/body/CTA copy per scenario. Wave 1
  * only carries the discriminator + selector so the state shape is locked.
+ *
+ * v2.3: added `enable-policy-add` (T5, S2→S3 adding a Membership Policy) and
+ * `enable-auto-add` (T6, S3→S5 enabling auto-add with cascade auto-approval).
  */
 export type ConfirmScenario =
   | 'enable-typical'
   | 'enable-empty'
   | 'enable-slow'
   | 'enable-large-jump'
+  | 'enable-policy-add'
+  | 'enable-auto-add'
   | 'disable-with-pending'
   | 'policy-change-impact';
+
+/**
+ * v2.3 §4.6 — five reason codes the atomicity rollback path can emit.
+ */
+export type RollbackReason =
+  | 'stale_policy_hash'
+  | 'stale_channel_version'
+  | 'stale_pending_request_count'
+  | 'acknowledgment_token_expired'
+  | 'server_error';
+
+/**
+ * v2.3 — in-channel admin-visible post lifecycle. `resolved-auto-add` is the
+ * V-005 "Auto-add enabled." status-stamp transition (T6 cascade,
+ * system-attributed since no admin acted at the per-request level).
+ */
+export type InChannelPostLifecycle =
+  | 'pending'
+  | 'resolved-approved'
+  | 'resolved-declined'
+  | 'resolved-auto-add';
 
 export type PermalinkUnfurlMode = 'visible' | 'silent';
 
@@ -73,9 +99,11 @@ export interface DmNotification {
   id: string;
   variant:
     | 'approved'
+    | 'approved-auto-cascade'
     | 'denied-no-reason'
     | 'denied-with-reason'
     | 'auto-withdraw-disabled'
+    | 'auto-withdraw-policy-filter'
     | 'auto-withdraw-channel-deleted';
   channelId: string;
   channelName: string;
@@ -157,9 +185,6 @@ export interface A1V2State {
   /** Sidebar pending-requests dot visibility for admin personas. */
   lhsPendingDotVisible: boolean;
 
-  /** Channel header indicator (subtle lock-plus) visibility for members. */
-  channelHeaderIndicatorVisible: boolean;
-
   /** Indicator showcase: which cross-surface scenario is highlighted. */
   indicatorShowcaseScenario:
     | 'header'
@@ -167,6 +192,29 @@ export interface A1V2State {
     | 'browse'
     | 'permalink'
     | 'all';
+
+  // ── v2.3 additions ─────────────────────────────────────────────────────
+
+  /** Whether the focus channel currently has auto-add enabled (S5 driver). */
+  autoAddEnabled: boolean;
+  /** Whether a Membership Policy is currently attached to the focus channel (S3+ driver). */
+  membershipPolicyAttached: boolean;
+  /** When set, the next CONFIRM_TOGGLE_ENABLE will fire atomicity rollback. */
+  simulateRollbackReason: RollbackReason | null;
+  /** True when the opaque rollback modal is open (§4.6). */
+  rollbackModalOpen: boolean;
+  /** Active rollback reason rendered in the rollback modal. */
+  rollbackModalReason: RollbackReason | null;
+  /** In-channel admin-visible system message lifecycle (§5.6 + V-005). */
+  inChannelPostLifecycle: InChannelPostLifecycle;
+  /** Actor who resolved the in-channel post (null for system-attributed T6). */
+  inChannelPostResolutionActor: string | null;
+  /** Channel id targeted by the page-level RequestToJoinModal overlay. */
+  activeRequestChannelId: string | null;
+  /** True when the page-level RequestToJoinModal overlay is open. */
+  requestToJoinModalOpen: boolean;
+  /** Two-step state for the RequestToJoinModal overlay. */
+  requestToJoinStep: 'preview' | 'pending';
 }
 
 // ── Actions ───────────────────────────────────────────────────────────────
@@ -211,11 +259,31 @@ export type A1V2Action =
   | { type: 'SET_TEAM_OVERRIDE_ACTIVE'; active: boolean }
   | { type: 'SET_IN_CHANNEL_ADMIN_SYS_MSG'; visible: boolean }
   | { type: 'SET_LHS_PENDING_DOT'; visible: boolean }
-  | { type: 'SET_CHANNEL_HEADER_INDICATOR'; visible: boolean }
   | {
       type: 'SET_INDICATOR_SHOWCASE';
       scenario: A1V2State['indicatorShowcaseScenario'];
-    };
+    }
+  // v2.3 additions
+  | { type: 'SET_AUTO_ADD'; enabled: boolean; actor: string }
+  | { type: 'APPLY_MEMBERSHIP_POLICY'; actor: string }
+  | { type: 'COMMIT_POLICY_ADD'; actor: string }
+  | { type: 'COMMIT_AUTO_ADD'; actor: string }
+  | { type: 'SIMULATE_ROLLBACK'; reason: RollbackReason | null }
+  | { type: 'OPEN_ROLLBACK_MODAL'; reason: RollbackReason }
+  | { type: 'CLOSE_ROLLBACK_MODAL' }
+  | { type: 'OPEN_REQUEST_TO_JOIN'; channelId: string }
+  | { type: 'CLOSE_REQUEST_TO_JOIN' }
+  | { type: 'SET_REQUEST_STEP'; step: 'preview' | 'pending' }
+  | {
+      type: 'RESOLVE_INCHANNEL_POST';
+      lifecycle: 'resolved-approved' | 'resolved-declined' | 'resolved-auto-add';
+      actor: string;
+    }
+  | { type: 'DECLINE_CANCELLED'; actor: string }
+  | { type: 'TELEMETRY_PERMALINK_VISIBLE'; viewer: string }
+  | { type: 'TELEMETRY_PERMALINK_SILENT' }
+  | { type: 'TELEMETRY_SWITCHER_SILENT' }
+  | { type: 'TELEMETRY_GUEST_FILTER'; surface: string };
 
 // ── Seed / initial state ──────────────────────────────────────────────────
 
@@ -263,8 +331,19 @@ const INITIAL_STATE: A1V2State = {
   teamOverrideActive: false,
   inChannelAdminSysMsgVisible: true,
   lhsPendingDotVisible: true,
-  channelHeaderIndicatorVisible: true,
   indicatorShowcaseScenario: 'all',
+
+  // v2.3 defaults
+  autoAddEnabled: false,
+  membershipPolicyAttached: false,
+  simulateRollbackReason: null,
+  rollbackModalOpen: false,
+  rollbackModalReason: null,
+  inChannelPostLifecycle: 'pending',
+  inChannelPostResolutionActor: null,
+  activeRequestChannelId: null,
+  requestToJoinModalOpen: false,
+  requestToJoinStep: 'preview',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -359,6 +438,35 @@ function reducer(state: A1V2State, action: A1V2Action): A1V2State {
     case 'CONFIRM_TOGGLE_ENABLE': {
       const policy = ABAC_POLICIES[state.abacPolicy];
       const ts = new Date().toISOString();
+
+      // v2.3 §4.6 — atomicity rollback simulation. When the reviewer has
+      // armed a rejection reason via the simulate-rollback control, the
+      // commit path emits the rejection audit, opens the opaque rollback
+      // modal, and leaves channelDiscoverable untouched (server-persisted
+      // state never enters a listable intermediate state).
+      if (state.simulateRollbackReason) {
+        const rejectedV23 = makeAudit({
+          ts,
+          actor: action.actor,
+          action: 'discoverable.toggle.attempt_rejected',
+          resource: FOCUS_CHANNEL.id,
+          outcome: 'denied',
+          meta: {
+            reason: state.simulateRollbackReason,
+            acknowledgment_metadata: buildAcknowledgmentMetadata(policy, ts),
+          },
+        });
+        return {
+          ...state,
+          pendingToggle: false,
+          modalMatchedUsersLoading: false,
+          simulateRollbackReason: null,
+          rollbackModalOpen: true,
+          rollbackModalReason: state.simulateRollbackReason,
+          auditEvents: [...state.auditEvents, rejectedV23],
+          recentlySaved: false,
+        };
+      }
 
       if (state.modalSessionExpired) {
         const rejected = makeAudit({
@@ -547,6 +655,9 @@ function reducer(state: A1V2State, action: A1V2Action): A1V2State {
         ),
         dmNotifications: [...state.dmNotifications, dm],
         auditEvents: [...state.auditEvents, approved],
+        // v2.3 §5.6 — admin-only in-channel post lifecycle transition.
+        inChannelPostLifecycle: 'resolved-approved',
+        inChannelPostResolutionActor: action.actor,
       };
     }
 
@@ -596,6 +707,9 @@ function reducer(state: A1V2State, action: A1V2Action): A1V2State {
         declineModalRequestId: null,
         declineModalStep: 'reason',
         declineModalReason: '',
+        // v2.3 §5.6 — admin-only in-channel post lifecycle transition.
+        inChannelPostLifecycle: 'resolved-declined',
+        inChannelPostResolutionActor: action.actor,
       };
     }
 
@@ -684,11 +798,289 @@ function reducer(state: A1V2State, action: A1V2Action): A1V2State {
     case 'SET_LHS_PENDING_DOT': {
       return { ...state, lhsPendingDotVisible: action.visible };
     }
-    case 'SET_CHANNEL_HEADER_INDICATOR': {
-      return { ...state, channelHeaderIndicatorVisible: action.visible };
-    }
     case 'SET_INDICATOR_SHOWCASE': {
       return { ...state, indicatorShowcaseScenario: action.scenario };
+    }
+
+    // ── v2.3 additions ────────────────────────────────────────────────────
+
+    case 'SET_AUTO_ADD': {
+      const ts = new Date().toISOString();
+      const evt = makeAudit({
+        ts,
+        actor: action.actor,
+        action: 'channel.auto_add.set',
+        resource: FOCUS_CHANNEL.id,
+        meta: { enabled: action.enabled },
+      });
+      return {
+        ...state,
+        autoAddEnabled: action.enabled,
+        auditEvents: [...state.auditEvents, evt],
+      };
+    }
+
+    case 'APPLY_MEMBERSHIP_POLICY': {
+      // Opens the SG2 modal pre-tuned to the T5 (S2→S3) template.
+      const ts = new Date().toISOString();
+      const opened = makeAudit({
+        ts,
+        actor: action.actor,
+        action: 'discoverable.toggle.opened',
+        resource: FOCUS_CHANNEL.id,
+        meta: {
+          from: 'membership-policy-tab',
+          policy_key: state.abacPolicy,
+          scenario: 'enable-policy-add',
+        },
+      });
+      return {
+        ...state,
+        pendingToggle: true,
+        confirmScenario: 'enable-policy-add',
+        modalMatchedUsersLoading: false,
+        modalSessionExpired: false,
+        auditEvents: [...state.auditEvents, opened],
+      };
+    }
+
+    case 'COMMIT_POLICY_ADD': {
+      // v2.3 §5.2 T5 — adding a Membership Policy to an existing S2 channel.
+      // Non-matching pending requests are auto-withdrawn with
+      // withdrawal_reason="abac_filter_applied" (heuristic: requests at index
+      // >= 3 are treated as non-matching for prototype purposes).
+      const ts = new Date().toISOString();
+      const policy = ABAC_POLICIES[state.abacPolicy];
+      const nonMatchingIdx = 3;
+      const survivors = state.pendingRequests.slice(0, nonMatchingIdx);
+      const removed = state.pendingRequests.slice(nonMatchingIdx);
+
+      const withdrawDms: DmNotification[] = removed.map((req) => ({
+        id: makeDmId(),
+        variant: 'auto-withdraw-policy-filter',
+        channelId: req.channelId,
+        channelName: FOCUS_CHANNEL.displayName,
+        adminUsername: action.actor,
+        createdAt: ts,
+      }));
+      const withdrawEvents: AuditEvent[] = removed.map((req) =>
+        makeAudit({
+          ts,
+          actor: 'system',
+          action: 'request.withdrawn',
+          resource: req.id,
+          meta: {
+            reason: 'abac_filter_applied',
+            requester: req.requesterUsername,
+          },
+        }),
+      );
+      const policyChanged = makeAudit({
+        ts,
+        actor: action.actor,
+        action: 'discoverable.policy.changed',
+        resource: FOCUS_CHANNEL.id,
+        meta: {
+          transition: 'S2_to_S3',
+          policy_key: policy.key,
+          pending_requests_withdrawn: removed.length,
+          acknowledgment_metadata: buildAcknowledgmentMetadata(policy, ts),
+        },
+      });
+      return {
+        ...state,
+        membershipPolicyAttached: true,
+        channelDiscoverable: true,
+        pendingToggle: false,
+        modalMatchedUsersLoading: false,
+        pendingRequests: survivors,
+        myPendingRequests: state.myPendingRequests.filter((id) =>
+          survivors.some((r) => r.id === id),
+        ),
+        dmNotifications: [...state.dmNotifications, ...withdrawDms],
+        auditEvents: [...state.auditEvents, policyChanged, ...withdrawEvents],
+        recentlySaved: true,
+      };
+    }
+
+    case 'COMMIT_AUTO_ADD': {
+      // v2.3 §4.8 T6 — enabling auto-add on an existing S3 channel triggers
+      // auto-approval cascade for pending matching-user requests (heuristic:
+      // index < 3) and transitions the in-channel admin post to
+      // "Auto-add enabled." (V-005 status stamp, system-attributed).
+      const ts = new Date().toISOString();
+      const policy = ABAC_POLICIES[state.abacPolicy];
+      const matchingIdx = 3;
+      const autoApproved = state.pendingRequests.slice(0, matchingIdx);
+      const survivors = state.pendingRequests.slice(matchingIdx);
+
+      const approvedDms: DmNotification[] = autoApproved.map((req) => ({
+        id: makeDmId(),
+        variant: 'approved-auto-cascade',
+        channelId: req.channelId,
+        channelName: FOCUS_CHANNEL.displayName,
+        adminUsername: 'system',
+        createdAt: ts,
+      }));
+      const approvedEvents: AuditEvent[] = autoApproved.map((req) =>
+        makeAudit({
+          ts,
+          actor: 'system',
+          action: 'request.auto_approved',
+          resource: req.id,
+          meta: {
+            auto_approval_reason: 'auto_add_enabled',
+            requester: req.requesterUsername,
+          },
+        }),
+      );
+      const policyChanged = makeAudit({
+        ts,
+        actor: action.actor,
+        action: 'discoverable.policy.changed',
+        resource: FOCUS_CHANNEL.id,
+        meta: {
+          transition: 'S3_to_S5',
+          policy_key: policy.key,
+          pending_requests_auto_approved: autoApproved.length,
+          acknowledgment_metadata: buildAcknowledgmentMetadata(policy, ts),
+        },
+      });
+      return {
+        ...state,
+        autoAddEnabled: true,
+        pendingToggle: false,
+        modalMatchedUsersLoading: false,
+        pendingRequests: survivors,
+        myPendingRequests: state.myPendingRequests.filter((id) =>
+          survivors.some((r) => r.id === id),
+        ),
+        dmNotifications: [...state.dmNotifications, ...approvedDms],
+        auditEvents: [...state.auditEvents, policyChanged, ...approvedEvents],
+        // V-005 status stamp lifecycle transition.
+        inChannelPostLifecycle: 'resolved-auto-add',
+        inChannelPostResolutionActor: null,
+        recentlySaved: true,
+      };
+    }
+
+    case 'SIMULATE_ROLLBACK': {
+      return { ...state, simulateRollbackReason: action.reason };
+    }
+
+    case 'OPEN_ROLLBACK_MODAL': {
+      return {
+        ...state,
+        rollbackModalOpen: true,
+        rollbackModalReason: action.reason,
+      };
+    }
+
+    case 'CLOSE_ROLLBACK_MODAL': {
+      return {
+        ...state,
+        rollbackModalOpen: false,
+        rollbackModalReason: null,
+      };
+    }
+
+    case 'OPEN_REQUEST_TO_JOIN': {
+      return {
+        ...state,
+        activeRequestChannelId: action.channelId,
+        requestToJoinModalOpen: true,
+        requestToJoinStep: 'preview',
+      };
+    }
+
+    case 'CLOSE_REQUEST_TO_JOIN': {
+      return {
+        ...state,
+        activeRequestChannelId: null,
+        requestToJoinModalOpen: false,
+        requestToJoinStep: 'preview',
+      };
+    }
+
+    case 'SET_REQUEST_STEP': {
+      return { ...state, requestToJoinStep: action.step };
+    }
+
+    case 'RESOLVE_INCHANNEL_POST': {
+      return {
+        ...state,
+        inChannelPostLifecycle: action.lifecycle,
+        inChannelPostResolutionActor: action.actor,
+      };
+    }
+
+    case 'DECLINE_CANCELLED': {
+      const ts = new Date().toISOString();
+      const evt = makeAudit({
+        ts,
+        actor: action.actor,
+        action: 'decline.confirmation.cancelled',
+        resource: state.declineModalRequestId ?? FOCUS_CHANNEL.id,
+        meta: {
+          request_id: state.declineModalRequestId,
+        },
+      });
+      return {
+        ...state,
+        declineModalOpen: false,
+        declineModalRequestId: null,
+        declineModalStep: 'reason',
+        declineModalReason: '',
+        auditEvents: [...state.auditEvents, evt],
+      };
+    }
+
+    case 'TELEMETRY_PERMALINK_VISIBLE': {
+      const ts = new Date().toISOString();
+      const evt = makeAudit({
+        ts,
+        actor: action.viewer,
+        action: 'permalink_unfurl.rendered',
+        resource: FOCUS_CHANNEL.id,
+        meta: { decision: 'visible', viewer: action.viewer },
+      });
+      return { ...state, auditEvents: [...state.auditEvents, evt] };
+    }
+
+    case 'TELEMETRY_PERMALINK_SILENT': {
+      const ts = new Date().toISOString();
+      const evt = makeAudit({
+        ts,
+        actor: 'aggregate',
+        action: 'permalink_unfurl.decision_silent',
+        resource: FOCUS_CHANNEL.id,
+        meta: { aggregate_only: true },
+      });
+      return { ...state, auditEvents: [...state.auditEvents, evt] };
+    }
+
+    case 'TELEMETRY_SWITCHER_SILENT': {
+      const ts = new Date().toISOString();
+      const evt = makeAudit({
+        ts,
+        actor: 'aggregate',
+        action: 'switcher_query.decision_silent',
+        resource: FOCUS_CHANNEL.id,
+        meta: { aggregate_only: true },
+      });
+      return { ...state, auditEvents: [...state.auditEvents, evt] };
+    }
+
+    case 'TELEMETRY_GUEST_FILTER': {
+      const ts = new Date().toISOString();
+      const evt = makeAudit({
+        ts,
+        actor: 'system',
+        action: 'guest_filter.applied',
+        resource: FOCUS_CHANNEL.id,
+        meta: { surface: action.surface },
+      });
+      return { ...state, auditEvents: [...state.auditEvents, evt] };
     }
 
     default:
@@ -743,10 +1135,29 @@ export interface A1V2StoreApi {
   setTeamOverrideActive: (active: boolean) => void;
   setInChannelAdminSysMsg: (visible: boolean) => void;
   setLhsPendingDot: (visible: boolean) => void;
-  setChannelHeaderIndicator: (visible: boolean) => void;
   setIndicatorShowcase: (
     scenario: A1V2State['indicatorShowcaseScenario'],
   ) => void;
+  // v2.3 action creators.
+  setAutoAdd: (enabled: boolean, actor: string) => void;
+  applyMembershipPolicy: (actor: string) => void;
+  commitPolicyAdd: (actor: string) => void;
+  commitAutoAdd: (actor: string) => void;
+  simulateRollback: (reason: RollbackReason | null) => void;
+  openRollbackModal: (reason: RollbackReason) => void;
+  closeRollbackModal: () => void;
+  openRequestToJoin: (channelId: string) => void;
+  closeRequestToJoin: () => void;
+  setRequestStep: (step: 'preview' | 'pending') => void;
+  resolveInChannelPost: (
+    lifecycle: 'resolved-approved' | 'resolved-declined' | 'resolved-auto-add',
+    actor: string,
+  ) => void;
+  declineCancelled: (actor: string) => void;
+  recordPermalinkVisible: (viewer: string) => void;
+  recordPermalinkSilent: () => void;
+  recordSwitcherSilent: () => void;
+  recordGuestFilter: (surface: string) => void;
 }
 
 export function useA1V2Store(): A1V2StoreApi {
@@ -884,15 +1295,69 @@ export function useA1V2Store(): A1V2StoreApi {
   const setLhsPendingDot = useCallback((visible: boolean) => {
     dispatch({ type: 'SET_LHS_PENDING_DOT', visible });
   }, []);
-  const setChannelHeaderIndicator = useCallback((visible: boolean) => {
-    dispatch({ type: 'SET_CHANNEL_HEADER_INDICATOR', visible });
-  }, []);
   const setIndicatorShowcase = useCallback(
     (scenario: A1V2State['indicatorShowcaseScenario']) => {
       dispatch({ type: 'SET_INDICATOR_SHOWCASE', scenario });
     },
     [],
   );
+
+  // ── v2.3 action creators ────────────────────────────────────────────────
+
+  const setAutoAdd = useCallback((enabled: boolean, actor: string) => {
+    dispatch({ type: 'SET_AUTO_ADD', enabled, actor });
+  }, []);
+  const applyMembershipPolicy = useCallback((actor: string) => {
+    dispatch({ type: 'APPLY_MEMBERSHIP_POLICY', actor });
+  }, []);
+  const commitPolicyAdd = useCallback((actor: string) => {
+    dispatch({ type: 'COMMIT_POLICY_ADD', actor });
+  }, []);
+  const commitAutoAdd = useCallback((actor: string) => {
+    dispatch({ type: 'COMMIT_AUTO_ADD', actor });
+  }, []);
+  const simulateRollback = useCallback((reason: RollbackReason | null) => {
+    dispatch({ type: 'SIMULATE_ROLLBACK', reason });
+  }, []);
+  const openRollbackModal = useCallback((reason: RollbackReason) => {
+    dispatch({ type: 'OPEN_ROLLBACK_MODAL', reason });
+  }, []);
+  const closeRollbackModal = useCallback(() => {
+    dispatch({ type: 'CLOSE_ROLLBACK_MODAL' });
+  }, []);
+  const openRequestToJoin = useCallback((channelId: string) => {
+    dispatch({ type: 'OPEN_REQUEST_TO_JOIN', channelId });
+  }, []);
+  const closeRequestToJoin = useCallback(() => {
+    dispatch({ type: 'CLOSE_REQUEST_TO_JOIN' });
+  }, []);
+  const setRequestStep = useCallback((step: 'preview' | 'pending') => {
+    dispatch({ type: 'SET_REQUEST_STEP', step });
+  }, []);
+  const resolveInChannelPost = useCallback(
+    (
+      lifecycle: 'resolved-approved' | 'resolved-declined' | 'resolved-auto-add',
+      actor: string,
+    ) => {
+      dispatch({ type: 'RESOLVE_INCHANNEL_POST', lifecycle, actor });
+    },
+    [],
+  );
+  const declineCancelled = useCallback((actor: string) => {
+    dispatch({ type: 'DECLINE_CANCELLED', actor });
+  }, []);
+  const recordPermalinkVisible = useCallback((viewer: string) => {
+    dispatch({ type: 'TELEMETRY_PERMALINK_VISIBLE', viewer });
+  }, []);
+  const recordPermalinkSilent = useCallback(() => {
+    dispatch({ type: 'TELEMETRY_PERMALINK_SILENT' });
+  }, []);
+  const recordSwitcherSilent = useCallback(() => {
+    dispatch({ type: 'TELEMETRY_SWITCHER_SILENT' });
+  }, []);
+  const recordGuestFilter = useCallback((surface: string) => {
+    dispatch({ type: 'TELEMETRY_GUEST_FILTER', surface });
+  }, []);
 
   return useMemo<A1V2StoreApi>(
     () => ({
@@ -930,8 +1395,23 @@ export function useA1V2Store(): A1V2StoreApi {
       setTeamOverrideActive,
       setInChannelAdminSysMsg,
       setLhsPendingDot,
-      setChannelHeaderIndicator,
       setIndicatorShowcase,
+      setAutoAdd,
+      applyMembershipPolicy,
+      commitPolicyAdd,
+      commitAutoAdd,
+      simulateRollback,
+      openRollbackModal,
+      closeRollbackModal,
+      openRequestToJoin,
+      closeRequestToJoin,
+      setRequestStep,
+      resolveInChannelPost,
+      declineCancelled,
+      recordPermalinkVisible,
+      recordPermalinkSilent,
+      recordSwitcherSilent,
+      recordGuestFilter,
     }),
     [
       state,
@@ -966,8 +1446,23 @@ export function useA1V2Store(): A1V2StoreApi {
       setTeamOverrideActive,
       setInChannelAdminSysMsg,
       setLhsPendingDot,
-      setChannelHeaderIndicator,
       setIndicatorShowcase,
+      setAutoAdd,
+      applyMembershipPolicy,
+      commitPolicyAdd,
+      commitAutoAdd,
+      simulateRollback,
+      openRollbackModal,
+      closeRollbackModal,
+      openRequestToJoin,
+      closeRequestToJoin,
+      setRequestStep,
+      resolveInChannelPost,
+      declineCancelled,
+      recordPermalinkVisible,
+      recordPermalinkSilent,
+      recordSwitcherSilent,
+      recordGuestFilter,
     ],
   );
 }

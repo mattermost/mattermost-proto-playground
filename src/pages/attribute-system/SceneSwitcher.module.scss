@@ -1,0 +1,189 @@
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  padding: 10px 20px;
+  background: var(--center-channel-bg);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  flex-shrink: 0;
+
+  &__variant,
+  &__surfaces {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__surfaces {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-family: var(--font-family-monospace, monospace);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__segment {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: var(--radius-l);
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+    flex-wrap: wrap;
+  }
+
+  &__divider {
+    width: 1px;
+    height: 20px;
+    margin: 0 2px;
+    background: rgba(var(--center-channel-color-rgb), 0.16);
+    flex-shrink: 0;
+  }
+
+  &__item {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__item:hover &__tooltip-layer,
+  &__item:focus-within &__tooltip-layer {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--duration-quick) var(--ease-entrance),
+      visibility 0s linear 0s;
+  }
+
+  &__tooltip-layer {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    z-index: 80;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--duration-quick) var(--ease-exit),
+      visibility 0s linear var(--duration-quick);
+  }
+
+  &__btn {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-m);
+    padding: 6px 12px;
+    font-family: var(--font-family-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    background: transparent;
+    white-space: nowrap;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background: var(--center-channel-bg);
+      color: var(--button-bg, #1c58d9);
+      box-shadow: var(--elevation-1);
+    }
+  }
+
+  &__more {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__more-chevron {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__more-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 90;
+    min-width: 280px;
+    max-width: 360px;
+    padding: 4px;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-3);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__more-item {
+    appearance: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: var(--radius-s);
+    text-align: left;
+    font-family: var(--font-family-body);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -1px;
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+    }
+  }
+
+  &__more-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--center-channel-color);
+  }
+
+  &__more-desc {
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__persona {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

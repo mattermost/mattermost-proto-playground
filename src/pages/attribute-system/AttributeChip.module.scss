@@ -1,0 +1,116 @@
+/**
+ * AttributeChip — page-local wrapper around RankedValueChip / Chip.
+ *
+ * Calm read-only register: chip is flat, no chevron, no extra border.
+ * Hover / focus on editable chips: hairline border fades in, trailing
+ * chevron fades in, cursor turns to pointer. Locked chips never reveal
+ * the chevron and never receive the hairline border at editable intensity.
+ *
+ * Coarse-pointer (touch): chevron is always visible on editable chips.
+ */
+
+.attribute-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: var(--radius-l);
+  // No padding here — the underlying Chip already has its own. We only own
+  // the affordance border + chevron container.
+  border: 1px solid transparent;
+  transition:
+    border-color var(--duration-quick) var(--ease-transition),
+    background-color var(--duration-quick) var(--ease-transition);
+
+  &__chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    opacity: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    transition:
+      opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__required {
+    margin-left: 2px;
+    color: var(--color-danger);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // ─── Locked register ──────────────────────────────────────────────────
+  &--locked {
+    cursor: default;
+
+    // Subtle hairline on hover — "you're on a thing", not an invitation.
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+  }
+
+  // ─── Editable register ────────────────────────────────────────────────
+  &--editable {
+    cursor: pointer;
+
+    &:hover,
+    &:focus-within {
+      border-color: rgba(var(--center-channel-color-rgb), 0.28);
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &:hover .attribute-chip__chevron,
+    &:focus-within .attribute-chip__chevron {
+      opacity: 1;
+    }
+  }
+
+  // Active = picker is open on this chip. Hold the affordance visible.
+  &--active {
+    border-color: rgba(var(--center-channel-color-rgb), 0.32);
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+
+    .attribute-chip__chevron {
+      opacity: 1;
+    }
+  }
+
+  // Unset placeholder chip — the only ambient action item in the calm rail.
+  // Show the chevron even when not hovered.
+  &--unset {
+    .attribute-chip__chevron {
+      opacity: 0.72;
+    }
+  }
+
+  // Required-but-unset gate — error border ridden on by Chip's own error prop.
+  &--error {
+    .attribute-chip__chevron {
+      opacity: 1;
+      color: var(--color-danger);
+    }
+  }
+
+  // Overridden state — slightly stronger background tint to seat the
+  // `· overridden` cue without competing with the chip's own color.
+  &--overridden {
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+}
+
+// ─── Coarse-pointer (touch) — chevron always on editable chips ──────────
+@media (pointer: coarse) {
+  .attribute-chip--editable .attribute-chip__chevron {
+    opacity: 1;
+  }
+}
+
+// ─── Reduced motion — chevron snaps in, no fade ─────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .attribute-chip,
+  .attribute-chip__chevron {
+    transition: none;
+  }
+}

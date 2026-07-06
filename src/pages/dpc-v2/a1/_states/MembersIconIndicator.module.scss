@@ -1,0 +1,125 @@
+// DPC V2 A1 — MembersIconIndicator state styles.
+// BEM block: v2-members-icon-indicator
+.v2-members-icon-indicator {
+  // Sentinel — file root selector required for module scoping. The block
+  // is used through nested element selectors only.
+
+  &__variants {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+  }
+
+  &__variant {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__variant-label {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__chrome {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+  }
+
+  &__detail {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+  }
+
+  &__detail-label {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-50);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // Custom Members Button — matches Figma 4888:61576 anatomy exactly.
+  // We do NOT reuse IconButton here because the dot needs the Content
+  // flex container as its reference frame, not the full button-with-count
+  // wrapper. See MembersIconIndicator.tsx for the structural rationale.
+  &__members-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+  }
+
+  // Content flex container — Figma "Content" frame. Position: relative
+  // so the absolutely-positioned dot resolves left / top values against
+  // this frame (which starts at the icon's top-left after the 6px button
+  // padding).
+  &__content {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  // 12px square wrapping the account-outline icon. Matches Figma "Icon
+  // Container" frame.
+  &__icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    line-height: 0;
+  }
+
+  &__count {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 12px;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // 6px pending-request dot — Figma 4888:61576 Unread Badge pattern.
+  // Position: top -2px / left 8px from the Content flex container's
+  // top-left (which sits at the icon's top-left after the 6px button
+  // padding). The dot sits over the top-right corner of the 12px icon,
+  // overlapping ~4px and extending ~2px past its right edge. Color via
+  // --sidebar-text-active-border so it adapts across all 5 themes (denim
+  // / sapphire / quartz / indigo / onyx) — same token as the LHS row dot
+  // (§3.24).
+  &__dot {
+    position: absolute;
+    top: -2px;
+    left: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--sidebar-text-active-border);
+    pointer-events: none;
+    z-index: 1;
+  }
+}

@@ -1,5 +1,7 @@
 .v2-decline-modal {
-  &__overlay {
+  // Page-level overlay (runtime: triggered from PendingRequestsRail's
+  // Deny button or InChannelAdminSysMsg's Decline button).
+  &__page-overlay {
     position: fixed;
     inset: 0;
     z-index: 50;
@@ -10,32 +12,6 @@
     padding: var(--spacing-l);
     animation: v2-decline-modal-fade-in var(--duration-quick)
       var(--ease-entrance);
-  }
-
-  &__shell {
-    width: min(720px, 100%);
-    max-height: 90vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(var(--center-channel-color-rgb), 0.24) transparent;
-    border-radius: var(--radius-m);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(var(--center-channel-color-rgb), 0.24);
-      border-radius: 3px;
-      border: 2px solid transparent;
-      background-clip: content-box;
-    }
-    &::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(var(--center-channel-color-rgb), 0.4);
-    }
   }
 
   &__footer {
@@ -109,24 +85,16 @@
     }
   }
 
-  &__note {
-    margin: 0;
-    padding: var(--spacing-s);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border-radius: var(--radius-s);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-50);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-    line-height: 1.5;
-  }
-
+  // DM preview now lives in the Review notes block below the canvas.
+  // Style here keeps the bubble identifiable but uses no dashed border
+  // (the ReviewNotes container already separates it from product UI).
   &__dm {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
-    padding: var(--spacing-m);
+    padding: var(--spacing-s);
     background: rgba(var(--color-info-rgb), 0.04);
-    border: 1px dashed rgba(var(--color-info-rgb), 0.48);
+    border: 1px solid rgba(var(--color-info-rgb), 0.24);
     border-radius: var(--radius-s);
   }
 
@@ -172,11 +140,12 @@
     word-break: break-word;
   }
 
-  &__dm-foot {
+  &__dm-meta {
     margin: 0;
-    font-family: var(--font-family-monospace, monospace);
+    font-family: var(--font-family-body);
     font-size: var(--font-size-50);
-    color: rgba(var(--center-channel-color-rgb), 0.56);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-style: italic;
   }
 
   &__confirm {

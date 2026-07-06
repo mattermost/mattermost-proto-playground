@@ -7,8 +7,12 @@ import IconButton from '@/components/ui/IconButton/IconButton';
 import styles from './ConsolePropertyRow.module.scss';
 
 export interface ConsolePropertyRowProps {
-  /** Property name shown in the title column. */
-  title: string;
+  /**
+   * Property name shown in the title column. Accepts a string (default
+   * styling) or a ReactNode for callers that need to render an inline
+   * affordance (e.g. an editable TextInput for a freshly-added row).
+   */
+  title: ReactNode;
   /** Property type icon (compass icon element). */
   typeIcon?: ReactNode;
   /** Property type label (e.g. "Text", "Select", "Boolean"). */

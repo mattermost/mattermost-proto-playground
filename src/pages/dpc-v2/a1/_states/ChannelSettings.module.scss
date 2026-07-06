@@ -3,11 +3,11 @@
   flex-direction: column;
   width: 100%;
   max-width: 960px;
-  min-height: 640px;
+  max-height: min(680px, calc(100vh - 200px));
   background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: var(--radius-l);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--elevation-6);
   overflow: hidden;
 
   &__header {
@@ -143,6 +143,31 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-l);
+
+    // The Compass `TextInput` and `TextArea` blocks cap themselves at
+    // `max-width: 300px` on their root element so they don't bleed full-width
+    // when dropped into arbitrary surfaces. Inside Channel Settings → Info
+    // the form fields are meant to fill the inner padded width of the panel,
+    // so we lift that cap for the direct children — the Channel name input
+    // (TextInput rendered directly under `__info`) and the textarea wraps.
+    > * {
+      max-width: none;
+    }
+  }
+
+  // Purpose and Header live inside `__textarea-wrap`; the wrap is the direct
+  // child of `__info`, so the cap also needs lifting on the actual `TextArea`
+  // root nested one level deeper. The `__textarea-icon` overlay is positioned
+  // absolutely (so it's out of normal flow) — we only stretch the first
+  // child, which is always the `TextArea` itself per the markup in
+  // `ChannelSettings.tsx`.
+  &__textarea-wrap {
+    width: 100%;
+
+    > *:first-child {
+      max-width: none;
+      width: 100%;
+    }
   }
 
   &__url-row {

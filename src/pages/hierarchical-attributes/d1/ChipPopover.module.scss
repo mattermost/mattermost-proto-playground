@@ -1,0 +1,113 @@
+.chip-popover {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  max-width: 320px;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elevation-4);
+  transform-origin: top left;
+  animation: chip-popover-in var(--duration-quick) var(--ease-entrance);
+
+  // ---------------------------------------------------------------------------
+  // Header: live chip preview on the left, close button on the right.
+  // ---------------------------------------------------------------------------
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__preview {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Body: single label field. Rank lives in the modal post 2026-05-22 sync.
+  // ---------------------------------------------------------------------------
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-m);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__field-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Footer: Remove value button. Disabled with tooltip when policy-referenced.
+  // ---------------------------------------------------------------------------
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--spacing-s) var(--spacing-m);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &__remove-wrap {
+    position: relative;
+    display: inline-flex;
+
+    // Hover/focus-within reveal of the Compass Tooltip surface above the
+    // disabled Remove button. The visually-hidden span carries the same copy
+    // for screen-reader users via aria-describedby on the button.
+    &:hover .chip-popover__tooltip,
+    &:focus-within .chip-popover__tooltip {
+      opacity: 1;
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-xxs));
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+    z-index: 1;
+  }
+
+  // sr-only utility — hide visually, keep accessible to assistive tech.
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+@keyframes chip-popover-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
