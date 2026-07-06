@@ -59,7 +59,21 @@ export type WhoSets =
   | 'LDAP'
   | 'SCIM';
 
-export type DisplayWhere = 'Header' | 'Sidebar' | 'Banner' | 'Hidden' | 'Info panel';
+export type DisplayWhere =
+  | 'Header'
+  | 'Sidebar'
+  | 'Banner'
+  | 'Hidden'
+  | 'Info panel'
+  | 'Composer';
+
+/** Post binding surfaces — subset of DisplayWhere (no channel chrome). */
+export type PostDisplayLoc = 'Composer' | 'Header';
+
+export const POST_DISPLAY_LOCATIONS: PostDisplayLoc[] = [
+  'Composer',
+  'Header',
+];
 
 export type InheritMode = 'off' | 'inherit' | 'inherit-lock';
 
@@ -81,7 +95,7 @@ export interface ResourceConfig {
   resource: ResourceKind;
   required: boolean;
   whoCanSet: WhoCanSet;
-  /** Channels only — where the value appears in channel chrome. */
+  /** Channels: header/sidebar/banner. Posts: message input / in-channel message view. */
   showWhere?: DisplayWhere[];
   /** Channels: how posts inherit. Teams: how channels inherit. */
   inheritMode?: InheritMode;
@@ -282,6 +296,27 @@ export function channelDisplayIncludes(
 ): boolean {
   if (!showWhere || isChannelDisplayHidden(showWhere)) return false;
   return showWhere.includes(loc);
+}
+
+export function postDisplayIncludes(
+  showWhere: DisplayWhere[] | undefined,
+  loc: PostDisplayLoc,
+): boolean {
+  if (!showWhere || isChannelDisplayHidden(showWhere)) return false;
+  return showWhere.includes(loc);
+}
+
+export function postDisplayLabel(loc: PostDisplayLoc): string {
+  switch (loc) {
+    case 'Composer':
+      return 'Message input box';
+    case 'Header':
+      return 'In-channel message view';
+    default: {
+      const _exhaustive: never = loc;
+      return _exhaustive;
+    }
+  }
 }
 
 export function supportsChannelBanner(attribute: HubAttribute): boolean {
@@ -534,6 +569,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         resource: 'Posts',
         required: false,
         whoCanSet: whoCanSet('Post author'),
+        showWhere: ['Header', 'Composer'],
       },
       {
         resource: 'Teams',
@@ -668,6 +704,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         resource: 'Posts',
         required: false,
         whoCanSet: whoCanSet('Post author'),
+        showWhere: ['Header', 'Composer'],
       },
     ],
     usedByPolicies: 0,
@@ -798,6 +835,7 @@ export function defaultResourceConfig(resource: ResourceKind): ResourceConfig {
         resource,
         required: false,
         whoCanSet: whoCanSet('Post author'),
+        showWhere: ['Composer'],
       };
     case 'Teams':
       return {

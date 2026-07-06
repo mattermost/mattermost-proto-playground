@@ -66,8 +66,8 @@ export default function AppliesToSection({
       {applied.length === 0 ? (
         <div className={styles['applies__empty']}>
           <EmptyState
-            title="Not applied anywhere yet"
-            description="Choose the resources this attribute can be set on — users, channels, posts, or teams."
+            title="No resources yet"
+            description="Add a resource to apply this attribute to users, channels, posts, or teams."
           />
           <div className={[styles['applies__footer'], styles['applies__footer--center']].join(' ')}>
             <AddResourceMenu
@@ -149,7 +149,7 @@ export default function AppliesToSection({
                     aria-hidden={!isOpen}
                     onClick={() => onRemoveResource(cfg.resource)}
                   >
-                    Stop applying
+                    Remove resource
                   </Button>
                 </div>
                 <div

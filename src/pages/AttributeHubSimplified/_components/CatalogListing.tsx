@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type DragEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
+import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
@@ -45,6 +46,7 @@ export interface CatalogListingProps {
   onQueryChange: (q: string) => void;
   onNewAttribute: () => void;
   onOpenDetail: (id: string) => void;
+  onReorderAttributes: (activeId: string, overId: string) => void;
   onDeactivate: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -66,6 +68,7 @@ export default function CatalogListing({
   onQueryChange,
   onNewAttribute,
   onOpenDetail,
+  onReorderAttributes,
   onDeactivate,
   onDelete,
 }: CatalogListingProps) {
@@ -75,7 +78,37 @@ export default function CatalogListing({
   const [menuId, setMenuId] = useState<string | null>(null);
   const menuWrapRef = useRef<HTMLDivElement>(null);
 
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
   const filteredEmpty = attributes.length > 0 && filtered.length === 0;
+
+  const clearDrag = () => {
+    setDragId(null);
+    setDragOverId(null);
+  };
+
+  const handleDragStart = (event: DragEvent<HTMLButtonElement>, id: string) => {
+    setDragId(id);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', id);
+  };
+
+  const handleDragOver = (event: DragEvent<HTMLTableRowElement>, id: string) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    if (dragId !== id) {
+      setDragOverId(id);
+    }
+  };
+
+  const handleDrop = (event: DragEvent<HTMLTableRowElement>, overId: string) => {
+    event.preventDefault();
+    if (dragId != null && dragId !== overId) {
+      onReorderAttributes(dragId, overId);
+    }
+    clearDrag();
+  };
 
   const resourceLabel =
     selectedResources.length === 0
@@ -181,6 +214,7 @@ export default function CatalogListing({
           <table className={styles['table__grid']}>
             <thead>
               <tr>
+                <th className={styles['table__col-handle']} aria-label="Reorder" />
                 <th>Attribute</th>
                 <th className={styles['table__col-type']}>Type</th>
                 <th>Applies to</th>
@@ -194,12 +228,42 @@ export default function CatalogListing({
               {filtered.map((a) => {
                 const synced = isSourceOwned(a);
                 const locked = isPolicyLocked(a);
+                const isDragging = dragId === a.id;
+                const isDragOver = dragOverId === a.id && dragId !== a.id;
                 return (
                   <tr
                     key={a.id}
-                    className={styles['table__row']}
+                    className={[
+                      styles['table__row'],
+                      isDragging ? styles['table__row--dragging'] : '',
+                      isDragOver ? styles['table__row--drag-over'] : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
                     onClick={() => onOpenDetail(a.id)}
+                    onDragOver={(event) => handleDragOver(event, a.id)}
+                    onDrop={(event) => handleDrop(event, a.id)}
+                    onDragLeave={() => {
+                      if (dragOverId === a.id) {
+                        setDragOverId(null);
+                      }
+                    }}
+                    onDragEnd={clearDrag}
                   >
+                    <td
+                      className={styles['table__handle']}
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <button
+                        type="button"
+                        className={styles['table__drag']}
+                        draggable
+                        aria-label={`Reorder ${a.name}`}
+                        onDragStart={(event) => handleDragStart(event, a.id)}
+                      >
+                        <Icon size="16" glyph={<DragVerticalIcon />} />
+                      </button>
+                    </td>
                     <td>
                       <div className={styles['table__name-block']}>
                         <span className={styles['table__name']}>{a.name}</span>

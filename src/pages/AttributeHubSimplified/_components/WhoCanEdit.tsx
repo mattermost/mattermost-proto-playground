@@ -189,7 +189,7 @@ export default function WhoCanEdit({ editors, onChange }: WhoCanEditProps) {
         onClose={() => setOpen(false)}
         anchorRef={fieldRef}
         className={styles['edit__menu']}
-        minWidthFloor={360}
+        minWidthFloor={600}
       >
         <PopoverMenu className={styles['edit__popover']}>
           <PopoverMenuScroll maxHeight={320}>

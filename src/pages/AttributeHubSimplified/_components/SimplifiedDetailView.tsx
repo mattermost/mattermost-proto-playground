@@ -174,7 +174,7 @@ export default function SimplifiedDetailView({
       {/* Applies to — first-class, both layouts. */}
       <ConsolePanel
         title="Applies to"
-        subtitle="Where this attribute can be set, and who can set it."
+        subtitle="Resources this attribute applies to, and who can set the value on each."
         trailing={
           <AddResourceMenu
             applied={attribute.appliesTo.map((c) => c.resource)}

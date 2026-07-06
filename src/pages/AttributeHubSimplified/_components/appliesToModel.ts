@@ -2,12 +2,14 @@ import {
   accessCap,
   channelBinding,
   defaultResourceConfig,
+  postDisplayLabel,
   readIntoActive,
   resolveInheritMode,
   takesValueList,
   teamBinding,
   type HubAttribute,
   type InheritMode,
+  type PostDisplayLoc,
   type ResourceConfig,
   type ResourceKind,
   type WhoCanSet,
@@ -38,6 +40,16 @@ export const OTHER_SYSTEM_ROLES = [
 
 export const DISPLAY_LOCATIONS = ['Header', 'Sidebar', 'Banner'] as const;
 export type DisplayLoc = (typeof DISPLAY_LOCATIONS)[number];
+
+function postDisplaySummary(cfg: ResourceConfig): string {
+  const shown = (cfg.showWhere ?? [])
+    .filter((loc) => loc !== 'Hidden')
+    .map((loc) => postDisplayLabel(loc as PostDisplayLoc));
+  if (shown.length === 0) {
+    return 'Display: Hidden';
+  }
+  return `Display: ${shown.join(' + ')}`;
+}
 
 export const INHERIT_MODE_OPTIONS: Array<{ key: InheritMode; label: string }> = [
   { key: 'off', label: 'Off' },
@@ -124,7 +136,7 @@ export function summaryChips(
     );
     chips.push(
       readIntoActive(attribute)
-        ? 'Visibility: Hide values not read into'
+        ? 'Visibility: Own values only'
         : 'Visibility: Show all values',
     );
   }
@@ -155,6 +167,7 @@ export function summaryChips(
   }
 
   if (cfg.resource === 'Posts') {
+    chips.push(postDisplaySummary(cfg));
     const channel = channelBinding(attribute);
     if (channel) {
       const mode = resolveInheritMode(channel);
@@ -207,7 +220,7 @@ export function deviationsFor(
     out.push({ field: 'required', label: 'Required' });
   }
 
-  // Display — Channels only. Default = Header + Sidebar.
+  // Display — Channels / Posts.
   if (cfg.resource === 'Channels') {
     const cur = (cfg.showWhere ?? [])
       .filter((l) => l !== 'Hidden')
@@ -216,6 +229,23 @@ export function deviationsFor(
     const def = (base.showWhere ?? []).sort().join(',');
     if (cur !== def) {
       const shown = (cfg.showWhere ?? []).filter((l) => l !== 'Hidden');
+      out.push({
+        field: 'display',
+        label: shown.length === 0 ? 'Hidden' : shown.join(' + '),
+      });
+    }
+  }
+
+  if (cfg.resource === 'Posts') {
+    const cur = (cfg.showWhere ?? [])
+      .filter((l) => l !== 'Hidden')
+      .sort()
+      .join(',');
+    const def = (base.showWhere ?? []).sort().join(',');
+    if (cur !== def) {
+      const shown = (cfg.showWhere ?? [])
+        .filter((l) => l !== 'Hidden')
+        .map((loc) => postDisplayLabel(loc as PostDisplayLoc));
       out.push({
         field: 'display',
         label: shown.length === 0 ? 'Hidden' : shown.join(' + '),

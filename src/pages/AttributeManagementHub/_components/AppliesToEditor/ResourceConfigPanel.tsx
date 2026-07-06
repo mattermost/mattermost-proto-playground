@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { useId } from 'react';
 import Switch from '@/components/ui/Switch/Switch';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
+import Radio from '@/components/ui/Radio/Radio';
 import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
 import {
@@ -8,6 +10,9 @@ import {
   channelDisplayIncludes,
   isChannelDisplayHidden,
   isSourceOwned,
+  postDisplayIncludes,
+  postDisplayLabel,
+  POST_DISPLAY_LOCATIONS,
   readIntoActive,
   readIntoForced,
   resolveInheritMode,
@@ -18,6 +23,7 @@ import {
   type ResourceConfig,
   type UserProfileDisplay,
   type DisplayWhere,
+  type PostDisplayLoc,
 } from '../../hubData';
 import styles from './ResourceConfigPanel.module.scss';
 
@@ -108,15 +114,71 @@ const VALUE_VISIBILITY_OPTIONS: { key: ValueVisibility; label: string }[] = [
   { key: 'show-all', label: 'Show all values' },
   {
     key: 'hide-not-read-in',
-    label: 'Hide values viewer isn’t read into',
+    label: 'Users only see values they hold themselves',
   },
 ];
+
+function ValueVisibilityRadios({
+  value,
+  readIntoLocked,
+  onChange,
+}: {
+  value: ValueVisibility;
+  readIntoLocked: boolean;
+  onChange: (next: ValueVisibility) => void;
+}) {
+  const groupName = useId();
+
+  return (
+    <div
+      className={styles['value-visibility']}
+      role="radiogroup"
+      aria-label="Value visibility"
+    >
+      {VALUE_VISIBILITY_OPTIONS.map((opt) => {
+        const disabled = readIntoLocked && opt.key === 'show-all';
+        return (
+          <Radio
+            key={opt.key}
+            className={styles['value-visibility__radio']}
+            name={groupName}
+            value={opt.key}
+            size="Medium"
+            checked={value === opt.key}
+            disabled={disabled}
+            onChange={() => {
+              if (!disabled) onChange(opt.key);
+            }}
+          >
+            {opt.label}
+          </Radio>
+        );
+      })}
+    </div>
+  );
+}
 
 type ChannelDisplayLoc = 'Header' | 'Sidebar' | 'Banner';
 
 function toggleChannelLocation(
   current: DisplayWhere[] | undefined,
   loc: ChannelDisplayLoc,
+): DisplayWhere[] {
+  const visible = isChannelDisplayHidden(current)
+    ? ([] as DisplayWhere[])
+    : (current ?? []).filter((entry) => entry !== 'Hidden');
+
+  const has = visible.includes(loc);
+  const next = has
+    ? visible.filter((entry) => entry !== loc)
+    : [...visible, loc];
+
+  return next.length === 0 ? (['Hidden'] as DisplayWhere[]) : next;
+}
+
+function togglePostLocation(
+  current: DisplayWhere[] | undefined,
+  loc: PostDisplayLoc,
 ): DisplayWhere[] {
   const visible = isChannelDisplayHidden(current)
     ? ([] as DisplayWhere[])
@@ -170,6 +232,33 @@ function ChannelDisplaySelect({
             Banner
           </Checkbox>
         )}
+    </div>
+  );
+}
+
+function PostDisplaySelect({
+  value,
+  onChange,
+}: {
+  value: DisplayWhere[] | undefined;
+  onChange: (next: DisplayWhere[]) => void;
+}) {
+  return (
+    <div
+      className={styles['display-locations']}
+      role="group"
+      aria-label="Display locations"
+    >
+      {POST_DISPLAY_LOCATIONS.map((loc) => (
+        <Checkbox
+          key={loc}
+          size="Small"
+          checked={postDisplayIncludes(value, loc)}
+          onChange={() => onChange(togglePostLocation(value, loc))}
+        >
+          {postDisplayLabel(loc)}
+        </Checkbox>
+      ))}
     </div>
   );
 }
@@ -272,25 +361,23 @@ export default function ResourceConfigPanel({
           label="Value visibility"
           hint={
             <>
-              Each user only sees values they’re read into. Values outside the
-              viewer’s read-in set are hidden in profiles, pickers, and
-              everywhere this attribute appears.
+              When restricted, users only see their own assigned value. Other
+              values are hidden in profiles, pickers, and everywhere this
+              attribute appears.
               {readIntoLocked && (
                 <p className={styles['note']}>
-                  Required for {attribute.source.system}-synced values — the
-                  catalog is need-to-know.
+                  Required for {attribute.source.system}-synced values — this
+                  setting can&apos;t be turned off.
                 </p>
               )}
             </>
           }
         >
-          <Segmented<ValueVisibility>
-            value={attribute.readIntoFiltering ? 'hide-not-read-in' : 'show-all'}
-            ariaLabel="Value visibility"
-            options={VALUE_VISIBILITY_OPTIONS.map((opt) => ({
-              ...opt,
-              disabled: readIntoLocked && opt.key === 'show-all',
-            }))}
+          <ValueVisibilityRadios
+            value={
+              attribute.readIntoFiltering ? 'hide-not-read-in' : 'show-all'
+            }
+            readIntoLocked={readIntoLocked}
             onChange={(next) =>
               onReadIntoFilteringChange(next === 'hide-not-read-in')
             }
@@ -301,8 +388,8 @@ export default function ResourceConfigPanel({
       {showReadIntoReflection && (
         <Field layout={layout} label="Value visibility">
           <span className={styles['reflection']}>
-            Values a viewer isn’t read into are hidden in the UI — configured on
-            the Users binding.
+            Users only see values they hold themselves — configured on the Users
+            binding.
           </span>
         </Field>
       )}
@@ -407,13 +494,42 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
+      {isPosts && (
+        <Field
+          layout={layout}
+          label="Display location"
+          hint={
+            <>
+              Multiple locations can be selected. Uncheck all to hide.
+              {!isChannelDisplayHidden(config.showWhere) &&
+                postDisplayIncludes(config.showWhere, 'Composer') && (
+                  <p className={styles['note']}>
+                    Shown in the message input while composing a post.
+                  </p>
+                )}
+              {!isChannelDisplayHidden(config.showWhere) &&
+                postDisplayIncludes(config.showWhere, 'Header') && (
+                  <p className={styles['note']}>
+                    Shown on the message in the channel timeline.
+                  </p>
+                )}
+            </>
+          }
+        >
+          <PostDisplaySelect
+            value={config.showWhere}
+            onChange={(next) => onChange({ showWhere: next })}
+          />
+        </Field>
+      )}
+
       {whoCanSetSlot != null ? (
         <Field
           layout={layout}
           label="Who can set the value"
           hint="Multiple roles can be selected."
         >
-          {whoCanSetSlot}
+          <div className={styles['combobox-slot']}>{whoCanSetSlot}</div>
         </Field>
       ) : (
         <WhoCanSetEditor

@@ -152,7 +152,7 @@ export default function SimplifiedWhoCanSetEditor({
   const noOneCanSet = config.required && selected.length === 0;
 
   return (
-    <>
+    <div className={comboboxStyles['edit']}>
       <div
         ref={fieldRef}
         className={comboboxStyles['edit__field']}
@@ -212,7 +212,7 @@ export default function SimplifiedWhoCanSetEditor({
         onClose={() => setOpen(false)}
         anchorRef={fieldRef}
         className={comboboxStyles['edit__menu']}
-        minWidthFloor={360}
+        minWidthFloor={600}
       >
         <PopoverMenu className={comboboxStyles['edit__popover']}>
           <PopoverMenuScroll maxHeight={320}>
@@ -275,6 +275,6 @@ export default function SimplifiedWhoCanSetEditor({
           description={`This resource requires a value, but no setter is selected. Choose who can set it so ${resource.toLowerCase()} can be created.`}
         />
       )}
-    </>
+    </div>
   );
 }

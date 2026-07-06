@@ -399,6 +399,20 @@ export default function AttributeHubSimplified() {
     if (selectedId === id) setSelectedId(null);
   };
 
+  const reorderAttributes = (activeId: string, overId: string) => {
+    setAttributes((prev) => {
+      const from = prev.findIndex((item) => item.id === activeId);
+      const to = prev.findIndex((item) => item.id === overId);
+      if (from < 0 || to < 0 || from === to) {
+        return prev;
+      }
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  };
+
   const openDeactivate = (id: string) => {
     const a = attributes.find((x) => x.id === id);
     if (!a) return;
@@ -507,6 +521,7 @@ export default function AttributeHubSimplified() {
                   onQueryChange={setQuery}
                   onNewAttribute={startCreate}
                   onOpenDetail={openDetail}
+                  onReorderAttributes={reorderAttributes}
                   onDeactivate={openDeactivate}
                   onDelete={openDelete}
                 />
