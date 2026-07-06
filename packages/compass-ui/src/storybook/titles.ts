@@ -10,7 +10,6 @@ export const TITLE_BANNERS_NEW_MESSAGE_BANNER =
   'Components/Banners/New Message Banner';
 export const TITLE_BANNERS_SEARCH_TIP_BANNER =
   'Components/Banners/Search Tip Banner';
-export const TITLE_BANNERS_TOAST_BANNER = 'Components/Banners/Toast Banner';
 
 export const TITLE_ACTIONS_ACTION_BUTTON = 'Components/Actions/Action Button';
 export const TITLE_ACTIONS_BUTTON = 'Components/Actions/Button';
@@ -18,6 +17,12 @@ export const TITLE_ACTIONS_ICON_BUTTON = 'Components/Actions/Icon Button';
 
 export const TITLE_FEEDBACK_ERROR_MESSAGE =
   'Components/Feedback and Notices/Error Message';
+export const TITLE_FEEDBACK_POPOVER_NOTICE =
+  'Components/Feedback and Notices/Popover Notice';
+export const TITLE_FEEDBACK_SECTION_NOTICE =
+  'Components/Feedback and Notices/Section Notice';
+export const TITLE_FEEDBACK_TOAST = 'Components/Feedback and Notices/Toast';
+export const TITLE_FEEDBACK_TOOLTIP = 'Components/Feedback and Notices/Tooltip';
 
 export const TITLE_FORMS_CHECKBOX = 'Components/Forms and Input/Checkbox';
 export const TITLE_FORMS_RADIO = 'Components/Forms and Input/Radio';
@@ -38,15 +43,8 @@ export const TITLE_IMAGES_USER_AVATAR_GROUP =
 export const TITLE_LAYOUT_DIVIDER = 'Components/Layout and Containers/Divider';
 export const TITLE_LAYOUT_EMPTY_STATE = 'Components/Layout and Containers/Empty State';
 export const TITLE_LAYOUT_SCROLLBAR = 'Components/Layout and Containers/Scrollbar';
-export const TITLE_LAYOUT_SCROLLBARS = 'Components/Layout and Containers/Scrollbars';
 export const TITLE_LAYOUT_TABS = 'Components/Layout and Containers/Tabs';
 
-export const TITLE_OVERLAYS_POPOVER_NOTICE =
-  'Components/Overlays and Layering/Popover Notice';
-export const TITLE_OVERLAYS_TOOLTIP = 'Components/Overlays and Layering/Tooltip';
-
-export const TITLE_FEEDBACK_SECTION_NOTICE =
-  'Components/Feedback and Notices/Section Notice';
 
 export const TITLE_FORMS_CHIP = 'Components/Forms and Input/Chip';
 export const TITLE_FORMS_DATE_RANGE_PICKER =
@@ -59,16 +57,17 @@ export const TITLE_PROGRESS_PROGRESS_BAR =
   'Components/Progress Indicators/Progress Bar';
 export const TITLE_PROGRESS_SPINNER = 'Components/Progress Indicators/Spinner';
 
-export const TITLE_STATUS_LABEL_TAG = 'Components/Status Indicators/Label Tag';
+export const TITLE_STATUS_TAG = 'Components/Status Indicators/Tag';
+export const TITLE_STATUS_SHORTCUT_TAG =
+  'Components/Status Indicators/Shortcut Tag';
 export const TITLE_STATUS_MENTION_BADGE =
   'Components/Status Indicators/Mention Badge';
-export const TITLE_STATUS_REACTION_PILL =
-  'Components/Status Indicators/Reaction Pill';
-export const TITLE_STATUS_RECORDING_PILL =
-  'Components/Status Indicators/Recording Pill';
+export const TITLE_CALLS_REACTION_PILL =
+  'Components/Calls/Reaction Pill';
+export const TITLE_CALLS_RECORDING_PILL =
+  'Components/Calls/Recording Pill';
 export const TITLE_STATUS_STATUS_BADGE =
   'Components/Status Indicators/Status Badge';
-export const TITLE_STATUS_TAGS = 'Components/Status Indicators/Tags';
 export const TITLE_STATUS_UNREAD_BADGE =
   'Components/Status Indicators/Unread Badge';
 

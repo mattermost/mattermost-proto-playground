@@ -27,10 +27,3 @@ export const CustomSize: Story = {
     children: <SearchIllustration />,
   },
 };
-
-export const Decorative: Story = {
-  args: {
-    'aria-label': '',
-    children: <SearchIllustration />,
-  },
-};

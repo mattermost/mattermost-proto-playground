@@ -28,7 +28,14 @@ export const CustomKeys: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'grid', gap: 12, maxWidth: 560 }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 12,
+      }}
+    >
       <SearchTipBanner onDismiss={fn()} />
       <SearchTipBanner
         prefix="Tip: Use"

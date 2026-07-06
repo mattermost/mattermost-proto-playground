@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
-import ToastBanner from './ToastBanner';
-import type { ToastBannerType } from './ToastBanner';
+import Toast from './Toast';
+import type { ToastType } from './Toast';
 
-const TYPES: ToastBannerType[] = [
+const TYPES: ToastType[] = [
   'General',
   'Info',
   'Success',
@@ -12,13 +12,13 @@ const TYPES: ToastBannerType[] = [
 ];
 
 const meta = {
-  title: 'Components/Banners/Toast Banner',
-  component: ToastBanner,
+  title: 'Components/Feedback and Notices/Toast',
+  component: Toast,
   tags: ['autodocs'],
   argTypes: {
     type: { control: 'select', options: TYPES },
   },
-} satisfies Meta<typeof ToastBanner>;
+} satisfies Meta<typeof Toast>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -69,30 +69,37 @@ export const Info: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div style={{ display: 'grid', gap: 12, maxWidth: 480 }}>
-      <ToastBanner
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 12,
+      }}
+    >
+      <Toast
         message="Link copied to clipboard."
         type="General"
         onDismiss={fn()}
       />
-      <ToastBanner
+      <Toast
         message="Message saved successfully."
         type="Success"
         onDismiss={fn()}
       />
-      <ToastBanner
+      <Toast
         message="Failed to send message. Please try again."
         type="Danger"
         actionLabel="Retry"
         onAction={fn()}
         onDismiss={fn()}
       />
-      <ToastBanner
+      <Toast
         message="Your session will expire in 5 minutes."
         type="Warning"
         onDismiss={fn()}
       />
-      <ToastBanner
+      <Toast
         message="New update available. Refresh to apply."
         type="Info"
         actionLabel="Refresh"

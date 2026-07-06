@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { useId } from 'react';
 import IconButton from '@/components/IconButton/IconButton';
 import Icon from '@/components/Icon/Icon';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import { toKebab } from '@/utils/string';
@@ -123,7 +123,7 @@ export default function Modal({
       </div>
 
       <div className={styles['modal__body']}>
-        <Scrollbars>
+        <Scrollbar>
           <div
             className={[styles['modal__body-inner'], bodyClassName]
               .filter(Boolean)
@@ -131,7 +131,7 @@ export default function Modal({
           >
             {children}
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       {footer && (

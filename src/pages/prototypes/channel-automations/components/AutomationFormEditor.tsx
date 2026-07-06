@@ -1,4 +1,4 @@
-import { Button, Scrollbars, Select, Switch, TextArea, TextInput } from '@mattermost/compass-ui';
+import { Button, Scrollbar, Select, Switch, TextArea, TextInput } from '@mattermost/compass-ui';
 import { forwardRef, useCallback, useImperativeHandle, useState, type ChangeEvent } from 'react';
 import {
   ACTIVE_CHANNEL,
@@ -332,7 +332,7 @@ const AutomationFormEditor = forwardRef<
         />
       ) : (
         <div className={styles['editor__scroll']}>
-          <Scrollbars>
+          <Scrollbar>
             <div className={styles['editor__form']}>
               <TextInput
                 className={styles['editor__form-control']}
@@ -444,7 +444,7 @@ const AutomationFormEditor = forwardRef<
                 maxLength={500}
               />
             </div>
-          </Scrollbars>
+          </Scrollbar>
         </div>
       )}
     </div>

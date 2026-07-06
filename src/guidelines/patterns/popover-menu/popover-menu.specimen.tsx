@@ -40,23 +40,13 @@ import { MenuItem } from '@mattermost/compass-ui';
 import {
   PopoverMenuDivider,
   PopoverMenuGroup,
-  PopoverMenu} from '@mattermost/compass-ui';
+  PopoverMenu,
+  ShortcutTag,
+} from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/patterns.module.scss';
 
-function messageMenuShortcutLabel(text: string, danger?: boolean) {
-  return (
-    <span
-      style={{
-        fontSize: 'var(--font-size-75)',
-        lineHeight: 'var(--line-height-75)',
-        color: danger ? 'var(--color-danger)' : 'var(--center-channel-color)',
-        opacity: 0.75,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {text}
-    </span>
-  );
+function messageMenuShortcutLabel(text: string) {
+  return <ShortcutTag label={text} size="Small" />;
 }
 
 function ChannelHeaderMenuExample() {
@@ -450,7 +440,7 @@ function MessageMoreOptionsMenuExample({
               destructive
               leadingVisual={<Icon glyph={<TrashCanOutlineIcon />} size="16" />}
               trailingElement
-              trailingVisual={messageMenuShortcutLabel('delete', true)}
+              trailingVisual={messageMenuShortcutLabel('delete')}
             />
           </PopoverMenuGroup>
         </>

@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import LabelTag from './LabelTag';
-import type { LabelTagCasing, LabelTagSize, LabelTagType } from './LabelTag';
+import Tag from './Tag';
+import type { TagCasing, TagSize, TagType } from './Tag';
 
-const TYPES: LabelTagType[] = [
+const TYPES: TagType[] = [
   'Default',
   'Info',
   'Info Dim',
@@ -12,19 +12,19 @@ const TYPES: LabelTagType[] = [
   'Success',
   'Warning',
 ];
-const SIZES: LabelTagSize[] = ['X-Small', 'Small'];
-const CASINGS: LabelTagCasing[] = ['Title Case', 'All Caps'];
+const SIZES: TagSize[] = ['X-Small', 'Small'];
+const CASINGS: TagCasing[] = ['Title Case', 'All Caps'];
 
 const meta = {
-  title: 'Components/Status Indicators/Label Tag',
-  component: LabelTag,
+  title: 'Components/Status Indicators/Tag',
+  component: Tag,
   tags: ['autodocs'],
   argTypes: {
     casing: { control: 'select', options: CASINGS },
     size: { control: 'select', options: SIZES },
     type: { control: 'select', options: TYPES },
   },
-} satisfies Meta<typeof LabelTag>;
+} satisfies Meta<typeof Tag>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -75,28 +75,28 @@ export const AllVariants: Story = {
       {SIZES.map((size) => (
         <Row key={size} label={`Types / ${size}`}>
           {TYPES.map((type) => (
-            <LabelTag key={type} label={type} type={type} size={size} />
+            <Tag key={type} label={type} type={type} size={size} />
           ))}
         </Row>
       ))}
       <Row label="All caps">
         {TYPES.map((type) => (
-          <LabelTag key={type} label="Tag" type={type} casing="All Caps" />
+          <Tag key={type} label="Tag" type={type} casing="All Caps" />
         ))}
       </Row>
       <Row label="With icon">
-        <LabelTag
+        <Tag
           label="Professional"
           casing="All Caps"
           leadingIcon={<GlobeIcon size={10} />}
           type="Default"
         />
-        <LabelTag
+        <Tag
           label="Info"
           leadingIcon={<GlobeIcon size={10} />}
           type="Info"
         />
-        <LabelTag
+        <Tag
           label="Success"
           leadingIcon={<GlobeIcon size={12} />}
           size="Small"

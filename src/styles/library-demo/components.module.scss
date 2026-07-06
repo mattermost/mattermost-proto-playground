@@ -252,6 +252,10 @@
   border-radius: var(--radius-m);
 }
 
+.components__instance-label--on-calls-bg {
+  color: rgba(var(--sidebar-text-rgb), 0.72);
+}
+
 .components__button-block--calls-bg {
   background-color: var(--calls-bg);
   padding: var(--spacing-l);

@@ -1,4 +1,4 @@
-import { ChannelHeader, ChannelShell, Icon, IconButton, Message, MessageInput, MessageReactions, MessageSeparator, Scrollbars } from '@mattermost/compass-ui';
+import { ChannelHeader, ChannelShell, Icon, IconButton, Message, MessageInput, MessageReactions, MessageSeparator, Scrollbar } from '@mattermost/compass-ui';
 import { useRef, useState, type ReactNode } from 'react';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
@@ -102,7 +102,7 @@ export default function AutomationsShell({
       overlay={overlay}
     >
       <div className={shellStyles['channel-shell__messages']}>
-        <Scrollbars>
+        <Scrollbar>
           <div className={shellStyles['channel-shell__messages-list']}>
             <MessageSeparator type="Date" label="Today" />
             {CHANNEL_MESSAGES.map((m) => (
@@ -123,7 +123,7 @@ export default function AutomationsShell({
               </Message>
             ))}
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       <div className={shellStyles['channel-shell__message-input']}>

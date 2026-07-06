@@ -3,7 +3,7 @@ import ArrowBackIosIcon from '@mattermost/compass-icons/components/arrow-back-io
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import styles from './AdminConsoleHeader.module.scss';
 
 export interface AdminConsoleHeaderProps {
@@ -36,7 +36,7 @@ export default function AdminConsoleHeader({
 }: AdminConsoleHeaderProps) {
   const enterpriseChip =
     enterpriseBadge ? (
-      <LabelTag
+      <Tag
         label={enterpriseBadgeLabel}
         size="X-Small"
         leadingIcon={<Icon size="12" glyph={<MattermostIcon />} />}

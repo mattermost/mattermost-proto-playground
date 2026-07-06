@@ -21,7 +21,7 @@ import PaperclipIcon from '@mattermost/compass-icons/components/paperclip';
 import SendIcon from '@mattermost/compass-icons/components/send';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import AttachmentCard from '@/components/AttachmentCard/AttachmentCard';
 import styles from './MessageInput.module.scss';
 
@@ -215,7 +215,7 @@ export default function MessageInput({
         >
           {showPriorityIndicator && (
             <div className={styles['message-input__priority-row']}>
-              <LabelTag
+              <Tag
                 label="IMPORTANT"
                 type="Info"
                 size="X-Small"

@@ -16,7 +16,7 @@ export default function CallParticipantAvatarLibrary() {
           <CallParticipantAvatar
             src={avatarLeonard}
             alt="Leonard Riley"
-            size="XS"
+            size="X-Small"
             name="Leonard R."
           />
           <CallParticipantAvatar
@@ -30,6 +30,12 @@ export default function CallParticipantAvatarLibrary() {
             alt="Marco Rinaldi"
             size="Medium"
             name="Marco R."
+          />
+          <CallParticipantAvatar
+            src={avatarEmma}
+            alt="Emma Novak"
+            size="Large"
+            name="Emma N."
           />
         </div>
         <div className={styles['components__button-row']}>

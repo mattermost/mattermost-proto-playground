@@ -1,4 +1,4 @@
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import { RightSidebarHeader } from '@mattermost/compass-ui';
 import { shellStyles } from '@mattermost/compass-ui';
 import type {
@@ -105,7 +105,7 @@ export default function AutomationsPanel({
             />
           </div>
         ) : (
-          <Scrollbars>
+          <Scrollbar>
             <AutomationsList
               automations={automations}
               onCreate={onCreate}
@@ -113,7 +113,7 @@ export default function AutomationsPanel({
               onEdit={onEdit}
               onRequestDelete={onRequestDelete}
             />
-          </Scrollbars>
+          </Scrollbar>
         )}
       </div>
     </aside>

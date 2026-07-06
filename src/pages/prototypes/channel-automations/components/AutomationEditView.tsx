@@ -1,4 +1,4 @@
-import { Button, Icon, IconButton, Scrollbars } from '@mattermost/compass-ui';
+import { Button, Icon, IconButton, Scrollbar } from '@mattermost/compass-ui';
 import { useState } from 'react';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
@@ -30,7 +30,7 @@ export default function AutomationEditView({
   return (
     <div className={styles['automation-edit']}>
       <div className={styles['automation-edit__scroll']}>
-        <Scrollbars>
+        <Scrollbar>
           <div className={styles['automation-edit__col']}>
             <div className={styles['automation-edit__head']}>
               <IconButton
@@ -65,7 +65,7 @@ export default function AutomationEditView({
               />
             </div>
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       <div className={styles['automation-edit__footer']}>

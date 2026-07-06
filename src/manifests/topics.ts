@@ -415,12 +415,12 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/image-preview/image-preview.specimen'),
   },
   {
-    slug: 'label-tag',
-    name: 'Label Tag',
+    slug: 'tag',
+    name: 'Tag',
     category: 'components',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/label-tag/label-tag.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/label-tag/label-tag.specimen'),
+    guidelinePage: () => import('@/guidelines/components/tag/tag.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/components/tag/tag.specimen'),
   },
   {
     slug: 'link-preview',
@@ -623,14 +623,6 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/tabs/tabs.specimen'),
   },
   {
-    slug: 'tags',
-    name: 'Tags',
-    category: 'components',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/tags/tags.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/tags/tags.specimen'),
-  },
-  {
     slug: 'team-avatar',
     name: 'Team Avatar',
     category: 'components',
@@ -671,12 +663,12 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/thread-list-item/thread-list-item.specimen'),
   },
   {
-    slug: 'toast-banner',
-    name: 'Toast Banner',
+    slug: 'toast',
+    name: 'Toast',
     category: 'components',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/toast-banner/toast-banner.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/toast-banner/toast-banner.specimen'),
+    guidelinePage: () => import('@/guidelines/components/toast/toast.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/components/toast/toast.specimen'),
   },
   {
     slug: 'tooltip',

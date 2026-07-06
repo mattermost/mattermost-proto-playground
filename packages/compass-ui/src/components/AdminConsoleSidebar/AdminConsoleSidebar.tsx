@@ -13,7 +13,7 @@ import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-
 import FlaskOutlineIcon from '@mattermost/compass-icons/components/flask-outline';
 import ChannelSidebarItem from '@/components/ChannelSidebarItem/ChannelSidebarItem';
 import { ChannelsSidebarCategory } from '@/components/ChannelsSidebar/ChannelsSidebar';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import {
   defaultAdminConsoleSidebarGroups,
@@ -108,7 +108,7 @@ export default function AdminConsoleSidebar({
       </div>
 
       <div className={styles['admin-console-sidebar__scroll']}>
-        <Scrollbars color="--sidebar-text-rgb">
+        <Scrollbar color="--sidebar-text-rgb">
           <div className={styles['admin-console-sidebar__nav']}>
             {groups.map((group) => (
               <div
@@ -134,7 +134,7 @@ export default function AdminConsoleSidebar({
               </div>
             ))}
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
     </div>
   );

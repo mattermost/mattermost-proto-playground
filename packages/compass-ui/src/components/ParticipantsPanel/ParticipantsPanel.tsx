@@ -3,7 +3,7 @@ import CloseIcon from '@mattermost/compass-icons/components/close';
 import Button from '@/components/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import type { Participant } from '@/types/callParticipant';
 import { ParticipantListItem } from './ParticipantListItem';
 import styles from './ParticipantsPanel.module.scss';
@@ -57,7 +57,7 @@ export default function ParticipantsPanel({
       </div>
 
       <div className={styles['participants-panel__scroll']}>
-        <Scrollbars>
+        <Scrollbar>
           <ul className={styles['participants-panel__list']}>
             {internal.map((p) => (
               <ParticipantListItem
@@ -88,7 +88,7 @@ export default function ParticipantsPanel({
               </ul>
             </>
           )}
-        </Scrollbars>
+        </Scrollbar>
       </div>
     </aside>
   );

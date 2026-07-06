@@ -1,8 +1,10 @@
 .admin-panel-header {
   flex-shrink: 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-moderate) var(--ease-transition);
 
   &--divided {
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-bottom-color: rgba(var(--center-channel-color-rgb), 0.12);
   }
 
   &__main {

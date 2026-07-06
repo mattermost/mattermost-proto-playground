@@ -11,7 +11,7 @@ import InformationOutlineIcon from '@mattermost/compass-icons/components/informa
 import Button from '@/components/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import styles from './ChannelHeader.module.scss';
 
@@ -157,7 +157,7 @@ export default function ChannelHeader({
                     </span>
                   </button>
                   <span className={styles['channel-header__bot-tag']}>
-                    <LabelTag label="BOT" casing="All Caps" />
+                    <Tag label="BOT" casing="All Caps" />
                   </span>
                 </div>
               ) : (

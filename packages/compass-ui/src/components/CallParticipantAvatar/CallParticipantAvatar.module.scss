@@ -25,8 +25,8 @@
   // ---------------------------------------------------------------------------
   &__host-actions {
     position: absolute;
-    top: var(--spacing-xxxs);
-    right: var(--spacing-xxxs);
+    top: var(--spacing-xxxxs);
+    right: var(--spacing-xxxxs);
     z-index: 3;
     opacity: 0;
     pointer-events: none;
@@ -247,7 +247,7 @@
     }
   }
 
-  &--size-xs {
+  &--size-x-small {
     padding: var(--spacing-m);
     gap: var(--spacing-xxs);
 

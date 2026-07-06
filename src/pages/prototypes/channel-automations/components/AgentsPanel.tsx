@@ -1,4 +1,4 @@
-import { Icon, MessageInput, Scrollbars } from '@mattermost/compass-ui';
+import { Icon, MessageInput, Scrollbar } from '@mattermost/compass-ui';
 import type { ReactNode } from 'react';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -55,9 +55,9 @@ export default function AgentsPanel({
       </div>
 
       <div className={shellStyles['channel-shell__right-sidebar-body']}>
-        <Scrollbars className={styles['agents__scroll']}>
+        <Scrollbar className={styles['agents__scroll']}>
           <div className={styles['agents__body']}>{children}</div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       <div className={styles['agents__composer']}>

@@ -307,6 +307,36 @@ Popover panels (menus, info popovers, dropdowns) animate on mount/unmount with a
 
 Set `transform-origin` so the scale grows from the anchor direction (e.g. `transform-origin: top left` for a popover that opens below-and-right of its trigger).
 
+## Animation: expand/collapse
+
+Any UI that expands or collapses in place — accordions, admin panels, disclosure regions, collapsible sections — must animate the transition. Never snap open or shut.
+
+| Property | Duration | Easing |
+| -------- | -------- | ------ |
+| Height (grid `0fr` → `1fr`, or equivalent) | `--duration-moderate` | `--ease-transition` |
+| Header divider / border reveal | `--duration-moderate` | `--ease-transition` |
+
+Use the CSS grid height technique so content of any size animates without measuring:
+
+```scss
+.collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+
+  &--expanded {
+    grid-template-rows: 1fr;
+  }
+}
+
+.collapse__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+```
+
+Keep the body mounted while expandable so the height transition can run in both directions; toggle an `--expanded` modifier (or equivalent class) rather than conditional unmount. Set `aria-hidden` on the collapsed region. Pair with `aria-expanded` on the trigger.
+
 ## Scrollbars: use the `Scrollbars` wrapper for UI components
 
 Any scrolling region inside a Compass UI component or pattern (`src/components/ui/`, `src/guidelines/**/*.specimen.tsx`) must render through the shared `Scrollbars` component at `src/components/ui/Scrollbars/`. It wraps `simplebar-react` to produce an overlay scrollbar — the thumb floats above content (no reserved gutter), auto-hides when idle, and matches Compass theming via `--center-channel-color-rgb`.

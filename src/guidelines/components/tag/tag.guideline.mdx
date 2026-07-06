@@ -1,14 +1,14 @@
-import { LabelTag } from '@mattermost/compass-ui';
+import { Tag } from '@mattermost/compass-ui';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 
-Label Tags are compact pills that mark something — a role (_BOT_, _GUEST_),
-a tier (_PROFESSIONAL_), a status (_NEW_, _BETA_), or a category. They're
-the most common Tag variant in the system and the right starting point
-when you need to tag a noun.
+Tags are compact pills that mark something — a role (_BOT_, _GUEST_), a tier
+(_PROFESSIONAL_), a status (_NEW_, _BETA_), or a category. They're scannable
+signal: a way to surface a small piece of metadata without spending a sentence
+on it.
 
-For other Tag flavours — Shortcut Tags inside menus and tooltips, Highlight
-Tags for @mentions and search hits — see the
-[Tags specimen page](/components/tags/specimen).
+Compass also ships related tag families for other contexts — `ShortcutTag` for
+keyboard hints inside menus and tooltips, and highlight tags for @mentions
+and search hits inside the message stream.
 
 <Divider />
 
@@ -18,10 +18,10 @@ A pill-shaped container with a label, optional leading icon, and a colour
 that signals the tag's intent.
 
 <AnatomyStage style={{gap:'0.5rem',flexWrap:'wrap'}}>
-  <LabelTag label="BOT" type="Info Dim" casing="All Caps" />
-  <LabelTag label="Guest" type="Default" />
-  <LabelTag label="Beta" type="Info" />
-  <LabelTag label="PROFESSIONAL" type="Default" casing="All Caps" leadingIcon={<GlobeIcon size={10} />} />
+  <Tag label="BOT" type="Info Dim" casing="All Caps" />
+  <Tag label="Guest" type="Default" />
+  <Tag label="Beta" type="Info" />
+  <Tag label="PROFESSIONAL" type="Default" casing="All Caps" leadingIcon={<GlobeIcon size={10} />} />
 </AnatomyStage>
 
 - <Num>1</Num> **Container** — rounded rectangle. Background and text
@@ -36,13 +36,13 @@ that signals the tag's intent.
 
 ## Sizes
 
-Two sizes. Reach for **X-Small** by default — Label Tags are meant to sit
+Two sizes. Reach for **X-Small** by default — tags are meant to sit
 quietly inside a row of text. Use **Small** when the tag stands alone or
 sits in a target where the smaller form would be hard to hit.
 
 <div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
-  <LabelTag label="X-Small" type="Default" size="X-Small" />
-  <LabelTag label="Small" type="Default" size="Small" />
+  <Tag label="X-Small" type="Default" size="X-Small" />
+  <Tag label="Small" type="Default" size="Small" />
 </div>
 
 | Size    | Use when                                                               |
@@ -59,12 +59,12 @@ that matches the tag's semantic intent — don't choose a colour because it
 looks nice.
 
 <div style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
-  <LabelTag label="Default" type="Default" />
-  <LabelTag label="Info" type="Info" />
-  <LabelTag label="Info Dim" type="Info Dim" />
-  <LabelTag label="Danger" type="Danger" />
-  <LabelTag label="Success" type="Success" />
-  <LabelTag label="Warning" type="Warning" />
+  <Tag label="Default" type="Default" />
+  <Tag label="Info" type="Info" />
+  <Tag label="Info Dim" type="Info Dim" />
+  <Tag label="Danger" type="Danger" />
+  <Tag label="Success" type="Success" />
+  <Tag label="Warning" type="Warning" />
 </div>
 
 | Type      | Use when                                                                                |
@@ -85,8 +85,8 @@ labels where the all-caps form is the convention — Bot tag, SKU labels,
 role badges in admin contexts.
 
 <div style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
-  <LabelTag label="New" type="Info" />
-  <LabelTag label="NEW" type="Info" casing="All Caps" />
+  <Tag label="New" type="Info" />
+  <Tag label="NEW" type="Info" casing="All Caps" />
 </div>
 
 <Divider />
@@ -94,4 +94,5 @@ role badges in admin contexts.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Label Tag specimen page](/components/label-tag/specimen).
+[Tag specimen page](/components/tag/specimen). Shortcut tags use the
+`ShortcutTag` component (`size`, `location`).

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import styles from './RightSidebar.module.scss';
 
 export interface RightSidebarProps {
@@ -50,7 +50,7 @@ export default function RightSidebar({
     <aside className={rootClass} aria-label="Right sidebar">
       <div className={styles['right-sidebar__header']}>{header}</div>
       <div className={bodyClass}>
-        <Scrollbars>{children}</Scrollbars>
+        <Scrollbar>{children}</Scrollbar>
       </div>
       {footer && (
         <div className={styles['right-sidebar__footer']}>{footer}</div>

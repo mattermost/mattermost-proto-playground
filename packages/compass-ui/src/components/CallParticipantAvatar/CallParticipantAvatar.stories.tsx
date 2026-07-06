@@ -24,7 +24,12 @@ const labelStyle = {
   marginBottom: 8,
 } as const;
 
-const SIZES: CallParticipantAvatarSize[] = ['XS', 'Small', 'Medium', 'Large'];
+const SIZES: CallParticipantAvatarSize[] = [
+  'X-Small',
+  'Small',
+  'Medium',
+  'Large',
+];
 const KINDS: CallParticipantKind[] = ['user', 'external-link', 'dial-in'];
 const MUTE_STATES: CallParticipantMuteState[] = ['muted', 'unmuted'];
 
@@ -97,7 +102,7 @@ export const AllVariants: Story = {
           <CallParticipantAvatar
             src={avatarLeonard}
             alt="Leonard Riley"
-            size="XS"
+            size="X-Small"
             name="Leonard R."
           />
           <CallParticipantAvatar
@@ -111,6 +116,12 @@ export const AllVariants: Story = {
             alt="Marco Rinaldi"
             size="Medium"
             name="Marco R."
+          />
+          <CallParticipantAvatar
+            src={avatarEmma}
+            alt="Emma Novak"
+            size="Large"
+            name="Emma N."
           />
         </div>
       </section>

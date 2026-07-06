@@ -13,11 +13,38 @@ the scrollbar never competes with content for attention.
 ## Anatomy
 
 <AnatomyStage style={{gap:'1.5rem',flexWrap:'wrap',alignItems:'flex-start'}}>
-  <div style={{height:'160px',display:'flex',alignItems:'stretch'}}>
-    <Scrollbar orientation="Vertical" thumbSize="33%" scrollPosition={20} />
-  </div>
-  <div style={{width:'200px'}}>
-    <Scrollbar orientation="Horizontal" thumbSize="33%" scrollPosition={20} />
+  <div
+    style={{
+      width: '280px',
+      height: '160px',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: 0,
+      overflow: 'hidden',
+      border: '1px solid rgba(var(--center-channel-color-rgb), 0.16)',
+      borderRadius: 'var(--radius-s)',
+      background: 'var(--center-channel-bg)',
+    }}
+  >
+    <Scrollbar alwaysVisible>
+      <ul
+        style={{
+          margin: 0,
+          padding: 'var(--spacing-s) var(--spacing-m)',
+          listStyle: 'none',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--spacing-xs)',
+          color: 'var(--center-channel-color)',
+          fontSize: 'var(--font-size-100)',
+          lineHeight: 'var(--line-height-100)',
+        }}
+      >
+        {Array.from({ length: 12 }, (_, i) => (
+          <li key={i + 1}>Item {i + 1}</li>
+        ))}
+      </ul>
+    </Scrollbar>
   </div>
 </AnatomyStage>
 
@@ -31,31 +58,31 @@ the scrollbar never competes with content for attention.
 
 ## Variants
 
-| Variant     | Values                              | Use when                                                  |
-| ----------- | ----------------------------------- | --------------------------------------------------------- |
-| Orientation | Vertical, Horizontal                | Match the scroll direction of the container.              |
-| Thumb size  | 25%, 33%, 50%, 75% of the track     | Reflects the visible portion of the total content.        |
-| Position    | 0–100% offset along the track       | Reflects the user's current scroll offset.                |
+| Option         | Values / behaviour                         | Use when                                                  |
+| -------------- | ------------------------------------------ | --------------------------------------------------------- |
+| Auto-hide      | On by default; thumb hides when idle       | Most product surfaces — keeps focus on content.           |
+| Always visible | `alwaysVisible`                            | Demos, or when the scroll affordance must stay on screen. |
+| Thumb colour   | `color="--sidebar-text-rgb"`               | Dark surfaces such as the channel sidebar.                |
 
 A larger thumb means more of the content is visible. When the thumb fills the
-track at 100%, hide the scrollbar — there's nothing to scroll.
+track, hide the scrollbar — there's nothing to scroll.
 
 <Divider />
 
-## Use the Scrollbars wrapper
+## Use Scrollbar
 
 Any scrolling region in a Compass surface should be rendered through the
-`Scrollbars` component. It wraps `simplebar-react` and renders an overlay
+`Scrollbar` component. It wraps `simplebar-react` and renders an overlay
 scrollbar that floats above content — items always span the full width of
 the container, and the thumb never reserves a gutter that pushes layout
 around.
 
 ```tsx
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 
-<Scrollbars>
+<Scrollbar>
   <YourLongList />
-</Scrollbars>
+</Scrollbar>
 ```
 
 What you get:
@@ -71,7 +98,7 @@ What you get:
 
 ### Sizing
 
-`Scrollbars` fills its parent by default. In a flex column, give the parent
+`Scrollbar` fills its parent by default. In a flex column, give the parent
 `flex: 1; min-height: 0;` so the scroller can shrink correctly. For
 fixed-height surfaces like menus, pass `style={{ maxHeight }}` directly on
 the wrapper.
@@ -82,9 +109,9 @@ On dark surfaces (e.g. the channel sidebar), pass `color` with the CSS
 variable name to recolour the thumb against its background:
 
 ```tsx
-<Scrollbars color="--sidebar-text-rgb">
+<Scrollbar color="--sidebar-text-rgb">
   <ChannelList />
-</Scrollbars>
+</Scrollbar>
 ```
 
 <Divider />

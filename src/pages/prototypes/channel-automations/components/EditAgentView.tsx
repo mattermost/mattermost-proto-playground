@@ -1,4 +1,4 @@
-import { Button, Icon, IconButton, Scrollbars } from '@mattermost/compass-ui';
+import { Button, Icon, IconButton, Scrollbar } from '@mattermost/compass-ui';
 import type { ReactNode } from 'react';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import AutomationsTabs from './AutomationsTabs';
@@ -107,7 +107,7 @@ export default function EditAgentView({
         <div className={styles['edit-agent__chat-pane']}>{column}</div>
       ) : (
         <div className={styles['edit-agent__scroll']}>
-          <Scrollbars>{column}</Scrollbars>
+          <Scrollbar>{column}</Scrollbar>
         </div>
       )}
 

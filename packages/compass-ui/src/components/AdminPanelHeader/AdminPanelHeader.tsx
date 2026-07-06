@@ -6,7 +6,7 @@ import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import Button from '@/components/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import Switch from '@/components/Switch/Switch';
 import styles from './AdminPanelHeader.module.scss';
 
@@ -108,7 +108,7 @@ export default function AdminPanelHeader({
                 {title}
               </h2>
               {showEnterpriseLabel ? (
-                <LabelTag
+                <Tag
                   label={enterpriseLabel}
                   size="X-Small"
                   type="Default"
@@ -116,7 +116,7 @@ export default function AdminPanelHeader({
                 />
               ) : null}
               {showBeta ? (
-                <LabelTag label={betaLabel} size="X-Small" type="Default" />
+                <Tag label={betaLabel} size="X-Small" type="Default" />
               ) : null}
             </div>
             {subtitle != null ? (

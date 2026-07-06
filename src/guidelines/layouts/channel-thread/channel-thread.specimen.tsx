@@ -8,7 +8,7 @@ import {
   RightSidebarHeader,
   RightSidebarThread,
   RightSidebar} from '@mattermost/compass-ui';
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import { RIGHT_SIDEBAR_THREAD_DEMO_MESSAGES } from '@/fixtures/rightSidebarThreadDemo';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
@@ -57,7 +57,7 @@ export default function ChannelThreadLayout() {
     >
       <>
         <div className={shellStyles['channel-shell__messages']}>
-          <Scrollbars>
+          <Scrollbar>
             <div className={shellStyles['channel-shell__messages-list']}>
               <MessageSeparator type="Date" label="Today" />
 
@@ -143,7 +143,7 @@ export default function ChannelThreadLayout() {
                 </p>
               </Message>
             </div>
-          </Scrollbars>
+          </Scrollbar>
         </div>
 
         <div className={shellStyles['channel-shell__message-input']}>

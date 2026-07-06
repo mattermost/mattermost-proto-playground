@@ -121,9 +121,23 @@ export default function AdminPanel({
         onToggleExpand={toggleExpanded}
         showDivider={showHeaderDivider}
       />
-      {isExpanded ? (
+      {expandable ? (
+        <div
+          className={[
+            styles['admin-panel__collapse'],
+            isExpanded ? styles['admin-panel__collapse--expanded'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          aria-hidden={!isExpanded}
+        >
+          <div className={styles['admin-panel__collapse-inner']}>
+            <div className={styles['admin-panel__body']}>{children}</div>
+          </div>
+        </div>
+      ) : (
         <div className={styles['admin-panel__body']}>{children}</div>
-      ) : null}
+      )}
     </section>
   );
 }

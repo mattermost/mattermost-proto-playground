@@ -9,6 +9,21 @@
   box-shadow: var(--elevation-1);
   overflow: hidden;
 
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+
+    &--expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  &__collapse-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
   &__body {
     flex: 1 1 auto;
     width: 100%;

@@ -1,4 +1,4 @@
-import { Button, Icon, Scrollbars, SearchInput, Tabs } from '@mattermost/compass-ui';
+import { Button, Icon, Scrollbar, SearchInput, Tabs } from '@mattermost/compass-ui';
 import { useMemo, useState, type ChangeEvent } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import type { Automation } from '../channelAutomationsData';
@@ -44,7 +44,7 @@ export default function AutomationsIndexView({
   }, [automations, query, tab]);
 
   return (
-    <Scrollbars>
+    <Scrollbar>
       <div className={indexStyles['automations-index']}>
         <header className={indexStyles['automations-index__header']}>
           <h1 className={indexStyles['automations-index__title']}>Automations</h1>
@@ -107,6 +107,6 @@ export default function AutomationsIndexView({
           )}
         </div>
       </div>
-    </Scrollbars>
+    </Scrollbar>
   );
 }

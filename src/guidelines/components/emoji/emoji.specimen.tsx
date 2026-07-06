@@ -6,12 +6,6 @@ export default function EmojiLibrary() {
     <>
       <div className={styles['components__row']}>
         <div className={styles['components__instance']}>
-          <span className={styles['components__instance-label']}>
-            size 16, vivid
-          </span>
-          <Emoji emoji="👍" size="16" variant="vivid" />
-        </div>
-        <div className={styles['components__instance']}>
           <span className={styles['components__instance-label']}>size 16</span>
           <Emoji emoji="👍" size="16" />
         </div>

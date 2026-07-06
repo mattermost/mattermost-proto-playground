@@ -5,7 +5,7 @@ import { AdminConsoleHeader } from '@mattermost/compass-ui';
 import { AdminPanel } from '@mattermost/compass-ui';
 import { AdminConsoleSidebar } from '@mattermost/compass-ui';
 import { Radio } from '@mattermost/compass-ui';
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import { Select } from '@mattermost/compass-ui';
 import { TextInput } from '@mattermost/compass-ui';
 import { defaultAdminConsoleSidebarGroups } from '@mattermost/compass-ui';
@@ -41,7 +41,7 @@ export default function AdminConsoleLayout() {
         <AdminConsoleHeader title="Posts" enterpriseBadge={false} />
 
         <div className={styles['admin-console-layout__scroll']}>
-          <Scrollbars>
+          <Scrollbar>
             <div className={styles['admin-console-layout__panels']}>
               <AdminPanel
                 title="Threads"
@@ -405,7 +405,7 @@ export default function AdminConsoleLayout() {
                 </div>
               </AdminPanel>
             </div>
-          </Scrollbars>
+          </Scrollbar>
         </div>
 
         <AdminPanelFooter saveDisabled={false} />

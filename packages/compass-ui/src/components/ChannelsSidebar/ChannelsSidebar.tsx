@@ -7,7 +7,7 @@ import ChannelSidebarItem from '@/components/ChannelSidebarItem/ChannelSidebarIt
 import MoreUnreadsBanner from '@/components/MoreUnreadsBanner/MoreUnreadsBanner';
 import IconButton from '@/components/IconButton/IconButton';
 import Icon from '@/components/Icon/Icon';
-import Scrollbars from '@/components/Scrollbars/Scrollbars';
+import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import {
   applyChannelNameOverrides,
   buildDefaultChannelsSidebarModel,
@@ -256,7 +256,7 @@ export default function ChannelsSidebar({
       </div>
 
       <div className={styles['channels-sidebar__scroll-view']}>
-        <Scrollbars color="--sidebar-text-rgb">
+        <Scrollbar color="--sidebar-text-rgb">
           <div className={styles['channels-sidebar__channel-groups']}>
             {model.groups.map((group) => (
               <div
@@ -277,7 +277,7 @@ export default function ChannelsSidebar({
               </div>
             ))}
           </div>
-        </Scrollbars>
+        </Scrollbar>
 
         {moreUnreadsAbove && (
           <MoreUnreadsBanner

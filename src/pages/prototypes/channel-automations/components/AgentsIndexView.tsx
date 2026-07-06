@@ -1,4 +1,4 @@
-import { Button, Icon, MenuItem, PopoverMenu, Scrollbars, SearchInput, Tabs, UserAvatar } from '@mattermost/compass-ui';
+import { Button, Icon, MenuItem, PopoverMenu, Scrollbar, SearchInput, Tabs, UserAvatar } from '@mattermost/compass-ui';
 import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
@@ -56,7 +56,7 @@ export default function AgentsIndexView({
   }, [agents, query, tab]);
 
   return (
-    <Scrollbars>
+    <Scrollbar>
       <div className={styles['agents-index']}>
         <header className={styles['agents-index__header']}>
           <h1 className={styles['agents-index__title']}>Agents</h1>
@@ -158,6 +158,6 @@ export default function AgentsIndexView({
           )}
         </div>
       </div>
-    </Scrollbars>
+    </Scrollbar>
   );
 }

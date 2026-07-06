@@ -8,7 +8,7 @@ import {
   RightSidebarHeader,
   RightSidebarThread,
   RightSidebar} from '@mattermost/compass-ui';
-import { Scrollbars } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import { Tabs } from '@mattermost/compass-ui';
 import { ThreadListItem } from '@mattermost/compass-ui';
 import {
@@ -112,7 +112,7 @@ export default function ThreadsViewLayout() {
             </header>
 
             <div className={inboxStyles['threads-view__list']}>
-              <Scrollbars>
+              <Scrollbar>
                 <div className={inboxStyles['threads-view__list-inner']}>
                   <ThreadListItem
                     active={selectedIndex === 0}
@@ -188,7 +188,7 @@ export default function ThreadsViewLayout() {
                     </>
                   )}
                 </div>
-              </Scrollbars>
+              </Scrollbar>
             </div>
           </div>
 

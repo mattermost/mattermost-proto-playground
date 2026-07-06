@@ -2,7 +2,7 @@ import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizo
 import { type KeyboardEvent, type MouseEvent, useCallback } from 'react';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
-import LabelTag from '../LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import MentionBadge from '../MentionBadge/MentionBadge';
 import UnreadBadge from '../UnreadBadge/UnreadBadge';
 import UserAvatarGroup, {
@@ -128,7 +128,7 @@ export default function ThreadListItem({
                     <span className={styles['thread-list-item__author']}>
                       {authorName}
                     </span>
-                    <LabelTag
+                    <Tag
                       casing="All Caps"
                       label={channelLabel}
                     />

@@ -12,7 +12,7 @@ import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outli
 import Button from '@/components/Button/Button';
 import IconButton from '@/components/IconButton/IconButton';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
-import LabelTag from '@/components/LabelTag/LabelTag';
+import Tag from '@/components/Tag/Tag';
 import Icon from '@/components/Icon/Icon';
 import styles from './ProfilePopover.module.scss';
 
@@ -181,7 +181,7 @@ export default function ProfilePopover({
     <div className={rootClass} onAnimationEnd={onAnimationEnd}>
       {jobRole && (
         <div className={styles['profile-popover__role-tag']}>
-          <LabelTag label={jobRole} casing="All Caps" size="X-Small" />
+          <Tag label={jobRole} casing="All Caps" size="X-Small" />
         </div>
       )}
 

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import IconButton from '@/components/IconButton/IconButton';
 import Icon from '@/components/Icon/Icon';
+import { ShortcutTagGroup } from '@/components/ShortcutTag/ShortcutTag';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import styles from './SearchTipBanner.module.scss';
 
@@ -45,16 +46,10 @@ export default function SearchTipBanner({
         {children ?? (
           <>
             <span className={styles['search-tip-banner__text']}>{prefix}</span>
-            <span className={styles['search-tip-banner__shortcut']}>
-              {shortcutKeys.map((key) => (
-                <kbd
-                  key={key.label}
-                  className={styles['search-tip-banner__key']}
-                >
-                  {key.label}
-                </kbd>
-              ))}
-            </span>
+            <ShortcutTagGroup
+              labels={shortcutKeys.map((key) => key.label)}
+              size="Medium"
+            />
             <span className={styles['search-tip-banner__text']}>{suffix}</span>
           </>
         )}
