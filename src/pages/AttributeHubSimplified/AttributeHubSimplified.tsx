@@ -37,7 +37,7 @@ import styles from './AttributeHubSimplified.module.scss';
 type GuardrailState = { kind: GuardrailKind; context: GuardrailContext } | null;
 type Editors = { roles: AccessGrant[]; users: AccessGrant[] };
 
-const SYSTEM_SUBJECTS = ['UAS sync (system)', 'LDAP sync (system)', 'SCIM sync (system)'];
+const SYSTEM_SUBJECTS = ['UAS sync (system)', 'LDAP sync (system)', 'SAML sync (system)', 'SCIM sync (system)'];
 
 /** Merge the old two-mode access model into one editors set (§4 collapse). */
 function editorsFor(a: HubAttribute): Editors {

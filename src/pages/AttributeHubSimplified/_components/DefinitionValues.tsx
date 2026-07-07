@@ -25,6 +25,7 @@ import {
   type AttrValue,
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
+import AttributeSourceField from './AttributeSourceField';
 import styles from './DefinitionValues.module.scss';
 
 export interface DefinitionValuesProps {
@@ -37,6 +38,8 @@ export interface DefinitionValuesProps {
   onLockedAttempt: () => void;
   onReuse: () => void;
   onUnlink: () => void;
+  onConnectSource: () => void;
+  onManageSource: () => void;
 }
 
 /** Ranked-hierarchical tree row (nest, reorder, disable-not-delete, tier badges). */
@@ -238,7 +241,7 @@ function TreeRow({
  * - Text → "no preset values" note
  * - Select / Multiselect / Ranked → wrapping chip row (type-and-enter commits)
  * - Ranked-hierarchical → full-width tree
- * Source-owned attributes show read-only value chips; sync status lives on Value source.
+ * Source / link status lives in a footer below the values list.
  */
 export default function DefinitionValues({
   attribute,
@@ -250,6 +253,8 @@ export default function DefinitionValues({
   onLockedAttempt,
   onReuse,
   onUnlink,
+  onConnectSource,
+  onManageSource,
 }: DefinitionValuesProps) {
   const [draft, setDraft] = useState('');
   const sourceOwned = isSourceOwned(attribute);
@@ -258,6 +263,68 @@ export default function DefinitionValues({
   const editable = !sourceOwned && !locked && !linked;
   const isTree = attribute.type === 'Ranked-hierarchical';
   const isRanked = attribute.type === 'Ranked' || isTree;
+  const showManualActions =
+    !sourceOwned && !linked && attribute.type !== 'Text';
+
+  const valuesFooter = () => {
+    if (sourceOwned) {
+      return (
+        <AttributeSourceField
+          attribute={attribute}
+          onManage={onManageSource}
+        />
+      );
+    }
+
+    if (linked && attribute.valuesLink) {
+      return (
+        <div className={styles['values__linked-footer']}>
+          <div className={styles['values__linked-copy']}>
+            <Icon size="16" glyph={<LinkVariantIcon />} />
+            <span>
+              Values shared from {attribute.valuesLink.attributeName} ·
+              read-only
+            </span>
+          </div>
+          <Button
+            emphasis="Tertiary"
+            size="Small"
+            leadingIcon={<Icon size="16" glyph={<LinkVariantOffIcon />} />}
+            onClick={onUnlink}
+          >
+            Unlink
+          </Button>
+        </div>
+      );
+    }
+
+    if (showManualActions) {
+      return (
+        <div className={styles['values__source-actions']}>
+          <Button
+            emphasis="Tertiary"
+            size="Small"
+            leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+            onClick={onConnectSource}
+          >
+            Connect external source
+          </Button>
+          {canReuseValues(attribute) && (
+            <Button
+              emphasis="Tertiary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+              onClick={onReuse}
+            >
+              Reuse values from another attribute
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   // Text — no enumerated values.
   if (attribute.type === 'Text') {
@@ -266,6 +333,24 @@ export default function DefinitionValues({
         <p className={styles['values__none']}>
           Text attributes have no preset values — a value is typed in per resource.
         </p>
+        {!sourceOwned && (
+          <div className={styles['values__source-actions']}>
+            <Button
+              emphasis="Tertiary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+              onClick={onConnectSource}
+            >
+              Connect external source
+            </Button>
+          </div>
+        )}
+        {sourceOwned && (
+          <AttributeSourceField
+            attribute={attribute}
+            onManage={onManageSource}
+          />
+        )}
       </div>
     );
   }
@@ -282,23 +367,6 @@ export default function DefinitionValues({
 
   return (
     <div className={styles['values']}>
-
-      {linked && attribute.valuesLink && (
-        <div className={styles['values__link']}>
-          <Icon size="16" glyph={<LinkVariantIcon />} />
-          <span className={styles['values__link-text']}>
-            Values shared from {attribute.valuesLink.attributeName} · read-only
-          </span>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<LinkVariantOffIcon />} />}
-            onClick={onUnlink}
-          >
-            Unlink
-          </Button>
-        </div>
-      )}
 
       {locked && !sourceOwned && !linked && (
         <SectionNotice
@@ -424,19 +492,7 @@ export default function DefinitionValues({
         </div>
       )}
 
-      {editable && canReuseValues(attribute) && (
-        <div className={styles['values__footer']}>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
-            onClick={onReuse}
-          >
-            Reuse values from another attribute
-          </Button>
-        </div>
-      )}
-
+      {valuesFooter()}
     </div>
   );
 }

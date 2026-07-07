@@ -21,6 +21,8 @@ export interface SelectProps extends Omit<
   leadingIcon?: ReactNode;
   /** Size variant. Default: Medium. */
   size?: SelectSize;
+  /** Full width (default) or shrink to the selected option label. */
+  width?: 'full' | 'fit';
   /** Select option items. */
   children?: ReactNode;
 }
@@ -35,6 +37,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
   {
     className = '',
     size = 'Medium',
+    width = 'full',
     label,
     leadingIcon,
     invalid = false,
@@ -73,9 +76,12 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
   const hasLeadingClass =
     leadingIcon != null ? styles['select--has-leading-icon'] : '';
 
+  const widthClass = width === 'fit' ? styles['select--width-fit'] : '';
+
   const rootClass = [
     styles.select,
     sizeClass,
+    widthClass,
     invalidClass,
     labelFloatedClass,
     hasLeadingClass,

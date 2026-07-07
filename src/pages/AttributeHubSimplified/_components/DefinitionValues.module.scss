@@ -9,19 +9,32 @@
     color: rgba(var(--center-channel-color-rgb), 0.64);
   }
 
-  &__link {
+  &__source-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-s);
-    border-radius: var(--radius-s);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    color: rgba(var(--center-channel-color-rgb), 0.75);
-    font-size: var(--font-size-100);
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-m);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
-  &__link-text {
-    flex: 1;
+  &__linked-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+    width: 100%;
+    padding-top: var(--spacing-m);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__linked-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    font-size: var(--font-size-100);
   }
 
   // ── Chip row (Select / Multiselect / Ranked) ──
@@ -108,11 +121,6 @@
     &::placeholder {
       color: rgba(var(--center-channel-color-rgb), 0.48);
     }
-  }
-
-  &__footer {
-    display: flex;
-    gap: var(--spacing-xs);
   }
 
   // ── Tree (Ranked-hierarchical) ──

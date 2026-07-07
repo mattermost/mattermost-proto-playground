@@ -54,11 +54,15 @@
         min-height: 32px;
         padding-top: 0;
 
-        > :first-child:not(.field__stack):not(.value-visibility):not(.combobox-slot) {
+        > :first-child:not(.field__stack):not(.value-visibility):not(.combobox-slot):not(.inherit-control):not(.default-value-select) {
           display: flex;
           align-items: center;
           min-height: 32px;
           max-width: 100%;
+        }
+
+        .default-value-select {
+          align-self: flex-start;
         }
 
         .combobox-slot {
@@ -202,6 +206,17 @@
       opacity: 1;
     }
   }
+}
+
+.default-value-select {
+  align-self: flex-start;
+}
+
+.inherit-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-m);
 }
 
 .display-locations {

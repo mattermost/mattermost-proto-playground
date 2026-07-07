@@ -24,7 +24,7 @@ export interface WhoCanSetEditorProps {
   onChange: (next: Partial<ResourceConfig>) => void;
 }
 
-const SYNC_SYSTEMS: WhoSets[] = ['UAS', 'LDAP', 'SCIM'];
+const SYNC_SYSTEMS: WhoSets[] = ['UAS', 'LDAP', 'SAML', 'SCIM'];
 
 const DEFAULT_OPTIONS: Record<ResourceKind, WhoSets[]> = {
   Users: ['System admin', 'Members'],

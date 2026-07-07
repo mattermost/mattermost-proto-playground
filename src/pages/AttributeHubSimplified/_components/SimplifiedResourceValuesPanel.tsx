@@ -23,8 +23,7 @@ export interface SimplifiedResourceValuesPanelProps {
 
 const VALUE_COLUMNS = [
   { key: 'value', label: 'Value', width: 240 },
-  { key: 'status', label: 'Assignment status' },
-  { key: 'allow', label: 'Allow new', width: 120 },
+  { key: 'allow', label: 'Allow new', width: 200 },
 ];
 
 export default function SimplifiedResourceValuesPanel({
@@ -60,6 +59,7 @@ export default function SimplifiedResourceValuesPanel({
     }
     onChange({
       disabledValueIds: next.size > 0 ? Array.from(next) : [],
+      ...(valueId === config.defaultValueId ? { defaultValueId: null } : {}),
     });
   };
 
@@ -136,23 +136,10 @@ export default function SimplifiedResourceValuesPanel({
                         <span className={styles['values__label']}>{value.label}</span>
                       )}
                     </div>
-                    <div className={styles['values__cell']}>
-                      <span className={styles['values__status']}>
-                        {disabledForNew ? 'Disabled for new assignments' : 'Available'}
-                      </span>
-                      {disabledForNew &&
-                        value.inUseCount != null &&
-                        value.inUseCount > 0 && (
-                          <span className={styles['values__meta']}>
-                            {value.inUseCount} existing{' '}
-                            {config.resource.toLowerCase()} still use this value
-                          </span>
-                        )}
-                    </div>
                     <div
                       className={[
                         styles['values__cell'],
-                        styles['values__cell--action'],
+                        styles['values__cell--allow'],
                       ].join(' ')}
                     >
                       <Switch
@@ -166,6 +153,14 @@ export default function SimplifiedResourceValuesPanel({
                       >
                         {disabledForNew ? 'Off' : 'On'}
                       </Switch>
+                      {disabledForNew &&
+                        value.inUseCount != null &&
+                        value.inUseCount > 0 && (
+                          <span className={styles['values__meta']}>
+                            {value.inUseCount} existing{' '}
+                            {config.resource.toLowerCase()} still use this value
+                          </span>
+                        )}
                     </div>
                   </div>
                 );

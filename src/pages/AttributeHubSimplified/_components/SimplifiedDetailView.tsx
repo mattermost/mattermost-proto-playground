@@ -13,7 +13,6 @@ import {
 import DefinitionValues from './DefinitionValues';
 import AppliesToSection from './AppliesToSection';
 import WhoCanEdit from './WhoCanEdit';
-import AttributeSourceField from './AttributeSourceField';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import styles from './SimplifiedDetailView.module.scss';
 
@@ -82,7 +81,7 @@ export default function SimplifiedDetailView({
       {/* Merged Definition = Name · Type · adaptive Values (+ synced status). */}
       <ConsolePanel
         title="Definition"
-        subtitle="Name, type, value source, allowed values, and editors."
+        subtitle="Name, type, allowed values, and editors."
       >
         <div className={styles['detail__def']}>
           <div className={styles['detail__row']}>
@@ -130,17 +129,6 @@ export default function SimplifiedDetailView({
             </div>
           </div>
 
-          <div className={[styles['detail__row'], styles['detail__row--chip-align']].join(' ')}>
-            <span className={styles['detail__key']}>Value source</span>
-            <div className={styles['detail__field']}>
-              <AttributeSourceField
-                attribute={attribute}
-                onConnect={onConnectSource}
-                onManage={onManageSource}
-              />
-            </div>
-          </div>
-
           <div className={styles['detail__row']}>
             <span className={styles['detail__key']}>Values</span>
             <div className={styles['detail__field']}>
@@ -154,6 +142,8 @@ export default function SimplifiedDetailView({
                 onLockedAttempt={onValuesLockedAttempt}
                 onReuse={onReuse}
                 onUnlink={onUnlink}
+                onConnectSource={onConnectSource}
+                onManageSource={onManageSource}
               />
             </div>
           </div>

@@ -29,9 +29,17 @@ export const SOURCE_PROVIDER_OPTIONS: SourceProviderOption[] = [
     system: 'LDAP',
   },
   {
+    id: 'saml',
+    label: 'SAML identity provider',
+    description:
+      'Map a SAML assertion attribute to this value catalog when users sign in.',
+    system: 'SAML',
+  },
+  {
     id: 'scim',
-    label: 'SAML / SCIM',
-    description: 'Provision values from your identity provider via SCIM.',
+    label: 'SCIM provisioning',
+    description:
+      'Provision and keep values in sync through your identity provider’s SCIM API.',
     system: 'SCIM',
   },
   {

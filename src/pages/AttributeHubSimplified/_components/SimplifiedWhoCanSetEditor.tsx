@@ -12,11 +12,10 @@ import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
 import {
   isPolicyLocked,
+  SYNC_WHO_SETS,
   whoCanSetLock,
   type HubAttribute,
   type ResourceConfig,
-  type ResourceKind,
-  type WhoSets,
 } from '@/pages/AttributeManagementHub/hubData';
 import {
   applySettersList,
@@ -35,14 +34,7 @@ export interface SimplifiedWhoCanSetEditorProps {
   onChange: (next: Partial<ResourceConfig>) => void;
 }
 
-const SYNC_SYSTEMS: WhoSets[] = ['UAS', 'LDAP', 'SCIM'];
-
-const PARENT_OWNER: Record<ResourceKind, string> = {
-  Users: 'the user',
-  Channels: 'the channel',
-  Teams: 'the team',
-  Posts: 'the post',
-};
+const SYNC_SYSTEMS = SYNC_WHO_SETS;
 
 function matchesQuery(value: string, query: string): boolean {
   return value.toLowerCase().includes(query.trim().toLowerCase());
@@ -124,13 +116,12 @@ export default function SimplifiedWhoCanSetEditor({
     : 'Enter roles to allow setting this value…';
 
   if (inheritLock.locked && inheritLock.parent) {
+    const parentLabel = inheritLock.parent.toLowerCase();
     return (
       <SectionNotice
         type="Info"
-        title={`Locked to ${inheritLock.parent}`}
-        description={`The value is inherited and locked from ${
-          PARENT_OWNER[inheritLock.parent]
-        }. It can't be set on ${resource.toLowerCase()} directly — change the inheritance on ${inheritLock.parent} to unlock.`}
+        title="Locked to inherited value"
+        description={`This value is locked to the ${parentLabel}’s value. Turn off "Lock to ${parentLabel}’s value" on ${resource} to allow changes.`}
       />
     );
   }

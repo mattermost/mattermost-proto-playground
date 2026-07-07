@@ -1,13 +1,16 @@
 import type { ReactNode } from 'react';
 import { useId } from 'react';
+import Select from '@/components/ui/Select/Select';
 import Switch from '@/components/ui/Switch/Switch';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import Radio from '@/components/ui/Radio/Radio';
 import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
 import {
-  channelBinding,
+  assignableValuesForResource,
   channelDisplayIncludes,
+  defaultValueHint,
+  hasInheritanceParent,
   isChannelDisplayHidden,
   isSourceOwned,
   postDisplayIncludes,
@@ -17,7 +20,8 @@ import {
   readIntoForced,
   resolveInheritMode,
   supportsChannelBanner,
-  teamBinding,
+  takesValueList,
+  whoCanSetIsEditable,
   type HubAttribute,
   type InheritMode,
   type ResourceConfig,
@@ -120,11 +124,11 @@ const VALUE_VISIBILITY_OPTIONS: { key: ValueVisibility; label: string }[] = [
 
 function ValueVisibilityRadios({
   value,
-  readIntoLocked,
+  sourceControlled,
   onChange,
 }: {
   value: ValueVisibility;
-  readIntoLocked: boolean;
+  sourceControlled: boolean;
   onChange: (next: ValueVisibility) => void;
 }) {
   const groupName = useId();
@@ -134,26 +138,24 @@ function ValueVisibilityRadios({
       className={styles['value-visibility']}
       role="radiogroup"
       aria-label="Value visibility"
+      aria-readonly={sourceControlled || undefined}
     >
-      {VALUE_VISIBILITY_OPTIONS.map((opt) => {
-        const disabled = readIntoLocked && opt.key === 'show-all';
-        return (
-          <Radio
-            key={opt.key}
-            className={styles['value-visibility__radio']}
-            name={groupName}
-            value={opt.key}
-            size="Medium"
-            checked={value === opt.key}
-            disabled={disabled}
-            onChange={() => {
-              if (!disabled) onChange(opt.key);
-            }}
-          >
-            {opt.label}
-          </Radio>
-        );
-      })}
+      {VALUE_VISIBILITY_OPTIONS.map((opt) => (
+        <Radio
+          key={opt.key}
+          className={styles['value-visibility__radio']}
+          name={groupName}
+          value={opt.key}
+          size="Medium"
+          checked={value === opt.key}
+          disabled={sourceControlled}
+          onChange={() => {
+            if (!sourceControlled) onChange(opt.key);
+          }}
+        >
+          {opt.label}
+        </Radio>
+      ))}
     </div>
   );
 }
@@ -263,33 +265,74 @@ function PostDisplaySelect({
   );
 }
 
-function postInheritFromChannelReflection(mode: InheritMode): string {
-  switch (mode) {
-    case 'inherit-lock':
-      return 'Locked to the channel’s value.';
-    case 'inherit':
-      return 'Inherits from the channel. Authors can lower but not raise it.';
-    default:
-      return 'Not inherited. Set independently on each post.';
-  }
-}
+function InheritFromParentField({
+  parentLabel,
+  parentKind,
+  mode,
+  layout,
+  onChange,
+}: {
+  parentLabel: string;
+  parentKind: 'team' | 'channel';
+  mode: InheritMode;
+  layout: 'default' | 'simplified';
+  onChange: (next: InheritMode) => void;
+}) {
+  const inheriting = mode !== 'off';
+  const locked = mode === 'inherit-lock';
+  const ceilingExample =
+    parentKind === 'team'
+      ? 'a channel in a Protected B team can be Protected B or lower, never higher'
+      : 'a post in a Protected B channel can be Protected B or lower, never higher';
 
-function channelInheritFromTeamReflection(mode: InheritMode): string {
-  switch (mode) {
-    case 'inherit-lock':
-      return 'Locked to the team’s value.';
-    case 'inherit':
-      return 'Inherits from the team. Channel admins can lower but not raise it.';
-    default:
-      return 'Not inherited. Set independently on each channel.';
-  }
+  return (
+    <Field
+      layout={layout}
+      label={`Inherit from ${parentLabel}`}
+      hint={
+        <span className={styles['field__hint-row']}>
+          <span>
+            {parentKind === 'team'
+              ? 'Each channel inherits the team’s value and can’t be set higher than it.'
+              : 'Each post inherits the channel’s value and can’t be set higher than it.'}
+          </span>
+          <InfoHint
+            label="The ceiling rule"
+            hint={`Example: ${ceilingExample}.`}
+          >
+            <span className={styles['help-link']}>What’s this?</span>
+          </InfoHint>
+        </span>
+      }
+    >
+      <div className={styles['inherit-control']}>
+        <Segmented<'off' | 'inherit'>
+          value={inheriting ? 'inherit' : 'off'}
+          ariaLabel={`Inherit from ${parentLabel}`}
+          options={[
+            { key: 'off', label: 'Off' },
+            { key: 'inherit', label: 'On' },
+          ]}
+          onChange={(next) => {
+            if (next === 'off') {
+              onChange('off');
+              return;
+            }
+            onChange(locked ? 'inherit-lock' : 'inherit');
+          }}
+        />
+        <Checkbox
+          size="Small"
+          checked={locked}
+          disabled={!inheriting}
+          onChange={() => onChange(locked ? 'inherit' : 'inherit-lock')}
+        >
+          Lock to {parentLabel}&apos;s value
+        </Checkbox>
+      </div>
+    </Field>
+  );
 }
-
-const INHERIT_MODE_OPTIONS: Array<{ key: InheritMode; label: string }> = [
-  { key: 'off', label: 'Off' },
-  { key: 'inherit', label: 'Inherit' },
-  { key: 'inherit-lock', label: 'Inherit + lock' },
-];
 
 export default function ResourceConfigPanel({
   attribute,
@@ -303,17 +346,24 @@ export default function ResourceConfigPanel({
   const isUsers = config.resource === 'Users';
   const isChannels = config.resource === 'Channels';
   const isPosts = config.resource === 'Posts';
-  const isTeams = config.resource === 'Teams';
-  const channelCfg = channelBinding(attribute);
-  const channelInherit: InheritMode = channelCfg
-    ? resolveInheritMode(channelCfg)
-    : 'off';
-  const teamConfig = teamBinding(attribute);
-  const teamInherit: InheritMode = teamConfig
-    ? resolveInheritMode(teamConfig)
-    : 'off';
-  const readIntoLocked = readIntoForced(attribute);
+  const readIntoSourceControlled = readIntoForced(attribute);
   const showReadIntoReflection = !isUsers && readIntoActive(attribute);
+  const showInheritFromTeam =
+    isChannels && hasInheritanceParent(attribute, 'Channels');
+  const showInheritFromChannel =
+    isPosts && hasInheritanceParent(attribute, 'Posts');
+  const showDefaultValue =
+    whoCanSetIsEditable(attribute, config) &&
+    takesValueList(attribute) &&
+    assignableValuesForResource(attribute, config).length > 0;
+  const assignableValues = showDefaultValue
+    ? assignableValuesForResource(attribute, config)
+    : [];
+  const currentDefaultId = assignableValues.some(
+    (v) => v.id === config.defaultValueId,
+  )
+    ? (config.defaultValueId ?? '')
+    : '';
 
   return (
     <div
@@ -364,10 +414,11 @@ export default function ResourceConfigPanel({
               When restricted, users only see their own assigned value. Other
               values are hidden in profiles, pickers, and everywhere this
               attribute appears.
-              {readIntoLocked && (
+              {readIntoSourceControlled && (
                 <p className={styles['note']}>
-                  Required for {attribute.source.system}-synced values — this
-                  setting can&apos;t be turned off.
+                  For {attribute.source.system}-synced attributes, value
+                  visibility is configured at the source. Shown here for
+                  reference, not editable in Mattermost.
                 </p>
               )}
             </>
@@ -377,7 +428,7 @@ export default function ResourceConfigPanel({
             value={
               attribute.readIntoFiltering ? 'hide-not-read-in' : 'show-all'
             }
-            readIntoLocked={readIntoLocked}
+            sourceControlled={readIntoSourceControlled}
             onChange={(next) =>
               onReadIntoFilteringChange(next === 'hide-not-read-in')
             }
@@ -394,12 +445,16 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {isChannels && teamConfig && (
-        <Field layout={layout} label="Inheritance from team">
-          <span className={styles['reflection']}>
-            {channelInheritFromTeamReflection(teamInherit)}
-          </span>
-        </Field>
+      {showInheritFromTeam && (
+        <InheritFromParentField
+          parentLabel="team"
+          parentKind="team"
+          mode={resolveInheritMode(config)}
+          layout={layout}
+          onChange={(next) =>
+            onChange({ inheritMode: next, inheritToChild: undefined })
+          }
+        />
       )}
 
       {isChannels && (
@@ -426,72 +481,16 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {isChannels && (
-        <Field
+      {showInheritFromChannel && (
+        <InheritFromParentField
+          parentLabel="channel"
+          parentKind="channel"
+          mode={resolveInheritMode(config)}
           layout={layout}
-          label="Inherit to posts"
-          hint={
-            <span className={styles['field__hint-row']}>
-              <span>
-                Posts inherit the channel’s value and can’t be set higher than
-                it.
-              </span>
-              <InfoHint
-                label="The ceiling rule"
-                hint="Example: a post in a Protected B channel can be Protected B or lower, never higher."
-              >
-                <span className={styles['help-link']}>What’s this?</span>
-              </InfoHint>
-            </span>
+          onChange={(next) =>
+            onChange({ inheritMode: next, inheritToChild: undefined })
           }
-        >
-          <Segmented<InheritMode>
-            value={resolveInheritMode(config)}
-            ariaLabel="Inherit to posts"
-            options={INHERIT_MODE_OPTIONS}
-            onChange={(next) =>
-              onChange({ inheritMode: next, inheritToChild: undefined })
-            }
-          />
-        </Field>
-      )}
-
-      {isTeams && (
-        <Field
-          layout={layout}
-          label="Inherit to channels"
-          hint={
-            <span className={styles['field__hint-row']}>
-              <span>
-                Channels inherit the team’s value and can’t be set higher than
-                it.
-              </span>
-              <InfoHint
-                label="The ceiling rule"
-                hint="Example: a channel in a Protected B team can be Protected B or lower, never higher."
-              >
-                <span className={styles['help-link']}>What’s this?</span>
-              </InfoHint>
-            </span>
-          }
-        >
-          <Segmented<InheritMode>
-            value={resolveInheritMode(config)}
-            ariaLabel="Inherit to channels"
-            options={INHERIT_MODE_OPTIONS}
-            onChange={(next) =>
-              onChange({ inheritMode: next, inheritToChild: undefined })
-            }
-          />
-        </Field>
-      )}
-
-      {isPosts && (
-        <Field layout={layout} label="Inheritance from channel">
-          <span className={styles['reflection']}>
-            {postInheritFromChannelReflection(channelInherit)}
-          </span>
-        </Field>
+        />
       )}
 
       {isPosts && (
@@ -537,6 +536,36 @@ export default function ResourceConfigPanel({
           config={config}
           onChange={onChange}
         />
+      )}
+
+      {showDefaultValue && (
+        <Field
+          layout={layout}
+          label="Default value"
+          hint={defaultValueHint(config.resource)}
+        >
+          <Select
+            className={styles['default-value-select']}
+            size="Medium"
+            width="fit"
+            value={currentDefaultId}
+            aria-label="Default value"
+            onChange={(e) =>
+              onChange({
+                defaultValueId: e.target.value === '' ? null : e.target.value,
+              })
+            }
+          >
+            <option value="">None</option>
+            {assignableValues.map((value) => (
+              <option key={value.id} value={value.id}>
+                {value.tier != null
+                  ? `${value.label} (Tier ${value.tier})`
+                  : value.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
       )}
     </div>
   );

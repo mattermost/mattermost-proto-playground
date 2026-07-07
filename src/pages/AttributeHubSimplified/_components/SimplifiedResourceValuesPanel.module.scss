@@ -48,7 +48,7 @@
 
   &__row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     background: var(--center-channel-bg);
 
@@ -57,8 +57,7 @@
     }
 
     &--disabled {
-      .values__label,
-      .values__status {
+      .values__label {
         color: rgba(var(--center-channel-color-rgb), 0.56);
       }
     }
@@ -67,7 +66,7 @@
   &__cell {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--spacing-xxs);
     min-width: 0;
     padding: var(--spacing-s) var(--spacing-l);
     flex: 1 1 auto;
@@ -77,21 +76,16 @@
       width: 240px;
     }
 
-    &--action {
-      flex: 0 0 120px;
-      width: 120px;
-      align-items: flex-end;
+    &--allow {
+      flex: 0 0 200px;
+      width: 200px;
+      align-items: flex-start;
     }
   }
 
   &__label {
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__status {
-    font-size: var(--font-size-100);
     color: var(--center-channel-color);
   }
 

@@ -20,7 +20,7 @@ export type ResourceKind = 'Users' | 'Channels' | 'Posts' | 'Teams';
 /** External-sync state. Text + color, never color alone. */
 export type SyncState = 'Synced' | 'Stale' | 'Failed' | 'Unreachable';
 
-export type SourceSystem = 'UAS' | 'LDAP' | 'SCIM';
+export type SourceSystem = 'UAS' | 'LDAP' | 'SAML' | 'SCIM';
 
 export interface Source {
   kind: 'manual' | 'synced';
@@ -57,6 +57,7 @@ export type WhoSets =
   | 'Members'
   | 'UAS'
   | 'LDAP'
+  | 'SAML'
   | 'SCIM';
 
 export type DisplayWhere =
@@ -97,7 +98,7 @@ export interface ResourceConfig {
   whoCanSet: WhoCanSet;
   /** Channels: header/sidebar/banner. Posts: message input / in-channel message view. */
   showWhere?: DisplayWhere[];
-  /** Channels: how posts inherit. Teams: how channels inherit. */
+  /** Child bindings only: inherit from parent (Channels←Teams, Posts←Channels). */
   inheritMode?: InheritMode;
   /** @deprecated Prefer inheritMode. */
   inheritToChild?: boolean;
@@ -105,6 +106,8 @@ export interface ResourceConfig {
   userProfileDisplay?: UserProfileDisplay;
   /** Base value ids disabled for NEW assignments on this resource. */
   disabledValueIds?: string[];
+  /** Pre-filled when a new resource instance is created without a value. */
+  defaultValueId?: string | null;
 }
 
 /** Capability delegation — owner + delegates per capability. */
@@ -211,11 +214,31 @@ export function teamBinding(
   return attribute.appliesTo.find((c) => c.resource === 'Teams');
 }
 
+/** Parent resource a child can inherit from, if applied. */
+export function inheritanceParentKind(
+  child: ResourceKind,
+): ResourceKind | null {
+  if (child === 'Channels') return 'Teams';
+  if (child === 'Posts') return 'Channels';
+  return null;
+}
+
+export function hasInheritanceParent(
+  attribute: HubAttribute,
+  child: ResourceKind,
+): boolean {
+  const parent = inheritanceParentKind(child);
+  return (
+    parent != null &&
+    attribute.appliesTo.some((c) => c.resource === parent)
+  );
+}
+
 export function appliesToUsers(a: HubAttribute): boolean {
   return a.appliesTo.some((c) => c.resource === 'Users');
 }
 
-/** Read-into filtering is forced on (and locked) for UAS-owned attributes. */
+/** UAS sets value visibility at the source; Mattermost displays it read-only. */
 export function readIntoForced(a: HubAttribute): boolean {
   return a.source.system === 'UAS';
 }
@@ -252,24 +275,21 @@ export function isMemberSettable(cfg: ResourceConfig): boolean {
 }
 
 /**
- * R3 — a child resource's setter is locked when its parent inherits with lock.
- * Team → Channel → Post.
+ * R3 — setter locked when this binding inherits with lock from its parent.
+ * Inheritance is configured on the child binding.
  */
 export function whoCanSetLock(
   a: HubAttribute,
   resource: ResourceKind,
 ): { locked: boolean; parent?: ResourceKind } {
-  if (resource === 'Posts') {
-    const parent = channelBinding(a);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
-      return { locked: true, parent: 'Channels' };
-    }
+  const parentKind = inheritanceParentKind(resource);
+  if (!parentKind || !hasInheritanceParent(a, resource)) {
+    return { locked: false };
   }
-  if (resource === 'Channels') {
-    const parent = teamBinding(a);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
-      return { locked: true, parent: 'Teams' };
-    }
+
+  const cfg = a.appliesTo.find((c) => c.resource === resource);
+  if (cfg && resolveInheritMode(cfg) === 'inherit-lock') {
+    return { locked: true, parent: parentKind };
   }
   return { locked: false };
 }
@@ -334,6 +354,49 @@ export function listValuesForOverlay(attribute: HubAttribute): AttrValue[] {
     return attribute.values.filter((v) => v.tier != null);
   }
   return attribute.values;
+}
+
+/** External sync systems own who-can-set on the binding. */
+export const SYNC_WHO_SETS: WhoSets[] = ['UAS', 'LDAP', 'SAML', 'SCIM'];
+
+/** True when the who-can-set combobox is shown (values can be set in Mattermost). */
+export function whoCanSetIsEditable(
+  attribute: HubAttribute,
+  config: ResourceConfig,
+): boolean {
+  const relational = config.whoCanSet.relationalDefault;
+  if (relational != null && SYNC_WHO_SETS.includes(relational)) {
+    return false;
+  }
+  return !whoCanSetLock(attribute, config.resource).locked;
+}
+
+/** Values that can be assigned on this resource (respects disabled subset + read-in). */
+export function assignableValuesForResource(
+  attribute: HubAttribute,
+  config: ResourceConfig,
+): AttrValue[] {
+  const disabled = new Set(config.disabledValueIds ?? []);
+  return visibleValues(attribute, listValuesForOverlay(attribute)).filter(
+    (v) => !disabled.has(v.id),
+  );
+}
+
+export function defaultValueHint(resource: ResourceKind): string {
+  switch (resource) {
+    case 'Users':
+      return 'Pre-filled on new user profiles when no value is set.';
+    case 'Channels':
+      return 'Pre-filled when a new channel is created without a value.';
+    case 'Posts':
+      return 'Pre-filled when a new post is created without a value.';
+    case 'Teams':
+      return 'Pre-filled when a new team is created without a value.';
+    default: {
+      const _exhaustive: never = resource;
+      return _exhaustive;
+    }
+  }
 }
 
 /** Reuse is offered only for manually-managed, not-yet-linked attributes. */
@@ -570,12 +633,12 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         required: false,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
+        inheritMode: 'inherit-lock',
       },
       {
         resource: 'Teams',
         required: false,
         whoCanSet: whoCanSet('Team admin'),
-        inheritMode: 'inherit-lock',
       },
     ],
     usedByPolicies: 3,
@@ -698,13 +761,13 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         required: false,
         whoCanSet: whoCanSet('Channel admin'),
         showWhere: ['Header', 'Sidebar'],
-        inheritMode: 'inherit',
       },
       {
         resource: 'Posts',
         required: false,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
+        inheritMode: 'inherit',
       },
     ],
     usedByPolicies: 0,
@@ -806,7 +869,7 @@ export const ALL_RESOURCES: ResourceKind[] = [
 ];
 
 export const SOURCE_FILTERS: Array<'All sources' | 'Managed here' | SourceSystem> =
-  ['All sources', 'Managed here', 'UAS', 'LDAP', 'SCIM'];
+  ['All sources', 'Managed here', 'UAS', 'LDAP', 'SAML', 'SCIM'];
 
 export function newAttributeId(): string {
   return `attr-${Date.now()}`;

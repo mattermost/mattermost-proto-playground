@@ -1,12 +1,14 @@
 import {
   accessCap,
-  channelBinding,
+  assignableValuesForResource,
   defaultResourceConfig,
+  hasInheritanceParent,
+  inheritanceParentKind,
   postDisplayLabel,
   readIntoActive,
   resolveInheritMode,
   takesValueList,
-  teamBinding,
+  whoCanSetIsEditable,
   type HubAttribute,
   type InheritMode,
   type PostDisplayLoc,
@@ -51,11 +53,17 @@ function postDisplaySummary(cfg: ResourceConfig): string {
   return `Display: ${shown.join(' + ')}`;
 }
 
-export const INHERIT_MODE_OPTIONS: Array<{ key: InheritMode; label: string }> = [
-  { key: 'off', label: 'Off' },
-  { key: 'inherit', label: 'Inherit' },
-  { key: 'inherit-lock', label: 'Inherit + lock' },
-];
+function inheritanceChipLabel(
+  mode: InheritMode,
+  parent: 'team' | 'channel',
+): string | null {
+  if (mode === 'off') return null;
+  const parentLabel = parent === 'team' ? 'team' : 'channel';
+  if (mode === 'inherit-lock') {
+    return `Inheritance: Locked to ${parentLabel}`;
+  }
+  return `Inheritance: From ${parentLabel}`;
+}
 
 /** All roles currently allowed to set the value on this resource. */
 export function selectedSetters(cfg: ResourceConfig): string[] {
@@ -146,36 +154,17 @@ export function summaryChips(
     chips.push(
       shown.length === 0 ? 'Display: Hidden' : `Display: ${shown.join(' + ')}`,
     );
-    const team = teamBinding(attribute);
-    if (team) {
-      const mode = resolveInheritMode(team);
-      if (mode === 'inherit-lock') {
-        chips.push('Inheritance: Locked from team');
-      } else if (mode === 'inherit') {
-        chips.push('Inheritance: From team');
-      }
-    }
-  }
-
-  if (cfg.resource === 'Teams') {
-    const mode = resolveInheritMode(cfg);
-    if (mode === 'inherit-lock') {
-      chips.push('Inheritance: Locked to channels');
-    } else if (mode === 'inherit') {
-      chips.push('Inheritance: To channels');
+    if (hasInheritanceParent(attribute, 'Channels')) {
+      const label = inheritanceChipLabel(resolveInheritMode(cfg), 'team');
+      if (label) chips.push(label);
     }
   }
 
   if (cfg.resource === 'Posts') {
     chips.push(postDisplaySummary(cfg));
-    const channel = channelBinding(attribute);
-    if (channel) {
-      const mode = resolveInheritMode(channel);
-      if (mode === 'inherit-lock') {
-        chips.push('Inheritance: Locked from channel');
-      } else if (mode === 'inherit') {
-        chips.push('Inheritance: From channel');
-      }
+    if (hasInheritanceParent(attribute, 'Posts')) {
+      const label = inheritanceChipLabel(resolveInheritMode(cfg), 'channel');
+      if (label) chips.push(label);
     }
   }
 
@@ -195,6 +184,19 @@ export function summaryChips(
         ? 'Values: All allowed'
         : `Values: ${disabled} disabled`,
     );
+  }
+
+  if (
+    cfg.defaultValueId &&
+    whoCanSetIsEditable(attribute, cfg) &&
+    assignableValuesForResource(attribute, cfg).some(
+      (v) => v.id === cfg.defaultValueId,
+    )
+  ) {
+    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
+    if (value) {
+      chips.push(`Default: ${value.label}`);
+    }
   }
 
   return chips;
@@ -253,13 +255,18 @@ export function deviationsFor(
     }
   }
 
-  // Inheritance — Channels (from Team) / Teams (to Channels) / Posts (from Channel).
+  // Inheritance — configured on child bindings when parent is applied.
   const mode = resolveInheritMode(cfg);
-  if ((cfg.resource === 'Channels' || cfg.resource === 'Teams') && mode !== 'off') {
-    const src = cfg.resource === 'Channels' ? 'Team' : 'Channels';
+  if (cfg.resource === 'Channels' && hasInheritanceParent(attribute, 'Channels') && mode !== 'off') {
     out.push({
       field: 'inheritance',
-      label: mode === 'inherit-lock' ? `Locked to ${src}` : `Inherits from ${src}`,
+      label: mode === 'inherit-lock' ? 'Locked to team' : 'Inherits from team',
+    });
+  }
+  if (cfg.resource === 'Posts' && hasInheritanceParent(attribute, 'Posts') && mode !== 'off') {
+    out.push({
+      field: 'inheritance',
+      label: mode === 'inherit-lock' ? 'Locked to channel' : 'Inherits from channel',
     });
   }
 
@@ -291,25 +298,35 @@ export function deviationsFor(
     });
   }
 
+  if (
+    cfg.defaultValueId &&
+    whoCanSetIsEditable(attribute, cfg) &&
+    assignableValuesForResource(attribute, cfg).some(
+      (v) => v.id === cfg.defaultValueId,
+    )
+  ) {
+    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
+    if (value) {
+      out.push({ field: 'default', label: `Default: ${value.label}` });
+    }
+  }
+
   return out;
 }
 
-/** Parent-inheritance lock (R3): a child setter is locked by an inherit+lock parent. */
+/** Setter locked when this binding inherits with lock from its parent. */
 export function setterLock(
   attribute: HubAttribute,
   resource: ResourceKind,
 ): { locked: boolean; parent?: ResourceKind } {
-  if (resource === 'Posts') {
-    const parent = channelBinding(attribute);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
-      return { locked: true, parent: 'Channels' };
-    }
+  const parentKind = inheritanceParentKind(resource);
+  if (!parentKind || !hasInheritanceParent(attribute, resource)) {
+    return { locked: false };
   }
-  if (resource === 'Channels') {
-    const parent = teamBinding(attribute);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
-      return { locked: true, parent: 'Teams' };
-    }
+
+  const cfg = attribute.appliesTo.find((c) => c.resource === resource);
+  if (cfg && resolveInheritMode(cfg) === 'inherit-lock') {
+    return { locked: true, parent: parentKind };
   }
   return { locked: false };
 }
