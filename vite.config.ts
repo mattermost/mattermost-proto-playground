@@ -37,7 +37,8 @@ function compassUiDistReload(): Plugin {
 }
 
 export default defineConfig({
-  base: '/mattermost-proto-playground/',
+  // Vercel serves at the domain root; GitHub Pages serves under the repo path.
+  base: process.env.VERCEL ? '/' : '/mattermost-proto-playground/',
   plugins: [
     {
       enforce: 'pre',
