@@ -12,6 +12,8 @@ export type PrototypeEntry = {
   description?: string;
   path: string;
   component: ComponentType;
+  /** Omit from the prototypes index while keeping the route available. */
+  hidden?: boolean;
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
@@ -44,18 +46,21 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Example Flow',
     path: '/prototypes/example-flow',
     component: ExampleFlow,
+    hidden: true,
   },
   {
     id: 'external-call-participants',
     label: 'External Call Participants',
     path: '/prototypes/external-call-participants',
     component: ExternalCallParticipants,
+    hidden: true,
   },
   {
     id: 'outbound-calls',
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+    hidden: true,
   },
 ];
 

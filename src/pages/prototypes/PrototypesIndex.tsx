@@ -17,7 +17,7 @@ export default function PrototypesIndex() {
       <div
         className={`${shellStyles['doc-shell__body']} ${shellStyles['doc-shell__body--standalone']}`}
       >
-        {PROTOTYPES.length === 0 && (
+        {PROTOTYPES.filter((p) => !p.hidden).length === 0 && (
           <p className={styles['prototypes-index__empty']}>
             No prototypes registered yet. Add entries to <code>PROTOTYPES</code>{' '}
             in <code>src/manifests/prototypes.ts</code>.
@@ -25,7 +25,7 @@ export default function PrototypesIndex() {
         )}
 
         <ul className={styles['prototypes-index__list']}>
-          {PROTOTYPES.map((p) => (
+          {PROTOTYPES.filter((p) => !p.hidden).map((p) => (
             <li key={p.id}>
               <Link to={p.path}>{p.label}</Link>
               {p.description ? (
