@@ -10,11 +10,13 @@ export interface AutomationsPanelOptions {
 export const OPTION1_PANEL_OPTIONS: AutomationsPanelOptions = {
   showAgentSelector: false,
   showAgentPicker: true,
+  editorKind: 'assignment',
 };
 
 export const OPTION2_PANEL_OPTIONS: AutomationsPanelOptions = {
   showAgentSelector: false,
   showAgentPicker: true,
+  editorKind: 'assignment',
 };
 
 export const OPTION3_PANEL_OPTIONS: AutomationsPanelOptions = {

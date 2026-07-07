@@ -80,6 +80,7 @@ export default function DiscoverScene({
             onEdit={() => {}}
             onRequestDelete={() => {}}
             {...panelOptions}
+            editorKind={panelOptions?.editorKind ?? 'assignment'}
           />
         )
       : (

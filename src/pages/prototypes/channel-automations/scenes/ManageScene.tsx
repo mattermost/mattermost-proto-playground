@@ -144,6 +144,7 @@ export default function ManageScene({
           onEdit={openEdit}
           onRequestDelete={openDeleteConfirm}
           {...panelOptions}
+          editorKind={panelOptions?.editorKind ?? 'assignment'}
           showAgentSelector={panelOptions?.showAgentSelector ?? false}
           showAgentPicker={panelOptions?.showAgentPicker ?? false}
         />
