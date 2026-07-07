@@ -2,9 +2,9 @@ import type { AgentTabKey } from './EditAgentView';
 import styles from './PlaceholderTab.module.scss';
 
 const TAB_LABELS: Record<Exclude<AgentTabKey, 'automations' | 'chat'>, string> = {
-  configuration: 'Configuration',
+  configuration: 'Settings',
   access: 'Access',
-  mcps: 'MCPs',
+  mcps: 'Tools',
 };
 
 export interface PlaceholderTabProps {
@@ -12,7 +12,7 @@ export interface PlaceholderTabProps {
 }
 
 /**
- * Out-of-scope tabs for this prototype. Access and MCPs have dedicated views;
+ * Out-of-scope tabs for this prototype. Access and Tools have dedicated views;
  * configuration on the agent edit screen uses this placeholder.
  */
 export default function PlaceholderTab({ tab }: PlaceholderTabProps) {

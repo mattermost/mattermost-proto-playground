@@ -47,6 +47,10 @@
     }
   }
 
+  &__panel-tab {
+    padding: var(--spacing-xl);
+  }
+
   &__footer {
     display: flex;
     flex: 0 0 auto;

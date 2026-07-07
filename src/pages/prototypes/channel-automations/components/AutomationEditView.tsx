@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
 import AutomationFormEditor, {
-  EDITOR_VIEW_TABS,
+  AUTOMATION_EDITOR_VIEW_TABS,
   type AutomationFormEditorHandle,
   type EditorView,
 } from './AutomationFormEditor';
@@ -48,7 +48,7 @@ export default function AutomationEditView({
             </div>
 
             <AutomationsTabs
-              tabs={EDITOR_VIEW_TABS.map((tab) => ({
+              tabs={AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
                 key: tab.id,
                 label: tab.label,
               }))}

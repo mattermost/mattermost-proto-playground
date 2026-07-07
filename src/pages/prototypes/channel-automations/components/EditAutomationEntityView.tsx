@@ -11,9 +11,9 @@ import styles from './EditAutomationEntityView.module.scss';
 
 const ENTITY_TABS = [
   { key: 'chat', label: 'Chat' },
-  { key: 'configuration', label: 'Configuration' },
+  { key: 'configuration', label: 'Settings' },
   { key: 'access', label: 'Access' },
-  { key: 'mcps', label: 'MCPs' },
+  { key: 'mcps', label: 'Tools' },
 ] as const;
 
 export interface EditAutomationEntityViewProps {

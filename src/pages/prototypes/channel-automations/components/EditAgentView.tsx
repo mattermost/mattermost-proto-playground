@@ -13,10 +13,10 @@ export type AgentTabKey =
   | 'mcps';
 
 const TABS: AutomationsTabItem[] = [
-  { key: 'configuration', label: 'Configuration' },
+  { key: 'configuration', label: 'Settings' },
   { key: 'access', label: 'Access' },
   { key: 'automations', label: 'Automations' },
-  { key: 'mcps', label: 'MCPs' },
+  { key: 'mcps', label: 'Tools' },
 ];
 
 export interface EditAgentViewProps {
@@ -33,7 +33,7 @@ export interface EditAgentViewProps {
 
 /**
  * Edit Agent settings view (Figma `4303-35266`) — an 800px-wide centered card
- * with a back-to-agents header, the Configuration / Access / Automations / MCPs
+ * with a back-to-agents header, the Settings / Access / Automations / Tools
  * tab strip, the active tab body, and a Cancel / Save footer.
  */
 export default function EditAgentView({

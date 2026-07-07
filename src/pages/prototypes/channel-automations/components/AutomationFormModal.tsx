@@ -2,7 +2,7 @@ import { Modal } from '@mattermost/compass-ui';
 import { useState } from 'react';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
 import AutomationFormEditor, {
-  EDITOR_VIEW_TABS,
+  AUTOMATION_EDITOR_VIEW_TABS,
   type EditorView,
 } from './AutomationFormEditor';
 import AutomationsTabs from './AutomationsTabs';
@@ -34,7 +34,7 @@ export default function AutomationFormModal({
 
   const headerBottom = (
     <AutomationsTabs
-      tabs={EDITOR_VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
+      tabs={AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
       activeKey={view}
       onChange={(id) => setView(id as EditorView)}
       ariaLabel="Automation editor view"

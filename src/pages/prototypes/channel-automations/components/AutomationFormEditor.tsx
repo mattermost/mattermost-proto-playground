@@ -8,6 +8,7 @@ import {
   EVENT_TYPE_LABELS,
   SCHEDULE_FREQUENCY_LABELS,
   SCHEDULE_TIMES,
+  agentById,
   applyTriggerPickerOption,
   buildTriggerConfig,
   defaultOwnedAgent,
@@ -27,20 +28,37 @@ import {
   type TriggerPickerOption,
 } from '../channelAutomationsData';
 import type { EditorKind, FormPatch, FormValues } from './automationFormTypes';
+import AccessTab from './AccessTab';
 import AgentPickerField from './AgentPickerField';
 import AutomationEditChat from './AutomationEditChat';
 import AutomationsTabs from './AutomationsTabs';
+import McpsTab from './McpsTab';
 import TriggerPicker from './TriggerPicker';
 import styles from './AutomationFormEditor.module.scss';
 
-type EditorView = 'form' | 'chat';
+type EditorView = 'chat' | 'form' | 'access' | 'tools';
 
 export type { EditorView };
 
-export const EDITOR_VIEW_TABS = [
+export const AUTOMATION_EDITOR_VIEW_TABS = [
   { id: 'chat' as const, label: 'Chat' },
   { id: 'form' as const, label: 'Settings' },
 ];
+
+export const ENTITY_EDITOR_VIEW_TABS = [
+  ...AUTOMATION_EDITOR_VIEW_TABS,
+  { id: 'access' as const, label: 'Access' },
+  { id: 'tools' as const, label: 'Tools' },
+];
+
+/** @deprecated Use AUTOMATION_EDITOR_VIEW_TABS or ENTITY_EDITOR_VIEW_TABS */
+export const EDITOR_VIEW_TABS = ENTITY_EDITOR_VIEW_TABS;
+
+function editorViewTabs(editorKind: EditorKind) {
+  return editorKind === 'entity'
+    ? ENTITY_EDITOR_VIEW_TABS
+    : AUTOMATION_EDITOR_VIEW_TABS;
+}
 
 export interface AutomationFormEditorProps {
   initial?: Automation;
@@ -311,10 +329,18 @@ const AutomationFormEditor = forwardRef<
     </Switch>
   ) : null;
 
+  const assignedAgent = agentById(
+    agentId || initial?.agentId || initialEntity?.id || DEFAULT_OWNED_AGENT_ID,
+  );
+  const toolsActiveMcps = initialEntity?.activeMcps ?? assignedAgent?.activeMcps ?? 0;
+  const toolsCount = initialEntity?.toolCount ?? assignedAgent?.toolCount ?? 0;
+
+  const viewTabs = editorViewTabs(editorKind);
+
   const toolbar = showViewTabs ? (
     <AutomationsTabs
       className={styles['editor__tabs']}
-      tabs={EDITOR_VIEW_TABS.map((tab) => ({ key: tab.id, label: tab.label }))}
+      tabs={viewTabs.map((tab) => ({ key: tab.id, label: tab.label }))}
       activeKey={view}
       onChange={(id) => setView(id as EditorView)}
       ariaLabel="Automation editor view"
@@ -339,6 +365,25 @@ const AutomationFormEditor = forwardRef<
           editorKind={editorKind}
           requireAgentId={showAgentPicker}
         />
+      ) : editorKind === 'entity' && view === 'access' ? (
+        <div className={styles['editor__scroll']}>
+          <Scrollbar>
+            <div className={styles['editor__panel-tab']}>
+              <AccessTab />
+            </div>
+          </Scrollbar>
+        </div>
+      ) : editorKind === 'entity' && view === 'tools' ? (
+        <div className={styles['editor__scroll']}>
+          <Scrollbar>
+            <div className={styles['editor__panel-tab']}>
+              <McpsTab
+                activeMcps={toolsActiveMcps}
+                toolCount={toolsCount}
+              />
+            </div>
+          </Scrollbar>
+        </div>
       ) : (
         <div className={styles['editor__scroll']}>
           <Scrollbar>
