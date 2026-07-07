@@ -9,6 +9,7 @@ import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 export type PrototypeEntry = {
   id: string;
   label: string;
+  description?: string;
   path: string;
   component: ComponentType;
 };
@@ -17,18 +18,24 @@ export const PROTOTYPES: PrototypeEntry[] = [
   {
     id: 'channel-automations',
     label: 'Automations within Agents',
+    description:
+      'Automations are part of the configuration for an agent. Users must have access to edit the agent in order to create an automation for an agent.',
     path: '/prototypes/channel-automations',
     component: ChannelAutomations,
   },
   {
     id: 'standalone-automations',
-    label: 'Standalone Automations',
+    label: 'Standalone Automations - Using agents to execute',
+    description:
+      'Automations are distinct entities from agents, but they use agents to execute the automation',
     path: '/prototypes/standalone-automations',
     component: StandaloneAutomations,
   },
   {
     id: 'automation-agents',
     label: 'Automations are agents',
+    description:
+      'Automations are a special type of agent. They have all the same configuration and guardrails as agents, but have the additional ability to execute on triggers',
     path: '/prototypes/automation-agents',
     component: AutomationAgents,
   },

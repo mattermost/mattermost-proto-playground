@@ -2,7 +2,7 @@ import { Icon, MenuItem, PopoverMenu, UserAvatar } from '@mattermost/compass-ui'
 import { useId, useRef, useState } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import { AGENTS, agentAvatarProps, agentById, defaultOwnedAgent } from '../channelAutomationsData';
+import { AGENTS, agentAvatarProps, agentById } from '../channelAutomationsData';
 import styles from './AgentPickerField.module.scss';
 
 export interface AgentPickerFieldProps {
@@ -24,7 +24,7 @@ export default function AgentPickerField({
 
   useOutsideClose(anchorRef, open, () => setOpen(false));
 
-  const selected = agentById(value) ?? defaultOwnedAgent();
+  const selected = value ? agentById(value) : undefined;
 
   const close = () => setOpen(false);
 
@@ -53,12 +53,23 @@ export default function AgentPickerField({
           aria-controls={listboxId}
           onClick={() => setOpen((current) => !current)}
         >
-          <UserAvatar
-            className={styles['picker__avatar']}
-            size="16"
-            {...agentAvatarProps(selected)}
-          />
-          <span className={styles['picker__value']}>{selected.displayName}</span>
+          {selected ? (
+            <UserAvatar
+              className={styles['picker__avatar']}
+              size="16"
+              {...agentAvatarProps(selected)}
+            />
+          ) : null}
+          <span
+            className={[
+              styles['picker__value'],
+              selected ? '' : styles['picker__value--placeholder'],
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            {selected ? selected.displayName : 'Choose an agent'}
+          </span>
           <span
             className={[
               styles['picker__chevron'],

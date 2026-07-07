@@ -5,6 +5,7 @@ import AutomationsShell from '../components/AutomationsShell';
 import AgentsPanel from '../components/AgentsPanel';
 import AgentsEmptyState from '../components/AgentsEmptyState';
 import AutomationsPanel from '../components/AutomationsPanel';
+import ChooseAgentPrompt from '../components/ChooseAgentPrompt';
 
 export interface DiscoverSceneProps {
   onCreateAutomation: (draft: AutomationDraft) => void;
@@ -22,17 +23,41 @@ export default function DiscoverScene({
   panelOptions,
   automations = [],
 }: DiscoverSceneProps) {
+  const requireAgent = panelOptions?.showAgentPicker ?? false;
   const [agentsOpen, setAgentsOpen] = useState(true);
   const [creating, setCreating] = useState(false);
   const [createType, setCreateType] = useState<AutomationType | undefined>();
+  const [creatingContextAgentId, setCreatingContextAgentId] = useState<
+    string | undefined
+  >();
+  const [agentPickerForCreate, setAgentPickerForCreate] = useState<{
+    type?: AutomationType;
+  } | null>(null);
 
-  const openCreate = (type?: AutomationType) => {
+  const openCreate = (type?: AutomationType, agentId?: string) => {
     setCreateType(type);
+    setCreatingContextAgentId(agentId);
     setCreating(true);
+    setAgentPickerForCreate(null);
   };
+
   const closeCreate = () => {
     setCreating(false);
     setCreateType(undefined);
+    setCreatingContextAgentId(undefined);
+  };
+
+  const requestCreate = (type?: AutomationType, agentId?: string) => {
+    if (agentId || !requireAgent) {
+      openCreate(type, agentId);
+      return;
+    }
+    setAgentPickerForCreate({ type });
+    setAgentsOpen(true);
+  };
+
+  const completeAgentPick = (agentId: string) => {
+    openCreate(agentPickerForCreate?.type, agentId);
   };
 
   const rhs = !agentsOpen
@@ -43,13 +68,14 @@ export default function DiscoverScene({
             automations={automations}
             creating
             createType={createType}
+            creatingContextAgentId={creatingContextAgentId}
             onBackFromEditor={closeCreate}
             onCreateSubmit={(draft) => {
               onCreateAutomation(draft);
               closeCreate();
             }}
             onClose={() => setAgentsOpen(false)}
-            onCreate={openCreate}
+            onCreate={requestCreate}
             onToggle={() => {}}
             onEdit={() => {}}
             onRequestDelete={() => {}}
@@ -61,13 +87,25 @@ export default function DiscoverScene({
             onClose={() => setAgentsOpen(false)}
             onViewAutomations={onManage}
           >
-            <AgentsEmptyState onCreate={() => openCreate()} />
+            {agentPickerForCreate ? (
+              <ChooseAgentPrompt
+                onSelectAgent={completeAgentPick}
+                onCancel={() => setAgentPickerForCreate(null)}
+              />
+            ) : (
+              <AgentsEmptyState
+                onCreateForAgent={
+                  requireAgent ? (agentId) => openCreate(undefined, agentId) : undefined
+                }
+                onCreate={requireAgent ? undefined : () => openCreate()}
+              />
+            )}
           </AgentsPanel>
         );
 
   return (
     <AutomationsShell
-      onCreate={openCreate}
+      onCreate={requestCreate}
       onOpenManage={onManage}
       onManageAgents={onManageAgents}
       rhs={rhs}

@@ -1,18 +1,41 @@
 import { Button, Icon, Illustration } from '@mattermost/compass-ui';
-import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import AiCopilotIntro from '@/assets/illustrations/ai-copilot-intro.svg?react';
+import NewAutomationAgentPicker from './NewAutomationAgentPicker';
 import styles from './AgentsEmptyState.module.scss';
 
 export interface AgentsEmptyStateProps {
-  /** Featured entry point: start the scripted create flow. */
-  onCreate: () => void;
+  onCreate?: () => void;
+  onCreateForAgent?: (agentId: string) => void;
 }
 
 /**
  * Agents panel empty state (Figma `4258-47129`) — the featured "Create a
  * channel automation" entry point, surfaced where the conversation happens.
  */
-export default function AgentsEmptyState({ onCreate }: AgentsEmptyStateProps) {
+export default function AgentsEmptyState({
+  onCreate,
+  onCreateForAgent,
+}: AgentsEmptyStateProps) {
+  const createControl = onCreateForAgent ? (
+    <NewAutomationAgentPicker
+      size="Small"
+      emphasis="Tertiary"
+      icon="lightning"
+      label="Create a channel automation"
+      onSelectAgent={onCreateForAgent}
+    />
+  ) : (
+    <Button
+      emphasis="Tertiary"
+      size="Small"
+      leadingIcon={<Icon size="16" glyph={<CreationOutlineIcon />} />}
+      onClick={onCreate}
+    >
+      Create a channel automation
+    </Button>
+  );
+
   return (
     <div className={styles['empty']}>
       <span className={styles['empty__art']}>
@@ -25,14 +48,7 @@ export default function AgentsEmptyState({ onCreate }: AgentsEmptyStateProps) {
         Agents are here to help. Choose from the prompts below or write your
         own.
       </p>
-      <Button
-        emphasis="Tertiary"
-        size="Small"
-        leadingIcon={<Icon size="16" glyph={<LightningBoltOutlineIcon />} />}
-        onClick={onCreate}
-      >
-        Create a channel automation
-      </Button>
+      {createControl}
     </div>
   );
 }

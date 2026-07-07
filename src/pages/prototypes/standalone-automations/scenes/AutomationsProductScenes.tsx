@@ -8,6 +8,7 @@ export interface AutomationsIndexSceneProps {
   automations: Automation[];
   onSelectAutomation: (id: string) => void;
   onNewAutomation: () => void;
+  onNewAutomationForAgent?: (agentId: string) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onRequestDelete?: (id: string) => void;
   deleteTarget?: Automation | null;
@@ -20,6 +21,7 @@ export function AutomationsIndexScene({
   automations,
   onSelectAutomation,
   onNewAutomation,
+  onNewAutomationForAgent,
   onToggle,
   onRequestDelete,
   deleteTarget = null,
@@ -50,6 +52,7 @@ export function AutomationsIndexScene({
         automations={automations}
         onSelectAutomation={onSelectAutomation}
         onNewAutomation={onNewAutomation}
+        onNewAutomationForAgent={onNewAutomationForAgent}
         onToggle={onToggle}
         onRequestDelete={onRequestDelete}
         showAgent
@@ -61,6 +64,7 @@ export function AutomationsIndexScene({
 export interface AutomationEditSceneProps {
   automation: Automation | null;
   isNew: boolean;
+  contextAgentId?: string;
   deleteTarget: Automation | null;
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
@@ -72,6 +76,7 @@ export interface AutomationEditSceneProps {
 export function AutomationEditScene({
   automation,
   isNew,
+  contextAgentId,
   deleteTarget,
   onSubmit,
   onClose,
@@ -103,6 +108,7 @@ export function AutomationEditScene({
         onSubmit={onSubmit}
         onClose={onClose}
         showAgentPicker
+        contextAgentId={contextAgentId}
       />
     </AgentsShell>
   );

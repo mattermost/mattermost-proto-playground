@@ -52,20 +52,6 @@
     flex-shrink: 0;
   }
 
-  &__agent-picker {
-    position: relative;
-  }
-
-  &__agent-picker-menu {
-    position: absolute;
-    top: calc(100% + var(--spacing-xxs));
-    right: 0;
-    z-index: 30;
-    width: max-content;
-    min-width: 220px;
-    max-width: none;
-  }
-
   &__body {
     display: flex;
     flex-direction: column;

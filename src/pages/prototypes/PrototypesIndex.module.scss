@@ -26,6 +26,13 @@
   }
 }
 
+.prototypes-index__description {
+  margin: var(--spacing-xxs) 0 0;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
 .prototypes-index__empty {
   padding: var(--spacing-l);
   background-color: rgba(var(--center-channel-color-rgb), 0.04);

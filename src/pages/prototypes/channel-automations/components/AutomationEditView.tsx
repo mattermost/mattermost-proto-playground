@@ -1,9 +1,10 @@
 import { Button, Icon, IconButton, Scrollbar } from '@mattermost/compass-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import type { Automation, AutomationDraft } from '../channelAutomationsData';
 import AutomationFormEditor, {
   EDITOR_VIEW_TABS,
+  type AutomationFormEditorHandle,
   type EditorView,
 } from './AutomationFormEditor';
 import AutomationsTabs from './AutomationsTabs';
@@ -15,6 +16,7 @@ export interface AutomationEditViewProps {
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
   showAgentPicker?: boolean;
+  contextAgentId?: string;
 }
 
 export default function AutomationEditView({
@@ -23,9 +25,12 @@ export default function AutomationEditView({
   onSubmit,
   onClose,
   showAgentPicker = true,
+  contextAgentId,
 }: AutomationEditViewProps) {
   const title = isNew ? 'New automation' : 'Edit automation';
   const [view, setView] = useState<EditorView>('chat');
+  const [canSave, setCanSave] = useState(false);
+  const editorRef = useRef<AutomationFormEditorHandle>(null);
 
   return (
     <div className={styles['automation-edit']}>
@@ -54,14 +59,17 @@ export default function AutomationEditView({
 
             <div className={styles['automation-edit__body']}>
               <AutomationFormEditor
+                ref={editorRef}
                 initial={initial}
                 onSubmit={onSubmit}
                 onCancel={onClose}
                 showViewTabs={false}
                 showFooter={false}
                 showAgentPicker={showAgentPicker}
+                contextAgentId={contextAgentId}
                 view={view}
                 onViewChange={setView}
+                onValidityChange={setCanSave}
               />
             </div>
           </div>
@@ -73,8 +81,12 @@ export default function AutomationEditView({
           <Button emphasis="Tertiary" onClick={onClose}>
             Cancel
           </Button>
-          <Button emphasis="Primary" onClick={onClose}>
-            Save
+          <Button
+            emphasis="Primary"
+            disabled={!canSave}
+            onClick={() => editorRef.current?.submit()}
+          >
+            {isNew ? 'Add automation' : 'Save changes'}
           </Button>
         </div>
       </div>

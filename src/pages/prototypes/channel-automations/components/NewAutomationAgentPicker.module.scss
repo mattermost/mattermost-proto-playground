@@ -1,0 +1,14 @@
+.picker {
+  position: relative;
+
+  &__menu-portal {
+    position: fixed;
+    z-index: 1200;
+  }
+
+  &__menu {
+    width: max-content;
+    min-width: 220px;
+    max-width: none;
+  }
+}

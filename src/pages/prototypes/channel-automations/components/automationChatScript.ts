@@ -1,4 +1,5 @@
 import {
+  AGENTS,
   AUTOMATION_CHANNEL_OPTIONS,
   AUTOMATION_PLAYBOOK_OPTIONS,
   AUTOMATION_TEAM_OPTIONS,
@@ -14,6 +15,7 @@ import type { FormValues } from './automationFormTypes';
 
 export type CreateScriptStep =
   | 'idea'
+  | 'agent'
   | 'trigger'
   | 'schedule-frequency'
   | 'schedule-time'
@@ -39,6 +41,16 @@ export interface ChatStepSelection {
   ariaLabel: string;
   variant?: 'list' | 'autocomplete';
   selectLabel?: string;
+}
+
+export const AGENT_STEP_TITLE = 'Which agent should run this automation?';
+
+export function agentStepOptions(): ChatScriptOption[] {
+  return AGENTS.map((agent) => ({
+    id: agent.id,
+    label: agent.displayName,
+    patch: { agentId: agent.id },
+  }));
 }
 
 export const CREATE_IDEA_TITLE =
@@ -249,6 +261,8 @@ export const KEYWORD_FILTER_OPTIONS: ChatScriptOption[] = [
 
 export function promptForStep(step: CreateScriptStep): string {
   switch (step) {
+    case 'agent':
+      return 'Which agent should run this automation?';
     case 'trigger':
       return 'Ok, got it. When should the automation be executed?';
     case 'schedule-frequency':
@@ -275,6 +289,12 @@ export function getStepSelection(step: CreateScriptStep): ChatStepSelection | nu
         title: CREATE_IDEA_TITLE,
         options: CREATE_IDEA_OPTIONS,
         ariaLabel: 'Automation ideas',
+      };
+    case 'agent':
+      return {
+        title: AGENT_STEP_TITLE,
+        options: agentStepOptions(),
+        ariaLabel: 'Choose agent',
       };
     case 'trigger':
       return {
@@ -325,6 +345,18 @@ export function getStepSelection(step: CreateScriptStep): ChatStepSelection | nu
   }
 }
 
+function advanceAfterAgent(values: FormValues): CreateScriptStep {
+  if (values.kind === 'playbook-event') return 'playbook';
+  if (values.kind === 'schedule') return 'schedule-frequency';
+  if (values.event === 'join') return 'channel';
+  if (values.event === 'channel-created') return 'team';
+  return 'trigger';
+}
+
+export function advanceAfterAgentStep(values: FormValues): CreateScriptStep {
+  return advanceAfterAgent(values);
+}
+
 function advanceAfterIdea(option: ChatScriptOption): CreateScriptStep {
   if (option.id === 'something-else') return 'trigger';
   if (option.id === 'welcome') return 'channel';
@@ -353,6 +385,8 @@ export function advanceAfterStep(
   switch (step) {
     case 'idea':
       return accepted ? advanceAfterIdea(accepted) : 'trigger';
+    case 'agent':
+      return advanceAfterAgent(values);
     case 'trigger':
       return accepted ? advanceAfterTrigger(accepted) : 'done';
     case 'schedule-frequency':

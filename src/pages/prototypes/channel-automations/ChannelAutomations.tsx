@@ -9,6 +9,7 @@ import {
   type AutomationDraft,
 } from './channelAutomationsData';
 import { SCENES, type SceneId } from './channelAutomationsScenes';
+import { OPTION1_PANEL_OPTIONS } from './panelOptions';
 import DiscoverScene from './scenes/DiscoverScene';
 import ManageScene from './scenes/ManageScene';
 import AgentsIndexScene from './scenes/AgentsIndexScene';
@@ -90,6 +91,7 @@ export default function ChannelAutomations() {
     <div className={styles['prototype-app-frame']}>
       {scene === 'discover' && (
         <DiscoverScene
+          panelOptions={OPTION1_PANEL_OPTIONS}
           onCreateAutomation={createAutomation}
           onManage={() => goManageFrom('discover')}
           onManageAgents={goAgents}
@@ -99,6 +101,7 @@ export default function ChannelAutomations() {
       {scene === 'manage' && (
         <ManageScene
           automations={automations}
+          panelOptions={OPTION1_PANEL_OPTIONS}
           onCreateAutomation={createAutomation}
           onUpdate={updateAutomation}
           onToggle={toggleAutomation}

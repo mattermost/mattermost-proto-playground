@@ -12,8 +12,8 @@ import ChannelAiMenu from './ChannelAiMenu';
 import styles from './AutomationsShell.module.scss';
 
 export interface AutomationsShellProps {
-  /** Start the create flow, optionally pre-selecting an automation type. */
-  onCreate: (type?: AutomationType) => void;
+  /** Start the create flow, optionally pre-selecting an automation type and agent. */
+  onCreate: (type?: AutomationType, agentId?: string) => void;
   /** Open the management surface. */
   onOpenManage: () => void;
   /** Open the agents index. */

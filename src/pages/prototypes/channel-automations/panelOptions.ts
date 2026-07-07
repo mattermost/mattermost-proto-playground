@@ -8,8 +8,8 @@ export interface AutomationsPanelOptions {
 }
 
 export const OPTION1_PANEL_OPTIONS: AutomationsPanelOptions = {
-  showAgentSelector: true,
-  showAgentPicker: false,
+  showAgentSelector: false,
+  showAgentPicker: true,
 };
 
 export const OPTION2_PANEL_OPTIONS: AutomationsPanelOptions = {

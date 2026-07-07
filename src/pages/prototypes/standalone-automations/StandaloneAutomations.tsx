@@ -17,7 +17,7 @@ import {
   AutomationEditScene,
   AutomationsIndexScene,
 } from './scenes/AutomationsProductScenes';
-import { EXTENDED_SCENES, type ExtendedSceneId } from './extendedScenes';
+import { STANDALONE_SCENES, type ExtendedSceneId } from './extendedScenes';
 import frameStyles from '@/pages/prototypes/channel-automations/PrototypeAppFrame.module.scss';
 
 export default function StandaloneAutomations() {
@@ -32,12 +32,15 @@ export default function StandaloneAutomations() {
     null,
   );
   const [automationIsNew, setAutomationIsNew] = useState(false);
+  const [createContextAgentId, setCreateContextAgentId] = useState<string | null>(
+    null,
+  );
   const [deleteTarget, setDeleteTarget] = useState<Automation | null>(null);
 
   useEffect(() => {
     setCenterSlot(
       <SceneSwitcher
-        scenes={EXTENDED_SCENES}
+        scenes={STANDALONE_SCENES}
         activeId={scene}
         onChange={(id) => setScene(id as ExtendedSceneId)}
         ariaLabel="Standalone automations scene"
@@ -86,12 +89,14 @@ export default function StandaloneAutomations() {
   const goEditAutomation = (id: string) => {
     setSelectedAutomationId(id);
     setAutomationIsNew(false);
+    setCreateContextAgentId(null);
     setScene('automation');
   };
 
-  const goNewAutomation = () => {
+  const goNewAutomationForAgent = (agentId: string) => {
     setSelectedAutomationId(null);
     setAutomationIsNew(true);
+    setCreateContextAgentId(agentId);
     setScene('automation');
   };
 
@@ -139,7 +144,7 @@ export default function StandaloneAutomations() {
       {scene === 'agents' && (
         <AgentsIndexScene
           onSelectAgent={goEditAgent}
-          onNewAutomation={() => {}}
+          onNewAutomation={goNewAutomationForAgent}
           showNewAutomation={false}
           onGoAutomations={goAutomations}
         />
@@ -163,7 +168,8 @@ export default function StandaloneAutomations() {
         <AutomationsIndexScene
           automations={automations}
           onSelectAutomation={goEditAutomation}
-          onNewAutomation={goNewAutomation}
+          onNewAutomation={() => {}}
+          onNewAutomationForAgent={goNewAutomationForAgent}
           onToggle={toggleAutomation}
           onRequestDelete={openDeleteConfirm}
           deleteTarget={deleteTarget}
@@ -177,6 +183,7 @@ export default function StandaloneAutomations() {
         <AutomationEditScene
           automation={selectedAutomation}
           isNew={automationIsNew}
+          contextAgentId={createContextAgentId ?? undefined}
           deleteTarget={deleteTarget}
           onSubmit={(draft) => {
             if (automationIsNew) {
@@ -184,9 +191,13 @@ export default function StandaloneAutomations() {
             } else if (selectedAutomation) {
               updateAutomation(selectedAutomation.id, draft);
             }
+            setCreateContextAgentId(null);
             goAutomations();
           }}
-          onClose={goAutomations}
+          onClose={() => {
+            setCreateContextAgentId(null);
+            goAutomations();
+          }}
           onConfirmDelete={() => {
             if (deleteTarget) deleteAutomation(deleteTarget.id);
             setDeleteTarget(null);

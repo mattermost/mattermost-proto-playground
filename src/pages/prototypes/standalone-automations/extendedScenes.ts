@@ -10,9 +10,12 @@ export type ExtendedSceneId =
 
 export const EXTENDED_SCENES: SceneSwitcherScene[] = [
   { id: 'discover', label: 'Discover' },
-  { id: 'manage', label: 'Manage' },
+  { id: 'manage', label: 'Automations RHS' },
   { id: 'agents', label: 'Agents' },
   { id: 'agent', label: 'Edit agent' },
   { id: 'automations', label: 'Automations' },
   { id: 'automation', label: 'Edit automation' },
 ];
+
+/** Standalone prototype — agent edit is reached from the agents list, not the scene switcher. */
+export const STANDALONE_SCENES = EXTENDED_SCENES.filter((scene) => scene.id !== 'agent');

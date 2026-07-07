@@ -4,7 +4,7 @@ export type SceneId = 'discover' | 'manage' | 'agents' | 'agent';
 
 export const SCENES: SceneSwitcherScene[] = [
   { id: 'discover', label: 'Discover' },
-  { id: 'manage', label: 'Manage' },
+  { id: 'manage', label: 'Automations RHS' },
   { id: 'agents', label: 'Agents' },
   { id: 'agent', label: 'Edit agent' },
 ];

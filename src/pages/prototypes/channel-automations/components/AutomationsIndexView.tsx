@@ -3,6 +3,7 @@ import { useMemo, useState, type ChangeEvent } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import type { Automation } from '../channelAutomationsData';
 import AutomationListItem from './AutomationListItem';
+import NewAutomationAgentPicker from './NewAutomationAgentPicker';
 import indexStyles from './AutomationsIndexView.module.scss';
 
 type AutomationsTabKey = 'all' | 'yours';
@@ -16,6 +17,7 @@ export interface AutomationsIndexViewProps {
   automations: Automation[];
   onSelectAutomation: (id: string) => void;
   onNewAutomation: () => void;
+  onNewAutomationForAgent?: (agentId: string) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onRequestDelete?: (id: string) => void;
   showAgent?: boolean;
@@ -25,6 +27,7 @@ export default function AutomationsIndexView({
   automations,
   onSelectAutomation,
   onNewAutomation,
+  onNewAutomationForAgent,
   onToggle,
   onRequestDelete,
   showAgent = true,
@@ -72,14 +75,20 @@ export default function AutomationsIndexView({
                   aria-label="Search automations"
                 />
                 <div className={indexStyles['automations-index__actions']}>
-                  <Button
-                    size="Medium"
-                    emphasis="Primary"
-                    leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
-                    onClick={onNewAutomation}
-                  >
-                    New automation
-                  </Button>
+                  {onNewAutomationForAgent ? (
+                    <NewAutomationAgentPicker
+                      onSelectAgent={onNewAutomationForAgent}
+                    />
+                  ) : (
+                    <Button
+                      size="Medium"
+                      emphasis="Primary"
+                      leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+                      onClick={onNewAutomation}
+                    >
+                      New automation
+                    </Button>
+                  )}
                 </div>
               </>
             }

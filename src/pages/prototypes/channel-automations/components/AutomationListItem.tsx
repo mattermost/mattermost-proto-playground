@@ -1,5 +1,5 @@
 import { Icon, IconButton, MenuItem, PopoverMenu, Switch, UserAvatar } from '@mattermost/compass-ui';
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useRef, useState, type ChangeEvent, Fragment } from 'react';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
@@ -22,7 +22,7 @@ export interface AutomationListItemProps {
 }
 
 function MetaSeparator() {
-  return <span className={styles['item__meta-sep']} aria-hidden>•</span>;
+  return <span className={styles['item__meta-sep']} aria-hidden>·</span>;
 }
 
 export default function AutomationListItem({
@@ -40,6 +40,11 @@ export default function AutomationListItem({
   useOutsideClose(menuRef, menuOpen, () => setMenuOpen(false));
 
   const close = () => setMenuOpen(false);
+
+  const metaSegments = [
+    ...automation.trigger.split(' · '),
+    `By ${automation.createdBy}`,
+  ];
 
   return (
     <div
@@ -66,9 +71,12 @@ export default function AutomationListItem({
       <div className={styles['item__body']}>
         <p className={styles['item__name']}>{automation.name}</p>
         <p className={styles['item__meta']}>
-          <span>{automation.trigger}</span>
-          <MetaSeparator />
-          <span>By {automation.createdBy}</span>
+          {metaSegments.map((segment, index) => (
+            <Fragment key={index}>
+              {index > 0 ? <MetaSeparator /> : null}
+              <span>{segment}</span>
+            </Fragment>
+          ))}
           {showAgent && agent ? (
             <>
               <MetaSeparator />

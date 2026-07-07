@@ -28,6 +28,9 @@ export default function PrototypesIndex() {
           {PROTOTYPES.map((p) => (
             <li key={p.id}>
               <Link to={p.path}>{p.label}</Link>
+              {p.description ? (
+                <p className={styles['prototypes-index__description']}>{p.description}</p>
+              ) : null}
             </li>
           ))}
         </ul>

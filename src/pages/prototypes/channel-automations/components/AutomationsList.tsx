@@ -4,11 +4,13 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import AiCopilotIntro from '@/assets/illustrations/ai-copilot-intro.svg?react';
 import type { Automation } from '../channelAutomationsData';
 import AutomationListItem from './AutomationListItem';
+import NewAutomationAgentPicker from './NewAutomationAgentPicker';
 import styles from './AutomationsList.module.scss';
 
 export interface AutomationsListProps {
   automations: Automation[];
   onCreate: () => void;
+  onCreateForAgent?: (agentId: string) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onEdit: (id: string) => void;
   onRequestDelete: (id: string) => void;
@@ -22,22 +24,50 @@ export interface AutomationsListProps {
 export default function AutomationsList({
   automations,
   onCreate,
+  onCreateForAgent,
   onToggle,
   onEdit,
   onRequestDelete,
 }: AutomationsListProps) {
+  const createControl = onCreateForAgent ? (
+    <NewAutomationAgentPicker
+      size="Small"
+      emphasis="Tertiary"
+      icon="none"
+      onSelectAgent={onCreateForAgent}
+    />
+  ) : (
+    <Button
+      size="Small"
+      emphasis="Tertiary"
+      leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+      onClick={onCreate}
+    >
+      New automation
+    </Button>
+  );
+
   if (automations.length === 0) {
     return (
-      <EmptyState
-        illustration={{ children: <AiCopilotIntro />, 'aria-label': '' }}
-        title="No automations yet"
-        description="Let an Agent set up recurring posts, recaps, or auto-replies for this channel."
-        action={{
-          children: 'Create an automation',
-          leadingIcon: <Icon size="16" glyph={<CreationOutlineIcon />} />,
-          onClick: onCreate,
-        }}
-      />
+      <>
+        <EmptyState
+          illustration={{ children: <AiCopilotIntro />, 'aria-label': '' }}
+          title="No automations yet"
+          description="Let an Agent set up recurring posts, recaps, or auto-replies for this channel."
+          action={
+            onCreateForAgent
+              ? undefined
+              : {
+                  children: 'New automation',
+                  leadingIcon: <Icon size="16" glyph={<CreationOutlineIcon />} />,
+                  onClick: onCreate,
+                }
+          }
+        />
+        {onCreateForAgent ? (
+          <div className={styles['list__empty-action']}>{createControl}</div>
+        ) : null}
+      </>
     );
   }
 
@@ -48,14 +78,7 @@ export default function AutomationsList({
           {automations.length}{' '}
           {automations.length === 1 ? 'automation' : 'automations'}
         </span>
-        <Button
-          size="Small"
-          emphasis="Tertiary"
-          leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
-          onClick={onCreate}
-        >
-          Create automation
-        </Button>
+        {createControl}
       </div>
 
       <div className={styles['list__rows']}>

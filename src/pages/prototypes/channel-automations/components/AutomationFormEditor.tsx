@@ -1,5 +1,5 @@
 import { Button, Scrollbar, Select, Switch, TextArea, TextInput } from '@mattermost/compass-ui';
-import { forwardRef, useCallback, useImperativeHandle, useState, type ChangeEvent } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState, type ChangeEvent } from 'react';
 import {
   ACTIVE_CHANNEL,
   AUTOMATION_CHANNEL_OPTIONS,
@@ -56,10 +56,12 @@ export interface AutomationFormEditorProps {
   editorKind?: EditorKind;
   view?: EditorView;
   onViewChange?: (view: EditorView) => void;
+  onValidityChange?: (valid: boolean) => void;
 }
 
 export interface AutomationFormEditorHandle {
   submit: () => void;
+  isValid: boolean;
 }
 
 const SCHEDULE_FREQUENCIES = Object.keys(
@@ -84,6 +86,7 @@ const AutomationFormEditor = forwardRef<
   editorKind = 'assignment',
   view: controlledView,
   onViewChange,
+  onValidityChange,
   },
   ref,
 ) {
@@ -93,7 +96,9 @@ const AutomationFormEditor = forwardRef<
   const initialTrigger = source?.triggerConfig ?? seed?.triggerConfig;
 
   const [agentId, setAgentId] = useState(
-    initial?.agentId ?? contextAgentId ?? DEFAULT_OWNED_AGENT_ID,
+    initial?.agentId ??
+      contextAgentId ??
+      (showAgentPicker ? '' : DEFAULT_OWNED_AGENT_ID),
   );
   const [displayName, setDisplayName] = useState(
     initialEntity?.displayName ?? 'New automation',
@@ -225,6 +230,10 @@ const AutomationFormEditor = forwardRef<
     hasTrigger &&
     agentValid;
 
+  useEffect(() => {
+    onValidityChange?.(isValid);
+  }, [isValid, onValidityChange]);
+
   const handleTriggerPickerChange = (option: TriggerPickerOption) => {
     const next = applyTriggerPickerOption(option);
     setTriggerPicker(option);
@@ -289,7 +298,7 @@ const AutomationFormEditor = forwardRef<
     channelId,
   ]);
 
-  useImperativeHandle(ref, () => ({ submit: handleSubmit }), [handleSubmit]);
+  useImperativeHandle(ref, () => ({ submit: handleSubmit, isValid }), [handleSubmit, isValid]);
 
   const enabledSwitch = showEnabledSwitch ? (
     <Switch
@@ -346,6 +355,7 @@ const AutomationFormEditor = forwardRef<
                   className={styles['editor__form-control']}
                   value={agentId}
                   onChange={setAgentId}
+                  label="Runs as"
                 />
               ) : null}
 

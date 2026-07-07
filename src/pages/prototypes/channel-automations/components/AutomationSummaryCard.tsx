@@ -12,6 +12,7 @@ export interface AutomationSummaryCardProps {
   when: string;
   where?: string | null;
   posts: string;
+  runsAs?: string | null;
 }
 
 /** Inline automation preview card shown at the end of the create flow and when editing. */
@@ -21,6 +22,7 @@ export default function AutomationSummaryCard({
   when,
   where,
   posts,
+  runsAs,
 }: AutomationSummaryCardProps) {
   const meta = AUTOMATION_TYPE_META[type];
 
@@ -44,6 +46,12 @@ export default function AutomationSummaryCard({
           <div className={styles['card__row']}>
             <dt className={styles['card__label']}>Where</dt>
             <dd className={styles['card__value']}>{where}</dd>
+          </div>
+        ) : null}
+        {runsAs ? (
+          <div className={styles['card__row']}>
+            <dt className={styles['card__label']}>Runs as</dt>
+            <dd className={styles['card__value']}>{runsAs}</dd>
           </div>
         ) : null}
         <div className={styles['card__row']}>

@@ -2,6 +2,7 @@ import { Button, Icon, MessageInput } from '@mattermost/compass-ui';
 import { useEffect, useRef, useState } from 'react';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import {
+  agentById,
   triggerSummary,
   triggerToType,
   buildTriggerConfig,
@@ -9,6 +10,7 @@ import {
 } from '../channelAutomationsData';
 import type { EditorKind, FormPatch, FormValues } from './automationFormTypes';
 import {
+  advanceAfterAgentStep,
   advanceAfterStep,
   getStepSelection,
   promptForStep,
@@ -58,6 +60,8 @@ function skipTargetStep(
   switch (step) {
     case 'idea':
       return 'trigger';
+    case 'agent':
+      return 'trigger';
     case 'schedule-frequency':
       return 'schedule-time';
     case 'schedule-time':
@@ -94,6 +98,7 @@ export default function AutomationEditChat({
     values.instructions.trim().length > 0;
 
   const scopeSummary = scopeSummaryFromValues(values);
+  const runsAsAgent = values.agentId ? agentById(values.agentId) : undefined;
 
   const draftCard = {
     name: values.name || 'Untitled automation',
@@ -101,6 +106,7 @@ export default function AutomationEditChat({
     when: triggerSummary(valuesToTrigger(values)),
     where: scopeSummary,
     posts: values.instructions,
+    runsAs: runsAsAgent?.displayName ?? null,
   };
 
   const [createStep, setCreateStep] = useState<CreateScriptStep>('idea');
@@ -177,10 +183,17 @@ export default function AutomationEditChat({
     confirmDraft();
   };
 
+  const needsAgentSelection =
+    requireAgentId && !contextAgentId && !values.agentId;
+
   const handleStepAccept = (step: CreateScriptStep, option: ChatScriptOption) => {
     if (option.id === 'something-else') {
       if (step === 'idea') {
-        goToStep('trigger');
+        if (needsAgentSelection) {
+          goToStep('agent');
+        } else {
+          goToStep('trigger');
+        }
         return;
       }
       setCreateStep('done');
@@ -189,7 +202,13 @@ export default function AutomationEditChat({
 
     const merged: FormValues = { ...values, ...option.patch };
     recordSelection(option);
-    const next = advanceAfterStep(step, merged, option);
+    let next = advanceAfterStep(step, merged, option);
+
+    if (step === 'idea' && requireAgentId && !contextAgentId && !merged.agentId) {
+      next = 'agent';
+    } else if (step === 'agent') {
+      next = advanceAfterAgentStep(merged);
+    }
 
     if (next === 'done') {
       finishCreateFlow();
@@ -290,6 +309,7 @@ export default function AutomationEditChat({
                           when={draftCard.when}
                           where={draftCard.where}
                           posts={draftCard.posts}
+                          runsAs={draftCard.runsAs}
                         />
                       </div>
                     ) : null}

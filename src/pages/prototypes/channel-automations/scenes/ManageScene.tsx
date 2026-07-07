@@ -35,8 +35,15 @@ export default function ManageScene({
   panelOptions,
   getEditingEntity,
 }: ManageSceneProps) {
+  const requireAgent = panelOptions?.showAgentPicker ?? false;
   const [creating, setCreating] = useState(false);
   const [createType, setCreateType] = useState<AutomationType | undefined>();
+  const [creatingContextAgentId, setCreatingContextAgentId] = useState<
+    string | undefined
+  >();
+  const [agentPickerForCreate, setAgentPickerForCreate] = useState<{
+    type?: AutomationType;
+  } | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Automation | null>(null);
   const editing =
@@ -51,18 +58,35 @@ export default function ManageScene({
   const closeEditor = () => {
     setCreating(false);
     setCreateType(undefined);
+    setCreatingContextAgentId(undefined);
     setEditingId(null);
   };
 
-  const openCreate = (type?: AutomationType) => {
+  const openCreate = (type?: AutomationType, agentId?: string) => {
     setEditingId(null);
     setCreateType(type);
+    setCreatingContextAgentId(agentId);
     setCreating(true);
+    setAgentPickerForCreate(null);
+  };
+
+  const requestCreate = (type?: AutomationType, agentId?: string) => {
+    if (agentId || !requireAgent) {
+      openCreate(type, agentId);
+      return;
+    }
+    setAgentPickerForCreate({ type });
+  };
+
+  const completeAgentPick = (agentId: string) => {
+    openCreate(agentPickerForCreate?.type, agentId);
   };
 
   const openEdit = (id: string) => {
     setCreating(false);
     setCreateType(undefined);
+    setCreatingContextAgentId(undefined);
+    setAgentPickerForCreate(null);
     setEditingId(id);
   };
 
@@ -82,7 +106,7 @@ export default function ManageScene({
 
   return (
     <AutomationsShell
-      onCreate={openCreate}
+      onCreate={requestCreate}
       onOpenManage={() => {}}
       onManageAgents={onManageAgents}
       overlay={
@@ -99,6 +123,15 @@ export default function ManageScene({
           automations={automations}
           creating={creating}
           createType={createType}
+          creatingContextAgentId={creatingContextAgentId}
+          agentPickerMode={
+            agentPickerForCreate
+              ? {
+                  onSelectAgent: completeAgentPick,
+                  onCancel: () => setAgentPickerForCreate(null),
+                }
+              : null
+          }
           editing={editingEntity ? null : editing}
           editingEntity={editingEntity}
           onBackFromEditor={closeEditor}
@@ -106,11 +139,13 @@ export default function ManageScene({
           onUpdate={onUpdate}
           onBack={onBack}
           onClose={onClose}
-          onCreate={openCreate}
+          onCreate={requestCreate}
           onToggle={onToggle}
           onEdit={openEdit}
           onRequestDelete={openDeleteConfirm}
           {...panelOptions}
+          showAgentSelector={panelOptions?.showAgentSelector ?? false}
+          showAgentPicker={panelOptions?.showAgentPicker ?? false}
         />
       }
     />

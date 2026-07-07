@@ -1,11 +1,15 @@
-import { Button, Icon, MenuItem, PopoverMenu, Scrollbar, SearchInput, Tabs, UserAvatar } from '@mattermost/compass-ui';
-import { useMemo, useRef, useState, type ChangeEvent } from 'react';
-import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import {
+  Button,
+  Icon,
+  Scrollbar,
+  SearchInput,
+  Tabs,
+} from '@mattermost/compass-ui';
+import { useMemo, useState, type ChangeEvent } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
-import { AGENTS, agentAvatarProps, type Agent } from '../channelAutomationsData';
+import { type Agent } from '../channelAutomationsData';
 import AgentListItem from './AgentListItem';
+import NewAutomationAgentPicker from './NewAutomationAgentPicker';
 import styles from './AgentsIndexView.module.scss';
 
 type AgentsTabKey = 'all' | 'yours';
@@ -36,10 +40,6 @@ export default function AgentsIndexView({
 }: AgentsIndexViewProps) {
   const [tab, setTab] = useState<AgentsTabKey>('all');
   const [query, setQuery] = useState('');
-  const [agentPickerOpen, setAgentPickerOpen] = useState(false);
-  const agentPickerRef = useRef<HTMLDivElement>(null);
-
-  useOutsideClose(agentPickerRef, agentPickerOpen, () => setAgentPickerOpen(false));
 
   const filteredAgents = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -85,46 +85,10 @@ export default function AgentsIndexView({
                 />
                 <div className={styles['agents-index__actions']}>
                   {showNewAutomation ? (
-                  <div
-                    ref={agentPickerRef}
-                    className={styles['agents-index__agent-picker']}
-                  >
-                    <Button
-                      size="Medium"
+                    <NewAutomationAgentPicker
                       emphasis="Tertiary"
-                      aria-haspopup="listbox"
-                      aria-expanded={agentPickerOpen}
-                      aria-label="New automation"
-                      leadingIcon={
-                        <Icon size="16" glyph={<LightningBoltOutlineIcon />} />
-                      }
-                      trailingIcon={<Icon size="16" glyph={<ChevronDownIcon />} />}
-                      onClick={() => setAgentPickerOpen((open) => !open)}
-                    >
-                      New automation
-                    </Button>
-                    {agentPickerOpen && (
-                      <PopoverMenu
-                        className={styles['agents-index__agent-picker-menu']}
-                        role="listbox"
-                        aria-label="Choose agent"
-                      >
-                        {AGENTS.map((agent) => (
-                          <MenuItem
-                            key={agent.id}
-                            label={agent.displayName}
-                            leadingVisual={
-                              <UserAvatar size="16" {...agentAvatarProps(agent)} />
-                            }
-                            onClick={() => {
-                              setAgentPickerOpen(false);
-                              onNewAutomation(agent.id);
-                            }}
-                          />
-                        ))}
-                      </PopoverMenu>
-                    )}
-                  </div>
+                      onSelectAgent={onNewAutomation}
+                    />
                   ) : null}
                   <Button
                     emphasis="Primary"
