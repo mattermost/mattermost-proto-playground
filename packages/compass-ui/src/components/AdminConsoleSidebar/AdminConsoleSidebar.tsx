@@ -1,4 +1,4 @@
-import { type ReactNode, useId } from 'react';
+import { type ReactNode, useEffect, useId, useMemo, useRef } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import CreditCardOutlineIcon from '@mattermost/compass-icons/components/credit-card-outline';
@@ -63,6 +63,36 @@ export default function AdminConsoleSidebar({
   groups = defaultAdminConsoleSidebarGroups,
 }: AdminConsoleSidebarProps) {
   const findSettingsId = useId();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const activeItemId = useMemo(
+    () =>
+      groups
+        .flatMap((group) =>
+          group.items.map((item, index) =>
+            item.active ? `${group.key}-${index}-${item.name}` : null,
+          ),
+        )
+        .find(Boolean) ?? null,
+    [groups],
+  );
+
+  useEffect(() => {
+    if (!activeItemId) return;
+
+    const scrollEl = scrollRef.current;
+    if (!scrollEl) return;
+
+    const frame = requestAnimationFrame(() => {
+      const activeEl = scrollEl.querySelector('[aria-current="page"]');
+      if (activeEl instanceof HTMLElement) {
+        activeEl.scrollIntoView({ block: 'nearest' });
+      }
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [activeItemId]);
+
   return (
     <div className={styles['admin-console-sidebar']}>
       <div className={styles['admin-console-sidebar__header']}>
@@ -108,7 +138,7 @@ export default function AdminConsoleSidebar({
       </div>
 
       <div className={styles['admin-console-sidebar__scroll']}>
-        <Scrollbar color="--sidebar-text-rgb">
+        <Scrollbar ref={scrollRef} color="--sidebar-text-rgb">
           <div className={styles['admin-console-sidebar__nav']}>
             {groups.map((group) => (
               <div

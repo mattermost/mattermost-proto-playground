@@ -1,0 +1,20 @@
+.channel-autocomplete {
+  position: relative;
+  width: 100%;
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    right: 0;
+    z-index: 20;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-s) var(--spacing-m);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}

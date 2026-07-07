@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import ExampleFlow from '@/pages/prototypes/example-flow/ExampleFlow';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
+import MatrixInterop from '@/pages/prototypes/matrix-interop/MatrixInterop';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 
 export type PrototypeEntry = {
@@ -28,6 +29,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'matrix-interop',
+    label: 'Matrix Interop',
+    path: '/prototypes/matrix-interop',
+    component: MatrixInterop,
   },
 ];
 

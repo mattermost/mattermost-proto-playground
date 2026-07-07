@@ -159,6 +159,7 @@ export default function ChannelSidebarItem({
       role="button"
       tabIndex={0}
       className={rootClass}
+      aria-current={active ? 'page' : undefined}
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

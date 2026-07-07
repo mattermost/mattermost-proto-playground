@@ -78,18 +78,28 @@ export default function AdminPanelHeader({
 
   const defaultLeading = <Icon size="20" glyph={<CogOutlineIcon />} />;
 
+  const handleMainClick = () => {
+    if (expandable) {
+      onToggleExpand?.();
+    }
+  };
+
   return (
     <header
       className={[
         styles['admin-panel-header'],
         showDivider ? styles['admin-panel-header--divided'] : '',
+        expandable ? styles['admin-panel-header--expandable'] : '',
         className,
       ]
         .filter(Boolean)
         .join(' ')
         .trim()}
     >
-      <div className={styles['admin-panel-header__main']}>
+      <div
+        className={styles['admin-panel-header__main']}
+        onClick={expandable ? handleMainClick : undefined}
+      >
         <div className={styles['admin-panel-header__start']}>
           {iconLeft ? (
             <div
@@ -127,7 +137,10 @@ export default function AdminPanelHeader({
           </div>
         </div>
         {hasActions ? (
-          <div className={styles['admin-panel-header__actions']}>
+          <div
+            className={styles['admin-panel-header__actions']}
+            onClick={(e) => e.stopPropagation()}
+          >
             {showSwitch ? (
               <Switch
                 size="Medium"
