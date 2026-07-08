@@ -9,7 +9,6 @@ import GuardrailDialog, {
   type GuardrailContext,
   type GuardrailKind,
 } from '@/pages/AttributeManagementHub/_components/GuardrailDialog/GuardrailDialog';
-import ReuseValuesPicker from '@/pages/AttributeManagementHub/_components/ReuseValuesPicker/ReuseValuesPicker';
 import {
   HUB_ACTIVE_ITEM,
   HUB_SIDEBAR_CATEGORIES,
@@ -32,6 +31,7 @@ import {
 import SimplifiedDetailView from './_components/SimplifiedDetailView';
 import ConnectSourceModal from './_components/ConnectSourceModal';
 import CatalogListing from './_components/CatalogListing';
+import { displayType, syncValuesWithType, assignSequentialTiers, comparesRank } from './_components/simplifiedModel';
 import styles from './AttributeHubSimplified.module.scss';
 
 type GuardrailState = { kind: GuardrailKind; context: GuardrailContext } | null;
@@ -60,7 +60,7 @@ function editorsFor(a: HubAttribute): Editors {
 
 function subtitle(a: HubAttribute): string {
   const parts = [
-    a.type,
+    displayType(a),
     `Applies to ${a.appliesTo.map((c) => c.resource).join(', ') || 'nothing yet'}`,
   ];
   if (a.usedByPolicies > 0) parts.push(policyLabel(a.usedByPolicies));
@@ -96,7 +96,14 @@ function readParams(): URLSearchParams {
  * section-by-section redesign (spec 29): merged Definition/Values, first-class
  * Applies-to (summary rows), single Who-can-edit, and create-as-detail.
  */
-export default function AttributeHubSimplified() {
+export interface AttributeHubSimplifiedProps {
+  /** Collapsed applies-to row summary — chips (default) or inline secondary text. */
+  appliesToRowSummary?: 'chips' | 'inline';
+}
+
+export default function AttributeHubSimplified({
+  appliesToRowSummary = 'chips',
+}: AttributeHubSimplifiedProps = {}) {
   const params = readParams();
 
   const [attributes, setAttributes] = useState<HubAttribute[]>(HUB_ATTRIBUTES);
@@ -111,7 +118,6 @@ export default function AttributeHubSimplified() {
   const [selectedResources, setSelectedResources] = useState<ResourceKind[]>([]);
   const [source, setSource] = useState('All sources');
   const [query, setQuery] = useState('');
-  const [reuseForId, setReuseForId] = useState<string | null>(null);
   const [connectSourceMode, setConnectSourceMode] = useState<
     'connect' | 'manage' | null
   >(null);
@@ -133,10 +139,6 @@ export default function AttributeHubSimplified() {
   const editors: Editors = active
     ? editorsById[active.id] ?? editorsFor(active)
     : { roles: [], users: [] };
-
-  const reuseAttr = reuseForId
-    ? attributes.find((a) => a.id === reuseForId) ?? null
-    : null;
 
   const filtered = useMemo(() => {
     return attributes.filter((a) => {
@@ -173,6 +175,14 @@ export default function AttributeHubSimplified() {
       setAttributes((prev) => prev.map((a) => (a.id === selectedId ? fn(a) : a)));
     }
   };
+
+  // Assign missing ranks when opening a ranked attribute.
+  useEffect(() => {
+    if (!active) return;
+    const synced = syncValuesWithType(active);
+    if (synced.values === active.values) return;
+    mutate(() => synced);
+  }, [active?.id, active?.type]);
 
   const setEditors = (next: Editors) => {
     if (!active) return;
@@ -245,7 +255,13 @@ export default function AttributeHubSimplified() {
       vs
         .filter((v) => v.id !== valueId)
         .map((v) => ({ ...v, children: v.children ? prune(v.children) : undefined }));
-    mutate((a) => ({ ...a, values: prune(a.values) }));
+    mutate((a) => {
+      let values = prune(a.values);
+      if (comparesRank(displayType(a))) {
+        values = assignSequentialTiers(values);
+      }
+      return { ...a, values };
+    });
   };
 
   const reorderValue = (valueId: string, dir: -1 | 1) => {
@@ -280,28 +296,46 @@ export default function AttributeHubSimplified() {
     });
   };
 
-  const handleReuse = (sourceId: string) => {
+  const relabelValue = (valueId: string, label: string) => {
     if (!active) return;
-    const src = attributes.find((a) => a.id === sourceId);
-    if (!src) return;
-    mutate((a) => ({
-      ...a,
-      valuesLink: { attributeId: src.id, attributeName: src.name },
-      values: src.values.map((v) => ({ ...v })),
-      type: src.type,
-    }));
-    setReuseForId(null);
+    if (isPolicyLocked(active)) return openValuesLocked();
+    const rename = (vs: AttrValue[]): AttrValue[] =>
+      vs.map((v) => ({
+        ...v,
+        label: v.id === valueId ? label : v.label,
+        children: v.children ? rename(v.children) : undefined,
+      }));
+    mutate((a) => ({ ...a, values: rename(a.values) }));
   };
 
-  const openUnlink = () => {
-    if (!active || !active.valuesLink) return;
-    setGuardrail({
-      kind: 'unlink-gated',
-      context: {
-        attributeName: active.name,
-        linkedName: active.valuesLink.attributeName,
-        policies: active.policyNames,
-      },
+  const setValueRank = (valueId: string, tier: number) => {
+    if (!active) return;
+    if (isPolicyLocked(active)) return openValuesLocked();
+    mutate((a) => {
+      let values = a.values;
+      if (comparesRank(displayType(a)) && values.some((v) => v.tier == null)) {
+        values = assignSequentialTiers(values);
+      }
+      const target = values.find((v) => v.id === valueId);
+      if (!target || target.tier == null) return { ...a, values };
+      const ranked = values.filter((v) => v.tier != null);
+      const others = ranked.filter((v) => v.id !== valueId);
+      const clamped = Math.max(1, Math.min(tier, ranked.length));
+      // Order others by current tier ascending, then splice target in at slot.
+      others.sort((x, y) => (x.tier ?? 0) - (y.tier ?? 0));
+      const reordered: AttrValue[] = [];
+      others.forEach((v, i) => {
+        if (i + 1 === clamped) reordered.push(target);
+        reordered.push(v);
+      });
+      if (reordered.length < ranked.length) reordered.push(target);
+      let t = 1;
+      const tierMap = new Map<string, number>();
+      reordered.forEach((v) => tierMap.set(v.id, t++));
+      const valuesOut = values.map((v) =>
+        v.tier != null ? { ...v, tier: tierMap.get(v.id) ?? v.tier } : v,
+      );
+      return { ...a, values: valuesOut };
     });
   };
 
@@ -345,9 +379,6 @@ export default function AttributeHubSimplified() {
   };
 
   const confirmGuardrail = () => {
-    if (guardrail?.kind === 'unlink-gated') {
-      mutate((a) => ({ ...a, valuesLink: undefined }));
-    }
     if (guardrail?.kind === 'remove-binding') {
       const resource = guardrail.context.resource as ResourceKind | undefined;
       if (resource) {
@@ -487,15 +518,17 @@ export default function AttributeHubSimplified() {
                 <SimplifiedDetailView
                   attribute={active}
                   creating={creating}
-                  onDefinitionChange={(next) => mutate((a) => ({ ...a, ...next }))}
+                  onDefinitionChange={(next) =>
+                    mutate((a) => syncValuesWithType({ ...a, ...next }))
+                  }
                   onAddValue={addValue}
                   onAddChild={addChild}
                   onToggleValueDisabled={toggleValueDisabled}
                   onDeleteValue={deleteValue}
                   onReorderValue={reorderValue}
+                  onRelabelValue={relabelValue}
+                  onSetValueRank={setValueRank}
                   onValuesLockedAttempt={openValuesLocked}
-                  onReuse={() => setReuseForId(active.id)}
-                  onUnlink={openUnlink}
                   onBindingChange={bindingChange}
                   onReadIntoFilteringChange={readIntoFilteringChange}
                   onAddResource={addResource}
@@ -507,6 +540,7 @@ export default function AttributeHubSimplified() {
                   nameRef={(el) => {
                     nameRef.current = el;
                   }}
+                  appliesToRowSummary={appliesToRowSummary}
                 />
               ) : (
                 <CatalogListing
@@ -530,15 +564,6 @@ export default function AttributeHubSimplified() {
           </Scrollbars>
         </div>
       </div>
-
-      {reuseAttr && active && (
-        <ReuseValuesPicker
-          current={active}
-          attributes={attributes}
-          onClose={() => setReuseForId(null)}
-          onPick={handleReuse}
-        />
-      )}
 
       {active && connectSourceMode && (
         <ConnectSourceModal

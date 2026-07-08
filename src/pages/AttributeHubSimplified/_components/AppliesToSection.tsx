@@ -9,8 +9,10 @@ import { resourceIcon } from '@/pages/AttributeManagementHub/resourceIcons';
 import type { HubAttribute, ResourceConfig, ResourceKind } from '@/pages/AttributeManagementHub/hubData';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import ResourceEditorBody from './ResourceEditorBody';
-import { summaryChips } from './appliesToModel';
+import { summaryChips, summaryLine } from './appliesToModel';
 import styles from './AppliesToSection.module.scss';
+
+export type AppliesToRowSummaryVariant = 'chips' | 'inline';
 
 export interface AppliesToSectionProps {
   attribute: HubAttribute;
@@ -18,6 +20,8 @@ export interface AppliesToSectionProps {
   onReadIntoFilteringChange: (value: boolean) => void;
   onAddResource: (resource: ResourceKind) => void;
   onRemoveResource: (resource: ResourceKind) => void;
+  /** Collapsed row summary — chips (default) or single-line secondary text. */
+  rowSummaryVariant?: AppliesToRowSummaryVariant;
 }
 
 /**
@@ -30,6 +34,7 @@ export default function AppliesToSection({
   onReadIntoFilteringChange,
   onAddResource,
   onRemoveResource,
+  rowSummaryVariant = 'chips',
 }: AppliesToSectionProps) {
   const applied = attribute.appliesTo;
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -105,7 +110,14 @@ export default function AppliesToSection({
                   <div className={styles['row__head-bar']}>
                     <button
                       type="button"
-                      className={styles['row__head']}
+                      className={[
+                        styles['row__head'],
+                        rowSummaryVariant === 'chips'
+                          ? styles['row__head--chips']
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
                       aria-expanded={isOpen}
                       onClick={() => toggle(cfg.resource)}
                     >
@@ -113,26 +125,36 @@ export default function AppliesToSection({
                       size="16"
                       glyph={isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
                     />
-                    <span className={styles['row__summary']}>
+                    <span
+                      className={[
+                        styles['row__summary'],
+                        rowSummaryVariant === 'inline'
+                          ? styles['row__summary--inline']
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                    >
                       <span className={styles['row__name']}>
                         {resourceIcon(cfg.resource)}
                         {cfg.resource}
                       </span>
-                      <span
-                        className={[
-                          styles['row__chips'],
-                          isOpen ? styles['row__chips--hidden'] : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                        aria-hidden={isOpen}
-                      >
-                        {summaryChips(attribute, cfg).map((chip) => (
-                          <Chip key={chip} size="Small">
-                            {chip}
-                          </Chip>
-                        ))}
-                      </span>
+                      {rowSummaryVariant === 'chips' ? (
+                        <span className={styles['row__chips']}>
+                          {summaryChips(attribute, cfg).map((chip) => (
+                            <Chip key={chip} size="Small">
+                              {chip}
+                            </Chip>
+                          ))}
+                        </span>
+                      ) : (
+                        <span
+                          className={styles['row__meta']}
+                          title={summaryLine(attribute, cfg)}
+                        >
+                          {summaryLine(attribute, cfg)}
+                        </span>
+                      )}
                     </span>
                   </button>
                   <Button

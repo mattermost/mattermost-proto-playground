@@ -19,22 +19,21 @@ export interface SimplifiedResourceValuesPanelProps {
   attribute: HubAttribute;
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
+  /** When true, always expanded inside Advanced — no Customize/Done toggle. */
+  embedded?: boolean;
 }
 
 const VALUE_COLUMNS = [
   { key: 'value', label: 'Value', width: 240 },
-  { key: 'allow', label: 'Allow new', width: 200 },
+  { key: 'allow', label: 'Allow assignment', width: 200 },
 ];
 
 export default function SimplifiedResourceValuesPanel({
   attribute,
   config,
   onChange,
+  embedded = false,
 }: SimplifiedResourceValuesPanelProps) {
-  if (!takesValueList(attribute) || attribute.values.length === 0) {
-    return null;
-  }
-
   const locked = isPolicyLocked(attribute);
   const sourceOwned = isSourceOwned(attribute);
   const togglesLocked = locked || sourceOwned;
@@ -43,11 +42,15 @@ export default function SimplifiedResourceValuesPanel({
   const disabledCount = values.filter((value) => disabledIds.includes(value.id)).length;
   const hasOverrides = disabledCount > 0;
 
-  const [expanded, setExpanded] = useState(hasOverrides);
+  const [expanded, setExpanded] = useState(hasOverrides || embedded);
+
+  if (!takesValueList(attribute) || attribute.values.length === 0) {
+    return null;
+  }
 
   const summary = hasOverrides
     ? `${values.length - disabledCount} of ${values.length} available · ${disabledCount} disabled`
-    : `All ${values.length} values available`;
+    : `All ${values.length} options available`;
 
   const handleToggle = (valueId: string, enabled: boolean) => {
     if (togglesLocked) return;
@@ -63,52 +66,46 @@ export default function SimplifiedResourceValuesPanel({
     });
   };
 
+  const showTable = embedded || expanded;
+
   return (
     <section className={styles['values']}>
       <div className={styles['values__toolbar']}>
         <div className={styles['values__intro']}>
-          <h4 className={styles['values__title']}>Allowed values</h4>
+          <h4 className={styles['values__title']}>Allowed options</h4>
           <p className={styles['values__summary']}>{summary}</p>
         </div>
-        <Button
-          emphasis="Tertiary"
-          size="Small"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((open) => !open)}
-        >
-          {expanded ? 'Done' : togglesLocked ? 'View' : 'Customize'}
-        </Button>
+        {!embedded && (
+          <Button
+            emphasis="Tertiary"
+            size="Small"
+            aria-expanded={expanded}
+            onClick={() => setExpanded((open) => !open)}
+          >
+            {expanded ? 'Done' : togglesLocked ? 'View' : 'Customize'}
+          </Button>
+        )}
       </div>
 
-      {expanded && (
+      {showTable && (
         <p className={styles['values__desc']}>
-          Choose which catalog values can be assigned on{' '}
-          {config.resource.toLowerCase()}. Disabling a value blocks new assignments;
+          Choose which options can be used on{' '}
+          {config.resource.toLowerCase()}. Turning off blocks future assignments;
           existing ones stay in place.
         </p>
       )}
 
-      {expanded && attribute.valuesLink && (
+      {showTable && sourceOwned && (
         <div className={styles['values__notice']}>
           <SectionNotice
             type="Info"
-            title="Mirrors shared catalog"
-            description="Disabling here does not change the linked attribute's global catalog."
+            title="Externally owned options"
+            description="Options sync from an external source and cannot be toggled here."
           />
         </div>
       )}
 
-      {expanded && sourceOwned && (
-        <div className={styles['values__notice']}>
-          <SectionNotice
-            type="Info"
-            title="Externally owned catalog"
-            description="Values sync from an external source and cannot be toggled here."
-          />
-        </div>
-      )}
-
-      {expanded && (
+      {showTable && (
         <ConsolePropertyTable
           className={styles['values__table']}
           sections={[
@@ -146,7 +143,7 @@ export default function SimplifiedResourceValuesPanel({
                         size="Small"
                         checked={!disabledForNew}
                         disabled={togglesLocked}
-                        aria-label={`${value.label} enabled for new assignments on ${config.resource}`}
+                        aria-label={`${value.label} allowed for assignment on ${config.resource}`}
                         onChange={(event) =>
                           handleToggle(value.id, event.target.checked)
                         }

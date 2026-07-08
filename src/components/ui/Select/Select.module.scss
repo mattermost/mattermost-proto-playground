@@ -48,7 +48,7 @@
       box-shadow: 0 0 0 1px var(--button-bg);
     }
 
-    .select:has(.select__control:disabled) & {
+    .select:has(.select__control:disabled):not(.select--read-only) & {
       opacity: 0.56;
     }
   }
@@ -249,6 +249,30 @@
 
   &:has(.select__control:focus-visible) .select__label {
     color: var(--button-bg);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Read-only modifier — locked selection with muted value text.
+  // ---------------------------------------------------------------------------
+  &--read-only {
+    .select__wrapper {
+      opacity: 1;
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+      background-color: var(--center-channel-bg);
+    }
+
+    .select__control {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+      cursor: default;
+    }
+
+    .select__trailingIcon {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    .select__label {
+      background-color: var(--center-channel-bg);
+    }
   }
 
   // Hide control text while the floating label is in the resting position to prevent overlap.

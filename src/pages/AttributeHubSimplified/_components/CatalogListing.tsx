@@ -21,17 +21,18 @@ import PopoverMenu, {
 } from '@/components/ui/PopoverMenu/PopoverMenu';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import InfoHint from '@/pages/AttributeManagementHub/_components/InfoHint/InfoHint';
-import SyncPill from '@/pages/AttributeManagementHub/_components/SyncPill/SyncPill';
+import MvpConnectionPill from '@/pages/AttributeHubMVP/_components/MvpConnectionPill';
+import { connectionStatus } from '@/pages/AttributeHubMVP/_components/mvpTerms';
 import {
   ALL_RESOURCES,
   SOURCE_FILTERS,
   isPolicyLocked,
   isSourceOwned,
   policyLabel,
-  valueCountLabel,
   type HubAttribute,
   type ResourceKind,
 } from '@/pages/AttributeManagementHub/hubData';
+import { displayType, optionCountLabel } from './simplifiedModel';
 import styles from './CatalogListing.module.scss';
 
 export interface CatalogListingProps {
@@ -219,7 +220,7 @@ export default function CatalogListing({
                 <th className={styles['table__col-type']}>Type</th>
                 <th>Applies to</th>
                 <th>Source</th>
-                <th className={styles['table__col-count']}>Values</th>
+                <th className={styles['table__col-count']}>Options</th>
                 <th>Usage</th>
                 <th className={styles['table__col-actions']} aria-label="Actions" />
               </tr>
@@ -267,15 +268,10 @@ export default function CatalogListing({
                     <td>
                       <div className={styles['table__name-block']}>
                         <span className={styles['table__name']}>{a.name}</span>
-                        {a.valuesLink && (
-                          <span className={styles['table__sub']}>
-                            Values shared from {a.valuesLink.attributeName}
-                          </span>
-                        )}
                       </div>
                     </td>
                     <td>
-                      <span className={styles['table__type']}>{a.type}</span>
+                      <span className={styles['table__type']}>{displayType(a)}</span>
                     </td>
                     <td>
                       <div className={styles['table__chips']}>
@@ -287,15 +283,20 @@ export default function CatalogListing({
                       </div>
                     </td>
                     <td>
-                      {synced && a.source.state ? (
-                        <SyncPill state={a.source.state} system={a.source.system} />
+                      {synced ? (
+                        <div className={styles['table__source']}>
+                          <span className={styles['table__source-name']}>
+                            {a.source.system}
+                          </span>
+                          <MvpConnectionPill status={connectionStatus(a)} />
+                        </div>
                       ) : (
                         <span className={styles['table__muted']}>Managed here</span>
                       )}
                     </td>
                     <td className={styles['table__col-count']}>
                       <span className={styles['table__count']}>
-                        {valueCountLabel(a)}
+                        {optionCountLabel(a)}
                       </span>
                     </td>
                     <td>

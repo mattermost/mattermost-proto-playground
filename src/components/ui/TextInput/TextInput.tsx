@@ -102,6 +102,8 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const hasTrailingClass =
       trailingIcon != null ? styles['textInput--has-trailing-icon'] : '';
 
+    const readOnlyClass = readOnly ? styles['textInput--read-only'] : '';
+
     const rootClass = [
       styles.textInput,
       sizeClass,
@@ -109,6 +111,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       labelFloatedClass,
       hasLeadingClass,
       hasTrailingClass,
+      readOnlyClass,
       className,
     ]
       .filter(Boolean)

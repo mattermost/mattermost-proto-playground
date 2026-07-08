@@ -50,6 +50,8 @@ import AttributeManagementHub from '@/pages/AttributeManagementHub/AttributeMana
 import AttributeHubBasicsAdvanced from '@/pages/AttributeHubBasicsAdvanced/AttributeHubBasicsAdvanced';
 import AttributeHubStreamlined from '@/pages/AttributeHubStreamlined/AttributeHubStreamlined';
 import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubSimplified';
+import AttributeHubSimplifiedInlineSummary from '@/pages/AttributeHubSimplifiedInlineSummary/AttributeHubSimplifiedInlineSummary';
+import AttributeHubMVP from '@/pages/AttributeHubMVP/AttributeHubMVP';
 import WhoCanSetOptions from '@/pages/WhoCanSetOptions/WhoCanSetOptions';
 
 export type PrototypeGroup =
@@ -141,6 +143,19 @@ export const PROTOTYPES: PrototypeEntry[] = [
     isPrimary: true,
     collections: ['attribute-management'],
   },
+  // Global Attributes MVP (P0) — ruthlessly-scoped cut for dev handoff (2026-07-08)
+  {
+    id: 'attribute-hub-mvp',
+    label: 'Attribute Management · MVP (P0)',
+    path: '/prototypes/attribute-hub-mvp',
+    component: AttributeHubMVP,
+    group: 'zero-trust-abac',
+    description:
+      'P0 scope cut of Global Attributes (epic MM-69673) for the dev handoff / scope session. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. Trims the Simplified design: no Ranked-Hierarchical/tree, no reuse/shared-scale, no per-attribute who-can-edit (delegated via DGA), no inheritance, no Teams. Per-resource: Required, Default value, Who-can-set; Users add Profile display + Value visibility; Channels add Display location. Externally-synced attrs show managed-by-source + locked fields. Classification appears read-only. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on (reveals the open allowed-values control).',
+    addedAt: '2026-07-08',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
   // Section-by-section simplification of the Hub, built with the user (2026-07-06)
   {
     id: 'attribute-hub-simplified',
@@ -152,6 +167,18 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Section-by-section simplification of the Hub detail page: Definition panel absorbs the adaptive Values editor (chip row for flat types, tree only for hierarchical; no Description field, no separate Values/Source panels); first-class Applies-to with summary rows (plain-language line per resource, expand in place) and a single Who-can-set dropdown; a single "Who can edit this attribute" roles+people picker; and create-as-detail-page blank/guided mode (?flow=new, no wizard). Deep-links: ?attr=<id>, ?flow=new.',
     addedAt: '2026-07-06',
     isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Simplified hub — inline applies-to row summary (chip alternative) (2026-07-08)
+  {
+    id: 'attribute-hub-simplified-inline-summary',
+    label: 'Attribute Management · Simplified (inline summary)',
+    path: '/prototypes/attribute-hub-simplified-inline-summary',
+    component: AttributeHubSimplifiedInlineSummary,
+    group: 'zero-trust-abac',
+    description:
+      'Copy of the Simplified hub with an alternate Applies-to row display: collapsed resources show a single-line secondary summary (key–value segments joined with middle dots, truncated on overflow) under the resource title instead of summary chips. Compare side-by-side with the chip variant. Deep-links: ?attr=<id>, ?flow=new.',
+    addedAt: '2026-07-08',
     collections: ['attribute-management'],
   },
   // Drill-in re-ideation after "kitchen sink" feedback — A/B comparison (2026-07-06)

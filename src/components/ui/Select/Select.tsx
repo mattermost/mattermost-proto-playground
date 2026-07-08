@@ -23,6 +23,8 @@ export interface SelectProps extends Omit<
   size?: SelectSize;
   /** Full width (default) or shrink to the selected option label. */
   width?: 'full' | 'fit';
+  /** Non-interactive display; uses muted styling distinct from disabled. */
+  readOnly?: boolean;
   /** Select option items. */
   children?: ReactNode;
 }
@@ -46,6 +48,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
     defaultValue,
     onChange,
     disabled,
+    readOnly = false,
     children,
     ...rest
   },
@@ -77,11 +80,13 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
     leadingIcon != null ? styles['select--has-leading-icon'] : '';
 
   const widthClass = width === 'fit' ? styles['select--width-fit'] : '';
+  const readOnlyClass = readOnly ? styles['select--read-only'] : '';
 
   const rootClass = [
     styles.select,
     sizeClass,
     widthClass,
+    readOnlyClass,
     invalidClass,
     labelFloatedClass,
     hasLeadingClass,
@@ -110,7 +115,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
             className={styles.select__control}
             value={isControlled ? valueProp : undefined}
             defaultValue={isControlled ? undefined : defaultValue}
-            disabled={disabled}
+            disabled={disabled || readOnly}
+            aria-readonly={readOnly || undefined}
             aria-invalid={invalid ? true : undefined}
             onChange={handleChange}
             {...rest}

@@ -1,31 +1,33 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import CloseIcon from '@mattermost/compass-icons/components/close';
 import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
-import LinkVariantOffIcon from '@mattermost/compass-icons/components/link-variant-off';
-import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import EyeOffOutlineIcon from '@mattermost/compass-icons/components/eye-off-outline';
 import PlusBoxOutlineIcon from '@mattermost/compass-icons/components/plus-box-outline';
+import ShieldOutlineIcon from '@mattermost/compass-icons/components/shield-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import TextInput from '@/components/ui/TextInput/TextInput';
-import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
-import InfoHint from '@/pages/AttributeManagementHub/_components/InfoHint/InfoHint';
 import {
-  canReuseValues,
   isPolicyLocked,
   isSourceOwned,
   type AttrValue,
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
-import AttributeSourceField from './AttributeSourceField';
+import MvpManagedSourceBar from '@/pages/AttributeHubMVP/_components/MvpManagedSourceBar';
+import ValueEditorPopover from './ValueEditorPopover';
+import ColoredRankedInputChip from '@/components/ui/ColoredRankedInputChip/ColoredRankedInputChip';
+import {
+  comparesRank,
+  displayType,
+  isTreeType,
+  optionColorScheme,
+} from './simplifiedModel';
 import styles from './DefinitionValues.module.scss';
 
 export interface DefinitionValuesProps {
@@ -35,41 +37,87 @@ export interface DefinitionValuesProps {
   onToggleDisabled: (valueId: string) => void;
   onDeleteValue: (valueId: string) => void;
   onReorder: (valueId: string, dir: -1 | 1) => void;
+  onRelabel: (valueId: string, label: string) => void;
+  onSetRank: (valueId: string, tier: number) => void;
   onLockedAttempt: () => void;
-  onReuse: () => void;
-  onUnlink: () => void;
   onConnectSource: () => void;
   onManageSource: () => void;
 }
 
-/** Ranked-hierarchical tree row (nest, reorder, disable-not-delete, tier badges). */
+/** Whether a tier is referenced by an access policy (demo heuristic). */
+function tierInPolicy(attribute: HubAttribute, value: AttrValue): boolean {
+  if (attribute.usedByPolicies === 0) return false;
+  // In this demo the two lowest-labelled protected tiers gate policies.
+  return value.id === 'protected-b' || value.id === 'cl-3' || value.tier === 3;
+}
+
+function renderOptionChip(
+  value: AttrValue,
+  {
+    ranked,
+    editable,
+    active,
+    onOpen,
+  }: {
+    ranked: boolean;
+    editable: boolean;
+    active?: boolean;
+    onOpen: (value: AttrValue, isRanked: boolean, el: HTMLElement) => void;
+  },
+) {
+  const scheme = optionColorScheme(value.id);
+  const rank = ranked && value.tier != null ? value.tier : undefined;
+
+  return (
+    <ColoredRankedInputChip
+      label={value.label}
+      rank={rank}
+      scheme={scheme}
+      disabled={value.disabled}
+      active={active}
+      onClick={
+        editable ? (e) => onOpen(value, ranked, e.currentTarget) : undefined
+      }
+    />
+  );
+}
+
+/** Tree row for Ranked-hierarchical / Hierarchical types. */
 function TreeRow({
+  attribute,
   value,
   depth,
   index,
   siblingCount,
   editable,
+  ranked,
+  tierCount,
   onToggleDisabled,
   onDeleteValue,
   onReorder,
   onAddChild,
+  onOpenEditor,
 }: {
+  attribute: HubAttribute;
   value: AttrValue;
   depth: number;
   index: number;
   siblingCount: number;
   editable: boolean;
+  ranked: boolean;
+  tierCount: number;
   onToggleDisabled: (id: string) => void;
   onDeleteValue: (id: string) => void;
   onReorder: (id: string, dir: -1 | 1) => void;
   onAddChild: (parentId: string, label: string) => void;
+  onOpenEditor: (value: AttrValue, ranked: boolean, el: HTMLElement) => void;
 }) {
   const [expanded, setExpanded] = useState(true);
   const [adding, setAdding] = useState(false);
   const [childDraft, setChildDraft] = useState('');
   const hasChildren = !!value.children?.length;
   const isTier = value.tier != null;
-  const inUse = (value.inUseCount ?? 0) > 0;
+  const inPolicy = tierInPolicy(attribute, value);
 
   const commitChild = () => {
     if (childDraft.trim()) {
@@ -89,9 +137,7 @@ function TreeRow({
         ]
           .filter(Boolean)
           .join(' ')}
-        style={{
-          paddingLeft: `calc(${depth} * var(--spacing-l) + var(--spacing-s))`,
-        }}
+        style={{ paddingLeft: `calc(${depth} * var(--spacing-l) + var(--spacing-s))` }}
       >
         {hasChildren ? (
           <button
@@ -100,10 +146,7 @@ function TreeRow({
             aria-label={expanded ? 'Collapse' : 'Expand'}
             onClick={() => setExpanded((e) => !e)}
           >
-            <Icon
-              size="16"
-              glyph={expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-            />
+            <Icon size="16" glyph={expanded ? <ChevronDownIcon /> : <ChevronRightIcon />} />
           </button>
         ) : (
           <span className={styles['tree__twist-spacer']} aria-hidden />
@@ -131,16 +174,28 @@ function TreeRow({
           </span>
         )}
 
-        <span className={styles['tree__label']}>{value.label}</span>
+        {renderOptionChip(value, {
+          ranked: ranked && isTier,
+          editable,
+          onOpen: onOpenEditor,
+        })}
 
-        {isTier ? (
-          <LabelTag label={`Ranked · Tier ${value.tier}`} type="Info" size="X-Small" />
-        ) : (
-          <LabelTag label="Sub-marking (display only)" type="Default" size="X-Small" />
+        {ranked && isTier && (
+          <span
+            className={[
+              styles['tree__policy'],
+              inPolicy ? '' : styles['tree__policy--unused'],
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            <Icon size="12" glyph={<ShieldOutlineIcon />} />
+            {inPolicy ? 'Used in a policy' : 'Not in a policy'}
+          </span>
         )}
 
         {value.disabled && (
-          <span className={styles['tree__flag']}>Disabled for new</span>
+          <span className={styles['tree__flag']}>Deactivated</span>
         )}
 
         <span className={styles['tree__spacer']} />
@@ -155,33 +210,6 @@ function TreeRow({
             >
               Add child
             </Button>
-            <InfoHint
-              label={value.disabled ? 'Re-enable value' : 'Disable for new assignments'}
-              arrow="Bottom"
-            >
-              <IconButton
-                size="X-Small"
-                aria-label="Disable value"
-                icon={<Icon size="16" glyph={<EyeOffOutlineIcon />} />}
-                onClick={() => onToggleDisabled(value.id)}
-              />
-            </InfoHint>
-            <InfoHint
-              label={
-                inUse
-                  ? `In use on ${value.inUseCount} resources — disable instead of deleting`
-                  : 'Delete value'
-              }
-              arrow="Bottom"
-            >
-              <IconButton
-                size="X-Small"
-                aria-label="Delete value"
-                destructive={!inUse}
-                icon={<Icon size="16" glyph={<TrashCanOutlineIcon />} />}
-                onClick={() => onDeleteValue(value.id)}
-              />
-            </InfoHint>
           </div>
         )}
       </div>
@@ -189,13 +217,11 @@ function TreeRow({
       {editable && adding && (
         <div
           className={styles['tree__child-add']}
-          style={{
-            paddingLeft: `calc(${depth + 1} * var(--spacing-l) + var(--spacing-s))`,
-          }}
+          style={{ paddingLeft: `calc(${depth + 1} * var(--spacing-l) + var(--spacing-s))` }}
         >
           <TextInput
             size="Small"
-            placeholder={`Nested marking under ${value.label}`}
+            placeholder={`Nested option under ${value.label}`}
             value={childDraft}
             onChange={(e) => setChildDraft(e.target.value)}
             onKeyDown={(e) => {
@@ -221,15 +247,19 @@ function TreeRow({
         value.children!.map((child, i) => (
           <TreeRow
             key={child.id}
+            attribute={attribute}
             value={child}
             depth={depth + 1}
             index={i}
             siblingCount={value.children!.length}
             editable={editable}
+            ranked={ranked}
+            tierCount={tierCount}
             onToggleDisabled={onToggleDisabled}
             onDeleteValue={onDeleteValue}
             onReorder={onReorder}
             onAddChild={onAddChild}
+            onOpenEditor={onOpenEditor}
           />
         ))}
     </>
@@ -237,11 +267,10 @@ function TreeRow({
 }
 
 /**
- * Adaptive Values control — the third element of the merged Definition panel.
- * - Text → "no preset values" note
- * - Select / Multiselect / Ranked → wrapping chip row (type-and-enter commits)
- * - Ranked-hierarchical → full-width tree
- * Source / link status lives in a footer below the values list.
+ * Adaptive Options control (Simplified). "Options" is the list of allowed
+ * choices; clicking an option opens the rich editor popover. Ranked-
+ * hierarchical shows tier + policy-usage per row; Hierarchical is a rank-
+ * agnostic tree. Value linking is gone — replaced by per-resource naming.
  */
 export default function DefinitionValues({
   attribute,
@@ -250,55 +279,46 @@ export default function DefinitionValues({
   onToggleDisabled,
   onDeleteValue,
   onReorder,
+  onRelabel,
+  onSetRank,
   onLockedAttempt,
-  onReuse,
-  onUnlink,
   onConnectSource,
   onManageSource,
 }: DefinitionValuesProps) {
   const [draft, setDraft] = useState('');
+  const [editing, setEditing] = useState<{
+    value: AttrValue;
+    ranked: boolean;
+  } | null>(null);
+  const anchorRef = useRef<HTMLElement | null>(null);
+
   const sourceOwned = isSourceOwned(attribute);
   const locked = isPolicyLocked(attribute);
-  const linked = !!attribute.valuesLink;
-  const editable = !sourceOwned && !locked && !linked;
-  const isTree = attribute.type === 'Ranked-hierarchical';
-  const isRanked = attribute.type === 'Ranked' || isTree;
-  const showManualActions =
-    !sourceOwned && !linked && attribute.type !== 'Text';
+  const editable = !sourceOwned && !locked;
+  const type = displayType(attribute);
+  const isTree = isTreeType(type);
+  const ranked = comparesRank(type);
+  const tierCount = attribute.values.filter((v) => v.tier != null).length;
+  const showConnect = !sourceOwned && type !== 'Text';
+
+  const openEditor = (value: AttrValue, isRanked: boolean, el: HTMLElement) => {
+    anchorRef.current = el;
+    setEditing({ value, ranked: isRanked });
+  };
+
+  const managedSourceBar = sourceOwned ? (
+    <MvpManagedSourceBar
+      attribute={attribute}
+      layout="in-options"
+      onManageConnection={onManageSource}
+    />
+  ) : null;
 
   const valuesFooter = () => {
     if (sourceOwned) {
-      return (
-        <AttributeSourceField
-          attribute={attribute}
-          onManage={onManageSource}
-        />
-      );
+      return managedSourceBar;
     }
-
-    if (linked && attribute.valuesLink) {
-      return (
-        <div className={styles['values__linked-footer']}>
-          <div className={styles['values__linked-copy']}>
-            <Icon size="16" glyph={<LinkVariantIcon />} />
-            <span>
-              Values shared from {attribute.valuesLink.attributeName} ·
-              read-only
-            </span>
-          </div>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<LinkVariantOffIcon />} />}
-            onClick={onUnlink}
-          >
-            Unlink
-          </Button>
-        </div>
-      );
-    }
-
-    if (showManualActions) {
+    if (showConnect) {
       return (
         <div className={styles['values__source-actions']}>
           <Button
@@ -309,31 +329,20 @@ export default function DefinitionValues({
           >
             Connect external source
           </Button>
-          {canReuseValues(attribute) && (
-            <Button
-              emphasis="Tertiary"
-              size="Small"
-              leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
-              onClick={onReuse}
-            >
-              Reuse values from another attribute
-            </Button>
-          )}
         </div>
       );
     }
-
     return null;
   };
 
-  // Text — no enumerated values.
-  if (attribute.type === 'Text') {
+  // Text — no enumerated options.
+  if (type === 'Text') {
     return (
       <div className={styles['values']}>
         <p className={styles['values__none']}>
-          Text attributes have no preset values — a value is typed in per resource.
+          Text attributes have no preset options — a value is typed in per resource.
         </p>
-        {!sourceOwned && (
+        {showConnect && (
           <div className={styles['values__source-actions']}>
             <Button
               emphasis="Tertiary"
@@ -345,12 +354,7 @@ export default function DefinitionValues({
             </Button>
           </div>
         )}
-        {sourceOwned && (
-          <AttributeSourceField
-            attribute={attribute}
-            onManage={onManageSource}
-          />
-        )}
+        {managedSourceBar}
       </div>
     );
   }
@@ -367,15 +371,14 @@ export default function DefinitionValues({
 
   return (
     <div className={styles['values']}>
-
-      {locked && !sourceOwned && !linked && (
+      {locked && !sourceOwned && (
         <SectionNotice
           type="Info"
           icon={<Icon size="20" glyph={<LockOutlineIcon />} />}
           title={`Locked — used by ${attribute.usedByPolicies} ${
             attribute.usedByPolicies === 1 ? 'policy' : 'policies'
           }`}
-          description="Editing values would re-evaluate access. Review the policies before making changes."
+          description="Editing options would re-evaluate access. Review the policies before making changes."
           primaryButtonLabel="Why is this locked?"
           onPrimaryAction={onLockedAttempt}
         />
@@ -384,22 +387,27 @@ export default function DefinitionValues({
       {isTree ? (
         <div className={styles['values__tree-block']}>
           <p className={styles['values__tree-explainer']}>
-            Ranked tiers form the ordered spine. Sub-markings nest beneath a tier
-            and are display only — they do not change the rank.
+            {ranked
+              ? 'Every tier is ranked and can be used in an access policy. Nested options group beneath a tier; the badge shows each tier’s policy usage.'
+              : 'A rank-agnostic tree — options are organized hierarchically, but rank is never compared.'}
           </p>
           <div className={styles['values__tree']}>
             {attribute.values.map((v, i) => (
               <TreeRow
                 key={v.id}
+                attribute={attribute}
                 value={v}
                 depth={0}
                 index={i}
                 siblingCount={attribute.values.length}
                 editable={editable}
+                ranked={ranked}
+                tierCount={tierCount}
                 onToggleDisabled={onToggleDisabled}
                 onDeleteValue={onDeleteValue}
                 onReorder={onReorder}
                 onAddChild={onAddChild}
+                onOpenEditor={openEditor}
               />
             ))}
           </div>
@@ -407,12 +415,12 @@ export default function DefinitionValues({
             <div className={styles['values__tree-add']}>
               <TextInput
                 size="Small"
-                placeholder="Add a top-level tier"
+                placeholder={ranked ? 'Add a top-level tier' : 'Add a top-level option'}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    onAddValue(draft.trim(), true);
+                    onAddValue(draft.trim(), ranked);
                     setDraft('');
                   }
                 }}
@@ -423,11 +431,11 @@ export default function DefinitionValues({
                 leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
                 disabled={draft.trim().length === 0}
                 onClick={() => {
-                  onAddValue(draft.trim(), true);
+                  onAddValue(draft.trim(), ranked);
                   setDraft('');
                 }}
               >
-                Add tier
+                {ranked ? 'Add tier' : 'Add option'}
               </Button>
             </div>
           )}
@@ -436,63 +444,71 @@ export default function DefinitionValues({
         <div className={styles['values__chips-wrap']}>
           <div className={styles['values__chips']}>
             {attribute.values.map((v) => (
-            <span
-              key={v.id}
-              className={[
-                styles['values__chip'],
-                v.disabled && styles['values__chip--disabled'],
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {isRanked && v.tier != null && (
-                <span className={styles['values__rank']}>{v.tier}</span>
-              )}
-              <span className={styles['values__chip-label']}>{v.label}</span>
-              {editable && (
-                <button
-                  type="button"
-                  className={styles['values__chip-x']}
-                  aria-label={`Remove ${v.label}`}
-                  onClick={() =>
-                    (v.inUseCount ?? 0) > 0
-                      ? onToggleDisabled(v.id)
-                      : onDeleteValue(v.id)
-                  }
-                >
-                  <Icon size="12" glyph={<CloseIcon />} />
-                </button>
-              )}
-            </span>
-          ))}
-          {attribute.values.length === 0 && (
-            <span className={styles['values__none']}>
-              Add a value and press Enter.
-            </span>
-          )}
-          {editable && (
-            <input
-              className={styles['values__input']}
-              placeholder={attribute.values.length === 0 ? 'Add a value…' : '+ Add'}
-              value={draft}
-              aria-label="Add a value"
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === 'Tab') {
-                  if (draft.trim()) {
-                    e.preventDefault();
-                    commitDraft();
-                  }
+              <span key={v.id}>
+                {renderOptionChip(v, {
+                  ranked,
+                  editable,
+                  active: editing?.value.id === v.id,
+                  onOpen: openEditor,
+                })}
+              </span>
+            ))}
+            {attribute.values.length === 0 && !editable && (
+              <span className={styles['values__none']}>No values.</span>
+            )}
+            {editable && (
+              <input
+                className={styles['values__input']}
+                placeholder={
+                  attribute.values.length === 0
+                    ? 'Add an option and press Enter.'
+                    : '+ Add'
                 }
-              }}
-              onBlur={commitDraft}
-            />
-          )}
+                value={draft}
+                aria-label="Add an option"
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === 'Tab') {
+                    if (draft.trim()) {
+                      e.preventDefault();
+                      commitDraft();
+                    }
+                  }
+                }}
+                onBlur={commitDraft}
+              />
+            )}
           </div>
+          {editable && (
+            <p className={styles['values__edit-hint']}>
+              Click an option to edit its label, color, or translations.
+            </p>
+          )}
         </div>
       )}
 
       {valuesFooter()}
+
+      {editing && anchorRef.current && (
+        <ValueEditorPopover
+          value={editing.value}
+          ranked={editing.ranked}
+          tierCount={tierCount}
+          readOnly={!editable}
+          anchorRef={anchorRef}
+          onClose={() => setEditing(null)}
+          onRelabel={(label) => onRelabel(editing.value.id, label)}
+          onSetRank={(tier) => onSetRank(editing.value.id, tier)}
+          onDeactivate={() => {
+            onToggleDisabled(editing.value.id);
+            setEditing(null);
+          }}
+          onRemove={() => {
+            onDeleteValue(editing.value.id);
+            setEditing(null);
+          }}
+        />
+      )}
     </div>
   );
 }

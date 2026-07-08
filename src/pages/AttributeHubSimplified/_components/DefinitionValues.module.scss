@@ -14,8 +14,6 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-s);
-    padding-top: var(--spacing-m);
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
   &__linked-footer {
@@ -58,15 +56,40 @@
     align-items: center;
     gap: var(--spacing-xxs);
     padding: var(--spacing-xxs) var(--spacing-xs);
+    border: none;
     border-radius: var(--radius-full);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: var(--center-channel-color);
+    font-family: var(--font-family);
     font-size: var(--font-size-100);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
 
     &--disabled {
       opacity: 0.5;
-      text-decoration: line-through;
     }
+  }
+
+  &__dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex: none;
+  }
+
+  &__edit-hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
   }
 
   &__rank {
@@ -199,6 +222,40 @@
   &__label {
     font-size: var(--font-size-100);
     color: var(--center-channel-color);
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-s);
+    background: none;
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  &__policy {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+
+    &--unused {
+      color: rgba(var(--center-channel-color-rgb), 0.48);
+      font-weight: var(--font-weight-regular);
+    }
   }
 
   &__flag {

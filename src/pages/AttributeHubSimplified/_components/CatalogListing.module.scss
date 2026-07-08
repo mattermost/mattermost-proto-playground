@@ -252,6 +252,18 @@
     color: rgba(var(--center-channel-color-rgb), 0.48);
   }
 
+  &__source {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__source-name {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-weight: var(--font-weight-semibold);
+  }
+
   &__count {
     color: var(--center-channel-color);
     font-variant-numeric: tabular-nums;

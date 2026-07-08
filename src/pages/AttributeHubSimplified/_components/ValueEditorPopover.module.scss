@@ -1,0 +1,294 @@
+.ve {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: var(--spacing-s);
+  gap: var(--spacing-xs);
+  min-width: 320px;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elevation-3);
+
+  &__label-field {
+    padding: var(--spacing-xxs);
+  }
+
+  &__nav-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: none;
+    background: none;
+    border-radius: var(--radius-s);
+    color: var(--center-channel-color);
+    font-family: var(--font-family);
+    font-size: var(--font-size-100);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  &__nav-label {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__nav-value {
+    margin-left: auto;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+  }
+
+  &__section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__section-title {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__source-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-info);
+  }
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-s);
+    color: var(--button-color);
+    cursor: pointer;
+    transition: transform var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+
+    &--active {
+      border-color: var(--button-bg);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  &__swatch-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.32);
+    border-radius: var(--radius-s);
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+  }
+
+  &__source-note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__divider {
+    height: 1px;
+    margin: var(--spacing-xxs) 0;
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: none;
+    background: none;
+    border-radius: var(--radius-s);
+    font-family: var(--font-family);
+    font-size: var(--font-size-100);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    &--danger {
+      color: var(--color-danger);
+    }
+  }
+
+  // ── Sub-panes (rank / translations) ──
+  &__pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    width: 100%;
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: none;
+    background: none;
+    color: var(--center-channel-color);
+    font-family: var(--font-family);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+  }
+
+  &__rank-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__rank-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: none;
+    background: none;
+    border-radius: var(--radius-s);
+    color: var(--center-channel-color);
+    font-family: var(--font-family);
+    font-size: var(--font-size-100);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--active {
+      color: var(--button-bg);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__trans-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: 0 var(--spacing-s);
+  }
+
+  &__trans-empty {
+    margin: 0;
+    padding: var(--spacing-xs) 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__trans-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xxs) 0;
+  }
+
+  &__trans-locale {
+    min-width: 72px;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__trans-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__trans-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__trans-add {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s) 0;
+    min-width: 0;
+
+    > button {
+      align-self: flex-end;
+    }
+  }
+}

@@ -10,13 +10,13 @@ import {
   takesValueList,
   whoCanSetIsEditable,
   type HubAttribute,
-  type InheritMode,
   type PostDisplayLoc,
   type ResourceConfig,
   type ResourceKind,
   type WhoCanSet,
   type WhoSets,
 } from '@/pages/AttributeManagementHub/hubData';
+import { ceilingSummaryLabel, resolveCeiling } from './simplifiedModel';
 
 /**
  * Simplified "who can set" model for the new variation:
@@ -53,16 +53,9 @@ function postDisplaySummary(cfg: ResourceConfig): string {
   return `Display: ${shown.join(' + ')}`;
 }
 
-function inheritanceChipLabel(
-  mode: InheritMode,
-  parent: 'team' | 'channel',
-): string | null {
-  if (mode === 'off') return null;
-  const parentLabel = parent === 'team' ? 'team' : 'channel';
-  if (mode === 'inherit-lock') {
-    return `Inheritance: Locked to ${parentLabel}`;
-  }
-  return `Inheritance: From ${parentLabel}`;
+function inheritanceChipLabel(cfg: ResourceConfig): string | null {
+  const summary = ceilingSummaryLabel(resolveCeiling(cfg));
+  return summary ? `Inheritance: ${summary}` : null;
 }
 
 /** All roles currently allowed to set the value on this resource. */
@@ -155,7 +148,7 @@ export function summaryChips(
       shown.length === 0 ? 'Display: Hidden' : `Display: ${shown.join(' + ')}`,
     );
     if (hasInheritanceParent(attribute, 'Channels')) {
-      const label = inheritanceChipLabel(resolveInheritMode(cfg), 'team');
+      const label = inheritanceChipLabel(cfg);
       if (label) chips.push(label);
     }
   }
@@ -163,7 +156,7 @@ export function summaryChips(
   if (cfg.resource === 'Posts') {
     chips.push(postDisplaySummary(cfg));
     if (hasInheritanceParent(attribute, 'Posts')) {
-      const label = inheritanceChipLabel(resolveInheritMode(cfg), 'channel');
+      const label = inheritanceChipLabel(cfg);
       if (label) chips.push(label);
     }
   }
@@ -181,8 +174,8 @@ export function summaryChips(
     const disabled = (cfg.disabledValueIds ?? []).length;
     chips.push(
       disabled === 0
-        ? 'Values: All allowed'
-        : `Values: ${disabled} disabled`,
+        ? 'Options: All allowed'
+        : `Options: ${disabled} disabled`,
     );
   }
 
@@ -200,6 +193,93 @@ export function summaryChips(
   }
 
   return chips;
+}
+
+/**
+ * Single-line secondary summary for collapsed resource rows.
+ * Compact segments joined with middle dots; truncates via CSS ellipsis.
+ */
+export function summaryLine(
+  attribute: HubAttribute,
+  cfg: ResourceConfig,
+): string {
+  const segments: string[] = [
+    cfg.required ? 'Required' : 'Optional',
+  ];
+
+  if (cfg.resource === 'Users') {
+    segments.push(
+      cfg.userProfileDisplay === 'always'
+        ? 'Profile: always show'
+        : 'Profile: hide when empty',
+    );
+    segments.push(
+      readIntoActive(attribute)
+        ? 'Visibility: own values only'
+        : 'Visibility: show all',
+    );
+  }
+
+  if (cfg.resource === 'Channels') {
+    const shown = (cfg.showWhere ?? []).filter((loc) => loc !== 'Hidden');
+    segments.push(
+      shown.length === 0
+        ? 'Display: hidden'
+        : `Display: ${shown.join(' + ')}`,
+    );
+    if (hasInheritanceParent(attribute, 'Channels')) {
+      const label = ceilingSummaryLabel(resolveCeiling(cfg));
+      if (label) segments.push(label);
+    }
+  }
+
+  if (cfg.resource === 'Posts') {
+    const shown = (cfg.showWhere ?? [])
+      .filter((loc) => loc !== 'Hidden')
+      .map((loc) => postDisplayLabel(loc as PostDisplayLoc));
+    segments.push(
+      shown.length === 0
+        ? 'Display: hidden'
+        : `Display: ${shown.join(' + ')}`,
+    );
+    if (hasInheritanceParent(attribute, 'Posts')) {
+      const label = ceilingSummaryLabel(resolveCeiling(cfg));
+      if (label) segments.push(label);
+    }
+  }
+
+  const setters = selectedSetters(cfg);
+  if (setters.length === 1) {
+    segments.push(`Set by ${setters[0]}`);
+  } else if (setters.length > 1) {
+    segments.push(`Set by ${setters.length} roles`);
+  } else if (cfg.required) {
+    segments.push('Set by: none');
+  }
+
+  if (takesValueList(attribute) && attribute.values.length > 0) {
+    const disabled = (cfg.disabledValueIds ?? []).length;
+    segments.push(
+      disabled === 0
+        ? 'Options: all allowed'
+        : `Options: ${disabled} blocked`,
+    );
+  }
+
+  if (
+    cfg.defaultValueId &&
+    whoCanSetIsEditable(attribute, cfg) &&
+    assignableValuesForResource(attribute, cfg).some(
+      (v) => v.id === cfg.defaultValueId,
+    )
+  ) {
+    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
+    if (value) {
+      segments.push(`Default: ${value.label}`);
+    }
+  }
+
+  return segments.join(' · ');
 }
 
 /**
@@ -256,18 +336,20 @@ export function deviationsFor(
   }
 
   // Inheritance — configured on child bindings when parent is applied.
-  const mode = resolveInheritMode(cfg);
-  if (cfg.resource === 'Channels' && hasInheritanceParent(attribute, 'Channels') && mode !== 'off') {
-    out.push({
-      field: 'inheritance',
-      label: mode === 'inherit-lock' ? 'Locked to team' : 'Inherits from team',
-    });
+  const ceiling = ceilingSummaryLabel(resolveCeiling(cfg));
+  if (
+    cfg.resource === 'Channels' &&
+    hasInheritanceParent(attribute, 'Channels') &&
+    ceiling
+  ) {
+    out.push({ field: 'inheritance', label: ceiling });
   }
-  if (cfg.resource === 'Posts' && hasInheritanceParent(attribute, 'Posts') && mode !== 'off') {
-    out.push({
-      field: 'inheritance',
-      label: mode === 'inherit-lock' ? 'Locked to channel' : 'Inherits from channel',
-    });
+  if (
+    cfg.resource === 'Posts' &&
+    hasInheritanceParent(attribute, 'Posts') &&
+    ceiling
+  ) {
+    out.push({ field: 'inheritance', label: ceiling });
   }
 
   // Who can set — deviates from the default single setter.

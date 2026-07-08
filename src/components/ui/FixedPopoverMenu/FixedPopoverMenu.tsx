@@ -36,7 +36,12 @@ export default function FixedPopoverMenu({
 }: FixedPopoverMenuProps) {
   const internalMenuRef = useRef<HTMLDivElement>(null);
   const menuRef = menuRefProp ?? internalMenuRef;
-  const position = useFixedMenuPosition(open, anchorRef, { gap, align, minWidthFloor });
+  const position = useFixedMenuPosition(open, anchorRef, {
+    gap,
+    align,
+    minWidthFloor,
+    menuRef,
+  });
 
   usePopoverDismiss(open, onClose, [anchorRef, menuRef]);
 

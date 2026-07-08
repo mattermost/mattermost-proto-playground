@@ -2,13 +2,10 @@ import { useState } from 'react';
 import Modal from '@/components/ui/Modal/Modal';
 import Button from '@/components/ui/Button/Button';
 import Radio from '@/components/ui/Radio/Radio';
-import Chip from '@/components/ui/Chip/Chip';
 import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
-import SyncPill from '@/pages/AttributeManagementHub/_components/SyncPill/SyncPill';
 import {
   isSourceOwned,
-  lastSyncedLabel,
   type HubAttribute,
   type SourceSystem,
 } from '@/pages/AttributeManagementHub/hubData';
@@ -25,14 +22,14 @@ export const SOURCE_PROVIDER_OPTIONS: SourceProviderOption[] = [
   {
     id: 'ldap',
     label: 'LDAP directory',
-    description: 'Map an LDAP attribute to this value catalog.',
+    description: 'Map an LDAP attribute to these options.',
     system: 'LDAP',
   },
   {
     id: 'saml',
     label: 'SAML identity provider',
     description:
-      'Map a SAML assertion attribute to this value catalog when users sign in.',
+      'Map a SAML assertion attribute to these options when users sign in.',
     system: 'SAML',
   },
   {
@@ -63,53 +60,31 @@ export interface ConnectSourceModalProps {
 
 function ConnectionDetails({ attribute }: { attribute: HubAttribute }) {
   const { source } = attribute;
-  const lastSynced = lastSyncedLabel(source);
+  const connected = source.state === 'Synced';
 
   return (
     <dl className={styles['connect__details']}>
       <div className={styles['connect__detail-row']}>
         <dt>Status</dt>
         <dd className={styles['connect__detail-chips']}>
-          {source.state && (
-            <SyncPill state={source.state} system={source.system} />
-          )}
-          {source.pastBudget && (
-            <LabelTag label="Sync overdue" type="Danger" size="X-Small" />
-          )}
+          <LabelTag
+            label={connected ? 'Connected' : 'Connection broken'}
+            type={connected ? 'Success' : 'Danger'}
+            size="Small"
+          />
         </dd>
       </div>
 
-      {source.cadence && (
-        <div className={styles['connect__detail-row']}>
-          <dt>Sync cadence</dt>
-          <dd>
-            <Chip size="Small">{source.cadence}</Chip>
-          </dd>
-        </div>
-      )}
+      <div className={styles['connect__detail-row']}>
+        <dt>Provider</dt>
+        <dd>{source.system ?? 'External source'}</dd>
+      </div>
 
-      {lastSynced && (
+      {!connected && (
         <div className={styles['connect__detail-row']}>
-          <dt>Last synced</dt>
-          <dd>{lastSynced.replace(/^Last synced /i, '')}</dd>
-        </div>
-      )}
-
-      {source.fieldMap && (
-        <div className={styles['connect__detail-row']}>
-          <dt>Mapped field</dt>
-          <dd>
-            <code className={styles['connect__map']}>{source.fieldMap}</code>
-          </dd>
-        </div>
-      )}
-
-      {source.pastBudget && (
-        <div className={styles['connect__detail-row']}>
-          <dt>Freshness</dt>
+          <dt>Details</dt>
           <dd className={styles['connect__warning']}>
-            Past freshness budget — downstream editing is blocked until the source
-            recovers.
+            This connection isn’t syncing. Reconfigure it to restore sync.
           </dd>
         </div>
       )}

@@ -40,6 +40,9 @@ export interface ResourceConfigPanelProps {
   whoCanSetSlot?: ReactNode;
   /** Simplified hub — Definition-aligned labels and spacing. */
   layout?: 'default' | 'simplified';
+  /** Suppress the built-in inherit-from-parent field so the consumer can render
+   *  its own inheritance control (e.g. the configurable ceiling) as a sibling. */
+  suppressInheritance?: boolean;
 }
 
 interface FieldProps {
@@ -341,6 +344,7 @@ export default function ResourceConfigPanel({
   onReadIntoFilteringChange,
   whoCanSetSlot,
   layout = 'default',
+  suppressInheritance = false,
 }: ResourceConfigPanelProps) {
   const sourceOwned = isSourceOwned(attribute);
   const isUsers = config.resource === 'Users';
@@ -445,7 +449,7 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {showInheritFromTeam && (
+      {showInheritFromTeam && !suppressInheritance && (
         <InheritFromParentField
           parentLabel="team"
           parentKind="team"
@@ -481,7 +485,7 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {showInheritFromChannel && (
+      {showInheritFromChannel && !suppressInheritance && (
         <InheritFromParentField
           parentLabel="channel"
           parentKind="channel"

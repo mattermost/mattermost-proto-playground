@@ -1,0 +1,60 @@
+.inherit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__row {
+    display: grid;
+    grid-template-columns: 176px 1fr;
+    column-gap: var(--spacing-m);
+    align-items: start;
+  }
+
+  &__label {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__control {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-s);
+    margin-left: calc(176px + var(--spacing-m));
+  }
+
+  &__ceiling-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__ceiling {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__radio {
+    align-self: flex-start;
+  }
+
+  &__enforce {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

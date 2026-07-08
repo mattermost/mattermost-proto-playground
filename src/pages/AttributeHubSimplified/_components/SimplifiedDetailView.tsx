@@ -11,32 +11,35 @@ import {
   type ResourceKind,
 } from '@/pages/AttributeManagementHub/hubData';
 import DefinitionValues from './DefinitionValues';
-import AppliesToSection from './AppliesToSection';
+import AppliesToSection, {
+  type AppliesToRowSummaryVariant,
+} from './AppliesToSection';
 import WhoCanEdit from './WhoCanEdit';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
+import {
+  SIMPLIFIED_ATTR_TYPES,
+  assignSequentialTiers,
+  comparesRank,
+  displayType,
+  markHierarchical,
+  stripTiers,
+  type SimplifiedAttrType,
+} from './simplifiedModel';
 import styles from './SimplifiedDetailView.module.scss';
-
-const ATTR_TYPES: AttrType[] = [
-  'Select',
-  'Multiselect',
-  'Ranked',
-  'Ranked-hierarchical',
-  'Text',
-];
 
 export interface SimplifiedDetailViewProps {
   attribute: HubAttribute;
   /** Blank/guided create mode. */
   creating?: boolean;
-  onDefinitionChange: (next: Partial<Pick<HubAttribute, 'name' | 'type'>>) => void;
+  onDefinitionChange: (next: Partial<Pick<HubAttribute, 'name' | 'type' | 'values'>>) => void;
   onAddValue: (label: string, asTier?: boolean) => void;
   onAddChild: (parentId: string, label: string) => void;
   onToggleValueDisabled: (valueId: string) => void;
   onDeleteValue: (valueId: string) => void;
   onReorderValue: (valueId: string, dir: -1 | 1) => void;
+  onRelabelValue: (valueId: string, label: string) => void;
+  onSetValueRank: (valueId: string, tier: number) => void;
   onValuesLockedAttempt: () => void;
-  onReuse: () => void;
-  onUnlink: () => void;
   onBindingChange: (resource: ResourceKind, next: Partial<ResourceConfig>) => void;
   onReadIntoFilteringChange: (value: boolean) => void;
   onAddResource: (resource: ResourceKind) => void;
@@ -47,6 +50,8 @@ export interface SimplifiedDetailViewProps {
   onManageSource: () => void;
   /** Refs the Name field for create-mode auto-focus. */
   nameRef?: (el: HTMLInputElement | null) => void;
+  /** Collapsed applies-to row summary display. */
+  appliesToRowSummary?: AppliesToRowSummaryVariant;
 }
 
 export default function SimplifiedDetailView({
@@ -58,9 +63,9 @@ export default function SimplifiedDetailView({
   onToggleValueDisabled,
   onDeleteValue,
   onReorderValue,
+  onRelabelValue,
+  onSetValueRank,
   onValuesLockedAttempt,
-  onReuse,
-  onUnlink,
   onBindingChange,
   onReadIntoFilteringChange,
   onAddResource,
@@ -70,18 +75,42 @@ export default function SimplifiedDetailView({
   onConnectSource,
   onManageSource,
   nameRef,
+  appliesToRowSummary = 'chips',
 }: SimplifiedDetailViewProps) {
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
   const nameReadOnly = sourceOwned;
-  const typeReadOnly = sourceOwned || !!attribute.valuesLink || policyLocked;
+  const typeReadOnly = sourceOwned || policyLocked;
+  const currentType = displayType(attribute);
+
+  const handleTypeChange = (next: SimplifiedAttrType) => {
+    const wasRanked = comparesRank(currentType);
+    const willRanked = comparesRank(next);
+    const updates: Partial<HubAttribute> = {};
+
+    if (next === 'Hierarchical') {
+      markHierarchical(attribute.id, true);
+      updates.type = 'Ranked-hierarchical' as AttrType;
+    } else {
+      markHierarchical(attribute.id, false);
+      updates.type = next as AttrType;
+    }
+
+    if (willRanked && !wasRanked) {
+      updates.values = assignSequentialTiers(attribute.values);
+    } else if (!willRanked && wasRanked) {
+      updates.values = stripTiers(attribute.values);
+    }
+
+    onDefinitionChange(updates);
+  };
 
   return (
     <div className={styles['detail']}>
       {/* Merged Definition = Name · Type · adaptive Values (+ synced status). */}
       <ConsolePanel
         title="Definition"
-        subtitle="Name, type, allowed values, and editors."
+        subtitle="Name, type, options, and editors."
       >
         <div className={styles['detail__def']}>
           <div className={styles['detail__row']}>
@@ -106,20 +135,20 @@ export default function SimplifiedDetailView({
               <Select
                 className={styles['detail__input']}
                 size="Medium"
-                value={attribute.type}
-                disabled={typeReadOnly}
+                value={currentType}
+                readOnly={typeReadOnly}
                 aria-label="Attribute type"
                 onChange={(e) =>
-                  onDefinitionChange({ type: e.target.value as AttrType })
+                  handleTypeChange(e.target.value as SimplifiedAttrType)
                 }
               >
-                {ATTR_TYPES.map((t) => (
+                {SIMPLIFIED_ATTR_TYPES.map((t) => (
                   <option key={t} value={t}>
                     {t}
                   </option>
                 ))}
               </Select>
-              {policyLocked && !sourceOwned && !attribute.valuesLink && (
+              {policyLocked && !sourceOwned && (
                 <p className={styles['detail__lock']}>
                   Locked — used by {attribute.usedByPolicies}{' '}
                   {attribute.usedByPolicies === 1 ? 'policy' : 'policies'}.
@@ -129,24 +158,26 @@ export default function SimplifiedDetailView({
             </div>
           </div>
 
-          <div className={styles['detail__row']}>
-            <span className={styles['detail__key']}>Values</span>
-            <div className={styles['detail__field']}>
-              <DefinitionValues
-                attribute={attribute}
-                onAddValue={onAddValue}
-                onAddChild={onAddChild}
-                onToggleDisabled={onToggleValueDisabled}
-                onDeleteValue={onDeleteValue}
-                onReorder={onReorderValue}
-                onLockedAttempt={onValuesLockedAttempt}
-                onReuse={onReuse}
-                onUnlink={onUnlink}
-                onConnectSource={onConnectSource}
-                onManageSource={onManageSource}
-              />
+          {currentType !== 'Text' && (
+            <div className={styles['detail__row']}>
+              <span className={styles['detail__key']}>Options</span>
+              <div className={styles['detail__field']}>
+                <DefinitionValues
+                  attribute={attribute}
+                  onAddValue={onAddValue}
+                  onAddChild={onAddChild}
+                  onToggleDisabled={onToggleValueDisabled}
+                  onDeleteValue={onDeleteValue}
+                  onReorder={onReorderValue}
+                  onRelabel={onRelabelValue}
+                  onSetRank={onSetValueRank}
+                  onLockedAttempt={onValuesLockedAttempt}
+                  onConnectSource={onConnectSource}
+                  onManageSource={onManageSource}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <div className={styles['detail__row']}>
             <span className={styles['detail__key']}>Who can edit</span>
@@ -179,6 +210,7 @@ export default function SimplifiedDetailView({
           onReadIntoFilteringChange={onReadIntoFilteringChange}
           onAddResource={onAddResource}
           onRemoveResource={onRemoveResource}
+          rowSummaryVariant={appliesToRowSummary}
         />
       </ConsolePanel>
     </div>

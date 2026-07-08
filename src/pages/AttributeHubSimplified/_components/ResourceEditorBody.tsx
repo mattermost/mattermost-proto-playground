@@ -1,6 +1,6 @@
 import ResourceConfigPanel from '@/pages/AttributeManagementHub/_components/AppliesToEditor/ResourceConfigPanel';
-import SimplifiedResourceValuesPanel from './SimplifiedResourceValuesPanel';
 import SimplifiedWhoCanSetEditor from './SimplifiedWhoCanSetEditor';
+import SimplifiedResourceAdvanced from './SimplifiedResourceAdvanced';
 import type { HubAttribute, ResourceConfig } from '@/pages/AttributeManagementHub/hubData';
 import styles from './ResourceEditorBody.module.scss';
 
@@ -11,7 +11,11 @@ export interface ResourceEditorBodyProps {
   onReadIntoFilteringChange: (value: boolean) => void;
 }
 
-/** Per-resource editor tuned for the simplified applies-to layout. */
+/**
+ * Per-resource editor for the Simplified applies-to layout. Standard fields
+ * reuse ResourceConfigPanel; inheritance, renaming, and allowed-option subsets
+ * live under a collapsed Advanced section (MVP-aligned).
+ */
 export default function ResourceEditorBody({
   attribute,
   config,
@@ -26,6 +30,7 @@ export default function ResourceEditorBody({
         onChange={onChange}
         onReadIntoFilteringChange={onReadIntoFilteringChange}
         layout="simplified"
+        suppressInheritance
         whoCanSetSlot={
           <SimplifiedWhoCanSetEditor
             attribute={attribute}
@@ -34,7 +39,8 @@ export default function ResourceEditorBody({
           />
         }
       />
-      <SimplifiedResourceValuesPanel
+
+      <SimplifiedResourceAdvanced
         attribute={attribute}
         config={config}
         onChange={onChange}

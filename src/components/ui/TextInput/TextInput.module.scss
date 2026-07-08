@@ -31,7 +31,7 @@
       box-shadow: 0 0 0 1px var(--button-bg);
     }
 
-    .textInput:has(.textInput__input:disabled) & {
+    .textInput:has(.textInput__input:disabled):not(.textInput--read-only) & {
       border-color: rgba(var(--center-channel-color-rgb), 0.16);
       background-color: var(--center-channel-bg);
       opacity: 0.56;
@@ -249,6 +249,26 @@
   &:has(.textInput__label):not(&--label-floated)
     .textInput__input::placeholder {
     color: transparent;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Read-only modifier — locked fields that still display authoritative values.
+  // ---------------------------------------------------------------------------
+  &--read-only {
+    .textInput__wrapper {
+      opacity: 1;
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    .textInput__input {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+      cursor: default;
+    }
+
+    .textInput__label {
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    }
   }
 
   // ---------------------------------------------------------------------------
