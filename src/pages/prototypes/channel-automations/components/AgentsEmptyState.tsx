@@ -22,7 +22,7 @@ export default function AgentsEmptyState({
       size="Small"
       emphasis="Tertiary"
       icon="lightning"
-      label="Create a channel automation"
+      label="Create an automation"
       onSelectAgent={onCreateForAgent}
     />
   ) : (
@@ -32,7 +32,7 @@ export default function AgentsEmptyState({
       leadingIcon={<Icon size="16" glyph={<CreationOutlineIcon />} />}
       onClick={onCreate}
     >
-      Create a channel automation
+      Create an automation
     </Button>
   );
 

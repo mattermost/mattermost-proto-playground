@@ -19,7 +19,7 @@ export type PrototypeEntry = {
 export const PROTOTYPES: PrototypeEntry[] = [
   {
     id: 'channel-automations',
-    label: 'Automations within Agents',
+    label: 'Option 1: Automations within Agents',
     description:
       'Automations are part of the configuration for an agent. Users must have access to edit the agent in order to create an automation for an agent.',
     path: '/prototypes/channel-automations',
@@ -27,7 +27,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
   },
   {
     id: 'standalone-automations',
-    label: 'Standalone Automations - Using agents to execute',
+    label: 'Option 2: Standalone Automations - Using agents to execute',
     description:
       'Automations are distinct entities from agents, but they use agents to execute the automation',
     path: '/prototypes/standalone-automations',
@@ -35,7 +35,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
   },
   {
     id: 'automation-agents',
-    label: 'Automations are agents',
+    label: 'Option 3: Automations are agents',
     description:
       'Automations are a special type of agent. They have all the same configuration and guardrails as agents, but have the additional ability to execute on triggers',
     path: '/prototypes/automation-agents',
