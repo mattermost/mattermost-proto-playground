@@ -50,6 +50,7 @@ import AttributeManagementHub from '@/pages/AttributeManagementHub/AttributeMana
 import AttributeHubBasicsAdvanced from '@/pages/AttributeHubBasicsAdvanced/AttributeHubBasicsAdvanced';
 import AttributeHubStreamlined from '@/pages/AttributeHubStreamlined/AttributeHubStreamlined';
 import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubSimplified';
+import AttributeHubTeamSettings from '@/pages/AttributeHubTeamSettings/AttributeHubTeamSettings';
 import WhoCanSetOptions from '@/pages/WhoCanSetOptions/WhoCanSetOptions';
 
 export type PrototypeGroup =
@@ -99,6 +100,8 @@ export type PrototypeEntry = {
   addedAt: string; // ISO date YYYY-MM-DD, used for recency sorting
   isPrimary?: boolean; // primary/index entry for a group — shown in the "Recently Updated" strip
   collections?: PrototypeCollection[];
+  /** When true, prototype chrome shows only back + center slot (no title label). */
+  hideChromeTitle?: boolean;
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
@@ -153,6 +156,20 @@ export const PROTOTYPES: PrototypeEntry[] = [
     addedAt: '2026-07-06',
     isPrimary: true,
     collections: ['attribute-management'],
+  },
+  // Team + Channel settings modals — simplified hub scoped per resource level (2026-07-07)
+  {
+    id: 'attribute-hub-team-settings',
+    label: 'Attribute Management · Resource settings',
+    path: '/prototypes/attribute-hub-team-settings',
+    component: AttributeHubTeamSettings,
+    group: 'zero-trust-abac',
+    description:
+      'Simplified attribute hub inside Team settings and Channel settings modals, plus a channel thread view with post attributes in the right sidebar. Top tabs switch between Team settings, Channel settings, and Channel · thread. Team settings: one catalog for attributes applying to the team, its channels, and posts. Channel settings: catalog for this channel and posts. Channel · thread: open thread RHS lists all post attributes on the root message (inherited, overridden, locked); + Add attribute opens Channel settings on the new-attribute flow with Posts pre-selected in Applies to. Deep-links: ?view=team|channel|channel-thread, ?tab=attributes, ?attr=<id>, ?flow=new, ?applies=Posts|Channels|Posts,Channels.',
+    addedAt: '2026-07-07',
+    isPrimary: true,
+    collections: ['attribute-management'],
+    hideChromeTitle: true,
   },
   // Drill-in re-ideation after "kitchen sink" feedback — A/B comparison (2026-07-06)
   {

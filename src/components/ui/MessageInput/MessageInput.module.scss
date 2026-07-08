@@ -75,6 +75,10 @@
     }
   }
 
+  &__body--composer-header {
+    padding-top: var(--spacing-s);
+  }
+
   &__priority-row {
     padding-bottom: var(--spacing-xs);
   }
@@ -186,6 +190,12 @@
     flex: 1;
     min-width: 0;
     overflow: hidden;
+  }
+
+  &__toolbar-leading {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
 
   &__toolbar-group {

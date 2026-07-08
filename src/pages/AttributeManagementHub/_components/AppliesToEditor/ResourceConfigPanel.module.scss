@@ -268,3 +268,23 @@
   text-decoration: underline;
   cursor: help;
 }
+
+.panel--read-only {
+  .field__control {
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+
+  .combobox-slot {
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    box-sizing: border-box;
+    pointer-events: none;
+  }
+}

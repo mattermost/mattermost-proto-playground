@@ -58,6 +58,8 @@ export interface ChannelShellProps {
   overlay?: ReactNode;
   /** Scrim + modal confined to the inner panel (center + trailing), not sidebars. */
   innerPanelOverlay?: ReactNode;
+  /** Card preview (default) or edge-to-edge fullscreen for prototype scenes. */
+  layout?: 'card' | 'fullscreen';
   className?: string;
 }
 
@@ -78,9 +80,16 @@ export default function ChannelShell({
   floating,
   overlay,
   innerPanelOverlay,
+  layout = 'card',
   className = '',
 }: ChannelShellProps) {
-  const rootClass = [styles['channel-shell'], className].filter(Boolean).join(' ');
+  const rootClass = [
+    styles['channel-shell'],
+    layout === 'fullscreen' ? styles['channel-shell--fullscreen'] : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const useInnerOnly = innerContent != null;
 
   const sidebarContent =

@@ -19,6 +19,7 @@ import GuardrailDialog, {
 import { HUB_ACTIVE_ITEM, HUB_SIDEBAR_CATEGORIES } from './hubSidebar';
 import {
   HUB_ATTRIBUTES,
+  coerceAppliesToForType,
   defaultAccessModel,
   defaultResourceConfig,
   isPolicyLocked,
@@ -392,7 +393,13 @@ export default function AttributeManagementHub() {
     next: Partial<Pick<HubAttribute, 'name' | 'type' | 'description'>>,
   ) => {
     if (!selected) return;
-    patch(selected.id, (a) => ({ ...a, ...next }));
+    patch(selected.id, (a) => {
+      const merged = { ...a, ...next };
+      if (next.type != null && next.type !== a.type) {
+        merged.appliesTo = coerceAppliesToForType(merged.type, merged.appliesTo);
+      }
+      return merged;
+    });
   };
 
   const handleCreate = (draft: WizardDraft) => {

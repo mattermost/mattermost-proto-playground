@@ -10,6 +10,7 @@ export type GuardrailKind =
   | 'values-locked'
   | 'deactivate-blocked'
   | 'delete-blocked'
+  | 'delete-confirm'
   | 'unlink-gated'
   | 'source-stale'
   | 'remove-binding';
@@ -78,6 +79,15 @@ function copyFor(kind: GuardrailKind, c: GuardrailContext) {
         noticeTitle: `${c.attributeName} is still in use`,
         body: 'Remove policy references and resource bindings before deleting this attribute. Deactivate first if you need to stop new assignments while existing values remain.',
         confirmLabel: undefined,
+        primary: undefined,
+      };
+    case 'delete-confirm':
+      return {
+        title: `Delete “${c.attributeName}”?`,
+        tone: 'Danger' as const,
+        noticeTitle: `${c.attributeName} will be removed`,
+        body: 'This action cannot be undone. Existing values on resources will be hidden.',
+        confirmLabel: 'Delete attribute',
         primary: undefined,
       };
     case 'unlink-gated':

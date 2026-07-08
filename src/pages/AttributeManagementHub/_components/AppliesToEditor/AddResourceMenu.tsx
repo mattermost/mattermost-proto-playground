@@ -16,6 +16,10 @@ export interface AddResourceMenuProps {
   emphasis?: 'Primary' | 'Secondary' | 'Tertiary';
   size?: 'Small' | 'Medium';
   align?: FixedPopoverAlign;
+  /** When set, only these resource kinds appear in the add menu. */
+  allowedResources?: ResourceKind[];
+  /** Override display labels for resource kinds. */
+  resourceLabels?: Partial<Record<ResourceKind, string>>;
 }
 
 export default function AddResourceMenu({
@@ -24,11 +28,13 @@ export default function AddResourceMenu({
   emphasis = 'Tertiary',
   size = 'Small',
   align = 'start',
+  allowedResources = ALL_RESOURCES,
+  resourceLabels,
 }: AddResourceMenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
 
-  const available = ALL_RESOURCES.filter((r) => !applied.includes(r));
+  const available = allowedResources.filter((r) => !applied.includes(r));
 
   return (
     <div className={styles['add']}>
@@ -54,7 +60,7 @@ export default function AddResourceMenu({
             {available.map((r) => (
               <MenuItem
                 key={r}
-                label={r}
+                label={resourceLabels?.[r] ?? r}
                 leadingVisual={resourceIcon(r)}
                 onClick={() => {
                   setOpen(false);

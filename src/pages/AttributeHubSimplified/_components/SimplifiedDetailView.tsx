@@ -13,7 +13,6 @@ import {
 import DefinitionValues from './DefinitionValues';
 import AppliesToSection from './AppliesToSection';
 import WhoCanEdit from './WhoCanEdit';
-import AttributeSourceField from './AttributeSourceField';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import styles from './SimplifiedDetailView.module.scss';
 
@@ -48,6 +47,13 @@ export interface SimplifiedDetailViewProps {
   onManageSource: () => void;
   /** Refs the Name field for create-mode auto-focus. */
   nameRef?: (el: HTMLInputElement | null) => void;
+  allowedResources?: ResourceKind[];
+  appliesToEmptyDescription?: string;
+  resourceLabels?: Partial<Record<ResourceKind, string>>;
+  /** View-only detail — synced or policy-bound attributes in resource settings. */
+  readOnly?: boolean;
+  /** Hide reuse-values and external source UI (team/channel settings). */
+  hideSourceUi?: boolean;
 }
 
 export default function SimplifiedDetailView({
@@ -71,18 +77,23 @@ export default function SimplifiedDetailView({
   onConnectSource,
   onManageSource,
   nameRef,
+  allowedResources,
+  appliesToEmptyDescription,
+  resourceLabels,
+  readOnly = false,
+  hideSourceUi = false,
 }: SimplifiedDetailViewProps) {
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
-  const nameReadOnly = sourceOwned;
-  const typeReadOnly = sourceOwned || !!attribute.valuesLink || policyLocked;
+  const nameReadOnly = readOnly || sourceOwned;
+  const typeReadOnly = readOnly || sourceOwned || !!attribute.valuesLink || policyLocked;
 
   return (
     <div className={styles['detail']}>
       {/* Merged Definition = Name · Type · adaptive Values (+ synced status). */}
       <ConsolePanel
         title="Definition"
-        subtitle="Name, type, value source, allowed values, and editors."
+        subtitle="Name, type, allowed values, and editors."
       >
         <div className={styles['detail__def']}>
           <div className={styles['detail__row']}>
@@ -93,7 +104,8 @@ export default function SimplifiedDetailView({
                 className={styles['detail__input']}
                 size="Medium"
                 value={attribute.name}
-                readOnly={nameReadOnly}
+                disabled={nameReadOnly}
+                locked={nameReadOnly}
                 placeholder={creating ? 'Name this attribute' : undefined}
                 aria-label="Attribute name"
                 onChange={(e) => onDefinitionChange({ name: e.target.value })}
@@ -109,6 +121,7 @@ export default function SimplifiedDetailView({
                 size="Medium"
                 value={attribute.type}
                 disabled={typeReadOnly}
+                locked={typeReadOnly}
                 aria-label="Attribute type"
                 onChange={(e) =>
                   onDefinitionChange({ type: e.target.value as AttrType })
@@ -130,22 +143,13 @@ export default function SimplifiedDetailView({
             </div>
           </div>
 
-          <div className={[styles['detail__row'], styles['detail__row--chip-align']].join(' ')}>
-            <span className={styles['detail__key']}>Value source</span>
-            <div className={styles['detail__field']}>
-              <AttributeSourceField
-                attribute={attribute}
-                onConnect={onConnectSource}
-                onManage={onManageSource}
-              />
-            </div>
-          </div>
-
           <div className={styles['detail__row']}>
             <span className={styles['detail__key']}>Values</span>
             <div className={styles['detail__field']}>
               <DefinitionValues
                 attribute={attribute}
+                readOnly={readOnly}
+                hideSourceUi={hideSourceUi}
                 onAddValue={onAddValue}
                 onAddChild={onAddChild}
                 onToggleDisabled={onToggleValueDisabled}
@@ -154,6 +158,8 @@ export default function SimplifiedDetailView({
                 onLockedAttempt={onValuesLockedAttempt}
                 onReuse={onReuse}
                 onUnlink={onUnlink}
+                onConnectSource={readOnly ? undefined : onConnectSource}
+                onManageSource={readOnly ? undefined : onManageSource}
               />
             </div>
           </div>
@@ -164,6 +170,7 @@ export default function SimplifiedDetailView({
               <WhoCanEdit
                 attribute={attribute}
                 editors={editors}
+                readOnly={readOnly}
                 onChange={onEditorsChange}
               />
             </div>
@@ -176,19 +183,27 @@ export default function SimplifiedDetailView({
         title="Applies to"
         subtitle="Resources this attribute applies to, and who can set the value on each."
         trailing={
-          <AddResourceMenu
-            applied={attribute.appliesTo.map((c) => c.resource)}
-            onAdd={onAddResource}
-            align="end"
-          />
+          readOnly ? undefined : (
+            <AddResourceMenu
+              applied={attribute.appliesTo.map((c) => c.resource)}
+              onAdd={onAddResource}
+              align="end"
+              allowedResources={allowedResources}
+              resourceLabels={resourceLabels}
+            />
+          )
         }
       >
         <AppliesToSection
           attribute={attribute}
+          readOnly={readOnly}
           onBindingChange={onBindingChange}
           onReadIntoFilteringChange={onReadIntoFilteringChange}
           onAddResource={onAddResource}
           onRemoveResource={onRemoveResource}
+          allowedResources={allowedResources}
+          resourceLabels={resourceLabels}
+          emptyDescription={appliesToEmptyDescription}
         />
       </ConsolePanel>
     </div>

@@ -26,6 +26,7 @@ export interface WhoCanEditProps {
   attribute: HubAttribute;
   editors: { roles: AccessGrant[]; users: AccessGrant[] };
   onChange: (next: { roles: AccessGrant[]; users: AccessGrant[] }) => void;
+  readOnly?: boolean;
 }
 
 function matchesQuery(value: string, query: string): boolean {
@@ -36,7 +37,7 @@ function matchesQuery(value: string, query: string): boolean {
  * Unified role/user picker for "Who can edit" — chips plus a single combobox
  * that opens a role list on focus and filters roles and users while typing.
  */
-export default function WhoCanEdit({ editors, onChange }: WhoCanEditProps) {
+export default function WhoCanEdit({ editors, onChange, readOnly = false }: WhoCanEditProps) {
   const fieldRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
@@ -102,6 +103,46 @@ export default function WhoCanEdit({ editors, onChange }: WhoCanEditProps) {
   const placeholder = hasSelections
     ? 'Enter roles, groups, or users…'
     : 'Enter roles, groups, or users to allow…';
+
+  if (readOnly) {
+    return (
+      <div className={styles['edit']}>
+        <div className={[styles['edit__field'], styles['edit__field--locked']].join(' ')}>
+          {editors.roles.map((grant) => (
+            <Chip
+              key={`role-${grant.subject}`}
+              size="Medium"
+              leadingIcon={<AccountOutlineIcon />}
+            >
+              {grant.subject}
+              {grant.owner ? ' · Owner' : ''}
+            </Chip>
+          ))}
+          {editors.users.map((grant) => {
+            const profile = EDITOR_USER_OPTIONS.find((user) => user.name === grant.subject);
+            return (
+              <Chip
+                key={`user-${grant.subject}`}
+                size="Medium"
+                leadingAvatar={
+                  profile
+                    ? { src: profile.avatarSrc, alt: grant.subject }
+                    : undefined
+                }
+                leadingIcon={profile ? undefined : <AccountOutlineIcon />}
+              >
+                {grant.subject}
+                {grant.owner ? ' · Owner' : ''}
+              </Chip>
+            );
+          })}
+          {!hasSelections && (
+            <span className={styles['edit__caption']}>No editors configured.</span>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles['edit']}>

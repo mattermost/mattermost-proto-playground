@@ -38,6 +38,14 @@ export interface MessageInputProps {
   stackedBelowRail?: boolean;
   /** Optional controls rendered inside the action row, left of the Aa button. */
   leadingActions?: ReactNode;
+  /** When true, the formatting toolbar starts expanded instead of behind the Aa toggle. */
+  formattingBarDefaultOpen?: boolean;
+  /** Optional controls at the start of the formatting toolbar (wide bar or narrow strip). */
+  formattingToolbarLeading?: ReactNode;
+  /** Optional content above the textarea inside the composer body (e.g. attribute chips). */
+  composerHeader?: ReactNode;
+  /** Called when the user sends a non-empty message. Clears the input after send. */
+  onSend?: (text: string) => void;
 }
 
 export default function MessageInput({
@@ -48,9 +56,13 @@ export default function MessageInput({
   width = 'wide',
   stackedBelowRail = false,
   leadingActions,
+  formattingBarDefaultOpen = false,
+  formattingToolbarLeading,
+  composerHeader,
+  onSend,
 }: MessageInputProps) {
   const [text, setText] = useState('');
-  const [formattingOpen, setFormattingOpen] = useState(false);
+  const [formattingOpen, setFormattingOpen] = useState(formattingBarDefaultOpen);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInput = useCallback(() => {
@@ -61,6 +73,17 @@ export default function MessageInput({
   }, []);
 
   const hasSendValue = text.trim().length > 0;
+
+  const handleSend = useCallback(() => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    onSend?.(trimmed);
+    setText('');
+    const el = textareaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+    }
+  }, [onSend, text]);
 
   const cls = (base: string, ...mods: (string | false | undefined)[]) =>
     [styles[base], ...mods.map((m) => (m ? styles[m] : ''))]
@@ -131,6 +154,7 @@ export default function MessageInput({
           className={styles['message-input__send-main']}
           aria-label="Send message"
           disabled={!hasSendValue}
+          onClick={handleSend}
         >
           <Icon glyph={<SendIcon />} size="16" />
         </button>
@@ -182,8 +206,10 @@ export default function MessageInput({
             'message-input__body',
             formattingOpen ? 'message-input__body--formatting-open' : '',
             leadingActions ? 'message-input__body--leading-actions' : '',
+            composerHeader ? 'message-input__body--composer-header' : '',
           )}
         >
+          {composerHeader}
           {showPriorityIndicator && (
             <div className={styles['message-input__priority-row']}>
               <LabelTag
@@ -204,6 +230,12 @@ export default function MessageInput({
             value={text}
             onChange={(e) => setText(e.target.value)}
             onInput={handleInput}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
             rows={1}
           />
         </div>
@@ -239,6 +271,17 @@ export default function MessageInput({
           aria-hidden={!showWideFormattingBar}
         >
           <div className={styles['message-input__toolbar-controls']}>
+            {formattingToolbarLeading != null && (
+              <>
+                <div className={styles['message-input__toolbar-leading']}>
+                  {formattingToolbarLeading}
+                </div>
+                <span
+                  className={styles['message-input__toolbar-divider']}
+                  aria-hidden
+                />
+              </>
+            )}
             {/* Style */}
             <div className={styles['message-input__toolbar-group']}>
               <IconButton
@@ -339,6 +382,17 @@ export default function MessageInput({
             <div className={styles['message-input__narrow-chrome-left']}>
               {formattingOpen && (
                 <div className={styles['message-input__formatting-collapsed']}>
+                  {formattingToolbarLeading != null && (
+                    <>
+                      <div className={styles['message-input__toolbar-leading']}>
+                        {formattingToolbarLeading}
+                      </div>
+                      <span
+                        className={styles['message-input__toolbar-divider']}
+                        aria-hidden
+                      />
+                    </>
+                  )}
                   <IconButton
                     icon={<Icon glyph={<FormatBoldIcon />} size="16" />}
                     size="Small"

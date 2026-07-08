@@ -60,17 +60,21 @@ export default function WhoCanSetEditor({
     attribute.usedByPolicies === 1 ? 'policy' : 'policies'
   }`;
 
-  // R3 — locked by parent inheritance.
   if (inheritLock.locked && inheritLock.parent) {
+    const lockDescription =
+      resource === 'Posts'
+        ? 'The value is inherited and locked from the channel. Turn off Inherits from channel on posts to unlock who can set the value.'
+        : `The value is inherited and locked from ${
+            PARENT_OWNER[inheritLock.parent]
+          }. It can't be set on ${resource.toLowerCase()} directly — change the inheritance on ${inheritLock.parent} to unlock.`;
+
     return (
       <div className={styles['editor']}>
         <span className={styles['label']}>Who can set the value</span>
         <SectionNotice
           type="Info"
           title={`Locked to ${inheritLock.parent}`}
-          description={`The value is inherited and locked from ${
-            PARENT_OWNER[inheritLock.parent]
-          }. It can't be set on ${resource.toLowerCase()} directly — change the inheritance on ${inheritLock.parent} to unlock.`}
+          description={lockDescription}
         />
       </div>
     );

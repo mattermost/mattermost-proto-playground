@@ -6,7 +6,6 @@ import Radio from '@/components/ui/Radio/Radio';
 import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
 import {
-  channelBinding,
   channelDisplayIncludes,
   isChannelDisplayHidden,
   isSourceOwned,
@@ -16,14 +15,18 @@ import {
   readIntoActive,
   readIntoForced,
   resolveInheritMode,
+  coerceValueEditabilityForType,
   supportsChannelBanner,
   teamBinding,
+  VALUE_EDITABILITY_LABEL,
+  valueEditabilityOptionsForType,
   type HubAttribute,
   type InheritMode,
   type ResourceConfig,
   type UserProfileDisplay,
   type DisplayWhere,
   type PostDisplayLoc,
+  type ValueEditability,
 } from '../../hubData';
 import styles from './ResourceConfigPanel.module.scss';
 
@@ -36,6 +39,7 @@ export interface ResourceConfigPanelProps {
   whoCanSetSlot?: ReactNode;
   /** Simplified hub — Definition-aligned labels and spacing. */
   layout?: 'default' | 'simplified';
+  readOnly?: boolean;
 }
 
 interface FieldProps {
@@ -263,17 +267,6 @@ function PostDisplaySelect({
   );
 }
 
-function postInheritFromChannelReflection(mode: InheritMode): string {
-  switch (mode) {
-    case 'inherit-lock':
-      return 'Locked to the channel’s value.';
-    case 'inherit':
-      return 'Inherits from the channel. Authors can lower but not raise it.';
-    default:
-      return 'Not inherited. Set independently on each post.';
-  }
-}
-
 function channelInheritFromTeamReflection(mode: InheritMode): string {
   switch (mode) {
     case 'inherit-lock':
@@ -298,28 +291,32 @@ export default function ResourceConfigPanel({
   onReadIntoFilteringChange,
   whoCanSetSlot,
   layout = 'default',
+  readOnly = false,
 }: ResourceConfigPanelProps) {
   const sourceOwned = isSourceOwned(attribute);
+  const inputsLocked = sourceOwned || readOnly;
   const isUsers = config.resource === 'Users';
   const isChannels = config.resource === 'Channels';
   const isPosts = config.resource === 'Posts';
   const isTeams = config.resource === 'Teams';
-  const channelCfg = channelBinding(attribute);
-  const channelInherit: InheritMode = channelCfg
-    ? resolveInheritMode(channelCfg)
-    : 'off';
   const teamConfig = teamBinding(attribute);
   const teamInherit: InheritMode = teamConfig
     ? resolveInheritMode(teamConfig)
     : 'off';
   const readIntoLocked = readIntoForced(attribute);
   const showReadIntoReflection = !isUsers && readIntoActive(attribute);
+  const valueEditabilityOptions = valueEditabilityOptionsForType(attribute.type);
+  const valueEditability = coerceValueEditabilityForType(
+    attribute.type,
+    config.valueEditability,
+  );
 
   return (
     <div
       className={[
         styles['panel'],
         layout === 'simplified' ? styles['panel--simplified'] : '',
+        readOnly ? styles['panel--read-only'] : '',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -333,11 +330,30 @@ export default function ResourceConfigPanel({
           <Switch
             size="Small"
             checked={config.required}
-            disabled={sourceOwned}
+            disabled={inputsLocked}
             onChange={(e) => onChange({ required: e.target.checked })}
           >
             {config.required ? 'On' : 'Off'}
           </Switch>
+        </Field>
+      )}
+
+      {!isUsers && (
+        <Field
+          layout={layout}
+          label="Value editability after set"
+          hint="Whether an assigned value may change, and how."
+        >
+          <Segmented<ValueEditability>
+            value={valueEditability}
+            ariaLabel="Value editability after set"
+            options={valueEditabilityOptions.map((key) => ({
+              key,
+              label: VALUE_EDITABILITY_LABEL[key],
+              disabled: inputsLocked,
+            }))}
+            onChange={(next) => onChange({ valueEditability: next })}
+          />
         </Field>
       )}
 
@@ -426,33 +442,25 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {isChannels && (
+      {isPosts && (
         <Field
           layout={layout}
-          label="Inherit to posts"
-          hint={
-            <span className={styles['field__hint-row']}>
-              <span>
-                Posts inherit the channel’s value and can’t be set higher than
-                it.
-              </span>
-              <InfoHint
-                label="The ceiling rule"
-                hint="Example: a post in a Protected B channel can be Protected B or lower, never higher."
-              >
-                <span className={styles['help-link']}>What’s this?</span>
-              </InfoHint>
-            </span>
-          }
+          label="Inherits from channel"
+          hint="When on, posts use the channel value as a ceiling. Authors can lower but not raise it."
         >
-          <Segmented<InheritMode>
-            value={resolveInheritMode(config)}
-            ariaLabel="Inherit to posts"
-            options={INHERIT_MODE_OPTIONS}
-            onChange={(next) =>
-              onChange({ inheritMode: next, inheritToChild: undefined })
+          <Switch
+            size="Small"
+            checked={resolveInheritMode(config) !== 'off'}
+            disabled={inputsLocked}
+            onChange={(e) =>
+              onChange({
+                inheritMode: e.target.checked ? 'inherit' : 'off',
+                inheritToChild: undefined,
+              })
             }
-          />
+          >
+            {resolveInheritMode(config) !== 'off' ? 'On' : 'Off'}
+          </Switch>
         </Field>
       )}
 
@@ -483,14 +491,6 @@ export default function ResourceConfigPanel({
               onChange({ inheritMode: next, inheritToChild: undefined })
             }
           />
-        </Field>
-      )}
-
-      {isPosts && (
-        <Field layout={layout} label="Inheritance from channel">
-          <span className={styles['reflection']}>
-            {postInheritFromChannelReflection(channelInherit)}
-          </span>
         </Field>
       )}
 

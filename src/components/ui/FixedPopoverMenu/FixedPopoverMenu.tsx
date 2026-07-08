@@ -17,6 +17,10 @@ export interface FixedPopoverMenuProps {
   menuRef?: RefObject<HTMLDivElement | null>;
   /** Minimum menu width regardless of anchor size. */
   minWidthFloor?: number;
+  /** Re-runs positioning when the anchor changes while open. */
+  repositionKey?: string | number | null;
+  /** Opens the menu above the anchor instead of below. */
+  preferAbove?: boolean;
 }
 
 /**
@@ -33,10 +37,18 @@ export default function FixedPopoverMenu({
   className = '',
   menuRef: menuRefProp,
   minWidthFloor,
+  repositionKey,
+  preferAbove = false,
 }: FixedPopoverMenuProps) {
   const internalMenuRef = useRef<HTMLDivElement>(null);
   const menuRef = menuRefProp ?? internalMenuRef;
-  const position = useFixedMenuPosition(open, anchorRef, { gap, align, minWidthFloor });
+  const position = useFixedMenuPosition(open, anchorRef, {
+    gap,
+    align,
+    minWidthFloor,
+    repositionKey,
+    preferAbove,
+  });
 
   usePopoverDismiss(open, onClose, [anchorRef, menuRef]);
 
@@ -49,6 +61,7 @@ export default function FixedPopoverMenu({
     top: position.top,
     width: position.minWidth,
     minWidth: position.minWidth,
+    ...(preferAbove ? { transform: 'translateY(-100%)' } : {}),
     ...(position.left != null
       ? { left: position.left }
       : { right: position.right }),

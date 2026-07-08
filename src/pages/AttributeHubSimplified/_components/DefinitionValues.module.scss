@@ -18,6 +18,11 @@
     background: rgba(var(--center-channel-color-rgb), 0.04);
     color: rgba(var(--center-channel-color-rgb), 0.75);
     font-size: var(--font-size-100);
+
+    &--locked {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
   }
 
   &__link-text {
@@ -41,15 +46,6 @@
   }
 
   &__chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxs);
-    padding: var(--spacing-xxs) var(--spacing-xs);
-    border-radius: var(--radius-full);
-    background: rgba(var(--center-channel-color-rgb), 0.08);
-    color: var(--center-channel-color);
-    font-size: var(--font-size-100);
-
     &--disabled {
       opacity: 0.5;
       text-decoration: line-through;
@@ -112,7 +108,15 @@
 
   &__footer {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-xs);
+  }
+
+  &__source-warning {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: var(--color-warning);
   }
 
   // ── Tree (Ranked-hierarchical) ──
@@ -120,6 +124,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-s);
+
+    &--locked {
+      padding: var(--spacing-s);
+      border-radius: var(--radius-s);
+      border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
   }
 
   &__tree-explainer {

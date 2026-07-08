@@ -3,13 +3,13 @@ import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
-import Chip from '@/components/ui/Chip/Chip';
 import EmptyState from '@/components/ui/EmptyState/EmptyState';
 import { resourceIcon } from '@/pages/AttributeManagementHub/resourceIcons';
 import type { HubAttribute, ResourceConfig, ResourceKind } from '@/pages/AttributeManagementHub/hubData';
+import { ALL_RESOURCES } from '@/pages/AttributeManagementHub/hubData';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import ResourceEditorBody from './ResourceEditorBody';
-import { summaryChips } from './appliesToModel';
+import { summaryLine } from './appliesToModel';
 import styles from './AppliesToSection.module.scss';
 
 export interface AppliesToSectionProps {
@@ -18,6 +18,11 @@ export interface AppliesToSectionProps {
   onReadIntoFilteringChange: (value: boolean) => void;
   onAddResource: (resource: ResourceKind) => void;
   onRemoveResource: (resource: ResourceKind) => void;
+  allowedResources?: ResourceKind[];
+  /** Override display labels for resource kinds (e.g. Channels → "This channel"). */
+  resourceLabels?: Partial<Record<ResourceKind, string>>;
+  emptyDescription?: string;
+  readOnly?: boolean;
 }
 
 /**
@@ -30,7 +35,13 @@ export default function AppliesToSection({
   onReadIntoFilteringChange,
   onAddResource,
   onRemoveResource,
+  allowedResources = ALL_RESOURCES,
+  resourceLabels,
+  emptyDescription = 'Add a resource to apply this attribute to users, channels, posts, or teams.',
+  readOnly = false,
 }: AppliesToSectionProps) {
+  const resourceLabel = (resource: ResourceKind) =>
+    resourceLabels?.[resource] ?? resource;
   const applied = attribute.appliesTo;
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [highlighted, setHighlighted] = useState<ResourceKind | null>(null);
@@ -67,16 +78,20 @@ export default function AppliesToSection({
         <div className={styles['applies__empty']}>
           <EmptyState
             title="No resources yet"
-            description="Add a resource to apply this attribute to users, channels, posts, or teams."
+            description={emptyDescription}
           />
-          <div className={[styles['applies__footer'], styles['applies__footer--center']].join(' ')}>
-            <AddResourceMenu
-              applied={appliedResources}
-              onAdd={handleAddResource}
-              emphasis="Primary"
-              size="Medium"
-            />
-          </div>
+          {!readOnly && (
+            <div className={[styles['applies__footer'], styles['applies__footer--center']].join(' ')}>
+              <AddResourceMenu
+                applied={appliedResources}
+                onAdd={handleAddResource}
+                emphasis="Primary"
+                size="Medium"
+                allowedResources={allowedResources}
+                resourceLabels={resourceLabels}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <>
@@ -109,48 +124,38 @@ export default function AppliesToSection({
                       aria-expanded={isOpen}
                       onClick={() => toggle(cfg.resource)}
                     >
-                    <Icon
-                      size="16"
-                      glyph={isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
-                    />
-                    <span className={styles['row__summary']}>
-                      <span className={styles['row__name']}>
-                        {resourceIcon(cfg.resource)}
-                        {cfg.resource}
+                      <span className={styles['row__title-row']}>
+                        <Icon
+                          size="16"
+                          glyph={isOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                        />
+                        <span className={styles['row__name']}>
+                          {resourceIcon(cfg.resource)}
+                          {resourceLabel(cfg.resource)}
+                        </span>
                       </span>
-                      <span
-                        className={[
-                          styles['row__chips'],
-                          isOpen ? styles['row__chips--hidden'] : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                        aria-hidden={isOpen}
-                      >
-                        {summaryChips(attribute, cfg).map((chip) => (
-                          <Chip key={chip} size="Small">
-                            {chip}
-                          </Chip>
-                        ))}
+                      <span className={styles['row__summary-text']}>
+                        {summaryLine(attribute, cfg)}
                       </span>
-                    </span>
-                  </button>
-                  <Button
-                    className={[
-                      styles['row__remove'],
-                      !isOpen ? styles['row__remove--hidden'] : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    emphasis="Quaternary"
-                    size="Small"
-                    destructive
-                    tabIndex={isOpen ? 0 : -1}
-                    aria-hidden={!isOpen}
-                    onClick={() => onRemoveResource(cfg.resource)}
-                  >
-                    Remove resource
-                  </Button>
+                    </button>
+                  {!readOnly && (
+                    <Button
+                      className={[
+                        styles['row__remove'],
+                        !isOpen ? styles['row__remove--hidden'] : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      emphasis="Quaternary"
+                      size="Small"
+                      destructive
+                      tabIndex={isOpen ? 0 : -1}
+                      aria-hidden={!isOpen}
+                      onClick={() => onRemoveResource(cfg.resource)}
+                    >
+                      Remove resource
+                    </Button>
+                  )}
                 </div>
                 <div
                   className={[
@@ -165,6 +170,7 @@ export default function AppliesToSection({
                       <ResourceEditorBody
                         attribute={attribute}
                         config={cfg}
+                        readOnly={readOnly}
                         onChange={(next) => onBindingChange(cfg.resource, next)}
                         onReadIntoFilteringChange={onReadIntoFilteringChange}
                       />
@@ -175,9 +181,16 @@ export default function AppliesToSection({
             );
           })}
           </div>
-          <div className={styles['applies__footer']}>
-            <AddResourceMenu applied={appliedResources} onAdd={handleAddResource} />
-          </div>
+          {!readOnly && (
+            <div className={styles['applies__footer']}>
+              <AddResourceMenu
+                applied={appliedResources}
+                onAdd={handleAddResource}
+                allowedResources={allowedResources}
+                resourceLabels={resourceLabels}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

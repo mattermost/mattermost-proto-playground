@@ -16,6 +16,7 @@ import {
 } from '@/pages/AttributeManagementHub/hubSidebar';
 import {
   HUB_ATTRIBUTES,
+  coerceAppliesToForType,
   defaultAccessModel,
   defaultResourceConfig,
   eligibility,
@@ -487,7 +488,18 @@ export default function AttributeHubSimplified() {
                 <SimplifiedDetailView
                   attribute={active}
                   creating={creating}
-                  onDefinitionChange={(next) => mutate((a) => ({ ...a, ...next }))}
+                  onDefinitionChange={(next) =>
+                    mutate((a) => {
+                      const merged = { ...a, ...next };
+                      if (next.type != null && next.type !== a.type) {
+                        merged.appliesTo = coerceAppliesToForType(
+                          merged.type,
+                          merged.appliesTo,
+                        );
+                      }
+                      return merged;
+                    })
+                  }
                   onAddValue={addValue}
                   onAddChild={addChild}
                   onToggleValueDisabled={toggleValueDisabled}

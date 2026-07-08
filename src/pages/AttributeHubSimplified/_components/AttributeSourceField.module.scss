@@ -4,6 +4,15 @@
   align-items: flex-start;
   gap: var(--spacing-s);
   max-width: 560px;
+
+  &--locked {
+    width: 100%;
+    padding: var(--spacing-s);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    box-sizing: border-box;
+  }
 }
 
 .source__lead {

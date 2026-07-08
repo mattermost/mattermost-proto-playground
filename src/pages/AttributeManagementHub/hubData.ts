@@ -77,6 +77,64 @@ export const POST_DISPLAY_LOCATIONS: PostDisplayLoc[] = [
 
 export type InheritMode = 'off' | 'inherit' | 'inherit-lock';
 
+/** Whether an assigned value may change after it is set on a resource. */
+export type ValueEditability = 'editable' | 'ratchet' | 'locked';
+
+export const VALUE_EDITABILITY_OPTIONS: ValueEditability[] = [
+  'editable',
+  'ratchet',
+  'locked',
+];
+
+export const VALUE_EDITABILITY_LABEL: Record<ValueEditability, string> = {
+  editable: 'Editable',
+  ratchet: 'Can only lower',
+  locked: 'Locked after set',
+};
+
+/** Ranked types may ratchet (lower-only) after set; select types may not. */
+export function supportsRatchetValueEditability(type: AttrType): boolean {
+  return type === 'Ranked' || type === 'Ranked-hierarchical';
+}
+
+export function valueEditabilityOptionsForType(
+  type: AttrType,
+): ValueEditability[] {
+  if (supportsRatchetValueEditability(type)) {
+    return VALUE_EDITABILITY_OPTIONS;
+  }
+  return VALUE_EDITABILITY_OPTIONS.filter((option) => option !== 'ratchet');
+}
+
+export function coerceValueEditabilityForType(
+  type: AttrType,
+  editability: ValueEditability | undefined,
+): ValueEditability {
+  const resolved = editability ?? 'editable';
+  if (resolved === 'ratchet' && !supportsRatchetValueEditability(type)) {
+    return 'editable';
+  }
+  return resolved;
+}
+
+export function coerceAppliesToForType(
+  type: AttrType,
+  appliesTo: ResourceConfig[],
+): ResourceConfig[] {
+  return appliesTo.map((cfg) => {
+    const valueEditability = coerceValueEditabilityForType(
+      type,
+      cfg.valueEditability,
+    );
+    if (valueEditability === cfg.valueEditability) return cfg;
+    return { ...cfg, valueEditability };
+  });
+}
+
+export function resolveValueEditability(cfg: ResourceConfig): ValueEditability {
+  return cfg.valueEditability ?? 'editable';
+}
+
 export type UserProfileDisplay = 'always' | 'hide-empty';
 
 /**
@@ -105,6 +163,8 @@ export interface ResourceConfig {
   userProfileDisplay?: UserProfileDisplay;
   /** Base value ids disabled for NEW assignments on this resource. */
   disabledValueIds?: string[];
+  /** Whether the value may change after assignment. */
+  valueEditability?: ValueEditability;
 }
 
 /** Capability delegation — owner + delegates per capability. */
@@ -260,8 +320,8 @@ export function whoCanSetLock(
   resource: ResourceKind,
 ): { locked: boolean; parent?: ResourceKind } {
   if (resource === 'Posts') {
-    const parent = channelBinding(a);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
+    const post = a.appliesTo.find((c) => c.resource === 'Posts');
+    if (post && resolveInheritMode(post) === 'inherit-lock') {
       return { locked: true, parent: 'Channels' };
     }
   }
@@ -562,14 +622,16 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
           ),
         ),
         showWhere: ['Header', 'Sidebar', 'Banner'],
-        inheritMode: 'inherit-lock',
         disabledValueIds: [],
+        valueEditability: 'locked',
       },
       {
         resource: 'Posts',
         required: false,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
+        inheritMode: 'inherit-lock',
+        valueEditability: 'locked',
       },
       {
         resource: 'Teams',
@@ -698,13 +760,13 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         required: false,
         whoCanSet: whoCanSet('Channel admin'),
         showWhere: ['Header', 'Sidebar'],
-        inheritMode: 'inherit',
       },
       {
         resource: 'Posts',
         required: false,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
+        inheritMode: 'inherit',
       },
     ],
     usedByPolicies: 0,
@@ -827,8 +889,8 @@ export function defaultResourceConfig(resource: ResourceKind): ResourceConfig {
         required: false,
         whoCanSet: whoCanSet('Channel admin'),
         showWhere: ['Header', 'Sidebar'],
-        inheritMode: 'off',
         disabledValueIds: [],
+        valueEditability: 'editable',
       };
     case 'Posts':
       return {
@@ -836,6 +898,8 @@ export function defaultResourceConfig(resource: ResourceKind): ResourceConfig {
         required: false,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Composer'],
+        inheritMode: 'off',
+        valueEditability: 'editable',
       };
     case 'Teams':
       return {
@@ -844,6 +908,7 @@ export function defaultResourceConfig(resource: ResourceKind): ResourceConfig {
         whoCanSet: whoCanSet('Team admin'),
         inheritMode: 'off',
         disabledValueIds: [],
+        valueEditability: 'editable',
       };
   }
 }

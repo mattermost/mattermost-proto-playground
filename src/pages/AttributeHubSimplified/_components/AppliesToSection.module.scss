@@ -51,7 +51,7 @@
   &__head-bar {
     position: relative;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--spacing-s);
     min-height: 46px;
 
@@ -77,10 +77,12 @@
   &__head {
     position: relative;
     z-index: 1;
-    display: flex;
+    display: grid;
     flex: 1;
-    align-items: center;
-    gap: var(--spacing-s);
+    grid-template-columns: auto 1fr;
+    column-gap: var(--spacing-s);
+    row-gap: var(--spacing-xxs);
+    align-items: start;
     min-width: 0;
     padding: var(--spacing-m);
     border: none;
@@ -90,10 +92,15 @@
     text-align: left;
   }
 
+  &__title-row {
+    display: contents;
+  }
+
   &__remove {
     position: relative;
     z-index: 1;
     flex-shrink: 0;
+    margin-top: var(--spacing-m);
     margin-right: var(--spacing-m);
 
     &--hidden {
@@ -106,18 +113,17 @@
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
-    flex-shrink: 0;
+    min-width: 0;
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
   }
 
-  &__summary {
-    display: flex;
-    flex: 1;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-s);
+  &__summary-text {
+    grid-column: 2;
     min-width: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
   }
 
   &__chips {

@@ -236,6 +236,30 @@
     color: transparent;
   }
 
+  &--locked {
+    .select__wrapper {
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+      border-color: rgba(var(--center-channel-color-rgb), 0.12);
+      opacity: 1;
+    }
+
+    &:has(.select__control:disabled) .select__wrapper {
+      opacity: 1;
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    .select__control:disabled {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      -webkit-text-fill-color: rgba(var(--center-channel-color-rgb), 0.72);
+      opacity: 1;
+      cursor: default;
+    }
+
+    .select__trailingIcon {
+      color: rgba(var(--center-channel-color-rgb), 0.48);
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Invalid modifier
   // ---------------------------------------------------------------------------

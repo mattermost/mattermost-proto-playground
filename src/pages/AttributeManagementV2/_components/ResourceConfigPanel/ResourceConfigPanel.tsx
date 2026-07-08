@@ -1,16 +1,13 @@
 import { type ReactNode } from 'react';
 import Switch from '@/components/ui/Switch/Switch';
-import HelpPopover from '../HelpPopover/HelpPopover';
 import DisabledControl from '../DisabledControl/DisabledControl';
 import {
   type Attribute,
   type ResourceBinding,
   type DisplayLocationOption,
   type DisplayLocations,
-  type InheritMode,
   type UserDisplay,
   DISABLED_REASONS,
-  HELP_COPY,
   normalizeDisplayLocations,
   isDisplayHidden,
   displayIncludes,
@@ -191,12 +188,6 @@ export default function ResourceConfigPanel({
 
   const canUseBanner = attribute.id === 'classification';
 
-  // Posts read-only reflection is derived from the channel's inherit mode.
-  const channelBinding = attribute.appliesTo.find(
-    (b) => b.resource === 'Channels',
-  );
-  const channelInherit: InheritMode = channelBinding?.inheritMode ?? 'off';
-
   return (
     <div className={styles['panel']}>
       {/* Required — Channels / Posts / Teams */}
@@ -251,48 +242,25 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {/* Channels → posts inheritance — 3-state with ceiling explanation */}
-      {isChannels && (
-        <Field
-          label="Inherit to posts"
-          hint={
-            <span className={styles['field__hint-row']}>
-              <span>
-                Posts inherit the channel’s value and can’t be set higher than
-                it.
-              </span>
-              <HelpPopover
-                triggerLabel="What’s this?"
-                title="The ceiling rule"
-                body={HELP_COPY.ceiling}
-                example="Example: a post in a Secret channel can be Secret or lower, never Top Secret."
-              />
-            </span>
-          }
-        >
-          <Segmented<InheritMode>
-            value={binding.inheritMode ?? 'off'}
-            ariaLabel="Inherit to posts"
-            options={[
-              { key: 'off', label: 'Off' },
-              { key: 'inherit', label: 'Inherit' },
-              { key: 'inherit-lock', label: 'Inherit + lock' },
-            ]}
-            onChange={(next) => onChange?.({ inheritMode: next })}
-          />
-        </Field>
-      )}
-
-      {/* Posts inheritance — read-only reflection of the channel setting */}
+      {/* Posts inherit from channel — toggle at post level */}
       {isPosts && (
-        <Field label="Inheritance from channel">
-          <span className={styles['reflection']}>
-            {channelInherit === 'inherit-lock'
-              ? 'Locked to the channel’s value.'
-              : channelInherit === 'inherit'
-                ? 'Inherits from the channel. Authors can lower but not raise it.'
-                : 'Not inherited. Set independently on each post.'}
-          </span>
+        <Field
+          label="Inherits from channel"
+          hint="When on, posts use the channel value as a ceiling. Authors can lower but not raise it."
+        >
+          <Switch
+            checked={(binding.inheritMode ?? 'off') !== 'off'}
+            onChange={(e) =>
+              onChange?.({
+                inheritMode: (e.target as HTMLInputElement).checked
+                  ? 'inherit'
+                  : 'off',
+              })
+            }
+            semiBold
+          >
+            {(binding.inheritMode ?? 'off') !== 'off' ? 'On' : 'Off'}
+          </Switch>
         </Field>
       )}
 

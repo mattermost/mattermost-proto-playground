@@ -1,12 +1,14 @@
 import {
   accessCap,
-  channelBinding,
   defaultResourceConfig,
   postDisplayLabel,
   readIntoActive,
   resolveInheritMode,
+  resolveValueEditability,
   takesValueList,
   teamBinding,
+  VALUE_EDITABILITY_LABEL,
+  whoCanSetLock,
   type HubAttribute,
   type InheritMode,
   type PostDisplayLoc,
@@ -168,14 +170,11 @@ export function summaryChips(
 
   if (cfg.resource === 'Posts') {
     chips.push(postDisplaySummary(cfg));
-    const channel = channelBinding(attribute);
-    if (channel) {
-      const mode = resolveInheritMode(channel);
-      if (mode === 'inherit-lock') {
-        chips.push('Inheritance: Locked from channel');
-      } else if (mode === 'inherit') {
-        chips.push('Inheritance: From channel');
-      }
+    const mode = resolveInheritMode(cfg);
+    if (mode === 'inherit-lock') {
+      chips.push('Inheritance: Locked from channel');
+    } else if (mode === 'inherit') {
+      chips.push('Inheritance: From channel');
     }
   }
 
@@ -188,6 +187,13 @@ export function summaryChips(
     chips.push('Who sets: None selected');
   }
 
+  if (cfg.resource !== 'Users') {
+    const editability = resolveValueEditability(cfg);
+    if (editability !== 'editable') {
+      chips.push(`Editability: ${VALUE_EDITABILITY_LABEL[editability]}`);
+    }
+  }
+
   if (takesValueList(attribute) && attribute.values.length > 0) {
     const disabled = (cfg.disabledValueIds ?? []).length;
     chips.push(
@@ -198,6 +204,14 @@ export function summaryChips(
   }
 
   return chips;
+}
+
+/** Plain-language applies-to summary — bullet-delimited prose for collapsed rows. */
+export function summaryLine(
+  attribute: HubAttribute,
+  cfg: ResourceConfig,
+): string {
+  return summaryChips(attribute, cfg).join(' · ');
 }
 
 /**
@@ -255,6 +269,13 @@ export function deviationsFor(
 
   // Inheritance — Channels (from Team) / Teams (to Channels) / Posts (from Channel).
   const mode = resolveInheritMode(cfg);
+  if (cfg.resource === 'Posts' && mode !== 'off') {
+    out.push({
+      field: 'inheritance',
+      label:
+        mode === 'inherit-lock' ? 'Locked from channel' : 'Inherits from channel',
+    });
+  }
   if ((cfg.resource === 'Channels' || cfg.resource === 'Teams') && mode !== 'off') {
     const src = cfg.resource === 'Channels' ? 'Team' : 'Channels';
     out.push({
@@ -281,6 +302,17 @@ export function deviationsFor(
     });
   }
 
+  if (cfg.resource !== 'Users') {
+    const editability = resolveValueEditability(cfg);
+    const baseEditability = resolveValueEditability(base);
+    if (editability !== baseEditability) {
+      out.push({
+        field: 'editability',
+        label: VALUE_EDITABILITY_LABEL[editability],
+      });
+    }
+  }
+
   // Allowed values — a subset was disabled.
   const disabled = cfg.disabledValueIds ?? [];
   if (disabled.length > 0 && attribute.type !== 'Text') {
@@ -294,22 +326,10 @@ export function deviationsFor(
   return out;
 }
 
-/** Parent-inheritance lock (R3): a child setter is locked by an inherit+lock parent. */
+/** Parent-inheritance lock (R3): a child resource's setter is locked by inherit+lock. */
 export function setterLock(
   attribute: HubAttribute,
   resource: ResourceKind,
 ): { locked: boolean; parent?: ResourceKind } {
-  if (resource === 'Posts') {
-    const parent = channelBinding(attribute);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
-      return { locked: true, parent: 'Channels' };
-    }
-  }
-  if (resource === 'Channels') {
-    const parent = teamBinding(attribute);
-    if (parent && resolveInheritMode(parent) === 'inherit-lock') {
-      return { locked: true, parent: 'Teams' };
-    }
-  }
-  return { locked: false };
+  return whoCanSetLock(attribute, resource);
 }

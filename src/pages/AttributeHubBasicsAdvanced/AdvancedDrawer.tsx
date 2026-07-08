@@ -312,7 +312,27 @@ export default function AdvancedDrawer({
                     </div>
                   )}
 
-                  {/* Inheritance (Channels/Teams). */}
+                  {/* Inheritance — Teams/Channels (3-state) or Posts (inherits from channel). */}
+                  {cfg.resource === 'Posts' && (
+                    <div className={styles['adv__res-block']}>
+                      <span className={styles['adv__res-label']}>
+                        Inherits from channel
+                      </span>
+                      <Switch
+                        size="Small"
+                        checked={resolveInheritMode(cfg) !== 'off'}
+                        onChange={(e) =>
+                          setInherit(
+                            cfg,
+                            e.target.checked ? 'inherit' : 'off',
+                          )
+                        }
+                      >
+                        {resolveInheritMode(cfg) !== 'off' ? 'On' : 'Off'}
+                      </Switch>
+                    </div>
+                  )}
+
                   {(cfg.resource === 'Channels' || cfg.resource === 'Teams') && (
                     <div className={styles['adv__res-block']}>
                       <span className={styles['adv__res-label']}>Inheritance</span>

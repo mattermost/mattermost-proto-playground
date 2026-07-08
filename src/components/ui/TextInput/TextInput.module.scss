@@ -132,6 +132,26 @@
     color: rgba(var(--center-channel-color-rgb), 0.64);
   }
 
+  &--locked {
+    .textInput__wrapper {
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+      border-color: rgba(var(--center-channel-color-rgb), 0.12);
+      opacity: 1;
+    }
+
+    &:has(.textInput__input:disabled) .textInput__wrapper,
+    &:has(.textInput__input:read-only) .textInput__wrapper {
+      opacity: 1;
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    .textInput__input:disabled,
+    .textInput__input:read-only {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      cursor: default;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Size modifiers (fixed height; label floats within same height, no wrapper growth)
   // ---------------------------------------------------------------------------

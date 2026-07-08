@@ -1,4 +1,4 @@
-import { useRef, useState, type DragEvent } from 'react';
+import { useCallback, useMemo, useRef, useState, type DragEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
@@ -32,7 +32,10 @@ import {
   type HubAttribute,
   type ResourceKind,
 } from '@/pages/AttributeManagementHub/hubData';
+import ResourceSettingsMenuContent from './ResourceSettingsMenuContent';
 import styles from './CatalogListing.module.scss';
+
+const DEFAULT_RESOURCES = ALL_RESOURCES;
 
 export interface CatalogListingProps {
   attributes: HubAttribute[];
@@ -49,6 +52,34 @@ export interface CatalogListingProps {
   onReorderAttributes: (activeId: string, overId: string) => void;
   onDeactivate: (id: string) => void;
   onDelete: (id: string) => void;
+  /** Resource kinds shown in the filter menu. Defaults to all four. */
+  allowedResources?: ResourceKind[];
+  /** Override for the zero-data empty state description. */
+  emptyDescription?: string;
+  /** When false, hides the source filter dropdown. Default: true. */
+  showSourceFilter?: boolean;
+  /** Filter bar control size. Default: Medium. */
+  filterSize?: 'Medium' | 'Small';
+  /** When false, hides the Usage column. Default: true. */
+  showUsageColumn?: boolean;
+  /** When false, hides the Source column. Default: true. */
+  showSourceColumn?: boolean;
+  /** Policy-locked rows do not navigate to detail (resource settings). */
+  policyLockedNoNavigate?: boolean;
+  /** System/global rows show lock only — no menu or drill-down (resource settings). */
+  isScopeLocked?: (attribute: HubAttribute) => boolean;
+  /** Group the table into labeled sections (e.g. system vs team-scoped). */
+  catalogSections?: Array<{
+    label: string;
+    filter: (attribute: HubAttribute) => boolean;
+  }>;
+  /** Resource-settings surfaces (team / channel) — row menu for editable attributes. */
+  resourceSettingsMenu?: {
+    isAttributeReadOnly: (attribute: HubAttribute) => boolean;
+    onEdit: (id: string) => void;
+    onDuplicate: (id: string) => void;
+    onDelete: (id: string) => void;
+  };
 }
 
 /**
@@ -71,12 +102,43 @@ export default function CatalogListing({
   onReorderAttributes,
   onDeactivate,
   onDelete,
+  allowedResources = DEFAULT_RESOURCES,
+  emptyDescription = 'Define your first attribute to make it available across users, channels, posts, and teams.',
+  showSourceFilter = true,
+  filterSize = 'Medium',
+  showUsageColumn = true,
+  showSourceColumn = true,
+  policyLockedNoNavigate = false,
+  isScopeLocked,
+  catalogSections,
+  resourceSettingsMenu,
 }: CatalogListingProps) {
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
   const [menuId, setMenuId] = useState<string | null>(null);
-  const menuWrapRef = useRef<HTMLDivElement>(null);
+  const menuAnchorRef = useRef<HTMLDivElement | null>(null);
+  const rowMenuWrapRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const closeRowMenu = useCallback(() => {
+    setMenuId(null);
+    menuAnchorRef.current = null;
+  }, []);
+
+  const openRowMenu = (attributeId: string) => {
+    const anchor = rowMenuWrapRefs.current[attributeId];
+    if (!anchor) return;
+    menuAnchorRef.current = anchor;
+    setMenuId(attributeId);
+  };
+
+  const toggleRowMenu = (attributeId: string) => {
+    if (menuId === attributeId) {
+      closeRowMenu();
+      return;
+    }
+    openRowMenu(attributeId);
+  };
 
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -117,14 +179,184 @@ export default function CatalogListing({
         ? selectedResources[0]
         : `${selectedResources.length} resource types`;
 
+  const menuAttribute = menuId
+    ? filtered.find((item) => item.id === menuId) ??
+      attributes.find((item) => item.id === menuId) ??
+      null
+    : null;
+  const menuSettingsReadOnly =
+    menuAttribute && resourceSettingsMenu
+      ? resourceSettingsMenu.isAttributeReadOnly(menuAttribute)
+      : false;
+  const menuUseSettings =
+    Boolean(resourceSettingsMenu && menuAttribute && !menuSettingsReadOnly);
+
+  const sectionRows = useMemo(() => {
+    if (!catalogSections || catalogSections.length === 0) {
+      return [{ label: null as string | null, rows: filtered }];
+    }
+    return catalogSections
+      .map((section) => ({
+        label: section.label,
+        rows: filtered.filter(section.filter),
+      }))
+      .filter((section) => section.rows.length > 0);
+  }, [catalogSections, filtered]);
+
+  const renderRow = (a: HubAttribute) => {
+    const synced = isSourceOwned(a);
+    const policyLocked = isPolicyLocked(a);
+    const scopeLocked = isScopeLocked?.(a) ?? false;
+    const showLock = policyLocked || scopeLocked;
+    const rowLocked =
+      scopeLocked || (policyLockedNoNavigate && policyLocked);
+    const isDragging = dragId === a.id;
+    const isDragOver = dragOverId === a.id && dragId !== a.id;
+
+    return (
+      <tr
+        key={a.id}
+        className={[
+          styles['table__row'],
+          rowLocked ? styles['table__row--locked'] : '',
+          isDragging ? styles['table__row--dragging'] : '',
+          isDragOver ? styles['table__row--drag-over'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        onClick={() => {
+          if (!rowLocked) onOpenDetail(a.id);
+        }}
+        onDragOver={(event) => handleDragOver(event, a.id)}
+        onDrop={(event) => handleDrop(event, a.id)}
+        onDragLeave={() => {
+          if (dragOverId === a.id) {
+            setDragOverId(null);
+          }
+        }}
+        onDragEnd={clearDrag}
+      >
+        <td
+          className={styles['table__handle']}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <button
+            type="button"
+            className={styles['table__drag']}
+            draggable
+            aria-label={`Reorder ${a.name}`}
+            onDragStart={(event) => handleDragStart(event, a.id)}
+          >
+            <Icon size="16" glyph={<DragVerticalIcon />} />
+          </button>
+        </td>
+        <td>
+          <div className={styles['table__name-block']}>
+            <span className={styles['table__name']}>{a.name}</span>
+            {a.valuesLink && (
+              <span className={styles['table__sub']}>
+                Values shared from {a.valuesLink.attributeName}
+              </span>
+            )}
+          </div>
+        </td>
+        <td>
+          <span className={styles['table__type']}>{a.type}</span>
+        </td>
+        <td>
+          <div className={styles['table__chips']}>
+            {a.appliesTo.map((c) => (
+              <Chip key={c.resource} size="Small">
+                {c.resource}
+              </Chip>
+            ))}
+          </div>
+        </td>
+        {showSourceColumn && (
+          <td>
+            {synced && a.source.state ? (
+              <SyncPill state={a.source.state} system={a.source.system} />
+            ) : (
+              <span className={styles['table__muted']}>Managed here</span>
+            )}
+          </td>
+        )}
+        <td className={styles['table__col-count']}>
+          <span className={styles['table__count']}>
+            {valueCountLabel(a)}
+          </span>
+        </td>
+        {showUsageColumn && (
+          <td>
+            {a.usedByPolicies > 0 ? (
+              <span className={styles['table__usage']}>
+                {policyLabel(a.usedByPolicies)}
+              </span>
+            ) : (
+              <span className={styles['table__muted']}>Not in use</span>
+            )}
+          </td>
+        )}
+        <td
+          className={styles['table__actions']}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles['table__actions-row']}>
+            {showLock && (
+              <InfoHint
+                label={
+                  scopeLocked
+                    ? 'Locked — system attribute'
+                    : `Locked — ${policyLabel(a.usedByPolicies).toLowerCase()}`
+                }
+                arrow="Right"
+              >
+                <span className={styles['table__lock']}>
+                  <Icon size="16" glyph={<LockOutlineIcon />} />
+                </span>
+              </InfoHint>
+            )}
+            {!rowLocked && (
+              <div
+                className={styles['table__menu-wrap']}
+                ref={(node) => {
+                  rowMenuWrapRefs.current[a.id] = node;
+                }}
+              >
+                <IconButton
+                  size="Small"
+                  aria-label={`More actions for ${a.name}`}
+                  aria-haspopup="menu"
+                  aria-expanded={menuId === a.id}
+                  icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleRowMenu(a.id);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <div className={styles['listing']}>
-      <div className={styles['filters']}>
+      <div
+        className={[
+          styles['filters'],
+          filterSize === 'Small' ? styles['filters--small'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <div className={styles['filters__controls']}>
           <div className={styles['filters__search']}>
             <SearchInput
               className={styles['filters__searchInput']}
-              size="Medium"
+              size={filterSize}
               placeholder="Search attributes"
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
@@ -141,7 +373,7 @@ export default function CatalogListing({
               onClick={() => setFilterOpen((c) => !c)}
             >
               <span>{resourceLabel}</span>
-              <Icon size="16" glyph={<ChevronDownIcon />} />
+              <Icon size={filterSize === 'Small' ? '12' : '16'} glyph={<ChevronDownIcon />} />
             </button>
             <FixedPopoverMenu
               open={filterOpen}
@@ -151,7 +383,7 @@ export default function CatalogListing({
             >
               <PopoverMenu aria-label="Filter by resource type">
                 <div className={styles['filters__menu-body']}>
-                  {ALL_RESOURCES.map((r) => (
+                  {allowedResources.map((r) => (
                     <label key={r} className={styles['filters__option']}>
                       <Checkbox
                         checked={selectedResources.includes(r)}
@@ -172,30 +404,34 @@ export default function CatalogListing({
             </FixedPopoverMenu>
           </div>
 
-          <div className={styles['filters__source']}>
-            <Select
-              className={styles['filters__select']}
-              size="Medium"
-              value={source}
-              onChange={(e) => onSourceChange(e.target.value)}
-              aria-label="Filter by source"
-            >
-              {SOURCE_FILTERS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
+          {showSourceFilter && (
+            <div className={styles['filters__source']}>
+              <Select
+                className={styles['filters__select']}
+                size={filterSize}
+                value={source}
+                onChange={(e) => onSourceChange(e.target.value)}
+                aria-label="Filter by source"
+              >
+                {SOURCE_FILTERS.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          )}
 
-        <Button
-          emphasis="Primary"
-          leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
-          onClick={onNewAttribute}
-        >
-          New attribute
-        </Button>
+          <Button
+            className={styles['filters__action']}
+            emphasis="Primary"
+            size={filterSize}
+            leadingIcon={<Icon size={filterSize === 'Small' ? '12' : '16'} glyph={<PlusIcon />} />}
+            onClick={onNewAttribute}
+          >
+            New attribute
+          </Button>
+        </div>
       </div>
 
       {filtered.length === 0 ? (
@@ -204,191 +440,112 @@ export default function CatalogListing({
             title={filteredEmpty ? 'No attributes match these filters' : 'No attributes yet'}
             description={
               filteredEmpty
-                ? 'Adjust the resource type, source, or search to see more.'
-                : 'Define your first attribute to make it available across users, channels, posts, and teams.'
+                ? showSourceFilter
+                  ? 'Adjust the resource type, source, or search to see more.'
+                  : 'Adjust the resource type or search to see more.'
+                : emptyDescription
             }
           />
         </div>
       ) : (
         <div className={styles['table']}>
-          <table className={styles['table__grid']}>
-            <thead>
-              <tr>
-                <th className={styles['table__col-handle']} aria-label="Reorder" />
-                <th>Attribute</th>
-                <th className={styles['table__col-type']}>Type</th>
-                <th>Applies to</th>
-                <th>Source</th>
-                <th className={styles['table__col-count']}>Values</th>
-                <th>Usage</th>
-                <th className={styles['table__col-actions']} aria-label="Actions" />
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((a) => {
-                const synced = isSourceOwned(a);
-                const locked = isPolicyLocked(a);
-                const isDragging = dragId === a.id;
-                const isDragOver = dragOverId === a.id && dragId !== a.id;
-                return (
-                  <tr
-                    key={a.id}
-                    className={[
-                      styles['table__row'],
-                      isDragging ? styles['table__row--dragging'] : '',
-                      isDragOver ? styles['table__row--drag-over'] : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => onOpenDetail(a.id)}
-                    onDragOver={(event) => handleDragOver(event, a.id)}
-                    onDrop={(event) => handleDrop(event, a.id)}
-                    onDragLeave={() => {
-                      if (dragOverId === a.id) {
-                        setDragOverId(null);
-                      }
-                    }}
-                    onDragEnd={clearDrag}
-                  >
-                    <td
-                      className={styles['table__handle']}
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      <button
-                        type="button"
-                        className={styles['table__drag']}
-                        draggable
-                        aria-label={`Reorder ${a.name}`}
-                        onDragStart={(event) => handleDragStart(event, a.id)}
-                      >
-                        <Icon size="16" glyph={<DragVerticalIcon />} />
-                      </button>
-                    </td>
-                    <td>
-                      <div className={styles['table__name-block']}>
-                        <span className={styles['table__name']}>{a.name}</span>
-                        {a.valuesLink && (
-                          <span className={styles['table__sub']}>
-                            Values shared from {a.valuesLink.attributeName}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <span className={styles['table__type']}>{a.type}</span>
-                    </td>
-                    <td>
-                      <div className={styles['table__chips']}>
-                        {a.appliesTo.map((c) => (
-                          <Chip key={c.resource} size="Small">
-                            {c.resource}
-                          </Chip>
-                        ))}
-                      </div>
-                    </td>
-                    <td>
-                      {synced && a.source.state ? (
-                        <SyncPill state={a.source.state} system={a.source.system} />
-                      ) : (
-                        <span className={styles['table__muted']}>Managed here</span>
-                      )}
-                    </td>
-                    <td className={styles['table__col-count']}>
-                      <span className={styles['table__count']}>
-                        {valueCountLabel(a)}
-                      </span>
-                    </td>
-                    <td>
-                      {a.usedByPolicies > 0 ? (
-                        <span className={styles['table__usage']}>
-                          {policyLabel(a.usedByPolicies)}
-                        </span>
-                      ) : (
-                        <span className={styles['table__muted']}>Not in use</span>
-                      )}
-                    </td>
-                    <td
-                      className={styles['table__actions']}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className={styles['table__actions-row']}>
-                        {locked && (
-                          <InfoHint
-                            label={`Locked — ${policyLabel(a.usedByPolicies).toLowerCase()}`}
-                            arrow="Right"
-                          >
-                            <span className={styles['table__lock']}>
-                              <Icon size="12" glyph={<LockOutlineIcon />} />
-                            </span>
-                          </InfoHint>
-                        )}
-                        <div
-                          className={styles['table__menu-wrap']}
-                          ref={menuId === a.id ? menuWrapRef : undefined}
-                        >
-                          <IconButton
-                            size="Small"
-                            aria-label={`More actions for ${a.name}`}
-                            aria-haspopup="menu"
-                            aria-expanded={menuId === a.id}
-                            icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
-                            onClick={() =>
-                              setMenuId((c) => (c === a.id ? null : a.id))
-                            }
-                          />
-                          <FixedPopoverMenu
-                            open={menuId === a.id}
-                            onClose={() => setMenuId(null)}
-                            anchorRef={menuWrapRef}
-                            align="end"
-                            className={styles['table__menu']}
-                          >
-                            <PopoverMenu aria-label={`${a.name} actions`}>
-                              <MenuItem
-                                label="Edit attribute"
-                                leadingVisual={
-                                  <Icon size="16" glyph={<PencilOutlineIcon />} />
-                                }
-                                onClick={() => {
-                                  setMenuId(null);
-                                  onOpenDetail(a.id);
-                                }}
-                              />
-                              <PopoverMenuDivider />
-                              <MenuItem
-                                label="Deactivate attribute"
-                                destructive
-                                leadingVisual={
-                                  <Icon size="16" glyph={<PowerPlugOutlineIcon />} />
-                                }
-                                onClick={() => {
-                                  setMenuId(null);
-                                  onDeactivate(a.id);
-                                }}
-                              />
-                              <MenuItem
-                                label="Delete attribute"
-                                destructive
-                                leadingVisual={
-                                  <Icon size="16" glyph={<TrashCanOutlineIcon />} />
-                                }
-                                onClick={() => {
-                                  setMenuId(null);
-                                  onDelete(a.id);
-                                }}
-                              />
-                            </PopoverMenu>
-                          </FixedPopoverMenu>
-                        </div>
-                      </div>
-                    </td>
+          {sectionRows.map((section) => (
+            <div key={section.label ?? 'all'} className={styles['table__section']}>
+              {section.label && (
+                <h4 className={styles['table__section-title']}>{section.label}</h4>
+              )}
+              <table className={styles['table__grid']}>
+                <thead>
+                  <tr>
+                    <th className={styles['table__col-handle']} aria-label="Reorder" />
+                    <th>Attribute</th>
+                    <th className={styles['table__col-type']}>Type</th>
+                    <th>Applies to</th>
+                    {showSourceColumn && <th>Source</th>}
+                    <th className={styles['table__col-count']}>Values</th>
+                    {showUsageColumn && <th>Usage</th>}
+                    <th className={styles['table__col-actions']} aria-label="Actions" />
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>{section.rows.map(renderRow)}</tbody>
+              </table>
+            </div>
+          ))}
         </div>
       )}
+
+      <FixedPopoverMenu
+        open={Boolean(menuId && menuAttribute)}
+        onClose={closeRowMenu}
+        anchorRef={menuAnchorRef}
+        align="end"
+        className={styles['table__menu']}
+        minWidthFloor={220}
+        repositionKey={menuId}
+      >
+        {menuId && menuAttribute ? (
+          menuUseSettings ? (
+            <ResourceSettingsMenuContent
+              attribute={menuAttribute}
+              onEdit={() => resourceSettingsMenu!.onEdit(menuId)}
+              onDuplicate={() => resourceSettingsMenu!.onDuplicate(menuId)}
+              onDelete={() => resourceSettingsMenu!.onDelete(menuId)}
+              onClose={closeRowMenu}
+            />
+          ) : (
+            <PopoverMenu aria-label={`${menuAttribute.name} actions`}>
+              {menuSettingsReadOnly && resourceSettingsMenu ? (
+                <MenuItem
+                  label="View attribute"
+                  leadingVisual={
+                    <Icon size="16" glyph={<PencilOutlineIcon />} />
+                  }
+                  onClick={() => {
+                    closeRowMenu();
+                    onOpenDetail(menuId);
+                  }}
+                />
+              ) : (
+                <>
+                  <MenuItem
+                    label="Edit attribute"
+                    leadingVisual={
+                      <Icon size="16" glyph={<PencilOutlineIcon />} />
+                    }
+                    onClick={() => {
+                      closeRowMenu();
+                      onOpenDetail(menuId);
+                    }}
+                  />
+                  <PopoverMenuDivider />
+                  <MenuItem
+                    label="Deactivate attribute"
+                    destructive
+                    leadingVisual={
+                      <Icon size="16" glyph={<PowerPlugOutlineIcon />} />
+                    }
+                    onClick={() => {
+                      closeRowMenu();
+                      onDeactivate(menuId);
+                    }}
+                  />
+                  <MenuItem
+                    label="Delete attribute"
+                    destructive
+                    leadingVisual={
+                      <Icon size="16" glyph={<TrashCanOutlineIcon />} />
+                    }
+                    onClick={() => {
+                      closeRowMenu();
+                      onDelete(menuId);
+                    }}
+                  />
+                </>
+              )}
+            </PopoverMenu>
+          )
+        ) : null}
+      </FixedPopoverMenu>
     </div>
   );
 }

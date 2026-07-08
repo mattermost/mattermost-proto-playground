@@ -33,6 +33,7 @@ export interface SimplifiedWhoCanSetEditorProps {
   attribute: HubAttribute;
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
+  readOnly?: boolean;
 }
 
 const SYNC_SYSTEMS: WhoSets[] = ['UAS', 'LDAP', 'SCIM'];
@@ -52,6 +53,7 @@ export default function SimplifiedWhoCanSetEditor({
   attribute,
   config,
   onChange,
+  readOnly = false,
 }: SimplifiedWhoCanSetEditorProps) {
   const { resource } = config;
   const wcs = config.whoCanSet;
@@ -124,13 +126,18 @@ export default function SimplifiedWhoCanSetEditor({
     : 'Enter roles to allow setting this value…';
 
   if (inheritLock.locked && inheritLock.parent) {
+    const lockDescription =
+      resource === 'Posts'
+        ? 'The value is inherited and locked from the channel. Turn off Inherits from channel on posts to unlock who can set the value.'
+        : `The value is inherited and locked from ${
+            PARENT_OWNER[inheritLock.parent]
+          }. It can't be set on ${resource.toLowerCase()} directly — change the inheritance on ${inheritLock.parent} to unlock.`;
+
     return (
       <SectionNotice
         type="Info"
         title={`Locked to ${inheritLock.parent}`}
-        description={`The value is inherited and locked from ${
-          PARENT_OWNER[inheritLock.parent]
-        }. It can't be set on ${resource.toLowerCase()} directly — change the inheritance on ${inheritLock.parent} to unlock.`}
+        description={lockDescription}
       />
     );
   }
@@ -142,6 +149,19 @@ export default function SimplifiedWhoCanSetEditor({
         <span className={styles['setter__hint']}>
           Set by the sync system — not editable.
         </span>
+      </div>
+    );
+  }
+
+  if (readOnly) {
+    return (
+      <div className={styles['setter__locked']}>
+        {selected.map((subject) => (
+          <Chip key={subject} size="Medium" leadingIcon={<AccountOutlineIcon />}>
+            {subject}
+          </Chip>
+        ))}
+        <span className={styles['setter__hint']}>Read-only in this settings surface.</span>
       </div>
     );
   }

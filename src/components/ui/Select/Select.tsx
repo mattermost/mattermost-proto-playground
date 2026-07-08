@@ -23,6 +23,8 @@ export interface SelectProps extends Omit<
   size?: SelectSize;
   /** Select option items. */
   children?: ReactNode;
+  /** Grey read-only surface — locked fields in attribute detail. */
+  locked?: boolean;
 }
 
 /**
@@ -43,6 +45,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
     defaultValue,
     onChange,
     disabled,
+    locked = false,
     children,
     ...rest
   },
@@ -72,6 +75,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
     label != null && hasValue ? styles['select--label-floated'] : '';
   const hasLeadingClass =
     leadingIcon != null ? styles['select--has-leading-icon'] : '';
+  const lockedClass = locked ? styles['select--locked'] : '';
 
   const rootClass = [
     styles.select,
@@ -79,6 +83,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
     invalidClass,
     labelFloatedClass,
     hasLeadingClass,
+    lockedClass,
     className,
   ]
     .filter(Boolean)

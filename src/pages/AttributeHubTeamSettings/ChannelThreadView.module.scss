@@ -1,0 +1,35 @@
+.channel-thread-view {
+  &__thread-root-wrap--clickable {
+    cursor: pointer;
+    border-radius: var(--radius-s);
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__thread-root-wrap--clickable:hover &__thread-root,
+  &__thread-root-wrap--selected &__thread-root {
+    background: rgba(var(--button-bg-rgb), 0.06);
+    outline: 1px solid rgba(var(--button-bg-rgb), 0.16);
+  }
+
+  &__thread-root {
+    border-radius: var(--radius-s);
+  }
+
+  &__post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: calc(var(--spacing-xxs) / 4);
+  }
+
+  &__meta-chip {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--center-channel-color);
+    font-weight: var(--font-weight-semibold);
+  }
+}

@@ -11,6 +11,8 @@ export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
   /** Optional secondary label. */
   secondaryLabel?: string;
+  /** Custom secondary content (takes precedence over secondaryLabel). */
+  secondaryVisual?: ReactNode;
   /** Where the secondary label appears. Default: 'Below'. */
   secondaryLabelPosition?: 'Inline' | 'Below';
   /** Custom content for the leading slot. When omitted, shows placeholder icon. */
@@ -41,6 +43,7 @@ export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export default function MenuItem({
   label,
   secondaryLabel,
+  secondaryVisual,
   secondaryLabelPosition = 'Below',
   leadingVisual,
   leadingElement = true,
@@ -80,11 +83,13 @@ export default function MenuItem({
         <div className={styles['menu-item__middle']}>
           <div className={styles['menu-item__top-row']}>
             <span className={styles['menu-item__label']}>{label}</span>
-            {secondaryLabel && secondaryLabelPosition === 'Inline' && (
-              <span className={styles['menu-item__secondary-label-inline']}>
-                {secondaryLabel}
-              </span>
-            )}
+            {secondaryLabelPosition === 'Inline' &&
+              (secondaryVisual ??
+                (secondaryLabel ? (
+                  <span className={styles['menu-item__secondary-label-inline']}>
+                    {secondaryLabel}
+                  </span>
+                ) : null))}
             {customStatusEmoji && (
               <span className={styles['menu-item__custom-status']} aria-hidden>
                 {customStatusEmoji}
@@ -99,13 +104,16 @@ export default function MenuItem({
               />
             )}
           </div>
-          {secondaryLabel && secondaryLabelPosition === 'Below' && (
-            <div className={styles['menu-item__bottom-row']}>
-              <span className={styles['menu-item__secondary-label-below']}>
-                {secondaryLabel}
-              </span>
-            </div>
-          )}
+          {secondaryLabelPosition === 'Below' &&
+            (secondaryVisual ?? secondaryLabel) && (
+              <div className={styles['menu-item__bottom-row']}>
+                {secondaryVisual ?? (
+                  <span className={styles['menu-item__secondary-label-below']}>
+                    {secondaryLabel}
+                  </span>
+                )}
+              </div>
+            )}
         </div>
         {trailingElement && (
           <div className={styles['menu-item__right']}>

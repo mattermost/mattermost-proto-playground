@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import CloseIcon from '@mattermost/compass-icons/components/close';
 import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
@@ -11,9 +10,11 @@ import LinkVariantOffIcon from '@mattermost/compass-icons/components/link-varian
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import EyeOffOutlineIcon from '@mattermost/compass-icons/components/eye-off-outline';
 import PlusBoxOutlineIcon from '@mattermost/compass-icons/components/plus-box-outline';
+import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
 import IconButton from '@/components/ui/IconButton/IconButton';
+import Chip from '@/components/ui/Chip/Chip';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
@@ -25,10 +26,12 @@ import {
   type AttrValue,
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
+import { AttributeSourceStatus } from './AttributeSourceField';
 import styles from './DefinitionValues.module.scss';
 
 export interface DefinitionValuesProps {
   attribute: HubAttribute;
+  readOnly?: boolean;
   onAddValue: (label: string, asTier?: boolean) => void;
   onAddChild: (parentId: string, label: string) => void;
   onToggleDisabled: (valueId: string) => void;
@@ -37,6 +40,10 @@ export interface DefinitionValuesProps {
   onLockedAttempt: () => void;
   onReuse: () => void;
   onUnlink: () => void;
+  onConnectSource?: () => void;
+  onManageSource?: () => void;
+  /** Hide reuse-values, connect-source, and sync status (resource-level settings). */
+  hideSourceUi?: boolean;
 }
 
 /** Ranked-hierarchical tree row (nest, reorder, disable-not-delete, tier badges). */
@@ -238,7 +245,7 @@ function TreeRow({
  * - Text → "no preset values" note
  * - Select / Multiselect / Ranked → wrapping chip row (type-and-enter commits)
  * - Ranked-hierarchical → full-width tree
- * Source-owned attributes show read-only value chips; sync status lives on Value source.
+ * Source-owned attributes show read-only value chips; sync status sits above values.
  */
 export default function DefinitionValues({
   attribute,
@@ -250,22 +257,79 @@ export default function DefinitionValues({
   onLockedAttempt,
   onReuse,
   onUnlink,
+  onConnectSource,
+  onManageSource,
+  readOnly = false,
+  hideSourceUi = false,
 }: DefinitionValuesProps) {
   const [draft, setDraft] = useState('');
   const sourceOwned = isSourceOwned(attribute);
   const locked = isPolicyLocked(attribute);
   const linked = !!attribute.valuesLink;
-  const editable = !sourceOwned && !locked && !linked;
+  const editable = !readOnly && !sourceOwned && !locked && !linked;
   const isTree = attribute.type === 'Ranked-hierarchical';
   const isRanked = attribute.type === 'Ranked' || isTree;
+  const showConnect =
+    !hideSourceUi && !readOnly && !sourceOwned && !linked && Boolean(onConnectSource);
+  const showReuse = !hideSourceUi && editable && canReuseValues(attribute);
+  const showManage = !hideSourceUi && !readOnly && sourceOwned && Boolean(onManageSource);
+  const showFooter = showConnect || showReuse || showManage;
+
+  const sourceWarning =
+    sourceOwned &&
+    attribute.source.kind === 'synced' &&
+    attribute.source.pastBudget ? (
+      <p className={styles['values__source-warning']}>
+        Sync is past its freshness budget — downstream editing is blocked until
+        the source recovers.
+      </p>
+    ) : null;
+
+  const valueAlternatives = showFooter ? (
+    <div className={styles['values__footer']}>
+      {showConnect && (
+        <Button
+          emphasis="Tertiary"
+          size="Small"
+          leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+          onClick={onConnectSource}
+        >
+          Connect external source
+        </Button>
+      )}
+      {showReuse && (
+        <Button
+          emphasis="Tertiary"
+          size="Small"
+          leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+          onClick={onReuse}
+        >
+          Reuse values from another attribute
+        </Button>
+      )}
+      {showManage && (
+        <Button
+          emphasis="Tertiary"
+          size="Small"
+          leadingIcon={<Icon size="16" glyph={<CogOutlineIcon />} />}
+          onClick={onManageSource}
+        >
+          Manage connection
+        </Button>
+      )}
+    </div>
+  ) : null;
 
   // Text — no enumerated values.
   if (attribute.type === 'Text') {
     return (
       <div className={styles['values']}>
+        {!hideSourceUi && <AttributeSourceStatus attribute={attribute} />}
+        {sourceWarning}
         <p className={styles['values__none']}>
           Text attributes have no preset values — a value is typed in per resource.
         </p>
+        {valueAlternatives}
       </div>
     );
   }
@@ -282,21 +346,32 @@ export default function DefinitionValues({
 
   return (
     <div className={styles['values']}>
+      {!hideSourceUi && <AttributeSourceStatus attribute={attribute} />}
+      {sourceWarning}
 
       {linked && attribute.valuesLink && (
-        <div className={styles['values__link']}>
+        <div
+          className={[
+            styles['values__link'],
+            !editable && styles['values__link--locked'],
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <Icon size="16" glyph={<LinkVariantIcon />} />
           <span className={styles['values__link-text']}>
             Values shared from {attribute.valuesLink.attributeName} · read-only
           </span>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<LinkVariantOffIcon />} />}
-            onClick={onUnlink}
-          >
-            Unlink
-          </Button>
+          {editable && (
+            <Button
+              emphasis="Tertiary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<LinkVariantOffIcon />} />}
+              onClick={onUnlink}
+            >
+              Unlink
+            </Button>
+          )}
         </div>
       )}
 
@@ -308,13 +383,20 @@ export default function DefinitionValues({
             attribute.usedByPolicies === 1 ? 'policy' : 'policies'
           }`}
           description="Editing values would re-evaluate access. Review the policies before making changes."
-          primaryButtonLabel="Why is this locked?"
-          onPrimaryAction={onLockedAttempt}
+          primaryButtonLabel={readOnly ? undefined : 'Why is this locked?'}
+          onPrimaryAction={readOnly ? undefined : onLockedAttempt}
         />
       )}
 
       {isTree ? (
-        <div className={styles['values__tree-block']}>
+        <div
+          className={[
+            styles['values__tree-block'],
+            !editable && styles['values__tree-block--locked'],
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <p className={styles['values__tree-explainer']}>
             Ranked tiers form the ordered spine. Sub-markings nest beneath a tier
             and are display only — they do not change the rank.
@@ -368,75 +450,55 @@ export default function DefinitionValues({
         <div className={styles['values__chips-wrap']}>
           <div className={styles['values__chips']}>
             {attribute.values.map((v) => (
-            <span
-              key={v.id}
-              className={[
-                styles['values__chip'],
-                v.disabled && styles['values__chip--disabled'],
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {isRanked && v.tier != null && (
-                <span className={styles['values__rank']}>{v.tier}</span>
-              )}
-              <span className={styles['values__chip-label']}>{v.label}</span>
-              {editable && (
-                <button
-                  type="button"
-                  className={styles['values__chip-x']}
-                  aria-label={`Remove ${v.label}`}
-                  onClick={() =>
-                    (v.inUseCount ?? 0) > 0
-                      ? onToggleDisabled(v.id)
-                      : onDeleteValue(v.id)
-                  }
-                >
-                  <Icon size="12" glyph={<CloseIcon />} />
-                </button>
-              )}
-            </span>
-          ))}
-          {attribute.values.length === 0 && (
-            <span className={styles['values__none']}>
-              Add a value and press Enter.
-            </span>
-          )}
-          {editable && (
-            <input
-              className={styles['values__input']}
-              placeholder={attribute.values.length === 0 ? 'Add a value…' : '+ Add'}
-              value={draft}
-              aria-label="Add a value"
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === 'Tab') {
-                  if (draft.trim()) {
-                    e.preventDefault();
-                    commitDraft();
-                  }
+              <Chip
+                key={v.id}
+                size="Medium"
+                tone={v.tier != null ? 'info' : 'neutral'}
+                className={v.disabled ? styles['values__chip--disabled'] : undefined}
+                onRemove={
+                  editable && (v.inUseCount ?? 0) === 0
+                    ? () => onDeleteValue(v.id)
+                    : editable && (v.inUseCount ?? 0) > 0
+                      ? () => onToggleDisabled(v.id)
+                      : undefined
                 }
-              }}
-              onBlur={commitDraft}
-            />
-          )}
+                removeLabel={
+                  (v.inUseCount ?? 0) > 0
+                    ? `Disable ${v.label} for new assignments`
+                    : `Remove ${v.label}`
+                }
+              >
+                {isRanked && v.tier != null ? `${v.tier}. ${v.label}` : v.label}
+              </Chip>
+            ))}
+            {attribute.values.length === 0 && (
+              <span className={styles['values__none']}>
+                Add a value and press Enter.
+              </span>
+            )}
+            {editable && (
+              <input
+                className={styles['values__input']}
+                placeholder={attribute.values.length === 0 ? 'Add a value…' : '+ Add'}
+                value={draft}
+                aria-label="Add a value"
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === 'Tab') {
+                    if (draft.trim()) {
+                      e.preventDefault();
+                      commitDraft();
+                    }
+                  }
+                }}
+                onBlur={commitDraft}
+              />
+            )}
           </div>
         </div>
       )}
 
-      {editable && canReuseValues(attribute) && (
-        <div className={styles['values__footer']}>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
-            onClick={onReuse}
-          >
-            Reuse values from another attribute
-          </Button>
-        </div>
-      )}
-
+      {valueAlternatives}
     </div>
   );
 }

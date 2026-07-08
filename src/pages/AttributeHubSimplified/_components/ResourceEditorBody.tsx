@@ -9,6 +9,7 @@ export interface ResourceEditorBodyProps {
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
   onReadIntoFilteringChange: (value: boolean) => void;
+  readOnly?: boolean;
 }
 
 /** Per-resource editor tuned for the simplified applies-to layout. */
@@ -17,27 +18,34 @@ export default function ResourceEditorBody({
   config,
   onChange,
   onReadIntoFilteringChange,
+  readOnly = false,
 }: ResourceEditorBodyProps) {
+  const handleChange = readOnly ? () => {} : onChange;
+  const handleReadInto = readOnly ? () => {} : onReadIntoFilteringChange;
+
   return (
     <div className={styles['body']}>
       <ResourceConfigPanel
         attribute={attribute}
         config={config}
-        onChange={onChange}
-        onReadIntoFilteringChange={onReadIntoFilteringChange}
+        readOnly={readOnly}
+        onChange={handleChange}
+        onReadIntoFilteringChange={handleReadInto}
         layout="simplified"
         whoCanSetSlot={
           <SimplifiedWhoCanSetEditor
             attribute={attribute}
             config={config}
-            onChange={onChange}
+            readOnly={readOnly}
+            onChange={handleChange}
           />
         }
       />
       <SimplifiedResourceValuesPanel
         attribute={attribute}
         config={config}
-        onChange={onChange}
+        readOnly={readOnly}
+        onChange={handleChange}
       />
     </div>
   );

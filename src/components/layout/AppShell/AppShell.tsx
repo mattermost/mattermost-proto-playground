@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import TopNav from '@/components/layout/TopNav/TopNav';
 import PrototypeTopNav from '@/components/layout/PrototypeTopNav/PrototypeTopNav';
@@ -12,16 +12,13 @@ export default function AppShell() {
   const prototypeEntry = getPrototypeByPath(pathname);
   const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
 
-  useEffect(() => {
-    setPrototypeCenterSlot(null);
-  }, [pathname]);
-
   return (
     <div className={styles['app-shell']}>
       {!isEmbedded && prototypeEntry && (
         <PrototypeTopNav
           title={prototypeEntry.label}
           centerSlot={prototypeCenterSlot}
+          hideTitle={prototypeEntry.hideChromeTitle}
         />
       )}
       {!isEmbedded && !prototypeEntry && <TopNav />}

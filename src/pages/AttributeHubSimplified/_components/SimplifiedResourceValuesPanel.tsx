@@ -19,6 +19,7 @@ export interface SimplifiedResourceValuesPanelProps {
   attribute: HubAttribute;
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
+  readOnly?: boolean;
 }
 
 const VALUE_COLUMNS = [
@@ -31,6 +32,7 @@ export default function SimplifiedResourceValuesPanel({
   attribute,
   config,
   onChange,
+  readOnly = false,
 }: SimplifiedResourceValuesPanelProps) {
   if (!takesValueList(attribute) || attribute.values.length === 0) {
     return null;
@@ -38,7 +40,7 @@ export default function SimplifiedResourceValuesPanel({
 
   const locked = isPolicyLocked(attribute);
   const sourceOwned = isSourceOwned(attribute);
-  const togglesLocked = locked || sourceOwned;
+  const togglesLocked = readOnly || locked || sourceOwned;
   const values = visibleValues(attribute, listValuesForOverlay(attribute));
   const disabledIds = config.disabledValueIds ?? [];
   const disabledCount = values.filter((value) => disabledIds.includes(value.id)).length;

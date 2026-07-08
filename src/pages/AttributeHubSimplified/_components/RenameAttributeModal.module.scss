@@ -1,0 +1,45 @@
+.rename {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+
+  &__scrim {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+    animation: rename-fade var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    animation: rename-pop var(--duration-quick) var(--ease-entrance);
+  }
+}
+
+@keyframes rename-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rename-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

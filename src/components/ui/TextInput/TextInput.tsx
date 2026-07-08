@@ -25,6 +25,8 @@ export interface TextInputProps extends Omit<
   size?: TextInputSize;
   /** Trailing icon. */
   trailingIcon?: ReactNode;
+  /** Grey read-only surface — locked fields in attribute detail. */
+  locked?: boolean;
 }
 
 /**
@@ -54,6 +56,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       onChange,
       disabled,
       readOnly,
+      locked = false,
       ...rest
     },
     ref,
@@ -101,6 +104,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       leadingIcon != null ? styles['textInput--has-leading-icon'] : '';
     const hasTrailingClass =
       trailingIcon != null ? styles['textInput--has-trailing-icon'] : '';
+    const lockedClass = locked ? styles['textInput--locked'] : '';
 
     const rootClass = [
       styles.textInput,
@@ -109,6 +113,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       labelFloatedClass,
       hasLeadingClass,
       hasTrailingClass,
+      lockedClass,
       className,
     ]
       .filter(Boolean)

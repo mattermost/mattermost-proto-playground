@@ -41,6 +41,13 @@
     flex-direction: column;
     gap: var(--spacing-xs);
     min-width: 0;
+
+    &--locked-surface {
+      padding: var(--spacing-s);
+      border-radius: var(--radius-s);
+      background-color: rgba(var(--center-channel-color-rgb), 0.06);
+      border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
   }
 
   &__input {

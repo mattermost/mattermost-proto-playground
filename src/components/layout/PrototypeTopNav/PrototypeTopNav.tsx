@@ -5,13 +5,15 @@ import type { ReactNode } from 'react';
 import styles from './PrototypeTopNav.module.scss';
 
 export interface PrototypeTopNavProps {
-  title: string;
+  title?: string;
   centerSlot?: ReactNode;
+  hideTitle?: boolean;
 }
 
 export default function PrototypeTopNav({
   title,
   centerSlot,
+  hideTitle = false,
 }: PrototypeTopNavProps) {
   return (
     <header className={styles['prototype-top-nav']}>
@@ -23,7 +25,9 @@ export default function PrototypeTopNav({
         >
           <ArrowLeftIcon size={20} aria-hidden />
         </Link>
-        <h1 className={styles['prototype-top-nav__title']}>{title}</h1>
+        {!hideTitle && title ? (
+          <h1 className={styles['prototype-top-nav__title']}>{title}</h1>
+        ) : null}
       </div>
 
       <div className={styles['prototype-top-nav__center']}>{centerSlot}</div>
