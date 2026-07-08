@@ -6,6 +6,17 @@
   background: var(--sidebar-bg);
   overflow: hidden;
 
+  /** Product System Console rail — matches production #111111 sidebar. */
+  &--product {
+    --sidebar-bg: #111111;
+    --sidebar-bg-rgb: 17, 17, 17;
+    --sidebar-header-bg: #111111;
+    --sidebar-header-bg-rgb: 17, 17, 17;
+    --sidebar-text: var(--color-neutral-0);
+    --sidebar-text-rgb: var(--color-neutral-0-rgb);
+    --sidebar-header-text-color: var(--color-neutral-0);
+  }
+
   &__header {
     flex: 0 0 auto;
   }

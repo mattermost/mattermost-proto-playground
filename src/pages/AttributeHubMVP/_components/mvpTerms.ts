@@ -2,6 +2,7 @@ import {
   inheritanceParentKind,
   hasInheritanceParent,
   type AttrType,
+  type AttrValue,
   type HubAttribute,
   type ResourceConfig,
   type ResourceKind,
@@ -18,17 +19,30 @@ import {
 // ─── Terminology (brief §Terminology) ───────────────────────────────────────
 
 /**
- * Listing / definition count label. "N options" for Select/Multiselect ·
- * "N tiers" for Ranked/Ranked-hierarchical · "Free text" for Text. This is the
- * option-domain count (renamed from the old "values" count), not usage.
+ * Listing / definition count label. "N options" for every option-bearing type
+ * (Select, Multiselect, Ranked, Ranked-hierarchical). Ranked-hierarchical counts
+ * every tier and nested marking. "Free text" for Text.
  */
+function countAllOptions(values: AttrValue[]): number {
+  let n = 0;
+  const walk = (vs: AttrValue[]) => {
+    for (const v of vs) {
+      n += 1;
+      if (v.children?.length) {
+        walk(v.children);
+      }
+    }
+  };
+  walk(values);
+  return n;
+}
+
 export function optionCountLabel(a: HubAttribute): string {
   if (a.type === 'Text') return 'Free text';
-  if (a.type === 'Ranked' || a.type === 'Ranked-hierarchical') {
-    const tiers = a.values.filter((v) => v.tier != null).length;
-    return `${tiers} ${tiers === 1 ? 'tier' : 'tiers'}`;
-  }
-  const n = a.values.length;
+  const n =
+    a.type === 'Ranked-hierarchical'
+      ? countAllOptions(a.values)
+      : a.values.length;
   return `${n} ${n === 1 ? 'option' : 'options'}`;
 }
 

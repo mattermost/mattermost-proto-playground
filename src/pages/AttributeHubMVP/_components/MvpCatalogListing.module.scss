@@ -180,6 +180,50 @@
         color: rgba(var(--center-channel-color-rgb), 0.56);
       }
     }
+
+    &--dragging {
+      opacity: 0.48;
+    }
+
+    &--drag-over td {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      box-shadow: inset 0 2px 0 var(--button-bg);
+    }
+  }
+
+  &__col-handle {
+    width: 40px;
+    padding-left: var(--spacing-s) !important;
+    padding-right: var(--spacing-xs) !important;
+  }
+
+  &__handle {
+    width: 40px;
+    padding-left: var(--spacing-s) !important;
+    padding-right: var(--spacing-xs) !important;
+    color: rgba(var(--center-channel-color-rgb), 0.32);
+  }
+
+  &__drag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxs);
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+    cursor: grab;
+    touch-action: none;
+
+    &:hover {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   &__col-type,

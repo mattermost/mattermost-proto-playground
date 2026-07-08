@@ -33,10 +33,8 @@ export interface MvpDetailViewProps {
   onRemoveResource: (resource: ResourceKind) => void;
   /** OPEN — reveal allowed-value subsets (?allowed=on). */
   allowedOn: boolean;
-  /** Connect an external source (LDAP / SAML) — demo record. */
+  /** Connect an external source (LDAP / SAML) — demo modal only. */
   onConnectSource: (system: SourceSystem) => void;
-  /** Source just connected in this session, if any. */
-  connectedSource?: SourceSystem;
   /** Per-resource inheritance state accessor + setter. */
   inheritanceFor: (cfg: ResourceConfig) => InheritanceState;
   onInheritanceChange: (resource: ResourceKind, next: InheritanceState) => void;
@@ -59,7 +57,6 @@ export default function MvpDetailView({
   onRemoveResource,
   allowedOn,
   onConnectSource,
-  connectedSource,
   inheritanceFor,
   onInheritanceChange,
   nameOnResourceFor,
@@ -134,12 +131,6 @@ export default function MvpDetailView({
                   attribute={attribute}
                   onConnect={onConnectSource}
                 />
-              )}
-              {connectedSource && !sourceOwned && (
-                <p className={styles['detail__connected']}>
-                  Connected to {connectedSource}. Options and values will sync from
-                  the source.
-                </p>
               )}
             </div>
           </div>

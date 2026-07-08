@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ConsoleSidebar from '@/components/ui/ConsoleSidebar/ConsoleSidebar';
+import sidebarStyles from '@/components/ui/ConsoleSidebar/ConsoleSidebar.module.scss';
 import ConsolePageHeader from '@/components/ui/ConsolePageHeader/ConsolePageHeader';
 import Button from '@/components/ui/Button/Button';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
@@ -458,6 +459,7 @@ export default function AttributeHubSimplified({
   return (
     <div className={styles['console']}>
       <ConsoleSidebar
+        className={sidebarStyles['console-sidebar--product']}
         avatarSrc={avatarLeonard}
         avatarAlt="Leonard Riley"
         username="leonard.riley"

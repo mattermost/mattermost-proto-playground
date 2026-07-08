@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ConsoleSidebar from '@/components/ui/ConsoleSidebar/ConsoleSidebar';
+import sidebarStyles from '@/components/ui/ConsoleSidebar/ConsoleSidebar.module.scss';
 import ConsolePageHeader from '@/components/ui/ConsolePageHeader/ConsolePageHeader';
 import Button from '@/components/ui/Button/Button';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
@@ -124,10 +125,6 @@ export default function AttributeHubMVP() {
   const [resourceNames, setResourceNames] = useState<Record<EdgeKey, string>>(
     {},
   );
-  /** Demo connect — records which source an attribute was just connected to. */
-  const [connectedSource, setConnectedSource] = useState<
-    Record<string, SourceSystem>
-  >({});
 
   const nameRef = useRef<HTMLInputElement | null>(null);
   const creating = draft !== null;
@@ -256,9 +253,8 @@ export default function AttributeHubMVP() {
     }));
   };
 
-  const connectSource = (system: SourceSystem) => {
-    if (!active) return;
-    setConnectedSource((prev) => ({ ...prev, [active.id]: system }));
+  const connectSource = (_system: SourceSystem) => {
+    // Demo — modal closes on selection; no transient connected state in the UI.
   };
 
   const addResource = (resource: ResourceKind) => {
@@ -334,11 +330,26 @@ export default function AttributeHubMVP() {
     });
   };
 
+  const reorderAttributes = (activeId: string, overId: string) => {
+    setAttributes((prev) => {
+      const from = prev.findIndex((item) => item.id === activeId);
+      const to = prev.findIndex((item) => item.id === overId);
+      if (from < 0 || to < 0 || from === to) {
+        return prev;
+      }
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  };
+
   const createEnabled = !!draft && draft.name.trim().length > 0 && !!draft.type;
 
   return (
     <div className={styles['console']}>
       <ConsoleSidebar
+        className={sidebarStyles['console-sidebar--product']}
         avatarSrc={avatarLeonard}
         avatarAlt="Leonard Riley"
         username="leonard.riley"
@@ -354,7 +365,7 @@ export default function AttributeHubMVP() {
                 ? 'New attribute'
                 : active
                   ? active.name || 'Untitled attribute'
-                  : 'Global Attributes'
+                  : 'Manage Attributes'
           }
           subtitle={
             markingsAttr
@@ -415,7 +426,6 @@ export default function AttributeHubMVP() {
                   onRemoveResource={removeResource}
                   allowedOn={allowedOn}
                   onConnectSource={connectSource}
-                  connectedSource={connectedSource[active.id]}
                   inheritanceFor={(cfg) => inheritanceFor(active, cfg)}
                   onInheritanceChange={setInheritance}
                   nameOnResourceFor={(resource) =>
@@ -440,6 +450,7 @@ export default function AttributeHubMVP() {
                   onNewAttribute={startCreate}
                   onOpenDetail={openDetail}
                   onOpenMarkings={openMarkings}
+                  onReorderAttributes={reorderAttributes}
                   onDeactivate={openDeactivate}
                   onDelete={openDelete}
                 />
