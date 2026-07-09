@@ -79,11 +79,9 @@
     grid-template-columns: minmax(160px, 0.38fr) minmax(0, 1fr);
     gap: var(--spacing-xl);
     padding: var(--spacing-l) 0;
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
 
     &:first-child {
       padding-top: 0;
-      border-top: none;
     }
   }
 

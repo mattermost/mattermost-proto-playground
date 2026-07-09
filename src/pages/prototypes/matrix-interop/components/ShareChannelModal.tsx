@@ -26,6 +26,7 @@ type ShareChannelModalProps = {
   connections: MatrixConnection[];
   channelOptions: MattermostChannelOption[];
   existingSharedChannels?: SharedChannel[];
+  editingChannel?: SharedChannel;
   defaultConnectionId?: string;
   defaultChannelId?: string;
   onClose: () => void;
@@ -40,6 +41,13 @@ type ShareChannelModalProps = {
   }) => void;
 };
 
+function initialShareMode(channel?: SharedChannel): ShareMode {
+  if (channel && isValidMatrixRoomAddress(channel.matrixRoomAlias)) {
+    return 'map';
+  }
+  return 'create';
+}
+
 export default function ShareChannelModal({
   variant,
   connections,
@@ -47,33 +55,49 @@ export default function ShareChannelModal({
   defaultConnectionId,
   defaultChannelId,
   existingSharedChannels = [],
+  editingChannel,
   onClose,
   onShare,
 }: ShareChannelModalProps) {
+  const isEditing = editingChannel != null;
   const radioNs = useId().replace(/\W/g, '');
   const [channelId, setChannelId] = useState(
     defaultChannelId ?? channelOptions[0]?.id ?? '',
   );
   const [connectionId, setConnectionId] = useState(
-    defaultConnectionId ?? connections[0]?.id ?? '',
+    editingChannel?.connectionId ??
+      defaultConnectionId ??
+      connections[0]?.id ??
+      '',
   );
-  const [shareMode, setShareMode] = useState<ShareMode>('create');
-  const [roomValue, setRoomValue] = useState('');
+  const [shareMode, setShareMode] = useState<ShareMode>(() =>
+    initialShareMode(editingChannel),
+  );
+  const [roomValue, setRoomValue] = useState(
+    editingChannel?.matrixRoomAlias ?? '',
+  );
   const [error, setError] = useState<string | null>(null);
 
-  const selectedChannel = useMemo(
-    () => channelOptions.find((c) => c.id === channelId),
-    [channelId, channelOptions],
-  );
+  const selectedChannel = useMemo(() => {
+    if (isEditing && editingChannel) {
+      return {
+        id: editingChannel.id,
+        name: editingChannel.name,
+        team: editingChannel.team,
+        visibility: editingChannel.visibility,
+      } satisfies MattermostChannelOption;
+    }
+    return channelOptions.find((c) => c.id === channelId);
+  }, [channelId, channelOptions, editingChannel, isEditing]);
 
   const alreadyBridged = useMemo(() => {
-    if (!selectedChannel) return false;
+    if (!selectedChannel || isEditing) return false;
     return existingSharedChannels.some(
       (c) =>
         c.connectionId === connectionId &&
         c.name.toLowerCase() === selectedChannel.name.toLowerCase(),
     );
-  }, [connectionId, existingSharedChannels, selectedChannel]);
+  }, [connectionId, existingSharedChannels, isEditing, selectedChannel]);
 
   if (connections.length === 0) {
     return (
@@ -132,7 +156,7 @@ export default function ShareChannelModal({
     );
 
     onShare({
-      channelId,
+      channelId: isEditing ? editingChannel!.id : channelId,
       connectionId,
       shareMode,
       matrixRoomAlias: alias,
@@ -148,7 +172,7 @@ export default function ShareChannelModal({
         Cancel
       </Button>
       <Button emphasis="Primary" onClick={handleShare}>
-        Share
+        {isEditing ? 'Save' : 'Share'}
       </Button>
     </div>
   );
@@ -162,13 +186,13 @@ export default function ShareChannelModal({
       />
       <div className={modalStyles['matrix-interop-modals__dialog']}>
         <Modal
-          title="Share channels with Matrix"
+          title={isEditing ? 'Edit shared channel' : 'Share channels with Matrix'}
           size="Small"
           onClose={onClose}
           footer={footer}
         >
           <div className={modalStyles['matrix-interop-modals__body-stack']}>
-            {variant === 'admin' && (
+            {variant === 'admin' && !isEditing && (
               <div className={modalStyles['matrix-interop-modals__field-group']}>
                 <p className={modalStyles['matrix-interop-modals__field-label']}>
                   Mattermost channel
@@ -182,6 +206,20 @@ export default function ShareChannelModal({
                   }}
                   onInputChange={() => setError(null)}
                   invalid={Boolean(error && !selectedChannel)}
+                  aria-label="Mattermost channel"
+                />
+              </div>
+            )}
+
+            {variant === 'admin' && isEditing && selectedChannel && (
+              <div className={modalStyles['matrix-interop-modals__field-group']}>
+                <p className={modalStyles['matrix-interop-modals__field-label']}>
+                  Mattermost channel
+                </p>
+                <TextInput
+                  size="Medium"
+                  value={selectedChannel.name}
+                  readOnly
                   aria-label="Mattermost channel"
                 />
               </div>

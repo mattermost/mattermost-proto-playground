@@ -156,6 +156,8 @@ export default function ConnectionsTable({
               >
                 <IconButton
                   aria-label={`Actions for ${connection.name}`}
+                  size="Small"
+                  padding="Compact"
                   icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
                   onClick={(e: MouseEvent) => {
                     e.stopPropagation();

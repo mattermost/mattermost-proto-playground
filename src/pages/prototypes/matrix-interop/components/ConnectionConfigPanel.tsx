@@ -261,6 +261,44 @@ export default function ConnectionConfigPanel({
             </p>
           </div>
         </div>
+
+        <div className={matrixAdminShellStyles['matrix-admin-shell__setting']}>
+          <div
+            className={matrixAdminShellStyles['matrix-admin-shell__setting-label']}
+          >
+            Matrix Rate Limiting
+          </div>
+          <div
+            className={
+              matrixAdminShellStyles['matrix-admin-shell__setting-fields']
+            }
+          >
+            <div className={matrixAdminShellStyles['matrix-admin-shell__radio-row']}>
+              <Radio
+                name={`${radioNs}-matrix-rate-limiting`}
+                value="true"
+                checked={connection.matrixRateLimitingEnabled}
+                onChange={() => onChange({ matrixRateLimitingEnabled: true })}
+                size="Medium"
+              >
+                True
+              </Radio>
+              <Radio
+                name={`${radioNs}-matrix-rate-limiting`}
+                value="false"
+                checked={!connection.matrixRateLimitingEnabled}
+                onChange={() => onChange({ matrixRateLimitingEnabled: false })}
+                size="Medium"
+              >
+                False
+              </Radio>
+            </div>
+            <p className={matrixAdminShellStyles['matrix-admin-shell__help']}>
+              When true, the Matrix homeserver applies rate limits to API
+              requests from this connection's application service user.
+            </p>
+          </div>
+        </div>
       </div>
     </AdminPanel>
   );

@@ -14,6 +14,7 @@ export interface MatrixConnection {
   applicationServiceToken: string;
   homeserverToken: string;
   messageSyncEnabled: boolean;
+  matrixRateLimitingEnabled: boolean;
 }
 
 export interface SharedChannel {

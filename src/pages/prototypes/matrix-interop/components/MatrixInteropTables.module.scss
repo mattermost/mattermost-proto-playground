@@ -14,7 +14,7 @@
 
   &__header {
     display: grid;
-    grid-template-columns: 1fr 228px 1fr;
+    grid-template-columns: 1fr 228px 1fr 40px;
     align-items: center;
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
     padding: var(--spacing-xs) 0;
@@ -28,6 +28,10 @@
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
+  &__header-cell--actions {
+    opacity: 0;
+  }
+
   &__connections-header {
     display: grid;
     grid-template-columns: 1fr 180px 1fr 100px 40px;
@@ -38,7 +42,7 @@
 
   &__row {
     display: grid;
-    grid-template-columns: 1fr 228px 1fr;
+    grid-template-columns: 1fr 228px 1fr 40px;
     align-items: center;
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     min-height: 48px;

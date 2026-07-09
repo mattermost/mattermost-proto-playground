@@ -24,6 +24,7 @@ export const NEW_CONNECTION_TEMPLATE: MatrixConnection = {
   applicationServiceToken: '',
   homeserverToken: '',
   messageSyncEnabled: true,
+  matrixRateLimitingEnabled: false,
 };
 
 export const INITIAL_CONNECTIONS: MatrixConnection[] = [
@@ -36,6 +37,7 @@ export const INITIAL_CONNECTIONS: MatrixConnection[] = [
     applicationServiceToken: 'as-token-acme-••••••••',
     homeserverToken: 'hs-token-acme-••••••••',
     messageSyncEnabled: true,
+    matrixRateLimitingEnabled: false,
   },
   {
     id: 'globex',
@@ -46,6 +48,7 @@ export const INITIAL_CONNECTIONS: MatrixConnection[] = [
     applicationServiceToken: 'as-token-globex-••••••••',
     homeserverToken: 'hs-token-globex-••••••••',
     messageSyncEnabled: true,
+    matrixRateLimitingEnabled: false,
   },
   {
     id: 'initech',
@@ -56,6 +59,7 @@ export const INITIAL_CONNECTIONS: MatrixConnection[] = [
     applicationServiceToken: 'as-token-initech-••••••••',
     homeserverToken: 'hs-token-initech-••••••••',
     messageSyncEnabled: false,
+    matrixRateLimitingEnabled: true,
   },
 ];
 

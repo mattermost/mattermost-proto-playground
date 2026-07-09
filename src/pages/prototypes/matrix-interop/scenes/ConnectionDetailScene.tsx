@@ -10,6 +10,8 @@ type ConnectionDetailSceneProps = {
   isNew?: boolean;
   onBack: () => void;
   onAddChannels: () => void;
+  onEditSharedChannel: (channel: SharedChannel) => void;
+  onRemoveSharedChannel: (channel: SharedChannel) => void;
   onSaveConnection: (connection: MatrixConnection) => void;
 };
 
@@ -21,6 +23,7 @@ function connectionSettingsEqual(
     a.name === b.name &&
     a.homeserverUrl === b.homeserverUrl &&
     a.messageSyncEnabled === b.messageSyncEnabled &&
+    a.matrixRateLimitingEnabled === b.matrixRateLimitingEnabled &&
     a.applicationServiceToken === b.applicationServiceToken &&
     a.homeserverToken === b.homeserverToken
   );
@@ -32,6 +35,8 @@ export default function ConnectionDetailScene({
   isNew = false,
   onBack,
   onAddChannels,
+  onEditSharedChannel,
+  onRemoveSharedChannel,
   onSaveConnection,
 }: ConnectionDetailSceneProps) {
   const [draft, setDraft] = useState(connection);
@@ -77,6 +82,8 @@ export default function ConnectionDetailScene({
       <SharedChannelsTable
         channels={sharedChannels}
         onAddChannels={onAddChannels}
+        onEditChannel={onEditSharedChannel}
+        onRemoveChannel={onRemoveSharedChannel}
       />
     </MatrixAdminShell>
   );

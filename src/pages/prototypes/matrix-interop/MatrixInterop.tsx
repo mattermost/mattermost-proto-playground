@@ -53,6 +53,8 @@ export default function MatrixInterop() {
     useState<ShareModalContext>('admin');
   const [unmapTarget, setUnmapTarget] = useState<SharedChannel | null>(null);
   const [unmapWorkspaceId, setUnmapWorkspaceId] = useState<string | null>(null);
+  const [editingSharedChannel, setEditingSharedChannel] =
+    useState<SharedChannel | null>(null);
 
   useEffect(() => {
     setCenterSlot(
@@ -152,8 +154,24 @@ export default function MatrixInterop() {
   }, [activeConnectionId]);
 
   const openShareModal = useCallback((context: ShareModalContext) => {
+    setEditingSharedChannel(null);
     setShareModalContext(context);
     setShareModalOpen(true);
+  }, []);
+
+  const closeShareModal = useCallback(() => {
+    setShareModalOpen(false);
+    setEditingSharedChannel(null);
+  }, []);
+
+  const handleEditSharedChannel = useCallback((channel: SharedChannel) => {
+    setEditingSharedChannel(channel);
+    setShareModalContext('admin');
+    setShareModalOpen(true);
+  }, []);
+
+  const handleRemoveSharedChannel = useCallback((channel: SharedChannel) => {
+    setUnmapTarget(channel);
   }, []);
 
   const handleShare = useCallback(
@@ -165,6 +183,41 @@ export default function MatrixInterop() {
       team: string;
       channelName: string;
     }) => {
+      if (editingSharedChannel) {
+        const previousConnectionId = editingSharedChannel.connectionId;
+        const updatedChannel: SharedChannel = {
+          ...editingSharedChannel,
+          connectionId: payload.connectionId,
+          name: payload.channelName,
+          team: payload.team,
+          matrixRoomAlias: payload.matrixRoomAlias,
+          visibility: payload.visibility,
+        };
+
+        setSharedChannels((prev) => {
+          const next = { ...prev };
+
+          if (previousConnectionId !== payload.connectionId) {
+            next[previousConnectionId] = (next[previousConnectionId] ?? []).filter(
+              (c) => c.id !== editingSharedChannel.id,
+            );
+            next[payload.connectionId] = [
+              ...(next[payload.connectionId] ?? []),
+              updatedChannel,
+            ];
+            return next;
+          }
+
+          next[payload.connectionId] = (next[payload.connectionId] ?? []).map(
+            (c) => (c.id === editingSharedChannel.id ? updatedChannel : c),
+          );
+          return next;
+        });
+
+        closeShareModal();
+        return;
+      }
+
       const newChannel: SharedChannel = {
         id: `sc-${Date.now()}`,
         connectionId: payload.connectionId,
@@ -204,9 +257,9 @@ export default function MatrixInterop() {
         }
       }
 
-      setShareModalOpen(false);
+      closeShareModal();
     },
-    [connections, shareModalContext],
+    [closeShareModal, connections, editingSharedChannel, shareModalContext],
   );
 
   const handleConfirmUnmap = useCallback(() => {
@@ -309,6 +362,8 @@ export default function MatrixInterop() {
             }
             onBack={handleBackToList}
             onAddChannels={() => openShareModal('admin')}
+            onEditSharedChannel={handleEditSharedChannel}
+            onRemoveSharedChannel={handleRemoveSharedChannel}
             onSaveConnection={handleSaveConnection}
           />
         )}
@@ -331,6 +386,7 @@ export default function MatrixInterop() {
           variant={shareModalContext}
           connections={connections}
           channelOptions={CHANNEL_OPTIONS}
+          editingChannel={editingSharedChannel ?? undefined}
           defaultConnectionId={activeConnectionId ?? undefined}
           defaultChannelId={CURRENT_CHANNEL.id}
           existingSharedChannels={
@@ -338,7 +394,7 @@ export default function MatrixInterop() {
               ? (sharedChannels[activeConnectionId] ?? [])
               : Object.values(sharedChannels).flat()
           }
-          onClose={() => setShareModalOpen(false)}
+          onClose={closeShareModal}
           onShare={handleShare}
         />
       )}
