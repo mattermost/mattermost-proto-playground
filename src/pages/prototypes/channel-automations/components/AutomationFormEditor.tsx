@@ -492,7 +492,7 @@ const AutomationFormEditor = forwardRef<
 
               <TextArea
                 className={styles['editor__form-control']}
-                label="Instructions"
+                label="Automation instructions"
                 value={instructions}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
                 rows={5}
