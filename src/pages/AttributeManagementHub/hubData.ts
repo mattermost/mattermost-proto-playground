@@ -718,9 +718,9 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
       'Named program assignment. Values are restricted — you see only the programs you are read into.',
     values: [
       { id: 'pg-aurora', label: 'AURORA' },
-      { id: 'pg-restricted-1', label: 'Restricted', disabled: false },
-      { id: 'pg-restricted-2', label: 'Restricted' },
-      { id: 'pg-restricted-3', label: 'Restricted' },
+      { id: 'pg-nexus', label: 'NEXUS' },
+      { id: 'pg-orion', label: 'ORION' },
+      { id: 'pg-sentinel', label: 'SENTINEL' },
     ],
     source: {
       kind: 'synced',

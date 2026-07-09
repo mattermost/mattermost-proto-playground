@@ -16,6 +16,13 @@ import { CHANNEL_ATTRIBUTE_DEFAULTS } from './postViewData';
 
 export type ChannelCustomAttribute = PostCustomAttribute;
 
+export function slugifyChannelName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export interface ChannelAttributeValue {
   attributeId: string;
   valueId: string;
@@ -58,9 +65,16 @@ export const CHANNEL_INFO_SEED: ChannelDemoState = {
     { attributeId: 'program', valueId: 'pg-aurora' },
     { attributeId: 'caveat', valueId: 'cav-noforn' },
     { attributeId: 'engagement-tempo', valueId: 'et-elevated' },
+    { attributeId: 'mission-phase', valueId: 'mp-exec' },
+    { attributeId: 'channel-attr-ops-window', valueId: 'ow-day' },
+    { attributeId: 'channel-attr-watch-floor', valueId: 'wf-alpha' },
   ],
   customAttributes: [],
-  bindingOverrides: {},
+  // Header chips: 6 attrs (Classification uses Banner); 3 visible + "+3 more".
+  bindingOverrides: {
+    'channel-attr-ops-window': { showWhere: ['Header', 'Sidebar'] },
+    'channel-attr-watch-floor': { showWhere: ['Header', 'Sidebar'] },
+  },
 };
 
 export function effectiveChannelBinding(

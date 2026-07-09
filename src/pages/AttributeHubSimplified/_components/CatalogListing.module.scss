@@ -176,6 +176,15 @@
   flex-direction: column;
   gap: var(--spacing-l);
 
+  --catalog-col-handle: 40px;
+  --catalog-col-name: 228px;
+  --catalog-col-type: 164px;
+  --catalog-col-applies: 208px;
+  --catalog-col-source: 136px;
+  --catalog-col-values: 92px;
+  --catalog-col-usage: 120px;
+  --catalog-col-actions: 100px;
+
   &__section {
     width: 100%;
     min-width: 0;
@@ -201,25 +210,11 @@
   overflow: visible;
   background: transparent;
 
-  &--sectioned {
-    --catalog-col-handle: 40px;
-    --catalog-col-name: 228px;
-    --catalog-col-type: 164px;
-    --catalog-col-applies: 208px;
-    --catalog-col-source: 136px;
-    --catalog-col-values: 92px;
-    --catalog-col-usage: 120px;
-    --catalog-col-actions: 100px;
-  }
-
   &__grid {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     font-size: var(--font-size-100);
-
-    .table--sectioned & {
-      table-layout: fixed;
-    }
 
     thead th {
       position: sticky;
@@ -291,6 +286,12 @@
     color: rgba(var(--center-channel-color-rgb), 0.32);
   }
 
+  &__handle-spacer {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+  }
+
   &__drag {
     display: inline-flex;
     align-items: center;
@@ -343,6 +344,14 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-width: 0;
   }
 
   &__name {

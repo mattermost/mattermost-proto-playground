@@ -110,7 +110,29 @@
       gap: 2px;
       max-width: 100%;
       min-width: 0;
-      pointer-events: none;
+    }
+
+    .panel__value-chip-label {
+      appearance: none;
+      display: inline;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      line-height: inherit;
+      letter-spacing: inherit;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &:focus-visible {
+        outline: 2px solid var(--button-bg);
+        outline-offset: 1px;
+        border-radius: var(--radius-xs);
+      }
     }
 
     .panel__value-remove {

@@ -43,7 +43,8 @@ function readView(): ResourceSettingsView {
   const view = new URLSearchParams(window.location.search).get('view');
   if (view === 'channel') return 'channel';
   if (view === 'channel-thread') return 'channel-thread';
-  if (view === 'channel-info') return 'channel-info';
+  // Former create-channel scene now lives on Channel info Admin (+ button)
+  if (view === 'channel-info' || view === 'create-channel') return 'channel-info';
   if (view === 'channel-info-user') return 'channel-info-user';
   return 'team';
 }

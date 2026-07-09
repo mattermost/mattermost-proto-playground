@@ -301,6 +301,12 @@ export default function ChannelThreadView({
                   channel={channel}
                   className={styles['channel-thread-view__rhs-header-attrs']}
                 />
+                {classificationBanner && (
+                  <ChannelClassificationBanner
+                    valueId={classificationBanner.valueId}
+                    label={classificationBanner.label}
+                  />
+                )}
               </div>
             }
             footer={

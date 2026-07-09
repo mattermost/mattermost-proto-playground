@@ -36,6 +36,48 @@ export const TEAM_APPLIES_TO_EMPTY =
 /** Team-created attribute ids — everything else in the catalog is system/global. */
 export const TEAM_LOCAL_IDS = new Set(['mission-phase']);
 
+const teamSessionAttributes = new Map<string, HubAttribute>();
+
+/** Persist attributes created in team settings across workspace remounts. */
+export function saveTeamLocalAttribute(attribute: HubAttribute): void {
+  TEAM_LOCAL_IDS.add(attribute.id);
+  teamSessionAttributes.set(attribute.id, attribute);
+}
+
+export function isSessionTeamAttribute(attributeId: string): boolean {
+  return teamSessionAttributes.has(attributeId);
+}
+
+/** Seed workspace state with fixture data plus session-created attributes. */
+export function getTeamWorkspaceAttributes(): HubAttribute[] {
+  const baseIds = new Set(TEAM_ATTRIBUTES.map((attribute) => attribute.id));
+  const created = [...teamSessionAttributes.values()].filter(
+    (attribute) => !baseIds.has(attribute.id),
+  );
+  return [...TEAM_ATTRIBUTES, ...created];
+}
+
+function readTeamSettingsUrl(): URL | null {
+  if (typeof window === 'undefined') return null;
+  return new URL(window.location.href);
+}
+
+export function syncTeamAttributeDetailParams(attributeId: string): void {
+  const url = readTeamSettingsUrl();
+  if (!url) return;
+  url.searchParams.set('tab', 'attributes');
+  url.searchParams.set('attr', attributeId);
+  url.searchParams.delete('flow');
+  window.history.replaceState(null, '', url);
+}
+
+export function clearTeamAttributeDetailParams(): void {
+  const url = readTeamSettingsUrl();
+  if (!url) return;
+  url.searchParams.delete('attr');
+  window.history.replaceState(null, '', url);
+}
+
 export function isSystemTeamAttribute(attribute: HubAttribute): boolean {
   return !TEAM_LOCAL_IDS.has(attribute.id);
 }

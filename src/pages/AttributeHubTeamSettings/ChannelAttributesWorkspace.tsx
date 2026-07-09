@@ -24,20 +24,20 @@ import CatalogListing from '@/pages/AttributeHubSimplified/_components/CatalogLi
 import DuplicateAttributeModal from '@/pages/AttributeHubSimplified/_components/DuplicateAttributeModal';
 import {
   CHANNEL_APPLIES_TO_EMPTY,
-  CHANNEL_ATTRIBUTES,
   CHANNEL_ATTRIBUTES_INTRO,
   CHANNEL_CATALOG_EMPTY,
-  CHANNEL_CATALOG_SECTIONS,
   CHANNEL_CATALOG_TITLE,
   CHANNEL_RESOURCE_LABELS,
   CHANNEL_SCOPE_RESOURCES,
   blankChannelAttribute,
   clearChannelAttributeDetailParams,
   defaultChannelResourceConfig,
+  getChannelWorkspaceAttributes,
   isChannelAttributeReadOnly,
+  isSessionChannelAttribute,
   isSystemChannelAttribute,
   readAppliesPreset,
-  registerChannelLocalAttribute,
+  saveChannelLocalAttribute,
   syncChannelAttributeDetailParams,
 } from './channelData';
 import styles from './TeamAttributesWorkspace.module.scss';
@@ -90,12 +90,15 @@ export default function ChannelAttributesWorkspace({
   onDirtyChange,
 }: ChannelAttributesWorkspaceProps) {
   const params = readParams();
-  const attrParam = params.get('attr');
-  const creatingFromUrl = !attrParam && params.get('flow') === 'new';
+  const initialAttrParam =
+    params.get('flow') === 'new' ? null : params.get('attr');
+  const creatingFromUrl = !initialAttrParam && params.get('flow') === 'new';
   const appliesPreset = readAppliesPreset(params);
 
-  const [attributes, setAttributes] = useState<HubAttribute[]>(CHANNEL_ATTRIBUTES);
-  const [selectedId, setSelectedId] = useState<string | null>(attrParam);
+  const [attributes, setAttributes] = useState<HubAttribute[]>(
+    getChannelWorkspaceAttributes,
+  );
+  const [selectedId, setSelectedId] = useState<string | null>(initialAttrParam);
   const [draft, setDraft] = useState<HubAttribute | null>(
     creatingFromUrl ? blankChannelAttribute(appliesPreset) : null,
   );
@@ -163,7 +166,16 @@ export default function ChannelAttributesWorkspace({
     if (draft) {
       setDraft((d) => (d ? fn(d) : d));
     } else if (selectedId) {
-      setAttributes((prev) => prev.map((a) => (a.id === selectedId ? fn(a) : a)));
+      setAttributes((prev) =>
+        prev.map((a) => {
+          if (a.id !== selectedId) return a;
+          const next = fn(a);
+          if (isSessionChannelAttribute(next.id)) {
+            saveChannelLocalAttribute(next);
+          }
+          return next;
+        }),
+      );
     }
   };
 
@@ -375,7 +387,7 @@ export default function ChannelAttributesWorkspace({
   const commitCreate = () => {
     if (!draft) return;
     const created: HubAttribute = { ...draft, name: draft.name.trim() };
-    registerChannelLocalAttribute(created.id);
+    saveChannelLocalAttribute(created);
     setAttributes((prev) => [...prev, created]);
     setSelectedId(created.id);
     setDraft(null);
@@ -437,7 +449,7 @@ export default function ChannelAttributesWorkspace({
       usedByPolicies: 0,
       policyNames: [],
     };
-    registerChannelLocalAttribute(copy.id);
+    saveChannelLocalAttribute(copy);
     setAttributes((prev) => [...prev, copy]);
     setDuplicateForId(null);
   };
@@ -565,7 +577,7 @@ export default function ChannelAttributesWorkspace({
             showUsageColumn={false}
             policyLockedNoNavigate
             isScopeLocked={isSystemChannelAttribute}
-            catalogSections={CHANNEL_CATALOG_SECTIONS}
+            showSystemBadge={isSystemChannelAttribute}
             resourceSettingsMenu={{
               isAttributeReadOnly: isChannelAttributeReadOnly,
               onEdit: openDetail,

@@ -54,7 +54,7 @@ export interface ChannelAttributesPanelProps {
   onEditAttribute?: (attributeId: string) => void;
 }
 
-const CLASSIFICATION_LOCK_TOOLTIP = 'Locked at the global level';
+const CLASSIFICATION_LOCK_TOOLTIP = 'Cannot be changed after set';
 const CLASSIFICATION_LOCK_TOOLTIP_GAP = 8;
 const CLASSIFICATION_LOCK_TOOLTIP_Z_INDEX = 1100;
 const CLASSIFICATION_LOCK_TOOLTIP_ESTIMATED_HEIGHT = 36;
@@ -374,6 +374,37 @@ function ChannelAttributeValue({
         {(active) => {
           const showRemove = Boolean(handleRemove) && active;
 
+          if (showChip) {
+            return (
+              <Chip
+                size="Small"
+                as="div"
+                className={styles['panel__value-chip']}
+                onRemove={
+                  showRemove
+                    ? (event) => {
+                        event.stopPropagation();
+                        handleRemove?.();
+                      }
+                    : undefined
+                }
+                removeLabel={`Remove ${attribute.name} from channel`}
+              >
+                <button
+                  ref={triggerRef}
+                  type="button"
+                  className={styles['panel__value-chip-label']}
+                  aria-haspopup="menu"
+                  aria-expanded={open}
+                  aria-label={`${attribute.name}: ${label}`}
+                  onClick={() => setOpen(true)}
+                >
+                  {label}
+                </button>
+              </Chip>
+            );
+          }
+
           return (
             <>
               <button
@@ -385,13 +416,7 @@ function ChannelAttributeValue({
                 aria-label={`${attribute.name}: ${label}`}
                 onClick={() => setOpen(true)}
               >
-                {showChip ? (
-                  <Chip size="Small" className={styles['panel__value-chip']}>
-                    {label}
-                  </Chip>
-                ) : (
-                  <span className={styles['panel__value-text']}>{label}</span>
-                )}
+                <span className={styles['panel__value-text']}>{label}</span>
               </button>
               {handleRemove && (
                 <button
@@ -520,6 +545,37 @@ function CustomAttributeValue({
         {(active) => {
           const showRemove = Boolean(handleRemove) && active;
 
+          if (showChip) {
+            return (
+              <Chip
+                size="Small"
+                as="div"
+                className={styles['panel__value-chip']}
+                onRemove={
+                  showRemove
+                    ? (event) => {
+                        event.stopPropagation();
+                        handleRemove?.();
+                      }
+                    : undefined
+                }
+                removeLabel={`Remove ${attribute.name} from channel`}
+              >
+                <button
+                  ref={triggerRef}
+                  type="button"
+                  className={styles['panel__value-chip-label']}
+                  aria-haspopup="menu"
+                  aria-expanded={open}
+                  aria-label={`${attribute.name}: ${label}`}
+                  onClick={() => setOpen(true)}
+                >
+                  {label}
+                </button>
+              </Chip>
+            );
+          }
+
           return (
             <>
               <button
@@ -538,13 +594,7 @@ function CustomAttributeValue({
                 aria-label={`${attribute.name}: ${label}`}
                 onClick={() => setOpen(true)}
               >
-                {showChip ? (
-                  <Chip size="Small" className={styles['panel__value-chip']}>
-                    {label}
-                  </Chip>
-                ) : (
-                  <span className={styles['panel__value-text']}>{label}</span>
-                )}
+                <span className={styles['panel__value-text']}>{label}</span>
               </button>
               {handleRemove && (
                 <button

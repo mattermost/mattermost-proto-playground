@@ -24,7 +24,6 @@ import CatalogListing from '@/pages/AttributeHubSimplified/_components/CatalogLi
 import DuplicateAttributeModal from '@/pages/AttributeHubSimplified/_components/DuplicateAttributeModal';
 import {
   TEAM_APPLIES_TO_EMPTY,
-  TEAM_ATTRIBUTES,
   TEAM_ATTRIBUTES_INTRO,
   TEAM_CATALOG_EMPTY,
   TEAM_CATALOG_SECTIONS,
@@ -32,9 +31,14 @@ import {
   TEAM_RESOURCE_LABELS,
   TEAM_SCOPE_RESOURCES,
   blankTeamAttribute,
+  clearTeamAttributeDetailParams,
   defaultTeamResourceConfig,
+  getTeamWorkspaceAttributes,
+  isSessionTeamAttribute,
   isTeamAttributeReadOnly,
   isSystemTeamAttribute,
+  saveTeamLocalAttribute,
+  syncTeamAttributeDetailParams,
 } from './teamData';
 import styles from './TeamAttributesWorkspace.module.scss';
 
@@ -89,7 +93,9 @@ export default function TeamAttributesWorkspace({
   const initialAttrParam =
     params.get('flow') === 'new' ? null : params.get('attr');
 
-  const [attributes, setAttributes] = useState<HubAttribute[]>(TEAM_ATTRIBUTES);
+  const [attributes, setAttributes] = useState<HubAttribute[]>(
+    getTeamWorkspaceAttributes,
+  );
   const [selectedId, setSelectedId] = useState<string | null>(initialAttrParam);
   const [draft, setDraft] = useState<HubAttribute | null>(
     params.get('flow') === 'new' ? blankTeamAttribute() : null,
@@ -158,7 +164,16 @@ export default function TeamAttributesWorkspace({
     if (draft) {
       setDraft((d) => (d ? fn(d) : d));
     } else if (selectedId) {
-      setAttributes((prev) => prev.map((a) => (a.id === selectedId ? fn(a) : a)));
+      setAttributes((prev) =>
+        prev.map((a) => {
+          if (a.id !== selectedId) return a;
+          const next = fn(a);
+          if (isSessionTeamAttribute(next.id)) {
+            saveTeamLocalAttribute(next);
+          }
+          return next;
+        }),
+      );
     }
   };
 
@@ -352,6 +367,7 @@ export default function TeamAttributesWorkspace({
   const openDetail = (id: string) => {
     setDraft(null);
     setSelectedId(id);
+    syncTeamAttributeDetailParams(id);
   };
 
   const startCreate = () => {
@@ -363,14 +379,17 @@ export default function TeamAttributesWorkspace({
   const backToList = () => {
     setDraft(null);
     setSelectedId(null);
+    clearTeamAttributeDetailParams();
   };
 
   const commitCreate = () => {
     if (!draft) return;
     const created: HubAttribute = { ...draft, name: draft.name.trim() };
+    saveTeamLocalAttribute(created);
     setAttributes((prev) => [...prev, created]);
-    setDraft(null);
     setSelectedId(created.id);
+    setDraft(null);
+    syncTeamAttributeDetailParams(created.id);
   };
 
   const requestDelete = (id: string) => {
@@ -428,6 +447,7 @@ export default function TeamAttributesWorkspace({
       usedByPolicies: 0,
       policyNames: [],
     };
+    saveTeamLocalAttribute(copy);
     setAttributes((prev) => [...prev, copy]);
     setDuplicateForId(null);
   };

@@ -11,6 +11,7 @@ import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
 import IconButton from '@/components/ui/IconButton/IconButton';
 import Chip from '@/components/ui/Chip/Chip';
+import LabelTag from '@/components/ui/LabelTag/LabelTag';
 import SearchInput from '@/components/ui/SearchInput/SearchInput';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import Select from '@/components/ui/Select/Select';
@@ -68,6 +69,8 @@ export interface CatalogListingProps {
   policyLockedNoNavigate?: boolean;
   /** System/global rows show lock only — no menu or drill-down (resource settings). */
   isScopeLocked?: (attribute: HubAttribute) => boolean;
+  /** When true for a row, show a muted SYSTEM badge beside the attribute name. */
+  showSystemBadge?: (attribute: HubAttribute) => boolean;
   /** Group the table into labeled sections (e.g. system vs team-scoped). */
   catalogSections?: Array<{
     label: string;
@@ -110,6 +113,7 @@ export default function CatalogListing({
   showSourceColumn = true,
   policyLockedNoNavigate = false,
   isScopeLocked,
+  showSystemBadge,
   catalogSections,
   resourceSettingsMenu,
 }: CatalogListingProps) {
@@ -203,8 +207,6 @@ export default function CatalogListing({
       .filter((section) => section.rows.length > 0);
   }, [catalogSections, filtered]);
 
-  const sectioned = Boolean(catalogSections && catalogSections.length > 0);
-
   const renderColgroup = () => (
     <colgroup>
       <col className={styles['table__col-handle']} />
@@ -222,11 +224,14 @@ export default function CatalogListing({
     const synced = isSourceOwned(a);
     const policyLocked = isPolicyLocked(a);
     const scopeLocked = isScopeLocked?.(a) ?? false;
+    const systemBadge = showSystemBadge?.(a) ?? false;
+    const hideDragHandle = scopeLocked || systemBadge;
     const showLock = policyLocked || scopeLocked;
     const rowLocked =
       scopeLocked || (policyLockedNoNavigate && policyLocked);
     const isDragging = dragId === a.id;
-    const isDragOver = dragOverId === a.id && dragId !== a.id;
+    const isDragOver =
+      !hideDragHandle && dragOverId === a.id && dragId !== a.id;
 
     return (
       <tr
@@ -242,32 +247,58 @@ export default function CatalogListing({
         onClick={() => {
           if (!rowLocked) onOpenDetail(a.id);
         }}
-        onDragOver={(event) => handleDragOver(event, a.id)}
-        onDrop={(event) => handleDrop(event, a.id)}
-        onDragLeave={() => {
-          if (dragOverId === a.id) {
-            setDragOverId(null);
-          }
-        }}
-        onDragEnd={clearDrag}
+        onDragOver={
+          hideDragHandle
+            ? undefined
+            : (event) => handleDragOver(event, a.id)
+        }
+        onDrop={
+          hideDragHandle
+            ? undefined
+            : (event) => handleDrop(event, a.id)
+        }
+        onDragLeave={
+          hideDragHandle
+            ? undefined
+            : () => {
+                if (dragOverId === a.id) {
+                  setDragOverId(null);
+                }
+              }
+        }
+        onDragEnd={hideDragHandle ? undefined : clearDrag}
       >
         <td
           className={styles['table__handle']}
           onClick={(event) => event.stopPropagation()}
         >
-          <button
-            type="button"
-            className={styles['table__drag']}
-            draggable
-            aria-label={`Reorder ${a.name}`}
-            onDragStart={(event) => handleDragStart(event, a.id)}
-          >
-            <Icon size="16" glyph={<DragVerticalIcon />} />
-          </button>
+          {hideDragHandle ? (
+            <span className={styles['table__handle-spacer']} aria-hidden />
+          ) : (
+            <button
+              type="button"
+              className={styles['table__drag']}
+              draggable
+              aria-label={`Reorder ${a.name}`}
+              onDragStart={(event) => handleDragStart(event, a.id)}
+            >
+              <Icon size="16" glyph={<DragVerticalIcon />} />
+            </button>
+          )}
         </td>
         <td>
           <div className={styles['table__name-block']}>
-            <span className={styles['table__name']}>{a.name}</span>
+            <div className={styles['table__name-row']}>
+              <span className={styles['table__name']}>{a.name}</span>
+              {showSystemBadge?.(a) && (
+                <LabelTag
+                  label="SYSTEM"
+                  type="Default"
+                  size="X-Small"
+                  casing="All Caps"
+                />
+              )}
+            </div>
             {a.valuesLink && (
               <span className={styles['table__sub']}>
                 Values shared from {a.valuesLink.attributeName}
@@ -464,12 +495,7 @@ export default function CatalogListing({
         </div>
       ) : (
         <div
-          className={[
-            styles['table'],
-            sectioned ? styles['table--sectioned'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={styles['table']}
         >
           {sectionRows.map((section) => (
             <div key={section.label ?? 'all'} className={styles['table__section']}>
@@ -477,7 +503,7 @@ export default function CatalogListing({
                 <h4 className={styles['table__section-title']}>{section.label}</h4>
               )}
               <table className={styles['table__grid']}>
-                {sectioned && renderColgroup()}
+                {renderColgroup()}
                 <thead>
                   <tr>
                     <th className={styles['table__col-handle']} aria-label="Reorder" />

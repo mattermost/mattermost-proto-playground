@@ -34,13 +34,35 @@ export const CHANNEL_APPLIES_TO_EMPTY =
   'Add a resource to apply this attribute to this channel, posts within it, or both.';
 
 /** Hub attributes reclassified as channel-local in this scope. */
-export const CHANNEL_LOCAL_IDS = new Set(['engagement-tempo', 'caveat']);
+export const CHANNEL_LOCAL_IDS = new Set([
+  'engagement-tempo',
+  'caveat',
+  'mission-phase',
+  'channel-attr-ops-window',
+  'channel-attr-watch-floor',
+]);
 
 const HUB_ATTRIBUTE_IDS = new Set(HUB_ATTRIBUTES.map((attribute) => attribute.id));
 
-/** Register ids created in channel settings so they stay in the channel table. */
-export function registerChannelLocalAttribute(attributeId: string): void {
-  CHANNEL_LOCAL_IDS.add(attributeId);
+const channelSessionAttributes = new Map<string, HubAttribute>();
+
+/** Persist attributes created in channel settings across workspace remounts. */
+export function saveChannelLocalAttribute(attribute: HubAttribute): void {
+  CHANNEL_LOCAL_IDS.add(attribute.id);
+  channelSessionAttributes.set(attribute.id, attribute);
+}
+
+export function isSessionChannelAttribute(attributeId: string): boolean {
+  return channelSessionAttributes.has(attributeId);
+}
+
+/** Seed workspace state with fixture data plus session-created attributes. */
+export function getChannelWorkspaceAttributes(): HubAttribute[] {
+  const baseIds = new Set(CHANNEL_ATTRIBUTES.map((attribute) => attribute.id));
+  const created = [...channelSessionAttributes.values()].filter(
+    (attribute) => !baseIds.has(attribute.id),
+  );
+  return [...CHANNEL_ATTRIBUTES, ...created];
 }
 
 /** Global hub catalog rows; channel-created attrs are everything else. */
@@ -97,14 +119,6 @@ export function clearChannelAttributeDetailParams(): void {
   window.history.replaceState(null, '', url);
 }
 
-export const CHANNEL_CATALOG_SECTIONS = [
-  { label: 'System attributes', filter: isSystemChannelAttribute },
-  {
-    label: 'Channel attributes',
-    filter: (attribute: HubAttribute) => !isSystemChannelAttribute(attribute),
-  },
-];
-
 /** Synced or policy-bound attributes open read-only in the detail view. */
 export function isChannelAttributeReadOnly(attribute: HubAttribute): boolean {
   return isSourceOwned(attribute) || isPolicyLocked(attribute);
@@ -145,6 +159,85 @@ const CHANNEL_LOCAL: HubAttribute[] = [
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
         inheritMode: 'inherit',
+      },
+    ],
+    usedByPolicies: 0,
+    policyNames: [],
+    access: defaultAccessModel('Channel Administrators'),
+    readIntoFiltering: false,
+  },
+  {
+    id: 'mission-phase',
+    name: 'Mission phase',
+    type: 'Select',
+    description:
+      'Operating phase for the ALPHA program — set on this channel and inherited by posts.',
+    values: [
+      { id: 'mp-plan', label: 'Planning' },
+      { id: 'mp-exec', label: 'Execution' },
+      { id: 'mp-sustain', label: 'Sustainment' },
+      { id: 'mp-standdown', label: 'Stand-down' },
+    ],
+    source: { kind: 'manual' },
+    appliesTo: [
+      {
+        resource: 'Channels',
+        required: false,
+        whoCanSet: whoCanSet('Channel admin'),
+        showWhere: ['Header', 'Sidebar'],
+      },
+      {
+        resource: 'Posts',
+        required: false,
+        whoCanSet: whoCanSet('Post author'),
+        showWhere: ['Header', 'Composer'],
+        inheritMode: 'inherit',
+      },
+    ],
+    usedByPolicies: 0,
+    policyNames: [],
+    access: defaultAccessModel('Channel Administrators'),
+    readIntoFiltering: false,
+  },
+  {
+    id: 'channel-attr-ops-window',
+    name: 'Ops window',
+    type: 'Select',
+    description: 'Day or night operating window for this channel.',
+    values: [
+      { id: 'ow-day', label: 'Day' },
+      { id: 'ow-night', label: 'Night' },
+    ],
+    source: { kind: 'manual' },
+    appliesTo: [
+      {
+        resource: 'Channels',
+        required: false,
+        whoCanSet: whoCanSet('Channel admin'),
+        showWhere: ['Header', 'Sidebar'],
+      },
+    ],
+    usedByPolicies: 0,
+    policyNames: [],
+    access: defaultAccessModel('Channel Administrators'),
+    readIntoFiltering: false,
+  },
+  {
+    id: 'channel-attr-watch-floor',
+    name: 'Watch floor',
+    type: 'Select',
+    description: 'Watch floor assignment for this channel.',
+    values: [
+      { id: 'wf-alpha', label: 'ALPHA' },
+      { id: 'wf-bravo', label: 'BRAVO' },
+    ],
+    source: { kind: 'manual' },
+    appliesTo: [
+      {
+        resource: 'Channels',
+        required: false,
+        whoCanSet: whoCanSet('Channel admin'),
+        showWhere: ['Header', 'Sidebar'],
       },
     ],
     usedByPolicies: 0,
