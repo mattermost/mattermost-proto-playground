@@ -1,4 +1,15 @@
-import { useMemo, useState, type ReactNode, type RefObject } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from 'react';
+import { createPortal } from 'react-dom';
 import FormatLetterCaseIcon from '@mattermost/compass-icons/components/format-letter-case';
 import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
 import FormatListNumberedIcon from '@mattermost/compass-icons/components/format-list-numbered';
@@ -124,20 +135,116 @@ export interface PostAttributeAddMenuProps {
 const LOCKED_INHERITED_ATTRIBUTE_TOOLTIP =
   'Automatically applied to every post. This attribute is locked and cannot be overridden.';
 
+const LOCKED_HINT_TOOLTIP_GAP = 8;
+const LOCKED_HINT_TOOLTIP_Z_INDEX = 1100;
+const LOCKED_HINT_TOOLTIP_ESTIMATED_HEIGHT = 72;
+
+type LockedHintPlacement = 'above' | 'below';
+
 function LockedInheritedMenuItemHint({
   children,
 }: {
   children: ReactNode;
 }) {
-  return (
-    <span className={menuStyles['thread-reply-input__menu-item-hint']}>
-      {children}
+  const hintRef = useRef<HTMLSpanElement>(null);
+  const bubbleRef = useRef<HTMLSpanElement>(null);
+  const [hovered, setHovered] = useState(false);
+  const [placement, setPlacement] = useState<LockedHintPlacement>('above');
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(
+    null,
+  );
+
+  const updateCoords = useCallback(() => {
+    const hint = hintRef.current;
+    if (!hint) return;
+
+    const rect = hint.getBoundingClientRect();
+    const bubbleHeight =
+      bubbleRef.current?.offsetHeight ?? LOCKED_HINT_TOOLTIP_ESTIMATED_HEIGHT;
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const nextPlacement: LockedHintPlacement =
+      spaceAbove >= bubbleHeight + LOCKED_HINT_TOOLTIP_GAP ||
+      spaceAbove >= spaceBelow
+        ? 'above'
+        : 'below';
+
+    setPlacement(nextPlacement);
+    setCoords({
+      left: rect.left + rect.width / 2,
+      top:
+        nextPlacement === 'above'
+          ? rect.top - LOCKED_HINT_TOOLTIP_GAP
+          : rect.bottom + LOCKED_HINT_TOOLTIP_GAP,
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!hovered) return;
+    updateCoords();
+  }, [hovered, updateCoords]);
+
+  useEffect(() => {
+    if (!hovered) return;
+
+    const dismiss = () => setHovered(false);
+    window.addEventListener('scroll', dismiss, true);
+    window.addEventListener('resize', dismiss);
+
+    return () => {
+      window.removeEventListener('scroll', dismiss, true);
+      window.removeEventListener('resize', dismiss);
+    };
+  }, [hovered]);
+
+  const translate =
+    placement === 'above' ? 'translate(-50%, -100%)' : 'translate(-50%, 0)';
+  const bubbleStyle: CSSProperties | undefined = coords
+    ? {
+        position: 'fixed',
+        top: coords.top,
+        left: coords.left,
+        zIndex: LOCKED_HINT_TOOLTIP_Z_INDEX,
+        transform: `${translate} scale(${hovered ? 1 : 0.9})`,
+        transformOrigin:
+          placement === 'above' ? 'bottom center' : 'top center',
+        opacity: hovered ? 1 : 0,
+        transition: hovered
+          ? `opacity var(--duration-quick) var(--ease-entrance), transform var(--duration-quick) var(--ease-entrance)`
+          : `opacity var(--duration-quick) var(--ease-exit), transform var(--duration-quick) var(--ease-exit)`,
+      }
+    : undefined;
+
+  const tooltipBubble =
+    hovered &&
+    coords &&
+    createPortal(
       <span
+        ref={bubbleRef}
         className={menuStyles['thread-reply-input__menu-item-hint-bubble']}
+        style={bubbleStyle}
         aria-hidden
       >
-        <Tooltip label={LOCKED_INHERITED_ATTRIBUTE_TOOLTIP} arrow="Bottom" />
-      </span>
+        <Tooltip
+          label={LOCKED_INHERITED_ATTRIBUTE_TOOLTIP}
+          arrow={placement === 'above' ? 'Bottom' : 'Top'}
+        />
+      </span>,
+      document.body,
+    );
+
+  return (
+    <span
+      ref={hintRef}
+      className={menuStyles['thread-reply-input__menu-item-hint']}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false);
+        setCoords(null);
+      }}
+    >
+      {children}
+      {tooltipBubble}
     </span>
   );
 }
@@ -197,19 +304,27 @@ export function PostAttributeAddMenu({
     () => buildPostAttributeMenuSections(attributes),
     [attributes],
   );
+  const availableConfigured = useMemo(
+    () => sections.configured.filter((item) => !attachedIds.includes(item.id)),
+    [sections.configured, attachedIds],
+  );
+  const availableInherited = useMemo(
+    () => sections.inherited.filter((item) => !attachedIds.includes(item.id)),
+    [sections.inherited, attachedIds],
+  );
   const filteredConfigured = useMemo(
-    () => filterPostAttributeMenuItems(sections.configured, query),
-    [sections.configured, query],
+    () => filterPostAttributeMenuItems(availableConfigured, query),
+    [availableConfigured, query],
   );
   const filteredInherited = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return sections.inherited;
-    return sections.inherited.filter(
+    if (!normalized) return availableInherited;
+    return availableInherited.filter(
       (item) =>
         item.label.toLowerCase().includes(normalized) ||
         item.valueLabel.toLowerCase().includes(normalized),
     );
-  }, [sections.inherited, query]);
+  }, [availableInherited, query]);
 
   const closeMenu = () => {
     setQuery('');

@@ -32,10 +32,13 @@ import {
   CHANNEL_RESOURCE_LABELS,
   CHANNEL_SCOPE_RESOURCES,
   blankChannelAttribute,
+  clearChannelAttributeDetailParams,
   defaultChannelResourceConfig,
   isChannelAttributeReadOnly,
   isSystemChannelAttribute,
   readAppliesPreset,
+  registerChannelLocalAttribute,
+  syncChannelAttributeDetailParams,
 } from './channelData';
 import styles from './TeamAttributesWorkspace.module.scss';
 
@@ -87,12 +90,12 @@ export default function ChannelAttributesWorkspace({
   onDirtyChange,
 }: ChannelAttributesWorkspaceProps) {
   const params = readParams();
-  const creatingFromUrl = params.get('flow') === 'new';
+  const attrParam = params.get('attr');
+  const creatingFromUrl = !attrParam && params.get('flow') === 'new';
   const appliesPreset = readAppliesPreset(params);
-  const initialAttrParam = creatingFromUrl ? null : params.get('attr');
 
   const [attributes, setAttributes] = useState<HubAttribute[]>(CHANNEL_ATTRIBUTES);
-  const [selectedId, setSelectedId] = useState<string | null>(initialAttrParam);
+  const [selectedId, setSelectedId] = useState<string | null>(attrParam);
   const [draft, setDraft] = useState<HubAttribute | null>(
     creatingFromUrl ? blankChannelAttribute(appliesPreset) : null,
   );
@@ -354,6 +357,7 @@ export default function ChannelAttributesWorkspace({
   const openDetail = (id: string) => {
     setDraft(null);
     setSelectedId(id);
+    syncChannelAttributeDetailParams(id);
   };
 
   const startCreate = () => {
@@ -365,14 +369,17 @@ export default function ChannelAttributesWorkspace({
   const backToList = () => {
     setDraft(null);
     setSelectedId(null);
+    clearChannelAttributeDetailParams();
   };
 
   const commitCreate = () => {
     if (!draft) return;
     const created: HubAttribute = { ...draft, name: draft.name.trim() };
+    registerChannelLocalAttribute(created.id);
     setAttributes((prev) => [...prev, created]);
-    setDraft(null);
     setSelectedId(created.id);
+    setDraft(null);
+    syncChannelAttributeDetailParams(created.id);
   };
 
   const requestDelete = (id: string) => {
@@ -430,6 +437,7 @@ export default function ChannelAttributesWorkspace({
       usedByPolicies: 0,
       policyNames: [],
     };
+    registerChannelLocalAttribute(copy.id);
     setAttributes((prev) => [...prev, copy]);
     setDuplicateForId(null);
   };

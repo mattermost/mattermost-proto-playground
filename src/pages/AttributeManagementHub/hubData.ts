@@ -358,6 +358,22 @@ export function channelDisplayIncludes(
   return showWhere.includes(loc);
 }
 
+export function toggleChannelLocation(
+  current: DisplayWhere[] | undefined,
+  loc: 'Header' | 'Sidebar' | 'Banner',
+): DisplayWhere[] {
+  const visible = isChannelDisplayHidden(current)
+    ? ([] as DisplayWhere[])
+    : (current ?? []).filter((entry) => entry !== 'Hidden');
+
+  const has = visible.includes(loc);
+  const next = has
+    ? visible.filter((entry) => entry !== loc)
+    : [...visible, loc];
+
+  return next.length === 0 ? (['Hidden'] as DisplayWhere[]) : next;
+}
+
 export function postDisplayIncludes(
   showWhere: DisplayWhere[] | undefined,
   loc: PostDisplayLoc,
@@ -621,7 +637,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
             ],
           ),
         ),
-        showWhere: ['Header', 'Sidebar', 'Banner'],
+        showWhere: ['Sidebar', 'Banner'],
         disabledValueIds: [],
         valueEditability: 'locked',
       },

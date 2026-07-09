@@ -26,6 +26,13 @@
       color: rgba(var(--center-channel-color-rgb), 0.64);
     }
 
+    .panel__label-cell {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      min-height: 28px;
+    }
+
     .panel__label-row {
       display: inline-flex;
       align-items: center;
@@ -38,11 +45,13 @@
       appearance: none;
       display: inline-flex;
       align-items: center;
+      justify-content: flex-start;
+      width: 100%;
       min-width: 0;
       max-width: 100%;
       min-height: 28px;
       margin: 0;
-      padding: 0 var(--spacing-xs);
+      padding: 0;
       border: none;
       border-radius: var(--radius-s);
       background: transparent;
@@ -86,23 +95,115 @@
       justify-content: flex-start;
     }
 
+    .panel__value-active-row {
+      display: flex;
+      flex: 1;
+      align-self: stretch;
+      align-items: center;
+      gap: var(--spacing-xxxxs);
+      width: 100%;
+      min-width: 0;
+      min-height: 28px;
+    }
+
+    .panel__value-chip {
+      gap: 2px;
+      max-width: 100%;
+      min-width: 0;
+      pointer-events: none;
+    }
+
+    .panel__value-remove {
+      appearance: none;
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: rgba(var(--center-channel-color-rgb), 0.48);
+      border-radius: var(--radius-full);
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      pointer-events: none;
+      transition:
+        opacity var(--duration-quick) var(--ease-transition),
+        color var(--duration-quick) var(--ease-transition);
+
+      &--visible {
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        pointer-events: auto;
+      }
+
+      &:hover {
+        color: var(--center-channel-color);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--button-bg);
+        outline-offset: 1px;
+      }
+    }
+
     .panel__value-display {
       display: inline-flex;
       align-items: center;
       min-height: 28px;
     }
 
+    .panel__classification-hint {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .panel__classification-hint-bubble {
+      pointer-events: none;
+      width: max-content;
+      max-width: 280px;
+    }
+
     .panel__value-trigger {
-      width: 100%;
-      max-width: none;
+      appearance: none;
       display: flex;
+      flex: 1;
       align-items: center;
       justify-content: flex-start;
-      margin-inline: 0;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
       min-height: 28px;
-      padding: 0 var(--spacing-xs);
+      margin: 0;
+      padding: 0;
+      border: none;
+      border-radius: var(--radius-s);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-family-body);
       font-size: var(--font-size-75);
       line-height: var(--line-height-75);
+      font-weight: var(--font-weight-semibold);
+      color: var(--center-channel-color);
+      text-align: left;
+      transition: background var(--duration-quick) var(--ease-transition);
+
+      &:hover {
+        background: rgba(var(--center-channel-color-rgb), 0.04);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--button-bg);
+        outline-offset: 2px;
+      }
+    }
+
+    .panel__value-active-row--open .panel__value-trigger {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
     }
 
     .panel__value-text--locked {
@@ -118,7 +219,7 @@
       min-width: 0;
       min-height: 28px;
       margin: 0;
-      padding: 0 var(--spacing-xs);
+      padding: 0;
       border: none;
       border-radius: var(--radius-s);
       background: transparent;
@@ -146,6 +247,12 @@
     .panel__value-trigger--placeholder {
       font-weight: var(--font-weight-regular);
       color: rgba(var(--center-channel-color-rgb), 0.48);
+    }
+
+    .panel__value-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 

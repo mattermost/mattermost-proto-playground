@@ -20,8 +20,16 @@ import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
 import PostAttributesThreadSidebar from './PostAttributesThreadSidebar';
 import ThreadReplyMessageInput from './ThreadReplyMessageInput';
+import ChannelHeaderAttributeChips from './ChannelHeaderAttributeChips';
+import ChannelClassificationBanner from './ChannelClassificationBanner';
+import {
+  CHANNEL_INFO_SEED,
+  channelClassificationBanner,
+  type ChannelDemoState,
+} from './channelViewData';
 import {
   THREAD_ROOT,
+  addAttributeToPost,
   addCustomAttributeToPost,
   addCustomAttributeValueOnPost,
   buildPostAttributesFromComposer,
@@ -123,6 +131,8 @@ export default function ChannelThreadView({
 }: ChannelThreadViewProps) {
   const [threadSidebarOpen, setThreadSidebarOpen] = useState(true);
   const [selectedPostId, setSelectedPostId] = useState(LEONARD_POST_ID);
+  const [channel] = useState<ChannelDemoState>(CHANNEL_INFO_SEED);
+  const classificationBanner = channelClassificationBanner(channel);
   const [leonardPost, setLeonardPost] = useState<ThreadDemoPost>(() => ({
     ...THREAD_ROOT,
     avatarSrc: avatarLeonard,
@@ -188,6 +198,13 @@ export default function ChannelThreadView({
     [],
   );
 
+  const handleAddAttribute = useCallback(
+    (postId: string, attributeId: string) => {
+      applyPostUpdate(postId, (post) => addAttributeToPost(post, attributeId));
+    },
+    [applyPostUpdate],
+  );
+
   const handleAddCustomAttribute = useCallback(
     (postId: string, type: AttrType) => {
       applyPostUpdate(postId, (post) => addCustomAttributeToPost(post, type));
@@ -249,14 +266,22 @@ export default function ChannelThreadView({
       userAvatarSrc={avatarLeonard}
       userAvatarAlt="Leonard Riley"
       channelHeader={
-        <ChannelHeader
-          type="Channel"
-          name="alpha-coordination"
-          description="Program ALPHA · Team coordination"
-          memberCount={28}
-          pinnedCount={2}
-          favorited
-        />
+        <>
+          <ChannelHeader
+            type="Channel"
+            name="alpha-coordination"
+            memberCount={28}
+            pinnedCount={2}
+            favorited
+            metaSlot={<ChannelHeaderAttributeChips channel={channel} />}
+          />
+          {classificationBanner && (
+            <ChannelClassificationBanner
+              valueId={classificationBanner.valueId}
+              label={classificationBanner.label}
+            />
+          )}
+        </>
       }
       trailing={
         threadSidebarOpen ? (
@@ -264,12 +289,19 @@ export default function ChannelThreadView({
             alignBody="start"
             className={shellStyles['channel-shell__right-sidebar']}
             header={
-              <RightSidebarHeader
-                title="Thread"
-                secondaryTitle="alpha-coordination"
-                onExpand={() => {}}
-                onClose={() => setThreadSidebarOpen(false)}
-              />
+              <div className={styles['channel-thread-view__rhs-header']}>
+                <RightSidebarHeader
+                  title="Thread"
+                  secondaryTitle="alpha-coordination"
+                  onExpand={() => {}}
+                  onClose={() => setThreadSidebarOpen(false)}
+                  className={styles['channel-thread-view__rhs-header-bar']}
+                />
+                <ChannelHeaderAttributeChips
+                  channel={channel}
+                  className={styles['channel-thread-view__rhs-header-attrs']}
+                />
+              </div>
             }
             footer={
               <div className={shellStyles['channel-shell__message-input']}>
@@ -282,6 +314,9 @@ export default function ChannelThreadView({
           >
             <PostAttributesThreadSidebar
               post={selectedPost}
+              onAddAttribute={(attributeId) =>
+                handleAddAttribute(selectedPostId, attributeId)
+              }
               onAddCustomAttribute={(type) =>
                 handleAddCustomAttribute(selectedPostId, type)
               }

@@ -2,6 +2,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-l);
+  width: 100%;
+  min-width: 0;
 
   &__empty {
     padding: var(--spacing-xxl) var(--spacing-l);
@@ -175,6 +177,8 @@
   gap: var(--spacing-l);
 
   &__section {
+    width: 100%;
+    min-width: 0;
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     border-radius: var(--radius-m);
     overflow: hidden;
@@ -197,10 +201,25 @@
   overflow: visible;
   background: transparent;
 
+  &--sectioned {
+    --catalog-col-handle: 40px;
+    --catalog-col-name: 228px;
+    --catalog-col-type: 164px;
+    --catalog-col-applies: 208px;
+    --catalog-col-source: 136px;
+    --catalog-col-values: 92px;
+    --catalog-col-usage: 120px;
+    --catalog-col-actions: 100px;
+  }
+
   &__grid {
     width: 100%;
     border-collapse: collapse;
     font-size: var(--font-size-100);
+
+    .table--sectioned & {
+      table-layout: fixed;
+    }
 
     thead th {
       position: sticky;
@@ -255,9 +274,14 @@
   }
 
   &__col-handle {
-    width: 40px;
+    width: var(--catalog-col-handle, 40px);
     padding-left: var(--spacing-s) !important;
     padding-right: var(--spacing-xs) !important;
+  }
+
+  &__col-name {
+    width: var(--catalog-col-name, auto);
+    min-width: 0;
   }
 
   &__handle {
@@ -289,13 +313,30 @@
     }
   }
 
-  &__col-type,
-  &__col-count {
+  &__col-type {
+    width: var(--catalog-col-type, auto);
     white-space: nowrap;
   }
 
+  &__col-applies {
+    width: var(--catalog-col-applies, auto);
+  }
+
+  &__col-source {
+    width: var(--catalog-col-source, auto);
+  }
+
+  &__col-count {
+    width: var(--catalog-col-values, auto);
+    white-space: nowrap;
+  }
+
+  &__col-usage {
+    width: var(--catalog-col-usage, auto);
+  }
+
   &__col-actions {
-    width: 84px;
+    width: var(--catalog-col-actions, 84px);
   }
 
   &__name-block {

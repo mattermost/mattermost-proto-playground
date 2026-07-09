@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import Message from '@/components/ui/Message/Message';
 import messageStyles from '@/components/ui/Message/Message.module.scss';
@@ -12,7 +12,10 @@ import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import PostAttributesPanel from './PostAttributesPanel';
-import { attributeTypeIcon } from './postAttributeAddMenu';
+import {
+  PostAttributeAddMenu,
+  attributeTypeIcon,
+} from './postAttributeAddMenu';
 import {
   POST_ATTRIBUTE_TYPES,
   THREAD_ROOT,
@@ -23,6 +26,7 @@ import styles from './PostAttributesThreadSidebar.module.scss';
 
 export interface PostAttributesThreadSidebarProps {
   post?: ThreadDemoPost;
+  onAddAttribute?: (attributeId: string) => void;
   onAddCustomAttribute?: (type: AttrType) => void;
   onUpdateCustomAttribute?: (
     id: string,
@@ -40,6 +44,7 @@ export default function PostAttributesThreadSidebar({
     ...THREAD_ROOT,
     avatarSrc: avatarLeonard,
   },
+  onAddAttribute,
   onAddCustomAttribute,
   onUpdateCustomAttribute,
   onAddCustomAttributeValue,
@@ -48,11 +53,33 @@ export default function PostAttributesThreadSidebar({
   onRenameCustomAttribute,
   showReplies = true,
 }: PostAttributesThreadSidebarProps) {
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [typeMenuOpen, setTypeMenuOpen] = useState(false);
   const addTriggerRef = useRef<HTMLButtonElement>(null);
   const textClass = messageStyles['message__body-text'];
 
+  const attachedIds = useMemo(
+    () => post.attributes.map((row) => row.attributeId),
+    [post.attributes],
+  );
+
+  const closeAddMenu = () => setAddMenuOpen(false);
   const closeTypeMenu = () => setTypeMenuOpen(false);
+
+  const openAddMenu = () => {
+    closeTypeMenu();
+    setAddMenuOpen(true);
+  };
+
+  const pickAttribute = (attributeId: string) => {
+    onAddAttribute?.(attributeId);
+    closeAddMenu();
+  };
+
+  const openCreateTypeMenu = () => {
+    closeAddMenu();
+    setTypeMenuOpen(true);
+  };
 
   const pickType = (type: AttrType) => {
     onAddCustomAttribute?.(type);
@@ -90,8 +117,8 @@ export default function PostAttributesThreadSidebar({
           className={styles['thread__add']}
           aria-label="Add attribute"
           aria-haspopup="menu"
-          aria-expanded={typeMenuOpen}
-          onClick={() => setTypeMenuOpen(true)}
+          aria-expanded={addMenuOpen || typeMenuOpen}
+          onClick={openAddMenu}
         >
           <span className={styles['thread__add-icon']} aria-hidden>
             <Icon size="16" glyph={<PlusIcon />} />
@@ -99,6 +126,16 @@ export default function PostAttributesThreadSidebar({
           Add attribute
         </button>
       </div>
+
+      <PostAttributeAddMenu
+        open={addMenuOpen}
+        onClose={closeAddMenu}
+        anchorRef={addTriggerRef}
+        attachedIds={attachedIds}
+        onPickAttribute={pickAttribute}
+        onCreateNew={openCreateTypeMenu}
+        preferAbove={false}
+      />
 
       <FixedPopoverMenu
         open={typeMenuOpen}

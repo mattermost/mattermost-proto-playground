@@ -203,6 +203,21 @@ export default function CatalogListing({
       .filter((section) => section.rows.length > 0);
   }, [catalogSections, filtered]);
 
+  const sectioned = Boolean(catalogSections && catalogSections.length > 0);
+
+  const renderColgroup = () => (
+    <colgroup>
+      <col className={styles['table__col-handle']} />
+      <col className={styles['table__col-name']} />
+      <col className={styles['table__col-type']} />
+      <col className={styles['table__col-applies']} />
+      {showSourceColumn && <col className={styles['table__col-source']} />}
+      <col className={styles['table__col-count']} />
+      {showUsageColumn && <col className={styles['table__col-usage']} />}
+      <col className={styles['table__col-actions']} />
+    </colgroup>
+  );
+
   const renderRow = (a: HubAttribute) => {
     const synced = isSourceOwned(a);
     const policyLocked = isPolicyLocked(a);
@@ -448,22 +463,34 @@ export default function CatalogListing({
           />
         </div>
       ) : (
-        <div className={styles['table']}>
+        <div
+          className={[
+            styles['table'],
+            sectioned ? styles['table--sectioned'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           {sectionRows.map((section) => (
             <div key={section.label ?? 'all'} className={styles['table__section']}>
               {section.label && (
                 <h4 className={styles['table__section-title']}>{section.label}</h4>
               )}
               <table className={styles['table__grid']}>
+                {sectioned && renderColgroup()}
                 <thead>
                   <tr>
                     <th className={styles['table__col-handle']} aria-label="Reorder" />
-                    <th>Attribute</th>
+                    <th className={styles['table__col-name']}>Attribute</th>
                     <th className={styles['table__col-type']}>Type</th>
-                    <th>Applies to</th>
-                    {showSourceColumn && <th>Source</th>}
+                    <th className={styles['table__col-applies']}>Applies to</th>
+                    {showSourceColumn && (
+                      <th className={styles['table__col-source']}>Source</th>
+                    )}
                     <th className={styles['table__col-count']}>Values</th>
-                    {showUsageColumn && <th>Usage</th>}
+                    {showUsageColumn && (
+                      <th className={styles['table__col-usage']}>Usage</th>
+                    )}
                     <th className={styles['table__col-actions']} aria-label="Actions" />
                   </tr>
                 </thead>
@@ -479,6 +506,7 @@ export default function CatalogListing({
         onClose={closeRowMenu}
         anchorRef={menuAnchorRef}
         align="end"
+        preferAbove
         className={styles['table__menu']}
         minWidthFloor={220}
         repositionKey={menuId}

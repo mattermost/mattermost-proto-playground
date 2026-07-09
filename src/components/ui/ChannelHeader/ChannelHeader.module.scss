@@ -1,11 +1,13 @@
 .channel-header {
   display: flex;
-  height: 56px;
+  min-height: 56px;
   align-items: center;
   gap: var(--spacing-l);
   padding: var(--spacing-m);
   background-color: var(--center-channel-bg, var(--color-neutral-0));
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  container-type: inline-size;
+  container-name: channel-header;
 
   &--simple {
     gap: var(--spacing-xs);
@@ -14,15 +16,26 @@
 
   &__left {
     display: flex;
-    align-items: center;
-    flex: 1 0 0;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1 1 auto;
     min-width: 0;
+  }
+
+  &__primary-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    row-gap: 2px;
   }
 
   &__top-row {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    min-width: 0;
   }
 
   &__identity {
@@ -71,9 +84,38 @@
     white-space: nowrap;
   }
 
+  &__meta {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-width: 0;
+    padding-left: var(--spacing-xxs);
+  }
+
+  @container channel-header (max-width: 720px) {
+    align-items: flex-start;
+
+    &__name-area {
+      flex-shrink: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    &__name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &__meta {
+      flex-basis: 100%;
+      padding-left: 0;
+    }
+  }
+
   &__stat-icons {
     display: flex;
     align-items: center;
+    padding-left: var(--spacing-xxs);
     padding-right: var(--spacing-xs);
     flex-shrink: 0;
   }

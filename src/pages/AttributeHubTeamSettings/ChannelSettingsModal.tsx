@@ -63,7 +63,7 @@ export default function ChannelSettingsModal({
         modalStyles['channel-settings-modal'],
         styles['channel-settings-modal'],
       ].join(' ')}
-      style={{ maxWidth: 'none', width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '100%' }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}

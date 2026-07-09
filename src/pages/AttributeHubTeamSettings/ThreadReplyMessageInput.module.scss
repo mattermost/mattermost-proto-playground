@@ -150,33 +150,14 @@
   }
 
   &__menu-item-hint {
-    position: relative;
     display: block;
     width: 100%;
   }
 
-  &__menu-item-hint:hover &__menu-item-hint-bubble {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-    transition:
-      opacity var(--duration-quick) var(--ease-entrance),
-      transform var(--duration-quick) var(--ease-entrance);
-  }
-
   &__menu-item-hint-bubble {
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%) scale(0.9);
-    transform-origin: bottom center;
-    z-index: 30;
-    opacity: 0;
     pointer-events: none;
     width: max-content;
     max-width: 280px;
-    transition:
-      opacity var(--duration-quick) var(--ease-exit),
-      transform var(--duration-quick) var(--ease-exit);
   }
 
   &__menu-item {

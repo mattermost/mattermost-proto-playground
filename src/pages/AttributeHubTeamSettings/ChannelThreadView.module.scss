@@ -1,4 +1,23 @@
 .channel-thread-view {
+  &__rhs-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background-color: var(--center-channel-bg);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__rhs-header-bar {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  &__rhs-header-attrs {
+    padding: 0 var(--spacing-m) var(--spacing-s);
+  }
+
   &__thread-root-wrap--clickable {
     cursor: pointer;
     border-radius: var(--radius-s);

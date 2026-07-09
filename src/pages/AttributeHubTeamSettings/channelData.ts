@@ -33,11 +33,68 @@ export const CHANNEL_CATALOG_EMPTY =
 export const CHANNEL_APPLIES_TO_EMPTY =
   'Add a resource to apply this attribute to this channel, posts within it, or both.';
 
-/** Channel-created attribute ids — everything else is system/global. */
+/** Hub attributes reclassified as channel-local in this scope. */
 export const CHANNEL_LOCAL_IDS = new Set(['engagement-tempo', 'caveat']);
 
+const HUB_ATTRIBUTE_IDS = new Set(HUB_ATTRIBUTES.map((attribute) => attribute.id));
+
+/** Register ids created in channel settings so they stay in the channel table. */
+export function registerChannelLocalAttribute(attributeId: string): void {
+  CHANNEL_LOCAL_IDS.add(attributeId);
+}
+
+/** Global hub catalog rows; channel-created attrs are everything else. */
 export function isSystemChannelAttribute(attribute: HubAttribute): boolean {
-  return !CHANNEL_LOCAL_IDS.has(attribute.id);
+  if (CHANNEL_LOCAL_IDS.has(attribute.id)) {
+    return false;
+  }
+  return HUB_ATTRIBUTE_IDS.has(attribute.id);
+}
+
+function readChannelSettingsUrl(): URL | null {
+  if (typeof window === 'undefined') return null;
+  return new URL(window.location.href);
+}
+
+export function syncChannelNewAttributeParams(
+  applies: ResourceKind[] = ['Posts'],
+): void {
+  const url = readChannelSettingsUrl();
+  if (!url) return;
+  url.searchParams.set('tab', 'attributes');
+  url.searchParams.set('flow', 'new');
+  if (applies.length > 0) {
+    url.searchParams.set('applies', applies.join(','));
+  } else {
+    url.searchParams.delete('applies');
+  }
+  url.searchParams.delete('attr');
+  window.history.replaceState(null, '', url);
+}
+
+export function syncChannelAttributeDetailParams(attributeId: string): void {
+  const url = readChannelSettingsUrl();
+  if (!url) return;
+  url.searchParams.set('tab', 'attributes');
+  url.searchParams.set('attr', attributeId);
+  url.searchParams.delete('flow');
+  url.searchParams.delete('applies');
+  window.history.replaceState(null, '', url);
+}
+
+export function clearChannelNewAttributeParams(): void {
+  const url = readChannelSettingsUrl();
+  if (!url) return;
+  url.searchParams.delete('flow');
+  url.searchParams.delete('applies');
+  window.history.replaceState(null, '', url);
+}
+
+export function clearChannelAttributeDetailParams(): void {
+  const url = readChannelSettingsUrl();
+  if (!url) return;
+  url.searchParams.delete('attr');
+  window.history.replaceState(null, '', url);
 }
 
 export const CHANNEL_CATALOG_SECTIONS = [
