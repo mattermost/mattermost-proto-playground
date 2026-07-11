@@ -1,0 +1,178 @@
+// "Find channels" quick switcher modal — faithful to the standard Mattermost
+// modal. Theme CSS variables only (classification colors come from the shared
+// ClassificationPill, which applies the prescribed CAPCO hex inline).
+
+.switcher {
+  width: 640px;
+  max-width: calc(100vw - var(--spacing-xl));
+  background: var(--center-channel-bg);
+  border-radius: var(--radius-l);
+  box-shadow: var(--elevation-4);
+  font-family: var(--font-family-body);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: var(--spacing-l) var(--spacing-l) 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__close {
+    display: inline-flex;
+    padding: var(--spacing-xxs);
+    border: none;
+    background: none;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__subtitle {
+    margin: var(--spacing-xxs) 0 0;
+    padding: 0 var(--spacing-l);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: var(--spacing-m) var(--spacing-l) var(--spacing-s);
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: var(--spacing-m);
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    pointer-events: none;
+  }
+
+  &__search-input {
+    width: 100%;
+    padding: var(--spacing-s) var(--spacing-m) var(--spacing-s) 44px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    color: var(--center-channel-color);
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--button-bg);
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.24);
+    }
+  }
+
+  &__results {
+    padding: var(--spacing-xs) 0 var(--spacing-s);
+    max-height: 320px;
+    overflow-y: auto;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__group-label {
+    padding: var(--spacing-s) var(--spacing-l) var(--spacing-xxs);
+    font-size: var(--font-size-25);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.5);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-l);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+
+    &--active {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__lead-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__lead-avatar {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  &__lead-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    // Name holds its natural width — it must not be squeezed by the trailing
+    // pill/handle. (The earlier full-word pill collapsed "Feature Proposals" → "F".)
+    // The compact abbrev pill leaves ample room; the handle absorbs any overflow.
+    flex: 0 0 auto;
+  }
+
+  &__handle {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+  }
+
+  &__badge {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.16);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}

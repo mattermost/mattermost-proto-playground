@@ -53,6 +53,15 @@ import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubS
 import AttributeHubSimplifiedInlineSummary from '@/pages/AttributeHubSimplifiedInlineSummary/AttributeHubSimplifiedInlineSummary';
 import AttributeHubMVP from '@/pages/AttributeHubMVP/AttributeHubMVP';
 import WhoCanSetOptions from '@/pages/WhoCanSetOptions/WhoCanSetOptions';
+import GlobalMembershipPolicyList from '@/pages/GlobalMembershipPolicy/List/GlobalMembershipPolicyList';
+import GlobalMembershipPolicyWalkthrough from '@/pages/GlobalMembershipPolicy/Walkthrough/GlobalMembershipPolicyWalkthrough';
+import GlobalMembershipPolicyLongForm from '@/pages/GlobalMembershipPolicy/LongForm/GlobalMembershipPolicyLongForm';
+import GlobalMembershipPolicyGuided from '@/pages/GlobalMembershipPolicy/Guided/GlobalMembershipPolicyGuided';
+import ChannelAttributesIndex from '@/pages/ChannelAttributes/ChannelAttributesIndex';
+import ChannelAttributesPrimary from '@/pages/ChannelAttributes/ChannelAttributesPrimary';
+import ChannelAttributesVariantA from '@/pages/ChannelAttributes/variants/VariantAHeaderDensity';
+import ChannelAttributesVariantB from '@/pages/ChannelAttributes/variants/VariantBBannerComposition';
+import ChannelAttributesPropagation from '@/pages/ChannelAttributes/propagation/PropagationHarness';
 
 export type PrototypeGroup =
   | 'navigation'
@@ -151,7 +160,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: AttributeHubMVP,
     group: 'zero-trust-abac',
     description:
-      'P0 scope cut of Global Attributes (epic MM-69673) for the dev handoff / scope session. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. Trims the Simplified design: no Ranked-Hierarchical/tree, no reuse/shared-scale, no per-attribute who-can-edit (delegated via DGA), no inheritance, no Teams. Per-resource: Required, Default value, Who-can-set; Users add Profile display + Value visibility; Channels add Display location. Externally-synced attrs show managed-by-source + locked fields. Classification appears read-only. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on (reveals the open allowed-values control).',
+      'P0 scope cut of Global Attributes (epic MM-69673) for the dev handoff / scope session. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. Trims the Simplified design: no Ranked-Hierarchical/tree, no reuse/shared-scale, no per-attribute who-can-edit (delegated via DGA), no inheritance, no Teams. Per-resource: Required, Default value, Who-can-set; Users add Profile display + Value visibility; Channels add Display location. Externally-synced attrs show managed-by-source + locked fields. Classification appears read-only. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on (reveals the open allowed-values control), ?resource=Channels|Users|Posts (comma-separated).',
     addedAt: '2026-07-08',
     isPrimary: true,
     collections: ['attribute-management'],
@@ -225,6 +234,50 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'System Console membership policy editor authored as attribute-requirement rows ([User attribute] [operator] [value or variable]) across multiple attribute types — ranked clearance-vs-classification variable, multiselect program variable, select nationality literal. Type-aware operators; variables render distinctly from literals. Simplified scope: "All channels it can evaluate" with a coverage preview (covered / skipped) plus optional limit-to-specific-channels. Deep-linkable via ?state=default|populated|loading|error|disabled|empty.',
     addedAt: '2026-07-03',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-walkthrough',
+    label: 'Global Membership Policies · Walkthrough',
+    path: '/prototypes/global-membership-policy-walkthrough',
+    component: GlobalMembershipPolicyWalkthrough,
+    group: 'zero-trust-abac',
+    description:
+      'Interactive click-through tour of the Global Membership Policies proposal: problem statement, channel-attribute primer, list → editor flow, relative comparison + scope targeting (two examples), teams note, combine/timing strip, impact gate, out-of-scope appendix, and open eng/PM items. Live iframe previews deep-link to list and Direction A editor states.',
+    addedAt: '2026-07-10',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policies',
+    label: 'Global Membership Policies · List',
+    path: '/prototypes/global-membership-policies',
+    component: GlobalMembershipPolicyList,
+    group: 'zero-trust-abac',
+    description:
+      'System Console Membership Policies list — policy table (Name / Applies to / Actions), search, Add policy CTA, and Membership sync jobs section. Links to the Direction A editor; back button on the editor returns here.',
+    addedAt: '2026-07-09',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-long-form',
+    label: 'Global Membership Policy · A · Long-Form',
+    path: '/prototypes/global-membership-policy-long-form',
+    component: GlobalMembershipPolicyLongForm,
+    group: 'zero-trust-abac',
+    description:
+      'Global Membership Policies editor — Direction A (Linear Long-Form, the literal mockup). One scrolling page: "Who this policy applies to" (relative user↔channel-attribute requirement rows, Simple/Advanced, match-mode, Test matching users) + "Where this policy applies" (three scope radios; All/Public/Private channel-type filter shown only under the all-channels radio). Always-confirm impact gate (async three-state) on Save. Deep-linkable via ?state=populated|empty|error and ?scope=all|manual|rules.',
+    addedAt: '2026-07-09',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-guided',
+    label: 'Global Membership Policy · B · Guided Steps',
+    path: '/prototypes/global-membership-policy-guided',
+    component: GlobalMembershipPolicyGuided,
+    group: 'zero-trust-abac',
+    description:
+      'Global Membership Policies editor — Direction B (Guided Steps + Review-as-gate). Same content sequenced Identity → Requirements → Scope + Type → Review; the channel-type filter gets its own framed step with destructive-private-removal framing, and the always-confirm impact gate IS the terminal Review step (async three-state). Deep-linkable via ?state=populated|empty|error and ?step=1..4.',
+    addedAt: '2026-07-09',
     collections: ['attribute-management'],
   },
   {
@@ -714,6 +767,69 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Template prototype demonstrating the standard screen-by-scene structure.',
     addedAt: '2024-01-01',
+  },
+
+  // ── Channel Attributes & Smart Labeling (Smart Markings Themes 1–2) ──────────
+  // Phase 6a: 1 primary (mockup-faithful) + 2 focused variants, desktop + mobile.
+  // Server-pre-filtered masking payloads drive all masking (FR-27/FR-28). (2026-07-09)
+  {
+    id: 'channel-attributes',
+    label: 'Channel Attributes & Smart Labeling · Index',
+    path: '/prototypes/channel-attributes',
+    component: ChannelAttributesIndex,
+    group: 'zero-trust-abac',
+    description:
+      'Smart Markings Themes 1–2: attribute identity on channels with server-side need-to-know masking, across create modal, info sidebar, header pills, and classification banner (desktop + mobile). Index of the primary direction plus the two comparison variants.',
+    addedAt: '2026-07-09',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'channel-attributes-primary',
+    label: 'Channel Attributes · Primary (all states)',
+    path: '/prototypes/channel-attributes/primary',
+    component: ChannelAttributesPrimary,
+    group: 'zero-trust-abac',
+    description:
+      'Mockup-faithful primary (Bundle-R): A2 header overflow, B1 banner, quiet advisory tooltip. Scene picker switches across create-modal (ON/OFF/picker/error/loading), header+banner (cleared/overflow/B1/B3/dual-band/elevated-warning), info sidebar (admin edit/config/member/partial/empty), reclassification modal (idle/loading/error), and mobile (label/banner/info member+admin/create). Masking derives only from the server-filtered payload.',
+    addedAt: '2026-07-09',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'channel-attributes-variant-a',
+    label: 'Channel Attributes · Variant A (header density)',
+    path: '/prototypes/channel-attributes/variant-a',
+    component: ChannelAttributesVariantA,
+    group: 'zero-trust-abac',
+    description:
+      'Header overflow density comparison: A2 (recommended, fixed-priority truncation + masking-aware +N popover) beside A3 (classification-only header, rest in sidebar). Both count from the cleared payload only.',
+    addedAt: '2026-07-09',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'channel-attributes-variant-b',
+    label: 'Channel Attributes · Variant B (banner / V7)',
+    path: '/prototypes/channel-attributes/variant-b',
+    component: ChannelAttributesVariantB,
+    group: 'zero-trust-abac',
+    description:
+      'Banner composition for the uncleared viewer (V7 decision axis): B1 (generic “additional handling restrictions apply” indicator, no count/value) beside B3 (full omission). Program values fully omitted in both. Desktop + mobile, for the security-officer review.',
+    addedAt: '2026-07-09',
+    collections: ['attribute-management'],
+  },
+  // Propagation surfaces — echoing channel classification markings across the
+  // product (surface 1 of ~14: quick switcher) + the shared list-data substrate
+  // the other 13 reuse. Server-side masking modeled in the data (no-trace).
+  {
+    id: 'channel-attributes-propagation',
+    label: 'Channel Attributes · Propagation surfaces',
+    path: '/prototypes/channel-attributes/propagation',
+    component: ChannelAttributesPropagation,
+    group: 'zero-trust-abac',
+    description:
+      'Where channel classification markings show up across the product. Surface #1: the "Find channels" quick switcher, with the compact classification pill after each channel name (before the ~handle). No-trace server-side masking is modeled in the shared multi-channel dataset — masked and unmarked channels are indistinguishable (both render no pill), DMs never carry a pill. Scene harness scaffolded for surfaces #2–#14. Deep-linkable via ?scene=switcher.',
+    addedAt: '2026-07-09',
+    collections: ['attribute-management'],
   },
 ];
 

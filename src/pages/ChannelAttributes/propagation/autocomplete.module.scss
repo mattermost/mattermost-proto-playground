@@ -1,0 +1,103 @@
+// ~-channel composer autocomplete — faithful to the standard Mattermost
+// autocomplete dropdown anchored above the message composer. Theme CSS variables
+// only; classification colors come from the shared ClassificationPill.
+
+.ac {
+  display: flex;
+  flex-direction: column;
+  width: 560px;
+  max-width: calc(100vw - var(--spacing-xl));
+  font-family: var(--font-family-body);
+
+  &__dropdown {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-l);
+    box-shadow: var(--elevation-4);
+    padding: var(--spacing-xs) 0;
+    // The dropdown opens upward over the composer; a small gap separates them.
+    margin-bottom: var(--spacing-s);
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  &__group-label {
+    padding: var(--spacing-s) var(--spacing-l) var(--spacing-xxs);
+    font-size: var(--font-size-25);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.5);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-l);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    // Name holds its natural width so a trailing pill never squeezes it.
+    flex: 0 0 auto;
+  }
+
+  &__handle {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+  }
+
+  // ── Minimal message composer (context for the dropdown) ──────────────────────
+  &__composer {
+    border: 2px solid rgba(var(--button-bg-rgb), 0.32);
+    border-radius: var(--radius-l);
+    background: var(--center-channel-bg);
+    padding: var(--spacing-m);
+  }
+
+  &__composer-input {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    font-size: var(--font-size-200);
+    color: var(--center-channel-color);
+  }
+
+  &__composer-typed {
+    white-space: pre;
+  }
+
+  &__composer-caret {
+    display: inline-block;
+    width: 1px;
+    height: 20px;
+    margin-left: 1px;
+    background: var(--center-channel-color);
+    animation: ac-blink 1s steps(1) infinite;
+  }
+}
+
+@keyframes ac-blink {
+  50% {
+    opacity: 0;
+  }
+}

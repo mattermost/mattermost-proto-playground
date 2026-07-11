@@ -35,6 +35,8 @@ import {
 } from './data';
 import type { AttrDef, AttrValue, Binding, ResourceType } from './data';
 import SceneSwitcher from './SceneSwitcher';
+import WalkthroughFocusProvider from '@/components/walkthrough/WalkthroughFocusProvider';
+import { readWalkthroughFocus } from '@/components/walkthrough/walkthroughFocus';
 import {
   isSceneId,
   type SceneId,
@@ -699,9 +701,13 @@ export default function AttributeSystem() {
   }
 
   return (
+    <WalkthroughFocusProvider>
     <div className={styles.page}>
-      <SceneSwitcher scene={scene} onSceneChange={handleSceneChange} />
+      {readWalkthroughFocus() == null && (
+        <SceneSwitcher scene={scene} onSceneChange={handleSceneChange} />
+      )}
       {sceneFrame}
     </div>
+    </WalkthroughFocusProvider>
   );
 }

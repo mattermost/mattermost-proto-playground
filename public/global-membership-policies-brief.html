@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Membership Policies — the two abilities we need</title>
+<style>
+  :root{
+    --ivory:#FAF9F5; --paper:#FFFFFF; --slate:#141413;
+    --clay:#D97757; --clay-d:#B85C3E; --oat:#E3DACC; --olive:#5F7049;
+    --rust:#B04A3F; --sky:#42618C;
+    --g100:#F0EEE6; --g150:#E8E5DB; --g300:#D1CFC5; --g500:#87867F; --g700:#3D3D3A;
+    --mono-tint:#EEF2F8;
+    --serif:ui-serif,Georgia,"Times New Roman",serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Monaco,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{font-family:var(--sans);background:var(--ivory);color:var(--g700);-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+  .deck{height:100vh;overflow:hidden;position:relative;}
+
+  .slide{
+    display:none;
+    height:100vh;overflow-y:auto;
+    flex-direction:column;justify-content:center;
+    padding:64px 88px 96px;position:relative;
+  }
+  .slide.is-active{display:flex;animation:slideIn .28s ease;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  @media(max-width:820px){.slide{padding:48px 32px 88px;}}
+
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--g500);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+  .kicker::before{content:"";width:28px;height:2px;background:var(--clay);}
+  .kicker b{color:var(--clay-d);font-weight:600;}
+
+  h1{font-family:var(--serif);font-weight:500;font-size:52px;line-height:1.1;color:var(--slate);letter-spacing:-.015em;margin-bottom:24px;max-width:20ch;}
+  h2{font-family:var(--serif);font-weight:500;font-size:40px;line-height:1.14;color:var(--slate);letter-spacing:-.01em;margin-bottom:22px;max-width:22ch;}
+  .lede{font-size:22px;line-height:1.5;color:var(--g700);max-width:60ch;}
+  .lede.big{font-size:24px;}
+  strong{color:var(--slate);font-weight:600;}
+  code{font-family:var(--mono);font-size:.9em;background:var(--mono-tint);color:var(--sky);border:1px solid #d8e0ec;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+
+  /* two-ability map cards */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
+  @media(max-width:820px){.two{grid-template-columns:1fr;}}
+  .ability{background:var(--paper);border:1.5px solid var(--g300);border-radius:16px;padding:28px 30px;}
+  .ability .num{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--slate);color:#fff;font-family:var(--mono);font-weight:600;font-size:16px;margin-bottom:16px;}
+  .ability h3{font-family:var(--serif);font-size:26px;font-weight:500;color:var(--slate);margin-bottom:10px;line-height:1.2;}
+  .ability p{font-size:18px;line-height:1.5;color:var(--g700);margin-bottom:14px;}
+  .ability .eg{font-size:16px;line-height:1.5;color:var(--g700);background:var(--ivory);border-radius:10px;padding:12px 14px;}
+  .ability .eg b{color:var(--clay-d);}
+
+  /* "what it does" visual */
+  .compare{display:flex;align-items:center;gap:22px;margin-top:12px;flex-wrap:wrap;}
+  .cbox{background:var(--paper);border:1.5px solid var(--g300);border-radius:14px;padding:18px 22px;min-width:220px;}
+  .cbox .t{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--g500);margin-bottom:6px;}
+  .cbox .v{font-size:20px;color:var(--slate);font-weight:600;}
+  .cmp{font-family:var(--serif);font-size:40px;color:var(--clay-d);}
+  .cnote{font-size:18px;color:var(--g700);margin-top:20px;max-width:58ch;line-height:1.5;}
+
+  /* use-case grid */
+  .cases{display:grid;grid-template-columns:1fr 1fr;gap:14px 40px;margin-top:6px;max-width:1180px;}
+  @media(max-width:900px){.cases{grid-template-columns:1fr;}}
+  .uc{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid var(--g150);}
+  .uc:nth-child(1),.uc:nth-child(2){border-top:none;}
+  @media(max-width:900px){.uc:nth-child(2){border-top:1px solid var(--g150);}}
+  .uc .no{font-family:var(--mono);font-size:13px;color:var(--clay);font-weight:600;flex-shrink:0;width:20px;}
+  .uc .txt{font-size:16.5px;line-height:1.45;}
+  .uc .txt b{color:var(--slate);font-weight:600;}
+
+  /* "without this" */
+  .without{max-width:70ch;}
+  .without .item{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-top:1px solid var(--g150);}
+  .without .item:first-of-type{border-top:none;}
+  .without .x{color:var(--rust);font-size:20px;flex-shrink:0;line-height:1.3;}
+  .without .item p{font-size:19px;line-height:1.5;color:var(--g700);}
+  .result{margin-top:22px;background:rgba(176,74,63,.06);border:1.5px solid rgba(176,74,63,.28);border-radius:14px;padding:18px 24px;max-width:70ch;}
+  .result .k{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--rust);font-weight:600;margin-bottom:6px;}
+  .result p{font-size:19px;line-height:1.5;color:var(--slate);}
+
+  /* close */
+  .close-card{background:var(--slate);color:#F4F2EC;border-radius:20px;padding:44px 48px;max-width:900px;}
+  .close-card h2{color:#fff;margin-bottom:18px;}
+  .close-card p{font-size:20px;line-height:1.55;color:rgba(244,242,236,.9);max-width:64ch;}
+  .close-card p + p{margin-top:14px;}
+  .close-card .fine{font-size:15px;color:rgba(244,242,236,.6);margin-top:22px;line-height:1.5;}
+
+  /* nav bar */
+  .nav{position:fixed;left:0;right:0;bottom:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(250,249,245,.9);backdrop-filter:blur(6px);border-top:1px solid var(--g150);z-index:10;font-family:var(--mono);font-size:12px;color:var(--g500);}
+  .nav .title{letter-spacing:.04em;}
+  .nav .ctrl{display:flex;align-items:center;gap:8px;}
+  .nav button{font-family:var(--mono);font-size:12px;border:1px solid var(--g300);background:var(--paper);color:var(--g700);border-radius:7px;padding:5px 12px;cursor:pointer;}
+  .nav button:hover{border-color:var(--clay);color:var(--clay-d);}
+  .nav .count{min-width:56px;text-align:center;color:var(--slate);font-weight:600;}
+  .hint{color:var(--g500);}
+
+  @media print{
+    body{overflow:visible;}
+    .deck{height:auto;overflow:visible;}
+    .slide{display:flex !important;height:auto;page-break-after:always;padding:32px;}
+    .nav{display:none;}
+    .close-card{background:#222;}
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide is-active">
+    <div class="kicker">Global Membership Policies · <b>who belongs in a channel</b></div>
+    <h1>Two abilities we need to control channel membership at scale</h1>
+    <p class="lede big">A membership policy decides who belongs in a channel. To make that work across thousands of channels, we need two abilities. This deck shows what each one does, where we'd use it, and what we can't do without it.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <div class="kicker">The two abilities, in plain terms</div>
+    <div class="two">
+      <div class="ability">
+        <div class="num">1</div>
+        <h3>Match a person to the channel</h3>
+        <p>Compare a person's own information against the channel's own information — not a fixed value typed in once.</p>
+        <div class="eg"><b>For example:</b> let people in only if their clearance is high enough for <i>that</i> channel.</div>
+      </div>
+      <div class="ability">
+        <div class="num">2</div>
+        <h3>Point a policy at channels by their labels</h3>
+        <p>Apply one policy to every channel that carries a certain label, instead of picking channels one by one.</p>
+        <div class="eg"><b>For example:</b> apply the Dragon Spacecraft rules to every channel labeled Dragon Spacecraft.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <div class="kicker">Ability 1 · <b>what it does</b></div>
+    <h2>Match a person to the channel</h2>
+    <div class="compare">
+      <div class="cbox"><div class="t">The person</div><div class="v">Clearance: Secret</div></div>
+      <div class="cmp">must be ≥</div>
+      <div class="cbox"><div class="t">This channel</div><div class="v">Classification: Secret</div></div>
+    </div>
+    <p class="cnote">A rule compares the person's information to the channel's own information. Write it once, and it works for every channel — because each channel brings its own values to the comparison. No need to write a separate rule for each level.</p>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <div class="kicker">Ability 1 · <b>where we'd use it</b></div>
+    <h2 style="margin-bottom:14px;">Match a person to the channel</h2>
+    <div class="cases">
+      <div class="uc"><span class="no">1</span><span class="txt"><b>Clearance vs. classification.</b> Join only if your clearance meets that channel's classification.</span></div>
+      <div class="uc"><span class="no">2</span><span class="txt"><b>Program access.</b> Join only if you're read into that channel's program.</span></div>
+      <div class="uc"><span class="no">3</span><span class="txt"><b>Country vs. releasability.</b> Join only if your country is allowed (US-only, Five Eyes, NATO).</span></div>
+      <div class="uc"><span class="no">4</span><span class="txt"><b>Special-access caveat.</b> Join only if you hold the caveat the channel requires.</span></div>
+      <div class="uc"><span class="no">5</span><span class="txt"><b>Organization / unit.</b> Join only if you're in the unit the channel belongs to.</span></div>
+      <div class="uc"><span class="no">6</span><span class="txt"><b>Mission / task force.</b> Join only if you're assigned to that channel's mission.</span></div>
+      <div class="uc"><span class="no">7</span><span class="txt"><b>Location / theater.</b> Join only if you're posted to that channel's region.</span></div>
+      <div class="uc"><span class="no">8</span><span class="txt"><b>Contract / vendor.</b> Join only if you're on the contract the channel is tied to.</span></div>
+      <div class="uc"><span class="no">9</span><span class="txt"><b>Certification level.</b> Join only if your certification meets the level the channel needs.</span></div>
+      <div class="uc"><span class="no">10</span><span class="txt"><b>Duty status.</b> Join only if your status matches — for example, active duty only.</span></div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <div class="kicker">Ability 1 · <b>what we can't do without it</b></div>
+    <h2>Without this, we can't match people to channels</h2>
+    <div class="without">
+      <div class="item"><span class="x">✕</span><p>We can't write one rule that fits every channel. Each rule would hold a single fixed value.</p></div>
+      <div class="item"><span class="x">✕</span><p>To cover the whole workspace, we'd hand-build a separate policy for every value — each clearance level, each program, each country — and keep them all in sync.</p></div>
+      <div class="item"><span class="x">✕</span><p>A new channel, or a channel that changes level, wouldn't be covered until someone builds or edits a matching policy by hand.</p></div>
+    </div>
+    <div class="result">
+      <div class="k">Outcome</div>
+      <p>People stay in channels they shouldn't be in, and the policy list grows too large to review or trust.</p>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <div class="kicker">Ability 2 · <b>what it does</b></div>
+    <h2>Point a policy at channels by their labels</h2>
+    <div class="compare">
+      <div class="cbox"><div class="t">One policy</div><div class="v">Dragon Spacecraft rules</div></div>
+      <div class="cmp">applies to →</div>
+      <div class="cbox"><div class="t">Every channel labeled</div><div class="v">Program: Dragon Spacecraft</div></div>
+    </div>
+    <p class="cnote">Instead of listing channels by hand, the policy points at a label. Every channel with that label is covered — and a new channel is covered the moment it gets the label. Nothing to remember, nothing to keep updating.</p>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <div class="kicker">Ability 2 · <b>where we'd use it</b></div>
+    <h2 style="margin-bottom:14px;">Point a policy at channels by their labels</h2>
+    <div class="cases">
+      <div class="uc"><span class="no">1</span><span class="txt"><b>One program's channels.</b> Apply a program's rules to every channel labeled with it.</span></div>
+      <div class="uc"><span class="no">2</span><span class="txt"><b>One classification level.</b> Apply the Top Secret rules to every Top Secret channel.</span></div>
+      <div class="uc"><span class="no">3</span><span class="txt"><b>One mission / task force.</b> The rules follow every channel that mission creates.</span></div>
+      <div class="uc"><span class="no">4</span><span class="txt"><b>One organization / command.</b> Cover all of a command's channels at once.</span></div>
+      <div class="uc"><span class="no">5</span><span class="txt"><b>One contract / engagement.</b> Cover every channel for a given contract.</span></div>
+      <div class="uc"><span class="no">6</span><span class="txt"><b>One region / theater.</b> Cover every channel in a theater.</span></div>
+      <div class="uc"><span class="no">7</span><span class="txt"><b>One coalition / partner.</b> Cover every channel shared with a partner nation.</span></div>
+      <div class="uc"><span class="no">8</span><span class="txt"><b>One sensitivity type.</b> Cover every channel marked "restricted handling."</span></div>
+      <div class="uc"><span class="no">9</span><span class="txt"><b>Hand off control.</b> Give a command charge of just its own channels.</span></div>
+      <div class="uc"><span class="no">10</span><span class="txt"><b>One exercise / event.</b> Cover every channel created for a specific exercise.</span></div>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <div class="kicker">Ability 2 · <b>what we can't do without it</b></div>
+    <h2>Without this, coverage is always a step behind</h2>
+    <div class="without">
+      <div class="item"><span class="x">✕</span><p>We can only pick channels one by one, or apply to every channel.</p></div>
+      <div class="item"><span class="x">✕</span><p>A new channel isn't covered until someone adds it by hand. Until then, it has no membership rules.</p></div>
+      <div class="item"><span class="x">✕</span><p>Coverage falls out of date every time channels are created, renamed, retired, or re-labeled.</p></div>
+      <div class="item"><span class="x">✕</span><p>We can't cleanly give one program or command control of just their own channels.</p></div>
+    </div>
+    <div class="result">
+      <div class="k">Outcome</div>
+      <p>Channels get missed, so the wrong people can join or stay — and admins keep maintaining lists that are never complete.</p>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <div class="kicker">What we're asking for</div>
+    <div class="close-card">
+      <h2>Support both abilities in the membership policy editor</h2>
+      <p>They're already designed and built in a working prototype. Together they let a security team set who belongs in a channel the way their organization already works — by clearance, program, country, and mission — and keep it correct as channels change.</p>
+      <p class="fine">This is the standard way access is defined in Zero Trust systems (NIST SP 800-162). Most tools we looked at can't compare a person to a channel this way, or point a policy at channels by their labels — so it's a real advantage for defense and regulated customers.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <span class="title">Global Membership Policies — the two abilities we need</span>
+  <div class="ctrl">
+    <span class="hint">← → to move</span>
+    <button id="prev" aria-label="Previous slide">Prev</button>
+    <span class="count" id="count">1 / 9</span>
+    <button id="next" aria-label="Next slide">Next</button>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var slides=Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var count=document.getElementById('count');
+    var cur=0;
+    function go(i){
+      cur=Math.max(0,Math.min(slides.length-1,i));
+      slides.forEach(function(s,idx){s.classList.toggle('is-active',idx===cur);});
+      slides[cur].scrollTop=0;
+      count.textContent=(cur+1)+' / '+slides.length;
+    }
+    document.getElementById('next').onclick=function(){go(cur+1);};
+    document.getElementById('prev').onclick=function(){go(cur-1);};
+    document.addEventListener('keydown',function(e){
+      if(['ArrowRight','ArrowDown','PageDown',' '].indexOf(e.key)>=0){e.preventDefault();go(cur+1);}
+      else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>=0){e.preventDefault();go(cur-1);}
+      else if(e.key==='Home'){e.preventDefault();go(0);}
+      else if(e.key==='End'){e.preventDefault();go(slides.length-1);}
+    });
+    go(0);
+  })();
+</script>
+</body>
+</html>

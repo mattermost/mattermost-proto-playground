@@ -1,0 +1,19 @@
+.wf-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: var(--spacing-xs) var(--spacing-m);
+  border-bottom: 1px solid rgba(var(--link-color-rgb), 0.24);
+  background: rgba(var(--link-color-rgb), 0.1);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.4;
+  color: var(--link-color);
+}
+
+:global([data-tour-highlight='true']) {
+  outline: 2px solid var(--link-color) !important;
+  outline-offset: 3px;
+  border-radius: var(--radius-s);
+  box-shadow: 0 0 0 4px rgba(var(--link-color-rgb), 0.16);
+}

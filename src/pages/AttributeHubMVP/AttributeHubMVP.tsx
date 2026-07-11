@@ -38,6 +38,7 @@ import {
   readInheritance,
   type InheritanceState,
 } from './_components/mvpTerms';
+import WalkthroughFocusProvider from '@/components/walkthrough/WalkthroughFocusProvider';
 import styles from './AttributeHubMVP.module.scss';
 
 /** Per (attribute, resource) demo state layered over the read-only base model. */
@@ -88,7 +89,8 @@ function readParams(): URLSearchParams {
  * detail-page (Type=Select), Definition (Name/Type/Values), and Applies-to
  * (Users/Channels/Posts) with the §3 per-resource config. Delegation is a quiet
  * DGA line, not a control. Allowed-value subsets are OPEN — hidden unless
- * ?allowed=on. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on.
+ * ?allowed=on. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on,
+ * ?resource=Channels|Users|Posts (comma-separated for multi-select).
  */
 export default function AttributeHubMVP() {
   const params = readParams();
@@ -109,7 +111,20 @@ export default function AttributeHubMVP() {
     () => params.get('markings'),
   );
 
-  const [selectedResources, setSelectedResources] = useState<ResourceKind[]>([]);
+  const [selectedResources, setSelectedResources] = useState<ResourceKind[]>(
+    () => {
+      const raw = params.get('resource');
+      if (raw == null || raw.trim() === '') {
+        return [];
+      }
+      return raw
+        .split(',')
+        .map((part) => part.trim())
+        .filter((part): part is ResourceKind =>
+          (MVP_RESOURCES as readonly string[]).includes(part),
+        );
+    },
+  );
   const [source, setSource] = useState('All sources');
   const [query, setQuery] = useState('');
   const [guardrail, setGuardrail] = useState<GuardrailState>(null);
@@ -347,125 +362,134 @@ export default function AttributeHubMVP() {
   const createEnabled = !!draft && draft.name.trim().length > 0 && !!draft.type;
 
   return (
-    <div className={styles['console']}>
-      <ConsoleSidebar
-        className={sidebarStyles['console-sidebar--product']}
-        avatarSrc={avatarLeonard}
-        avatarAlt="Leonard Riley"
-        username="leonard.riley"
-        categories={HUB_SIDEBAR_CATEGORIES}
-        activeItemId={HUB_ACTIVE_ITEM}
-      />
-      <div className={styles['console__center']}>
-        <ConsolePageHeader
-          title={
-            markingsAttr
-              ? `${markingsAttr.name} markings`
-              : creating
-                ? 'New attribute'
-                : active
-                  ? active.name || 'Untitled attribute'
-                  : 'Manage Attributes'
-          }
-          subtitle={
-            markingsAttr
-              ? 'Read-only — ranked tiers and their nested handling markings.'
-              : creating
-                ? draft && (draft.values.length > 0 || draft.appliesTo.length > 0)
-                  ? subtitle(draft)
-                  : 'Name the attribute, choose a type, and pick where it applies.'
-                : active
-                  ? subtitle(active)
-                  : 'Define an attribute once, then choose which resources can use it.'
-          }
-          backButton={!!active || !!markingsAttr}
-          onBack={() => {
-            setDraft(null);
-            setSelectedId(null);
-            setMarkingsId(null);
-          }}
-          trailing={
-            markingsAttr ? undefined : creating ? (
-              <div className={styles['console__create-actions']}>
-                <Button emphasis="Tertiary" size="Medium" onClick={cancelCreate}>
-                  Cancel
-                </Button>
-                <Button
-                  emphasis="Primary"
-                  size="Medium"
-                  disabled={!createEnabled}
-                  onClick={commitCreate}
-                >
-                  Create attribute
-                </Button>
-              </div>
-            ) : active && isSourceOwned(active) ? (
-              <MvpConnectionPill
-                status={connectionStatus(active)}
-                size="Medium"
-              />
-            ) : undefined
-          }
+    <WalkthroughFocusProvider>
+      <div className={styles['console']}>
+        <ConsoleSidebar
+          className={sidebarStyles['console-sidebar--product']}
+          avatarSrc={avatarLeonard}
+          avatarAlt="Leonard Riley"
+          username="leonard.riley"
+          categories={HUB_SIDEBAR_CATEGORIES}
+          activeItemId={HUB_ACTIVE_ITEM}
         />
-        <div className={styles['console__scroll']}>
-          <Scrollbars>
-            <div className={styles['console__content']}>
-              {markingsAttr ? (
-                <MvpMarkingsPage attribute={markingsAttr} />
-              ) : active ? (
-                <MvpDetailView
-                  attribute={active}
-                  creating={creating}
-                  onDefinitionChange={(next) => mutate((a) => ({ ...a, ...next }))}
-                  onAddValue={addValue}
-                  onDeleteValue={deleteValue}
-                  onToggleValueDisabled={toggleValueDisabled}
-                  onBindingChange={bindingChange}
-                  onReadIntoFilteringChange={readIntoFilteringChange}
-                  onAddResource={addResource}
-                  onRemoveResource={removeResource}
-                  allowedOn={allowedOn}
-                  onConnectSource={connectSource}
-                  inheritanceFor={(cfg) => inheritanceFor(active, cfg)}
-                  onInheritanceChange={setInheritance}
-                  nameOnResourceFor={(resource) =>
-                    nameOnResourceFor(active, resource)
-                  }
-                  onNameOnResourceChange={setNameOnResource}
-                  nameRef={(el) => {
-                    nameRef.current = el;
-                  }}
+        <div className={styles['console__center']}>
+          <ConsolePageHeader
+            title={
+              markingsAttr
+                ? `${markingsAttr.name} markings`
+                : creating
+                  ? 'New attribute'
+                  : active
+                    ? active.name || 'Untitled attribute'
+                    : 'Manage Attributes'
+            }
+            subtitle={
+              markingsAttr
+                ? 'Read-only — ranked tiers and their nested handling markings.'
+                : creating
+                  ? draft &&
+                    (draft.values.length > 0 || draft.appliesTo.length > 0)
+                    ? subtitle(draft)
+                    : 'Name the attribute, choose a type, and pick where it applies.'
+                  : active
+                    ? subtitle(active)
+                    : 'Define an attribute once, then choose which resources can use it.'
+            }
+            backButton={!!active || !!markingsAttr}
+            onBack={() => {
+              setDraft(null);
+              setSelectedId(null);
+              setMarkingsId(null);
+            }}
+            trailing={
+              markingsAttr ? undefined : creating ? (
+                <div className={styles['console__create-actions']}>
+                  <Button
+                    emphasis="Tertiary"
+                    size="Medium"
+                    onClick={cancelCreate}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    emphasis="Primary"
+                    size="Medium"
+                    disabled={!createEnabled}
+                    onClick={commitCreate}
+                  >
+                    Create attribute
+                  </Button>
+                </div>
+              ) : active && isSourceOwned(active) ? (
+                <MvpConnectionPill
+                  status={connectionStatus(active)}
+                  size="Medium"
                 />
-              ) : (
-                <MvpCatalogListing
-                  attributes={attributes}
-                  filtered={filtered}
-                  selectedResources={selectedResources}
-                  onToggleResource={toggleResource}
-                  onClearResources={() => setSelectedResources([])}
-                  source={source}
-                  onSourceChange={setSource}
-                  query={query}
-                  onQueryChange={setQuery}
-                  onNewAttribute={startCreate}
-                  onOpenDetail={openDetail}
-                  onOpenMarkings={openMarkings}
-                  onReorderAttributes={reorderAttributes}
-                  onDeactivate={openDeactivate}
-                  onDelete={openDelete}
-                />
-              )}
-            </div>
-          </Scrollbars>
+              ) : undefined
+            }
+          />
+          <div className={styles['console__scroll']}>
+            <Scrollbars>
+              <div className={styles['console__content']}>
+                {markingsAttr ? (
+                  <MvpMarkingsPage attribute={markingsAttr} />
+                ) : active ? (
+                  <MvpDetailView
+                    attribute={active}
+                    creating={creating}
+                    onDefinitionChange={(next) =>
+                      mutate((a) => ({ ...a, ...next }))
+                    }
+                    onAddValue={addValue}
+                    onDeleteValue={deleteValue}
+                    onToggleValueDisabled={toggleValueDisabled}
+                    onBindingChange={bindingChange}
+                    onReadIntoFilteringChange={readIntoFilteringChange}
+                    onAddResource={addResource}
+                    onRemoveResource={removeResource}
+                    allowedOn={allowedOn}
+                    onConnectSource={connectSource}
+                    inheritanceFor={(cfg) => inheritanceFor(active, cfg)}
+                    onInheritanceChange={setInheritance}
+                    nameOnResourceFor={(resource) =>
+                      nameOnResourceFor(active, resource)
+                    }
+                    onNameOnResourceChange={setNameOnResource}
+                    nameRef={(el) => {
+                      nameRef.current = el;
+                    }}
+                  />
+                ) : (
+                  <MvpCatalogListing
+                    attributes={attributes}
+                    filtered={filtered}
+                    selectedResources={selectedResources}
+                    onToggleResource={toggleResource}
+                    onClearResources={() => setSelectedResources([])}
+                    source={source}
+                    onSourceChange={setSource}
+                    query={query}
+                    onQueryChange={setQuery}
+                    onNewAttribute={startCreate}
+                    onOpenDetail={openDetail}
+                    onOpenMarkings={openMarkings}
+                    onReorderAttributes={reorderAttributes}
+                    onDeactivate={openDeactivate}
+                    onDelete={openDelete}
+                  />
+                )}
+              </div>
+            </Scrollbars>
+          </div>
         </div>
-      </div>
 
-      <GuardrailDialog
-        kind={guardrail?.kind ?? null}
-        context={guardrail?.context ?? { attributeName: '' }}
-        onClose={() => setGuardrail(null)}
-        onConfirm={confirmGuardrail}
-      />
-    </div>
+        <GuardrailDialog
+          kind={guardrail?.kind ?? null}
+          context={guardrail?.context ?? { attributeName: '' }}
+          onClose={() => setGuardrail(null)}
+          onConfirm={confirmGuardrail}
+        />
+      </div>
+    </WalkthroughFocusProvider>
   );
 }

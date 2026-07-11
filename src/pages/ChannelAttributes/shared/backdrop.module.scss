@@ -1,0 +1,17 @@
+.backdrop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  min-height: 640px;
+  padding: var(--spacing-xl) var(--spacing-l);
+  border-radius: var(--radius-l);
+  background: rgba(0, 0, 0, 0.32);
+
+  &__inner {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    justify-content: center;
+  }
+}

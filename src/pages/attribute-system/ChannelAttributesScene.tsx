@@ -222,7 +222,7 @@ export default function ChannelAttributesScene({
         expandable
         defaultExpandedState="Expanded"
       >
-        <div className={sharedStyles.gaTableWrap}>
+        <div className={sharedStyles.gaTableWrap} data-tour-focus="attr-table">
           <table className={sharedStyles.gaTable}>
             <thead>
               <tr>
@@ -291,7 +291,16 @@ export default function ChannelAttributesScene({
                 const isClassification = def.id === 'classification';
 
                 return (
-                  <tr key={def.id}>
+                  <tr
+                    key={def.id}
+                    data-tour-focus={
+                      def.id === 'classification'
+                        ? 'classification-row'
+                        : def.id === 'program'
+                          ? 'program-row'
+                          : undefined
+                    }
+                  >
                     <td className={sharedStyles.gaTable__handle}>
                       <Icon size="16" glyph={<DragVerticalIcon />} />
                     </td>

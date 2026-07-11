@@ -1,0 +1,148 @@
+// Shared styles for the Channel Attributes scene.
+// Theme CSS variables only; classification colors are prescribed hex per the
+// Astro/CAPCO scheme and are applied inline (they are a hard external dependency,
+// not theme tokens).
+
+// ── Classification pill ──────────────────────────────────────────────────────
+.class-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-s);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 16px;
+
+  &--md {
+    padding: 4px 12px;
+    font-size: var(--font-size-100);
+    line-height: 20px;
+  }
+}
+
+.class-pill-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  &__icon {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &:hover .class-pill-lock__icon,
+  &:focus-visible .class-pill-lock__icon {
+    color: var(--center-channel-color);
+  }
+}
+
+// ── Banner ───────────────────────────────────────────────────────────────────
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  min-height: 28px;
+  padding: 4px var(--spacing-m);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-align: center;
+
+  &--compact {
+    min-height: 24px;
+    font-size: var(--font-size-75);
+  }
+
+  &__text {
+    white-space: nowrap;
+  }
+
+  &__glyph {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: help;
+    outline: none;
+
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+      border-radius: var(--radius-full);
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    pointer-events: none;
+  }
+}
+
+// ── Header pills ─────────────────────────────────────────────────────────────
+.header-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.header-pills__overflow {
+  position: relative;
+  display: inline-flex;
+}
+
+.header-pills__more-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.header-pills__popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  // Right-align to the +N pill so the popover opens leftward and stays inside the
+  // channel frame instead of clipping past its right edge.
+  right: 0;
+  left: auto;
+  z-index: 40;
+  width: 280px;
+  max-width: calc(100vw - var(--spacing-l));
+}
+
+.header-pills__popover-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.header-pills__popover-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-s);
+}
+
+.header-pills__popover-name {
+  font-size: var(--font-size-100);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}

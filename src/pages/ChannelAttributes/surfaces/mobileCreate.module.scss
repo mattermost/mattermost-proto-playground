@@ -1,0 +1,180 @@
+.phone {
+  display: flex;
+  flex-direction: column;
+  width: 390px;
+  height: 760px;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 8px solid #0b0d12;
+  background: var(--center-channel-bg);
+  font-family: var(--font-family-body);
+
+  &__statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px var(--spacing-l);
+    background: #1b2a4a;
+    color: #fff;
+    font-size: var(--font-size-75);
+  }
+
+  &__notch {
+    width: 120px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    background: #000;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    background: #1b2a4a;
+    color: #fff;
+  }
+
+  &__nav-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  &__nav-title {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__nav-action {
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-l) var(--spacing-m);
+  }
+
+  &__toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
+  &__toggle-icon {
+    display: inline-flex;
+    padding-top: 2px;
+    color: var(--center-channel-color);
+  }
+
+  &__toggle-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__toggle-title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__toggle-desc {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__divider {
+    height: 1px;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__attrs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__attrs-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__attrs-sub {
+    margin: calc(var(--spacing-s) * -1) 0 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__field-label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__req {
+    color: var(--color-danger);
+  }
+
+  &__class-picker {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__field-error {
+    margin-top: var(--spacing-xxs);
+  }
+
+  &__add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: var(--spacing-xxs) 0;
+    cursor: pointer;
+    color: var(--link-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

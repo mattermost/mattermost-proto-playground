@@ -1,0 +1,137 @@
+.attr-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  padding: var(--spacing-s) 0;
+
+  &__add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: flex-start;
+    margin-top: var(--spacing-xs);
+    background: none;
+    border: none;
+    padding: var(--spacing-xxs) 0;
+    cursor: pointer;
+    color: var(--link-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.attr-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-m);
+
+  &__label {
+    flex: 0 0 120px;
+    padding-top: 3px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__value {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-height: 24px;
+  }
+
+  &__config {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__config-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: var(--radius-s);
+    background: none;
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+  }
+}
+
+// ── Config popover (DISPLAY IN toggles + Duplicate; NO Rename per V2) ─────────
+.config-popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 50;
+  width: 280px;
+  padding: var(--spacing-s);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elevation-4);
+
+  &__section-title {
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-25);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.06em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-s);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+  }
+
+  &__forced {
+    display: inline-flex;
+    color: var(--link-color);
+  }
+
+  &__divider {
+    height: 1px;
+    margin: var(--spacing-xs) 0;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-s);
+    background: none;
+    cursor: pointer;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+  }
+}

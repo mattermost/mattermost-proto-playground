@@ -1,0 +1,121 @@
+.phone {
+  display: flex;
+  flex-direction: column;
+  width: 390px;
+  height: 720px;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 8px solid #0b0d12;
+  background: var(--center-channel-bg);
+  font-family: var(--font-family-body);
+
+  &__statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px var(--spacing-l);
+    background: #1b2a4a;
+    color: #fff;
+    font-size: var(--font-size-75);
+  }
+
+  &__notch {
+    width: 120px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    background: #000;
+  }
+
+  &__nav {
+    background: #1b2a4a;
+    color: #fff;
+  }
+
+  &__globalband {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 var(--spacing-m) var(--spacing-xs);
+    min-height: 22px;
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+  }
+
+  &__nav-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-s);
+  }
+
+  &__nav-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &__channel-name {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__label-pill {
+    display: inline-flex;
+  }
+
+  &__members {
+    font-size: var(--font-size-75);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  &__nav-actions {
+    display: flex;
+    gap: var(--spacing-s);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  &__messages {
+    flex: 1;
+    padding: var(--spacing-m);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__msg {
+    display: flex;
+    gap: var(--spacing-s);
+  }
+
+  &__msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    flex-shrink: 0;
+  }
+
+  &__msg-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__msg-text {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.8);
+  }
+
+  &__composer {
+    padding: var(--spacing-m);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    color: rgba(var(--center-channel-color-rgb), 0.5);
+    font-size: var(--font-size-75);
+  }
+}

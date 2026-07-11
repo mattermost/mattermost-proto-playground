@@ -1,0 +1,176 @@
+// Surface #3 — RHS Search Results panel. Theme CSS variables only; the
+// classification colors come from the shared ClassificationPill (prescribed CAPCO
+// hex applied inline there, not here).
+
+.search {
+  // The RightSidebar is fixed-width (400px); frame it on the harness stage.
+  &__frame {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 720px;
+    max-height: calc(100vh - var(--spacing-xxl));
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 var(--spacing-l);
+    font-family: var(--font-family-body);
+  }
+
+  &__query-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+  }
+
+  &__query-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-s);
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+  }
+
+  &__query-chip-x {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__expand-hint {
+    margin-left: auto;
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__tabs {
+    display: flex;
+    gap: var(--spacing-l);
+    padding: 0 var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s) 0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+
+    &:hover {
+      color: var(--center-channel-color);
+    }
+
+    &--active {
+      color: var(--button-bg);
+      border-bottom-color: var(--button-bg);
+    }
+  }
+
+  &__tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    font-size: var(--font-size-25);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__group-header {
+    position: relative;
+    padding: var(--spacing-m) var(--spacing-m) var(--spacing-s);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    text-align: center;
+  }
+
+  &__result {
+    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-m);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.03);
+    }
+  }
+
+  // The channel-attribution row: "[Team] · [Channel] [pill]  Jump".
+  &__attribution {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    line-height: 1;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__attribution-team {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+  }
+
+  &__attribution-sep {
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+  }
+
+  &__attribution-channel {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+  }
+
+  &__jump {
+    margin-left: auto;
+    padding: 2px var(--spacing-xs);
+    border: none;
+    background: none;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--link-color, var(--button-bg));
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__result:hover &__jump {
+    opacity: 1;
+  }
+
+  // Tighten the reused Message inside a compact result row.
+  &__result-message {
+    margin-left: calc(-1 * var(--spacing-xs));
+  }
+}

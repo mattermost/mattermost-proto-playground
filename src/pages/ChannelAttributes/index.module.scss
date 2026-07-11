@@ -1,0 +1,83 @@
+.index {
+  min-height: 100vh;
+  padding: var(--spacing-xxl) var(--spacing-l);
+  background: rgba(var(--center-channel-color-rgb), 0.03);
+  font-family: var(--font-family-body);
+
+  &__inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__sub {
+    margin: var(--spacing-s) 0 var(--spacing-xl);
+    font-size: var(--font-size-200);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+}
+
+.card {
+  display: block;
+  padding: var(--spacing-l);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-l);
+  background: var(--center-channel-bg);
+  text-decoration: none;
+  transition: border-color var(--duration-quick) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    border-color: var(--button-bg);
+    box-shadow: var(--elevation-2);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__badge {
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--color-success-rgb), 0.16);
+    color: var(--color-success);
+    font-size: var(--font-size-25);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  &__philosophy {
+    margin: var(--spacing-s) 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.8);
+    line-height: 1.5;
+  }
+
+  &__meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}

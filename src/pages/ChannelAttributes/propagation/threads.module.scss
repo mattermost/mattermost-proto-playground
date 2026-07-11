@@ -1,0 +1,182 @@
+// Surface #4 — Global Threads view. Faithful local recreation of the DS thread
+// row metrics (see ThreadListItem.module.scss) so the classification pill can sit
+// inline on the channel label. Theme CSS variables only; pill colors come from the
+// shared ClassificationPill.
+
+.threads {
+  &__frame {
+    display: flex;
+    width: 100%;
+    height: 720px;
+    max-height: calc(100vh - var(--spacing-xxl));
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+    background: var(--center-channel-bg);
+    font-family: var(--font-family-body);
+  }
+
+  &__inbox {
+    display: flex;
+    flex: 0 0 400px;
+    flex-direction: column;
+    min-height: 0;
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+  }
+
+  &__tabs {
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__tabs-strip {
+    box-sizing: border-box;
+    width: 100%;
+    height: 56px;
+    padding: var(--spacing-m) var(--spacing-m) var(--spacing-m) 14px;
+  }
+
+  &__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__reader {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__composer {
+    padding: var(--spacing-s) var(--spacing-m) var(--spacing-m);
+  }
+}
+
+// Local thread row — mirrors ThreadListItem spacing/typography.
+.thread-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xxxxs, 4px);
+  padding: var(--spacing-l);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background: var(--center-channel-bg);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-within {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+
+    .thread-row__actions {
+      display: flex;
+    }
+
+    .thread-row__timestamp {
+      visibility: hidden;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px rgba(var(--center-channel-color-rgb), 0.32);
+  }
+
+  &--active {
+    background: rgba(var(--button-bg-rgb), 0.04);
+
+    &:hover {
+      background: rgba(var(--button-bg-rgb), 0.08);
+    }
+  }
+
+  &__gutter {
+    position: relative;
+    flex-shrink: 0;
+    width: 8px;
+    min-height: 21px;
+  }
+
+  &__unread-badge {
+    position: absolute;
+    top: var(--spacing-xxs);
+    left: -4px;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs, 4px);
+    min-width: 0;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    height: 20px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &__name-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &__author {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__timestamp {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-25);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  &__preview {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    width: 100%;
+  }
+
+  &__replies {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-xxs);
+  }
+
+  &__reply-count {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--link-color, var(--button-bg));
+  }
+
+  &__actions {
+    display: none;
+    position: absolute;
+    top: var(--spacing-s);
+    right: var(--spacing-s);
+  }
+}

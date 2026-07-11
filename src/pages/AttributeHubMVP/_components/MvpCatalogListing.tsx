@@ -140,7 +140,11 @@ export default function MvpCatalogListing({
             />
           </div>
 
-          <div className={styles['filters__resource']} ref={filterRef}>
+          <div
+            className={styles['filters__resource']}
+            ref={filterRef}
+            data-tour-focus="resource-filter"
+          >
             <button
               type="button"
               className={styles['filters__trigger']}
@@ -232,7 +236,7 @@ export default function MvpCatalogListing({
           />
         </div>
       ) : (
-        <div className={styles['table']}>
+        <div className={styles['table']} data-tour-focus="attr-table">
           <table className={styles['table__grid']}>
             <thead>
               <tr>
@@ -253,6 +257,12 @@ export default function MvpCatalogListing({
                 const readOnly = a.id === READONLY_ATTR_ID;
                 const isDragging = dragId === a.id;
                 const isDragOver = dragOverId === a.id && dragId !== a.id;
+                const tourFocusId =
+                  a.id === 'classification'
+                    ? 'classification-row'
+                    : a.id === 'program'
+                      ? 'program-row'
+                      : undefined;
                 return (
                   <tr
                     key={a.id}
@@ -264,6 +274,7 @@ export default function MvpCatalogListing({
                     ]
                       .filter(Boolean)
                       .join(' ')}
+                    data-tour-focus={tourFocusId}
                     onClick={() => {
                       if (readOnly) {
                         onOpenMarkings(a.id);
