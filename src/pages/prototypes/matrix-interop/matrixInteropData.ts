@@ -55,7 +55,7 @@ export const INITIAL_CONNECTIONS: MatrixConnection[] = [
     name: 'Initech Systems',
     homeserverUrl: 'https://matrix.initech.example.com',
     domain: 'initech.example.com',
-    health: 'degraded',
+    health: 'paused',
     applicationServiceToken: 'as-token-initech-••••••••',
     homeserverToken: 'hs-token-initech-••••••••',
     messageSyncEnabled: false,

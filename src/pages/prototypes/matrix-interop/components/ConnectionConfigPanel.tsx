@@ -8,6 +8,7 @@ import {
   TextInput,
 } from '@mattermost/compass-ui';
 import PauseIcon from '@mattermost/compass-icons/components/pause';
+import PlayIcon from '@mattermost/compass-icons/components/play';
 import type { MatrixConnection } from '../matrixInteropTypes';
 import { domainFromHomeserverUrl } from '../matrixInteropTypes';
 import { matrixAdminShellStyles } from './matrixAdminShellStyles';
@@ -16,18 +17,19 @@ import styles from './MatrixInteropTables.module.scss';
 type ConnectionConfigPanelProps = {
   connection: MatrixConnection;
   onChange: (patch: Partial<MatrixConnection>) => void;
+  onTogglePause?: () => void;
   isNew?: boolean;
 };
 
 function healthTagType(health: MatrixConnection['health']) {
   if (health === 'active') return 'Success' as const;
-  if (health === 'degraded') return 'Warning' as const;
+  if (health === 'degraded' || health === 'paused') return 'Warning' as const;
   return 'Default' as const;
 }
 
 function healthLabel(health: MatrixConnection['health']) {
   if (health === 'active') return 'Active';
-  if (health === 'degraded') return 'Sync disabled';
+  if (health === 'degraded' || health === 'paused') return 'Paused';
   return 'Unknown';
 }
 
@@ -39,8 +41,11 @@ function generateToken(prefix: string): string {
 export default function ConnectionConfigPanel({
   connection,
   onChange,
+  onTogglePause,
   isNew = false,
 }: ConnectionConfigPanelProps) {
+  const isPaused =
+    connection.health === 'paused' || connection.health === 'degraded';
   const radioNs = useId().replace(/\W/g, '');
   const settingsSubtitle =
     'Matrix homeserver configuration for this connection.';
@@ -73,9 +78,12 @@ export default function ConnectionConfigPanel({
           <Button
             emphasis="Tertiary"
             size="Small"
-            leadingIcon={<Icon glyph={<PauseIcon />} size="16" />}
+            leadingIcon={
+              <Icon glyph={isPaused ? <PlayIcon /> : <PauseIcon />} size="16" />
+            }
+            onClick={onTogglePause}
           >
-            Pause connection
+            {isPaused ? 'Resume connection' : 'Pause connection'}
           </Button>
         )
       }

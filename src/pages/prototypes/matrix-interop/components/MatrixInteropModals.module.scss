@@ -92,4 +92,26 @@
     line-height: var(--line-height-100);
     color: var(--center-channel-color);
   }
+
+  &__confirm-body {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__confirm-lead {
+    margin: 0 0 var(--spacing-m);
+  }
+
+  &__confirm-emphasis {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__confirm-list {
+    margin: 0;
+    padding-left: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+  }
 }

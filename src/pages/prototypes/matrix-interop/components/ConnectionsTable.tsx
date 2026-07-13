@@ -13,6 +13,7 @@ import {
 } from '@mattermost/compass-ui';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PauseIcon from '@mattermost/compass-icons/components/pause';
+import PlayIcon from '@mattermost/compass-icons/components/play';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
@@ -33,14 +34,18 @@ type ConnectionsTableProps = {
 
 function healthTagType(health: MatrixConnection['health']) {
   if (health === 'active') return 'Success' as const;
-  if (health === 'degraded') return 'Warning' as const;
+  if (health === 'degraded' || health === 'paused') return 'Warning' as const;
   return 'Default' as const;
 }
 
 function healthLabel(health: MatrixConnection['health']) {
   if (health === 'active') return 'Active';
-  if (health === 'degraded') return 'Sync disabled';
+  if (health === 'degraded' || health === 'paused') return 'Paused';
   return 'Unknown';
+}
+
+function isConnectionPaused(health: MatrixConnection['health']) {
+  return health === 'paused' || health === 'degraded';
 }
 
 export default function ConnectionsTable({
@@ -181,9 +186,22 @@ export default function ConnectionsTable({
                           }}
                         />
                         <MenuItem
-                          label="Pause connection"
+                          label={
+                            isConnectionPaused(connection.health)
+                              ? 'Resume connection'
+                              : 'Pause connection'
+                          }
                           leadingVisual={
-                            <Icon glyph={<PauseIcon />} size="16" />
+                            <Icon
+                              glyph={
+                                isConnectionPaused(connection.health) ? (
+                                  <PlayIcon />
+                                ) : (
+                                  <PauseIcon />
+                                )
+                              }
+                              size="16"
+                            />
                           }
                           onClick={() => {
                             closeMenu();

@@ -1,6 +1,6 @@
 export type SceneId = 'connections' | 'connection' | 'channel-settings';
 
-export type ConnectionHealth = 'active' | 'degraded' | 'unknown';
+export type ConnectionHealth = 'active' | 'degraded' | 'paused' | 'unknown';
 export type ShareMode = 'create' | 'map';
 export type ChannelVisibility = 'public' | 'private';
 export type ShareModalVariant = 'admin' | 'channel';

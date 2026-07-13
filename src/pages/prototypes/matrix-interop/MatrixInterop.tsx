@@ -129,11 +129,15 @@ export default function MatrixInterop() {
 
   const handlePauseConnection = useCallback((connectionId: string) => {
     setConnections((prev) =>
-      prev.map((connection) =>
-        connection.id === connectionId
-          ? { ...connection, health: 'degraded' as const }
-          : connection,
-      ),
+      prev.map((connection) => {
+        if (connection.id !== connectionId) return connection;
+        return {
+          ...connection,
+          health: connection.health === 'paused' || connection.health === 'degraded'
+            ? 'active'
+            : 'paused',
+        };
+      }),
     );
   }, []);
 
@@ -365,6 +369,7 @@ export default function MatrixInterop() {
             onEditSharedChannel={handleEditSharedChannel}
             onRemoveSharedChannel={handleRemoveSharedChannel}
             onSaveConnection={handleSaveConnection}
+            onTogglePauseConnection={handlePauseConnection}
           />
         )}
 
@@ -406,6 +411,16 @@ export default function MatrixInterop() {
               name: 'workspace',
               matrixRoomAlias: '',
             }
+          }
+          connectionName={
+            connections.find(
+              (connection) => connection.id === unmapTarget?.connectionId,
+            )?.name ?? 'Matrix connection'
+          }
+          connectionDomain={
+            connections.find(
+              (connection) => connection.id === unmapTarget?.connectionId,
+            )?.domain ?? ''
           }
           onClose={() => {
             setUnmapTarget(null);

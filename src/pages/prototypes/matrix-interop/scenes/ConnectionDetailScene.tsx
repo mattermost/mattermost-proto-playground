@@ -13,6 +13,7 @@ type ConnectionDetailSceneProps = {
   onEditSharedChannel: (channel: SharedChannel) => void;
   onRemoveSharedChannel: (channel: SharedChannel) => void;
   onSaveConnection: (connection: MatrixConnection) => void;
+  onTogglePauseConnection: (connectionId: string) => void;
 };
 
 function connectionSettingsEqual(
@@ -38,6 +39,7 @@ export default function ConnectionDetailScene({
   onEditSharedChannel,
   onRemoveSharedChannel,
   onSaveConnection,
+  onTogglePauseConnection,
 }: ConnectionDetailSceneProps) {
   const [draft, setDraft] = useState(connection);
 
@@ -65,7 +67,7 @@ export default function ConnectionDetailScene({
 
   return (
     <MatrixAdminShell
-      title="Matrix Bridge"
+      title={isNew ? 'New Matrix Bridge Connection' : 'Matrix Bridge'}
       showBack
       ariaLabelBack="All connections"
       onBackClick={onBack}
@@ -78,6 +80,7 @@ export default function ConnectionDetailScene({
         connection={draft}
         isNew={isNew}
         onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
+        onTogglePause={() => onTogglePauseConnection(connection.id)}
       />
       <SharedChannelsTable
         channels={sharedChannels}
