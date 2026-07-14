@@ -1,0 +1,24 @@
+.setter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-m) var(--spacing-l);
+  min-height: 32px;
+
+  &__radio {
+    flex: 0 0 auto;
+  }
+}
+
+.locked {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-s);
+  min-height: 32px;
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}

@@ -7,7 +7,8 @@ import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
-import CheckIcon from '@mattermost/compass-icons/components/check';
+import CheckAllIcon from '@mattermost/compass-icons/components/check-all';
+import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import AlertCircleOutlineIcon from '@mattermost/compass-icons/components/alert-circle-outline';
 import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
@@ -60,6 +61,7 @@ import {
   POLICY_EDITOR_PRESETS,
   userAttr,
   channelVar,
+  isTestMatchingPanel,
   type Requirement,
   type ChannelCondition,
   type ScopeMode,
@@ -68,6 +70,7 @@ import {
   type ManualChannel,
   type PolicyTeam,
   type ReqValue,
+  type TestMatchingPanelId,
 } from '@/pages/GlobalMembershipPolicy/gmpData';
 import {
   GMP_ROUTES,
@@ -75,6 +78,7 @@ import {
 } from '@/pages/GlobalMembershipPolicy/gmpConsole';
 
 import WalkthroughFocusProvider from '@/components/walkthrough/WalkthroughFocusProvider';
+import TestMatchingModal from '@/pages/GlobalMembershipPolicy/Simulate/TestMatchingModal/TestMatchingModal';
 import ValuePicker from './ValuePicker';
 import styles from './GlobalMembershipPolicyLongForm.module.scss';
 
@@ -134,6 +138,12 @@ export default function GlobalMembershipPolicyLongForm() {
     tabParam === 'teams' ? 'teams' : 'channels';
   const gateParam = params.get('gate');
   const testParam = params.get('test');
+  // ?sim=channel|impact|person|changeset auto-opens the Test-matching modal on
+  // the chosen panel (additive deep-link for review; does not touch ?test=done).
+  const simParam = params.get('sim');
+  const initialSimPanel: TestMatchingPanelId | null = isTestMatchingPanel(simParam)
+    ? simParam
+    : null;
 
   const isEmpty = initialState === 'empty';
   const isError = initialState === 'error';
@@ -188,6 +198,15 @@ export default function GlobalMembershipPolicyLongForm() {
   );
   const [teams, setTeams] = useState<PolicyTeam[]>(isEmpty ? [] : TEAMS);
   const [gateOpen, setGateOpen] = useState(gateFromUrl);
+  // Test-matching modal (additive; triggered by "Test matching users" or ?sim=).
+  const [simModalOpen, setSimModalOpen] = useState(initialSimPanel != null);
+  const [simPanel, setSimPanel] = useState<TestMatchingPanelId>(
+    initialSimPanel ?? 'channel',
+  );
+  const openSimModal = (panel: TestMatchingPanelId = 'channel') => {
+    setSimPanel(panel);
+    setSimModalOpen(true);
+  };
 
   const referencesChannelAttr = requirements.some(
     (r) => r.value.mode === 'variable',
@@ -393,7 +412,10 @@ export default function GlobalMembershipPolicyLongForm() {
                   <p className={styles['gmp__req-help']}>
                     Select the attributes users must have.
                   </p>
-                  <TestMatchingUsers initialState={testDoneFromUrl ? 'done' : 'idle'} />
+                  <TestMatchingUsers
+                    initialState={testDoneFromUrl ? 'done' : 'idle'}
+                    onOpenModal={() => openSimModal('channel')}
+                  />
                 </div>
               </div>
             </section>
@@ -610,6 +632,14 @@ export default function GlobalMembershipPolicyLongForm() {
           initialState={gateResultsFromUrl ? 'results' : undefined}
         />
       )}
+
+      {simModalOpen && (
+        <TestMatchingModal
+          policyName={policyName || 'Clearance required'}
+          initialPanel={simPanel}
+          onClose={() => setSimModalOpen(false)}
+        />
+      )}
     </div>
     </WalkthroughFocusProvider>
   );
@@ -787,7 +817,10 @@ function RequirementRow({
         </select>
       </div>
 
-      <div className={styles['gmp__req-cell']}>
+      <div
+        className={styles['gmp__req-cell']}
+        data-tour-focus={tourFocusId === 'hero-row' ? 'value-picker' : undefined}
+      >
         <ValuePicker
           literalKey={req.userAttrId}
           kind={kind}
@@ -960,9 +993,9 @@ function AllRequiredMenu({
               label={TERMS.allRequired}
               secondaryLabel="A user must satisfy every row"
               secondaryLabelPosition="Below"
-              trailingVisual={
-                value ? <Icon size="16" glyph={<CheckIcon />} /> : undefined
-              }
+              leadingVisual={<Icon size="16" glyph={<CheckAllIcon />} />}
+              active={value}
+              trailingElement={value}
               onClick={() => {
                 onChange(true);
                 setOpen(false);
@@ -972,9 +1005,9 @@ function AllRequiredMenu({
               label={TERMS.anyMatch}
               secondaryLabel="A user must satisfy at least one row"
               secondaryLabelPosition="Below"
-              trailingVisual={
-                !value ? <Icon size="16" glyph={<CheckIcon />} /> : undefined
-              }
+              leadingVisual={<Icon size="16" glyph={<CheckCircleOutlineIcon />} />}
+              active={!value}
+              trailingElement={!value}
               onClick={() => {
                 onChange(false);
                 setOpen(false);
@@ -1251,15 +1284,17 @@ function TeamsTab({
 
 function TestMatchingUsers({
   initialState = 'idle',
+  onOpenModal,
 }: {
   initialState?: 'idle' | 'loading' | 'done';
+  /**
+   * Primary action: open the Test-matching modal (concept switcher). The inline
+   * result below is preserved for the walkthrough's ?test=done deep-link and is
+   * driven by `initialState` — the modal is ADDITIVE, not a replacement.
+   */
+  onOpenModal?: () => void;
 }) {
-  const [state, setState] = useState<'idle' | 'loading' | 'done'>(initialState);
-
-  const run = () => {
-    setState('loading');
-    window.setTimeout(() => setState('done'), 700);
-  };
+  const [state] = useState<'idle' | 'loading' | 'done'>(initialState);
 
   return (
     <div className={styles['gmp__test']}>
@@ -1267,7 +1302,7 @@ function TestMatchingUsers({
         emphasis="Tertiary"
         size="Small"
         leadingIcon={<Icon size="16" glyph={<MagnifyIcon />} />}
-        onClick={run}
+        onClick={onOpenModal}
       >
         {TERMS.testUsers}
       </Button>

@@ -10,6 +10,7 @@ export const GMP_ROUTES = {
   editor: '/prototypes/global-membership-policy-long-form',
   guided: '/prototypes/global-membership-policy-guided',
   walkthrough: '/prototypes/global-membership-policy-walkthrough',
+  simulate: '/prototypes/global-membership-policy-simulate',
 } as const;
 
 /** Global Attributes hub filtered to Channels — walkthrough primer. */

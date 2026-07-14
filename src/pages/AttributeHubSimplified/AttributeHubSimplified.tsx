@@ -32,7 +32,19 @@ import {
 import SimplifiedDetailView from './_components/SimplifiedDetailView';
 import ConnectSourceModal from './_components/ConnectSourceModal';
 import CatalogListing from './_components/CatalogListing';
-import { displayType, syncValuesWithType, assignSequentialTiers, comparesRank } from './_components/simplifiedModel';
+import LinkValuesModal from './_components/LinkValuesModal';
+import {
+  displayType,
+  syncValuesWithType,
+  assignSequentialTiers,
+  comparesRank,
+  findValueByLabel,
+  markResourceIntroducedValue,
+  resolveValueLink,
+  setValueLinkConfig,
+  suggestValueMappings,
+  type ValueLinkConfig,
+} from './_components/simplifiedModel';
 import styles from './AttributeHubSimplified.module.scss';
 
 type GuardrailState = { kind: GuardrailKind; context: GuardrailContext } | null;
@@ -123,6 +135,7 @@ export default function AttributeHubSimplified({
     'connect' | 'manage' | null
   >(null);
   const [guardrail, setGuardrail] = useState<GuardrailState>(null);
+  const [linkValuesOpen, setLinkValuesOpen] = useState(false);
 
   const nameRef = useRef<HTMLInputElement | null>(null);
   const creating = draft !== null;
@@ -349,6 +362,70 @@ export default function AttributeHubSimplified({
     }));
   };
 
+  const addResourceValue = (resource: ResourceKind, label: string) => {
+    if (!active) return;
+    if (isPolicyLocked(active)) return openValuesLocked();
+    if (isSourceOwned(active)) return;
+
+    const trimmed = label.trim();
+    if (!trimmed) return;
+
+    const existing = findValueByLabel(active.values, trimmed);
+    if (existing) {
+      mutate((a) => ({
+        ...a,
+        appliesTo: a.appliesTo.map((c) => {
+          if (c.resource !== resource) return c;
+          const disabled = new Set(c.disabledValueIds ?? []);
+          disabled.delete(existing.id);
+          return {
+            ...c,
+            disabledValueIds: disabled.size > 0 ? Array.from(disabled) : [],
+          };
+        }),
+      }));
+      markResourceIntroducedValue(active.id, resource, existing.id);
+      return;
+    }
+
+    const type = displayType(active);
+    const ranked = comparesRank(type);
+    const nextTier =
+      ranked && active.type !== 'Ranked-hierarchical'
+        ? active.values.filter((v) => v.tier != null).length + 1
+        : undefined;
+    const value: AttrValue = { id: `v-${Date.now()}`, label: trimmed, tier: nextTier };
+
+    mutate((a) => {
+      let values = [...a.values, value];
+      if (comparesRank(displayType(a))) {
+        values = assignSequentialTiers(values);
+      }
+      const newId =
+        values.find((v) => v.label.trim().toLowerCase() === trimmed.toLowerCase())
+          ?.id ?? value.id;
+
+      markResourceIntroducedValue(a.id, resource, newId);
+
+      return {
+        ...a,
+        values,
+        appliesTo: a.appliesTo.map((c) => {
+          const disabled = new Set(c.disabledValueIds ?? []);
+          if (c.resource === resource) {
+            disabled.delete(newId);
+          } else {
+            disabled.add(newId);
+          }
+          return {
+            ...c,
+            disabledValueIds: disabled.size > 0 ? Array.from(disabled) : [],
+          };
+        }),
+      };
+    });
+  };
+
   const readIntoFilteringChange = (value: boolean) => {
     mutate((a) => ({ ...a, readIntoFiltering: value }));
   };
@@ -379,6 +456,8 @@ export default function AttributeHubSimplified({
     });
   };
 
+  const activeValueLink = active ? resolveValueLink(active) : null;
+
   const confirmGuardrail = () => {
     if (guardrail?.kind === 'remove-binding') {
       const resource = guardrail.context.resource as ResourceKind | undefined;
@@ -389,10 +468,63 @@ export default function AttributeHubSimplified({
         }));
       }
     }
+    if (guardrail?.kind === 'unlink-gated' && active) {
+      mutate((a) => ({ ...a, valuesLink: undefined }));
+      setValueLinkConfig(active.id, null);
+    }
     if (guardrail?.kind === 'delete-blocked') {
       // no-op — informational block
     }
     setGuardrail(null);
+  };
+
+  const handleLinkValues = (config: ValueLinkConfig) => {
+    if (!active) return;
+    const src = attributes.find((attribute) => attribute.id === config.attributeId);
+    if (!src) return;
+
+    mutate((a) => {
+      const next: HubAttribute = {
+        ...a,
+        valuesLink: {
+          attributeId: config.attributeId,
+          attributeName: config.attributeName,
+        },
+      };
+      if (config.mode === 'exact') {
+        next.values = src.values.map((value) => ({ ...value }));
+        if (comparesRank(displayType(src))) {
+          next.type = src.type;
+        }
+      }
+      return next;
+    });
+    setValueLinkConfig(active.id, {
+      ...config,
+      mappings:
+        config.mode === 'mapped'
+          ? config.mappings ?? suggestValueMappings(active.values, src.values)
+          : undefined,
+    });
+    setLinkValuesOpen(false);
+  };
+
+  const openUnlinkGate = () => {
+    if (!active || !activeValueLink) return;
+    const linked = attributes.find(
+      (attribute) => attribute.id === activeValueLink.attributeId,
+    );
+    const policies = Array.from(
+      new Set([...active.policyNames, ...(linked?.policyNames ?? [])]),
+    );
+    setGuardrail({
+      kind: 'unlink-gated',
+      context: {
+        attributeName: active.name,
+        linkedName: activeValueLink.attributeName,
+        policies,
+      },
+    });
   };
 
   // ── Detail / create navigation ────────────────────────────────────────────
@@ -519,6 +651,8 @@ export default function AttributeHubSimplified({
               {active ? (
                 <SimplifiedDetailView
                   attribute={active}
+                  attributes={attributes}
+                  valueLink={activeValueLink}
                   creating={creating}
                   onDefinitionChange={(next) =>
                     mutate((a) => syncValuesWithType({ ...a, ...next }))
@@ -532,6 +666,7 @@ export default function AttributeHubSimplified({
                   onSetValueRank={setValueRank}
                   onValuesLockedAttempt={openValuesLocked}
                   onBindingChange={bindingChange}
+                  onAddResourceValue={addResourceValue}
                   onReadIntoFilteringChange={readIntoFilteringChange}
                   onAddResource={addResource}
                   onRemoveResource={removeResource}
@@ -539,6 +674,9 @@ export default function AttributeHubSimplified({
                   onEditorsChange={setEditors}
                   onConnectSource={() => setConnectSourceMode('connect')}
                   onManageSource={() => setConnectSourceMode('manage')}
+                  onLinkValues={() => setLinkValuesOpen(true)}
+                  onEditLink={() => setLinkValuesOpen(true)}
+                  onUnlinkValues={openUnlinkGate}
                   nameRef={(el) => {
                     nameRef.current = el;
                   }}
@@ -572,6 +710,16 @@ export default function AttributeHubSimplified({
           attribute={active}
           mode={connectSourceMode}
           onClose={() => setConnectSourceMode(null)}
+        />
+      )}
+
+      {active && linkValuesOpen && (
+        <LinkValuesModal
+          current={active}
+          attributes={attributes}
+          existing={activeValueLink}
+          onClose={() => setLinkValuesOpen(false)}
+          onConfirm={handleLinkValues}
         />
       )}
 

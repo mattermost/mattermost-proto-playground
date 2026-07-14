@@ -52,11 +52,23 @@ import AttributeHubStreamlined from '@/pages/AttributeHubStreamlined/AttributeHu
 import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubSimplified';
 import AttributeHubSimplifiedInlineSummary from '@/pages/AttributeHubSimplifiedInlineSummary/AttributeHubSimplifiedInlineSummary';
 import AttributeHubMVP from '@/pages/AttributeHubMVP/AttributeHubMVP';
+import AttributeHubMVPNext from '@/pages/AttributeHubMVPNext/AttributeHubMVPNext';
 import WhoCanSetOptions from '@/pages/WhoCanSetOptions/WhoCanSetOptions';
 import GlobalMembershipPolicyList from '@/pages/GlobalMembershipPolicy/List/GlobalMembershipPolicyList';
 import GlobalMembershipPolicyWalkthrough from '@/pages/GlobalMembershipPolicy/Walkthrough/GlobalMembershipPolicyWalkthrough';
 import GlobalMembershipPolicyLongForm from '@/pages/GlobalMembershipPolicy/LongForm/GlobalMembershipPolicyLongForm';
 import GlobalMembershipPolicyGuided from '@/pages/GlobalMembershipPolicy/Guided/GlobalMembershipPolicyGuided';
+import GlobalMembershipPolicySimplified from '@/pages/GlobalMembershipPolicy/Simplified/GlobalMembershipPolicySimplified';
+import GlobalMembershipPolicySimplifiedWalkthrough from '@/pages/GlobalMembershipPolicy/SimplifiedWalkthrough/GlobalMembershipPolicySimplifiedWalkthrough';
+import GlobalMembershipPolicySimulate from '@/pages/GlobalMembershipPolicy/Simulate/Simulate';
+import GlobalMembershipPolicySimulateChips from '@/pages/GlobalMembershipPolicy/Simulate/OptionChips/OptionChips';
+import GlobalMembershipPolicySimulateInlineStrip from '@/pages/GlobalMembershipPolicy/Simulate/OptionInlineStrip/OptionInlineStrip';
+import GmpSimulateConceptPersonFirst from '@/pages/GlobalMembershipPolicy/Simulate/ConceptPersonFirst/ConceptPersonFirst';
+import GmpSimulateConceptChangeset from '@/pages/GlobalMembershipPolicy/Simulate/ConceptChangeset/ConceptChangeset';
+import GmpSimulateConceptCohortPreview from '@/pages/GlobalMembershipPolicy/Simulate/ConceptCohortPreview/ConceptCohortPreview';
+import GmpOptionRoleFraming from '@/pages/GlobalMembershipPolicy/Disambiguation/OptionRoleFraming/OptionRoleFraming';
+import GmpOptionSplitCard from '@/pages/GlobalMembershipPolicy/Disambiguation/OptionSplitCard/OptionSplitCard';
+import GmpOptionTabbedRevamp from '@/pages/GlobalMembershipPolicy/Disambiguation/OptionTabbedRevamp/OptionTabbedRevamp';
 import ChannelAttributesIndex from '@/pages/ChannelAttributes/ChannelAttributesIndex';
 import ChannelAttributesPrimary from '@/pages/ChannelAttributes/ChannelAttributesPrimary';
 import ChannelAttributesVariantA from '@/pages/ChannelAttributes/variants/VariantAHeaderDensity';
@@ -157,11 +169,23 @@ export const PROTOTYPES: PrototypeEntry[] = [
     id: 'attribute-hub-mvp',
     label: 'Attribute Management · MVP (P0)',
     path: '/prototypes/attribute-hub-mvp',
+    component: AttributeHubMVPNext,
+    group: 'zero-trust-abac',
+    description:
+      'P0 scope cut of Global Attributes (epic MM-69673) — active working iteration. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. System Console Save pattern, Display name field, Users profile display (Always/When set/Hidden), Member/Sysadmin who-can-set, no Usage column. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on, ?resource=Channels|Users|Posts (comma-separated).',
+    addedAt: '2026-07-08',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'attribute-hub-mvp-next',
+    label: 'Attribute Management · MVP (P0) · Snapshot',
+    path: '/prototypes/attribute-hub-mvp-next',
     component: AttributeHubMVP,
     group: 'zero-trust-abac',
     description:
-      'P0 scope cut of Global Attributes (epic MM-69673) for the dev handoff / scope session. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. Trims the Simplified design: no Ranked-Hierarchical/tree, no reuse/shared-scale, no per-attribute who-can-edit (delegated via DGA), no inheritance, no Teams. Per-resource: Required, Default value, Who-can-set; Users add Profile display + Value visibility; Channels add Display location. Externally-synced attrs show managed-by-source + locked fields. Classification appears read-only. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on (reveals the open allowed-values control), ?resource=Channels|Users|Posts (comma-separated).',
-    addedAt: '2026-07-08',
+      'Frozen MVP (P0) handoff snapshot preserved at the secondary route after the working iteration moved to `/prototypes/attribute-hub-mvp`. Same deep-links as the original: ?attr=<id>, ?flow=new, ?allowed=on, ?resource=Channels|Users|Posts (comma-separated).',
+    addedAt: '2026-07-14',
     isPrimary: true,
     collections: ['attribute-management'],
   },
@@ -270,6 +294,28 @@ export const PROTOTYPES: PrototypeEntry[] = [
     collections: ['attribute-management'],
   },
   {
+    id: 'global-membership-policy-simplified',
+    label: 'GMP · Simplified editor',
+    path: '/prototypes/global-membership-policy-simplified',
+    component: GlobalMembershipPolicySimplified,
+    group: 'zero-trust-abac',
+    description:
+      'Simplified copy of the GMP Direction A editor with four scope simplifications: (2.1) requirement value picker offers only the ONE schema-paired channel attribute per user attribute (Clearance→Classification, Program→Program, department→department; Nationality/COI are literals only); (2.2) "Where this policy applies" is TWO radios — "All channels" (fail-secure: a channel missing a referenced attribute value removes everyone) and "Select channels manually"; (2.4) no channel-type segmented control; (2.3) an inline scope guardrail disables "All channels" when the policy references a channel attribute NOT marked required-for-channels (Classification=required, Program=NOT required), with an explanation under the disabled radio. Deep-links: ?policy=<id>, ?scope=all|manual, ?state=populated|empty|error.',
+    addedAt: '2026-07-14',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-simplified-walkthrough',
+    label: 'GMP · Simplified walkthrough',
+    path: '/prototypes/global-membership-policy-simplified-walkthrough',
+    component: GlobalMembershipPolicySimplifiedWalkthrough,
+    group: 'zero-trust-abac',
+    description:
+      'Guided click-through tour of the SIMPLIFIED Global Membership Policies variation (Parts A + B). A copy of the original GMP walkthrough re-pointed at the Simplified editor route: requirements offer one schema-paired channel attribute per user attribute (Nationality/COI literal-only); "Where this policy applies" is two choices — All channels (fail-secure) and Select channels manually; a hard-error save guardrail blocks an "All channels" policy that references a channel attribute not required-for-channels; and Test matching users uses the new single-mode modal (affected-channels list + autocomplete, per-channel Allowed/Removed drill-in). Customer stories adapted to the two scope modes (NOFORN = All channels floor; DS Program / Dragon / Northern = manual). Editor iframes deep-link via ?policy, ?scope=all|manual, ?state, ?test=list|channel.',
+    addedAt: '2026-07-14',
+    collections: ['attribute-management'],
+  },
+  {
     id: 'global-membership-policy-guided',
     label: 'Global Membership Policy · B · Guided Steps',
     path: '/prototypes/global-membership-policy-guided',
@@ -278,6 +324,118 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Global Membership Policies editor — Direction B (Guided Steps + Review-as-gate). Same content sequenced Identity → Requirements → Scope + Type → Review; the channel-type filter gets its own framed step with destructive-private-removal framing, and the always-confirm impact gate IS the terminal Review step (async three-state). Deep-linkable via ?state=populated|empty|error and ?step=1..4.',
     addedAt: '2026-07-09',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-simulate',
+    label: 'Global Membership Policy · Simulate',
+    path: '/prototypes/global-membership-policy-simulate',
+    component: GlobalMembershipPolicySimulate,
+    group: 'zero-trust-abac',
+    description:
+      'GMP "Simulate" surface (WORKSTREAM 3) — previews membership changes before save, using an Added / Kept / Removed set-diff (not an access verdict). Against a channel: a picker filtered to channels the admin can fully see → set-diff with destructive-removal danger emphasis; channels above the admin\'s clearance render aggregate bands only (no names, no matching rule). Policy impact: an aggregate across the policy\'s whole scope (members touched, added, kept, destructive removed) with a ranked most-affected list and drill-in; over-clearance channels contribute a bucketed removal band only. Deep-links: ?mode=channel|batch, ?state=default|computing|populated|over-clearance|empty|error, ?policy=<id>.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  // GMP Simulate — two ALTERNATIVE design options for the selection round,
+  // to compare against the recommended Simulate scene above. Both reuse the
+  // SAME gmpData.ts set-diff fixtures / over-clearance guard / bands so the
+  // numbers stay consistent across all three. (2026-07-13)
+  {
+    id: 'global-membership-policy-simulate-chips',
+    label: 'GMP Simulate · Option 1 · Chips-adapted',
+    path: '/prototypes/global-membership-policy-simulate-chips',
+    component: GlobalMembershipPolicySimulateChips,
+    group: 'zero-trust-abac',
+    description:
+      'ALTERNATIVE Option 1 for the GMP "Simulate" experience (selection round). Reuses the Simulate-Access CHIP visual, but each chip is a CHANNEL context — click a chip to open a read-only popover with that channel\'s Added / Kept / Removed set-diff (not an access verdict). Chip tone encodes destructive weight (danger = private removals, warning = over-clearance). Channels above the admin\'s Secret clearance render aggregate bands only (no names, no matching rule). Same set-diff fixtures as the recommended Simulate scene. Deep-links: ?state=default|populated|over-clearance|empty|error, ?policy=<id>.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-simulate-inline-strip',
+    label: 'GMP Simulate · Option 2 · Inline per-channel strip',
+    path: '/prototypes/global-membership-policy-simulate-inline-strip',
+    component: GlobalMembershipPolicySimulateInlineStrip,
+    group: 'zero-trust-abac',
+    description:
+      'ALTERNATIVE Option 2 for the GMP "Simulate" experience (selection round). A persistent strip inside the policy editor where the admin pins up to 3 channels and sees each one\'s Added / Kept / Removed set-diff side-by-side, always visible while editing — no separate Simulate surface. An over-clearance pinned column shows aggregate bands only (no names, no rule); an inline note flags that the strip is per-channel and points to the full Simulate surface for the aggregate. Same set-diff fixtures as the recommended Simulate scene. Deep-links: ?state=default|populated|over-clearance|empty|error, ?policy=<id>.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  // GMP Simulate — three CONCEPTUALLY DISTINCT approaches for the selection
+  // round (05-ideation-concepts.md §6). Each moves off the channel subject the
+  // committed Simulate scene uses: A = one person, C = the edit-delta as a diff
+  // document, B = the attribute expression previewed live while authoring. All
+  // three reuse the SAME gmpData.ts set-diff fixtures / over-clearance guard so
+  // the numbers stay comparable. (2026-07-13)
+  {
+    id: 'global-membership-policy-simulate-pinpoint',
+    label: 'GMP Simulate · Concept A · Person-First Pinpoint',
+    path: '/prototypes/global-membership-policy-simulate-pinpoint',
+    component: GmpSimulateConceptPersonFirst,
+    group: 'zero-trust-abac',
+    description:
+      'Concept A (Person-First Pinpoint) for the GMP "Simulate" experience. Subject = a specific USER, not a channel: name one member and get a single verdict-trace — Kept / Would-be-added / Would-be-removed per in-scope channel, with the deciding requirement row for each. Smallest data footprint of the three concepts. Channels above the admin\'s clearance are REFUSED (no result, no range) because an N=1 result would be an oracle — never downgraded to bands. Same set-diff fixtures as the committed Simulate scene. Deep-links: ?state=empty|needs-channel|computing|kept|added|removed|over-clearance|literal|error, ?policy=<id>.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-simulate-changeset',
+    label: 'GMP Simulate · Concept C · Delta / Changeset',
+    path: '/prototypes/global-membership-policy-simulate-changeset',
+    component: GmpSimulateConceptChangeset,
+    group: 'zero-trust-abac',
+    description:
+      'Concept C (Delta / Changeset) for the GMP "Simulate" experience. Subject = the EDIT ITSELF (delta vs current live membership). Output = an approvable, scrollable per-channel DIFF DOCUMENT (grouped +added / −removed lines per channel, collapsible, filterable to removals) that the admin reviews and approves before Save — a "Terraform plan for membership," deliberately NOT a totals dashboard. Channels above the admin\'s clearance appear as a single banded row inline in the diff (counts only, no names) so totals stay honest. Route-to-ISSO second-approver hand-off present (persistence pending PM/Security, OD-3). Same set-diff fixtures as the committed Simulate scene. Deep-links: ?state=idle|computing|populated|filtered-removals|empty|stale|approved|isso-pending|error, ?policy=<id>.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'global-membership-policy-cohort-preview',
+    label: 'GMP Simulate · Concept B · Live Cohort Preview',
+    path: '/prototypes/global-membership-policy-cohort-preview',
+    component: GmpSimulateConceptCohortPreview,
+    group: 'zero-trust-abac',
+    description:
+      'Concept B (Live Inline Cohort Preview) for the GMP "Simulate" experience. Subject = the ATTRIBUTE EXPRESSION / cohort it defines. Output = a live, bucketed count shown inline in the requirement-authoring row ("~20–50 users match") that updates as the admin edits the expression — no modal, no picker, no explicit "Run"; the earliest signal in the funnel. Built as a small mock requirement-builder (NOT the real LongForm editor) to isolate the interaction. Over-clearance handling: user-attribute side only, coarse buckets, entitlement-scoped (unentitled attribute → "count unavailable"); channel-variable rows preview the user side only. OD-1 [VERIFY WITH SECURITY]: bucketed workspace cohort counts in an IL5 tenant gate whether this ships. Deep-links: ?state=idle|debouncing|populated|suppressed|broad|narrow|variable|error, ?policy=<id>.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  // Two-uses disambiguation options — resolving the confusion where channel
+  // attributes appear in both "Membership requirements" (compared to a member)
+  // and "Where this policy applies" (used to select channels). (2026-07-13)
+  {
+    id: 'gmp-disambiguation-role-framing',
+    label: 'GMP Disambiguation · O2 · Role framing',
+    path: '/prototypes/global-membership-policy-disambiguation-role-framing',
+    component: GmpOptionRoleFraming,
+    group: 'zero-trust-abac',
+    description:
+      'O2 (semantic role framing + iconography/color): the committed single-page GMP editor refined so the two independent uses of channel attributes read as different questions. Membership requirements carries a person glyph + info-tinted accent; Where this policy applies carries a channels glyph + success-tinted accent; every row shows its axis marker and a one-line role framing loads the correct mental model before the rows. Folds in O1 (copy) via section framings and O5 (the "Channel:" prefix stays anchored on RHS variables). Populated with DS Program seed data. Deep-links: ?policy=<id>, ?state=populated|empty|error, ?scope=all|manual|rules.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'gmp-disambiguation-split-card',
+    label: 'GMP Disambiguation · O4 · Split card + sentence',
+    path: '/prototypes/global-membership-policy-disambiguation-split-card',
+    component: GmpOptionSplitCard,
+    group: 'zero-trust-abac',
+    description:
+      'O4 (axis-per-side split card + sentence recap): Membership requirements (member axis) and Where this policy applies (channel axis) sit side-by-side in one card at ≥1280px, stacking on narrower viewports. A persistent generated-only policy sentence spans the top — "Members of [channels] must satisfy [requirements]" — with the two axes tinted distinctly. Spatial separation is the strongest independence signal; the recap fuses them into one readable line. Populated with DS Program seed data. Deep-links: ?policy=<id>, ?state=populated|empty|error, ?scope=all|manual|rules.',
+    addedAt: '2026-07-13',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'gmp-disambiguation-tabbed-revamp',
+    label: 'GMP Disambiguation · O6 · Members/Channels tabs',
+    path: '/prototypes/global-membership-policy-disambiguation-tabbed-revamp',
+    component: GmpOptionTabbedRevamp,
+    group: 'zero-trust-abac',
+    description:
+      'O6 (full-page revamp): the two axes become the top-level IA — page-level Members and Channels tabs, so the reader literally cannot conflate them. Members tab = requirements (Simple/Advanced, match-mode, Test matching users). Channels tab = the three scope modes + type filter. A persistent header banner carries the auto-generated policy sentence; the combine/timing strip + Save live in a sticky footer that belongs to the whole policy. The vision-setting candidate. Populated with DS Program seed data. Deep-links: ?policy=<id>, ?state=populated|empty|error, ?page=members|channels, ?scope=all|manual|rules, ?gate=open|results.',
+    addedAt: '2026-07-13',
     collections: ['attribute-management'],
   },
   {

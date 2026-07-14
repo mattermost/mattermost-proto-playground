@@ -1,0 +1,40 @@
+.sentence {
+  &--card {
+    padding: var(--spacing-m) var(--spacing-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &--header {
+    padding: var(--spacing-s) 0 0;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: 1.6;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__placeholder {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-style: italic;
+  }
+
+  &__members,
+  &__channels {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__members {
+    color: var(--color-info);
+  }
+
+  &__channels {
+    color: var(--color-success);
+  }
+}

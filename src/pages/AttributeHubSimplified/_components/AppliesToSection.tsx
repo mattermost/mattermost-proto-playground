@@ -17,6 +17,7 @@ export type AppliesToRowSummaryVariant = 'chips' | 'inline';
 export interface AppliesToSectionProps {
   attribute: HubAttribute;
   onBindingChange: (resource: ResourceKind, next: Partial<ResourceConfig>) => void;
+  onAddResourceValue: (resource: ResourceKind, label: string) => void;
   onReadIntoFilteringChange: (value: boolean) => void;
   onAddResource: (resource: ResourceKind) => void;
   onRemoveResource: (resource: ResourceKind) => void;
@@ -31,6 +32,7 @@ export interface AppliesToSectionProps {
 export default function AppliesToSection({
   attribute,
   onBindingChange,
+  onAddResourceValue,
   onReadIntoFilteringChange,
   onAddResource,
   onRemoveResource,
@@ -188,6 +190,9 @@ export default function AppliesToSection({
                         attribute={attribute}
                         config={cfg}
                         onChange={(next) => onBindingChange(cfg.resource, next)}
+                        onAddResourceValue={(label) =>
+                          onAddResourceValue(cfg.resource, label)
+                        }
                         onReadIntoFilteringChange={onReadIntoFilteringChange}
                       />
                     )}

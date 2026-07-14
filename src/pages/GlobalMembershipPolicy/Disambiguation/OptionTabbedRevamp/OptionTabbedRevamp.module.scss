@@ -1,0 +1,322 @@
+// O6 — Full-page revamp: page-level Members / Channels tabs.
+// The two axes ARE the top-level IA. Persistent policy-sentence header banner;
+// sticky footer with combine/timing + Save.
+
+.scene {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    max-width: 1000px;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+}
+
+// ── Persistent policy header (name + generated sentence + axis tabs) ──
+.policy-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-l) var(--spacing-xxl) 0;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+
+  &__name {
+    width: 100%;
+    max-width: 480px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__tabs {
+    margin-top: var(--spacing-xs);
+  }
+}
+
+// ── Tab panel ──────────────────────────────────────────────────
+.tabpanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__intro {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    padding: var(--spacing-m) var(--spacing-l);
+    border-radius: var(--radius-s);
+    border-left: 3px solid transparent;
+  }
+
+  &[data-axis='members'] &__intro {
+    background: rgba(var(--color-info-rgb), 0.04);
+    border-left-color: var(--color-info);
+  }
+
+  &[data-axis='channels'] &__intro {
+    background: rgba(var(--color-success-rgb), 0.04);
+    border-left-color: var(--color-success);
+  }
+
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-s);
+    flex-shrink: 0;
+  }
+
+  &[data-axis='members'] &__glyph {
+    background: rgba(var(--color-info-rgb), 0.1);
+  }
+
+  &[data-axis='channels'] &__glyph {
+    background: rgba(var(--color-success-rgb), 0.1);
+  }
+
+  &__question {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__framing {
+    margin: var(--spacing-xxs) 0 0;
+    max-width: 44rem;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+// ── Segmented control ──────────────────────────────────────────
+.segmented {
+  display: inline-flex;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  flex-shrink: 0;
+  width: fit-content;
+  margin-left: auto;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px var(--spacing-s);
+    border: 0;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    & + & {
+      border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
+  }
+}
+
+.cel {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+  color: var(--center-channel-color);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-75);
+  line-height: 1.6;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: var(--button-bg);
+  }
+}
+
+.add-row {
+  padding-top: var(--spacing-xs);
+}
+
+// ── Test matching users ────────────────────────────────────────
+.test {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-s);
+  padding-top: var(--spacing-m);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__line {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__count {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__skipped {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}
+
+// ── Scope (Channels tab) ───────────────────────────────────────
+.scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    font-size: var(--font-size-100);
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: 0 0 var(--spacing-xs) 28px;
+  }
+}
+
+.typefilter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__label {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__help {
+    margin: 0;
+    max-width: 52rem;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    &--danger {
+      color: var(--color-danger);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
+// ── Sticky footer ──────────────────────────────────────────────
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-l);
+  flex-shrink: 0;
+  padding: var(--spacing-m) var(--spacing-xxl);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
+
+  &__timing {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__timing-icon {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__timing-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__timing-line {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: 1.45;
+  }
+
+  &__timing-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    flex-shrink: 0;
+  }
+}

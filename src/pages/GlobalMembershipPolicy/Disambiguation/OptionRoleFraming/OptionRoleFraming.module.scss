@@ -1,0 +1,340 @@
+// O2 — Semantic role framing + iconography/color.
+// The member axis is tinted with --color-info; the channel axis with
+// --color-success. Layout matches the committed long-form editor.
+
+.scene {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    max-width: 1000px;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+}
+
+// ── Two-axes explainer chips ───────────────────────────────────
+.explainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-s);
+  padding: var(--spacing-s) var(--spacing-m);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px var(--spacing-s);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+
+    &[data-axis='members'] {
+      color: var(--color-info);
+      background: rgba(var(--color-info-rgb), 0.08);
+    }
+
+    &[data-axis='channels'] {
+      color: var(--color-success);
+      background: rgba(var(--color-success-rgb), 0.08);
+    }
+  }
+
+  &__text {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+// ── Name field ─────────────────────────────────────────────────
+.field {
+  display: flex;
+  gap: var(--spacing-xl);
+  align-items: flex-start;
+
+  &__label {
+    width: 180px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 8px;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__control {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__input {
+    width: 100%;
+    height: 40px;
+    padding: 0 var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    transition: border-color var(--duration-quick) var(--ease-transition);
+
+    &:focus {
+      outline: none;
+      border-color: var(--button-bg);
+      box-shadow: inset 0 0 0 1px var(--button-bg);
+    }
+  }
+
+  &__help {
+    margin: var(--spacing-xs) 0 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+// ── Panels with axis accent ────────────────────────────────────
+.panel {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  overflow: hidden;
+  border-left-width: 3px;
+
+  &[data-axis='members'] {
+    border-left-color: var(--color-info);
+  }
+
+  &[data-axis='channels'] {
+    border-left-color: var(--color-success);
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    padding: var(--spacing-l);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &[data-axis='members'] &__head {
+    background: rgba(var(--color-info-rgb), 0.03);
+  }
+
+  &[data-axis='channels'] &__head {
+    background: rgba(var(--color-success-rgb), 0.03);
+  }
+
+  &__title-area {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-s);
+    flex-shrink: 0;
+  }
+
+  &[data-axis='members'] &__glyph {
+    background: rgba(var(--color-info-rgb), 0.1);
+  }
+
+  &[data-axis='channels'] &__glyph {
+    background: rgba(var(--color-success-rgb), 0.1);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__framing {
+    margin: var(--spacing-xxs) 0 0;
+    max-width: 44rem;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__body {
+    padding: var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+}
+
+// ── Segmented control (Simple/Advanced + channel type) ─────────
+.segmented {
+  display: inline-flex;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  flex-shrink: 0;
+  width: fit-content;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px var(--spacing-s);
+    border: 0;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    & + & {
+      border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
+  }
+}
+
+.cel {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+  color: var(--center-channel-color);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-75);
+  line-height: 1.6;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: var(--button-bg);
+  }
+}
+
+.add-row {
+  padding-top: var(--spacing-xs);
+}
+
+// ── Scope ──────────────────────────────────────────────────────
+.scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    font-size: var(--font-size-100);
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: 0 0 var(--spacing-xs) 28px;
+  }
+}
+
+.typefilter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__label {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__help {
+    margin: 0;
+    max-width: 52rem;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    &--danger {
+      color: var(--color-danger);
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+}
+
+// ── Timing strip ───────────────────────────────────────────────
+.timing {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-s);
+  padding: var(--spacing-m) var(--spacing-xxl);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+
+  &__icon {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__lines {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__line {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: 1.5;
+  }
+
+  &__label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+}

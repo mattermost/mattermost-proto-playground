@@ -43,6 +43,10 @@ export interface ResourceConfigPanelProps {
   /** Suppress the built-in inherit-from-parent field so the consumer can render
    *  its own inheritance control (e.g. the configurable ceiling) as a sibling. */
   suppressInheritance?: boolean;
+  /** Override profile-display segmented options (default: Always show / Hide when empty). */
+  userProfileDisplayOptions?: { key: UserProfileDisplay; label: string }[];
+  /** Hint under the who-can-set field when `whoCanSetSlot` is provided. */
+  whoCanSetHint?: string;
 }
 
 interface FieldProps {
@@ -215,14 +219,12 @@ function ChannelDisplaySelect({
       aria-label="Display locations"
     >
       <Checkbox
-          size="Small"
           checked={channelDisplayIncludes(value, 'Header')}
           onChange={() => onChange(toggleChannelLocation(value, 'Header'))}
         >
           Header
         </Checkbox>
         <Checkbox
-          size="Small"
           checked={channelDisplayIncludes(value, 'Sidebar')}
           onChange={() => onChange(toggleChannelLocation(value, 'Sidebar'))}
         >
@@ -230,7 +232,6 @@ function ChannelDisplaySelect({
         </Checkbox>
         {bannerSupported && (
           <Checkbox
-            size="Small"
             checked={channelDisplayIncludes(value, 'Banner')}
             onChange={() => onChange(toggleChannelLocation(value, 'Banner'))}
           >
@@ -257,7 +258,6 @@ function PostDisplaySelect({
       {POST_DISPLAY_LOCATIONS.map((loc) => (
         <Checkbox
           key={loc}
-          size="Small"
           checked={postDisplayIncludes(value, loc)}
           onChange={() => onChange(togglePostLocation(value, loc))}
         >
@@ -345,7 +345,13 @@ export default function ResourceConfigPanel({
   whoCanSetSlot,
   layout = 'default',
   suppressInheritance = false,
+  userProfileDisplayOptions,
+  whoCanSetHint = 'Multiple roles can be selected.',
 }: ResourceConfigPanelProps) {
+  const profileDisplayOptions = userProfileDisplayOptions ?? [
+    { key: 'always' as const, label: 'Always show' },
+    { key: 'hide-empty' as const, label: 'Hide when empty' },
+  ];
   const sourceOwned = isSourceOwned(attribute);
   const isUsers = config.resource === 'Users';
   const isChannels = config.resource === 'Channels';
@@ -400,10 +406,7 @@ export default function ResourceConfigPanel({
           <Segmented<UserProfileDisplay>
             value={config.userProfileDisplay ?? 'hide-empty'}
             ariaLabel="Profile display"
-            options={[
-              { key: 'always', label: 'Always show' },
-              { key: 'hide-empty', label: 'Hide when empty' },
-            ]}
+            options={profileDisplayOptions}
             onChange={(next) => onChange({ userProfileDisplay: next })}
           />
         </Field>
@@ -530,7 +533,7 @@ export default function ResourceConfigPanel({
         <Field
           layout={layout}
           label="Who can set the value"
-          hint="Multiple roles can be selected."
+          hint={whoCanSetHint}
         >
           <div className={styles['combobox-slot']}>{whoCanSetSlot}</div>
         </Field>

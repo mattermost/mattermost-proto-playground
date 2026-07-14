@@ -8,6 +8,7 @@ export interface ResourceEditorBodyProps {
   attribute: HubAttribute;
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
+  onAddResourceValue: (label: string) => void;
   onReadIntoFilteringChange: (value: boolean) => void;
 }
 
@@ -20,6 +21,7 @@ export default function ResourceEditorBody({
   attribute,
   config,
   onChange,
+  onAddResourceValue,
   onReadIntoFilteringChange,
 }: ResourceEditorBodyProps) {
   return (
@@ -44,6 +46,7 @@ export default function ResourceEditorBody({
         attribute={attribute}
         config={config}
         onChange={onChange}
+        onAddResourceValue={onAddResourceValue}
       />
     </div>
   );

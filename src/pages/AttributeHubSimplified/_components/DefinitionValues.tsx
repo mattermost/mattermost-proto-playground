@@ -6,6 +6,7 @@ import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
+import LinkVariantOffIcon from '@mattermost/compass-icons/components/link-variant-off';
 import PlusBoxOutlineIcon from '@mattermost/compass-icons/components/plus-box-outline';
 import ShieldOutlineIcon from '@mattermost/compass-icons/components/shield-outline';
 import Icon from '@/components/ui/Icon/Icon';
@@ -23,15 +24,21 @@ import MvpManagedSourceBar from '@/pages/AttributeHubMVP/_components/MvpManagedS
 import ValueEditorPopover from './ValueEditorPopover';
 import ColoredRankedInputChip from '@/components/ui/ColoredRankedInputChip/ColoredRankedInputChip';
 import {
+  canLinkValues,
   comparesRank,
   displayType,
   isTreeType,
+  isValueLinked,
+  mappedSourceValue,
   optionColorScheme,
+  type ValueLinkConfig,
 } from './simplifiedModel';
 import styles from './DefinitionValues.module.scss';
 
 export interface DefinitionValuesProps {
   attribute: HubAttribute;
+  attributes: HubAttribute[];
+  valueLink: ValueLinkConfig | null;
   onAddValue: (label: string, asTier?: boolean) => void;
   onAddChild: (parentId: string, label: string) => void;
   onToggleDisabled: (valueId: string) => void;
@@ -42,6 +49,9 @@ export interface DefinitionValuesProps {
   onLockedAttempt: () => void;
   onConnectSource: () => void;
   onManageSource: () => void;
+  onLinkValues: () => void;
+  onEditLink: () => void;
+  onUnlinkValues: () => void;
 }
 
 /** Whether a tier is referenced by an access policy (demo heuristic). */
@@ -270,10 +280,13 @@ function TreeRow({
  * Adaptive Options control (Simplified). "Options" is the list of allowed
  * choices; clicking an option opens the rich editor popover. Ranked-
  * hierarchical shows tier + policy-usage per row; Hierarchical is a rank-
- * agnostic tree. Value linking is gone — replaced by per-resource naming.
+ * agnostic tree. Options can link to another attribute via exact match or
+ * define-mapping for consistent rank comparison.
  */
 export default function DefinitionValues({
   attribute,
+  attributes,
+  valueLink,
   onAddValue,
   onAddChild,
   onToggleDisabled,
@@ -284,6 +297,9 @@ export default function DefinitionValues({
   onLockedAttempt,
   onConnectSource,
   onManageSource,
+  onLinkValues,
+  onEditLink,
+  onUnlinkValues,
 }: DefinitionValuesProps) {
   const [draft, setDraft] = useState('');
   const [editing, setEditing] = useState<{
@@ -294,12 +310,19 @@ export default function DefinitionValues({
 
   const sourceOwned = isSourceOwned(attribute);
   const locked = isPolicyLocked(attribute);
-  const editable = !sourceOwned && !locked;
+  const linked = isValueLinked(attribute);
+  const exactLinked = valueLink?.mode === 'exact';
+  const mappedLinked = valueLink?.mode === 'mapped';
+  const editable = !sourceOwned && !locked && !exactLinked;
   const type = displayType(attribute);
   const isTree = isTreeType(type);
   const ranked = comparesRank(type);
   const tierCount = attribute.values.filter((v) => v.tier != null).length;
-  const showConnect = !sourceOwned && type !== 'Text';
+  const showConnect = !sourceOwned && type !== 'Text' && !linked;
+  const showLink = canLinkValues(attribute) && !linked;
+  const sourceAttribute = valueLink
+    ? attributes.find((item) => item.id === valueLink.attributeId)
+    : undefined;
 
   const openEditor = (value: AttrValue, isRanked: boolean, el: HTMLElement) => {
     anchorRef.current = el;
@@ -318,21 +341,69 @@ export default function DefinitionValues({
     if (sourceOwned) {
       return managedSourceBar;
     }
-    if (showConnect) {
+    if (linked && valueLink) {
+      return (
+        <div className={styles['values__linked-footer']}>
+          <span className={styles['values__linked-copy']}>
+            <Icon size="16" glyph={<LinkVariantIcon />} />
+            {exactLinked
+              ? `Exact match with ${valueLink.attributeName} — options sync from the source catalog.`
+              : `Mapped to ${valueLink.attributeName} — ranks compare via your mapping.`}
+          </span>
+          <div className={styles['values__source-actions']}>
+            {mappedLinked && (
+              <Button emphasis="Tertiary" size="Small" onClick={onEditLink}>
+                Edit mapping
+              </Button>
+            )}
+            <Button
+              emphasis="Tertiary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<LinkVariantOffIcon />} />}
+              onClick={onUnlinkValues}
+            >
+              Unlink
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    if (showConnect || showLink) {
       return (
         <div className={styles['values__source-actions']}>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
-            onClick={onConnectSource}
-          >
-            Connect external source
-          </Button>
+          {showLink && (
+            <Button
+              emphasis="Tertiary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+              onClick={onLinkValues}
+            >
+              Link values to another attribute
+            </Button>
+          )}
+          {showConnect && (
+            <Button
+              emphasis="Tertiary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<LinkVariantIcon />} />}
+              onClick={onConnectSource}
+            >
+              Connect external source
+            </Button>
+          )}
         </div>
       );
     }
     return null;
+  };
+
+  const mappingHint = (valueId: string) => {
+    if (!mappedLinked || !valueLink || !sourceAttribute) return null;
+    const mapped = mappedSourceValue(valueLink, sourceAttribute, valueId);
+    if (!mapped) return 'No source mapping';
+    return mapped.tier != null
+      ? `→ ${mapped.label} (tier ${mapped.tier})`
+      : `→ ${mapped.label}`;
   };
 
   // Text — no enumerated options.
@@ -371,7 +442,7 @@ export default function DefinitionValues({
 
   return (
     <div className={styles['values']}>
-      {locked && !sourceOwned && (
+      {locked && !sourceOwned && !linked && (
         <SectionNotice
           type="Info"
           icon={<Icon size="20" glyph={<LockOutlineIcon />} />}
@@ -381,6 +452,22 @@ export default function DefinitionValues({
           description="Editing options would re-evaluate access. Review the policies before making changes."
           primaryButtonLabel="Why is this locked?"
           onPrimaryAction={onLockedAttempt}
+        />
+      )}
+
+      {exactLinked && valueLink && (
+        <SectionNotice
+          type="Info"
+          title="Shared value scale"
+          description={`Options mirror ${valueLink.attributeName}. Labels and ranks stay in sync; edit the source attribute to change them.`}
+        />
+      )}
+
+      {mappedLinked && valueLink && (
+        <SectionNotice
+          type="Info"
+          title="Mapped comparison"
+          description={`Each local option maps to a ${valueLink.attributeName} option so rank checks use one consistent scale.`}
         />
       )}
 
@@ -444,13 +531,18 @@ export default function DefinitionValues({
         <div className={styles['values__chips-wrap']}>
           <div className={styles['values__chips']}>
             {attribute.values.map((v) => (
-              <span key={v.id}>
+              <span key={v.id} className={styles['values__chip-wrap']}>
                 {renderOptionChip(v, {
                   ranked,
                   editable,
                   active: editing?.value.id === v.id,
                   onOpen: openEditor,
                 })}
+                {mappedLinked && (
+                  <span className={styles['values__mapping-hint']}>
+                    {mappingHint(v.id)}
+                  </span>
+                )}
               </span>
             ))}
             {attribute.values.length === 0 && !editable && (
@@ -481,7 +573,9 @@ export default function DefinitionValues({
           </div>
           {editable && (
             <p className={styles['values__edit-hint']}>
-              Click an option to edit its label, color, or translations.
+              {mappedLinked
+                ? 'Click an option to edit its label. Rank comparison follows your mapping.'
+                : 'Click an option to edit its label, color, or translations.'}
             </p>
           )}
         </div>

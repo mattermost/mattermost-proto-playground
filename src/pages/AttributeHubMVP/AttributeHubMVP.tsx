@@ -84,13 +84,9 @@ function readParams(): URLSearchParams {
 }
 
 /**
- * Global Attributes — MVP (P0). A ruthlessly-scoped cut of the Simplified hub
- * for the scope session: listing (search/filter/row-actions), create-as-blank-
- * detail-page (Type=Select), Definition (Name/Type/Values), and Applies-to
- * (Users/Channels/Posts) with the §3 per-resource config. Delegation is a quiet
- * DGA line, not a control. Allowed-value subsets are OPEN — hidden unless
- * ?allowed=on. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on,
- * ?resource=Channels|Users|Posts (comma-separated for multi-select).
+ * Manage Attributes — MVP (P0) handoff snapshot. Frozen iteration preserved at
+ * `/prototypes/attribute-hub-mvp-next` after the working copy took over the
+ * canonical `/prototypes/attribute-hub-mvp` route.
  */
 export default function AttributeHubMVP() {
   const params = readParams();

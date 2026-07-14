@@ -69,11 +69,23 @@
           width: 100%;
           max-width: 600px;
           align-self: flex-start;
+
+          > :first-child {
+            display: flex;
+            align-items: center;
+            min-height: 32px;
+          }
         }
 
         .value-visibility {
           align-self: stretch;
           width: 100%;
+          gap: var(--spacing-s);
+
+          &__radio:first-child {
+            min-height: 32px;
+            align-items: center;
+          }
         }
       }
 

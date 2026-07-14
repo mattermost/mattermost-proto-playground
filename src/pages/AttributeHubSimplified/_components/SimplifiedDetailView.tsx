@@ -24,11 +24,14 @@ import {
   markHierarchical,
   stripTiers,
   type SimplifiedAttrType,
+  type ValueLinkConfig,
 } from './simplifiedModel';
 import styles from './SimplifiedDetailView.module.scss';
 
 export interface SimplifiedDetailViewProps {
   attribute: HubAttribute;
+  attributes: HubAttribute[];
+  valueLink: ValueLinkConfig | null;
   /** Blank/guided create mode. */
   creating?: boolean;
   onDefinitionChange: (next: Partial<Pick<HubAttribute, 'name' | 'type' | 'values'>>) => void;
@@ -41,6 +44,7 @@ export interface SimplifiedDetailViewProps {
   onSetValueRank: (valueId: string, tier: number) => void;
   onValuesLockedAttempt: () => void;
   onBindingChange: (resource: ResourceKind, next: Partial<ResourceConfig>) => void;
+  onAddResourceValue: (resource: ResourceKind, label: string) => void;
   onReadIntoFilteringChange: (value: boolean) => void;
   onAddResource: (resource: ResourceKind) => void;
   onRemoveResource: (resource: ResourceKind) => void;
@@ -48,6 +52,9 @@ export interface SimplifiedDetailViewProps {
   onEditorsChange: (next: { roles: AccessGrant[]; users: AccessGrant[] }) => void;
   onConnectSource: () => void;
   onManageSource: () => void;
+  onLinkValues: () => void;
+  onEditLink: () => void;
+  onUnlinkValues: () => void;
   /** Refs the Name field for create-mode auto-focus. */
   nameRef?: (el: HTMLInputElement | null) => void;
   /** Collapsed applies-to row summary display. */
@@ -56,6 +63,8 @@ export interface SimplifiedDetailViewProps {
 
 export default function SimplifiedDetailView({
   attribute,
+  attributes,
+  valueLink,
   creating = false,
   onDefinitionChange,
   onAddValue,
@@ -67,6 +76,7 @@ export default function SimplifiedDetailView({
   onSetValueRank,
   onValuesLockedAttempt,
   onBindingChange,
+  onAddResourceValue,
   onReadIntoFilteringChange,
   onAddResource,
   onRemoveResource,
@@ -74,13 +84,17 @@ export default function SimplifiedDetailView({
   onEditorsChange,
   onConnectSource,
   onManageSource,
+  onLinkValues,
+  onEditLink,
+  onUnlinkValues,
   nameRef,
   appliesToRowSummary = 'chips',
 }: SimplifiedDetailViewProps) {
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
   const nameReadOnly = sourceOwned;
-  const typeReadOnly = sourceOwned || policyLocked;
+  const typeReadOnly =
+    sourceOwned || policyLocked || valueLink?.mode === 'exact';
   const currentType = displayType(attribute);
 
   const handleTypeChange = (next: SimplifiedAttrType) => {
@@ -164,6 +178,8 @@ export default function SimplifiedDetailView({
               <div className={styles['detail__field']}>
                 <DefinitionValues
                   attribute={attribute}
+                  attributes={attributes}
+                  valueLink={valueLink}
                   onAddValue={onAddValue}
                   onAddChild={onAddChild}
                   onToggleDisabled={onToggleValueDisabled}
@@ -174,6 +190,9 @@ export default function SimplifiedDetailView({
                   onLockedAttempt={onValuesLockedAttempt}
                   onConnectSource={onConnectSource}
                   onManageSource={onManageSource}
+                  onLinkValues={onLinkValues}
+                  onEditLink={onEditLink}
+                  onUnlinkValues={onUnlinkValues}
                 />
               </div>
             </div>
@@ -207,6 +226,7 @@ export default function SimplifiedDetailView({
         <AppliesToSection
           attribute={attribute}
           onBindingChange={onBindingChange}
+          onAddResourceValue={onAddResourceValue}
           onReadIntoFilteringChange={onReadIntoFilteringChange}
           onAddResource={onAddResource}
           onRemoveResource={onRemoveResource}

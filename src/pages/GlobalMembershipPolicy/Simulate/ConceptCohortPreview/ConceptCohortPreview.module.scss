@@ -1,0 +1,184 @@
+// GMP Simulate — Concept B · Live Inline Cohort Preview. A mock requirement-
+// builder where an ambient bucketed count badge sits at the end of each
+// authoring row and updates live. Single-root BEM; tokens only; semibold.
+
+.cohort {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    max-width: 840px;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+
+  // ── Section ───────────────────────────────────────────────────────
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: var(--spacing-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-l);
+  }
+
+  &__section-title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__section-sub {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  // ── Authoring row ─────────────────────────────────────────────────
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    flex-wrap: wrap;
+    padding: var(--spacing-s);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &__row-lead {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__variable {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: 1px dashed rgba(var(--color-info-rgb), 0.48);
+    border-radius: var(--radius-m);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-info);
+    background: rgba(var(--color-info-rgb), 0.08);
+  }
+
+  // ── The live inline badge — the load-bearing element ──────────────
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    margin-left: auto;
+    padding: var(--spacing-xxs) var(--spacing-s);
+    border-radius: var(--radius-m);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    transition:
+      color var(--duration-quick) var(--ease-transition),
+      background var(--duration-quick) var(--ease-transition);
+
+    &--neutral {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--debouncing {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      animation: cohort-pulse 1s ease-in-out infinite;
+    }
+
+    &--broad {
+      color: var(--color-warning);
+      background: rgba(var(--color-warning-rgb), 0.12);
+    }
+
+    &--narrow {
+      color: var(--color-warning);
+      background: rgba(var(--color-warning-rgb), 0.12);
+    }
+
+    &--suppressed {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      font-style: italic;
+    }
+
+    &--error {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      font-style: italic;
+    }
+  }
+
+  // ── Add row ───────────────────────────────────────────────────────
+  &__add {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    align-self: flex-start;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-m);
+    background: transparent;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  // ── Notes ─────────────────────────────────────────────────────────
+  &__note {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__audit {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}
+
+@keyframes cohort-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}

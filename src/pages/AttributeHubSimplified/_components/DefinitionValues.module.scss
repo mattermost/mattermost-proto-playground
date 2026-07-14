@@ -46,9 +46,23 @@
   &__chips {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--spacing-xs);
     min-width: 0;
+  }
+
+  &__chip-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  &__mapping-hint {
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    line-height: 1.3;
+    padding-left: var(--spacing-xxs);
   }
 
   &__chip {

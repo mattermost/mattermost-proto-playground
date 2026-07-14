@@ -1,0 +1,361 @@
+// GMP Simulate — ALTERNATIVE Option 1 (Chips-adapted). Reuses the DS Chip
+// component for the channel-context chips; the popover is a page-local
+// composition. Tokens only, semibold not bold, danger tone reserved for
+// destructive private-channel removals.
+
+.chips {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    max-width: 1000px;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__note {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // ── Chip row (wraps) ─────────────────────────────────────────────
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+  }
+
+  &__chip-wrap {
+    display: inline-flex;
+  }
+
+  &__chip {
+    &--active {
+      box-shadow: 0 0 0 2px var(--button-bg);
+    }
+  }
+
+  &__chip-tag {
+    display: inline-flex;
+    margin-left: var(--spacing-xs);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+
+  // ── Popover (channel-context detail — the Option 1 set-diff) ─────
+  &__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
+
+  &__popover {
+    position: fixed;
+    z-index: 41;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    max-height: 78vh;
+    overflow-y: auto;
+    padding: var(--spacing-l);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-l);
+    box-shadow: var(--elevation-4);
+    transform-origin: top left;
+    animation: chips-pop var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__popover-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+  }
+
+  &__popover-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__popover-title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__popover-subtitle {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__popover-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__popover-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-radius: var(--radius-m);
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    strong {
+      font-weight: var(--font-weight-semibold);
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__popover-removed {
+    color: var(--color-danger);
+
+    strong {
+      color: var(--color-danger);
+    }
+  }
+
+  &__popover-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  // ── Set-diff groups (stacked in the narrow popover) ──────────────
+  &__diff-group {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+
+    &--removed {
+      border-color: rgba(var(--color-danger-rgb), 0.32);
+    }
+  }
+
+  &__diff-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s) var(--spacing-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+    .chips__diff-group--removed & {
+      background: rgba(var(--color-danger-rgb), 0.06);
+      border-bottom-color: rgba(var(--color-danger-rgb), 0.2);
+    }
+  }
+
+  &__diff-glyph {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+
+    .chips__diff-group--removed & {
+      color: var(--color-danger);
+    }
+  }
+
+  &__diff-label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+
+    .chips__diff-group--removed & {
+      color: var(--color-danger);
+    }
+  }
+
+  &__diff-count {
+    margin-left: auto;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    .chips__diff-group--removed & {
+      color: var(--color-danger);
+    }
+  }
+
+  &__diff-note {
+    padding: var(--spacing-xs) var(--spacing-m);
+    font-size: var(--font-size-75);
+    color: var(--color-danger);
+    background: rgba(var(--color-danger-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--color-danger-rgb), 0.16);
+  }
+
+  &__diff-note-muted {
+    padding: var(--spacing-xs) var(--spacing-m);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+  }
+
+  &__diff-members {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__diff-empty {
+    padding: var(--spacing-m);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__member {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.06);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__member-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__member-name {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__member-role {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+
+  // ── Over-clearance bands ─────────────────────────────────────────
+  &__bands {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-s);
+  }
+
+  &__band {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+
+    &--removed {
+      border-color: rgba(var(--color-danger-rgb), 0.32);
+      background: rgba(var(--color-danger-rgb), 0.04);
+    }
+  }
+
+  &__band-label {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+
+    .chips__band--removed & {
+      color: var(--color-danger);
+    }
+  }
+
+  &__band-value {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+
+    .chips__band--removed & {
+      color: var(--color-danger);
+    }
+  }
+
+  &__audit {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.6);
+  }
+}
+
+@keyframes chips-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

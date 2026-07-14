@@ -1,0 +1,218 @@
+// O4 — Axis-per-side split card + sentence recap.
+// Two columns on wide viewports; stack under 1024px. Left = member axis
+// (--color-info), right = channel axis (--color-success).
+
+.scene {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    max-width: 1280px;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+}
+
+.field {
+  display: flex;
+  gap: var(--spacing-xl);
+  align-items: flex-start;
+
+  &__label {
+    width: 180px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 8px;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__control {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__input {
+    width: 100%;
+    height: 40px;
+    padding: 0 var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    transition: border-color var(--duration-quick) var(--ease-transition);
+
+    &:focus {
+      outline: none;
+      border-color: var(--button-bg);
+      box-shadow: inset 0 0 0 1px var(--button-bg);
+    }
+  }
+
+  &__help {
+    margin: var(--spacing-xs) 0 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+// ── The split card ─────────────────────────────────────────────
+.card {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  overflow: hidden;
+
+  &__recap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-l);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &__recap-label {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__cols {
+    display: grid;
+    // Stacked by default (narrow); two axis columns at wide viewports (≥1280px),
+    // per the spec — System Console is desktop-only in practice.
+    grid-template-columns: 1fr;
+
+    @include respond-to(xl) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+
+  // Divider between the two axes — horizontal when stacked, vertical when wide.
+  & + & {
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+    @include respond-to(xl) {
+      border-top: 0;
+      border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    padding: var(--spacing-l);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-top: 3px solid transparent;
+  }
+
+  &[data-axis='members'] &__head {
+    border-top-color: var(--color-info);
+    background: rgba(var(--color-info-rgb), 0.03);
+  }
+
+  &[data-axis='channels'] &__head {
+    border-top-color: var(--color-success);
+    background: rgba(var(--color-success-rgb), 0.03);
+  }
+
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-s);
+    flex-shrink: 0;
+  }
+
+  &[data-axis='members'] &__glyph {
+    background: rgba(var(--color-info-rgb), 0.1);
+  }
+
+  &[data-axis='channels'] &__glyph {
+    background: rgba(var(--color-success-rgb), 0.1);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__framing {
+    margin: var(--spacing-xxs) 0 0;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    padding: var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+}
+
+.add-row {
+  padding-top: var(--spacing-xs);
+}
+
+.scope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    font-size: var(--font-size-100);
+  }
+
+  &__detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: 0 0 var(--spacing-xs) 28px;
+  }
+}

@@ -78,7 +78,7 @@ export const POST_DISPLAY_LOCATIONS: PostDisplayLoc[] = [
 
 export type InheritMode = 'off' | 'inherit' | 'inherit-lock';
 
-export type UserProfileDisplay = 'always' | 'hide-empty';
+export type UserProfileDisplay = 'always' | 'hide-empty' | 'hidden';
 
 /**
  * Who can set the value on this resource — a relational default (the natural
@@ -153,6 +153,8 @@ export interface ValuesLink {
 export interface HubAttribute {
   id: string;
   name: string;
+  /** Human-facing label (CEL-safe); shown in UI when set. */
+  displayName?: string;
   type: AttrType;
   description: string;
   values: AttrValue[];

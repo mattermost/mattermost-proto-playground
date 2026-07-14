@@ -332,3 +332,161 @@ export function setResourceName(
   if (name.trim()) RESOURCE_NAME[key] = name.trim();
   else delete RESOURCE_NAME[key];
 }
+
+// ── Per-resource option additions ──────────────────────────────────────────
+//
+// Options added from a resource binding join the shared catalog (one rank
+// scale for ranked types). New rows are enabled on the introducing resource
+// and disabled on other bindings until an admin turns them on there.
+
+const RESOURCE_INTRODUCED_VALUES: Record<string, string[]> = {};
+
+function resourceValueKey(attributeId: string, resource: ResourceKind): string {
+  return `${attributeId}:${resource}`;
+}
+
+export function markResourceIntroducedValue(
+  attributeId: string,
+  resource: ResourceKind,
+  valueId: string,
+): void {
+  const key = resourceValueKey(attributeId, resource);
+  const current = RESOURCE_INTRODUCED_VALUES[key] ?? [];
+  if (!current.includes(valueId)) {
+    RESOURCE_INTRODUCED_VALUES[key] = [...current, valueId];
+  }
+}
+
+export function resourceIntroducedValueIds(
+  attributeId: string,
+  resource: ResourceKind,
+): string[] {
+  return RESOURCE_INTRODUCED_VALUES[resourceValueKey(attributeId, resource)] ?? [];
+}
+
+export function wasIntroducedOnResource(
+  attributeId: string,
+  resource: ResourceKind,
+  valueId: string,
+): boolean {
+  return resourceIntroducedValueIds(attributeId, resource).includes(valueId);
+}
+
+/** Case-insensitive label match across the flat catalog (tiers + leaves). */
+export function findValueByLabel(
+  values: AttrValue[],
+  label: string,
+): AttrValue | undefined {
+  const needle = label.trim().toLowerCase();
+  if (!needle) return undefined;
+  const walk = (rows: AttrValue[]): AttrValue | undefined => {
+    for (const row of rows) {
+      if (row.label.trim().toLowerCase() === needle) return row;
+      if (row.children) {
+        const nested = walk(row.children);
+        if (nested) return nested;
+      }
+    }
+    return undefined;
+  };
+  return walk(values);
+}
+
+// ── Value linking (exact match + define mapping) ───────────────────────────
+//
+// Scene-local extension of baseline `valuesLink`. Exact match mirrors the
+// source catalog (read-only here). Mapped mode keeps local labels but pins
+// each option to a source option so rank comparison stays consistent.
+
+export type ValueLinkMode = 'exact' | 'mapped';
+
+export interface ValueLinkConfig {
+  attributeId: string;
+  attributeName: string;
+  mode: ValueLinkMode;
+  /** Local value id → source value id (mapped mode). */
+  mappings?: Record<string, string>;
+}
+
+const VALUE_LINK_CONFIG: Record<string, ValueLinkConfig> = {
+  classification: {
+    attributeId: 'clearance',
+    attributeName: 'Clearance',
+    mode: 'exact',
+  },
+};
+
+export function resolveValueLink(attribute: HubAttribute): ValueLinkConfig | null {
+  const stored = VALUE_LINK_CONFIG[attribute.id];
+  if (stored) return stored;
+  if (attribute.valuesLink) {
+    return { ...attribute.valuesLink, mode: 'exact' };
+  }
+  return null;
+}
+
+export function setValueLinkConfig(
+  attributeId: string,
+  config: ValueLinkConfig | null,
+): void {
+  if (config) {
+    VALUE_LINK_CONFIG[attributeId] = config;
+  } else {
+    delete VALUE_LINK_CONFIG[attributeId];
+  }
+}
+
+export function isValueLinked(attribute: HubAttribute): boolean {
+  return resolveValueLink(attribute) != null;
+}
+
+/** Linking is offered for manual catalogs that do not own a mirrored scale. */
+export function canLinkValues(attribute: HubAttribute): boolean {
+  return (
+    attribute.source.kind === 'manual' &&
+    attribute.type !== 'Text' &&
+    !attribute.mirroredBy?.length
+  );
+}
+
+/** Flatten tiers + leaves for mapping pickers. */
+export function flatCatalogValues(values: AttrValue[]): AttrValue[] {
+  const out: AttrValue[] = [];
+  const walk = (rows: AttrValue[]) => {
+    for (const row of rows) {
+      out.push(row);
+      if (row.children?.length) walk(row.children);
+    }
+  };
+  walk(values);
+  return out;
+}
+
+/** Seed mappings from case-insensitive label matches. */
+export function suggestValueMappings(
+  localValues: AttrValue[],
+  sourceValues: AttrValue[],
+): Record<string, string> {
+  const mappings: Record<string, string> = {};
+  const sourceByLabel = new Map(
+    flatCatalogValues(sourceValues).map((value) => [
+      value.label.trim().toLowerCase(),
+      value.id,
+    ]),
+  );
+  for (const local of flatCatalogValues(localValues)) {
+    const match = sourceByLabel.get(local.label.trim().toLowerCase());
+    if (match) mappings[local.id] = match;
+  }
+  return mappings;
+}
+
+export function mappedSourceValue(
+  config: ValueLinkConfig,
+  sourceAttribute: HubAttribute,
+  localValueId: string,
+): AttrValue | undefined {
+  const sourceId = config.mappings?.[localValueId];
+  if (!sourceId) return undefined;
+  return flatCatalogValues(sourceAttribute.values).find((v) => v.id === sourceId);
+}

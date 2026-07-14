@@ -26,6 +26,7 @@ export interface SimplifiedResourceAdvancedProps {
   attribute: HubAttribute;
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
+  onAddResourceValue: (label: string) => void;
 }
 
 function inheritanceOn(attributeId: string, config: ResourceConfig): boolean {
@@ -50,6 +51,7 @@ export default function SimplifiedResourceAdvanced({
   attribute,
   config,
   onChange,
+  onAddResourceValue,
 }: SimplifiedResourceAdvancedProps) {
   const { resource } = config;
   const showInheritFromTeam =
@@ -131,6 +133,7 @@ export default function SimplifiedResourceAdvanced({
               attribute={attribute}
               config={config}
               onChange={onChange}
+              onAddResourceValue={onAddResourceValue}
               embedded
             />
           )}
