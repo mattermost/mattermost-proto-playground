@@ -69,6 +69,8 @@ export interface AutomationEntityEditSceneProps {
   onConfirmDelete: () => void;
   onCloseDelete: () => void;
   onGoAgents: () => void;
+  progressiveDisclosure?: boolean;
+  showBlastRadius?: boolean;
 }
 
 export function AutomationEntityEditScene({
@@ -80,6 +82,8 @@ export function AutomationEntityEditScene({
   onConfirmDelete,
   onCloseDelete,
   onGoAgents,
+  progressiveDisclosure = false,
+  showBlastRadius = false,
 }: AutomationEntityEditSceneProps) {
   return (
     <AgentsShell
@@ -104,6 +108,8 @@ export function AutomationEntityEditScene({
         isNew={isNew}
         onSubmit={onSubmit}
         onClose={onClose}
+        progressiveDisclosure={progressiveDisclosure}
+        showBlastRadius={showBlastRadius}
       />
     </AgentsShell>
   );

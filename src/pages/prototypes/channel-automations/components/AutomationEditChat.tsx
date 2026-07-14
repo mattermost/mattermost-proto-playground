@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import {
   agentById,
+  blastRadiusFromScope,
   triggerSummary,
   triggerToType,
   buildTriggerConfig,
@@ -20,6 +21,7 @@ import {
 } from './automationChatScript';
 import { AgentMessage, ChatText, UserMessage } from './AgentChatMessage';
 import AutomationSummaryCard from './AutomationSummaryCard';
+import BlastRadiusSummary from './BlastRadiusSummary';
 import ChatSelectionOptions from './ChatSelectionOptions';
 import ChatTypingIndicator from './ChatTypingIndicator';
 import { parseEditIntent } from './parseEditIntent';
@@ -39,6 +41,7 @@ export interface AutomationEditChatProps {
   contextAgentId?: string;
   editorKind?: EditorKind;
   requireAgentId?: boolean;
+  showBlastRadius?: boolean;
 }
 
 function valuesToTrigger(values: FormValues) {
@@ -87,6 +90,7 @@ export default function AutomationEditChat({
   contextAgentId,
   editorKind = 'assignment',
   requireAgentId = false,
+  showBlastRadius = false,
 }: AutomationEditChatProps) {
   const chatAgent = resolveChatAgent(values, { editorKind, contextAgentId });
   const summaryType =
@@ -98,6 +102,10 @@ export default function AutomationEditChat({
     values.instructions.trim().length > 0;
 
   const scopeSummary = scopeSummaryFromValues(values);
+  const blast = blastRadiusFromScope({
+    channelId: values.teamId ? undefined : values.channelId || undefined,
+    teamId: values.teamId || undefined,
+  });
   const runsAsAgent = values.agentId ? agentById(values.agentId) : undefined;
 
   const draftCard = {
@@ -311,6 +319,12 @@ export default function AutomationEditChat({
                           posts={draftCard.posts}
                           runsAs={draftCard.runsAs}
                         />
+                        {showBlastRadius ? (
+                          <BlastRadiusSummary
+                            className={styles['chat__blast']}
+                            blast={blast}
+                          />
+                        ) : null}
                       </div>
                     ) : null}
                     {isLast && showSave && showInteractiveChrome ? (

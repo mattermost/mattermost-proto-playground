@@ -10,6 +10,7 @@ import {
   SCHEDULE_TIMES,
   agentById,
   applyTriggerPickerOption,
+  blastRadiusFromScope,
   buildTriggerConfig,
   defaultOwnedAgent,
   playbookEventToPickerOption,
@@ -29,9 +30,12 @@ import {
 } from '../channelAutomationsData';
 import type { EditorKind, FormPatch, FormValues } from './automationFormTypes';
 import AccessTab from './AccessTab';
+import AdvancedAgentConfig from './AdvancedAgentConfig';
 import AgentPickerField from './AgentPickerField';
 import AutomationEditChat from './AutomationEditChat';
+import AutomationToolScope from './AutomationToolScope';
 import AutomationsTabs from './AutomationsTabs';
+import BlastRadiusSummary from './BlastRadiusSummary';
 import McpsTab from './McpsTab';
 import TriggerPicker from './TriggerPicker';
 import styles from './AutomationFormEditor.module.scss';
@@ -54,10 +58,14 @@ export const ENTITY_EDITOR_VIEW_TABS = [
 /** @deprecated Use AUTOMATION_EDITOR_VIEW_TABS or ENTITY_EDITOR_VIEW_TABS */
 export const EDITOR_VIEW_TABS = ENTITY_EDITOR_VIEW_TABS;
 
-function editorViewTabs(editorKind: EditorKind) {
-  return editorKind === 'entity'
-    ? ENTITY_EDITOR_VIEW_TABS
-    : AUTOMATION_EDITOR_VIEW_TABS;
+function editorViewTabs(
+  editorKind: EditorKind,
+  progressiveDisclosure: boolean,
+) {
+  if (editorKind === 'entity' && !progressiveDisclosure) {
+    return ENTITY_EDITOR_VIEW_TABS;
+  }
+  return AUTOMATION_EDITOR_VIEW_TABS;
 }
 
 export interface AutomationFormEditorProps {
@@ -72,6 +80,10 @@ export interface AutomationFormEditorProps {
   showAgentPicker?: boolean;
   contextAgentId?: string;
   editorKind?: EditorKind;
+  showAgentCapabilities?: boolean;
+  showAutomationToolScope?: boolean;
+  showBlastRadius?: boolean;
+  progressiveDisclosure?: boolean;
   view?: EditorView;
   onViewChange?: (view: EditorView) => void;
   onValidityChange?: (valid: boolean) => void;
@@ -102,6 +114,10 @@ const AutomationFormEditor = forwardRef<
   showAgentPicker = false,
   contextAgentId,
   editorKind = 'assignment',
+  showAgentCapabilities = false,
+  showAutomationToolScope = false,
+  showBlastRadius = false,
+  progressiveDisclosure = false,
   view: controlledView,
   onViewChange,
   onValidityChange,
@@ -334,8 +350,14 @@ const AutomationFormEditor = forwardRef<
   );
   const toolsActiveMcps = initialEntity?.activeMcps ?? assignedAgent?.activeMcps ?? 0;
   const toolsCount = initialEntity?.toolCount ?? assignedAgent?.toolCount ?? 0;
+  const blast = blastRadiusFromScope({
+    channelId: teamId ? undefined : channelId || undefined,
+    teamId: teamId || undefined,
+  });
+  const showEntityIdentity =
+    editorKind === 'entity' && !progressiveDisclosure;
 
-  const viewTabs = editorViewTabs(editorKind);
+  const viewTabs = editorViewTabs(editorKind, progressiveDisclosure);
 
   const toolbar = showViewTabs ? (
     <AutomationsTabs
@@ -364,8 +386,11 @@ const AutomationFormEditor = forwardRef<
           contextAgentId={contextAgentId}
           editorKind={editorKind}
           requireAgentId={showAgentPicker}
+          showBlastRadius={showBlastRadius}
         />
-      ) : editorKind === 'entity' && view === 'access' ? (
+      ) : editorKind === 'entity' &&
+        !progressiveDisclosure &&
+        view === 'access' ? (
         <div className={styles['editor__scroll']}>
           <Scrollbar>
             <div className={styles['editor__panel-tab']}>
@@ -373,7 +398,9 @@ const AutomationFormEditor = forwardRef<
             </div>
           </Scrollbar>
         </div>
-      ) : editorKind === 'entity' && view === 'tools' ? (
+      ) : editorKind === 'entity' &&
+        !progressiveDisclosure &&
+        view === 'tools' ? (
         <div className={styles['editor__scroll']}>
           <Scrollbar>
             <div className={styles['editor__panel-tab']}>
@@ -401,10 +428,11 @@ const AutomationFormEditor = forwardRef<
                   value={agentId}
                   onChange={setAgentId}
                   label="Runs as"
+                  showCapabilities={showAgentCapabilities}
                 />
               ) : null}
 
-              {editorKind === 'entity' ? (
+              {showEntityIdentity ? (
                 <>
                   <TextInput
                     className={styles['editor__form-control']}
@@ -498,6 +526,25 @@ const AutomationFormEditor = forwardRef<
                 rows={5}
                 maxLength={500}
               />
+
+              {showAutomationToolScope ? (
+                <AutomationToolScope
+                  agentToolSummary={
+                    assignedAgent
+                      ? `${assignedAgent.activeMcps} MCP · ${assignedAgent.toolCount} tools`
+                      : null
+                  }
+                />
+              ) : null}
+
+              {showBlastRadius ? <BlastRadiusSummary blast={blast} /> : null}
+
+              {progressiveDisclosure ? (
+                <AdvancedAgentConfig
+                  activeMcps={toolsActiveMcps}
+                  toolCount={toolsCount}
+                />
+              ) : null}
             </div>
           </Scrollbar>
         </div>

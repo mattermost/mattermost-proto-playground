@@ -65,8 +65,15 @@
     flex: 0 0 auto;
   }
 
-  &__value {
+  &__value-stack {
+    display: flex;
     flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__value {
     min-width: 0;
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
@@ -78,6 +85,15 @@
     &--placeholder {
       color: rgba(var(--center-channel-color-rgb), 0.64);
     }
+  }
+
+  &__capability {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__chevron {

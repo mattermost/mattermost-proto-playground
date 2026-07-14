@@ -17,6 +17,9 @@ export interface AutomationEditViewProps {
   onClose: () => void;
   showAgentPicker?: boolean;
   contextAgentId?: string;
+  showAgentCapabilities?: boolean;
+  showAutomationToolScope?: boolean;
+  showBlastRadius?: boolean;
 }
 
 export default function AutomationEditView({
@@ -26,54 +29,83 @@ export default function AutomationEditView({
   onClose,
   showAgentPicker = true,
   contextAgentId,
+  showAgentCapabilities = false,
+  showAutomationToolScope = false,
+  showBlastRadius = false,
 }: AutomationEditViewProps) {
   const title = isNew ? 'New automation' : 'Edit automation';
   const [view, setView] = useState<EditorView>('chat');
   const [canSave, setCanSave] = useState(false);
   const editorRef = useRef<AutomationFormEditorHandle>(null);
+  const isChat = view === 'chat';
+
+  const body = (
+    <div
+      className={[
+        styles['automation-edit__body'],
+        isChat ? styles['automation-edit__body--chat'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <AutomationFormEditor
+        ref={editorRef}
+        initial={initial}
+        onSubmit={onSubmit}
+        onCancel={onClose}
+        showViewTabs={false}
+        showFooter={false}
+        showAgentPicker={showAgentPicker}
+        contextAgentId={contextAgentId}
+        showAgentCapabilities={showAgentCapabilities}
+        showAutomationToolScope={showAutomationToolScope}
+        showBlastRadius={showBlastRadius}
+        view={view}
+        onViewChange={setView}
+        onValidityChange={setCanSave}
+      />
+    </div>
+  );
 
   return (
-    <div className={styles['automation-edit']}>
-      <div className={styles['automation-edit__scroll']}>
-        <Scrollbar>
-          <div className={styles['automation-edit__col']}>
-            <div className={styles['automation-edit__head']}>
-              <IconButton
-                size="Small"
-                aria-label="Back to automations"
-                onClick={onClose}
-                icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
-              />
-              <h1 className={styles['automation-edit__title']}>{title}</h1>
-            </div>
-
-            <AutomationsTabs
-              tabs={AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
-                key: tab.id,
-                label: tab.label,
-              }))}
-              activeKey={view}
-              onChange={(id) => setView(id as EditorView)}
-              ariaLabel="Automation editor view"
+    <div
+      className={[
+        styles['automation-edit'],
+        isChat ? styles['automation-edit--chat'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <div className={styles['automation-edit__col']}>
+        <div className={styles['automation-edit__chrome']}>
+          <div className={styles['automation-edit__head']}>
+            <IconButton
+              size="Small"
+              aria-label="Back to automations"
+              onClick={onClose}
+              icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
             />
-
-            <div className={styles['automation-edit__body']}>
-              <AutomationFormEditor
-                ref={editorRef}
-                initial={initial}
-                onSubmit={onSubmit}
-                onCancel={onClose}
-                showViewTabs={false}
-                showFooter={false}
-                showAgentPicker={showAgentPicker}
-                contextAgentId={contextAgentId}
-                view={view}
-                onViewChange={setView}
-                onValidityChange={setCanSave}
-              />
-            </div>
+            <h1 className={styles['automation-edit__title']}>{title}</h1>
           </div>
-        </Scrollbar>
+
+          <AutomationsTabs
+            tabs={AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
+              key: tab.id,
+              label: tab.label,
+            }))}
+            activeKey={view}
+            onChange={(id) => setView(id as EditorView)}
+            ariaLabel="Automation editor view"
+          />
+        </div>
+
+        {isChat ? (
+          body
+        ) : (
+          <div className={styles['automation-edit__scroll']}>
+            <Scrollbar>{body}</Scrollbar>
+          </div>
+        )}
       </div>
 
       <div className={styles['automation-edit__footer']}>

@@ -38,9 +38,16 @@
   }
 
   &__addon {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
     animation: chat-addon-enter var(--duration-quick) var(--ease-entrance)
       backwards;
     animation-delay: 100ms;
+  }
+
+  &__blast {
+    margin-top: 0;
   }
 
   &__composer {

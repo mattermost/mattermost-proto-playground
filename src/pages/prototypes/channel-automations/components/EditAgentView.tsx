@@ -55,15 +55,8 @@ export default function EditAgentView({
 
   const isChatTab = activeTab === 'chat';
 
-  const column = (
-    <div
-      className={[
-        styles['edit-agent__col'],
-        isChatTab ? styles['edit-agent__col--chat'] : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-    >
+  const chrome = (
+    <div className={styles['edit-agent__chrome']}>
       <div className={styles['edit-agent__head']}>
         <IconButton
           size="Small"
@@ -80,17 +73,19 @@ export default function EditAgentView({
         onChange={(key) => onTabChange(key as AgentTabKey)}
         ariaLabel={tabsAriaLabel}
       />
+    </div>
+  );
 
-      <div
-        className={[
-          styles['edit-agent__body'],
-          isChatTab ? styles['edit-agent__body--chat'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {children}
-      </div>
+  const body = (
+    <div
+      className={[
+        styles['edit-agent__body'],
+        isChatTab ? styles['edit-agent__body--chat'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {children}
     </div>
   );
 
@@ -103,13 +98,24 @@ export default function EditAgentView({
         .filter(Boolean)
         .join(' ')}
     >
-      {isChatTab ? (
-        <div className={styles['edit-agent__chat-pane']}>{column}</div>
-      ) : (
-        <div className={styles['edit-agent__scroll']}>
-          <Scrollbar>{column}</Scrollbar>
-        </div>
-      )}
+      <div
+        className={[
+          styles['edit-agent__col'],
+          isChatTab ? styles['edit-agent__col--chat'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {chrome}
+
+        {isChatTab ? (
+          body
+        ) : (
+          <div className={styles['edit-agent__scroll']}>
+            <Scrollbar>{body}</Scrollbar>
+          </div>
+        )}
+      </div>
 
       {activeTab !== 'chat' ? (
         <div className={styles['edit-agent__footer']}>

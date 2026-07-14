@@ -437,7 +437,9 @@ export function triggerToType(t: TriggerConfig): AutomationType {
 /* ------------------------------------------------------------------ */
 /* Scope — which channels a run is allowed to touch. An automation can  */
 /* reach a channel directly, via its team, or via a channel attribute.  */
-/* Tools are NOT part of scope: they're inherited from the agent.       */
+/* Options 1–3/5: tools are agent-owned. Option 4 may also grant tools  */
+/* per automation (see AUTOMATION_GRANTABLE_TOOLS) without editing the  */
+/* executor agent.                                                      */
 /* ------------------------------------------------------------------ */
 
 export interface AutomationScope {
@@ -447,6 +449,103 @@ export interface AutomationScope {
   teamIds?: string[];
   /** Channel attributes (e.g. 'design') the automation covers. */
   attributes?: string[];
+}
+
+/** Always-visible create-flow impact summary (Options 4 & 5). */
+export interface BlastRadius {
+  channels: string[];
+  audience: string;
+  hasPrivateChannel: boolean;
+  exposureWarning: string | null;
+}
+
+export interface AutomationGrantableTool {
+  id: string;
+  label: string;
+  description: string;
+  /** Pre-checked as a least-privilege default for typical tasks. */
+  suggested: boolean;
+}
+
+/**
+ * Option 4 — tools the creating user can grant on the automation itself.
+ * These are independent of the chosen agent's permanent MCP set.
+ */
+export const AUTOMATION_GRANTABLE_TOOLS: AutomationGrantableTool[] = [
+  {
+    id: 'post-message',
+    label: 'Post messages',
+    description: 'Write into channels within this automation’s scope.',
+    suggested: true,
+  },
+  {
+    id: 'read-history',
+    label: 'Read channel history',
+    description: 'Read recent messages needed to draft a response.',
+    suggested: true,
+  },
+  {
+    id: 'github-issues',
+    label: 'GitHub — issues',
+    description: 'Create or update issues; grant only when the task needs it.',
+    suggested: false,
+  },
+  {
+    id: 'jira-tickets',
+    label: 'Jira — tickets',
+    description: 'Create or transition tickets via Atlassian MCP.',
+    suggested: false,
+  },
+  {
+    id: 'playbooks-run',
+    label: 'Playbooks — start run',
+    description: 'Start or update a playbook run from a trigger.',
+    suggested: false,
+  },
+];
+
+export function blastRadiusFromScope(input: {
+  channelId?: string;
+  teamId?: string;
+}): BlastRadius {
+  const channels: string[] = [];
+  let hasPrivateChannel = false;
+
+  if (input.teamId) {
+    const team = AUTOMATION_TEAM_OPTIONS.find((t) => t.id === input.teamId);
+    channels.push(
+      team
+        ? `All channels in ${team.label}`
+        : `All channels in ${input.teamId}`,
+    );
+  } else if (input.channelId) {
+    const channel = AUTOMATION_CHANNEL_OPTIONS.find(
+      (c) => c.id === input.channelId,
+    );
+    if (channel) {
+      channels.push(
+        `${channel.label} (${channel.type === 'private' ? 'private' : 'public'})`,
+      );
+      hasPrivateChannel = channel.type === 'private';
+    } else {
+      channels.push(input.channelId);
+    }
+  } else {
+    channels.push(
+      `${ACTIVE_CHANNEL.name} (default channel)`,
+    );
+  }
+
+  return {
+    channels,
+    audience: input.teamId
+      ? 'Members of the selected team'
+      : 'Members of the selected channel',
+    hasPrivateChannel,
+    exposureWarning: hasPrivateChannel
+      ? 'Private channel content may be summarized or posted where this automation has write access.'
+      : null,
+  };
 }
 
 export interface ChannelContext {
@@ -796,6 +895,12 @@ export function agentById(id: string): Agent | undefined {
 
 export function defaultOwnedAgent(): Agent {
   return agentById(DEFAULT_OWNED_AGENT_ID) ?? AGENT;
+}
+
+export function agentCapabilitySummary(
+  agent: Pick<Agent, 'activeMcps' | 'toolCount'>,
+): string {
+  return `${agent.activeMcps} MCP · ${agent.toolCount} tools · All channels`;
 }
 
 /* ------------------------------------------------------------------ */

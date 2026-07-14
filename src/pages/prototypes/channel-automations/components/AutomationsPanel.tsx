@@ -38,6 +38,10 @@ export interface AutomationsPanelProps {
     onCancel: () => void;
   } | null;
   editorKind?: EditorKind;
+  showAgentCapabilities?: boolean;
+  showAutomationToolScope?: boolean;
+  showBlastRadius?: boolean;
+  progressiveDisclosure?: boolean;
 }
 
 export default function AutomationsPanel({
@@ -61,6 +65,10 @@ export default function AutomationsPanel({
   creatingContextAgentId,
   agentPickerMode = null,
   editorKind = 'assignment',
+  showAgentCapabilities = false,
+  showAutomationToolScope = false,
+  showBlastRadius = false,
+  progressiveDisclosure = false,
 }: AutomationsPanelProps) {
   const inEditor = creating || editing != null || editingEntity != null;
   const choosingAgent = agentPickerMode != null;
@@ -120,6 +128,10 @@ export default function AutomationsPanel({
               showAgentPicker={showAgentPicker}
               contextAgentId={editorContextAgentId}
               editorKind={editorKind}
+              showAgentCapabilities={showAgentCapabilities}
+              showAutomationToolScope={showAutomationToolScope}
+              showBlastRadius={showBlastRadius}
+              progressiveDisclosure={progressiveDisclosure}
             />
           </div>
         ) : choosingAgent && agentPickerMode ? (
@@ -127,6 +139,7 @@ export default function AutomationsPanel({
             <ChooseAgentPrompt
               onSelectAgent={agentPickerMode.onSelectAgent}
               onCancel={agentPickerMode.onCancel}
+              showCapabilities={showAgentCapabilities}
             />
           </Scrollbar>
         ) : (

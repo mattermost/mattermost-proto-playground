@@ -4,6 +4,7 @@ import type { AgentTabKey } from './EditAgentView';
 import EditAgentView from './EditAgentView';
 import AccessTab from './AccessTab';
 import AutomationFormEditor, {
+  AUTOMATION_EDITOR_VIEW_TABS,
   type AutomationFormEditorHandle,
 } from './AutomationFormEditor';
 import McpsTab from './McpsTab';
@@ -16,11 +17,19 @@ const ENTITY_TABS = [
   { key: 'mcps', label: 'Tools' },
 ] as const;
 
+const PROGRESSIVE_TABS = AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
+  key: tab.id === 'form' ? ('configuration' as const) : tab.id,
+  label: tab.label,
+}));
+
 export interface EditAutomationEntityViewProps {
   entity?: AutomationEntity;
   isNew?: boolean;
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
+  /** Option 5 — Chat + Settings only; agent plumbing lives in Advanced. */
+  progressiveDisclosure?: boolean;
+  showBlastRadius?: boolean;
 }
 
 export default function EditAutomationEntityView({
@@ -28,6 +37,8 @@ export default function EditAutomationEntityView({
   isNew = false,
   onSubmit,
   onClose,
+  progressiveDisclosure = false,
+  showBlastRadius = false,
 }: EditAutomationEntityViewProps) {
   const [tab, setTab] = useState<AgentTabKey>(isNew ? 'chat' : 'configuration');
   const editorRef = useRef<AutomationFormEditorHandle>(null);
@@ -36,15 +47,21 @@ export default function EditAutomationEntityView({
     ? 'New automation'
     : `Edit ${entity?.displayName ?? 'automation'}`;
 
+  const tabs = progressiveDisclosure
+    ? PROGRESSIVE_TABS
+    : [...ENTITY_TABS];
+
   const renderBody = () => {
-    if (tab === 'access') return <AccessTab />;
-    if (tab === 'mcps') {
-      return (
-        <McpsTab
-          activeMcps={entity?.activeMcps}
-          toolCount={entity?.toolCount}
-        />
-      );
+    if (!progressiveDisclosure) {
+      if (tab === 'access') return <AccessTab />;
+      if (tab === 'mcps') {
+        return (
+          <McpsTab
+            activeMcps={entity?.activeMcps}
+            toolCount={entity?.toolCount}
+          />
+        );
+      }
     }
 
     return (
@@ -63,6 +80,8 @@ export default function EditAutomationEntityView({
           showViewTabs={false}
           showFooter={false}
           editorKind="entity"
+          progressiveDisclosure={progressiveDisclosure}
+          showBlastRadius={showBlastRadius}
           view={tab === 'chat' ? 'chat' : 'form'}
         />
       </div>
@@ -77,7 +96,7 @@ export default function EditAutomationEntityView({
       onClose={onClose}
       onSave={() => editorRef.current?.submit()}
       showAutomationsTab={false}
-      tabs={[...ENTITY_TABS]}
+      tabs={[...tabs]}
       tabsAriaLabel="Automation settings"
     >
       {renderBody()}

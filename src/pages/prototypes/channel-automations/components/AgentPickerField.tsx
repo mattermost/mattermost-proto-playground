@@ -2,7 +2,12 @@ import { Icon, MenuItem, PopoverMenu, UserAvatar } from '@mattermost/compass-ui'
 import { useId, useRef, useState } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import { AGENTS, agentAvatarProps, agentById } from '../channelAutomationsData';
+import {
+  AGENTS,
+  agentAvatarProps,
+  agentById,
+  agentCapabilitySummary,
+} from '../channelAutomationsData';
 import styles from './AgentPickerField.module.scss';
 
 export interface AgentPickerFieldProps {
@@ -10,6 +15,8 @@ export interface AgentPickerFieldProps {
   onChange: (agentId: string) => void;
   label?: string;
   className?: string;
+  /** Option 4 — show each agent's tools/access so fit is judgeable. */
+  showCapabilities?: boolean;
 }
 
 export default function AgentPickerField({
@@ -17,6 +24,7 @@ export default function AgentPickerField({
   onChange,
   label = 'Agent',
   className = '',
+  showCapabilities = false,
 }: AgentPickerFieldProps) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
@@ -60,15 +68,22 @@ export default function AgentPickerField({
               {...agentAvatarProps(selected)}
             />
           ) : null}
-          <span
-            className={[
-              styles['picker__value'],
-              selected ? '' : styles['picker__value--placeholder'],
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            {selected ? selected.displayName : 'Choose an agent'}
+          <span className={styles['picker__value-stack']}>
+            <span
+              className={[
+                styles['picker__value'],
+                selected ? '' : styles['picker__value--placeholder'],
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              {selected ? selected.displayName : 'Choose an agent'}
+            </span>
+            {selected && showCapabilities ? (
+              <span className={styles['picker__capability']}>
+                {agentCapabilitySummary(selected)}
+              </span>
+            ) : null}
           </span>
           <span
             className={[
@@ -95,6 +110,9 @@ export default function AgentPickerField({
             <MenuItem
               key={agent.id}
               label={agent.displayName}
+              secondaryLabel={
+                showCapabilities ? agentCapabilitySummary(agent) : undefined
+              }
               active={value === agent.id}
               trailingElement={value === agent.id}
               leadingVisual={

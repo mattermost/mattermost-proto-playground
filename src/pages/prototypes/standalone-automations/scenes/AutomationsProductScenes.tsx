@@ -71,6 +71,9 @@ export interface AutomationEditSceneProps {
   onConfirmDelete: () => void;
   onCloseDelete: () => void;
   onGoAgents: () => void;
+  showAgentCapabilities?: boolean;
+  showAutomationToolScope?: boolean;
+  showBlastRadius?: boolean;
 }
 
 export function AutomationEditScene({
@@ -83,6 +86,9 @@ export function AutomationEditScene({
   onConfirmDelete,
   onCloseDelete,
   onGoAgents,
+  showAgentCapabilities = false,
+  showAutomationToolScope = false,
+  showBlastRadius = false,
 }: AutomationEditSceneProps) {
   return (
     <AgentsShell
@@ -109,6 +115,9 @@ export function AutomationEditScene({
         onClose={onClose}
         showAgentPicker
         contextAgentId={contextAgentId}
+        showAgentCapabilities={showAgentCapabilities}
+        showAutomationToolScope={showAutomationToolScope}
+        showBlastRadius={showBlastRadius}
       />
     </AgentsShell>
   );
