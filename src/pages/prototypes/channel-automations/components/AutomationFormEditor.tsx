@@ -1,19 +1,33 @@
-import { Button, Scrollbar, Select, Switch, TextArea, TextInput } from '@mattermost/compass-ui';
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useState, type ChangeEvent } from 'react';
+import { Button, Scrollbar, Select, Switch, TextArea } from '@mattermost/compass-ui';
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from 'react';
 import {
   ACTIVE_CHANNEL,
+  AI_SERVICES,
   AUTOMATION_CHANNEL_OPTIONS,
   AUTOMATION_PLAYBOOK_OPTIONS,
+  DEFAULT_AI_SERVICE_ID,
   DEFAULT_OWNED_AGENT_ID,
   EVENT_TYPE_LABELS,
   SCHEDULE_FREQUENCY_LABELS,
   SCHEDULE_TIMES,
+  SCHEDULE_WEEKDAY_LABELS,
+  SCHEDULE_WEEKDAYS,
   agentById,
   applyTriggerPickerOption,
-  blastRadiusFromScope,
   buildTriggerConfig,
   defaultOwnedAgent,
   playbookEventToPickerOption,
+  scheduleNeedsTime,
+  scheduleNeedsWeekday,
   seedForAutomationType,
   triggerConfigToPickerOption,
   triggerPickerNeedsChannel,
@@ -25,6 +39,7 @@ import {
   type EventType,
   type PlaybookEventType,
   type ScheduleFrequency,
+  type ScheduleWeekday,
   type TriggerKind,
   type TriggerPickerOption,
 } from '../channelAutomationsData';
@@ -33,9 +48,9 @@ import AccessTab from './AccessTab';
 import AdvancedAgentConfig from './AdvancedAgentConfig';
 import AgentPickerField from './AgentPickerField';
 import AutomationEditChat from './AutomationEditChat';
+import AutomationOperateWhere from './AutomationOperateWhere';
 import AutomationToolScope from './AutomationToolScope';
 import AutomationsTabs from './AutomationsTabs';
-import BlastRadiusSummary from './BlastRadiusSummary';
 import McpsTab from './McpsTab';
 import TriggerPicker from './TriggerPicker';
 import styles from './AutomationFormEditor.module.scss';
@@ -82,8 +97,11 @@ export interface AutomationFormEditorProps {
   editorKind?: EditorKind;
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
-  showBlastRadius?: boolean;
+  showOperateWhere?: boolean;
   progressiveDisclosure?: boolean;
+  /** Controlled automation name (e.g. from an editable title in chrome). */
+  name?: string;
+  onNameChange?: (name: string) => void;
   view?: EditorView;
   onViewChange?: (view: EditorView) => void;
   onValidityChange?: (valid: boolean) => void;
@@ -116,8 +134,10 @@ const AutomationFormEditor = forwardRef<
   editorKind = 'assignment',
   showAgentCapabilities = false,
   showAutomationToolScope = false,
-  showBlastRadius = false,
+  showOperateWhere = false,
   progressiveDisclosure = false,
+  name: nameProp,
+  onNameChange,
   view: controlledView,
   onViewChange,
   onValidityChange,
@@ -128,6 +148,8 @@ const AutomationFormEditor = forwardRef<
   const seed = !isEdit && createType ? seedForAutomationType(createType) : null;
   const source = initial ?? initialEntity;
   const initialTrigger = source?.triggerConfig ?? seed?.triggerConfig;
+  const defaultName =
+    source?.name ?? seed?.name ?? (isEdit ? '' : 'New automation');
 
   const [agentId, setAgentId] = useState(
     initial?.agentId ??
@@ -143,16 +165,28 @@ const AutomationFormEditor = forwardRef<
   const [avatarSrc, setAvatarSrc] = useState(
     initialEntity?.avatarSrc ?? defaultOwnedAgent().avatarSrc,
   );
-  const [name, setName] = useState(source?.name ?? seed?.name ?? '');
+  const [internalName, setInternalName] = useState(defaultName);
+  const name = nameProp ?? internalName;
+  const setName = (next: string) => {
+    if (nameProp === undefined) setInternalName(next);
+    onNameChange?.(next);
+  };
   const [triggerPicker, setTriggerPicker] = useState<TriggerPickerOption | null>(
     () => triggerConfigToPickerOption(initialTrigger),
   );
   const [kind, setKind] = useState<TriggerKind>(initialTrigger?.kind ?? 'schedule');
   const [frequency, setFrequency] = useState<ScheduleFrequency>(
-    initialTrigger?.kind === 'schedule' ? initialTrigger.frequency : 'weekdays',
+    initialTrigger?.kind === 'schedule' ? initialTrigger.frequency : 'daily',
   );
   const [time, setTime] = useState(
-    initialTrigger?.kind === 'schedule' ? initialTrigger.time : SCHEDULE_TIMES[1],
+    initialTrigger?.kind === 'schedule'
+      ? (initialTrigger.time ?? SCHEDULE_TIMES[1])
+      : SCHEDULE_TIMES[1],
+  );
+  const [weekday, setWeekday] = useState<ScheduleWeekday>(
+    initialTrigger?.kind === 'schedule'
+      ? (initialTrigger.weekday ?? 'monday')
+      : 'monday',
   );
   const [event, setEvent] = useState<EventType>(
     initialTrigger?.kind === 'event' ? initialTrigger.event : 'mention',
@@ -180,6 +214,10 @@ const AutomationFormEditor = forwardRef<
     source?.instructions ?? seed?.instructions ?? '',
   );
   const [enabled, setEnabled] = useState(source?.enabled ?? true);
+  const [aiServiceId, setAiServiceId] = useState(DEFAULT_AI_SERVICE_ID);
+
+  const triggerSectionId = useId();
+  const tasksSectionId = useId();
 
   const [internalView, setInternalView] = useState<EditorView>(() =>
     !showViewTabs && isEdit ? 'form' : 'chat',
@@ -193,6 +231,7 @@ const AutomationFormEditor = forwardRef<
     kind,
     frequency,
     time,
+    weekday,
     event,
     keyword,
     playbookEvent,
@@ -214,6 +253,7 @@ const AutomationFormEditor = forwardRef<
     if (changes.avatarSrc !== undefined) setAvatarSrc(changes.avatarSrc);
     if (changes.frequency !== undefined) setFrequency(changes.frequency);
     if (changes.time !== undefined) setTime(changes.time);
+    if (changes.weekday !== undefined) setWeekday(changes.weekday);
     if (changes.keyword !== undefined) setKeyword(changes.keyword);
     if (changes.playbookEvent !== undefined) setPlaybookEvent(changes.playbookEvent);
     if (changes.playbookId !== undefined) setPlaybookId(changes.playbookId);
@@ -289,6 +329,7 @@ const AutomationFormEditor = forwardRef<
       kind,
       frequency,
       time,
+      weekday,
       event,
       keyword,
       playbookEvent,
@@ -301,10 +342,11 @@ const AutomationFormEditor = forwardRef<
       enabled,
       agentId: showAgentPicker || editorKind === 'assignment' ? agentId : undefined,
       ...(editorKind === 'entity'
-        ? { displayName, username, avatarSrc }
+        ? { displayName: name, username, avatarSrc }
         : {}),
       ...(teamId ? { triggerTeamId: teamId } : {}),
-      ...(kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker)
+      ...(triggerPickerNeedsChannel(triggerPicker) ||
+      (!showOperateWhere && kind === 'schedule')
         ? { triggerChannelId: channelId || ACTIVE_CHANNEL.id }
         : {}),
     });
@@ -313,6 +355,7 @@ const AutomationFormEditor = forwardRef<
     kind,
     frequency,
     time,
+    weekday,
     event,
     keyword,
     playbookEvent,
@@ -324,12 +367,12 @@ const AutomationFormEditor = forwardRef<
     showAgentPicker,
     editorKind,
     agentId,
-    displayName,
     username,
     avatarSrc,
     teamId,
     triggerPicker,
     channelId,
+    showOperateWhere,
   ]);
 
   useImperativeHandle(ref, () => ({ submit: handleSubmit, isValid }), [handleSubmit, isValid]);
@@ -350,14 +393,108 @@ const AutomationFormEditor = forwardRef<
   );
   const toolsActiveMcps = initialEntity?.activeMcps ?? assignedAgent?.activeMcps ?? 0;
   const toolsCount = initialEntity?.toolCount ?? assignedAgent?.toolCount ?? 0;
-  const blast = blastRadiusFromScope({
-    channelId: teamId ? undefined : channelId || undefined,
-    teamId: teamId || undefined,
-  });
-  const showEntityIdentity =
-    editorKind === 'entity' && !progressiveDisclosure;
 
   const viewTabs = editorViewTabs(editorKind, progressiveDisclosure);
+
+  const showChannelField = showOperateWhere
+    ? triggerPickerNeedsChannel(triggerPicker)
+    : kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker);
+
+  const scheduleFields =
+    triggerPicker === 'schedule' ? (
+      <>
+        <Select
+          className={styles['editor__form-control']}
+          label="Frequency"
+          value={frequency}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            setFrequency(e.target.value as ScheduleFrequency)
+          }
+        >
+          {SCHEDULE_FREQUENCIES.map((f) => (
+            <option key={f} value={f}>
+              {SCHEDULE_FREQUENCY_LABELS[f]}
+            </option>
+          ))}
+        </Select>
+        {scheduleNeedsWeekday(frequency) || scheduleNeedsTime(frequency) ? (
+          <div className={styles['editor__form-row']}>
+            {scheduleNeedsWeekday(frequency) ? (
+              <Select
+                className={styles['editor__form-control']}
+                label="Day of the week"
+                value={weekday}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setWeekday(e.target.value as ScheduleWeekday)
+                }
+              >
+                {SCHEDULE_WEEKDAYS.map((day) => (
+                  <option key={day} value={day}>
+                    {SCHEDULE_WEEKDAY_LABELS[day]}
+                  </option>
+                ))}
+              </Select>
+            ) : null}
+            {scheduleNeedsTime(frequency) ? (
+              <Select
+                className={styles['editor__form-control']}
+                label="Time"
+                value={time}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setTime(e.target.value)
+                }
+              >
+                {SCHEDULE_TIMES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </Select>
+            ) : null}
+          </div>
+        ) : null}
+      </>
+    ) : null;
+
+  const channelField = showChannelField ? (
+    <Select
+      className={styles['editor__form-control']}
+      label="Channel"
+      value={channelId}
+      onChange={(e: ChangeEvent<HTMLSelectElement>) => setChannelId(e.target.value)}
+    >
+      {AUTOMATION_CHANNEL_OPTIONS.map((channel) => (
+        <option key={channel.id} value={channel.id}>
+          {channel.label}
+        </option>
+      ))}
+    </Select>
+  ) : null;
+
+  const playbookField = triggerPickerNeedsPlaybook(triggerPicker) ? (
+    <Select
+      className={styles['editor__form-control']}
+      label="Playbook"
+      value={playbookId}
+      onChange={(e: ChangeEvent<HTMLSelectElement>) => setPlaybookId(e.target.value)}
+    >
+      <option value="">Any playbook</option>
+      {AUTOMATION_PLAYBOOK_OPTIONS.map((playbook) => (
+        <option key={playbook.id} value={playbook.id}>
+          {playbook.label}
+        </option>
+      ))}
+    </Select>
+  ) : null;
+
+  const formSection = (title: string, titleId: string, children: ReactNode) => (
+    <section className={styles['editor__section']} aria-labelledby={titleId}>
+      <h3 id={titleId} className={styles['editor__section-title']}>
+        {title}
+      </h3>
+      <div className={styles['editor__section-fields']}>{children}</div>
+    </section>
+  );
 
   const toolbar = showViewTabs ? (
     <AutomationsTabs
@@ -386,7 +523,6 @@ const AutomationFormEditor = forwardRef<
           contextAgentId={contextAgentId}
           editorKind={editorKind}
           requireAgentId={showAgentPicker}
-          showBlastRadius={showBlastRadius}
         />
       ) : editorKind === 'entity' &&
         !progressiveDisclosure &&
@@ -415,13 +551,6 @@ const AutomationFormEditor = forwardRef<
         <div className={styles['editor__scroll']}>
           <Scrollbar>
             <div className={styles['editor__form']}>
-              <TextInput
-                className={styles['editor__form-control']}
-                label="Automation name"
-                value={name}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-              />
-
               {showAgentPicker ? (
                 <AgentPickerField
                   className={styles['editor__form-control']}
@@ -432,103 +561,88 @@ const AutomationFormEditor = forwardRef<
                 />
               ) : null}
 
-              {showEntityIdentity ? (
+              {showOperateWhere ? (
+                formSection(
+                  'What starts the automation?',
+                  triggerSectionId,
+                  <>
+                    <TriggerPicker
+                      className={styles['editor__form-control']}
+                      value={triggerPicker}
+                      fallbackLabel={triggerFallbackLabel}
+                      emptyLabel="Choose a trigger"
+                      onChange={handleTriggerPickerChange}
+                    />
+                    {scheduleFields}
+                    {channelField}
+                    {playbookField}
+                  </>,
+                )
+              ) : (
                 <>
-                  <TextInput
+                  <TriggerPicker
                     className={styles['editor__form-control']}
-                    label="Display name"
-                    value={displayName}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setDisplayName(e.target.value)}
+                    value={triggerPicker}
+                    fallbackLabel={triggerFallbackLabel}
+                    onChange={handleTriggerPickerChange}
                   />
-                  <TextInput
-                    className={styles['editor__form-control']}
-                    label="Username"
-                    value={username}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-                  />
+                  {scheduleFields}
+                  {channelField}
+                  {playbookField}
                 </>
-              ) : null}
+              )}
 
-              <TriggerPicker
-                className={styles['editor__form-control']}
-                value={triggerPicker}
-                fallbackLabel={triggerFallbackLabel}
-                onChange={handleTriggerPickerChange}
-              />
+              {showOperateWhere ? <AutomationOperateWhere /> : null}
 
-              {triggerPicker === 'schedule' ? (
-                <div className={styles['editor__form-row']}>
-                  <Select
+              {showOperateWhere ? (
+                formSection(
+                  'What should the automation do?',
+                  tasksSectionId,
+                  <TextArea
                     className={styles['editor__form-control']}
-                    label="Frequency"
-                    value={frequency}
-                    onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                      setFrequency(e.target.value as ScheduleFrequency)
+                    value={instructions}
+                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                      setInstructions(e.target.value)
                     }
-                  >
-                    {SCHEDULE_FREQUENCIES.map((f) => (
-                      <option key={f} value={f}>
-                        {SCHEDULE_FREQUENCY_LABELS[f]}
-                      </option>
-                    ))}
-                  </Select>
-                  <Select
-                    className={styles['editor__form-control']}
-                    label="Time"
-                    value={time}
-                    onChange={(e: ChangeEvent<HTMLSelectElement>) => setTime(e.target.value)}
-                  >
-                    {SCHEDULE_TIMES.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-              ) : null}
+                    placeholder="Describe the tasks this automation should perform…"
+                    rows={5}
+                    maxLength={500}
+                    aria-labelledby={tasksSectionId}
+                  />,
+                )
+              ) : (
+                <TextArea
+                  className={styles['editor__form-control']}
+                  label="Automation tasks"
+                  value={instructions}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setInstructions(e.target.value)
+                  }
+                  rows={5}
+                  maxLength={500}
+                />
+              )}
 
-              {kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker) ? (
+              {editorKind === 'entity' ? (
                 <Select
                   className={styles['editor__form-control']}
-                  label="Channel"
-                  value={channelId}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setChannelId(e.target.value)}
+                  label="AI service"
+                  value={aiServiceId}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                    setAiServiceId(e.target.value)
+                  }
                 >
-                  {AUTOMATION_CHANNEL_OPTIONS.map((channel) => (
-                    <option key={channel.id} value={channel.id}>
-                      {channel.label}
+                  {AI_SERVICES.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.label}
                     </option>
                   ))}
                 </Select>
               ) : null}
-
-              {triggerPickerNeedsPlaybook(triggerPicker) ? (
-                <Select
-                  className={styles['editor__form-control']}
-                  label="Playbook"
-                  value={playbookId}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) => setPlaybookId(e.target.value)}
-                >
-                  <option value="">Any playbook</option>
-                  {AUTOMATION_PLAYBOOK_OPTIONS.map((playbook) => (
-                    <option key={playbook.id} value={playbook.id}>
-                      {playbook.label}
-                    </option>
-                  ))}
-                </Select>
-              ) : null}
-
-              <TextArea
-                className={styles['editor__form-control']}
-                label="Automation instructions"
-                value={instructions}
-                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
-                rows={5}
-                maxLength={500}
-              />
 
               {showAutomationToolScope ? (
                 <AutomationToolScope
+                  agentName={assignedAgent?.displayName}
                   agentToolSummary={
                     assignedAgent
                       ? `${assignedAgent.activeMcps} MCP · ${assignedAgent.toolCount} tools`
@@ -537,12 +651,11 @@ const AutomationFormEditor = forwardRef<
                 />
               ) : null}
 
-              {showBlastRadius ? <BlastRadiusSummary blast={blast} /> : null}
-
               {progressiveDisclosure ? (
                 <AdvancedAgentConfig
                   activeMcps={toolsActiveMcps}
                   toolCount={toolsCount}
+                  aiServiceId={aiServiceId}
                 />
               ) : null}
             </div>

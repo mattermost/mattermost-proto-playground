@@ -191,7 +191,7 @@ export default function ProgressiveAutomationAgents() {
           isNew={entityIsNew}
           deleteTarget={deleteTarget}
           progressiveDisclosure
-          showBlastRadius
+          showOperateWhere
           onSubmit={(draft) => {
             if (entityIsNew) {
               createEntity(draft);

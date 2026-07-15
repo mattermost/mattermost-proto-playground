@@ -1,4 +1,4 @@
-import { Checkbox, Icon, SectionNotice, Tag } from '@mattermost/compass-ui';
+import { Checkbox, Icon, SectionNotice } from '@mattermost/compass-ui';
 import { useId, useState, type ChangeEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import {
@@ -8,6 +8,8 @@ import {
 import styles from './AutomationToolScope.module.scss';
 
 export interface AutomationToolScopeProps {
+  /** Display name of the executor agent, e.g. "Matty". */
+  agentName?: string | null;
   /** Agent's own tools — shown as context, not as this control. */
   agentToolSummary?: string | null;
   className?: string;
@@ -18,6 +20,7 @@ export interface AutomationToolScopeProps {
  * the executor agent's fixed MCP set.
  */
 export default function AutomationToolScope({
+  agentName,
   agentToolSummary,
   className = '',
 }: AutomationToolScopeProps) {
@@ -60,7 +63,6 @@ export default function AutomationToolScope({
           </span>
         </span>
         <span className={styles['tool-scope__trigger-end']}>
-          <Tag label="Scoped" type="Info" size="X-Small" />
           <span
             className={[
               styles['tool-scope__chevron'],
@@ -88,7 +90,7 @@ export default function AutomationToolScope({
           {agentToolSummary ? (
             <SectionNotice
               type="Info"
-              title={`Executor agent already has: ${agentToolSummary}. Enable additional tools below only if the task needs them.`}
+              title={`${agentName ?? 'This agent'} already has: ${agentToolSummary}. Enable additional tools below only if the task needs them.`}
             />
           ) : null}
 
@@ -106,11 +108,6 @@ export default function AutomationToolScope({
                   >
                     <span className={styles['tool-scope__row-label']}>
                       {tool.label}
-                      {tool.suggested ? (
-                        <span className={styles['tool-scope__suggested']}>
-                          Suggested
-                        </span>
-                      ) : null}
                     </span>
                   </Checkbox>
                   <p className={styles['tool-scope__desc']}>{tool.description}</p>

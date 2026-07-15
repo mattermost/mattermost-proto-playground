@@ -24,8 +24,8 @@ import {
 import frameStyles from '@/pages/prototypes/channel-automations/PrototypeAppFrame.module.scss';
 
 /**
- * Option 2b — scoped executor: Option 2 backbone + per-automation tool grants,
- * capability-aware agent picker, and always-visible blast radius.
+ * Option 2b — scoped executor: Option 2 backbone + per-automation tool grants
+ * and a capability-aware agent picker.
  */
 export default function ScopedExecutorAutomations() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -168,7 +168,6 @@ export default function ScopedExecutorAutomations() {
           onClose={goAgents}
           showAutomationsTab={false}
           onGoAutomations={goAutomations}
-          onCreateAutomationFromAgent={goNewAutomationForAgent}
         />
       )}
 
@@ -195,7 +194,7 @@ export default function ScopedExecutorAutomations() {
           deleteTarget={deleteTarget}
           showAgentCapabilities
           showAutomationToolScope
-          showBlastRadius
+          showOperateWhere
           onSubmit={(draft) => {
             if (automationIsNew) {
               createAutomation(draft);

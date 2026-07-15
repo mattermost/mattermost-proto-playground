@@ -8,6 +8,7 @@ import AutomationFormEditor, {
   type EditorView,
 } from './AutomationFormEditor';
 import AutomationsTabs from './AutomationsTabs';
+import EditableTitle from './EditableTitle';
 import styles from './AutomationEditView.module.scss';
 
 export interface AutomationEditViewProps {
@@ -19,7 +20,7 @@ export interface AutomationEditViewProps {
   contextAgentId?: string;
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
-  showBlastRadius?: boolean;
+  showOperateWhere?: boolean;
 }
 
 export default function AutomationEditView({
@@ -31,9 +32,11 @@ export default function AutomationEditView({
   contextAgentId,
   showAgentCapabilities = false,
   showAutomationToolScope = false,
-  showBlastRadius = false,
+  showOperateWhere = false,
 }: AutomationEditViewProps) {
-  const title = isNew ? 'New automation' : 'Edit automation';
+  const [name, setName] = useState(
+    initial?.name ?? (isNew ? 'New automation' : ''),
+  );
   const [view, setView] = useState<EditorView>('chat');
   const [canSave, setCanSave] = useState(false);
   const editorRef = useRef<AutomationFormEditorHandle>(null);
@@ -51,6 +54,8 @@ export default function AutomationEditView({
       <AutomationFormEditor
         ref={editorRef}
         initial={initial}
+        name={name}
+        onNameChange={setName}
         onSubmit={onSubmit}
         onCancel={onClose}
         showViewTabs={false}
@@ -59,7 +64,7 @@ export default function AutomationEditView({
         contextAgentId={contextAgentId}
         showAgentCapabilities={showAgentCapabilities}
         showAutomationToolScope={showAutomationToolScope}
-        showBlastRadius={showBlastRadius}
+        showOperateWhere={showOperateWhere}
         view={view}
         onViewChange={setView}
         onValidityChange={setCanSave}
@@ -85,7 +90,12 @@ export default function AutomationEditView({
               onClick={onClose}
               icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
             />
-            <h1 className={styles['automation-edit__title']}>{title}</h1>
+            <EditableTitle
+              className={styles['automation-edit__title']}
+              value={name}
+              onChange={setName}
+              size="page"
+            />
           </div>
 
           <AutomationsTabs

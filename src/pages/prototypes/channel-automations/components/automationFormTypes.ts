@@ -2,6 +2,7 @@ import type {
   EventType,
   PlaybookEventType,
   ScheduleFrequency,
+  ScheduleWeekday,
   TriggerKind,
 } from '../channelAutomationsData';
 
@@ -12,6 +13,7 @@ export interface FormValues {
   kind: TriggerKind;
   frequency: ScheduleFrequency;
   time: string;
+  weekday: ScheduleWeekday;
   event: EventType;
   keyword: string;
   playbookEvent: PlaybookEventType;

@@ -1,6 +1,7 @@
 import { Scrollbar } from '@mattermost/compass-ui';
 import { RightSidebarHeader } from '@mattermost/compass-ui';
 import { shellStyles } from '@mattermost/compass-ui';
+import { useEffect, useState } from 'react';
 import type {
   Automation,
   AutomationDraft,
@@ -11,6 +12,7 @@ import AgentSelector from './AgentSelector';
 import AutomationFormEditor from './AutomationFormEditor';
 import AutomationsList from './AutomationsList';
 import ChooseAgentPrompt from './ChooseAgentPrompt';
+import EditableTitle from './EditableTitle';
 import type { EditorKind } from './automationFormTypes';
 import styles from './AutomationsPanel.module.scss';
 
@@ -40,7 +42,7 @@ export interface AutomationsPanelProps {
   editorKind?: EditorKind;
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
-  showBlastRadius?: boolean;
+  showOperateWhere?: boolean;
   progressiveDisclosure?: boolean;
 }
 
@@ -67,16 +69,38 @@ export default function AutomationsPanel({
   editorKind = 'assignment',
   showAgentCapabilities = false,
   showAutomationToolScope = false,
-  showBlastRadius = false,
+  showOperateWhere = false,
   progressiveDisclosure = false,
 }: AutomationsPanelProps) {
   const inEditor = creating || editing != null || editingEntity != null;
   const choosingAgent = agentPickerMode != null;
   const editorContextAgentId = creatingContextAgentId ?? contextAgentId;
-  const headerTitle = choosingAgent || creating
+  const [name, setName] = useState('New automation');
+
+  useEffect(() => {
+    if (creating) {
+      setName('New automation');
+      return;
+    }
+    if (editing) {
+      setName(editing.name);
+      return;
+    }
+    if (editingEntity) {
+      setName(editingEntity.name);
+    }
+  }, [creating, editing, editingEntity]);
+
+  const headerTitle = choosingAgent
     ? 'New automation'
-    : editing || editingEntity
-      ? 'Edit automation'
+    : inEditor
+      ? (
+          <EditableTitle
+            value={name}
+            onChange={setName}
+            size="sidebar"
+          />
+        )
       : 'Automations';
 
   const handleSubmit = (draft: AutomationDraft) => {
@@ -122,6 +146,8 @@ export default function AutomationsPanel({
               initial={editing ?? undefined}
               initialEntity={editingEntity ?? undefined}
               createType={creating ? createType : undefined}
+              name={name}
+              onNameChange={setName}
               onSubmit={handleSubmit}
               onCancel={onBackFromEditor}
               showEnabledSwitch={false}
@@ -130,7 +156,7 @@ export default function AutomationsPanel({
               editorKind={editorKind}
               showAgentCapabilities={showAgentCapabilities}
               showAutomationToolScope={showAutomationToolScope}
-              showBlastRadius={showBlastRadius}
+              showOperateWhere={showOperateWhere}
               progressiveDisclosure={progressiveDisclosure}
             />
           </div>

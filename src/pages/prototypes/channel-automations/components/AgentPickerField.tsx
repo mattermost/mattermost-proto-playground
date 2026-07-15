@@ -64,7 +64,7 @@ export default function AgentPickerField({
           {selected ? (
             <UserAvatar
               className={styles['picker__avatar']}
-              size="16"
+              size="28"
               {...agentAvatarProps(selected)}
             />
           ) : null}
@@ -116,7 +116,7 @@ export default function AgentPickerField({
               active={value === agent.id}
               trailingElement={value === agent.id}
               leadingVisual={
-                <UserAvatar size="16" {...agentAvatarProps(agent)} />
+                <UserAvatar size="24" {...agentAvatarProps(agent)} />
               }
               onClick={() => {
                 onChange(agent.id);

@@ -1,0 +1,38 @@
+.editable-title {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--center-channel-color);
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-semibold);
+  outline: none;
+
+  &::placeholder {
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 -2px 0 var(--button-bg);
+  }
+
+  &--page {
+    font-size: var(--font-size-500);
+    line-height: var(--line-height-500);
+  }
+
+  &--modal {
+    font-size: var(--font-size-300);
+    line-height: var(--line-height-300);
+    font-family: var(--font-family-heading);
+  }
+
+  &--sidebar {
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-family: var(--font-family-heading);
+  }
+}

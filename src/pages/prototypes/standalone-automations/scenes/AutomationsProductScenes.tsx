@@ -73,7 +73,7 @@ export interface AutomationEditSceneProps {
   onGoAgents: () => void;
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
-  showBlastRadius?: boolean;
+  showOperateWhere?: boolean;
 }
 
 export function AutomationEditScene({
@@ -88,7 +88,7 @@ export function AutomationEditScene({
   onGoAgents,
   showAgentCapabilities = false,
   showAutomationToolScope = false,
-  showBlastRadius = false,
+  showOperateWhere = false,
 }: AutomationEditSceneProps) {
   return (
     <AgentsShell
@@ -117,7 +117,7 @@ export function AutomationEditScene({
         contextAgentId={contextAgentId}
         showAgentCapabilities={showAgentCapabilities}
         showAutomationToolScope={showAutomationToolScope}
-        showBlastRadius={showBlastRadius}
+        showOperateWhere={showOperateWhere}
       />
     </AgentsShell>
   );

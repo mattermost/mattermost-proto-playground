@@ -9,8 +9,8 @@ import type { TagType } from '@/components/Tag/Tag';
 import styles from './RightSidebarHeader.module.scss';
 
 export interface RightSidebarHeaderProps {
-  /** Primary title text. */
-  title: string;
+  /** Primary title text or custom node (e.g. editable title). */
+  title: ReactNode;
   /** Secondary title shown to the right of a vertical divider (e.g. parent channel name). */
   secondaryTitle?: string;
   /** Custom secondary column content; takes precedence over `secondaryTitle`. */

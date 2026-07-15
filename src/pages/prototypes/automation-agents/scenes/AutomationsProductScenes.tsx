@@ -70,7 +70,7 @@ export interface AutomationEntityEditSceneProps {
   onCloseDelete: () => void;
   onGoAgents: () => void;
   progressiveDisclosure?: boolean;
-  showBlastRadius?: boolean;
+  showOperateWhere?: boolean;
 }
 
 export function AutomationEntityEditScene({
@@ -83,7 +83,7 @@ export function AutomationEntityEditScene({
   onCloseDelete,
   onGoAgents,
   progressiveDisclosure = false,
-  showBlastRadius = false,
+  showOperateWhere = false,
 }: AutomationEntityEditSceneProps) {
   return (
     <AgentsShell
@@ -109,7 +109,7 @@ export function AutomationEntityEditScene({
         onSubmit={onSubmit}
         onClose={onClose}
         progressiveDisclosure={progressiveDisclosure}
-        showBlastRadius={showBlastRadius}
+        showOperateWhere={showOperateWhere}
       />
     </AgentsShell>
   );

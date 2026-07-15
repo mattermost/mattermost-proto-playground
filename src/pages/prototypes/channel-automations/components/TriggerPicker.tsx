@@ -45,6 +45,8 @@ export interface TriggerPickerProps {
   value: TriggerPickerOption | null;
   /** Shown on the trigger when `value` is null (e.g. legacy @mention triggers). */
   fallbackLabel?: string;
+  /** Empty-state prompt when no trigger is selected. */
+  emptyLabel?: string;
   onChange: (value: TriggerPickerOption) => void;
   className?: string;
 }
@@ -52,6 +54,7 @@ export interface TriggerPickerProps {
 export default function TriggerPicker({
   value,
   fallbackLabel,
+  emptyLabel = 'What starts the automation?',
   onChange,
   className = '',
 }: TriggerPickerProps) {
@@ -199,7 +202,7 @@ export default function TriggerPicker({
             </span>
           ) : (
             <span className={styles['trigger-picker__label-emphasis']}>
-              What starts the automation?
+              {emptyLabel}
             </span>
           )}
         </span>

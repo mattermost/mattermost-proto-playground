@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import type { TagType } from '@mattermost/compass-ui';
 import ChannelAutomations from '@/pages/prototypes/channel-automations/ChannelAutomations';
 import StandaloneAutomations from '@/pages/prototypes/standalone-automations/StandaloneAutomations';
 import AutomationAgents from '@/pages/prototypes/automation-agents/AutomationAgents';
@@ -14,6 +15,11 @@ export type PrototypeEntry = {
   description?: string;
   path: string;
   component: ComponentType;
+  /** Optional status label tag shown beside the title on the index. */
+  tag?: {
+    label: string;
+    type?: TagType;
+  };
   /** Omit from the prototypes index while keeping the route available. */
   hidden?: boolean;
 };
@@ -26,6 +32,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Automations are part of the configuration for an agent. Users must have access to edit the agent in order to create an automation for an agent.',
     path: '/prototypes/channel-automations',
     component: ChannelAutomations,
+    tag: { label: 'Not selected', type: 'Default' },
   },
   {
     id: 'standalone-automations',
@@ -55,7 +62,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     id: 'progressive-automation-agents',
     label: 'Option 3b: Automation is an agent (progressive)',
     description:
-      'Each automation is its own dedicated agent. Defaults show name, trigger, instructions, and blast radius; model, tools, and access sit behind Advanced.',
+      'Each automation is its own dedicated agent. Defaults show name, trigger, and instructions; model, tools, and access sit behind Advanced.',
     path: '/prototypes/progressive-automation-agents',
     component: ProgressiveAutomationAgents,
   },

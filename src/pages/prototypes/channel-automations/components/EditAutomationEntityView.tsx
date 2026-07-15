@@ -27,9 +27,9 @@ export interface EditAutomationEntityViewProps {
   isNew?: boolean;
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
-  /** Option 5 — Chat + Settings only; agent plumbing lives in Advanced. */
+  /** Option 3b — Chat + Settings only; agent plumbing lives in Advanced. */
   progressiveDisclosure?: boolean;
-  showBlastRadius?: boolean;
+  showOperateWhere?: boolean;
 }
 
 export default function EditAutomationEntityView({
@@ -38,14 +38,13 @@ export default function EditAutomationEntityView({
   onSubmit,
   onClose,
   progressiveDisclosure = false,
-  showBlastRadius = false,
+  showOperateWhere = false,
 }: EditAutomationEntityViewProps) {
   const [tab, setTab] = useState<AgentTabKey>(isNew ? 'chat' : 'configuration');
+  const [name, setName] = useState(
+    entity?.name ?? (isNew ? 'New automation' : ''),
+  );
   const editorRef = useRef<AutomationFormEditorHandle>(null);
-
-  const title = isNew
-    ? 'New automation'
-    : `Edit ${entity?.displayName ?? 'automation'}`;
 
   const tabs = progressiveDisclosure
     ? PROGRESSIVE_TABS
@@ -75,13 +74,15 @@ export default function EditAutomationEntityView({
         <AutomationFormEditor
           ref={editorRef}
           initialEntity={entity}
+          name={name}
+          onNameChange={setName}
           onSubmit={onSubmit}
           onCancel={onClose}
           showViewTabs={false}
           showFooter={false}
           editorKind="entity"
           progressiveDisclosure={progressiveDisclosure}
-          showBlastRadius={showBlastRadius}
+          showOperateWhere={showOperateWhere}
           view={tab === 'chat' ? 'chat' : 'form'}
         />
       </div>
@@ -90,7 +91,9 @@ export default function EditAutomationEntityView({
 
   return (
     <EditAgentView
-      title={title}
+      title={name}
+      titleEditable
+      onTitleChange={setName}
       activeTab={tab}
       onTabChange={setTab}
       onClose={onClose}
@@ -98,6 +101,9 @@ export default function EditAutomationEntityView({
       showAutomationsTab={false}
       tabs={[...tabs]}
       tabsAriaLabel="Automation settings"
+      flushBody={
+        progressiveDisclosure || tab === 'chat' || tab === 'configuration'
+      }
     >
       {renderBody()}
     </EditAgentView>

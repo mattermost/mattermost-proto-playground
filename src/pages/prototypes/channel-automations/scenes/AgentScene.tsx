@@ -7,10 +7,10 @@ import {
 import EditAgentView, { type AgentTabKey } from '../components/EditAgentView';
 import AccessTab from '../components/AccessTab';
 import AgentAutomationsTab from '../components/AgentAutomationsTab';
+import AgentSettingsTab from '../components/AgentSettingsTab';
 import AgentsShell from '../components/AgentsShell';
 import AutomationDeleteModal from '../components/AutomationDeleteModal';
 import AutomationFormModal from '../components/AutomationFormModal';
-import CreateAutomationShortcut from '../components/CreateAutomationShortcut';
 import McpsTab from '../components/McpsTab';
 import PlaceholderTab from '../components/PlaceholderTab';
 
@@ -25,8 +25,6 @@ export interface AgentSceneProps {
   onClose: () => void;
   showAutomationsTab?: boolean;
   onGoAutomations?: () => void;
-  /** Option 4 — deep-link into new automation for this agent. */
-  onCreateAutomationFromAgent?: (agentId: string) => void;
 }
 
 type FormState =
@@ -45,7 +43,6 @@ export default function AgentScene({
   onClose,
   showAutomationsTab = true,
   onGoAutomations,
-  onCreateAutomationFromAgent,
 }: AgentSceneProps) {
   const agent = agentById(agentId);
   const agentAutomations = automationsForAgent(automations, agentId);
@@ -145,11 +142,8 @@ export default function AgentScene({
             toolCount={agent?.toolCount}
           />
         ) : tab === 'configuration' ? (
-          onCreateAutomationFromAgent && agent ? (
-            <CreateAutomationShortcut
-              agentDisplayName={agent.displayName}
-              onCreate={() => onCreateAutomationFromAgent(agentId)}
-            />
+          agent ? (
+            <AgentSettingsTab agent={agent} />
           ) : (
             <PlaceholderTab tab={tab} />
           )

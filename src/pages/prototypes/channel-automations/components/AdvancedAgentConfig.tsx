@@ -1,36 +1,41 @@
 import { Icon, Select } from '@mattermost/compass-ui';
-import { useId, useState, type ChangeEvent } from 'react';
+import { useEffect, useId, useState, type ChangeEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import { modelsForAiService } from '../channelAutomationsData';
 import AccessTab from './AccessTab';
 import McpsTab from './McpsTab';
 import styles from './AdvancedAgentConfig.module.scss';
 
-const MODEL_OPTIONS = [
-  { id: 'default', label: 'Default workspace model' },
-  { id: 'gpt-4.1', label: 'GPT-4.1' },
-  { id: 'claude-sonnet', label: 'Claude Sonnet' },
-] as const;
-
 export interface AdvancedAgentConfigProps {
   activeMcps?: number;
   toolCount?: number;
+  /** Selected System Console AI service — drives available models. */
+  aiServiceId: string;
   className?: string;
 }
 
 /**
- * Option 5 — agent plumbing (model, tools, access) collapsed behind Advanced.
- * Blast radius stays outside this panel.
+ * Option 3b — agent plumbing (model, tools, access) collapsed behind Advanced.
  */
 export default function AdvancedAgentConfig({
   activeMcps,
   toolCount,
+  aiServiceId,
   className = '',
 }: AdvancedAgentConfigProps) {
   const panelId = useId().replace(/\W/g, '');
   const [expanded, setExpanded] = useState(false);
-  const [model, setModel] = useState<(typeof MODEL_OPTIONS)[number]['id']>(
-    'default',
-  );
+  const models = modelsForAiService(aiServiceId);
+  const [model, setModel] = useState(models[0]?.id ?? '');
+
+  useEffect(() => {
+    const nextModels = modelsForAiService(aiServiceId);
+    setModel((current) =>
+      nextModels.some((option) => option.id === current)
+        ? current
+        : (nextModels[0]?.id ?? ''),
+    );
+  }, [aiServiceId]);
 
   return (
     <section
@@ -46,7 +51,7 @@ export default function AdvancedAgentConfig({
         <span className={styles['advanced__trigger-copy']}>
           <span className={styles['advanced__trigger-label']}>Advanced</span>
           <span className={styles['advanced__trigger-hint']}>
-            Model, tools, and access — this automation runs as its own agent
+            Model, tools, and access
           </span>
         </span>
         <span
@@ -73,15 +78,14 @@ export default function AdvancedAgentConfig({
       >
         <div className={styles['advanced__collapse-inner']} id={panelId}>
           <div className={styles['advanced__section']}>
-            <h4 className={styles['advanced__section-title']}>Model</h4>
             <Select
               label="Model"
               value={model}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setModel(e.target.value as typeof model)
+                setModel(e.target.value)
               }
             >
-              {MODEL_OPTIONS.map((option) => (
+              {models.map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.label}
                 </option>

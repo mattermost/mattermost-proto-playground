@@ -23,7 +23,7 @@
   &__chrome {
     flex: 0 0 auto;
     background-color: var(--center-channel-bg);
-    padding-top: var(--spacing-xxxl);
+    padding-top: calc(var(--spacing-xxl) + var(--spacing-l));
   }
 
   &__scroll {
@@ -39,6 +39,8 @@
   }
 
   &__title {
+    flex: 1 1 auto;
+    min-width: 0;
     margin: 0;
     font-family: var(--font-family-heading);
     font-size: var(--font-size-500);

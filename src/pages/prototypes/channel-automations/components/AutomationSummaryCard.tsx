@@ -55,7 +55,7 @@ export default function AutomationSummaryCard({
           </div>
         ) : null}
         <div className={styles['card__row']}>
-          <dt className={styles['card__label']}>Posts</dt>
+          <dt className={styles['card__label']}>Summary</dt>
           <dd className={styles['card__value']}>{posts}</dd>
         </div>
       </dl>

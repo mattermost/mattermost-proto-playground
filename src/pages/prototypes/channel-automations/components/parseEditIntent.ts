@@ -49,14 +49,14 @@ export function parseEditIntent(text: string): EditIntentPatch | null {
     }
   }
 
-  if (normalized.includes('weekday') || normalized.includes('every weekday')) {
-    return { kind: 'schedule', frequency: 'weekdays' };
+  if (normalized.includes('hourly') || normalized.includes('every hour')) {
+    return { kind: 'schedule', frequency: 'hourly' };
   }
   if (normalized.includes('every day') || normalized.includes('daily')) {
     return { kind: 'schedule', frequency: 'daily' };
   }
   if (normalized.includes('monday') || normalized.includes('weekly')) {
-    return { kind: 'schedule', frequency: 'weekly' };
+    return { kind: 'schedule', frequency: 'weekly', weekday: 'monday' };
   }
   if (normalized.includes('mention')) {
     return { kind: 'event', event: 'mention' };

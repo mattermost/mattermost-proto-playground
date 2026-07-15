@@ -5,8 +5,12 @@ import {
   AUTOMATION_TEAM_OPTIONS,
   SCHEDULE_FREQUENCY_LABELS,
   SCHEDULE_TIMES,
+  SCHEDULE_WEEKDAY_LABELS,
+  SCHEDULE_WEEKDAYS,
   channelLabelById,
   playbookLabelById,
+  scheduleNeedsTime,
+  scheduleNeedsWeekday,
   teamLabelById,
   type AutomationChannelType,
   type ScheduleFrequency,
@@ -18,6 +22,7 @@ export type CreateScriptStep =
   | 'agent'
   | 'trigger'
   | 'schedule-frequency'
+  | 'schedule-weekday'
   | 'schedule-time'
   | 'channel'
   | 'team'
@@ -64,7 +69,7 @@ export const CREATE_IDEA_OPTIONS: ChatScriptOption[] = [
     patch: {
       name: 'Post a recurring reminder',
       kind: 'schedule',
-      frequency: 'weekdays',
+      frequency: 'daily',
       time: '9:00 AM',
       instructions:
         'Post a reminder asking the team to share their standup update in the thread before 10:00 AM.',
@@ -90,6 +95,7 @@ export const CREATE_IDEA_OPTIONS: ChatScriptOption[] = [
       name: 'Send a weekly digest',
       kind: 'schedule',
       frequency: 'weekly',
+      weekday: 'monday',
       time: '8:00 AM',
       instructions:
         'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',
@@ -190,6 +196,8 @@ export const PLAYBOOK_SCOPE_TITLE = 'Which playbook should this apply to?';
 
 export const SCHEDULE_FREQUENCY_TITLE = 'How often should it run?';
 
+export const SCHEDULE_WEEKDAY_TITLE = 'Which day of the week?';
+
 export const SCHEDULE_TIME_TITLE = 'What time should it run?';
 
 export function scheduleTriggerOptions(): ChatScriptOption[] {
@@ -200,6 +208,14 @@ export function scheduleTriggerOptions(): ChatScriptOption[] {
       patch: { kind: 'schedule', frequency },
     }),
   );
+}
+
+export function scheduleWeekdayOptions(): ChatScriptOption[] {
+  return SCHEDULE_WEEKDAYS.map((weekday) => ({
+    id: weekday,
+    label: SCHEDULE_WEEKDAY_LABELS[weekday],
+    patch: { kind: 'schedule', weekday },
+  }));
 }
 
 export function scheduleTimeOptions(): ChatScriptOption[] {
@@ -267,6 +283,8 @@ export function promptForStep(step: CreateScriptStep): string {
       return 'Ok, got it. When should the automation be executed?';
     case 'schedule-frequency':
       return 'How often should it run?';
+    case 'schedule-weekday':
+      return 'Which day of the week?';
     case 'schedule-time':
       return 'What time should it run?';
     case 'channel':
@@ -307,6 +325,12 @@ export function getStepSelection(step: CreateScriptStep): ChatStepSelection | nu
         title: SCHEDULE_FREQUENCY_TITLE,
         options: scheduleTriggerOptions(),
         ariaLabel: 'Schedule frequency',
+      };
+    case 'schedule-weekday':
+      return {
+        title: SCHEDULE_WEEKDAY_TITLE,
+        options: scheduleWeekdayOptions(),
+        ariaLabel: 'Day of the week',
       };
     case 'schedule-time':
       return {
@@ -390,6 +414,10 @@ export function advanceAfterStep(
     case 'trigger':
       return accepted ? advanceAfterTrigger(accepted) : 'done';
     case 'schedule-frequency':
+      if (scheduleNeedsWeekday(values.frequency)) return 'schedule-weekday';
+      if (scheduleNeedsTime(values.frequency)) return 'schedule-time';
+      return 'channel';
+    case 'schedule-weekday':
       return 'schedule-time';
     case 'schedule-time':
       return 'channel';

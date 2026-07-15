@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Tag } from '@mattermost/compass-ui';
 import { PROTOTYPES } from '@/manifests/prototypes';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import shellStyles from '@/pages/_shell/DocShell.module.scss';
@@ -27,7 +28,16 @@ export default function PrototypesIndex() {
         <ul className={styles['prototypes-index__list']}>
           {PROTOTYPES.filter((p) => !p.hidden).map((p) => (
             <li key={p.id}>
-              <Link to={p.path}>{p.label}</Link>
+              <div className={styles['prototypes-index__title-row']}>
+                <Link to={p.path}>{p.label}</Link>
+                {p.tag ? (
+                  <Tag
+                    label={p.tag.label}
+                    type={p.tag.type ?? 'Default'}
+                    size="Small"
+                  />
+                ) : null}
+              </div>
               {p.description ? (
                 <p className={styles['prototypes-index__description']}>{p.description}</p>
               ) : null}

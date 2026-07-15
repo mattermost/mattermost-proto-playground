@@ -29,7 +29,7 @@
   &__form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-l);
+    gap: var(--spacing-xxl);
     padding: var(--spacing-xl);
 
     &-control {
@@ -45,6 +45,27 @@
         min-width: 0;
       }
     }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__section-title {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__section-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
   }
 
   &__panel-tab {

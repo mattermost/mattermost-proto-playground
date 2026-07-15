@@ -6,6 +6,7 @@ import AutomationFormEditor, {
   type EditorView,
 } from './AutomationFormEditor';
 import AutomationsTabs from './AutomationsTabs';
+import EditableTitle from './EditableTitle';
 import styles from './AutomationFormModal.module.scss';
 
 export interface AutomationFormModalProps {
@@ -29,7 +30,9 @@ export default function AutomationFormModal({
   onClose,
 }: AutomationFormModalProps) {
   const isEdit = initial != null;
-  const title = isEdit ? 'Edit automation' : 'New automation';
+  const [name, setName] = useState(
+    initial?.name ?? (isEdit ? '' : 'New automation'),
+  );
   const [view, setView] = useState<EditorView>('chat');
 
   const headerBottom = (
@@ -49,7 +52,13 @@ export default function AutomationFormModal({
       <div className={styles['layer__modal']}>
         <Modal
           size="Large"
-          title={title}
+          title={
+            <EditableTitle
+              value={name}
+              onChange={setName}
+              size="modal"
+            />
+          }
           onClose={onClose}
           headerBottom={headerBottom}
           headerDivider={false}
@@ -57,6 +66,8 @@ export default function AutomationFormModal({
         >
           <AutomationFormEditor
             initial={initial}
+            name={name}
+            onNameChange={setName}
             onSubmit={onSubmit}
             onCancel={onClose}
             showViewTabs={false}

@@ -26,6 +26,13 @@
   }
 }
 
+.prototypes-index__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
 .prototypes-index__description {
   margin: var(--spacing-xxs) 0 0;
   font-size: var(--font-size-100);

@@ -81,13 +81,18 @@ export function seedForAutomationType(type: AutomationType): AutomationTypeSeed 
     case 'recurring-post':
       return {
         name: meta.label,
-        triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+        triggerConfig: { kind: 'schedule', frequency: 'daily', time: '9:00 AM' },
         instructions: meta.description,
       };
     case 'recap':
       return {
         name: meta.label,
-        triggerConfig: { kind: 'schedule', frequency: 'weekly', time: '8:00 AM' },
+        triggerConfig: {
+          kind: 'schedule',
+          frequency: 'weekly',
+          weekday: 'monday',
+          time: '8:00 AM',
+        },
         instructions: meta.description,
       };
     case 'auto-responder':
@@ -99,7 +104,7 @@ export function seedForAutomationType(type: AutomationType): AutomationTypeSeed 
     case 'custom':
       return {
         name: '',
-        triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+        triggerConfig: { kind: 'schedule', frequency: 'daily', time: '9:00 AM' },
         instructions: '',
       };
   }
@@ -113,7 +118,17 @@ export function seedForAutomationType(type: AutomationType): AutomationTypeSeed 
 
 export type TriggerKind = 'schedule' | 'event' | 'playbook-event';
 
-export type ScheduleFrequency = 'weekdays' | 'daily' | 'weekly' | 'monthly';
+export type ScheduleFrequency = 'hourly' | 'daily' | 'weekly';
+
+export type ScheduleWeekday =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday';
+
 export type EventType =
   | 'mention'
   | 'keyword'
@@ -221,11 +236,24 @@ export const TRIGGER_PICKER_META: Record<
 );
 
 export const SCHEDULE_FREQUENCY_LABELS: Record<ScheduleFrequency, string> = {
-  weekdays: 'Weekdays',
-  daily: 'Every day',
-  weekly: 'Mondays',
-  monthly: 'On the 1st of each month',
+  hourly: 'Hourly',
+  daily: 'Daily',
+  weekly: 'Weekly',
 };
+
+export const SCHEDULE_WEEKDAY_LABELS: Record<ScheduleWeekday, string> = {
+  monday: 'Monday',
+  tuesday: 'Tuesday',
+  wednesday: 'Wednesday',
+  thursday: 'Thursday',
+  friday: 'Friday',
+  saturday: 'Saturday',
+  sunday: 'Sunday',
+};
+
+export const SCHEDULE_WEEKDAYS = Object.keys(
+  SCHEDULE_WEEKDAY_LABELS,
+) as ScheduleWeekday[];
 
 /** Times offered in the schedule picker. */
 export const SCHEDULE_TIMES = [
@@ -234,6 +262,14 @@ export const SCHEDULE_TIMES = [
   '12:00 PM',
   '5:00 PM',
 ] as const;
+
+export function scheduleNeedsWeekday(frequency: ScheduleFrequency): boolean {
+  return frequency === 'weekly';
+}
+
+export function scheduleNeedsTime(frequency: ScheduleFrequency): boolean {
+  return frequency === 'daily' || frequency === 'weekly';
+}
 
 export const EVENT_TYPE_LABELS: Record<EventType, string> = {
   mention: 'When the agent is @mentioned',
@@ -269,8 +305,10 @@ export function playbookLabelById(id: string): string {
 export interface ScheduleTrigger {
   kind: 'schedule';
   frequency: ScheduleFrequency;
-  /** One of SCHEDULE_TIMES. */
-  time: string;
+  /** Required for daily and weekly. One of SCHEDULE_TIMES. */
+  time?: string;
+  /** Required for weekly. */
+  weekday?: ScheduleWeekday;
 }
 
 export interface EventTrigger {
@@ -384,6 +422,7 @@ export function buildTriggerConfig(params: {
   kind: TriggerKind;
   frequency: ScheduleFrequency;
   time: string;
+  weekday: ScheduleWeekday;
   event: EventType;
   keyword: string;
   playbookEvent: PlaybookEventType;
@@ -393,7 +432,10 @@ export function buildTriggerConfig(params: {
     return {
       kind: 'schedule',
       frequency: params.frequency,
-      time: params.time,
+      ...(scheduleNeedsTime(params.frequency) ? { time: params.time } : {}),
+      ...(scheduleNeedsWeekday(params.frequency)
+        ? { weekday: params.weekday }
+        : {}),
     };
   }
   if (params.kind === 'playbook-event') {
@@ -413,7 +455,15 @@ export function buildTriggerConfig(params: {
 /** Build the human-readable trigger summary shown in lists. */
 export function triggerSummary(t: TriggerConfig): string {
   if (t.kind === 'schedule') {
-    return `${SCHEDULE_FREQUENCY_LABELS[t.frequency]} at ${t.time}`;
+    if (t.frequency === 'hourly') {
+      return SCHEDULE_FREQUENCY_LABELS.hourly;
+    }
+    if (t.frequency === 'daily') {
+      return `Daily at ${t.time ?? '9:00 AM'}`;
+    }
+    const day =
+      t.weekday != null ? SCHEDULE_WEEKDAY_LABELS[t.weekday] : 'Monday';
+    return `Weekly on ${day}s at ${t.time ?? '9:00 AM'}`;
   }
   if (t.kind === 'playbook-event') {
     const label = PLAYBOOK_EVENT_LABELS[t.event];
@@ -437,7 +487,7 @@ export function triggerToType(t: TriggerConfig): AutomationType {
 /* ------------------------------------------------------------------ */
 /* Scope — which channels a run is allowed to touch. An automation can  */
 /* reach a channel directly, via its team, or via a channel attribute.  */
-/* Options 1–3/5: tools are agent-owned. Option 4 may also grant tools  */
+/* Options 1–3 / 3b: tools are agent-owned. Option 2b may also grant tools */
 /* per automation (see AUTOMATION_GRANTABLE_TOOLS) without editing the  */
 /* executor agent.                                                      */
 /* ------------------------------------------------------------------ */
@@ -451,14 +501,6 @@ export interface AutomationScope {
   attributes?: string[];
 }
 
-/** Always-visible create-flow impact summary (Options 4 & 5). */
-export interface BlastRadius {
-  channels: string[];
-  audience: string;
-  hasPrivateChannel: boolean;
-  exposureWarning: string | null;
-}
-
 export interface AutomationGrantableTool {
   id: string;
   label: string;
@@ -468,7 +510,7 @@ export interface AutomationGrantableTool {
 }
 
 /**
- * Option 4 — tools the creating user can grant on the automation itself.
+ * Option 2b — tools the creating user can grant on the automation itself.
  * These are independent of the chosen agent's permanent MCP set.
  */
 export const AUTOMATION_GRANTABLE_TOOLS: AutomationGrantableTool[] = [
@@ -503,50 +545,6 @@ export const AUTOMATION_GRANTABLE_TOOLS: AutomationGrantableTool[] = [
     suggested: false,
   },
 ];
-
-export function blastRadiusFromScope(input: {
-  channelId?: string;
-  teamId?: string;
-}): BlastRadius {
-  const channels: string[] = [];
-  let hasPrivateChannel = false;
-
-  if (input.teamId) {
-    const team = AUTOMATION_TEAM_OPTIONS.find((t) => t.id === input.teamId);
-    channels.push(
-      team
-        ? `All channels in ${team.label}`
-        : `All channels in ${input.teamId}`,
-    );
-  } else if (input.channelId) {
-    const channel = AUTOMATION_CHANNEL_OPTIONS.find(
-      (c) => c.id === input.channelId,
-    );
-    if (channel) {
-      channels.push(
-        `${channel.label} (${channel.type === 'private' ? 'private' : 'public'})`,
-      );
-      hasPrivateChannel = channel.type === 'private';
-    } else {
-      channels.push(input.channelId);
-    }
-  } else {
-    channels.push(
-      `${ACTIVE_CHANNEL.name} (default channel)`,
-    );
-  }
-
-  return {
-    channels,
-    audience: input.teamId
-      ? 'Members of the selected team'
-      : 'Members of the selected channel',
-    hasPrivateChannel,
-    exposureWarning: hasPrivateChannel
-      ? 'Private channel content may be summarized or posted where this automation has write access.'
-      : null,
-  };
-}
 
 export interface ChannelContext {
   id: string;
@@ -698,7 +696,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: { channelIds: ['ux-design'] },
     name: 'Daily standup reminder',
     type: 'recurring-post',
-    triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+    triggerConfig: { kind: 'schedule', frequency: 'daily', time: '9:00 AM' },
     trigger: 'Daily, 9:00 AM',
     instructions:
       'Post a friendly reminder asking the team to drop their standup update in the thread before 10:00 AM.',
@@ -713,7 +711,12 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: { teamIds: ['contributors'] },
     name: 'Weekly design digest',
     type: 'recurring-post',
-    triggerConfig: { kind: 'schedule', frequency: 'weekly', time: '8:00 AM' },
+    triggerConfig: {
+      kind: 'schedule',
+      frequency: 'weekly',
+      weekday: 'monday',
+      time: '8:00 AM',
+    },
     trigger: 'Mondays at 8:00 AM',
     instructions:
       'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',
@@ -904,6 +907,57 @@ export function agentCapabilitySummary(
 }
 
 /* ------------------------------------------------------------------ */
+/* AI services (system console) — Options 3 & 3b                      */
+/* ------------------------------------------------------------------ */
+
+export interface AiService {
+  id: string;
+  label: string;
+}
+
+export interface AiModelOption {
+  id: string;
+  label: string;
+}
+
+/** Services configured in System Console — fixture for entity automations. */
+export const AI_SERVICES: AiService[] = [
+  { id: 'openai', label: 'OpenAI' },
+  { id: 'anthropic', label: 'Anthropic' },
+  { id: 'azure-openai', label: 'Azure OpenAI' },
+  { id: 'mattermost', label: 'Mattermost LLM' },
+];
+
+export const DEFAULT_AI_SERVICE_ID = AI_SERVICES[0].id;
+
+/** Models available per AI service (from System Console config). */
+export const AI_SERVICE_MODELS: Record<string, AiModelOption[]> = {
+  openai: [
+    { id: 'gpt-4.1', label: 'GPT-4.1' },
+    { id: 'gpt-4o', label: 'GPT-4o' },
+    { id: 'o3-mini', label: 'o3-mini' },
+  ],
+  anthropic: [
+    { id: 'claude-sonnet-4.6', label: 'Sonnet 4.6' },
+    { id: 'claude-sonnet', label: 'Claude Sonnet 4' },
+    { id: 'claude-opus', label: 'Claude Opus 4' },
+    { id: 'claude-haiku', label: 'Claude Haiku 3.5' },
+  ],
+  'azure-openai': [
+    { id: 'gpt-4.1-azure', label: 'GPT-4.1 (Azure)' },
+    { id: 'gpt-4o-azure', label: 'GPT-4o (Azure)' },
+  ],
+  mattermost: [
+    { id: 'default', label: 'Default workspace model' },
+    { id: 'mm-small', label: 'Mattermost Small' },
+  ],
+};
+
+export function modelsForAiService(serviceId: string): AiModelOption[] {
+  return AI_SERVICE_MODELS[serviceId] ?? AI_SERVICE_MODELS[DEFAULT_AI_SERVICE_ID];
+}
+
+/* ------------------------------------------------------------------ */
 /* Option 3 — automation-as-agent entities                            */
 /* ------------------------------------------------------------------ */
 
@@ -1046,7 +1100,7 @@ export function emptyAutomationEntityDraft(): AutomationEntityDraft {
     toolCount: 8,
     enabled: true,
     name: '',
-    triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+    triggerConfig: { kind: 'schedule', frequency: 'daily', time: '9:00 AM' },
     instructions: '',
   };
 }
@@ -1062,7 +1116,7 @@ export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
     enabled: true,
     name: 'Daily standup reminder',
     type: 'recurring-post',
-    triggerConfig: { kind: 'schedule', frequency: 'weekdays', time: '9:00 AM' },
+    triggerConfig: { kind: 'schedule', frequency: 'daily', time: '9:00 AM' },
     trigger: 'Daily, 9:00 AM',
     instructions:
       'Post a friendly reminder asking the team to drop their standup update in the thread before 10:00 AM.',
@@ -1080,7 +1134,12 @@ export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
     enabled: true,
     name: 'Weekly design digest',
     type: 'recap',
-    triggerConfig: { kind: 'schedule', frequency: 'weekly', time: '8:00 AM' },
+    triggerConfig: {
+      kind: 'schedule',
+      frequency: 'weekly',
+      weekday: 'monday',
+      time: '8:00 AM',
+    },
     trigger: 'Mondays at 8:00 AM',
     instructions:
       'Summarize the past week of activity in this channel — decisions, shipped work, and open questions — and post the recap.',

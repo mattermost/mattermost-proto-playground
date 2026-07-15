@@ -51,12 +51,13 @@
   }
 
   &__row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
     gap: var(--spacing-s);
+    align-items: start;
   }
 
   &__label {
-    flex: 0 0 48px;
     margin: 0;
     font-size: var(--font-size-75);
     line-height: var(--line-height-75);
@@ -65,7 +66,6 @@
   }
 
   &__value {
-    flex: 1 1 auto;
     margin: 0;
     font-size: var(--font-size-75);
     line-height: var(--line-height-75);

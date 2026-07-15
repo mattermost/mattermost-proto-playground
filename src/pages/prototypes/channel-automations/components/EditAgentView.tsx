@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import AutomationsTabs from './AutomationsTabs';
 import type { AutomationsTabItem } from './AutomationsTabs';
+import EditableTitle from './EditableTitle';
 import styles from './EditAgentView.module.scss';
 
 export type AgentTabKey =
@@ -21,6 +22,8 @@ const TABS: AutomationsTabItem[] = [
 
 export interface EditAgentViewProps {
   title?: string;
+  titleEditable?: boolean;
+  onTitleChange?: (title: string) => void;
   activeTab: AgentTabKey;
   onTabChange: (key: AgentTabKey) => void;
   onClose: () => void;
@@ -29,6 +32,8 @@ export interface EditAgentViewProps {
   showAutomationsTab?: boolean;
   tabs?: AutomationsTabItem[];
   tabsAriaLabel?: string;
+  /** When true, body skips its own padding so nested editors can own spacing. */
+  flushBody?: boolean;
 }
 
 /**
@@ -38,6 +43,8 @@ export interface EditAgentViewProps {
  */
 export default function EditAgentView({
   title = 'Edit Agent',
+  titleEditable = false,
+  onTitleChange,
   activeTab,
   onTabChange,
   onClose,
@@ -46,6 +53,7 @@ export default function EditAgentView({
   showAutomationsTab = true,
   tabs: tabsOverride,
   tabsAriaLabel = 'Agent settings',
+  flushBody = false,
 }: EditAgentViewProps) {
   const tabs =
     tabsOverride ??
@@ -64,7 +72,16 @@ export default function EditAgentView({
           onClick={onClose}
           icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
         />
-        <h1 className={styles['edit-agent__title']}>{title}</h1>
+        {titleEditable && onTitleChange ? (
+          <EditableTitle
+            className={styles['edit-agent__title']}
+            value={title}
+            onChange={onTitleChange}
+            size="page"
+          />
+        ) : (
+          <h1 className={styles['edit-agent__title']}>{title}</h1>
+        )}
       </div>
 
       <AutomationsTabs
@@ -81,6 +98,7 @@ export default function EditAgentView({
       className={[
         styles['edit-agent__body'],
         isChatTab ? styles['edit-agent__body--chat'] : '',
+        flushBody ? styles['edit-agent__body--flush'] : '',
       ]
         .filter(Boolean)
         .join(' ')}
