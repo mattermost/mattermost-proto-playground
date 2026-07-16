@@ -17,7 +17,7 @@ export interface AutomationsPanelOptions {
    */
   showOperateWhere?: boolean;
   /**
-   * Option 3b — Chat / Settings / Tools / Access as peer tabs; only model
+   * Option 3b — Chat / Settings / Access / Tools as peer tabs; only model
    * knobs stay behind an Advanced disclosure on Settings.
    */
   progressiveDisclosure?: boolean;
@@ -33,7 +33,7 @@ export const OPTION2B_PANEL_OPTIONS: AutomationsPanelOptions = {
   showOperateWhere: true,
 };
 
-/** Option 3b — entity model; Tools/Access as tabs, model knobs in Advanced. */
+/** Option 3b — entity model; Access/Tools as tabs, model knobs in Advanced. */
 export const OPTION3B_PANEL_OPTIONS: AutomationsPanelOptions = {
   showAgentSelector: false,
   showAgentPicker: false,

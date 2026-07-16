@@ -49,7 +49,7 @@ export default function AgentSettingsTab({
 
   return (
     <div className={styles['settings']}>
-      <SettingsSectionRow label="Display name">
+      <SettingsSectionRow label="Display name" divided>
         <TextInput
           className={styles['settings__control']}
           placeholder="e.g. Sales Assistant"
@@ -60,7 +60,7 @@ export default function AgentSettingsTab({
         />
       </SettingsSectionRow>
 
-      <SettingsSectionRow label="Username and avatar">
+      <SettingsSectionRow label="Username and avatar" divided>
         <PersonaIdentityField
           avatar={agentAvatarProps(agent)}
           username={username}
@@ -70,7 +70,7 @@ export default function AgentSettingsTab({
         />
       </SettingsSectionRow>
 
-      <SettingsSectionRow label="Description">
+      <SettingsSectionRow label="Description" divided>
         <TextInput
           className={styles['settings__control']}
           placeholder="E.g. A general purpose agent to chat with"
@@ -81,7 +81,7 @@ export default function AgentSettingsTab({
         />
       </SettingsSectionRow>
 
-      <SettingsSectionRow label="AI Service & model">
+      <SettingsSectionRow label="AI Service & model" divided>
         <AiServiceModelField
           aiServiceId={aiServiceId}
           modelId={modelId}
@@ -90,7 +90,7 @@ export default function AgentSettingsTab({
         />
       </SettingsSectionRow>
 
-      <SettingsSectionRow label="Custom instructions">
+      <SettingsSectionRow label="Custom instructions" divided>
         <TextArea
           className={styles['settings__control']}
           placeholder="How would you like the agent to respond?"

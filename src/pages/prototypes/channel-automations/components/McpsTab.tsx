@@ -10,9 +10,12 @@ import styles from './McpsTab.module.scss';
 export interface McpsTabProps {
   activeMcps?: number;
   toolCount?: number;
+  entityLabel?: 'agent' | 'automation';
 }
 
-export default function McpsTab(_props: McpsTabProps = {}) {
+export default function McpsTab({
+  entityLabel = 'agent',
+}: McpsTabProps = {}) {
   const [autoEnableAllTools, setAutoEnableAllTools] = useState(true);
   const [query, setQuery] = useState('');
 
@@ -30,8 +33,8 @@ export default function McpsTab(_props: McpsTabProps = {}) {
             Automatically enable all MCP tools
           </Checkbox>
           <p className={styles['tools-tab__checkbox-help']}>
-            Give this agent access to every currently available MCP tool and any
-            added in the future.
+            Give this {entityLabel} access to every currently available MCP tool
+            and any added in the future.
           </p>
         </div>
       </div>
@@ -50,7 +53,7 @@ export default function McpsTab(_props: McpsTabProps = {}) {
       {autoEnableAllTools ? (
         <SectionNotice
           type="Info"
-          title="Every MCP tool is enabled for this agent."
+          title={`Every MCP tool is enabled for this ${entityLabel}.`}
           description="Disable 'Automatically enable all MCP tools' above to pick specific tools."
         />
       ) : null}

@@ -43,7 +43,7 @@
     }
 
     &--selected {
-      border-color: rgba(var(--button-bg-rgb), 0.32);
+      border-color: var(--button-bg);
 
       &:hover {
         background: var(--center-channel-bg);

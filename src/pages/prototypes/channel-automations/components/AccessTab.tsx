@@ -1,11 +1,11 @@
-import { Chip, Icon, Select } from '@mattermost/compass-ui';
+import { Checkbox, Chip, Icon, Select } from '@mattermost/compass-ui';
 import { useState, type ChangeEvent, type ReactNode } from 'react';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import { SettingsHelpText, SettingsSectionRow } from './settings';
+import { SettingsField, SettingsHelpText, SettingsSectionRow } from './settings';
 import styles from './AccessTab.module.scss';
 
 type ChannelAccess = 'all' | 'allow-selected' | 'block-selected' | 'block-all';
@@ -25,19 +25,16 @@ const CHANNEL_ACCESS_OPTIONS: { value: ChannelAccess; label: string }[] = [
 
 const USER_VISIBILITY_OPTIONS: {
   value: UserVisibility;
-  title: string;
   description: string;
   icon: ReactNode;
 }[] = [
   {
     value: 'public',
-    title: 'Public agent',
     description: 'Anyone can interact',
     icon: <AccountMultipleOutlineIcon />,
   },
   {
     value: 'private',
-    title: 'Private agent',
     description: 'Only invited members',
     icon: <LockOutlineIcon />,
   },
@@ -85,6 +82,10 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
   const [channelAccess, setChannelAccess] = useState<ChannelAccess>('all');
   const [userVisibility, setUserVisibility] =
     useState<UserVisibility>('private');
+  const [allowInAutomations, setAllowInAutomations] = useState(true);
+  const entityNoun = entityLabel === 'automation' ? 'automation' : 'agent';
+  const visibilityTitle = (value: UserVisibility) =>
+    value === 'public' ? `Public ${entityNoun}` : `Private ${entityNoun}`;
   const adminsLabel =
     entityLabel === 'automation' ? 'Automation admins' : 'Agent admins';
 
@@ -94,31 +95,31 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
         label="Channel access"
         labelAs="h3"
         divided
-        fieldsGap="m"
       >
-        <Select
-          aria-label="Channel access"
-          value={channelAccess}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-            setChannelAccess(e.target.value as ChannelAccess)
-          }
-        >
-          {CHANNEL_ACCESS_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-        <SettingsHelpText>
-          Control which channels this agent can be mentioned in.
-        </SettingsHelpText>
+        <SettingsField>
+          <Select
+            aria-label="Channel access"
+            value={channelAccess}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setChannelAccess(e.target.value as ChannelAccess)
+            }
+          >
+            {CHANNEL_ACCESS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+          <SettingsHelpText>
+            Control which channels this {entityNoun} can be mentioned in.
+          </SettingsHelpText>
+        </SettingsField>
       </SettingsSectionRow>
 
       <SettingsSectionRow
         label="User access"
         labelAs="h3"
         divided
-        fieldsGap="m"
       >
         <div
           className={styles['access-tab__visibility']}
@@ -127,6 +128,7 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
         >
           {USER_VISIBILITY_OPTIONS.map((option) => {
             const selected = userVisibility === option.value;
+            const title = visibilityTitle(option.value);
 
             return (
               <button
@@ -134,6 +136,7 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
                 type="button"
                 role="radio"
                 aria-checked={selected}
+                aria-label={title}
                 className={[
                   styles['access-tab__visibility-card'],
                   selected
@@ -159,7 +162,7 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
                 </span>
                 <span className={styles['access-tab__visibility-copy']}>
                   <span className={styles['access-tab__visibility-title']}>
-                    {option.title}
+                    {title}
                   </span>
                   <span className={styles['access-tab__visibility-description']}>
                     {option.description}
@@ -181,14 +184,34 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
         {userVisibility === 'private' ? (
           <div className={styles['access-tab__subfield']}>
             <h4 className={styles['access-tab__subfield-label']}>Allow list</h4>
-            <AccessUserField
-              users={[ACCESS_USER]}
-              ariaLabel="Users allowed to interact with this agent"
-            />
-            <SettingsHelpText>
-              Enter users who can interact with this agent
-            </SettingsHelpText>
+            <SettingsField>
+              <AccessUserField
+                users={[ACCESS_USER]}
+                ariaLabel={`Users allowed to interact with this ${entityNoun}`}
+              />
+              <SettingsHelpText>
+                Enter users who can interact with this {entityNoun}
+              </SettingsHelpText>
+            </SettingsField>
           </div>
+        ) : null}
+
+        {entityLabel === 'agent' ? (
+          <SettingsField>
+            <Checkbox
+              size="Medium"
+              checked={allowInAutomations}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setAllowInAutomations(e.target.checked)
+              }
+            >
+              Allow this agent to be used by others in automations
+            </Checkbox>
+            <SettingsHelpText>
+              When enabled, other users can select this agent when building
+              automations.
+            </SettingsHelpText>
+          </SettingsField>
         ) : null}
       </SettingsSectionRow>
 
@@ -196,14 +219,15 @@ export default function AccessTab({ entityLabel = 'agent' }: AccessTabProps) {
         label={adminsLabel}
         labelAs="h3"
         divided
-        fieldsGap="m"
       >
-        <AccessUserField users={[ACCESS_USER]} ariaLabel={adminsLabel} />
-        <SettingsHelpText>
-          {entityLabel === 'automation'
-            ? 'These users can edit and delete this automation. The automation creator is always an admin.'
-            : 'These users can edit and delete this agent. The agent creator is always an admin.'}
-        </SettingsHelpText>
+        <SettingsField>
+          <AccessUserField users={[ACCESS_USER]} ariaLabel={adminsLabel} />
+          <SettingsHelpText>
+            {entityLabel === 'automation'
+              ? 'These users can edit and delete this automation. The automation creator is always an admin.'
+              : 'These users can edit and delete this agent. The agent creator is always an admin.'}
+          </SettingsHelpText>
+        </SettingsField>
       </SettingsSectionRow>
     </div>
   );

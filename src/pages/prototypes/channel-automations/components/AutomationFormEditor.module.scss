@@ -37,23 +37,31 @@
     gap: 0;
     padding: var(--spacing-xl);
 
-    > *:first-child {
-      padding-top: 0;
-      border-top: none;
+    > [data-form-section] {
+      margin-top: 0;
     }
 
     &-control {
       max-width: none;
     }
+  }
 
-    &-row {
-      display: flex;
-      gap: var(--spacing-m);
+  &__schedule-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-m);
+    min-width: 0;
 
-      > * {
-        flex: 1 1 0;
-        min-width: 0;
-      }
+    &--with-weekday {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @container (width < 600px) {
+      grid-template-columns: 1fr;
+    }
+
+    > * {
+      min-width: 0;
     }
   }
 

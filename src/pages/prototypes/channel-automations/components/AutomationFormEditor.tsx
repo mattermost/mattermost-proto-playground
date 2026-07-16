@@ -369,7 +369,7 @@ const AutomationFormEditor = forwardRef<
         ? { displayName: name, username, avatarSrc }
         : {}),
       ...(teamId ? { triggerTeamId: teamId } : {}),
-      ...(triggerPickerNeedsChannel(triggerPicker) || kind === 'schedule'
+      ...(triggerPickerNeedsChannel(triggerPicker)
         ? { triggerChannelId: channelId || ACTIVE_CHANNEL.id }
         : {}),
     });
@@ -420,17 +420,72 @@ const AutomationFormEditor = forwardRef<
   const viewTabs = progressiveDisclosure
     ? [
         ...AUTOMATION_EDITOR_VIEW_TABS,
-        ...(enableTools ? [{ id: 'mcps' as const, label: 'Tools' }] : []),
         { id: 'access' as const, label: 'Access' },
+        ...(enableTools ? [{ id: 'mcps' as const, label: 'Tools' }] : []),
       ]
     : AUTOMATION_EDITOR_VIEW_TABS;
 
-  const showChannelField =
-    kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker);
+  const showChannelField = triggerPickerNeedsChannel(triggerPicker);
 
   const scheduleFields =
     triggerPicker === 'schedule' ? (
-      <>
+      scheduleNeedsTime(frequency) ? (
+        <div
+          className={[
+            styles['editor__schedule-row'],
+            scheduleNeedsWeekday(frequency)
+              ? styles['editor__schedule-row--with-weekday']
+              : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          <Select
+            className={styles['editor__form-control']}
+            label="Frequency"
+            value={frequency}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setFrequency(e.target.value as ScheduleFrequency)
+            }
+          >
+            {SCHEDULE_FREQUENCIES.map((f) => (
+              <option key={f} value={f}>
+                {SCHEDULE_FREQUENCY_LABELS[f]}
+              </option>
+            ))}
+          </Select>
+          <Select
+            className={styles['editor__form-control']}
+            label="Time"
+            value={time}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setTime(e.target.value)
+            }
+          >
+            {SCHEDULE_TIMES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </Select>
+          {scheduleNeedsWeekday(frequency) ? (
+            <Select
+              className={styles['editor__form-control']}
+              label="Day of the week"
+              value={weekday}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                setWeekday(e.target.value as ScheduleWeekday)
+              }
+            >
+              {SCHEDULE_WEEKDAYS.map((day) => (
+                <option key={day} value={day}>
+                  {SCHEDULE_WEEKDAY_LABELS[day]}
+                </option>
+              ))}
+            </Select>
+          ) : null}
+        </div>
+      ) : (
         <Select
           className={styles['editor__form-control']}
           label="Frequency"
@@ -445,43 +500,7 @@ const AutomationFormEditor = forwardRef<
             </option>
           ))}
         </Select>
-        {scheduleNeedsWeekday(frequency) || scheduleNeedsTime(frequency) ? (
-          <div className={styles['editor__form-row']}>
-            {scheduleNeedsWeekday(frequency) ? (
-              <Select
-                className={styles['editor__form-control']}
-                label="Day of the week"
-                value={weekday}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setWeekday(e.target.value as ScheduleWeekday)
-                }
-              >
-                {SCHEDULE_WEEKDAYS.map((day) => (
-                  <option key={day} value={day}>
-                    {SCHEDULE_WEEKDAY_LABELS[day]}
-                  </option>
-                ))}
-              </Select>
-            ) : null}
-            {scheduleNeedsTime(frequency) ? (
-              <Select
-                className={styles['editor__form-control']}
-                label="Time"
-                value={time}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setTime(e.target.value)
-                }
-              >
-                {SCHEDULE_TIMES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </Select>
-            ) : null}
-          </div>
-        ) : null}
-      </>
+      )
     ) : null;
 
   const channelField = showChannelField ? (
@@ -520,7 +539,6 @@ const AutomationFormEditor = forwardRef<
       label={title}
       labelId={titleId}
       labelAs="h3"
-      fieldsGap="l"
       sectioned
     >
       {children}
@@ -695,7 +713,11 @@ const AutomationFormEditor = forwardRef<
       ) : view === 'mcps' && progressiveDisclosure ? (
         scrollPanel(
           <div className={styles['editor__form']}>
-            <McpsTab activeMcps={toolsActiveMcps} toolCount={toolsCount} />
+            <McpsTab
+              activeMcps={toolsActiveMcps}
+              toolCount={toolsCount}
+              entityLabel="automation"
+            />
           </div>,
         )
       ) : view === 'access' && progressiveDisclosure ? (

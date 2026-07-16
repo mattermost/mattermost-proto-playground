@@ -9,6 +9,7 @@ import AutomationFormEditor, {
 } from './AutomationFormEditor';
 import McpsTab from './McpsTab';
 import styles from './EditAutomationEntityView.module.scss';
+import formStyles from './AutomationFormEditor.module.scss';
 
 const BASE_TABS = AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
   key: tab.id === 'form' ? ('configuration' as const) : tab.id,
@@ -20,7 +21,7 @@ export interface EditAutomationEntityViewProps {
   isNew?: boolean;
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
-  /** Option 3b — Chat + Settings + Tools + Access; Advanced holds model knobs only. */
+  /** Option 3b — Chat + Settings + Access + Tools; Advanced holds model knobs only. */
   progressiveDisclosure?: boolean;
   showOperateWhere?: boolean;
 }
@@ -44,8 +45,8 @@ export default function EditAutomationEntityView({
     if (!progressiveDisclosure) return BASE_TABS;
     return [
       ...BASE_TABS,
-      ...(enableTools ? [{ key: 'mcps' as const, label: 'Tools' }] : []),
       { key: 'access' as const, label: 'Access' },
+      ...(enableTools ? [{ key: 'mcps' as const, label: 'Tools' }] : []),
     ];
   }, [progressiveDisclosure, enableTools]);
 
@@ -56,6 +57,8 @@ export default function EditAutomationEntityView({
   }, [enableTools, tab]);
 
   const isEditorTab = tab === 'chat' || tab === 'configuration';
+  const flushBody =
+    isEditorTab || tab === 'access' || tab === 'mcps';
 
   return (
     <EditAgentView
@@ -68,15 +71,22 @@ export default function EditAutomationEntityView({
       onSave={() => editorRef.current?.submit()}
       tabs={[...tabs]}
       tabsAriaLabel="Automation settings"
-      flushBody={isEditorTab}
+      flushBody={flushBody}
     >
-      {tab === 'mcps' ? (
-        <McpsTab
-          activeMcps={entity?.activeMcps}
-          toolCount={entity?.toolCount}
-        />
+      {tab === 'access' ? (
+        <div className={formStyles['editor__form']}>
+          <AccessTab entityLabel="automation" />
+        </div>
       ) : null}
-      {tab === 'access' ? <AccessTab entityLabel="automation" /> : null}
+      {tab === 'mcps' ? (
+        <div className={formStyles['editor__form']}>
+          <McpsTab
+            activeMcps={entity?.activeMcps}
+            toolCount={entity?.toolCount}
+            entityLabel="automation"
+          />
+        </div>
+      ) : null}
       {/* Keep mounted so form state and Save survive Tools / Access tabs. */}
       <div
         className={

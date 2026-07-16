@@ -2,6 +2,7 @@ import { Checkbox, Select, TextInput } from '@mattermost/compass-ui';
 import { useState, type ChangeEvent } from 'react';
 import {
   SettingsDisclosureCard,
+  SettingsField,
   SettingsHelpText,
   SettingsSectionRow,
 } from './settings';
@@ -65,76 +66,84 @@ export default function AgentAdvancedConfig({
   const fields = (
     <div className={styles['advanced__fields-stack']}>
       <SettingsSectionRow label="Enable Vision" divided>
-        <Checkbox
-          size="Medium"
-          checked={enableVision}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setEnableVision(e.target.checked)
-          }
-        >
-          Enable
-        </Checkbox>
-        <SettingsHelpText>
-          Enable Vision to allow the bot to process images. Requires a
-          compatible model.
-        </SettingsHelpText>
+        <SettingsField>
+          <Checkbox
+            size="Medium"
+            checked={enableVision}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setEnableVision(e.target.checked)
+            }
+          >
+            Enable
+          </Checkbox>
+          <SettingsHelpText>
+            Enable Vision to allow the bot to process images. Requires a
+            compatible model.
+          </SettingsHelpText>
+        </SettingsField>
       </SettingsSectionRow>
 
       <SettingsSectionRow label="Enable Tools" divided>
-        <Checkbox
-          size="Medium"
-          checked={enableTools}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setEnableTools(e.target.checked)
-          }
-        >
-          Enable
-        </Checkbox>
-        <SettingsHelpText>
-          By default some tool use is enabled to allow for features such as
-          integrations with JIRA. Disabling this allows use of models that do
-          not support or are not very good at tool use. Some features will not
-          work without tools.
-        </SettingsHelpText>
+        <SettingsField>
+          <Checkbox
+            size="Medium"
+            checked={enableTools}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setEnableTools(e.target.checked)
+            }
+          >
+            Enable
+          </Checkbox>
+          <SettingsHelpText>
+            By default some tool use is enabled to allow for features such as
+            integrations with JIRA. Disabling this allows use of models that do
+            not support or are not very good at tool use. Some features will not
+            work without tools.
+          </SettingsHelpText>
+        </SettingsField>
       </SettingsSectionRow>
 
       {enableTools ? (
         <>
           <SettingsSectionRow label="Dynamic tool loading" divided>
-            <Checkbox
-              size="Medium"
-              checked={dynamicToolLoading}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setDynamicToolLoading(e.target.checked)
-              }
-            >
-              Enable
-            </Checkbox>
-            <SettingsHelpText>
-              Expose search and load helper tools first, then load MCP tool
-              schemas only when the agent needs them. Disable this to use the
-              full MCP tool list for this agent.
-            </SettingsHelpText>
+            <SettingsField>
+              <Checkbox
+                size="Medium"
+                checked={dynamicToolLoading}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setDynamicToolLoading(e.target.checked)
+                }
+              >
+                Enable
+              </Checkbox>
+              <SettingsHelpText>
+                Expose search and load helper tools first, then load MCP tool
+                schemas only when the agent needs them. Disable this to use the
+                full MCP tool list for this agent.
+              </SettingsHelpText>
+            </SettingsField>
           </SettingsSectionRow>
 
           <SettingsSectionRow label="Max tool turns" divided>
-            <TextInput
-              className={styles['advanced__control']}
-              type="number"
-              min={1}
-              max={100}
-              placeholder={String(DEFAULT_MAX_TOOL_TURNS)}
-              value={maxToolTurns}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setMaxToolTurns(e.target.value)
-              }
-            />
-            <SettingsHelpText>
-              Maximum number of consecutive tool-call/execute rounds the agent
-              will run before stopping. Lower this for smaller models that tend
-              to loop on tool calls; raise it for agents that chain many tools
-              per turn.
-            </SettingsHelpText>
+            <SettingsField>
+              <TextInput
+                className={styles['advanced__control']}
+                type="number"
+                min={1}
+                max={100}
+                placeholder={String(DEFAULT_MAX_TOOL_TURNS)}
+                value={maxToolTurns}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setMaxToolTurns(e.target.value)
+                }
+              />
+              <SettingsHelpText>
+                Maximum number of consecutive tool-call/execute rounds the agent
+                will run before stopping. Lower this for smaller models that tend
+                to loop on tool calls; raise it for agents that chain many tools
+                per turn.
+              </SettingsHelpText>
+            </SettingsField>
           </SettingsSectionRow>
         </>
       ) : null}
@@ -146,19 +155,21 @@ export default function AgentAdvancedConfig({
           }
           divided
         >
-          <Checkbox
-            size="Medium"
-            checked={webSearch}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              setWebSearch(e.target.checked)
-            }
-          >
-            Web search
-          </Checkbox>
-          <SettingsHelpText>
-            Allow the model to use the provider’s built-in web search tool when
-            answering.
-          </SettingsHelpText>
+          <SettingsField>
+            <Checkbox
+              size="Medium"
+              checked={webSearch}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setWebSearch(e.target.checked)
+              }
+            >
+              Web search
+            </Checkbox>
+            <SettingsHelpText>
+              Allow the model to use the provider’s built-in web search tool when
+              answering.
+            </SettingsHelpText>
+          </SettingsField>
         </SettingsSectionRow>
       ) : null}
 
@@ -198,7 +209,7 @@ export default function AgentAdvancedConfig({
               ) : null}
             </div>
           ) : (
-            <>
+            <SettingsField>
               <div className={styles['advanced__inline-controls']}>
                 <span className={styles['advanced__inline-check']}>
                   <Checkbox
@@ -231,31 +242,33 @@ export default function AgentAdvancedConfig({
                 reasoning but increase response time and cost. Leave blank to
                 use the default.
               </SettingsHelpText>
-            </>
+            </SettingsField>
           )}
         </SettingsSectionRow>
       ) : null}
 
       {showStructuredOutput ? (
         <SettingsSectionRow label="Structured Output" divided>
-          <Checkbox
-            size="Medium"
-            checked={structuredOutput}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              const next = e.target.checked;
-              setStructuredOutput(next);
-              if (isAnthropic && next) {
-                setReasoningEnabled(false);
-              }
-            }}
-          >
-            Enable
-          </Checkbox>
-          <SettingsHelpText>
-            {isAnthropic
-              ? 'Enable structured JSON output for this agent. Requires a compatible Anthropic model (Claude 4.5/4.6+). Structured output and extended thinking cannot be used simultaneously.'
-              : 'Enable structured JSON output for this agent. When enabled and a JSON schema is provided in the request, the model will produce valid JSON matching the schema.'}
-          </SettingsHelpText>
+          <SettingsField>
+            <Checkbox
+              size="Medium"
+              checked={structuredOutput}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const next = e.target.checked;
+                setStructuredOutput(next);
+                if (isAnthropic && next) {
+                  setReasoningEnabled(false);
+                }
+              }}
+            >
+              Enable
+            </Checkbox>
+            <SettingsHelpText>
+              {isAnthropic
+                ? 'Enable structured JSON output for this agent. Requires a compatible Anthropic model (Claude 4.5/4.6+). Structured output and extended thinking cannot be used simultaneously.'
+                : 'Enable structured JSON output for this agent. When enabled and a JSON schema is provided in the request, the model will produce valid JSON matching the schema.'}
+            </SettingsHelpText>
+          </SettingsField>
           {isAnthropic && structuredOutput ? (
             <p className={styles['advanced__note']}>
               Extended thinking is turned off while structured output is enabled

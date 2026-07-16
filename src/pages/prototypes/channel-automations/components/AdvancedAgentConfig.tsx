@@ -1,6 +1,5 @@
 import AgentAdvancedConfig from './AgentAdvancedConfig';
 import { SettingsDisclosureCard } from './settings';
-import styles from './AdvancedAgentConfig.module.scss';
 
 export interface AdvancedAgentConfigProps {
   /** Selected System Console AI service — drives provider-specific advanced options. */
@@ -12,7 +11,7 @@ export interface AdvancedAgentConfigProps {
 
 /**
  * Option 3b — provider / model knobs collapsed behind Advanced.
- * Tools and Access live as peer form tabs.
+ * Access and Tools live as peer form tabs.
  */
 export default function AdvancedAgentConfig({
   aiServiceId,
@@ -26,7 +25,6 @@ export default function AdvancedAgentConfig({
       title="Advanced"
       hint="Vision, reasoning, and other model options"
       formSection
-      bodyClassName={styles['advanced__body']}
     >
       <AgentAdvancedConfig
         aiServiceId={aiServiceId}
