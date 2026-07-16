@@ -74,6 +74,7 @@ export interface AutomationEditSceneProps {
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
   showOperateWhere?: boolean;
+  showReadScope?: boolean;
 }
 
 export function AutomationEditScene({
@@ -89,6 +90,7 @@ export function AutomationEditScene({
   showAgentCapabilities = false,
   showAutomationToolScope = false,
   showOperateWhere = false,
+  showReadScope = false,
 }: AutomationEditSceneProps) {
   return (
     <AgentsShell
@@ -118,6 +120,7 @@ export function AutomationEditScene({
         showAgentCapabilities={showAgentCapabilities}
         showAutomationToolScope={showAutomationToolScope}
         showOperateWhere={showOperateWhere}
+        showReadScope={showReadScope}
       />
     </AgentsShell>
   );

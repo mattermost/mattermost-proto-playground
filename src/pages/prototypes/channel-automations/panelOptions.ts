@@ -16,6 +16,8 @@ export interface AutomationsPanelOptions {
    * Options 2b & 3b — sectioned trigger/instructions layout in the form editor.
    */
   showOperateWhere?: boolean;
+  /** Option 2b — show per-automation read scope controls. */
+  showReadScope?: boolean;
   /**
    * Option 3b — Chat / Settings / Access / Tools as peer tabs; only model
    * knobs stay behind an Advanced disclosure on Settings.
@@ -31,6 +33,7 @@ export const OPTION2B_PANEL_OPTIONS: AutomationsPanelOptions = {
   showAgentCapabilities: true,
   showAutomationToolScope: true,
   showOperateWhere: true,
+  showReadScope: true,
 };
 
 /** Option 3b — entity model; Access/Tools as tabs, model knobs in Advanced. */

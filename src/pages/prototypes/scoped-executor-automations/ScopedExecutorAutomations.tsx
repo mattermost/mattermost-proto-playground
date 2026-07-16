@@ -197,6 +197,7 @@ export default function ScopedExecutorAutomations() {
           showAgentCapabilities
           showAutomationToolScope
           showOperateWhere
+          showReadScope
           onSubmit={(draft) => {
             if (automationIsNew) {
               createAutomation(draft);

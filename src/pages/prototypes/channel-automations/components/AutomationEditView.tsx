@@ -21,6 +21,7 @@ export interface AutomationEditViewProps {
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
   showOperateWhere?: boolean;
+  showReadScope?: boolean;
 }
 
 export default function AutomationEditView({
@@ -33,6 +34,7 @@ export default function AutomationEditView({
   showAgentCapabilities = false,
   showAutomationToolScope = false,
   showOperateWhere = false,
+  showReadScope = false,
 }: AutomationEditViewProps) {
   const [name, setName] = useState(
     initial?.name ?? (isNew ? 'New automation' : ''),
@@ -67,6 +69,7 @@ export default function AutomationEditView({
           showAgentCapabilities={showAgentCapabilities}
           showAutomationToolScope={showAutomationToolScope}
           showOperateWhere={showOperateWhere}
+          showReadScope={showReadScope}
           view={view}
           onViewChange={setView}
           onValidityChange={setCanSave}

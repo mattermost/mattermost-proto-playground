@@ -49,6 +49,7 @@ import AccessTab from './AccessTab';
 import AdvancedAgentConfig from './AdvancedAgentConfig';
 import AgentPickerField from './AgentPickerField';
 import AutomationEditChat from './AutomationEditChat';
+import AutomationOperateWhere from './AutomationOperateWhere';
 import AutomationToolScope from './AutomationToolScope';
 import AutomationsTabs from './AutomationsTabs';
 import McpsTab from './McpsTab';
@@ -89,6 +90,7 @@ export interface AutomationFormEditorProps {
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
   showOperateWhere?: boolean;
+  showReadScope?: boolean;
   progressiveDisclosure?: boolean;
   /** Option 3b — gates Tools tab + tool-specific Advanced rows. */
   enableTools?: boolean;
@@ -130,6 +132,7 @@ const AutomationFormEditor = forwardRef<
   showAgentCapabilities = false,
   showAutomationToolScope = false,
   showOperateWhere = false,
+  showReadScope = false,
   progressiveDisclosure = false,
   enableTools: enableToolsProp,
   onEnableToolsChange,
@@ -216,6 +219,7 @@ const AutomationFormEditor = forwardRef<
   const [modelId, setModelId] = useState(models[0]?.id ?? '');
 
   const triggerSectionId = useId();
+  const readScopeSectionId = useId();
   const tasksSectionId = useId();
   const agentSectionId = useId();
   const personaSectionId = useId();
@@ -641,6 +645,14 @@ const AutomationFormEditor = forwardRef<
           maxLength={500}
         />
       )}
+
+      {showReadScope ? (
+        formSection(
+          'Where the automation can read from',
+          readScopeSectionId,
+          <AutomationOperateWhere />,
+        )
+      ) : null}
 
       {editorKind === 'entity' ? (
         <>

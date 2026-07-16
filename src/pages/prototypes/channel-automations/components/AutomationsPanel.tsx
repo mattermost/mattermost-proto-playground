@@ -43,6 +43,7 @@ export interface AutomationsPanelProps {
   showAgentCapabilities?: boolean;
   showAutomationToolScope?: boolean;
   showOperateWhere?: boolean;
+  showReadScope?: boolean;
   progressiveDisclosure?: boolean;
 }
 
@@ -70,6 +71,7 @@ export default function AutomationsPanel({
   showAgentCapabilities = false,
   showAutomationToolScope = false,
   showOperateWhere = false,
+  showReadScope = false,
   progressiveDisclosure = false,
 }: AutomationsPanelProps) {
   const inEditor = creating || editing != null || editingEntity != null;
@@ -157,6 +159,7 @@ export default function AutomationsPanel({
               showAgentCapabilities={showAgentCapabilities}
               showAutomationToolScope={showAutomationToolScope}
               showOperateWhere={showOperateWhere}
+              showReadScope={showReadScope}
               progressiveDisclosure={progressiveDisclosure}
             />
           </div>
