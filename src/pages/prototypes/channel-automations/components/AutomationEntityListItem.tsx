@@ -64,7 +64,7 @@ export default function AutomationEntityListItem({
           <span>{entity.trigger}</span>
           <MetaSeparator />
           <span>
-            {entity.activeMcps} MCPs Active
+            {entity.activeMcps} MCPs
           </span>
           <MetaSeparator />
           <span>{entity.toolCount} tools</span>

@@ -48,6 +48,11 @@
     white-space: nowrap;
   }
 
+  &__default-tag {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
   &__description {
     margin: 0;
     overflow: hidden;
@@ -74,14 +79,6 @@
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.75);
     white-space: nowrap;
-  }
-
-  &__stat-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: var(--radius-full);
-    background: var(--online-indicator);
-    flex-shrink: 0;
   }
 
   &__stat-divider {

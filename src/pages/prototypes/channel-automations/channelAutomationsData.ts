@@ -833,6 +833,10 @@ export interface Agent {
   aiServiceId: string;
   /** Model id within the selected AI service. */
   modelId: string;
+  /** Display name of the person who owns this agent. */
+  owner: string;
+  /** When true, show a Default badge in agent lists. */
+  isDefault?: boolean;
   /** When true, the agent appears under the "Your agents" tab. */
   ownedByCurrentUser?: boolean;
 }
@@ -860,6 +864,8 @@ export const AGENTS: Agent[] = [
     toolCount: 12,
     aiServiceId: 'anthropic',
     modelId: 'claude-sonnet-4.6',
+    owner: 'Leonard Riley',
+    isDefault: true,
     ownedByCurrentUser: true,
   },
   {
@@ -873,6 +879,7 @@ export const AGENTS: Agent[] = [
     toolCount: 16,
     aiServiceId: 'openai',
     modelId: 'gpt-4.1',
+    owner: 'Marcus Chen',
   },
   {
     id: 'cloudops',
@@ -885,6 +892,7 @@ export const AGENTS: Agent[] = [
     toolCount: 24,
     aiServiceId: 'anthropic',
     modelId: 'claude-opus',
+    owner: 'Aisha Patel',
   },
   {
     id: 'insights',
@@ -897,6 +905,7 @@ export const AGENTS: Agent[] = [
     toolCount: 20,
     aiServiceId: 'openai',
     modelId: 'gpt-4o',
+    owner: 'Marcus Chen',
   },
   {
     id: 'tracker',
@@ -909,6 +918,7 @@ export const AGENTS: Agent[] = [
     toolCount: 7,
     aiServiceId: 'mattermost',
     modelId: 'mm-large',
+    owner: 'Aisha Patel',
   },
 ];
 
@@ -923,6 +933,7 @@ export const NEW_AGENT_DRAFT: Agent = {
   toolCount: 0,
   aiServiceId: 'openai',
   modelId: 'gpt-4.1',
+  owner: 'Leonard Riley',
   ownedByCurrentUser: true,
 };
 
@@ -1153,6 +1164,7 @@ export function entityToAgent(entity: AutomationEntity): Agent {
     toolCount: entity.toolCount,
     aiServiceId: AGENT.aiServiceId,
     modelId: AGENT.modelId,
+    owner: 'Leonard Riley',
   };
 }
 

@@ -1,4 +1,4 @@
-import { Icon, IconButton, MenuItem, PopoverMenu, UserAvatar } from '@mattermost/compass-ui';
+import { Icon, IconButton, MenuItem, PopoverMenu, Tag, UserAvatar } from '@mattermost/compass-ui';
 import { useRef, useState } from 'react';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
@@ -39,14 +39,24 @@ export default function AgentListItem({
           <p className={styles['agent-item__username']}>
             @{agent.username}
           </p>
+          {agent.isDefault ? (
+            <Tag
+              className={styles['agent-item__default-tag']}
+              label="Default"
+              type="Default"
+              size="X-Small"
+            />
+          ) : null}
         </div>
-        <p className={styles['agent-item__description']}>{agent.description}</p>
+        <p className={styles['agent-item__description']}>
+          By {agent.owner}
+          {agent.description ? ` · ${agent.description}` : ''}
+        </p>
       </div>
 
       <div className={styles['agent-item__stats']}>
         <span className={styles['agent-item__stat']}>
-          <span className={styles['agent-item__stat-dot']} aria-hidden />
-          {agent.activeMcps} MCPs Active
+          {agent.activeMcps} MCPs
         </span>
         <span className={styles['agent-item__stat-divider']} aria-hidden />
         <span className={styles['agent-item__stat']}>
