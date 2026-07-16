@@ -58,7 +58,9 @@
     padding: var(--spacing-l);
 
     &--flush {
-      padding: 0 var(--spacing-l);
+      // Edge-to-edge so page scrollbars sit on the panel right edge;
+      // nested views keep their own max-width content columns.
+      padding: 0;
     }
 
     &--with-product-nav {

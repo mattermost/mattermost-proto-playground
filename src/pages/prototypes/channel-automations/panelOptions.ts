@@ -13,36 +13,18 @@ export interface AutomationsPanelOptions {
    */
   showAutomationToolScope?: boolean;
   /**
-   * Options 2b & 3b — where the automation may read/post (operate-where field).
+   * Options 2b & 3b — sectioned trigger/instructions layout in the form editor.
    */
   showOperateWhere?: boolean;
   /**
-   * Option 3b — collapse model / tools / access behind an Advanced disclosure
-   * instead of exposing Access + Tools as peer tabs.
+   * Option 3b — Chat / Settings / Tools / Access as peer tabs; only model
+   * knobs stay behind an Advanced disclosure on Settings.
    */
   progressiveDisclosure?: boolean;
 }
 
-export const OPTION1_PANEL_OPTIONS: AutomationsPanelOptions = {
-  showAgentSelector: false,
-  showAgentPicker: true,
-  editorKind: 'assignment',
-};
-
-export const OPTION2_PANEL_OPTIONS: AutomationsPanelOptions = {
-  showAgentSelector: false,
-  showAgentPicker: true,
-  editorKind: 'assignment',
-};
-
-export const OPTION3_PANEL_OPTIONS: AutomationsPanelOptions = {
-  showAgentSelector: false,
-  showAgentPicker: false,
-  editorKind: 'entity',
-};
-
-/** Option 2b — Option 2 backbone + per-automation tool scoping. */
-export const OPTION4_PANEL_OPTIONS: AutomationsPanelOptions = {
+/** Option 2b — assignment backbone + per-automation tool scoping. */
+export const OPTION2B_PANEL_OPTIONS: AutomationsPanelOptions = {
   showAgentSelector: false,
   showAgentPicker: true,
   editorKind: 'assignment',
@@ -51,8 +33,8 @@ export const OPTION4_PANEL_OPTIONS: AutomationsPanelOptions = {
   showOperateWhere: true,
 };
 
-/** Option 3b — Option 3 entity model with progressive disclosure of agent plumbing. */
-export const OPTION5_PANEL_OPTIONS: AutomationsPanelOptions = {
+/** Option 3b — entity model; Tools/Access as tabs, model knobs in Advanced. */
+export const OPTION3B_PANEL_OPTIONS: AutomationsPanelOptions = {
   showAgentSelector: false,
   showAgentPicker: false,
   editorKind: 'entity',

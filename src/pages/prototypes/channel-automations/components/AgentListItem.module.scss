@@ -1,7 +1,7 @@
 .agent-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-m);
   width: 100%;
   padding: var(--spacing-m);
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
@@ -16,18 +16,17 @@
     background: rgba(var(--center-channel-color-rgb), 0.04);
   }
 
-  &__main {
+  &__body {
     display: flex;
     flex: 1 1 auto;
-    align-items: center;
-    gap: var(--spacing-xxxs);
+    flex-direction: column;
+    gap: 2px;
     min-width: 0;
   }
 
-  &__identity {
+  &__title {
     display: flex;
-    flex: 1 1 auto;
-    align-items: center;
+    align-items: baseline;
     gap: var(--spacing-xs);
     min-width: 0;
   }
@@ -49,11 +48,22 @@
     white-space: nowrap;
   }
 
+  &__description {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   &__stats {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
     flex-shrink: 0;
+    margin-inline-start: calc(var(--spacing-xxl) * 2);
   }
 
   &__stat {

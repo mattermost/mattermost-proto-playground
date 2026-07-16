@@ -1,35 +1,34 @@
-import AgentsShell from '@/pages/prototypes/channel-automations/components/AgentsShell';
-import AutomationEntitiesIndexView from '@/pages/prototypes/channel-automations/components/AutomationEntitiesIndexView';
-import EditAutomationEntityView from '@/pages/prototypes/channel-automations/components/EditAutomationEntityView';
-import AutomationDeleteModal from '@/pages/prototypes/channel-automations/components/AutomationDeleteModal';
-import type {
-  AutomationDraft,
-  AutomationEntity,
-} from '@/pages/prototypes/channel-automations/channelAutomationsData';
+import AgentsShell from '../components/AgentsShell';
+import AutomationEditView from '../components/AutomationEditView';
+import AutomationsIndexView from '../components/AutomationsIndexView';
+import AutomationDeleteModal from '../components/AutomationDeleteModal';
+import type { Automation, AutomationDraft } from '../channelAutomationsData';
 
-export interface AutomationEntitiesIndexSceneProps {
-  entities: AutomationEntity[];
-  onSelectEntity: (id: string) => void;
+export interface AutomationsIndexSceneProps {
+  automations: Automation[];
+  onSelectAutomation: (id: string) => void;
   onNewAutomation: () => void;
+  onNewAutomationForAgent?: (agentId: string) => void;
   onToggle: (id: string, enabled: boolean) => void;
   onRequestDelete?: (id: string) => void;
-  deleteTarget?: AutomationEntity | null;
+  deleteTarget?: Automation | null;
   onConfirmDelete?: () => void;
   onCloseDelete?: () => void;
   onGoAgents: () => void;
 }
 
-export function AutomationEntitiesIndexScene({
-  entities,
-  onSelectEntity,
+export function AutomationsIndexScene({
+  automations,
+  onSelectAutomation,
   onNewAutomation,
+  onNewAutomationForAgent,
   onToggle,
   onRequestDelete,
   deleteTarget = null,
   onConfirmDelete,
   onCloseDelete,
   onGoAgents,
-}: AutomationEntitiesIndexSceneProps) {
+}: AutomationsIndexSceneProps) {
   return (
     <AgentsShell
       flushContent
@@ -42,49 +41,55 @@ export function AutomationEntitiesIndexScene({
       overlay={
         deleteTarget && onConfirmDelete && onCloseDelete ? (
           <AutomationDeleteModal
-            automationName={deleteTarget.displayName}
+            automationName={deleteTarget.name}
             onConfirm={onConfirmDelete}
             onClose={onCloseDelete}
           />
         ) : null
       }
     >
-      <AutomationEntitiesIndexView
-        entities={entities}
-        onSelectEntity={onSelectEntity}
+      <AutomationsIndexView
+        automations={automations}
+        onSelectAutomation={onSelectAutomation}
         onNewAutomation={onNewAutomation}
+        onNewAutomationForAgent={onNewAutomationForAgent}
         onToggle={onToggle}
         onRequestDelete={onRequestDelete}
+        showAgent
       />
     </AgentsShell>
   );
 }
 
-export interface AutomationEntityEditSceneProps {
-  entity: AutomationEntity | null;
+export interface AutomationEditSceneProps {
+  automation: Automation | null;
   isNew: boolean;
-  deleteTarget: AutomationEntity | null;
+  contextAgentId?: string;
+  deleteTarget: Automation | null;
   onSubmit: (draft: AutomationDraft) => void;
   onClose: () => void;
   onConfirmDelete: () => void;
   onCloseDelete: () => void;
   onGoAgents: () => void;
-  progressiveDisclosure?: boolean;
+  showAgentCapabilities?: boolean;
+  showAutomationToolScope?: boolean;
   showOperateWhere?: boolean;
 }
 
-export function AutomationEntityEditScene({
-  entity,
+export function AutomationEditScene({
+  automation,
   isNew,
+  contextAgentId,
   deleteTarget,
   onSubmit,
   onClose,
   onConfirmDelete,
   onCloseDelete,
   onGoAgents,
-  progressiveDisclosure = false,
+  showAgentCapabilities = false,
+  showAutomationToolScope = false,
   showOperateWhere = false,
-}: AutomationEntityEditSceneProps) {
+}: AutomationEditSceneProps) {
   return (
     <AgentsShell
       productNav={{
@@ -96,19 +101,22 @@ export function AutomationEntityEditScene({
       overlay={
         deleteTarget ? (
           <AutomationDeleteModal
-            automationName={deleteTarget.displayName}
+            automationName={deleteTarget.name}
             onConfirm={onConfirmDelete}
             onClose={onCloseDelete}
           />
         ) : null
       }
     >
-      <EditAutomationEntityView
-        entity={entity ?? undefined}
+      <AutomationEditView
+        initial={automation ?? undefined}
         isNew={isNew}
         onSubmit={onSubmit}
         onClose={onClose}
-        progressiveDisclosure={progressiveDisclosure}
+        showAgentPicker
+        contextAgentId={contextAgentId}
+        showAgentCapabilities={showAgentCapabilities}
+        showAutomationToolScope={showAutomationToolScope}
         showOperateWhere={showOperateWhere}
       />
     </AgentsShell>

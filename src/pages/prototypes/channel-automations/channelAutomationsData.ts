@@ -633,6 +633,7 @@ export interface AutomationDraft {
   displayName?: string;
   username?: string;
   avatarSrc?: string;
+  description?: string;
   name: string;
   triggerConfig: TriggerConfig;
   instructions: string;
@@ -822,10 +823,16 @@ export interface Agent {
   displayName: string;
   /** Mention handle without the @ prefix. */
   username: string;
+  /** Short summary shown in agent lists and Settings. */
+  description: string;
   avatarSrc?: string;
   avatarFallbackColor?: UserAvatarFallbackColor;
   activeMcps: number;
   toolCount: number;
+  /** AI service configured for this agent (System Console id). */
+  aiServiceId: string;
+  /** Model id within the selected AI service. */
+  modelId: string;
   /** When true, the agent appears under the "Your agents" tab. */
   ownedByCurrentUser?: boolean;
 }
@@ -847,44 +854,78 @@ export const AGENTS: Agent[] = [
     id: 'matty',
     displayName: 'Matty',
     username: 'matty',
+    description:
+      'A general-purpose assistant for chatting, drafting replies, and helping with everyday team work.',
     avatarSrc: avatarMatty,
     activeMcps: 3,
     toolCount: 12,
+    aiServiceId: 'anthropic',
+    modelId: 'claude-sonnet-4.6',
     ownedByCurrentUser: true,
   },
   {
     id: 'devops',
     displayName: 'DevOps Agent',
     username: 'devops-agent',
+    description:
+      'Monitors deployments, CI pipelines, and infra alerts so the team can respond faster.',
     avatarFallbackColor: 'Blue',
     activeMcps: 4,
     toolCount: 16,
+    aiServiceId: 'openai',
+    modelId: 'gpt-4.1',
   },
   {
     id: 'cloudops',
     displayName: 'CloudOps Agent',
     username: 'cloudops-agent',
+    description:
+      'Helps manage cloud resources, scaling, and operational runbooks across environments.',
     avatarFallbackColor: 'Cyan',
     activeMcps: 8,
     toolCount: 24,
+    aiServiceId: 'anthropic',
+    modelId: 'claude-opus',
   },
   {
     id: 'insights',
     displayName: 'Data Insights Agent',
     username: 'insights-agent',
+    description:
+      'Answers questions about metrics, trends, and reports from your connected data sources.',
     avatarFallbackColor: 'Purple',
     activeMcps: 5,
     toolCount: 20,
+    aiServiceId: 'openai',
+    modelId: 'gpt-4o',
   },
   {
     id: 'tracker',
     displayName: 'Project Tracker Agent',
     username: 'task-agent',
+    description:
+      'Keeps projects on track by summarizing status, flagging blockers, and updating tasks.',
     avatarFallbackColor: 'Orange',
     activeMcps: 2,
     toolCount: 7,
+    aiServiceId: 'mattermost',
+    modelId: 'mm-large',
   },
 ];
+
+/** Blank agent used when opening the create-agent flow. */
+export const NEW_AGENT_DRAFT: Agent = {
+  id: 'new-agent',
+  displayName: '',
+  username: '',
+  description: '',
+  avatarSrc: avatarMatty,
+  activeMcps: 0,
+  toolCount: 0,
+  aiServiceId: 'openai',
+  modelId: 'gpt-4.1',
+  ownedByCurrentUser: true,
+};
 
 /** The default agent used in channel RHS panels and automation fixtures. */
 export const AGENT = AGENTS[0];
@@ -948,13 +989,29 @@ export const AI_SERVICE_MODELS: Record<string, AiModelOption[]> = {
     { id: 'gpt-4o-azure', label: 'GPT-4o (Azure)' },
   ],
   mattermost: [
-    { id: 'default', label: 'Default workspace model' },
+    { id: 'mm-large', label: 'Mattermost Large' },
     { id: 'mm-small', label: 'Mattermost Small' },
   ],
 };
 
 export function modelsForAiService(serviceId: string): AiModelOption[] {
   return AI_SERVICE_MODELS[serviceId] ?? AI_SERVICE_MODELS[DEFAULT_AI_SERVICE_ID];
+}
+
+export function agentModelLabel(
+  agent: Pick<Agent, 'aiServiceId' | 'modelId'>,
+): string {
+  return (
+    modelsForAiService(agent.aiServiceId).find(
+      (entry) => entry.id === agent.modelId,
+    )?.label ?? ''
+  );
+}
+
+export function agentToolsSummary(
+  agent: Pick<Agent, 'activeMcps' | 'toolCount'>,
+): string {
+  return `${agent.activeMcps} MCP · ${agent.toolCount} tools`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -966,6 +1023,7 @@ export interface AutomationEntity {
   displayName: string;
   username: string;
   avatarSrc: string;
+  description: string;
   activeMcps: number;
   toolCount: number;
   enabled: boolean;
@@ -984,6 +1042,7 @@ export interface AutomationEntityDraft {
   displayName: string;
   username: string;
   avatarSrc: string;
+  description: string;
   activeMcps: number;
   toolCount: number;
   enabled: boolean;
@@ -1000,6 +1059,7 @@ export function automationToEntity(automation: Automation, agent: Agent): Automa
     displayName: automation.name,
     username: agent.username,
     avatarSrc: agent.avatarSrc ?? '',
+    description: agent.description,
     activeMcps: agent.activeMcps,
     toolCount: agent.toolCount,
     enabled: automation.enabled,
@@ -1024,6 +1084,7 @@ export function draftToAutomationEntity(
     displayName,
     username: draft.username?.trim() || `automation-${id}`,
     avatarSrc: draft.avatarSrc ?? avatarMatty,
+    description: draft.description?.trim() ?? '',
     activeMcps: 2,
     toolCount: 8,
     enabled: draft.enabled,
@@ -1046,6 +1107,7 @@ export function applyEntityDraftFromAutomationDraft(
     displayName: draft.displayName ?? entity.displayName,
     username: draft.username ?? entity.username,
     avatarSrc: draft.avatarSrc ?? entity.avatarSrc,
+    description: draft.description ?? entity.description,
     activeMcps: entity.activeMcps,
     toolCount: entity.toolCount,
     enabled: draft.enabled,
@@ -1066,6 +1128,7 @@ export function applyEntityDraft(
     displayName: draft.displayName.trim() || entity.displayName,
     username: draft.username.trim() || entity.username,
     avatarSrc: draft.avatarSrc,
+    description: draft.description.trim(),
     activeMcps: draft.activeMcps,
     toolCount: draft.toolCount,
     enabled: draft.enabled,
@@ -1085,6 +1148,7 @@ export function entityToAgent(entity: AutomationEntity): Agent {
     id: entity.id,
     displayName: entity.displayName,
     username: entity.username,
+    description: entity.description,
     avatarSrc: entity.avatarSrc,
     activeMcps: entity.activeMcps,
     toolCount: entity.toolCount,
@@ -1096,6 +1160,7 @@ export function emptyAutomationEntityDraft(): AutomationEntityDraft {
     displayName: 'New automation',
     username: 'new-automation',
     avatarSrc: avatarMatty,
+    description: '',
     activeMcps: 2,
     toolCount: 8,
     enabled: true,
@@ -1111,6 +1176,7 @@ export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
     displayName: 'Daily standup reminder',
     username: 'standup-bot',
     avatarSrc: avatarMatty,
+    description: 'Posts a daily standup prompt so the team can share updates in thread.',
     activeMcps: 3,
     toolCount: 12,
     enabled: true,
@@ -1129,6 +1195,7 @@ export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
     displayName: 'Weekly design digest',
     username: 'digest-bot',
     avatarSrc: avatarAiko,
+    description: 'Summarizes the week’s design activity into a Monday morning digest.',
     activeMcps: 5,
     toolCount: 20,
     enabled: true,
@@ -1151,6 +1218,7 @@ export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
     displayName: 'After-hours auto-reply',
     username: 'after-hours-bot',
     avatarSrc: avatarEthan,
+    description: 'Auto-replies when mentioned outside business hours.',
     activeMcps: 2,
     toolCount: 6,
     enabled: false,
@@ -1169,6 +1237,7 @@ export const INITIAL_AUTOMATION_ENTITIES: AutomationEntity[] = [
     displayName: 'Incident playbook started',
     username: 'incident-playbook',
     avatarSrc: avatarMarco,
+    description: 'Announces new incident runs and asks for a severity update.',
     activeMcps: 4,
     toolCount: 14,
     enabled: true,

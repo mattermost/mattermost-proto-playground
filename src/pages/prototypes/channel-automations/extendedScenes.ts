@@ -17,5 +17,5 @@ export const EXTENDED_SCENES: SceneSwitcherScene[] = [
   { id: 'automation', label: 'Edit automation' },
 ];
 
-/** Standalone prototype — agent edit is reached from the agents list, not the scene switcher. */
+/** Agent edit is reached from the agents list, not the scene switcher. */
 export const STANDALONE_SCENES = EXTENDED_SCENES.filter((scene) => scene.id !== 'agent');

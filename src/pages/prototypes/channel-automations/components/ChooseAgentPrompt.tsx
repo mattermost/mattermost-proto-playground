@@ -3,7 +3,8 @@ import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import {
   AGENTS,
   agentAvatarProps,
-  agentCapabilitySummary,
+  agentModelLabel,
+  agentToolsSummary,
 } from '../channelAutomationsData';
 import styles from './ChooseAgentPrompt.module.scss';
 
@@ -45,7 +46,9 @@ export default function ChooseAgentPrompt({
             <MenuItem
               label={agent.displayName}
               secondaryLabel={
-                showCapabilities ? agentCapabilitySummary(agent) : undefined
+                showCapabilities
+                  ? `${agentModelLabel(agent)} · ${agentToolsSummary(agent)}`
+                  : agent.description
               }
               leadingVisual={
                 <UserAvatar size="16" {...agentAvatarProps(agent)} />

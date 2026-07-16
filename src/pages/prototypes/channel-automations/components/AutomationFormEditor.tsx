@@ -11,7 +11,6 @@ import {
 } from 'react';
 import {
   ACTIVE_CHANNEL,
-  AI_SERVICES,
   AUTOMATION_CHANNEL_OPTIONS,
   AUTOMATION_PLAYBOOK_OPTIONS,
   DEFAULT_AI_SERVICE_ID,
@@ -25,6 +24,7 @@ import {
   applyTriggerPickerOption,
   buildTriggerConfig,
   defaultOwnedAgent,
+  modelsForAiService,
   playbookEventToPickerOption,
   scheduleNeedsTime,
   scheduleNeedsWeekday,
@@ -48,14 +48,18 @@ import AccessTab from './AccessTab';
 import AdvancedAgentConfig from './AdvancedAgentConfig';
 import AgentPickerField from './AgentPickerField';
 import AutomationEditChat from './AutomationEditChat';
-import AutomationOperateWhere from './AutomationOperateWhere';
 import AutomationToolScope from './AutomationToolScope';
 import AutomationsTabs from './AutomationsTabs';
 import McpsTab from './McpsTab';
+import {
+  AiServiceModelField,
+  PersonaIdentityField,
+  SettingsSectionRow,
+} from './settings';
 import TriggerPicker from './TriggerPicker';
 import styles from './AutomationFormEditor.module.scss';
 
-type EditorView = 'chat' | 'form' | 'access' | 'tools';
+type EditorView = 'chat' | 'form' | 'mcps' | 'access';
 
 export type { EditorView };
 
@@ -64,24 +68,8 @@ export const AUTOMATION_EDITOR_VIEW_TABS = [
   { id: 'form' as const, label: 'Settings' },
 ];
 
-export const ENTITY_EDITOR_VIEW_TABS = [
-  ...AUTOMATION_EDITOR_VIEW_TABS,
-  { id: 'access' as const, label: 'Access' },
-  { id: 'tools' as const, label: 'Tools' },
-];
-
-/** @deprecated Use AUTOMATION_EDITOR_VIEW_TABS or ENTITY_EDITOR_VIEW_TABS */
-export const EDITOR_VIEW_TABS = ENTITY_EDITOR_VIEW_TABS;
-
-function editorViewTabs(
-  editorKind: EditorKind,
-  progressiveDisclosure: boolean,
-) {
-  if (editorKind === 'entity' && !progressiveDisclosure) {
-    return ENTITY_EDITOR_VIEW_TABS;
-  }
-  return AUTOMATION_EDITOR_VIEW_TABS;
-}
+/** @deprecated Use AUTOMATION_EDITOR_VIEW_TABS */
+export const EDITOR_VIEW_TABS = AUTOMATION_EDITOR_VIEW_TABS;
 
 export interface AutomationFormEditorProps {
   initial?: Automation;
@@ -91,6 +79,8 @@ export interface AutomationFormEditorProps {
   onCancel: () => void;
   showViewTabs?: boolean;
   showFooter?: boolean;
+  /** When false, form content flows so a parent scroller can own the scrollbar. */
+  scrollBody?: boolean;
   showEnabledSwitch?: boolean;
   showAgentPicker?: boolean;
   contextAgentId?: string;
@@ -99,6 +89,9 @@ export interface AutomationFormEditorProps {
   showAutomationToolScope?: boolean;
   showOperateWhere?: boolean;
   progressiveDisclosure?: boolean;
+  /** Option 3b — gates Tools tab + tool-specific Advanced rows. */
+  enableTools?: boolean;
+  onEnableToolsChange?: (enabled: boolean) => void;
   /** Controlled automation name (e.g. from an editable title in chrome). */
   name?: string;
   onNameChange?: (name: string) => void;
@@ -128,6 +121,7 @@ const AutomationFormEditor = forwardRef<
   onCancel,
   showViewTabs = true,
   showFooter = true,
+  scrollBody = true,
   showEnabledSwitch = true,
   showAgentPicker = false,
   contextAgentId,
@@ -136,6 +130,8 @@ const AutomationFormEditor = forwardRef<
   showAutomationToolScope = false,
   showOperateWhere = false,
   progressiveDisclosure = false,
+  enableTools: enableToolsProp,
+  onEnableToolsChange,
   name: nameProp,
   onNameChange,
   view: controlledView,
@@ -160,7 +156,7 @@ const AutomationFormEditor = forwardRef<
     initialEntity?.displayName ?? 'New automation',
   );
   const [username, setUsername] = useState(
-    initialEntity?.username ?? 'new-automation',
+    initialEntity?.username ?? '',
   );
   const [avatarSrc, setAvatarSrc] = useState(
     initialEntity?.avatarSrc ?? defaultOwnedAgent().avatarSrc,
@@ -215,15 +211,42 @@ const AutomationFormEditor = forwardRef<
   );
   const [enabled, setEnabled] = useState(source?.enabled ?? true);
   const [aiServiceId, setAiServiceId] = useState(DEFAULT_AI_SERVICE_ID);
+  const models = modelsForAiService(aiServiceId);
+  const [modelId, setModelId] = useState(models[0]?.id ?? '');
 
   const triggerSectionId = useId();
   const tasksSectionId = useId();
+  const agentSectionId = useId();
+  const personaSectionId = useId();
+  const modelSectionId = useId();
+
+  useEffect(() => {
+    const nextModels = modelsForAiService(aiServiceId);
+    setModelId((current) =>
+      nextModels.some((option) => option.id === current)
+        ? current
+        : (nextModels[0]?.id ?? ''),
+    );
+  }, [aiServiceId]);
 
   const [internalView, setInternalView] = useState<EditorView>(() =>
     !showViewTabs && isEdit ? 'form' : 'chat',
   );
   const view = controlledView ?? internalView;
   const setView = onViewChange ?? setInternalView;
+
+  const [internalEnableTools, setInternalEnableTools] = useState(true);
+  const enableTools = enableToolsProp ?? internalEnableTools;
+  const setEnableTools = (next: boolean) => {
+    if (enableToolsProp === undefined) setInternalEnableTools(next);
+    onEnableToolsChange?.(next);
+  };
+
+  useEffect(() => {
+    if (!enableTools && view === 'mcps') {
+      setView('form');
+    }
+  }, [enableTools, view, setView]);
 
   const values: FormValues = {
     agentId,
@@ -345,8 +368,7 @@ const AutomationFormEditor = forwardRef<
         ? { displayName: name, username, avatarSrc }
         : {}),
       ...(teamId ? { triggerTeamId: teamId } : {}),
-      ...(triggerPickerNeedsChannel(triggerPicker) ||
-      (!showOperateWhere && kind === 'schedule')
+      ...(triggerPickerNeedsChannel(triggerPicker) || kind === 'schedule'
         ? { triggerChannelId: channelId || ACTIVE_CHANNEL.id }
         : {}),
     });
@@ -372,7 +394,6 @@ const AutomationFormEditor = forwardRef<
     teamId,
     triggerPicker,
     channelId,
-    showOperateWhere,
   ]);
 
   useImperativeHandle(ref, () => ({ submit: handleSubmit, isValid }), [handleSubmit, isValid]);
@@ -391,14 +412,20 @@ const AutomationFormEditor = forwardRef<
   const assignedAgent = agentById(
     agentId || initial?.agentId || initialEntity?.id || DEFAULT_OWNED_AGENT_ID,
   );
-  const toolsActiveMcps = initialEntity?.activeMcps ?? assignedAgent?.activeMcps ?? 0;
+  const toolsActiveMcps =
+    initialEntity?.activeMcps ?? assignedAgent?.activeMcps ?? 0;
   const toolsCount = initialEntity?.toolCount ?? assignedAgent?.toolCount ?? 0;
 
-  const viewTabs = editorViewTabs(editorKind, progressiveDisclosure);
+  const viewTabs = progressiveDisclosure
+    ? [
+        ...AUTOMATION_EDITOR_VIEW_TABS,
+        ...(enableTools ? [{ id: 'mcps' as const, label: 'Tools' }] : []),
+        { id: 'access' as const, label: 'Access' },
+      ]
+    : AUTOMATION_EDITOR_VIEW_TABS;
 
-  const showChannelField = showOperateWhere
-    ? triggerPickerNeedsChannel(triggerPicker)
-    : kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker);
+  const showChannelField =
+    kind === 'schedule' || triggerPickerNeedsChannel(triggerPicker);
 
   const scheduleFields =
     triggerPicker === 'schedule' ? (
@@ -488,12 +515,15 @@ const AutomationFormEditor = forwardRef<
   ) : null;
 
   const formSection = (title: string, titleId: string, children: ReactNode) => (
-    <section className={styles['editor__section']} aria-labelledby={titleId}>
-      <h3 id={titleId} className={styles['editor__section-title']}>
-        {title}
-      </h3>
-      <div className={styles['editor__section-fields']}>{children}</div>
-    </section>
+    <SettingsSectionRow
+      label={title}
+      labelId={titleId}
+      labelAs="h3"
+      fieldsGap="l"
+      sectioned
+    >
+      {children}
+    </SettingsSectionRow>
   );
 
   const toolbar = showViewTabs ? (
@@ -507,6 +537,144 @@ const AutomationFormEditor = forwardRef<
       rhsInset
     />
   ) : null;
+
+  const scrollPanel = (content: ReactNode) =>
+    scrollBody ? (
+      <div className={styles['editor__scroll']}>
+        <Scrollbar>{content}</Scrollbar>
+      </div>
+    ) : (
+      content
+    );
+
+  const settingsForm = (
+    <div className={styles['editor__form']}>
+      {showAgentPicker ? (
+        formSection(
+          'Agent',
+          agentSectionId,
+          <AgentPickerField
+            className={styles['editor__form-control']}
+            value={agentId}
+            onChange={setAgentId}
+            labelledBy={agentSectionId}
+            showCapabilities={showAgentCapabilities}
+          />,
+        )
+      ) : null}
+
+      {showOperateWhere ? (
+        formSection(
+          'What starts the automation?',
+          triggerSectionId,
+          <>
+            <TriggerPicker
+              className={styles['editor__form-control']}
+              value={triggerPicker}
+              fallbackLabel={triggerFallbackLabel}
+              emptyLabel="Choose a trigger"
+              onChange={handleTriggerPickerChange}
+            />
+            {scheduleFields}
+            {channelField}
+            {playbookField}
+          </>,
+        )
+      ) : (
+        <>
+          <TriggerPicker
+            className={styles['editor__form-control']}
+            value={triggerPicker}
+            fallbackLabel={triggerFallbackLabel}
+            onChange={handleTriggerPickerChange}
+          />
+          {scheduleFields}
+          {channelField}
+          {playbookField}
+        </>
+      )}
+
+      {showOperateWhere ? (
+        formSection(
+          'What should the automation do?',
+          tasksSectionId,
+          <TextArea
+            className={styles['editor__form-control']}
+            value={instructions}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setInstructions(e.target.value)
+            }
+            placeholder="Describe what this automation should do and how it should respond…"
+            rows={5}
+            maxLength={500}
+            aria-labelledby={tasksSectionId}
+          />,
+        )
+      ) : (
+        <TextArea
+          className={styles['editor__form-control']}
+          label="Instructions"
+          value={instructions}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            setInstructions(e.target.value)
+          }
+          rows={5}
+          maxLength={500}
+        />
+      )}
+
+      {editorKind === 'entity' ? (
+        <>
+          {formSection(
+            'Username and avatar for posts',
+            personaSectionId,
+            <PersonaIdentityField
+              avatar={{
+                alt: name || 'Automation',
+                name: name || 'Automation',
+                src: avatarSrc,
+              }}
+              username={username}
+              onUsernameChange={setUsername}
+              usernameDisabled={isEdit}
+              labelledBy={personaSectionId}
+              help="Users will see this username and avatar when the automation posts a message"
+            />,
+          )}
+
+          {formSection(
+            'AI Service & model',
+            modelSectionId,
+            <AiServiceModelField
+              aiServiceId={aiServiceId}
+              modelId={modelId}
+              onAiServiceChange={setAiServiceId}
+              onModelChange={setModelId}
+            />,
+          )}
+        </>
+      ) : null}
+
+      {showAutomationToolScope ? (
+        <AutomationToolScope
+          agentName={assignedAgent?.displayName}
+          agentToolSummary={
+            assignedAgent
+              ? `${assignedAgent.activeMcps} MCP · ${assignedAgent.toolCount} tools`
+              : null
+          }
+        />
+      ) : null}
+
+      {progressiveDisclosure ? (
+        <AdvancedAgentConfig
+          aiServiceId={aiServiceId}
+          enableTools={enableTools}
+          onEnableToolsChange={setEnableTools}
+        />
+      ) : null}
+    </div>
+  );
 
   const body = (
     <div className={styles['editor__body']}>
@@ -524,148 +692,25 @@ const AutomationFormEditor = forwardRef<
           editorKind={editorKind}
           requireAgentId={showAgentPicker}
         />
-      ) : editorKind === 'entity' &&
-        !progressiveDisclosure &&
-        view === 'access' ? (
-        <div className={styles['editor__scroll']}>
-          <Scrollbar>
-            <div className={styles['editor__panel-tab']}>
-              <AccessTab />
-            </div>
-          </Scrollbar>
-        </div>
-      ) : editorKind === 'entity' &&
-        !progressiveDisclosure &&
-        view === 'tools' ? (
-        <div className={styles['editor__scroll']}>
-          <Scrollbar>
-            <div className={styles['editor__panel-tab']}>
-              <McpsTab
-                activeMcps={toolsActiveMcps}
-                toolCount={toolsCount}
-              />
-            </div>
-          </Scrollbar>
-        </div>
+      ) : view === 'mcps' && progressiveDisclosure ? (
+        scrollPanel(
+          <div className={styles['editor__form']}>
+            <McpsTab activeMcps={toolsActiveMcps} toolCount={toolsCount} />
+          </div>,
+        )
+      ) : view === 'access' && progressiveDisclosure ? (
+        scrollPanel(
+          <div className={styles['editor__form']}>
+            <AccessTab entityLabel="automation" />
+          </div>,
+        )
       ) : (
-        <div className={styles['editor__scroll']}>
-          <Scrollbar>
-            <div className={styles['editor__form']}>
-              {showAgentPicker ? (
-                <AgentPickerField
-                  className={styles['editor__form-control']}
-                  value={agentId}
-                  onChange={setAgentId}
-                  label="Runs as"
-                  showCapabilities={showAgentCapabilities}
-                />
-              ) : null}
-
-              {showOperateWhere ? (
-                formSection(
-                  'What starts the automation?',
-                  triggerSectionId,
-                  <>
-                    <TriggerPicker
-                      className={styles['editor__form-control']}
-                      value={triggerPicker}
-                      fallbackLabel={triggerFallbackLabel}
-                      emptyLabel="Choose a trigger"
-                      onChange={handleTriggerPickerChange}
-                    />
-                    {scheduleFields}
-                    {channelField}
-                    {playbookField}
-                  </>,
-                )
-              ) : (
-                <>
-                  <TriggerPicker
-                    className={styles['editor__form-control']}
-                    value={triggerPicker}
-                    fallbackLabel={triggerFallbackLabel}
-                    onChange={handleTriggerPickerChange}
-                  />
-                  {scheduleFields}
-                  {channelField}
-                  {playbookField}
-                </>
-              )}
-
-              {showOperateWhere ? <AutomationOperateWhere /> : null}
-
-              {showOperateWhere ? (
-                formSection(
-                  'What should the automation do?',
-                  tasksSectionId,
-                  <TextArea
-                    className={styles['editor__form-control']}
-                    value={instructions}
-                    onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                      setInstructions(e.target.value)
-                    }
-                    placeholder="Describe the tasks this automation should perform…"
-                    rows={5}
-                    maxLength={500}
-                    aria-labelledby={tasksSectionId}
-                  />,
-                )
-              ) : (
-                <TextArea
-                  className={styles['editor__form-control']}
-                  label="Automation tasks"
-                  value={instructions}
-                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                    setInstructions(e.target.value)
-                  }
-                  rows={5}
-                  maxLength={500}
-                />
-              )}
-
-              {editorKind === 'entity' ? (
-                <Select
-                  className={styles['editor__form-control']}
-                  label="AI service"
-                  value={aiServiceId}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                    setAiServiceId(e.target.value)
-                  }
-                >
-                  {AI_SERVICES.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.label}
-                    </option>
-                  ))}
-                </Select>
-              ) : null}
-
-              {showAutomationToolScope ? (
-                <AutomationToolScope
-                  agentName={assignedAgent?.displayName}
-                  agentToolSummary={
-                    assignedAgent
-                      ? `${assignedAgent.activeMcps} MCP · ${assignedAgent.toolCount} tools`
-                      : null
-                  }
-                />
-              ) : null}
-
-              {progressiveDisclosure ? (
-                <AdvancedAgentConfig
-                  activeMcps={toolsActiveMcps}
-                  toolCount={toolsCount}
-                  aiServiceId={aiServiceId}
-                />
-              ) : null}
-            </div>
-          </Scrollbar>
-        </div>
+        scrollPanel(settingsForm)
       )}
     </div>
   );
 
-  const footerVisible = view === 'form';
+  const footerVisible = view !== 'chat';
 
   const footer = showFooter && footerVisible ? (
     <div className={styles['editor__footer']}>
@@ -679,7 +724,14 @@ const AutomationFormEditor = forwardRef<
   ) : null;
 
   return (
-    <div className={styles['editor']}>
+    <div
+      className={[
+        styles['editor'],
+        !scrollBody ? styles['editor--flow'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {toolbar}
       {body}
       {footer}

@@ -22,7 +22,7 @@ export interface FormValues {
   enabled: boolean;
   channelId: string;
   teamId: string;
-  /** Option 3 — automation-as-agent persona fields. */
+  /** Option 3b — automation-as-agent persona fields. */
   displayName?: string;
   username?: string;
   avatarSrc?: string;

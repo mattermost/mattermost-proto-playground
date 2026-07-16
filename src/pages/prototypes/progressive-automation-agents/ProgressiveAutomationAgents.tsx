@@ -9,7 +9,7 @@ import {
   type AutomationDraft,
   type AutomationEntity,
 } from '@/pages/prototypes/channel-automations/channelAutomationsData';
-import { OPTION5_PANEL_OPTIONS } from '@/pages/prototypes/channel-automations/panelOptions';
+import { OPTION3B_PANEL_OPTIONS } from '@/pages/prototypes/channel-automations/panelOptions';
 import AgentScene from '@/pages/prototypes/channel-automations/scenes/AgentScene';
 import AgentsIndexScene from '@/pages/prototypes/channel-automations/scenes/AgentsIndexScene';
 import DiscoverScene from '@/pages/prototypes/channel-automations/scenes/DiscoverScene';
@@ -17,16 +17,16 @@ import ManageScene from '@/pages/prototypes/channel-automations/scenes/ManageSce
 import {
   EXTENDED_SCENES,
   type ExtendedSceneId,
-} from '@/pages/prototypes/standalone-automations/extendedScenes';
+} from '@/pages/prototypes/channel-automations/extendedScenes';
 import {
   AutomationEntitiesIndexScene,
   AutomationEntityEditScene,
-} from '@/pages/prototypes/automation-agents/scenes/AutomationsProductScenes';
+} from '@/pages/prototypes/channel-automations/scenes/AutomationEntitiesProductScenes';
 import frameStyles from '@/pages/prototypes/channel-automations/PrototypeAppFrame.module.scss';
 
 /**
- * Option 3b — each automation is a dedicated agent, with agent plumbing
- * collapsed behind Advanced (progressive disclosure).
+ * Option 3b — each automation is a dedicated agent; Tools and Access are
+ * peer tabs, with model knobs collapsed behind Advanced.
  */
 export default function ProgressiveAutomationAgents() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -37,6 +37,7 @@ export default function ProgressiveAutomationAgents() {
   );
   const [manageOrigin, setManageOrigin] = useState<ExtendedSceneId>('discover');
   const [selectedAgentId, setSelectedAgentId] = useState('matty');
+  const [agentIsNew, setAgentIsNew] = useState(false);
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
   const [entityIsNew, setEntityIsNew] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AutomationEntity | null>(null);
@@ -91,6 +92,13 @@ export default function ProgressiveAutomationAgents() {
 
   const goEditAgent = (agentId: string) => {
     setSelectedAgentId(agentId);
+    setAgentIsNew(false);
+    setScene('agent');
+  };
+
+  const goNewAgent = () => {
+    setSelectedAgentId('new-agent');
+    setAgentIsNew(true);
     setScene('agent');
   };
 
@@ -126,7 +134,7 @@ export default function ProgressiveAutomationAgents() {
       {scene === 'discover' && (
         <DiscoverScene
           automations={automationsList}
-          panelOptions={OPTION5_PANEL_OPTIONS}
+          panelOptions={OPTION3B_PANEL_OPTIONS}
           onCreateAutomation={createEntity}
           onManage={() => goManageFrom('discover')}
           onManageAgents={goAgents}
@@ -136,7 +144,7 @@ export default function ProgressiveAutomationAgents() {
       {scene === 'manage' && (
         <ManageScene
           automations={automationsList}
-          panelOptions={OPTION5_PANEL_OPTIONS}
+          panelOptions={OPTION3B_PANEL_OPTIONS}
           onCreateAutomation={createEntity}
           onUpdate={updateEntity}
           onToggle={toggleAutomation}
@@ -151,8 +159,7 @@ export default function ProgressiveAutomationAgents() {
       {scene === 'agents' && (
         <AgentsIndexScene
           onSelectAgent={goEditAgent}
-          onNewAutomation={() => {}}
-          showNewAutomation={false}
+          onNewAgent={goNewAgent}
           onGoAutomations={goAutomations}
         />
       )}
@@ -160,13 +167,8 @@ export default function ProgressiveAutomationAgents() {
       {scene === 'agent' && (
         <AgentScene
           agentId={selectedAgentId}
-          automations={[]}
-          onCreate={() => {}}
-          onUpdate={() => {}}
-          onToggle={() => {}}
-          onDelete={() => {}}
+          isNew={agentIsNew}
           onClose={goAgents}
-          showAutomationsTab={false}
           onGoAutomations={goAutomations}
         />
       )}

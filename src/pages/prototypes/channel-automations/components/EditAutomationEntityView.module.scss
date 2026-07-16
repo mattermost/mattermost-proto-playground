@@ -1,6 +1,5 @@
 .entity-edit {
-  &__chat,
-  &__configuration {
+  &__chat {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
@@ -10,5 +9,9 @@
       flex: 1 1 auto;
       min-height: 0;
     }
+  }
+
+  &__configuration {
+    width: 100%;
   }
 }

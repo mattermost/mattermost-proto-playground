@@ -4,6 +4,11 @@
   height: 100%;
   min-height: 0;
 
+  &--flow {
+    height: auto;
+    min-height: 0;
+  }
+
   &__enabled {
     flex: 0 0 auto;
     width: auto;
@@ -29,8 +34,13 @@
   &__form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xxl);
+    gap: 0;
     padding: var(--spacing-xl);
+
+    > *:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
 
     &-control {
       max-width: none;
@@ -45,27 +55,6 @@
         min-width: 0;
       }
     }
-  }
-
-  &__section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-s);
-  }
-
-  &__section-title {
-    margin: 0;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__section-fields {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-l);
   }
 
   &__panel-tab {

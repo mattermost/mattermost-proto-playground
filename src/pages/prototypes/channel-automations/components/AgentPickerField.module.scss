@@ -24,25 +24,6 @@
     }
   }
 
-  &__label {
-    position: absolute;
-    left: var(--spacing-xs);
-    top: 0;
-    padding: 0 var(--spacing-xxxs);
-    transform: translateY(-50%);
-    margin: 0;
-    font-size: var(--font-size-25);
-    line-height: 14px;
-    font-weight: var(--font-weight-regular);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-    background-color: var(--center-channel-bg);
-    pointer-events: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: calc(100% - 24px);
-  }
-
   &__trigger {
     display: flex;
     align-items: center;

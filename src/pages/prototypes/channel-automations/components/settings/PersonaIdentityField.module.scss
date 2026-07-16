@@ -1,0 +1,37 @@
+.persona-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  min-width: 0;
+
+  &__row {
+    display: flex;
+    gap: var(--spacing-m);
+    align-items: center;
+    min-width: 0;
+  }
+
+  &__avatar-actions {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__avatar-edit {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    z-index: 1;
+    background: var(--center-channel-bg);
+    box-shadow: 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__control {
+    flex: 1 1 0;
+    max-width: none;
+    width: 100%;
+    min-width: 0;
+  }
+}

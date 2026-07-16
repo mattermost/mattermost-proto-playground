@@ -13,7 +13,10 @@ import styles from './AgentPickerField.module.scss';
 export interface AgentPickerFieldProps {
   value: string;
   onChange: (agentId: string) => void;
+  /** Accessible name when no external labelledBy is provided. */
   label?: string;
+  /** External label id for aria-labelledby (e.g. section title). */
+  labelledBy?: string;
   className?: string;
   /** Option 4 — show each agent's tools/access so fit is judgeable. */
   showCapabilities?: boolean;
@@ -23,6 +26,7 @@ export default function AgentPickerField({
   value,
   onChange,
   label = 'Agent',
+  labelledBy,
   className = '',
   showCapabilities = false,
 }: AgentPickerFieldProps) {
@@ -49,15 +53,13 @@ export default function AgentPickerField({
           .filter(Boolean)
           .join(' ')}
       >
-        <span className={styles['picker__label']} id={`${listboxId}-label`}>
-          {label}
-        </span>
         <button
           type="button"
           className={styles['picker__trigger']}
           aria-haspopup="listbox"
           aria-expanded={open}
-          aria-labelledby={`${listboxId}-label`}
+          aria-labelledby={labelledBy}
+          aria-label={labelledBy ? undefined : label}
           aria-controls={listboxId}
           onClick={() => setOpen((current) => !current)}
         >

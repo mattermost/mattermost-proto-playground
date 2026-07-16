@@ -1,45 +1,31 @@
+import { TextArea, TextInput } from '@mattermost/compass-ui';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import {
-  Button,
-  Select,
-  TextArea,
-  TextInput,
-  UserAvatar,
-} from '@mattermost/compass-ui';
-import { useEffect, useState, type ChangeEvent, type ReactNode } from 'react';
-import {
-  AI_SERVICES,
   agentAvatarProps,
   modelsForAiService,
   type Agent,
 } from '../channelAutomationsData';
 import AgentAdvancedConfig from './AgentAdvancedConfig';
+import {
+  AiServiceModelField,
+  PersonaIdentityField,
+  SettingsSectionRow,
+} from './settings';
 import styles from './AgentSettingsTab.module.scss';
 
 export interface AgentSettingsTabProps {
   agent: Agent;
-}
-
-function SettingRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className={styles['settings__row']}>
-      <p className={styles['settings__label']}>{label}</p>
-      <div className={styles['settings__fields']}>{children}</div>
-    </div>
-  );
+  /** When true, username can be edited (create flow). */
+  usernameEditable?: boolean;
 }
 
 /** Agent Settings tab — aligns with plugin-agents config + Advanced (PR #887). */
-export default function AgentSettingsTab({ agent }: AgentSettingsTabProps) {
+export default function AgentSettingsTab({
+  agent,
+  usernameEditable = false,
+}: AgentSettingsTabProps) {
   const [displayName, setDisplayName] = useState(agent.displayName);
-  const [description, setDescription] = useState(
-    'A general purpose agent to chat with',
-  );
+  const [description, setDescription] = useState(agent.description);
   const [username, setUsername] = useState(agent.username);
   const [aiServiceId, setAiServiceId] = useState('anthropic');
   const models = modelsForAiService(aiServiceId);
@@ -48,8 +34,9 @@ export default function AgentSettingsTab({ agent }: AgentSettingsTabProps) {
 
   useEffect(() => {
     setDisplayName(agent.displayName);
+    setDescription(agent.description);
     setUsername(agent.username);
-  }, [agent.displayName, agent.username, agent.id]);
+  }, [agent.description, agent.displayName, agent.username, agent.id]);
 
   useEffect(() => {
     const nextModels = modelsForAiService(aiServiceId);
@@ -62,7 +49,7 @@ export default function AgentSettingsTab({ agent }: AgentSettingsTabProps) {
 
   return (
     <div className={styles['settings']}>
-      <SettingRow label="Display name">
+      <SettingsSectionRow label="Display name">
         <TextInput
           className={styles['settings__control']}
           placeholder="e.g. Sales Assistant"
@@ -71,9 +58,19 @@ export default function AgentSettingsTab({ agent }: AgentSettingsTabProps) {
             setDisplayName(e.target.value)
           }
         />
-      </SettingRow>
+      </SettingsSectionRow>
 
-      <SettingRow label="Description">
+      <SettingsSectionRow label="Username and avatar">
+        <PersonaIdentityField
+          avatar={agentAvatarProps(agent)}
+          username={username}
+          onUsernameChange={setUsername}
+          usernameDisabled={!usernameEditable}
+          help="Users will mention this name to interact with the agent. Must start with a letter and contain only lowercase letters, numbers, dots, hyphens, or underscores. The username cannot be changed after the agent is created."
+        />
+      </SettingsSectionRow>
+
+      <SettingsSectionRow label="Description">
         <TextInput
           className={styles['settings__control']}
           placeholder="E.g. A general purpose agent to chat with"
@@ -82,75 +79,18 @@ export default function AgentSettingsTab({ agent }: AgentSettingsTabProps) {
             setDescription(e.target.value)
           }
         />
-      </SettingRow>
+      </SettingsSectionRow>
 
-      <SettingRow label="Agent username and avatar">
-        <div className={styles['settings__persona']}>
-          <div className={styles['settings__persona-row']}>
-            <TextInput
-              className={styles['settings__control']}
-              placeholder="Agent username"
-              value={username}
-              disabled
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setUsername(e.target.value)
-              }
-            />
-            <div className={styles['settings__avatar-actions']}>
-              <UserAvatar size="40" {...agentAvatarProps(agent)} />
-              <Button emphasis="Tertiary" size="Medium">
-                Upload image
-              </Button>
-            </div>
-          </div>
-          <p className={styles['settings__help']}>
-            Users will mention this name to interact with the agent. Must start
-            with a letter and contain only lowercase letters, numbers, dots,
-            hyphens, or underscores. The username cannot be changed after the
-            agent is created.
-          </p>
-        </div>
-      </SettingRow>
+      <SettingsSectionRow label="AI Service & model">
+        <AiServiceModelField
+          aiServiceId={aiServiceId}
+          modelId={modelId}
+          onAiServiceChange={setAiServiceId}
+          onModelChange={setModelId}
+        />
+      </SettingsSectionRow>
 
-      <SettingRow label="AI Service">
-        <div className={styles['settings__model']}>
-          <Select
-            className={styles['settings__control']}
-            value={aiServiceId}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              setAiServiceId(e.target.value)
-            }
-          >
-            {AI_SERVICES.map((service) => (
-              <option key={service.id} value={service.id}>
-                {service.label}
-              </option>
-            ))}
-          </Select>
-          <p className={styles['settings__help']}>
-            Select an AI service to load model suggestions and configure vision,
-            tools, native provider tools, reasoning, and structured output.
-          </p>
-        </div>
-      </SettingRow>
-
-      <SettingRow label="Model">
-        <Select
-          className={styles['settings__control']}
-          value={modelId}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-            setModelId(e.target.value)
-          }
-        >
-          {models.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-      </SettingRow>
-
-      <SettingRow label="Custom instructions">
+      <SettingsSectionRow label="Custom instructions">
         <TextArea
           className={styles['settings__control']}
           placeholder="How would you like the agent to respond?"
@@ -160,7 +100,7 @@ export default function AgentSettingsTab({ agent }: AgentSettingsTabProps) {
           }
           rows={8}
         />
-      </SettingRow>
+      </SettingsSectionRow>
 
       <AgentAdvancedConfig aiServiceId={aiServiceId} />
     </div>

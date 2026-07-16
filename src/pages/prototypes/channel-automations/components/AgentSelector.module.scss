@@ -1,0 +1,30 @@
+.selector {
+  position: relative;
+
+  &__trigger {
+    // Beat Dropdown Small’s asymmetric padding (left xxxs / right xxxxs).
+    padding: var(--spacing-xxxxs) !important;
+
+    :global([class*='dropdown__trigger']),
+    :global([class*='dropdown__content']),
+    :global([class*='dropdown__leadingIcon']),
+    :global([class*='dropdown__chevron']) {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    :global([class*='dropdown__label']) {
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
+    }
+  }
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    right: 0;
+    z-index: 20;
+    min-width: 220px;
+  }
+}

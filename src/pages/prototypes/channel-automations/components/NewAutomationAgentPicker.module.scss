@@ -7,8 +7,87 @@
   }
 
   &__menu {
-    width: max-content;
-    min-width: 220px;
-    max-width: none;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 360px;
+    max-height: min(420px, calc(100vh - 24px));
+    overflow: hidden;
+  }
+
+  &__search {
+    flex-shrink: 0;
+    padding: 0 var(--spacing-l);
+  }
+
+  &__options {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-m) var(--spacing-l) var(--spacing-l);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-m);
+    width: 100%;
+    padding: var(--spacing-s) var(--spacing-l);
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
+  }
+
+  &__option-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__option-name {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__option-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__option-meta {
+    margin-top: 2px;
+    font-size: var(--font-size-25);
+    line-height: var(--line-height-25);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 }

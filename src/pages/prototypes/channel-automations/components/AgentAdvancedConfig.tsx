@@ -1,6 +1,10 @@
-import { Checkbox, Icon, Select, TextInput } from '@mattermost/compass-ui';
-import { useId, useState, type ChangeEvent, type ReactNode } from 'react';
-import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import { Checkbox, Select, TextInput } from '@mattermost/compass-ui';
+import { useState, type ChangeEvent } from 'react';
+import {
+  SettingsDisclosureCard,
+  SettingsHelpText,
+  SettingsSectionRow,
+} from './settings';
 import styles from './AgentAdvancedConfig.module.scss';
 
 const DEFAULT_MAX_TOOL_TURNS = 10;
@@ -10,25 +14,18 @@ const REASONING_EFFORTS = [
   { id: 'high', label: 'High' },
 ] as const;
 
-function AdvancedRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className={styles['advanced__row']}>
-      <p className={styles['advanced__label']}>{label}</p>
-      <div className={styles['advanced__fields']}>{children}</div>
-    </div>
-  );
-}
-
 export interface AgentAdvancedConfigProps {
   /** Drives which provider-specific options are shown. */
   aiServiceId: string;
   className?: string;
+  /**
+   * When true, render fields only (no outer Advanced disclosure) —
+   * for nesting inside Option 3b’s progressive Advanced panel.
+   */
+  embedded?: boolean;
+  /** Controlled Enable Tools value (Option 3b lifts this to hide the Tools tab). */
+  enableTools?: boolean;
+  onEnableToolsChange?: (enabled: boolean) => void;
 }
 
 /**
@@ -38,19 +35,25 @@ export interface AgentAdvancedConfigProps {
 export default function AgentAdvancedConfig({
   aiServiceId,
   className = '',
+  embedded = false,
+  enableTools: enableToolsProp,
+  onEnableToolsChange,
 }: AgentAdvancedConfigProps) {
-  const panelId = useId().replace(/\W/g, '');
-  const [expanded, setExpanded] = useState(false);
-
   const [dynamicToolLoading, setDynamicToolLoading] = useState(true);
   const [maxToolTurns, setMaxToolTurns] = useState(String(DEFAULT_MAX_TOOL_TURNS));
   const [enableVision, setEnableVision] = useState(false);
-  const [enableTools, setEnableTools] = useState(true);
+  const [internalEnableTools, setInternalEnableTools] = useState(true);
   const [webSearch, setWebSearch] = useState(true);
   const [reasoningEnabled, setReasoningEnabled] = useState(true);
   const [reasoningEffort, setReasoningEffort] = useState('medium');
   const [thinkingBudget, setThinkingBudget] = useState('');
   const [structuredOutput, setStructuredOutput] = useState(false);
+
+  const enableTools = enableToolsProp ?? internalEnableTools;
+  const setEnableTools = (next: boolean) => {
+    if (enableToolsProp === undefined) setInternalEnableTools(next);
+    onEnableToolsChange?.(next);
+  };
 
   const isAnthropic = aiServiceId === 'anthropic';
   const isOpenAI =
@@ -59,49 +62,45 @@ export default function AgentAdvancedConfig({
   const showReasoning = isAnthropic || isOpenAI;
   const showStructuredOutput = isAnthropic || isOpenAI;
 
-  return (
-    <section
-      className={[styles['advanced'], className].filter(Boolean).join(' ')}
-    >
-      <button
-        type="button"
-        className={styles['advanced__trigger']}
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        onClick={() => setExpanded((current) => !current)}
-      >
-        <span className={styles['advanced__trigger-copy']}>
-          <span className={styles['advanced__trigger-label']}>
-            Advanced configuration
-          </span>
-          <span className={styles['advanced__trigger-hint']}>
-            Tool limits, vision, reasoning, and other model-specific options
-          </span>
-        </span>
-        <span
-          className={[
-            styles['advanced__chevron'],
-            expanded ? styles['advanced__chevron--open'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          aria-hidden
+  const fields = (
+    <div className={styles['advanced__fields-stack']}>
+      <SettingsSectionRow label="Enable Vision" divided>
+        <Checkbox
+          size="Medium"
+          checked={enableVision}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setEnableVision(e.target.checked)
+          }
         >
-          <Icon size="16" glyph={<ChevronDownIcon />} />
-        </span>
-      </button>
+          Enable
+        </Checkbox>
+        <SettingsHelpText>
+          Enable Vision to allow the bot to process images. Requires a
+          compatible model.
+        </SettingsHelpText>
+      </SettingsSectionRow>
 
-      <div
-        className={[
-          styles['advanced__collapse'],
-          expanded ? styles['advanced__collapse--expanded'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        aria-hidden={!expanded}
-      >
-        <div className={styles['advanced__collapse-inner']} id={panelId}>
-          <AdvancedRow label="Dynamic tool loading">
+      <SettingsSectionRow label="Enable Tools" divided>
+        <Checkbox
+          size="Medium"
+          checked={enableTools}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setEnableTools(e.target.checked)
+          }
+        >
+          Enable
+        </Checkbox>
+        <SettingsHelpText>
+          By default some tool use is enabled to allow for features such as
+          integrations with JIRA. Disabling this allows use of models that do
+          not support or are not very good at tool use. Some features will not
+          work without tools.
+        </SettingsHelpText>
+      </SettingsSectionRow>
+
+      {enableTools ? (
+        <>
+          <SettingsSectionRow label="Dynamic tool loading" divided>
             <Checkbox
               size="Medium"
               checked={dynamicToolLoading}
@@ -111,14 +110,14 @@ export default function AgentAdvancedConfig({
             >
               Enable
             </Checkbox>
-            <p className={styles['advanced__help']}>
+            <SettingsHelpText>
               Expose search and load helper tools first, then load MCP tool
               schemas only when the agent needs them. Disable this to use the
               full MCP tool list for this agent.
-            </p>
-          </AdvancedRow>
+            </SettingsHelpText>
+          </SettingsSectionRow>
 
-          <AdvancedRow label="Max tool turns">
+          <SettingsSectionRow label="Max tool turns" divided>
             <TextInput
               className={styles['advanced__control']}
               type="number"
@@ -130,154 +129,155 @@ export default function AgentAdvancedConfig({
                 setMaxToolTurns(e.target.value)
               }
             />
-            <p className={styles['advanced__help']}>
+            <SettingsHelpText>
               Maximum number of consecutive tool-call/execute rounds the agent
               will run before stopping. Lower this for smaller models that tend
               to loop on tool calls; raise it for agents that chain many tools
               per turn.
-            </p>
-          </AdvancedRow>
+            </SettingsHelpText>
+          </SettingsSectionRow>
+        </>
+      ) : null}
 
-          <AdvancedRow label="Enable Vision">
-            <Checkbox
-              size="Medium"
-              checked={enableVision}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setEnableVision(e.target.checked)
-              }
-            >
-              Enable
-            </Checkbox>
-            <p className={styles['advanced__help']}>
-              Enable Vision to allow the bot to process images. Requires a
-              compatible model.
-            </p>
-          </AdvancedRow>
+      {enableTools && showNativeTools ? (
+        <SettingsSectionRow
+          label={
+            isAnthropic ? 'Anthropic native tools' : 'OpenAI native tools'
+          }
+          divided
+        >
+          <Checkbox
+            size="Medium"
+            checked={webSearch}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setWebSearch(e.target.checked)
+            }
+          >
+            Web search
+          </Checkbox>
+          <SettingsHelpText>
+            Allow the model to use the provider’s built-in web search tool when
+            answering.
+          </SettingsHelpText>
+        </SettingsSectionRow>
+      ) : null}
 
-          <AdvancedRow label="Enable Tools">
-            <Checkbox
-              size="Medium"
-              checked={enableTools}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setEnableTools(e.target.checked)
-              }
-            >
-              Enable
-            </Checkbox>
-            <p className={styles['advanced__help']}>
-              By default some tool use is enabled to allow for features such as
-              integrations with JIRA. Disabling this allows use of models that
-              do not support or are not very good at tool use. Some features
-              will not work without tools.
-            </p>
-          </AdvancedRow>
-
-          {showNativeTools ? (
-            <AdvancedRow
-              label={
-                isAnthropic ? 'Anthropic native tools' : 'OpenAI native tools'
-              }
-            >
-              <Checkbox
-                size="Medium"
-                checked={webSearch}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setWebSearch(e.target.checked)
-                }
-              >
-                Web search
-              </Checkbox>
-              <p className={styles['advanced__help']}>
-                Allow the model to use the provider’s built-in web search tool
-                when answering.
-              </p>
-            </AdvancedRow>
-          ) : null}
-
-          {showReasoning ? (
-            <AdvancedRow label={isAnthropic ? 'Extended Thinking' : 'Reasoning'}>
-              <Checkbox
-                size="Medium"
-                checked={reasoningEnabled && !structuredOutput}
-                disabled={isAnthropic && structuredOutput}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setReasoningEnabled(e.target.checked)
-                }
-              >
-                Enable
-              </Checkbox>
-              {reasoningEnabled && !(isAnthropic && structuredOutput) ? (
-                <div className={styles['advanced__nested']}>
-                  {!isAnthropic ? (
-                    <Select
-                      className={styles['advanced__control']}
-                      label="Effort"
-                      value={reasoningEffort}
-                      onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                        setReasoningEffort(e.target.value)
-                      }
-                    >
-                      {REASONING_EFFORTS.map((effort) => (
-                        <option key={effort.id} value={effort.id}>
-                          {effort.label}
-                        </option>
-                      ))}
-                    </Select>
-                  ) : (
-                    <>
-                      <TextInput
-                        className={styles['advanced__control']}
-                        type="number"
-                        min={1024}
-                        label="Thinking Budget (tokens)"
-                        placeholder="1024"
-                        value={thinkingBudget}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                          setThinkingBudget(e.target.value)
-                        }
-                      />
-                      <p className={styles['advanced__help']}>
-                        Token budget for extended thinking. Higher values allow
-                        deeper reasoning but increase response time and cost.
-                        Leave blank to use the default.
-                      </p>
-                    </>
-                  )}
-                </div>
-              ) : null}
-            </AdvancedRow>
-          ) : null}
-
-          {showStructuredOutput ? (
-            <AdvancedRow label="Structured Output">
-              <Checkbox
-                size="Medium"
-                checked={structuredOutput}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  const next = e.target.checked;
-                  setStructuredOutput(next);
-                  if (isAnthropic && next) {
-                    setReasoningEnabled(false);
+      {showReasoning ? (
+        <SettingsSectionRow
+          label={isAnthropic ? 'Extended Thinking' : 'Reasoning'}
+          divided
+        >
+          {!isAnthropic ? (
+            <div className={styles['advanced__inline-controls']}>
+              <span className={styles['advanced__inline-check']}>
+                <Checkbox
+                  size="Medium"
+                  checked={reasoningEnabled}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setReasoningEnabled(e.target.checked)
                   }
-                }}
-              >
-                Enable
-              </Checkbox>
-              <p className={styles['advanced__help']}>
-                {isAnthropic
-                  ? 'Enable structured JSON output for this agent. Requires a compatible Anthropic model (Claude 4.5/4.6+). Structured output and extended thinking cannot be used simultaneously.'
-                  : 'Enable structured JSON output for this agent. When enabled and a JSON schema is provided in the request, the model will produce valid JSON matching the schema.'}
-              </p>
-              {isAnthropic && structuredOutput ? (
-                <p className={styles['advanced__note']}>
-                  Extended thinking is turned off while structured output is
-                  enabled (Anthropic does not support both at once).
-                </p>
+                >
+                  Enable
+                </Checkbox>
+              </span>
+              {reasoningEnabled ? (
+                <Select
+                  className={styles['advanced__effort-select']}
+                  label="Effort"
+                  value={reasoningEffort}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                    setReasoningEffort(e.target.value)
+                  }
+                >
+                  {REASONING_EFFORTS.map((effort) => (
+                    <option key={effort.id} value={effort.id}>
+                      {effort.label}
+                    </option>
+                  ))}
+                </Select>
               ) : null}
-            </AdvancedRow>
+            </div>
+          ) : (
+            <>
+              <div className={styles['advanced__inline-controls']}>
+                <span className={styles['advanced__inline-check']}>
+                  <Checkbox
+                    size="Medium"
+                    checked={reasoningEnabled && !structuredOutput}
+                    disabled={structuredOutput}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setReasoningEnabled(e.target.checked)
+                    }
+                  >
+                    Enable
+                  </Checkbox>
+                </span>
+                {reasoningEnabled && !structuredOutput ? (
+                  <TextInput
+                    className={styles['advanced__thinking-budget']}
+                    type="number"
+                    min={1024}
+                    label="Thinking Budget (tokens)"
+                    placeholder="1024"
+                    value={thinkingBudget}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setThinkingBudget(e.target.value)
+                    }
+                  />
+                ) : null}
+              </div>
+              <SettingsHelpText>
+                Token budget for extended thinking. Higher values allow deeper
+                reasoning but increase response time and cost. Leave blank to
+                use the default.
+              </SettingsHelpText>
+            </>
+          )}
+        </SettingsSectionRow>
+      ) : null}
+
+      {showStructuredOutput ? (
+        <SettingsSectionRow label="Structured Output" divided>
+          <Checkbox
+            size="Medium"
+            checked={structuredOutput}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              const next = e.target.checked;
+              setStructuredOutput(next);
+              if (isAnthropic && next) {
+                setReasoningEnabled(false);
+              }
+            }}
+          >
+            Enable
+          </Checkbox>
+          <SettingsHelpText>
+            {isAnthropic
+              ? 'Enable structured JSON output for this agent. Requires a compatible Anthropic model (Claude 4.5/4.6+). Structured output and extended thinking cannot be used simultaneously.'
+              : 'Enable structured JSON output for this agent. When enabled and a JSON schema is provided in the request, the model will produce valid JSON matching the schema.'}
+          </SettingsHelpText>
+          {isAnthropic && structuredOutput ? (
+            <p className={styles['advanced__note']}>
+              Extended thinking is turned off while structured output is enabled
+              (Anthropic does not support both at once).
+            </p>
           ) : null}
-        </div>
-      </div>
-    </section>
+        </SettingsSectionRow>
+      ) : null}
+    </div>
+  );
+
+  if (embedded) {
+    return <div className={className || undefined}>{fields}</div>;
+  }
+
+  return (
+    <SettingsDisclosureCard
+      className={className}
+      title="Advanced configuration"
+      hint="Tool limits, vision, reasoning, and other model-specific options"
+    >
+      {fields}
+    </SettingsDisclosureCard>
   );
 }

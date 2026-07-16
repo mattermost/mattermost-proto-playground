@@ -6,15 +6,13 @@ import AutomationDeleteModal from '../components/AutomationDeleteModal';
 
 export interface AgentsIndexSceneProps {
   onSelectAgent: (id: string) => void;
-  onNewAutomation: (agentId: string) => void;
-  showNewAutomation?: boolean;
+  onNewAgent: () => void;
   onGoAutomations?: () => void;
 }
 
 export default function AgentsIndexScene({
   onSelectAgent,
-  onNewAutomation,
-  showNewAutomation = true,
+  onNewAgent,
   onGoAutomations,
 }: AgentsIndexSceneProps) {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -47,9 +45,8 @@ export default function AgentsIndexScene({
       <AgentsIndexView
         agents={AGENTS}
         onSelectAgent={onSelectAgent}
-        onNewAutomation={onNewAutomation}
+        onNewAgent={onNewAgent}
         onRequestDelete={setDeleteTargetId}
-        showNewAutomation={showNewAutomation}
       />
     </AgentsShell>
   );

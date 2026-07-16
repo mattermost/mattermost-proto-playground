@@ -8,7 +8,7 @@ import {
   type Automation,
   type AutomationDraft,
 } from '@/pages/prototypes/channel-automations/channelAutomationsData';
-import { OPTION4_PANEL_OPTIONS } from '@/pages/prototypes/channel-automations/panelOptions';
+import { OPTION2B_PANEL_OPTIONS } from '@/pages/prototypes/channel-automations/panelOptions';
 import AgentScene from '@/pages/prototypes/channel-automations/scenes/AgentScene';
 import AgentsIndexScene from '@/pages/prototypes/channel-automations/scenes/AgentsIndexScene';
 import DiscoverScene from '@/pages/prototypes/channel-automations/scenes/DiscoverScene';
@@ -16,11 +16,11 @@ import ManageScene from '@/pages/prototypes/channel-automations/scenes/ManageSce
 import {
   AutomationEditScene,
   AutomationsIndexScene,
-} from '@/pages/prototypes/standalone-automations/scenes/AutomationsProductScenes';
+} from '@/pages/prototypes/channel-automations/scenes/AutomationsProductScenes';
 import {
   STANDALONE_SCENES,
   type ExtendedSceneId,
-} from '@/pages/prototypes/standalone-automations/extendedScenes';
+} from '@/pages/prototypes/channel-automations/extendedScenes';
 import frameStyles from '@/pages/prototypes/channel-automations/PrototypeAppFrame.module.scss';
 
 /**
@@ -35,6 +35,7 @@ export default function ScopedExecutorAutomations() {
     useState<Automation[]>(INITIAL_AUTOMATIONS);
   const [manageOrigin, setManageOrigin] = useState<ExtendedSceneId>('discover');
   const [selectedAgentId, setSelectedAgentId] = useState('matty');
+  const [agentIsNew, setAgentIsNew] = useState(false);
   const [selectedAutomationId, setSelectedAutomationId] = useState<string | null>(
     null,
   );
@@ -90,6 +91,13 @@ export default function ScopedExecutorAutomations() {
 
   const goEditAgent = (agentId: string) => {
     setSelectedAgentId(agentId);
+    setAgentIsNew(false);
+    setScene('agent');
+  };
+
+  const goNewAgent = () => {
+    setSelectedAgentId('new-agent');
+    setAgentIsNew(true);
     setScene('agent');
   };
 
@@ -127,7 +135,7 @@ export default function ScopedExecutorAutomations() {
       {scene === 'discover' && (
         <DiscoverScene
           automations={automations}
-          panelOptions={OPTION4_PANEL_OPTIONS}
+          panelOptions={OPTION2B_PANEL_OPTIONS}
           onCreateAutomation={createAutomation}
           onManage={() => goManageFrom('discover')}
           onManageAgents={goAgents}
@@ -137,7 +145,7 @@ export default function ScopedExecutorAutomations() {
       {scene === 'manage' && (
         <ManageScene
           automations={automations}
-          panelOptions={OPTION4_PANEL_OPTIONS}
+          panelOptions={OPTION2B_PANEL_OPTIONS}
           onCreateAutomation={createAutomation}
           onUpdate={updateAutomation}
           onToggle={toggleAutomation}
@@ -151,8 +159,7 @@ export default function ScopedExecutorAutomations() {
       {scene === 'agents' && (
         <AgentsIndexScene
           onSelectAgent={goEditAgent}
-          onNewAutomation={goNewAutomationForAgent}
-          showNewAutomation={false}
+          onNewAgent={goNewAgent}
           onGoAutomations={goAutomations}
         />
       )}
@@ -160,13 +167,8 @@ export default function ScopedExecutorAutomations() {
       {scene === 'agent' && (
         <AgentScene
           agentId={selectedAgentId}
-          automations={automations}
-          onCreate={createAutomation}
-          onUpdate={updateAutomation}
-          onToggle={toggleAutomation}
-          onDelete={deleteAutomation}
+          isNew={agentIsNew}
           onClose={goAgents}
-          showAutomationsTab={false}
           onGoAutomations={goAutomations}
         />
       )}

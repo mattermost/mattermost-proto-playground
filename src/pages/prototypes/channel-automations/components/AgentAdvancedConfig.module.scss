@@ -1,127 +1,8 @@
 .advanced {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  border-radius: var(--radius-m);
-  background: var(--center-channel-bg);
-  overflow: hidden;
-
-  &__trigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-s);
-    width: 100%;
-    padding: var(--spacing-m);
-    border: none;
-    background: transparent;
-    text-align: left;
-    cursor: pointer;
-    color: var(--center-channel-color);
-
-    &:hover {
-      background: rgba(var(--center-channel-color-rgb), 0.04);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--button-bg);
-      outline-offset: -2px;
-    }
-  }
-
-  &__trigger-copy {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--spacing-xs);
-    min-width: 0;
-  }
-
-  &__trigger-label {
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  &__trigger-hint {
-    font-size: var(--font-size-75);
-    line-height: var(--line-height-100);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &__chevron {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-    transition: transform var(--duration-quick) var(--ease-transition);
-
-    &--open {
-      transform: rotate(180deg);
-    }
-  }
-
-  &__collapse {
-    display: grid;
-    grid-template-rows: 0fr;
-    overflow: hidden;
-    transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
-
-    &--expanded {
-      grid-template-rows: 1fr;
-    }
-  }
-
-  &__collapse-inner {
-    overflow: hidden;
-    min-height: 0;
+  &__fields-stack {
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 0;
-  }
-
-  &__collapse--expanded &__collapse-inner {
-    padding: var(--spacing-m) var(--spacing-m) var(--spacing-l);
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  }
-
-  &__row {
-    display: grid;
-    grid-template-columns: minmax(132px, 0.34fr) minmax(0, 1fr);
-    gap: var(--spacing-xl);
-    align-items: start;
-    padding: var(--spacing-l) 0;
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-
-    &:first-child {
-      padding-top: 0;
-      border-top: none;
-    }
-
-    @media (max-width: 560px) {
-      grid-template-columns: 1fr;
-      gap: var(--spacing-s);
-    }
-  }
-
-  &__label {
-    margin: 0;
-    padding-top: var(--spacing-xxs);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__fields {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-s);
-    align-items: flex-start;
     min-width: 0;
   }
 
@@ -130,18 +11,38 @@
     width: 100%;
   }
 
-  &__nested {
+  &__inline-controls {
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-s);
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-m);
+    flex-wrap: nowrap;
     width: 100%;
+    min-width: 0;
+
+    @container (width < 360px) {
+      flex-wrap: wrap;
+    }
   }
 
-  &__help {
-    margin: 0;
-    font-size: var(--font-size-75);
-    line-height: var(--line-height-75);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+  // Compass Checkbox defaults to width: 100%; wrap so Enable hugs content beside Effort.
+  &__inline-check {
+    flex: 0 0 auto;
+    width: fit-content;
+    max-width: fit-content;
+
+    :global(.checkbox) {
+      width: fit-content;
+      max-width: fit-content;
+    }
+  }
+
+  &__inline-controls &__effort-select,
+  &__inline-controls &__thinking-budget {
+    width: auto;
+    min-width: 8rem;
+    max-width: 12rem;
+    flex: 0 0 auto;
   }
 
   &__note {

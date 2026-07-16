@@ -51,24 +51,27 @@ export default function AutomationEditView({
         .filter(Boolean)
         .join(' ')}
     >
-      <AutomationFormEditor
-        ref={editorRef}
-        initial={initial}
-        name={name}
-        onNameChange={setName}
-        onSubmit={onSubmit}
-        onCancel={onClose}
-        showViewTabs={false}
-        showFooter={false}
-        showAgentPicker={showAgentPicker}
-        contextAgentId={contextAgentId}
-        showAgentCapabilities={showAgentCapabilities}
-        showAutomationToolScope={showAutomationToolScope}
-        showOperateWhere={showOperateWhere}
-        view={view}
-        onViewChange={setView}
-        onValidityChange={setCanSave}
-      />
+      <div className={styles['automation-edit__col']}>
+        <AutomationFormEditor
+          ref={editorRef}
+          initial={initial}
+          name={name}
+          onNameChange={setName}
+          onSubmit={onSubmit}
+          onCancel={onClose}
+          showViewTabs={false}
+          showFooter={false}
+          scrollBody={isChat}
+          showAgentPicker={showAgentPicker}
+          contextAgentId={contextAgentId}
+          showAgentCapabilities={showAgentCapabilities}
+          showAutomationToolScope={showAutomationToolScope}
+          showOperateWhere={showOperateWhere}
+          view={view}
+          onViewChange={setView}
+          onValidityChange={setCanSave}
+        />
+      </div>
     </div>
   );
 
@@ -81,8 +84,8 @@ export default function AutomationEditView({
         .filter(Boolean)
         .join(' ')}
     >
-      <div className={styles['automation-edit__col']}>
-        <div className={styles['automation-edit__chrome']}>
+      <div className={styles['automation-edit__chrome']}>
+        <div className={styles['automation-edit__col']}>
           <div className={styles['automation-edit__head']}>
             <IconButton
               size="Small"
@@ -97,26 +100,31 @@ export default function AutomationEditView({
               size="page"
             />
           </div>
-
-          <AutomationsTabs
-            tabs={AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
-              key: tab.id,
-              label: tab.label,
-            }))}
-            activeKey={view}
-            onChange={(id) => setView(id as EditorView)}
-            ariaLabel="Automation editor view"
-          />
         </div>
 
-        {isChat ? (
-          body
-        ) : (
-          <div className={styles['automation-edit__scroll']}>
-            <Scrollbar>{body}</Scrollbar>
+        <div className={styles['automation-edit__tabs']}>
+          <div className={styles['automation-edit__col']}>
+            <AutomationsTabs
+              tabs={AUTOMATION_EDITOR_VIEW_TABS.map((tab) => ({
+                key: tab.id,
+                label: tab.label,
+              }))}
+              activeKey={view}
+              onChange={(id) => setView(id as EditorView)}
+              ariaLabel="Automation editor view"
+              showDivider={false}
+            />
           </div>
-        )}
+        </div>
       </div>
+
+      {isChat ? (
+        <div className={styles['automation-edit__main']}>{body}</div>
+      ) : (
+        <div className={styles['automation-edit__scroll']}>
+          <Scrollbar>{body}</Scrollbar>
+        </div>
+      )}
 
       <div className={styles['automation-edit__footer']}>
         <div className={styles['automation-edit__footer-col']}>

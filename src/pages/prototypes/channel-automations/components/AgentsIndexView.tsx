@@ -9,7 +9,6 @@ import { useMemo, useState, type ChangeEvent } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { type Agent } from '../channelAutomationsData';
 import AgentListItem from './AgentListItem';
-import NewAutomationAgentPicker from './NewAutomationAgentPicker';
 import styles from './AgentsIndexView.module.scss';
 
 type AgentsTabKey = 'all' | 'yours';
@@ -22,9 +21,8 @@ const TABS = [
 export interface AgentsIndexViewProps {
   agents: Agent[];
   onSelectAgent: (id: string) => void;
-  onNewAutomation: (agentId: string) => void;
+  onNewAgent: () => void;
   onRequestDelete?: (id: string) => void;
-  showNewAutomation?: boolean;
 }
 
 /**
@@ -34,9 +32,8 @@ export interface AgentsIndexViewProps {
 export default function AgentsIndexView({
   agents,
   onSelectAgent,
-  onNewAutomation,
+  onNewAgent,
   onRequestDelete,
-  showNewAutomation = true,
 }: AgentsIndexViewProps) {
   const [tab, setTab] = useState<AgentsTabKey>('all');
   const [query, setQuery] = useState('');
@@ -84,16 +81,11 @@ export default function AgentsIndexView({
                   aria-label="Search agents"
                 />
                 <div className={styles['agents-index__actions']}>
-                  {showNewAutomation ? (
-                    <NewAutomationAgentPicker
-                      emphasis="Tertiary"
-                      onSelectAgent={onNewAutomation}
-                    />
-                  ) : null}
                   <Button
                     emphasis="Primary"
                     size="Medium"
                     leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+                    onClick={onNewAgent}
                   >
                     New agent
                   </Button>

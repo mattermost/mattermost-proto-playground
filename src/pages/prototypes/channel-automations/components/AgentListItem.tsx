@@ -31,25 +31,27 @@ export default function AgentListItem({
       className={styles['agent-item']}
       onClick={() => onEdit(agent.id)}
     >
-      <div className={styles['agent-item__main']}>
-        <div className={styles['agent-item__identity']}>
-          <UserAvatar size="24" {...agentAvatarProps(agent)} />
+      <UserAvatar size="32" {...agentAvatarProps(agent)} />
+
+      <div className={styles['agent-item__body']}>
+        <div className={styles['agent-item__title']}>
           <p className={styles['agent-item__name']}>{agent.displayName}</p>
           <p className={styles['agent-item__username']}>
-            (@{agent.username})
+            @{agent.username}
           </p>
         </div>
+        <p className={styles['agent-item__description']}>{agent.description}</p>
+      </div>
 
-        <div className={styles['agent-item__stats']}>
-          <span className={styles['agent-item__stat']}>
-            <span className={styles['agent-item__stat-dot']} aria-hidden />
-            {agent.activeMcps} MCPs Active
-          </span>
-          <span className={styles['agent-item__stat-divider']} aria-hidden />
-          <span className={styles['agent-item__stat']}>
-            {agent.toolCount} tools
-          </span>
-        </div>
+      <div className={styles['agent-item__stats']}>
+        <span className={styles['agent-item__stat']}>
+          <span className={styles['agent-item__stat-dot']} aria-hidden />
+          {agent.activeMcps} MCPs Active
+        </span>
+        <span className={styles['agent-item__stat-divider']} aria-hidden />
+        <span className={styles['agent-item__stat']}>
+          {agent.toolCount} tools
+        </span>
       </div>
 
       <div

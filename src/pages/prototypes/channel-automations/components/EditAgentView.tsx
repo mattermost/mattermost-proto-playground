@@ -10,13 +10,11 @@ export type AgentTabKey =
   | 'chat'
   | 'configuration'
   | 'access'
-  | 'automations'
   | 'mcps';
 
 const TABS: AutomationsTabItem[] = [
   { key: 'configuration', label: 'Settings' },
   { key: 'access', label: 'Access' },
-  { key: 'automations', label: 'Automations' },
   { key: 'mcps', label: 'Tools' },
 ];
 
@@ -29,7 +27,6 @@ export interface EditAgentViewProps {
   onClose: () => void;
   onSave: () => void;
   children: ReactNode;
-  showAutomationsTab?: boolean;
   tabs?: AutomationsTabItem[];
   tabsAriaLabel?: string;
   /** When true, body skips its own padding so nested editors can own spacing. */
@@ -37,9 +34,8 @@ export interface EditAgentViewProps {
 }
 
 /**
- * Edit Agent settings view (Figma `4303-35266`) — an 800px-wide centered card
- * with a back-to-agents header, the Settings / Access / Automations / Tools
- * tab strip, the active tab body, and a Cancel / Save footer.
+ * Edit Agent settings view — full-bleed chrome/scroll/footer with an 800px
+ * content column, matching the Agents list edge-scrollbar layout.
  */
 export default function EditAgentView({
   title = 'Edit Agent',
@@ -50,46 +46,48 @@ export default function EditAgentView({
   onClose,
   onSave,
   children,
-  showAutomationsTab = true,
   tabs: tabsOverride,
   tabsAriaLabel = 'Agent settings',
   flushBody = false,
 }: EditAgentViewProps) {
-  const tabs =
-    tabsOverride ??
-    (showAutomationsTab
-      ? TABS
-      : TABS.filter((tab) => tab.key !== 'automations'));
+  const tabs = tabsOverride ?? TABS;
 
   const isChatTab = activeTab === 'chat';
 
   const chrome = (
     <div className={styles['edit-agent__chrome']}>
-      <div className={styles['edit-agent__head']}>
-        <IconButton
-          size="Small"
-          aria-label="Back to agents"
-          onClick={onClose}
-          icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
-        />
-        {titleEditable && onTitleChange ? (
-          <EditableTitle
-            className={styles['edit-agent__title']}
-            value={title}
-            onChange={onTitleChange}
-            size="page"
+      <div className={styles['edit-agent__col']}>
+        <div className={styles['edit-agent__head']}>
+          <IconButton
+            size="Small"
+            aria-label="Back to agents"
+            onClick={onClose}
+            icon={<Icon size="20" glyph={<ArrowLeftIcon />} />}
           />
-        ) : (
-          <h1 className={styles['edit-agent__title']}>{title}</h1>
-        )}
+          {titleEditable && onTitleChange ? (
+            <EditableTitle
+              className={styles['edit-agent__title']}
+              value={title}
+              onChange={onTitleChange}
+              size="page"
+            />
+          ) : (
+            <h1 className={styles['edit-agent__title']}>{title}</h1>
+          )}
+        </div>
       </div>
 
-      <AutomationsTabs
-        tabs={tabs}
-        activeKey={activeTab}
-        onChange={(key) => onTabChange(key as AgentTabKey)}
-        ariaLabel={tabsAriaLabel}
-      />
+      <div className={styles['edit-agent__tabs']}>
+        <div className={styles['edit-agent__col']}>
+          <AutomationsTabs
+            tabs={tabs}
+            activeKey={activeTab}
+            onChange={(key) => onTabChange(key as AgentTabKey)}
+            ariaLabel={tabsAriaLabel}
+            showDivider={false}
+          />
+        </div>
+      </div>
     </div>
   );
 
@@ -103,7 +101,7 @@ export default function EditAgentView({
         .filter(Boolean)
         .join(' ')}
     >
-      {children}
+      <div className={styles['edit-agent__col']}>{children}</div>
     </div>
   );
 
@@ -116,24 +114,15 @@ export default function EditAgentView({
         .filter(Boolean)
         .join(' ')}
     >
-      <div
-        className={[
-          styles['edit-agent__col'],
-          isChatTab ? styles['edit-agent__col--chat'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {chrome}
+      {chrome}
 
-        {isChatTab ? (
-          body
-        ) : (
-          <div className={styles['edit-agent__scroll']}>
-            <Scrollbar>{body}</Scrollbar>
-          </div>
-        )}
-      </div>
+      {isChatTab ? (
+        <div className={styles['edit-agent__main']}>{body}</div>
+      ) : (
+        <div className={styles['edit-agent__scroll']}>
+          <Scrollbar>{body}</Scrollbar>
+        </div>
+      )}
 
       {activeTab !== 'chat' ? (
         <div className={styles['edit-agent__footer']}>

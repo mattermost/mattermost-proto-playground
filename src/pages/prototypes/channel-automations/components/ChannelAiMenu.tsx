@@ -118,7 +118,7 @@ export default function ChannelAiMenu({
 
             <MenuItem
               leadingElement={false}
-              label="Manage agents"
+              label="Manage automations"
               onClick={onManageAgents}
             />
           </PopoverMenu>
