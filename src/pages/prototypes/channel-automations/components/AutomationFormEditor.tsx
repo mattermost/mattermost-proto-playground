@@ -670,6 +670,7 @@ const AutomationFormEditor = forwardRef<
               username={username}
               onUsernameChange={setUsername}
               usernameDisabled={isEdit}
+              usernamePlaceholder="Automation username"
               labelledBy={personaSectionId}
               help="Users will see this username and avatar when the automation posts a message"
             />,
