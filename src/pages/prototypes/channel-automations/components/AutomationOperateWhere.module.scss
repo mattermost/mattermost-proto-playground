@@ -32,10 +32,6 @@
       border-color: var(--button-bg);
       box-shadow: 0 0 0 1px var(--button-bg);
     }
-
-    &--has-private {
-      border-color: rgba(var(--color-warning-rgb), 0.4);
-    }
   }
 
   &__chips {
@@ -45,12 +41,6 @@
     gap: var(--spacing-xxs);
     flex: 1 1 auto;
     min-width: 0;
-  }
-
-  &__chip-label {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxs);
   }
 
   &__placeholder {

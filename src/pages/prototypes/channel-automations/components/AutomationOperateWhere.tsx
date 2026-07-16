@@ -1,4 +1,4 @@
-import { Chip, Icon, MenuItem, PopoverMenu, Select, Tag } from '@mattermost/compass-ui';
+import { Chip, Icon, MenuItem, PopoverMenu, Select } from '@mattermost/compass-ui';
 import { useId, useRef, useState, type ChangeEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
@@ -134,7 +134,6 @@ export default function AutomationOperateWhere({
             className={[
               styles['operate-where__picker-field'],
               pickerOpen ? styles['operate-where__picker-field--open'] : '',
-              hasPrivate ? styles['operate-where__picker-field--has-private'] : '',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -148,16 +147,7 @@ export default function AutomationOperateWhere({
                   onRemove={() => removeChannel(channel.id)}
                   removeLabel={`Remove ${channel.label}`}
                 >
-                  <span className={styles['operate-where__chip-label']}>
-                    {channel.label}
-                    {channel.type === 'private' ? (
-                      <Tag
-                        label="Private"
-                        type="Warning"
-                        size="X-Small"
-                      />
-                    ) : null}
-                  </span>
+                  {channel.label}
                 </Chip>
               ))}
               {selected.length === 0 ? (
