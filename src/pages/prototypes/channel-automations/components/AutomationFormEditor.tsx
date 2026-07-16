@@ -20,6 +20,7 @@ import {
   SCHEDULE_TIMES,
   SCHEDULE_WEEKDAY_LABELS,
   SCHEDULE_WEEKDAYS,
+  agentAvatarProps,
   agentById,
   applyTriggerPickerOption,
   buildTriggerConfig,
@@ -629,11 +630,10 @@ const AutomationFormEditor = forwardRef<
             'Username and avatar for posts',
             personaSectionId,
             <PersonaIdentityField
-              avatar={{
-                alt: name || 'Automation',
-                name: name || 'Automation',
-                src: avatarSrc,
-              }}
+              avatar={agentAvatarProps({
+                displayName: name || 'Automation',
+                avatarSrc,
+              })}
               username={username}
               onUsernameChange={setUsername}
               usernameDisabled={isEdit}

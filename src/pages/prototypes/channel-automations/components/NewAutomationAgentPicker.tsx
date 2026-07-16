@@ -15,6 +15,7 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type KeyboardEvent,
 } from 'react';
 import { createPortal } from 'react-dom';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -189,7 +190,7 @@ export default function NewAutomationAgentPicker({
               setQuery(e.target.value)
             }
             onClear={() => setQuery('')}
-            onKeyDown={(e) => {
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Escape') {
                 e.stopPropagation();
                 closeMenu();

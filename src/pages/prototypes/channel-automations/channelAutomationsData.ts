@@ -843,9 +843,8 @@ export function agentAvatarProps(
   return {
     alt: agent.displayName,
     name: agent.displayName,
-    ...(agent.avatarSrc
-      ? { src: agent.avatarSrc }
-      : { fallbackColor: agent.avatarFallbackColor }),
+    src: agent.avatarSrc,
+    fallbackColor: agent.avatarFallbackColor ?? 'Blue',
   };
 }
 
@@ -1152,6 +1151,8 @@ export function entityToAgent(entity: AutomationEntity): Agent {
     avatarSrc: entity.avatarSrc,
     activeMcps: entity.activeMcps,
     toolCount: entity.toolCount,
+    aiServiceId: AGENT.aiServiceId,
+    modelId: AGENT.modelId,
   };
 }
 
