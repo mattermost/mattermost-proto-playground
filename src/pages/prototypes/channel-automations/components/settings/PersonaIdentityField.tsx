@@ -1,5 +1,5 @@
 import { Icon, IconButton, TextInput, UserAvatar } from '@mattermost/compass-ui';
-import type { ChangeEvent, ComponentProps } from 'react';
+import type { ChangeEvent, ComponentProps, ReactNode } from 'react';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import SettingsHelpText from './SettingsHelpText';
 import styles from './PersonaIdentityField.module.scss';
@@ -11,6 +11,11 @@ type AvatarProps = Pick<
 
 export interface PersonaIdentityFieldProps {
   avatar: AvatarProps;
+  /**
+   * When set, replaces the photo avatar with a trigger-style icon tile
+   * (same treatment as TriggerPicker’s leading icon).
+   */
+  leadingIcon?: ReactNode;
   username: string;
   onUsernameChange: (value: string) => void;
   usernameDisabled?: boolean;
@@ -23,6 +28,7 @@ export interface PersonaIdentityFieldProps {
 /** Username + avatar cluster used in agent and automation settings. */
 export default function PersonaIdentityField({
   avatar,
+  leadingIcon,
   username,
   onUsernameChange,
   usernameDisabled = false,
@@ -37,7 +43,13 @@ export default function PersonaIdentityField({
     >
       <div className={styles['persona-field__row']}>
         <div className={styles['persona-field__avatar-actions']}>
-          <UserAvatar size="40" {...avatar} />
+          {leadingIcon != null ? (
+            <span className={styles['persona-field__icon-tile']} aria-hidden>
+              <Icon size="20" glyph={leadingIcon} />
+            </span>
+          ) : (
+            <UserAvatar size="40" {...avatar} />
+          )}
           <IconButton
             className={styles['persona-field__avatar-edit']}
             size="X-Small"

@@ -17,15 +17,31 @@
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  &__icon-tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    color: var(--button-bg);
+    background: rgba(var(--button-bg-rgb), 0.08);
   }
 
   &__avatar-edit {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: 2px;
+    right: 2px;
     z-index: 1;
-    background: var(--center-channel-bg);
-    box-shadow: 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+    // Center the control on the avatar’s top-right edge.
+    transform: translate(40%, -40%);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    background-color: var(--center-channel-bg);
+    box-shadow: none;
   }
 
   &__control {

@@ -59,6 +59,7 @@ import {
   SettingsSectionRow,
 } from './settings';
 import TriggerPicker from './TriggerPicker';
+import { triggerOptionIcon } from './triggerIcons';
 import styles from './AutomationFormEditor.module.scss';
 
 type EditorView = 'chat' | 'form' | 'mcps' | 'access';
@@ -430,6 +431,7 @@ const AutomationFormEditor = forwardRef<
     : AUTOMATION_EDITOR_VIEW_TABS;
 
   const showChannelField = triggerPickerNeedsChannel(triggerPicker);
+  const PersonaTriggerIcon = triggerOptionIcon(triggerPicker);
 
   const scheduleFields =
     triggerPicker === 'schedule' ? (
@@ -664,6 +666,7 @@ const AutomationFormEditor = forwardRef<
                 displayName: name || 'Automation',
                 avatarSrc,
               })}
+              leadingIcon={<PersonaTriggerIcon />}
               username={username}
               onUsernameChange={setUsername}
               usernameDisabled={isEdit}

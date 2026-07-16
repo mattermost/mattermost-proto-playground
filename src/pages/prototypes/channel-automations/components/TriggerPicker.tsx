@@ -1,15 +1,7 @@
 import { Icon, MenuItem } from '@mattermost/compass-ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
-import CheckboxBlankOutlineIcon from '@mattermost/compass-icons/components/checkbox-blank-outline';
-import CheckboxMarkedIcon from '@mattermost/compass-icons/components/checkbox-marked';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
-import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
-import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
-import ProductChannelsIcon from '@mattermost/compass-icons/components/product-channels';
-import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
 import {
   PopoverMenu,
   PopoverMenuGroup,
@@ -21,25 +13,12 @@ import {
   TRIGGER_PICKER_OPTIONS,
   type TriggerPickerOption,
 } from '../channelAutomationsData';
+import { triggerOptionIcon } from './triggerIcons';
 import styles from './TriggerPicker.module.scss';
 
 const MENU_GAP_PX = 4;
 const MENU_MAX_HEIGHT_PX = 240;
 const VIEWPORT_PADDING_PX = 16;
-
-const OPTION_ICONS: Record<
-  TriggerPickerOption,
-  typeof ClockOutlineIcon
-> = {
-  schedule: ClockOutlineIcon,
-  message: MessageTextOutlineIcon,
-  join: AccountPlusOutlineIcon,
-  'channel-created': ProductChannelsIcon,
-  'playbook-run-started': ProductPlaybooksIcon,
-  'playbook-run-finished': ProductPlaybooksIcon,
-  'playbook-task-checked': CheckboxMarkedIcon,
-  'playbook-task-unchecked': CheckboxBlankOutlineIcon,
-};
 
 export interface TriggerPickerProps {
   value: TriggerPickerOption | null;
@@ -117,8 +96,7 @@ export default function TriggerPicker({
 
   const selectedMeta = value != null ? TRIGGER_PICKER_OPTIONS.find((o) => o.id === value) : null;
   const displayLabel = selectedMeta?.label ?? fallbackLabel;
-  const TriggerIcon =
-    value != null ? OPTION_ICONS[value] : LightningBoltOutlineIcon;
+  const TriggerIcon = triggerOptionIcon(value);
 
   const close = () => setOpen(false);
 
@@ -146,7 +124,7 @@ export default function TriggerPicker({
               <PopoverMenuGroup key={group.id} aria-label={group.label}>
                 <PopoverMenuGroupTitle>{group.label}</PopoverMenuGroupTitle>
                 {options.map((option) => {
-                  const OptionIcon = OPTION_ICONS[option.id];
+                  const OptionIcon = triggerOptionIcon(option.id);
                   return (
                     <MenuItem
                       key={option.id}
