@@ -1,0 +1,178 @@
+.quick-switcher {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  // Pin to the top edge a centered max-height panel would use, so filtering
+  // changes height downward only and never shifts the dialog vertically.
+  align-items: flex-start;
+  justify-content: center;
+  padding: max(var(--spacing-xl), calc((100vh - 560px) / 2)) var(--spacing-xl)
+    var(--spacing-xl);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    padding: 0;
+    cursor: default;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    transform-origin: top center;
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity var(--duration-quick) var(--ease-entrance),
+      transform var(--duration-quick) var(--ease-entrance);
+  }
+
+  &--visible {
+    .quick-switcher__backdrop {
+      opacity: 1;
+    }
+
+    .quick-switcher__dialog {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &--exiting {
+    .quick-switcher__backdrop {
+      opacity: 0;
+      transition: opacity var(--duration-quick) var(--ease-exit);
+    }
+
+    .quick-switcher__dialog {
+      opacity: 0;
+      transform: scale(0.9);
+      transition:
+        opacity var(--duration-quick) var(--ease-exit),
+        transform var(--duration-quick) var(--ease-exit);
+    }
+  }
+
+  // Mirrors Modal Small surface.
+  &__panel {
+    width: min(600px, 100%);
+    max-height: min(560px, calc(100vh - 2 * var(--spacing-xl)));
+    background-color: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-l);
+    box-shadow: var(--elevation-6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__header {
+    flex-shrink: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__search {
+    position: relative;
+
+    // Clear control owns the trailing slot while the field has a value.
+    &:has(button) {
+      .quick-switcher__shortcut {
+        display: none;
+      }
+
+      .quick-switcher__search-input input {
+        padding-right: 0;
+      }
+    }
+  }
+
+  &__search-input {
+    width: 100%;
+
+    // Flatten SearchInput chrome — no field border; focus uses header bottom edge.
+    > * {
+      border-radius: 0;
+      box-shadow: none !important;
+    }
+
+    // Large SearchInput uses spacing-m / spacing-l; add 8px more inset.
+    > * > * {
+      padding: calc(var(--spacing-m) + 8px) calc(var(--spacing-l) + 8px) !important;
+    }
+
+    // Keep typed text clear of the in-field shortcut.
+    input {
+      padding-right: 48px;
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-400) !important;
+    }
+  }
+
+  &__shortcut {
+    position: absolute;
+    right: calc(var(--spacing-l) + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &__breadcrumb-sep {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__breadcrumb-crumb {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-xl) var(--spacing-xxxl);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    text-align: center;
+  }
+}
