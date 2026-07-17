@@ -12,14 +12,21 @@
   box-shadow: var(--elevation-4);
   width: 386px;
 
+  // MDX may wrap children in bare <p>/<ul>/<ol>; neutralize doc-prose margins
+  p:not([class]),
+  ul:not([class]),
+  ol:not([class]) {
+    margin: 0;
+  }
+
   // ---------------------------------------------------------------------------
   // Elements
   // ---------------------------------------------------------------------------
   &__content {
     display: flex;
-    gap: var(--spacing-l);
+    gap: var(--spacing-m);
     align-items: flex-start;
-    padding: var(--spacing-xl);
+    padding: var(--spacing-m);
     width: 100%;
   }
 
@@ -28,7 +35,6 @@
     align-items: flex-start;
     flex-shrink: 0;
     color: var(--center-channel-color);
-    margin-top: 2px;
 
     &--info {
       color: var(--color-info);
@@ -47,16 +53,20 @@
   &__body {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-s);
+    gap: var(--spacing-xs);
     flex: 1 0 0;
     min-width: 0;
     overflow: hidden;
+    padding-right: var(--spacing-xl);
+
+    > :last-child {
+      margin-bottom: 0;
+    }
   }
 
   &__title-row {
     display: flex;
     align-items: flex-start;
-    padding-right: var(--spacing-xxl);
     width: 100%;
   }
 
@@ -74,18 +84,22 @@
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-100);
     color: var(--center-channel-color);
+
+    > :last-child {
+      margin-bottom: 0;
+    }
   }
 
   &__actions {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xxs);
+    gap: var(--spacing-s);
     padding: var(--spacing-xxs) 0;
   }
 
   &__close {
     position: absolute;
-    top: var(--spacing-m);
-    right: var(--spacing-m);
+    top: var(--spacing-xxs);
+    right: var(--spacing-xxs);
   }
 }

@@ -8,7 +8,10 @@ export default function PermalinkPreviewLibrary() {
       <div className={styles['components__button-block']}>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>Default</span>
-          <PermalinkPreview avatarSrc={avatarLeonard} />
+          <PermalinkPreview
+            avatarSrc={avatarLeonard}
+            onDismiss={() => {}}
+          />
         </div>
       </div>
     </>
