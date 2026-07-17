@@ -114,6 +114,14 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-xl);
+    // Match setting-label padding so True/False radios top-align with the left label
+    padding-top: var(--spacing-xxs);
+
+    // Radio defaults to width: 100%; shrink so True/False sit side-by-side
+    > * {
+      width: auto;
+      flex: 0 0 auto;
+    }
   }
 
   &__help {
