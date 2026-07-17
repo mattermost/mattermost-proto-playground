@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ChangeEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from 'react';
@@ -231,7 +232,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
                   setQuery('');
                   setActiveIndex(0);
                 }}
-                onChange={(e) => {
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setQuery(e.target.value);
                   setActiveIndex(0);
                 }}
