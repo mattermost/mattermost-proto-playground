@@ -9,6 +9,8 @@ export type PrototypeEntry = {
   label: string;
   path: string;
   component: ComponentType;
+  /** When true, omit from the prototypes index list (route still works). */
+  hidden?: boolean;
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
@@ -23,12 +25,14 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'External Call Participants',
     path: '/prototypes/external-call-participants',
     component: ExternalCallParticipants,
+    hidden: true,
   },
   {
     id: 'outbound-calls',
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+    hidden: true,
   },
   {
     id: 'classification-markings-config',
