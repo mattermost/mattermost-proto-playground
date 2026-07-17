@@ -28,6 +28,7 @@ function InteractiveLargeImagePreview({
       onToggleImageCollapse={() => setImageCollapsed((value) => !value)}
       onCopyImageLink={onCopyImageLink}
       onDownloadImage={onDownloadImage}
+      onDismiss={props.onDismiss ?? fn()}
     />
   );
 }
@@ -41,13 +42,18 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  args: {
+    onDismiss: fn(),
+  },
+};
 
 export const SmallImage: Story = {
   args: {
     imageSrc: sampleImage,
     imageAlt: 'Preview image',
     imageSize: 'small',
+    onDismiss: fn(),
   },
 };
 
@@ -80,7 +86,7 @@ export const AllVariants: Story = {
         >
           Text only
         </h3>
-        <LinkPreview />
+        <LinkPreview onDismiss={fn()} />
       </section>
       <section>
         <h3
@@ -96,6 +102,7 @@ export const AllVariants: Story = {
           imageSrc={sampleImage}
           imageAlt="Preview image"
           imageSize="small"
+          onDismiss={fn()}
         />
       </section>
       <section>

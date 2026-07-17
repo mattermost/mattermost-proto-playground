@@ -327,6 +327,16 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/chip/chip.specimen'),
   },
   {
+    slug: 'combobox',
+    name: 'Combobox',
+    category: 'components',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/combobox/combobox.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/combobox/combobox.specimen'),
+  },
+  {
     slug: 'date-range-picker',
     name: 'Date & Range Picker',
     category: 'components',

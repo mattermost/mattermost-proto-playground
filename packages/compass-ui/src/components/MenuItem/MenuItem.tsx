@@ -10,7 +10,7 @@ export interface MenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Primary label text. */
   label: string;
   /** Optional secondary label. */
-  secondaryLabel?: string;
+  secondaryLabel?: ReactNode;
   /** Where the secondary label appears. Default: 'Below'. */
   secondaryLabelPosition?: 'Inline' | 'Below';
   /** Custom content for the leading slot. When omitted, shows placeholder icon. */

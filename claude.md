@@ -83,6 +83,12 @@ Keyframes and other global at-rules can stay at the top of the file; the rest of
 
 When adding an `action` to `EmptyState`, omit the `size` prop unless a Figma spec requires a different size. `Button` defaults to `Medium`, which is the correct size for empty state actions.
 
+## Admin console: True/False radios sit side-by-side
+
+Boolean admin settings that use True/False `Radio` options must lay out **horizontally** (one row), not stacked. Wrap the pair in a flex row (e.g. `admin-console-layout__radio-row`) with horizontal gap. `Radio` defaults to `width: 100%`, which forces wrap — override children to `width: auto; flex: 0 0 auto` so True and False stay side-by-side. Do not use a vertical stack for boolean True/False pairs in admin console prototypes or specimens.
+
+Top-align the radio row with the left setting label: the label uses `padding-top: var(--spacing-xxs)` for optical alignment with text inputs — apply the same `padding-top` on the radio row (do not remove label padding only for radio rows).
+
 ## Avatar components: default to fixture photos
 
 Whenever you use an avatar component or pattern that supports a real image (`UserAvatar`, `TeamAvatar`, `UserAvatarGroup` / `UserAvatarGroupItem`, `CallParticipantAvatar`, props like `src` or `userAvatarSrc`, default data in list items, and similar), **pass an imported image from `src/assets/avatars/`** so demos and product-like UI show real faces.

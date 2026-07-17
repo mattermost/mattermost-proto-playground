@@ -1,7 +1,46 @@
 .permalink-preview {
+  --permalink-preview-dismiss-size: 20px; // X-Small Compact IconButton
+  --permalink-preview-dismiss-outset: calc(
+    var(--permalink-preview-dismiss-size) + var(--spacing-xxxs)
+  );
+
   display: flex;
   align-items: flex-start;
   max-width: 700px;
+  position: relative;
+
+  // Invisible bridge along the left edge so hover isn't lost moving to dismiss.
+  // No layout spacing.
+  &__dismiss-bridge {
+    position: absolute;
+    top: calc(-1 * var(--permalink-preview-dismiss-outset));
+    bottom: 0;
+    left: calc(-1 * var(--permalink-preview-dismiss-outset));
+    width: var(--permalink-preview-dismiss-outset);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &__dismiss {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * var(--spacing-xxl));
+    z-index: 2;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &:hover &__dismiss-bridge,
+  &:focus-within &__dismiss-bridge {
+    pointer-events: auto;
+  }
+
+  &:hover &__dismiss,
+  &:focus-within &__dismiss {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
   &__card {
     background-color: var(--center-channel-bg);
@@ -15,6 +54,15 @@
     align-items: flex-start;
     min-width: 0;
     padding: var(--spacing-xl);
+    transition:
+      box-shadow var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      box-shadow: var(--elevation-2);
+      border-color: rgba(var(--center-channel-color-rgb), 0.24);
+      cursor: pointer;
+    }
   }
 
   &__message {

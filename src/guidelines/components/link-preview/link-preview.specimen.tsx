@@ -19,6 +19,7 @@ function InteractiveLargeImagePreview({
       onToggleImageCollapse={() => setImageCollapsed((value) => !value)}
       onCopyImageLink={() => {}}
       onDownloadImage={() => {}}
+      onDismiss={() => {}}
     />
   );
 }
@@ -29,7 +30,7 @@ export default function LinkPreviewLibrary() {
       <div className={styles['components__button-block']}>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>Default</span>
-          <LinkPreview />
+          <LinkPreview onDismiss={() => {}} />
         </div>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>
@@ -39,6 +40,7 @@ export default function LinkPreviewLibrary() {
             imageSrc={sampleImage}
             imageAlt="Preview image"
             imageSize="small"
+            onDismiss={() => {}}
           />
         </div>
         <div className={styles['components__button-row']}>

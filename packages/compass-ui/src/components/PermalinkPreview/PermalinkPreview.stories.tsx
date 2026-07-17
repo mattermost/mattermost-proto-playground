@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import PermalinkPreview from './PermalinkPreview';
 
@@ -14,5 +15,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     avatarSrc: avatarLeonard,
+    onDismiss: fn(),
   },
 };

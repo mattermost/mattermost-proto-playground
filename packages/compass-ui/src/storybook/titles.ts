@@ -47,6 +47,7 @@ export const TITLE_LAYOUT_TABS = 'Components/Layout and Containers/Tabs';
 
 
 export const TITLE_FORMS_CHIP = 'Components/Forms and Input/Chip';
+export const TITLE_FORMS_COMBOBOX = 'Components/Forms and Input/Combobox';
 export const TITLE_FORMS_DATE_RANGE_PICKER =
   'Components/Forms and Input/Date Range Picker';
 export const TITLE_FORMS_DROPDOWN = 'Components/Forms and Input/Dropdown';

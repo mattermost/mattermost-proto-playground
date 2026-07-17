@@ -5,7 +5,6 @@ import Home from '@/pages/home/Home';
 import CategoryRoute from '@/pages/topics/CategoryRoute';
 import TopicRoute from '@/pages/topics/TopicRoute';
 import PrototypesIndex from '@/pages/prototypes/PrototypesIndex';
-import ResourcesIndex from '@/pages/resources/ResourcesIndex';
 import { PROTOTYPES } from '@/manifests/prototypes';
 
 export { PROTOTYPES } from '@/manifests/prototypes';
@@ -28,7 +27,6 @@ export default function AppRouter() {
         </Route>
 
         <Route path="/prototypes" element={<PrototypesIndex />} />
-        <Route path="/resources" element={<ResourcesIndex />} />
 
         {PROTOTYPES.map(({ id, path, component: Component }) => (
           <Route key={id} path={path} element={<Component />} />

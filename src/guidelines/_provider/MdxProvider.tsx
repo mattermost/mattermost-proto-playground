@@ -63,6 +63,7 @@ import MdxAnchor from '@/guidelines/_components/MdxAnchor';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import { Divider } from '@mattermost/compass-ui';
 import { Chip } from '@mattermost/compass-ui';
+import { Combobox } from '@mattermost/compass-ui';
 import GuidelineSampleRow from '@/guidelines/_components/GuidelineSampleRow';
 import DocUiEmbed from '@/pages/_shell/DocUiEmbed';
 
@@ -124,6 +125,7 @@ const MDX_COMPONENTS = {
   AnatomyStage,
   Divider,
   Chip,
+  Combobox,
   DocUiEmbed,
   /** Horizontal flex row for guideline inline demos; use instead of raw `<div style={{display:'flex',…}}>`. */
   SampleRow: GuidelineSampleRow,

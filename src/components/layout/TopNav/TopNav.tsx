@@ -1,7 +1,9 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
+import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
 import ThemeSwitcherControl from '@/components/layout/ThemeSwitcherControl/ThemeSwitcherControl';
+import { Icon, IconButton } from '@mattermost/compass-ui';
 import styles from './TopNav.module.scss';
 
 interface NavItem {
@@ -89,7 +91,12 @@ function TopNavLink({ item }: TopNavLinkProps) {
   );
 }
 
-export default function TopNav() {
+interface TopNavProps {
+  /** Opens the ⌘K / Ctrl+K quick switcher (navigate to any page). */
+  onOpenQuickSwitcher?: () => void;
+}
+
+export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
   return (
     <div className={styles['top-nav']}>
       <NavLink to="/" className={styles['top-nav__logo']} aria-label="Compass home">
@@ -101,6 +108,17 @@ export default function TopNav() {
         {NAV_ITEMS.map((item) => (
           <TopNavLink key={item.label} item={item} />
         ))}
+
+        {onOpenQuickSwitcher != null && (
+          <IconButton
+            aria-label="Open quick switcher"
+            aria-keyshortcuts="Control+K Meta+K"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<MagnifyIcon />} />}
+            onClick={onOpenQuickSwitcher}
+          />
+        )}
 
         <ThemeSwitcherControl />
       </nav>

@@ -104,6 +104,7 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       slugs: [
         'checkbox',
         'chip',
+        'combobox',
         'date-range-picker',
         'dropdown',
         'radio',

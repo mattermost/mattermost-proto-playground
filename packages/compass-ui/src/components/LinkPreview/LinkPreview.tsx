@@ -76,7 +76,11 @@ export default function LinkPreview({
   return (
     <div className={rootClass}>
       {onDismiss != null && (
-        <div className={styles['link-preview__dismiss-slot']}>
+        <>
+          <div
+            className={styles['link-preview__dismiss-bridge']}
+            aria-hidden
+          />
           <IconButton
             className={styles['link-preview__dismiss']}
             size="X-Small"
@@ -85,7 +89,7 @@ export default function LinkPreview({
             icon={<Icon size="12" glyph={<CloseIcon />} />}
             onClick={onDismiss}
           />
-        </div>
+        </>
       )}
 
       <div className={cardClass}>

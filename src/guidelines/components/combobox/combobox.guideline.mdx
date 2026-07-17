@@ -1,0 +1,154 @@
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import avatarArjun from '@/assets/avatars/Arjun Patel.png';
+import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
+import { Combobox, Icon, UserAvatar } from '@mattermost/compass-ui';
+
+export const CHANNEL_OPTIONS = [
+  { value: 'town-square', label: 'Town Square' },
+  { value: 'off-topic', label: 'Off-Topic' },
+  { value: 'design', label: 'Design' },
+  { value: 'engineering', label: 'Engineering' },
+  { value: 'releases', label: 'Releases' },
+];
+
+export const PEOPLE_OPTIONS = [
+  {
+    value: 'emma',
+    label: 'Emma Novak',
+    secondaryLabel: '@emma',
+    leadingAvatar: { src: avatarEmma, alt: 'Emma Novak' },
+    leadingVisual: <UserAvatar src={avatarEmma} alt="Emma Novak" size="24" />,
+  },
+  {
+    value: 'arjun',
+    label: 'Arjun Patel',
+    secondaryLabel: '@arjun',
+    leadingAvatar: { src: avatarArjun, alt: 'Arjun Patel' },
+    leadingVisual: <UserAvatar src={avatarArjun} alt="Arjun Patel" size="24" />,
+  },
+  {
+    value: 'sofia',
+    label: 'Sofia Bauer',
+    secondaryLabel: '@sofia',
+    leadingAvatar: { src: avatarSofia, alt: 'Sofia Bauer' },
+    leadingVisual: <UserAvatar src={avatarSofia} alt="Sofia Bauer" size="24" />,
+  },
+];
+
+A Combobox lets people search and pick from a list of options — one value or
+many. It looks like a [Select](/components/select) field, filters as you type,
+and in multi-select mode shows chosen values as removable
+[Chips](/components/chip).
+
+Reach for a Combobox when the list is long enough to need typeahead, or when
+people need to pick more than one value. Use a Select for shorter closed lists
+with no search. Use a [Dropdown](/components/dropdown) for action menus that
+don't capture a form value.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
+  <div style={{width:'100%',maxWidth:'320px'}}>
+    <Combobox
+      label="Channel"
+      placeholder="Search channels…"
+      leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}
+      options={CHANNEL_OPTIONS}
+      defaultValue="design"
+    />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Border** — the field surface; signals interactivity and
+  state.
+- <Num>2</Num> **Label** — optional floating label. Floats above the border
+  once the field is focused, filled, or has chips.
+- <Num>3</Num> **Leading icon** — optional. Reinforce the field's meaning.
+- <Num>4</Num> **Value** — the chosen option label, or a row of chips when
+  multi-select is on.
+- <Num>5</Num> **Filter input** — type to narrow the list.
+- <Num>6</Num> **Trailing icon** — chevron that flips while the list is open.
+- <Num>7</Num> **Popover menu** — filtered options as a listbox.
+
+<Divider />
+
+## Single select
+
+Type to filter, then choose one option. Selecting closes the list and shows
+the chosen label in the field.
+
+<div style={{maxWidth:'320px',padding:'1rem 0'}}>
+  <Combobox
+    label="Default channel"
+    placeholder="Search channels…"
+    options={CHANNEL_OPTIONS}
+  />
+</div>
+
+<Divider />
+
+## Multi select
+
+With `multiple`, each choice becomes a removable chip inside the field.
+Selecting an option closes the list. Backspace on an empty filter removes
+the last chip.
+
+<div style={{maxWidth:'360px',padding:'1rem 0'}}>
+  <Combobox
+    label="Invite people"
+    placeholder="Search people…"
+    multiple
+    options={PEOPLE_OPTIONS}
+    defaultValue={['emma', 'arjun']}
+  />
+</div>
+
+<Divider />
+
+## Sizes
+
+Three sizes — pick the one that matches the surrounding form rhythm.
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
+  <Combobox size="Small" label="Small" options={CHANNEL_OPTIONS} />
+  <Combobox size="Medium" label="Medium" options={CHANNEL_OPTIONS} />
+  <Combobox size="Large" label="Large" options={CHANNEL_OPTIONS} />
+</div>
+
+<Divider />
+
+## States
+
+Comboboxes share their state model with the rest of the input family.
+
+| State    | What it shows                                                       |
+| -------- | ------------------------------------------------------------------- |
+| Default  | Empty or placeholder text.                                          |
+| Focus    | Blue ring; filter input is active.                                  |
+| Filled   | A value or chips are present; the floating label settles above.     |
+| Open     | The popover list is visible; the chevron flips.                     |
+| Disabled | Greyed out; non-interactive.                                        |
+| Invalid  | Red border; pair with an inline error message below.                |
+
+<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
+  <Combobox label="Default" options={CHANNEL_OPTIONS} />
+  <Combobox label="Filled" defaultValue="design" options={CHANNEL_OPTIONS} />
+  <Combobox label="Invalid" invalid defaultValue="design" options={CHANNEL_OPTIONS} />
+  <Combobox label="Disabled" disabled defaultValue="design" options={CHANNEL_OPTIONS} />
+</div>
+
+<Divider />
+
+## Keyboard
+
+| Key        | Action                                              |
+| ---------- | --------------------------------------------------- |
+| ↓ / ↑      | Open the list (if closed) and move the highlight.   |
+| Enter      | Select the highlighted option.                      |
+| Escape     | Close the list.                                     |
+| Home / End | Jump to the first or last enabled option.           |
+| Backspace  | In multi-select with an empty filter, remove the last chip. |
+| Tab        | Close the list and move focus onward.               |

@@ -19,6 +19,7 @@ export * from './components/ChannelSidebarItem/index';
 export * from './components/ChannelsSidebar/index';
 export * from './components/Checkbox/index';
 export * from './components/Chip/index';
+export * from './components/Combobox/index';
 export * from './components/DateRangePicker/index';
 export { default as Divider } from './components/Divider/Divider';
 export type * from './components/Divider/Divider';

@@ -47,7 +47,7 @@ export default function RecordingPill({
       >
         <span className={styles['recording-pill__icon']} aria-hidden>
           {state === 'Initializing' && (
-            <Spinner size={12} aria-label="Initializing recording" />
+            <Spinner size={12} inverted aria-label="Initializing recording" />
           )}
           {state === 'Recording' && (
             <Icon size="12" glyph={<RecordCircleOutlineIcon />} />

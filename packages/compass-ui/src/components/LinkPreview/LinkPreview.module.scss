@@ -1,27 +1,45 @@
 .link-preview {
+  --link-preview-dismiss-size: 20px; // X-Small Compact IconButton
+  --link-preview-dismiss-outset: calc(
+    var(--link-preview-dismiss-size) + var(--spacing-xxxs)
+  );
+
   display: flex;
   align-items: flex-start;
   max-width: 700px;
   position: relative;
 
-  &__dismiss-slot {
-    position: relative;
-    flex-shrink: 0;
-    width: 0;
-    align-self: stretch;
+  // Invisible bridge along the left edge so hover isn't lost moving to dismiss.
+  // No layout spacing.
+  &__dismiss-bridge {
+    position: absolute;
+    top: calc(-1 * var(--link-preview-dismiss-outset));
+    bottom: 0;
+    left: calc(-1 * var(--link-preview-dismiss-outset));
+    width: var(--link-preview-dismiss-outset);
+    z-index: 1;
+    pointer-events: none;
   }
 
   &__dismiss {
     position: absolute;
-    top: calc(-1 * var(--spacing-xxxxs));
-    left: calc(-1 * var(--spacing-xl));
+    top: 0;
+    left: calc(-1 * var(--spacing-xxl));
+    z-index: 2;
     opacity: 0;
+    pointer-events: none;
     transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &:hover &__dismiss-bridge,
+  &:focus-within &__dismiss-bridge {
+    pointer-events: auto;
   }
 
   &:hover &__dismiss,
   &:focus-within &__dismiss {
     opacity: 1;
+    pointer-events: auto;
   }
 
   &__card {
