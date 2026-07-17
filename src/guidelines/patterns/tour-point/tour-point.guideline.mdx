@@ -1,0 +1,65 @@
+import { TourPoint } from '@mattermost/compass-ui';
+
+Tour points walk people through a new feature or call attention to a particular
+part of the interface.
+
+They are most often used during onboarding: they draw the eye toward something
+new and give optional guidance to users who want more context.
+
+<Divider />
+
+## Anatomy
+
+A Tour Point is made up of the following elements:
+
+<AnatomyStage>
+  <TourPoint
+    title="Tour point title"
+    pointerPosition="top-center"
+    onClose={() => {}}
+    progress={{ pages: 3, activePage: 1 }}
+    primaryAction={{ label: 'Next', onClick: () => {} }}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vel orci id
+    urna facilisis luctus.
+  </TourPoint>
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — The framed surface that holds the tour content.
+- <Num>2</Num> **Pulsing dot** — Optional animated marker on the anchor that
+  draws attention; can be turned off.
+- <Num>3</Num> **Arrow** — Points at the highlighted element. Placement follows
+  screen position and available space (see Positioning).
+- <Num>4</Num> **Title** — Short label that names the step; aim for a single
+  line.
+- <Num>5</Num> **Body** — Longer copy that explains what the user is looking at.
+- <Num>6</Num> **Image** — Optional screenshot or illustration when words alone
+  are not enough.
+- <Num>7</Num> **Pagination indicator** — Optional [Pagination dots](/components/pagination-dots)
+  when more than one Tour Point appears in a series. Keep a series to at most
+  five steps.
+- <Num>8</Num> **Buttons** — Optional `Next` and `Previous` actions that move
+  through the series. On the last step, the primary action reads `Done`.
+- <Num>9</Num> **Close button** — Uses the [Icon Button](/components/icon-button)
+  pattern so people can leave the tour.
+
+<Divider />
+
+## Dismissing a tour
+
+For a single Tour Point with no series, clicking the dimmed backdrop outside the
+card dismisses the tour and removes the pulsing dot anchor.
+
+For a series, clicking outside only hides the current card; the pulsing dot
+stays so the same tour can be opened again from the anchor.
+
+If someone uses the close control, the entire tour is dismissed and removed,
+including the pulsing dot, and the series is considered finished.
+
+<Divider />
+
+## Positioning
+
+Tour Points can sit above, below, to the left, or to the right of the target.
+Pick the side and corner that preserves clearance on screen; the arrow should
+re-aim as the card moves so the tip still points at the highlighted element.

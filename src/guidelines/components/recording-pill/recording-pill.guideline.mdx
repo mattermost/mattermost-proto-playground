@@ -1,4 +1,4 @@
-import RecordingPill from '@/components/ui/RecordingPill/RecordingPill';
+import { RecordingPill } from '@mattermost/compass-ui';
 
 The Recording Pill is the persistent indicator that a call is being recorded.
 It sits in the call surface, makes the recording state unmistakable, and
@@ -14,7 +14,13 @@ recording is in progress — never hide it, even on compact layouts.
 A leading status icon paired with the **REC** label, wrapped in a pressable
 container.
 
-<AnatomyStage style={{gap:'1rem',flexWrap:'wrap'}}>
+<AnatomyStage
+  style={{
+    gap: '1rem',
+    flexWrap: 'wrap',
+    backgroundColor: 'var(--calls-bg)',
+  }}
+>
   <RecordingPill state="Recording" />
 </AnatomyStage>
 
@@ -33,11 +39,20 @@ container.
 | Recording    | Record icon + REC. The default in-progress state.                                      |
 | Hover        | Stop icon + REC + tooltip "Click to Stop". Reveals the stop affordance to authorised users. |
 
-<div style={{display:'flex',gap:'1rem',flexWrap:'wrap',alignItems:'flex-start',padding:'1rem 0'}}>
+<AnatomyStage
+  style={{
+    gap: '1rem',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    backgroundColor: 'var(--calls-bg)',
+    paddingBottom: 'var(--spacing-xxxl)',
+  }}
+>
   <RecordingPill state="Initializing" />
   <RecordingPill state="Recording" />
   <RecordingPill state="Hover" />
-</div>
+</AnatomyStage>
 
 The hover state is only meaningful for users who can stop the recording.
 Hide the hover affordance for participants who don't have permission — for
@@ -49,4 +64,4 @@ button.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Recording Pill library page](/components/recording-pill/specimen).
+[Recording Pill specimen page](/components/recording-pill/specimen).

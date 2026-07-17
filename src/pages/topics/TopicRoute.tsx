@@ -6,10 +6,17 @@ import {
   useParams,
 } from 'react-router-dom';
 import { findTopic, type Topic, type TopicCategory } from '@/manifests/topics';
+import {
+  firstTopicInNextCategory,
+  isLastTopicInCategorySeries,
+  nextTopicInCategorySeries,
+} from '@/manifests/topicSeriesOrder';
 import PageHero from '@/components/layout/PageHero/PageHero';
-import Tabs from '@/components/ui/Tabs/Tabs';
+import GuidelineNextTopicCard from '@/components/layout/GuidelineNextTopicCard/GuidelineNextTopicCard';
+import { Tabs } from '@mattermost/compass-ui';
 import OnThisPage from '@/components/layout/OnThisPage/OnThisPage';
 import docStyles from '@/pages/_shell/DocPage.module.scss';
+import DocUiEmbed from '@/pages/_shell/DocUiEmbed';
 import styles from '@/pages/_shell/DocShell.module.scss';
 
 const VALID_CATEGORIES: TopicCategory[] = [
@@ -56,6 +63,39 @@ export default function TopicRoute() {
     () => (topic && topic.specimenPage ? lazy(topic.specimenPage) : null),
     [topic],
   );
+
+  const nextTopic = useMemo(
+    () => (topic ? nextTopicInCategorySeries(topic) : undefined),
+    [topic],
+  );
+  const firstTopicNextSection = useMemo(() => {
+    if (!topic) return undefined;
+    if (nextTopic !== undefined || !isLastTopicInCategorySeries(topic)) {
+      return undefined;
+    }
+    return firstTopicInNextCategory(topic);
+  }, [topic, nextTopic]);
+
+  if (topic?.category === 'layouts' && location.pathname.endsWith('/specimen')) {
+    return (
+      <Navigate to={`/${topic.category}/${topic.slug}`} replace />
+    );
+  }
+
+  if (topic?.category === 'layouts' && SpecimenPage) {
+    return (
+      <div
+        className={[
+          styles['doc-shell'],
+          styles['doc-shell--layout-only'],
+        ].join(' ')}
+      >
+        <Suspense fallback={null}>
+          <SpecimenPage />
+        </Suspense>
+      </div>
+    );
+  }
 
   if (!topic || !GuidelinePage) {
     return (
@@ -110,7 +150,9 @@ export default function TopicRoute() {
       </div>
       {fullBleed && SpecimenPage ? (
         <Suspense fallback={null}>
-          <SpecimenPage />
+          <DocUiEmbed>
+            <SpecimenPage />
+          </DocUiEmbed>
         </Suspense>
       ) : view === 'guidelines' ? (
         <div className={styles['doc-shell__columns']}>
@@ -118,6 +160,19 @@ export default function TopicRoute() {
             <Suspense fallback={<p>Loading…</p>}>
               <div className={docStyles['doc-page__prose']}>
                 <GuidelinePage />
+                {nextTopic ? (
+                  <GuidelineNextTopicCard next={nextTopic} />
+                ) : firstTopicNextSection ? (
+                  <GuidelineNextTopicCard
+                    next={firstTopicNextSection}
+                    title={`Continue to ${CATEGORY_LABELS[firstTopicNextSection.category]}`}
+                    description={
+                      firstTopicNextSection.description
+                        ? `${firstTopicNextSection.name} — ${firstTopicNextSection.description}`
+                        : firstTopicNextSection.name
+                    }
+                  />
+                ) : null}
               </div>
             </Suspense>
           </div>
@@ -129,10 +184,9 @@ export default function TopicRoute() {
         <div
           className={`${styles['doc-shell__body']} ${styles['doc-shell__body--standalone']}`}
         >
+          {/* Specimens are not wrapped in doc-page__prose; DocUiEmbed resets doc-shell typography. */}
           <Suspense fallback={<p>Loading…</p>}>
-            <div className={docStyles['doc-page__prose']}>
-              {SpecimenPage && <SpecimenPage />}
-            </div>
+            <DocUiEmbed>{SpecimenPage && <SpecimenPage />}</DocUiEmbed>
           </Suspense>
         </div>
       )}

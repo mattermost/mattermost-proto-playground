@@ -1,0 +1,144 @@
+.reaction-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-full);
+  background-color: var(--calls-bg, var(--color-indigo-600));
+
+  &__inner {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    background-color: rgba(var(--color-neutral-0-rgb), 0.16);
+    border-radius: var(--radius-xl);
+    width: 100%;
+  }
+
+  &__emoji {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: var(--font-size-75);
+    line-height: 1;
+  }
+
+  &__label {
+    font-family: var(--font-family-body);
+    font-weight: var(--font-weight-semibold);
+    color: var(--button-color, var(--color-neutral-0));
+    white-space: nowrap;
+  }
+
+  &__leading-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxxs);
+    flex-shrink: 0;
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
+  &__trailing-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxxs);
+    flex-shrink: 0;
+    color: var(--button-color, var(--color-neutral-0));
+    opacity: 0.32;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // ---------------------------------------------------------------------------
+
+  &--size-small {
+    .reaction-pill__inner {
+      gap: var(--spacing-xxxs);
+      padding: var(--spacing-xxxxs) var(--spacing-s) var(--spacing-xxxxs)
+        var(--spacing-xxs);
+    }
+
+    .reaction-pill__emoji {
+      font-size: var(--font-size-75);
+    }
+
+    .reaction-pill__label {
+      font-size: var(--font-size-25);
+      line-height: var(--line-height-75);
+      letter-spacing: 0.1px;
+    }
+  }
+
+  &--size-medium {
+    .reaction-pill__inner {
+      gap: 5px;
+      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
+        var(--spacing-xs);
+    }
+
+    .reaction-pill__emoji {
+      font-size: var(--font-size-200);
+    }
+
+    .reaction-pill__label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+
+  &--size-large {
+    .reaction-pill__inner {
+      gap: var(--spacing-xxs);
+      padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-xxs)
+        var(--spacing-s);
+    }
+
+    .reaction-pill__emoji {
+      font-size: var(--font-size-400);
+    }
+
+    .reaction-pill__label {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Type modifiers
+  // ---------------------------------------------------------------------------
+
+  &--type-hand-raise {
+    background-color: var(--button-color, var(--color-neutral-0));
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+
+    .reaction-pill__inner {
+      background-color: transparent;
+      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
+        var(--spacing-xxxs);
+    }
+
+    .reaction-pill__leading-icon {
+      color: var(--calls-bg, var(--color-indigo-600));
+    }
+
+    .reaction-pill__label {
+      color: var(--calls-bg, var(--color-indigo-600));
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+
+  &--type-other {
+    .reaction-pill__inner {
+      gap: 5px;
+      padding: var(--spacing-xxxs) var(--spacing-s) var(--spacing-xxxs)
+        var(--spacing-xxxs);
+    }
+
+    .reaction-pill__label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+}

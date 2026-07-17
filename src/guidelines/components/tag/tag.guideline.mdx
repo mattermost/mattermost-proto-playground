@@ -1,0 +1,98 @@
+import { Tag } from '@mattermost/compass-ui';
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+
+Tags are compact pills that mark something — a role (_BOT_, _GUEST_), a tier
+(_PROFESSIONAL_), a status (_NEW_, _BETA_), or a category. They're scannable
+signal: a way to surface a small piece of metadata without spending a sentence
+on it.
+
+Compass also ships related tag families for other contexts — `ShortcutTag` for
+keyboard hints inside menus and tooltips, and highlight tags for @mentions
+and search hits inside the message stream.
+
+<Divider />
+
+## Anatomy
+
+A pill-shaped container with a label, optional leading icon, and a colour
+that signals the tag's intent.
+
+<AnatomyStage style={{gap:'0.5rem',flexWrap:'wrap'}}>
+  <Tag label="BOT" type="Info Dim" casing="All Caps" />
+  <Tag label="Guest" type="Default" />
+  <Tag label="Beta" type="Info" />
+  <Tag label="PROFESSIONAL" type="Default" casing="All Caps" leadingIcon={<GlobeIcon size={10} />} />
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — rounded rectangle. Background and text
+  colour map to the chosen `type`.
+- <Num>2</Num> **Label** — the tag text. Sentence case by default;
+  switch to all-caps for system-level markers like _BOT_ or
+  _PROFESSIONAL_.
+- <Num>3</Num> **Leading icon** — optional 10–12px glyph, useful when
+  the tag represents a recognisable concept.
+
+<Divider />
+
+## Sizes
+
+Two sizes. Reach for **X-Small** by default — tags are meant to sit
+quietly inside a row of text. Use **Small** when the tag stands alone or
+sits in a target where the smaller form would be hard to hit.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <Tag label="X-Small" type="Default" size="X-Small" />
+  <Tag label="Small" type="Default" size="Small" />
+</div>
+
+| Size    | Use when                                                               |
+| ------- | ---------------------------------------------------------------------- |
+| X-Small | Inline next to a name or title (Bot tag in a Message Header).          |
+| Small   | Standalone in cards, lists, and Feature Discovery surfaces.            |
+
+<Divider />
+
+## Types
+
+Six type variants, each with a distinct colour treatment. Pick the type
+that matches the tag's semantic intent — don't choose a colour because it
+looks nice.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px',flexWrap:'wrap'}}>
+  <Tag label="Default" type="Default" />
+  <Tag label="Info" type="Info" />
+  <Tag label="Info Dim" type="Info Dim" />
+  <Tag label="Danger" type="Danger" />
+  <Tag label="Success" type="Success" />
+  <Tag label="Warning" type="Warning" />
+</div>
+
+| Type      | Use when                                                                                |
+| --------- | --------------------------------------------------------------------------------------- |
+| Default   | Neutral identifiers — _Guest_, _Bot_, generic categories.                               |
+| Info      | A high-emphasis informational badge — _New_, _Beta_, _Updated_.                         |
+| Info Dim  | A subtle informational badge for SKU labels and meta callouts.                          |
+| Danger    | Failure or restricted state — _Failed_, _Suspended_.                                    |
+| Success   | Positive state — _Active_, _Verified_, _Connected_.                                     |
+| Warning   | Cautionary state — _Expiring_, _Read-only_.                                             |
+
+<Divider />
+
+## Casing
+
+The default casing is sentence case. Switch to **All Caps** for system-level
+labels where the all-caps form is the convention — Bot tag, SKU labels,
+role badges in admin contexts.
+
+<div style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'1.5rem',background:'rgba(0,0,0,0.04)',borderRadius:'8px'}}>
+  <Tag label="New" type="Info" />
+  <Tag label="NEW" type="Info" casing="All Caps" />
+</div>
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Tag specimen page](/components/tag/specimen). Shortcut tags use the
+`ShortcutTag` component (`size`, `location`).

@@ -1,0 +1,157 @@
+.admin-console-layout {
+  /* Match ChannelShell / threads layout specimen frame (see ChannelShell.module.scss). */
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: calc(100% - 80px);
+  height: calc(100% - 80px);
+  margin: auto;
+  max-width: 1440px;
+  max-height: 800px;
+  min-width: 1000px;
+  min-height: 600px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: var(--elevation-6);
+  overflow: hidden;
+  box-sizing: border-box;
+
+  &__sidebar-mount {
+    display: flex;
+    flex-shrink: 0;
+    height: 100%;
+    min-height: 0;
+
+    /* Specimen fills viewport height; sidebar component defaults to a fixed demo height. */
+    & > * {
+      height: 100% !important;
+    }
+  }
+
+  &__main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--center-channel-bg);
+  }
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+    :global(.simplebar-wrapper),
+    :global(.simplebar-mask),
+    :global(.simplebar-offset),
+    :global(.simplebar-content-wrapper) {
+      background-color: transparent;
+    }
+  }
+
+  &__panels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    padding-bottom: var(--spacing-xxl);
+    box-sizing: border-box;
+  }
+
+  &__copy {
+    margin: 0;
+    max-width: 42rem;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__settings {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__setting {
+    display: grid;
+    grid-template-columns: minmax(160px, 0.38fr) minmax(0, 1fr);
+    gap: var(--spacing-xl);
+    padding: var(--spacing-l) 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+    &:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-s);
+    }
+  }
+
+  &__setting-label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    padding-top: var(--spacing-xxs);
+  }
+
+  &__setting-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xl);
+    // Match setting-label padding so True/False radios top-align with the left label
+    padding-top: var(--spacing-xxs);
+
+    // Radio defaults to width: 100%; shrink so True/False sit side-by-side
+    > * {
+      width: auto;
+      flex: 0 0 auto;
+    }
+  }
+
+  &__help {
+    margin: 0;
+    max-width: 48rem;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__doc-link {
+    color: var(--button-bg);
+    font-weight: var(--font-weight-regular);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__code {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.85);
+  }
+
+  &__select-wrap,
+  &__input-wrap {
+    max-width: 22rem;
+  }
+}

@@ -1,5 +1,5 @@
-import Button from '@/components/ui/Button/Button';
-import { Modal } from '@/components/ui/Modal';
+import { Button } from '@mattermost/compass-ui';
+import { Modal } from '@mattermost/compass-ui';
 import styles from './ModalSamples.module.scss';
 
 export function ModalAnatomy() {
@@ -11,7 +11,7 @@ export function ModalAnatomy() {
   );
 
   return (
-    <div className={styles['modal-anatomy']}>
+    <div className={[styles['modal-anatomy'], 'compass-doc-embed'].join(' ')}>
       <div className={styles['modal-anatomy__chart']}>
         <div className={styles['modal-anatomy__backdrop']} aria-hidden />
         <div className={styles['modal-anatomy__modal-wrap']}>

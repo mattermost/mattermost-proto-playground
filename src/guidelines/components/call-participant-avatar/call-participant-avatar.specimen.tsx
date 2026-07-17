@@ -2,7 +2,7 @@ import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
-import CallParticipantAvatar from '@/components/ui/CallParticipantAvatar/CallParticipantAvatar';
+import { CallParticipantAvatar } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function CallParticipantAvatarLibrary() {
@@ -16,7 +16,7 @@ export default function CallParticipantAvatarLibrary() {
           <CallParticipantAvatar
             src={avatarLeonard}
             alt="Leonard Riley"
-            size="XS"
+            size="X-Small"
             name="Leonard R."
           />
           <CallParticipantAvatar
@@ -30,6 +30,12 @@ export default function CallParticipantAvatarLibrary() {
             alt="Marco Rinaldi"
             size="Medium"
             name="Marco R."
+          />
+          <CallParticipantAvatar
+            src={avatarEmma}
+            alt="Emma Novak"
+            size="Large"
+            name="Emma N."
           />
         </div>
         <div className={styles['components__button-row']}>

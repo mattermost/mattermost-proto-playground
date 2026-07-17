@@ -1,0 +1,72 @@
+import { AdminPanel } from '@mattermost/compass-ui';
+
+Admin Panel is the bordered sheet used throughout System Console for a
+single settings section. It combines the
+[`Admin Panel Header`](/components/admin-panel-header) with a
+body where grouped fields and help text live. Panels stack on the page so
+admins can scan sections without leaving the workspace.
+
+<Divider />
+
+## Anatomy
+
+The pattern is an elevation-1 surface with a capped content width for readable
+lines on wide consoles. The header rail carries the section identity and
+optional controls; the body holds the form layout.
+
+<AnatomyStage>
+  <AdminPanel
+    title="Section Title"
+    subtitle="Section sub-title"
+    iconLeft
+    showEnterpriseLabel
+    showBeta
+    showSwitch
+    switchLabel="Off"
+    showButton
+    buttonLabel="Button"
+  >
+    <div style={{ margin: 0, color: 'rgba(var(--center-channel-color-rgb), 0.75)', fontSize: 'var(--font-size-100)' }}>
+      Body slot for grouped fields or descriptions.
+    </div>
+  </AdminPanel>
+</AnatomyStage>
+
+- <Num>1</Num> **Surface** — full border, corner radius, and shadow consistent
+  with other Compass elevated cards.
+- <Num>2</Num> **Panel header** — use the
+  [`Admin Panel Header`](/components/admin-panel-header)
+  component for the title row, optional tags, subtitle, and trailing actions.
+- <Num>3</Num> **Body** — settings fields and explanatory copy; when the panel
+  is expandable and collapsed, the body is hidden until expanded.
+
+<Divider />
+
+## Options
+
+Enable only what each section needs. Page-level save and cancel belong in
+workspace chrome, not inside every panel.
+
+| Option | Use when |
+| ------ | -------- |
+| Leading icon | The section maps to a recognizable console category (see panel header guidance). |
+| Enterprise / Beta tags | SKU or lifecycle needs to appear beside the section name. |
+| Switch in header | A single on/off applies to the whole section. |
+| Primary button in header | One sectional action is tied to the heading; avoid duplicating the page Save. |
+| Expand / collapse | Long or advanced sections should stay compact until opened. |
+
+<Divider />
+
+## Behaviour
+
+- **Collapsed expandable panels.** The header stays visible without a lower
+  divider until expanded; opening restores the divider and shows the body.
+- **Saving and validation** for the whole page stay in the console footer or
+  equivalent, not inside each panel.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Admin Panel specimen](/patterns/admin-panel/specimen).

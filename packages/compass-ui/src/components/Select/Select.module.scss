@@ -1,0 +1,283 @@
+// ---------------------------------------------------------------------------
+// Block — Select (Figma v2.0.1). Full-featured form select with floating label.
+// ---------------------------------------------------------------------------
+.select {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  // ---------------------------------------------------------------------------
+  // Wrapper (bordered container)
+  // ---------------------------------------------------------------------------
+  &__wrapper {
+    position: relative;
+    background-color: var(--center-channel-bg);
+    border-radius: var(--radius-s);
+    box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+    .select:has(.select__control:not(:disabled)):hover:not(:focus-within) & {
+      box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.24);
+    }
+
+    .select:has(.select__control:focus-visible) & {
+      box-shadow:
+        inset 0 0 0 1px var(--button-bg),
+        0 0 0 1px var(--button-bg);
+    }
+
+    .select:has(.select__control:disabled) & {
+      opacity: 0.56;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Floating label
+  // ---------------------------------------------------------------------------
+  &__label {
+    position: absolute;
+    left: var(--spacing-xs);
+    top: 50%;
+    padding: 0 var(--spacing-xxxs);
+    transform: translateY(-50%);
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-regular);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    background-color: var(--center-channel-bg);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 24px);
+    transition:
+      transform var(--duration-quick) var(--ease-transition),
+      font-size var(--duration-quick) var(--ease-transition),
+      top var(--duration-quick) var(--ease-transition),
+      left var(--duration-quick) var(--ease-transition);
+
+    .select--label-floated & {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Inner row (icon + select + trailing chevron)
+  // ---------------------------------------------------------------------------
+  &__inner {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  &__leadingIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    pointer-events: none;
+  }
+
+  &__control {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-regular);
+    color: var(--center-channel-color);
+    cursor: pointer;
+
+    // When empty / no value show placeholder color
+    &:invalid,
+    &[value=''],
+    option[value=''] {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__trailingIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    pointer-events: none;
+    margin-right: var(--spacing-xxxs);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // ---------------------------------------------------------------------------
+  &--size-small {
+    .select__wrapper {
+      min-height: 32px;
+    }
+
+    .select__inner {
+      padding: var(--spacing-xs) var(--spacing-m);
+      gap: var(--spacing-xs);
+    }
+
+    .select__control {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+
+    .select__trailingIcon svg {
+      width: var(--icon-size-12);
+      height: var(--icon-size-12);
+    }
+
+    &.select--label-floated .select__label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &--size-medium {
+    .select__wrapper {
+      min-height: 40px;
+    }
+
+    .select__inner {
+      padding: var(--spacing-s) var(--spacing-l);
+      gap: var(--spacing-s);
+    }
+
+    .select__control {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+
+    .select__label {
+      font-size: var(--font-size-100);
+      left: var(--spacing-m);
+    }
+
+    .select__trailingIcon svg {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+
+    &.select--label-floated .select__label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &--size-large {
+    .select__wrapper {
+      min-height: 48px;
+    }
+
+    .select__inner {
+      padding: var(--spacing-m) var(--spacing-l);
+      gap: var(--spacing-s);
+    }
+
+    .select__control {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+
+    .select__label {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+      left: var(--spacing-m);
+    }
+
+    .select__trailingIcon svg {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+
+    &.select--label-floated .select__label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &:has(.select__control:focus-visible) .select__label {
+    color: var(--button-bg);
+  }
+
+  // Hide control text while the floating label is in the resting position to prevent overlap.
+  &:has(.select__label):not(&--label-floated) .select__control {
+    color: transparent;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Invalid modifier
+  // ---------------------------------------------------------------------------
+  &--invalid {
+    .select__wrapper {
+      box-shadow: inset 0 0 0 1px var(--color-danger);
+    }
+
+    &:has(.select__control:focus-visible) .select__wrapper {
+      box-shadow:
+        inset 0 0 0 1px var(--color-danger),
+        0 0 0 1px var(--color-danger);
+    }
+
+    .select__label {
+      color: var(--color-danger);
+    }
+
+    &:has(.select__control:focus-visible) .select__label {
+      color: var(--color-danger);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Leading icon: offset resting label; reset left when floated
+  // ---------------------------------------------------------------------------
+  &--has-leading-icon {
+    .select__label {
+      left: 32px; // Small: 12px padding + 16px icon + 8px gap − 4px label-padding
+    }
+
+    &.select--label-floated .select__label {
+      left: var(--spacing-xs);
+    }
+
+    &.select--size-medium,
+    &.select--size-large {
+      .select__label {
+        left: 38px; // 16px padding + 16px icon + 10px gap − 4px label-padding
+      }
+
+      &.select--label-floated .select__label {
+        left: var(--spacing-m);
+      }
+    }
+  }
+}

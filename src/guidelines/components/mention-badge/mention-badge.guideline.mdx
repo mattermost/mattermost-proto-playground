@@ -1,8 +1,9 @@
-import MentionBadge from '@/components/ui/MentionBadge/MentionBadge';
+import { MentionBadge } from '@mattermost/compass-ui';
 
 Mention Badges show a numerical count of pending mentions. They appear next
-to channel names in the sidebar, on app-bar icons, and inline in menu items —
-small, high-contrast pills that pull the eye without dominating the row.
+to channel names in the sidebar, on app-bar icons, inline in menu items, and
+on center-channel lists such as thread rows — small, high-contrast pills that
+pull the eye without dominating the row.
 
 <Divider />
 
@@ -14,10 +15,10 @@ A Mention Badge is a single pill with a numeric label.
 - <Num>2</Num> **Count** — the mention number. Up to `99`; anything higher
   shows as `99+`.
 
-<AnatomyStage style={{gap:'1rem',flexWrap:'wrap'}}>
+<AnatomyStage style={{ gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
   <MentionBadge count={3} />
-  <MentionBadge count={42} />
-  <MentionBadge count={150} />
+  <MentionBadge count={3} location="Channel" />
+  <MentionBadge count={3} location="Menu Item" />
 </AnatomyStage>
 
 Use the badge for **mention** counts only. For "this row has unread activity"
@@ -47,12 +48,23 @@ expected viewing distance.
 ## Locations
 
 The badge adapts its colour to where it sits so it reads against the
-underlying surface.
+underlying surface. Pass `location` to match the surface (see the
+[specimen](/components/mention-badge/specimen) for every size and digit count).
+
+Same count across each location:
+
+<div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', padding: '0.75rem 0' }}>
+  <MentionBadge count={3} location="Sidebar" />
+  <MentionBadge count={3} location="Menu Item" />
+  <MentionBadge count={3} location="Channel" />
+  <MentionBadge count={3} location="Icon Button" />
+</div>
 
 | Location    | Use when                                                              |
 | ----------- | --------------------------------------------------------------------- |
 | Sidebar     | Default. Pinned next to a channel name in the channel sidebar.        |
 | Menu Item   | Inline at the end of a [Menu Item](/components/menu-item). |
+| Channel     | Center-channel lists such as thread rows on neutral list backgrounds. |
 | Icon Button | Anchored to an app-bar or toolbar [Icon Button](/components/icon-button). |
 
 Don't pair more than one mention badge with the same row — the count is the
@@ -63,4 +75,4 @@ summary.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Mention Badge library page](/components/mention-badge/specimen).
+[Mention Badge specimen page](/components/mention-badge/specimen).

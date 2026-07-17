@@ -61,18 +61,29 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
         'more-unreads-banner',
         'new-message-banner',
         'search-tip-banner',
-        'toast-banner',
       ],
     },
     {
       label: 'Calls',
-      slugs: ['call-participant-avatar'],
+      slugs: [
+        'call-participant-avatar',
+        'reaction-pill',
+        'recording-pill',
+      ],
+    },
+    {
+      label: 'Admin Console',
+      slugs: [
+        'admin-console-header',
+        'admin-panel-header',
+        'admin-panel-footer',
+        'feature-discovery-panel',
+      ],
     },
     {
       label: 'Cards and Previews',
       slugs: [
         'attachment-card',
-        'feature-discovery-panel',
         'image-preview',
         'link-preview',
         'permalink-preview',
@@ -80,13 +91,20 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Feedback and Notices',
-      slugs: ['error-message', 'section-notice'],
+      slugs: [
+        'error-message',
+        'popover-notice',
+        'section-notice',
+        'toast',
+        'tooltip',
+      ],
     },
     {
       label: 'Forms and Input',
       slugs: [
         'checkbox',
         'chip',
+        'combobox',
         'date-range-picker',
         'dropdown',
         'radio',
@@ -129,24 +147,22 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
     },
     {
-      label: 'Overlays and Layering',
-      slugs: ['popover-notice', 'tooltip'],
-    },
-    {
       label: 'Progress Indicators',
       slugs: ['pagination-dots', 'progress-bar', 'spinner'],
     },
     {
       label: 'Status Indicators',
-      slugs: [
-        'label-tag',
-        'mention-badge',
-        'reaction-pill',
-        'recording-pill',
-        'status-badge',
-        'tags',
-        'unread-badge',
-      ],
+      slugs: ['tag', 'mention-badge', 'status-badge', 'unread-badge'],
+    },
+  ],
+  patterns: [
+    {
+      label: 'Admin Console',
+      slugs: ['admin-panel', 'admin-console-sidebar'],
+    },
+    {
+      label: 'Onboarding',
+      slugs: ['tour-point'],
     },
   ],
 };

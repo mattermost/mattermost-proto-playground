@@ -1,4 +1,4 @@
-import ErrorMessage from '@/components/ui/ErrorMessage/ErrorMessage';
+import { ErrorMessage } from '@mattermost/compass-ui';
 
 Error Message is the inline red error line that appears below a form input
 when validation fails. It pairs an alert glyph with a short, human-readable
@@ -10,7 +10,15 @@ explanation so the user can fix the field and move on.
 
 Two parts, sitting on a single line directly under the input they describe.
 
-<AnatomyStage style={{flexDirection:'column',gap:'0.75rem',maxWidth:'420px'}}>
+<AnatomyStage
+  style={{
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    gap: '0.75rem',
+    maxWidth: '420px',
+  }}
+>
   <ErrorMessage message="Enter a valid email address." />
   <ErrorMessage message="Password must be at least 12 characters." />
   <ErrorMessage message="Channel names can't contain spaces or special characters except dashes and underscores." />
@@ -40,4 +48,4 @@ input and a programmatic association (`aria-describedby`).
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Error Message library page](/components/error-message/specimen).
+[Error Message specimen page](/components/error-message/specimen).

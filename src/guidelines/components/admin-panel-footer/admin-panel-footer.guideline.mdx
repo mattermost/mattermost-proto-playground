@@ -1,0 +1,58 @@
+import { AdminPanelFooter } from '@mattermost/compass-ui';
+
+Admin Panel Footer pins Save and Cancel to the bottom of System Console
+form layouts. It mirrors channel composer discipline: one primary commit path,
+a safe escape hatch, and optional validation status without stealing focus from
+the draft.
+
+<Divider />
+
+## Anatomy
+
+Sticky-style toolbar: Save then Cancel reads left to right with optional status
+summarising validation beside or below on narrow widths.
+
+<AnatomyStage style={{ width: '100%', maxWidth: '920px' }}>
+  <AdminPanelFooter
+    saveDisabled={false}
+    status="warning"
+    statusMessage="SMTP server address is required."
+    onSave={() => {}}
+    onCancel={() => {}}
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Save** — Primary emphasis; stays disabled until the form is valid
+  and has something to commit when the product uses that guard rail.
+- <Num>2</Num> **Cancel** — Tertiary emphasis for leaving without persisting or
+  confirming abandon when the platform requires it.
+- <Num>3</Num> **Status lane** — optional short validation or guidance summary
+  beside or following the buttons; uses semantic warning or danger tone with matching icon
+  affordance.
+
+<Divider />
+
+## Options
+
+| Option | Use when |
+| ------ | -------- |
+| Disabled save | Required fields are missing, the record is unchanged and saving would no-op, or the server rejected a prior attempt. |
+| Warning status | The admin can still save but surfaced issues deserve attention (configuration oddities, soft checks). |
+| Error status | Blocking problems must be addressed before the workspace accepts the save. |
+| No status | The form is clean or inline field errors already carry the story. |
+
+<Divider />
+
+## Behaviour
+
+- **Copy discipline.** Status text should name what is wrong or link to the
+  offending field; avoid generic error dumps in the footer.
+- **One primary.** Keep a single Primary emphasis in the stripe so commit intent
+  stays obvious.
+
+<Divider />
+
+## Implementation
+
+For props and examples, see the
+[Admin Panel Footer specimen page](/components/admin-panel-footer/specimen).

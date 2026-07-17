@@ -1,0 +1,18 @@
+import type { ReactElement } from 'react';
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import { OutboundCallIcon } from '@mattermost/compass-ui';
+import { PhoneLockIcon } from '@mattermost/compass-ui';
+import type { PhoneKind } from '@/types/outboundCall';
+
+export function phoneLabelText(phone: { label: string; sipTrunk?: string }): string {
+  return [phone.label, phone.sipTrunk].filter(Boolean).join(' • ');
+}
+
+export function phoneGlyphFor(
+  kind: PhoneKind,
+  secureClass?: string,
+): ReactElement {
+  if (kind === 'conference') return <OutboundCallIcon />;
+  if (kind === 'secure') return <PhoneLockIcon className={secureClass} />;
+  return <PhoneIcon />;
+}

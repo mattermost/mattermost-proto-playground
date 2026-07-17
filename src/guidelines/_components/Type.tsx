@@ -265,13 +265,16 @@ interface ScaleTableRow {
 interface ScaleTableProps {
   /** Levels to include — defaults to the full scale. */
   levels?: TypeLevel[];
-  /** Highlight a specific row as the base size. */
+  /** Highlight a specific row as the base size (also used for the ratio column). */
   base?: TypeLevel;
+  /** Optional second highlight, e.g. mobile reference step. */
+  mobileBase?: TypeLevel;
 }
 
 export function ScaleTable({
   levels = [25, 50, 75, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
   base = 100,
+  mobileBase,
 }: ScaleTableProps) {
   const rows: ScaleTableRow[] = levels.map((level) => ({
     level,
@@ -293,17 +296,26 @@ export function ScaleTable({
       <tbody>
         {rows.map((row) => {
           const ratio = row.size / FONT_SIZE_PX[base];
+          const rowClass = [
+            row.level === base ? styles['scale__row--base'] : '',
+            mobileBase !== undefined && row.level === mobileBase
+              ? styles['scale__row--mobile-base']
+              : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
           return (
             <tr
               key={row.level}
-              className={
-                row.level === base ? styles['scale__row--base'] : undefined
-              }
+              className={rowClass || undefined}
             >
               <td>
                 {row.level}
                 {row.level === base && (
                   <span className={styles['scale__pill']}>Base</span>
+                )}
+                {mobileBase !== undefined && row.level === mobileBase && (
+                  <span className={styles['scale__pill']}>Mobile base</span>
                 )}
               </td>
               <td>

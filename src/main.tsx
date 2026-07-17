@@ -14,6 +14,9 @@ import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/600.css';
 import '@fontsource/open-sans/700.css';
 
+import '@mattermost/compass-ui/styles';
+import '@mattermost/compass-ui/component-styles';
+
 import './styles/global.scss';
 
 createRoot(document.getElementById('root')!).render(

@@ -5,8 +5,8 @@ import { topicSections, type SectionGroup } from '@/manifests/sections';
 import DocSidebar, {
   type SidebarGroup,
 } from '@/components/layout/DocSidebar/DocSidebar';
-import IconButton from '@/components/ui/IconButton/IconButton';
-import Icon from '@/components/ui/Icon/Icon';
+import { IconButton } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
 import styles from './DocsLayout.module.scss';
 
 const TOPIC_CATEGORIES: { slug: TopicCategory; name: string }[] = [

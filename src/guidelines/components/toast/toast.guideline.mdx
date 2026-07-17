@@ -1,0 +1,95 @@
+import { Toast } from '@mattermost/compass-ui';
+
+Toasts notify the user that an action has completed or surface a brief
+message about a system process. They sit on top of the workflow without
+interrupting it, don't require user input to disappear, and auto-dismiss
+after a short duration.
+
+<Divider />
+
+## Anatomy
+
+<AnatomyStage>
+  <div style={{ width: '100%', maxWidth: '480px' }}>
+    <Toast
+      type="General"
+      message="New update available. Refresh to apply."
+      actionLabel="Refresh"
+      onAction={() => {}}
+      onDismiss={() => {}}
+    />
+  </div>
+</AnatomyStage>
+
+- <Num>1</Num> **Container** — dark surface with rounded corners; a coloured
+  variant is reserved for warnings.
+- <Num>2</Num> **Leading icon** — semantic icon that mirrors the toast's
+  type (general, success, error, warning, info).
+- <Num>3</Num> **Message** — the line of text. One sentence; complete and
+  self-contained.
+- <Num>4</Num> **Action button** — optional; for "Retry", "Undo", "View",
+  and similar single-step recovery moves.
+- <Num>5</Num> **Dismiss button** — optional close affordance for users who
+  want to clear the toast immediately.
+
+<Divider />
+
+## Types
+
+Pick the type that matches the message's meaning, not the colour you want.
+
+| Type     | Use when                                                                          |
+| -------- | --------------------------------------------------------------------------------- |
+| General  | Neutral confirmation with no semantic state (e.g. "Link copied to clipboard").    |
+| Info     | Informational follow-up; usually paired with an action ("Refresh", "View").       |
+| Success  | A user-initiated action completed successfully.                                   |
+| Warning  | Something the user should notice but isn't blocking ("Session expires soon").     |
+| Danger   | An error or failure. Always pair with a recovery action when one exists.          |
+
+<div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxWidth: '480px' }}>
+  <Toast type="General" message="Link copied to clipboard." onDismiss={() => {}} />
+  <Toast type="Info" message="New update available. Refresh to apply." actionLabel="Refresh" onAction={() => {}} onDismiss={() => {}} />
+  <Toast type="Success" message="Message saved successfully." onDismiss={() => {}} />
+  <Toast type="Warning" message="Your session will expire in 5 minutes." onDismiss={() => {}} />
+  <Toast type="Danger" message="Failed to send message. Please try again." actionLabel="Retry" onAction={() => {}} onDismiss={() => {}} />
+</div>
+
+<Divider />
+
+## Behavior
+
+- **Auto-dismiss** after **3–5 seconds**. Longer messages or messages with an
+  action can extend toward the upper end of that range.
+- **Stacking** — when multiple toasts queue up, stack them vertically with
+  the newest on top. Don't show more than three at once; collapse older ones.
+- **Hover** to pause the auto-dismiss timer; resume on mouse-out so users
+  reading a toast aren't punished for taking their time.
+- **Don't** use a toast for critical information that the user must see —
+  reach for a Section Notice, modal, or Global Banner instead.
+
+<Divider />
+
+## Width
+
+| Width      | Use when                                                                          |
+| ---------- | --------------------------------------------------------------------------------- |
+| Auto-width | The default. Width follows the message and any action.                            |
+| Fixed      | The toast lives inside a layout column where alignment with siblings matters.     |
+
+<Divider />
+
+## Content
+
+- One sentence. Past tense for completion ("Saved", "Sent"), present tense
+  for state ("Connection lost"), future tense for what's about to happen.
+- Don't blame the user. "Couldn't send message" beats "You sent an invalid
+  message".
+- Pair Danger toasts with an action whenever recovery is possible — Retry,
+  Undo, Reconnect.
+
+<Divider />
+
+## Implementation
+
+For props, variants, and copy-ready examples, see the
+[Toast specimen page](/components/toast/specimen).

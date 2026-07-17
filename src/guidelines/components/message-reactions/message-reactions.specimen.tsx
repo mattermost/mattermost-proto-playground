@@ -1,4 +1,4 @@
-import MessageReactions from '@/components/ui/MessageReactions/MessageReactions';
+import { MessageReactions } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function MessageReactionsLibrary() {

@@ -1,4 +1,4 @@
-import Dropdown from '@/components/ui/Dropdown/Dropdown';
+import { Dropdown } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function DropdownLibrary() {
@@ -12,6 +12,13 @@ export default function DropdownLibrary() {
           <Dropdown size="Medium">Medium</Dropdown>
           <Dropdown size="Large">Large</Dropdown>
           <Dropdown size="X-Large">X-Large</Dropdown>
+        </div>
+        <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>Padding</span>
+          <Dropdown size="Medium">Tight</Dropdown>
+          <Dropdown size="Medium" padding="Compact">
+            Compact
+          </Dropdown>
         </div>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>States</span>

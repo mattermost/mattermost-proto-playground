@@ -1,0 +1,41 @@
+.message-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: var(--spacing-xxxxs);
+  background-color: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-s);
+  box-shadow: var(--elevation-1);
+
+  &__jump {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    padding: 0 var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-s);
+    background-color: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--link-color);
+      outline-offset: -1px;
+    }
+  }
+}

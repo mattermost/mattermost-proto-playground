@@ -1,4 +1,4 @@
-import Select from '@/components/ui/Select/Select';
+import { Select } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function SelectLibrary() {

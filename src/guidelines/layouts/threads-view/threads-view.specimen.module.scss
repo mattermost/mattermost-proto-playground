@@ -1,0 +1,43 @@
+.threads-view {
+  &__split {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  &__inbox {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 400px;
+    min-width: 0;
+    min-height: 0;
+    background: var(--center-channel-bg);
+  }
+
+  &__tabs {
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+  }
+
+  &__tabs-strip {
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--spacing-m) var(--spacing-m) var(--spacing-m) 14px;
+    height: 56px;
+  }
+
+  &__list {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__list-inner {
+    display: flex;
+    flex-direction: column;
+  }
+}

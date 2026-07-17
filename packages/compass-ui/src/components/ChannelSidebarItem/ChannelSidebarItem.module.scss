@@ -1,0 +1,209 @@
+.channel-sidebar-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+
+  &__menu-button {
+    display: none;
+  }
+
+  &:hover {
+    background: rgba(var(--sidebar-text-rgb), 0.08);
+
+    .channel-sidebar-item__menu-button {
+      display: contents;
+    }
+
+    .channel-sidebar-item__mention-badge {
+      display: none;
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--sidebar-text-active-border);
+  }
+
+  &__active-border {
+    flex-shrink: 0;
+    width: 2px;
+    align-self: stretch;
+    border-radius: 0 2px 2px 0;
+    background: var(--sidebar-text-active-border);
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: var(--spacing-xxxxs);
+    padding: var(--spacing-xxxxs) var(--spacing-xs) var(--spacing-xxxxs) 18px;
+  }
+
+  &__icon-container {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: var(--spacing-xxxs);
+    color: var(--sidebar-text);
+    opacity: 0.64;
+
+    &--dm {
+      padding: var(--spacing-xxxxs);
+      opacity: 1;
+      --status-badge-bg: var(--sidebar-bg);
+    }
+  }
+
+  &__group-icon {
+    width: var(--icon-size-16);
+    height: var(--icon-size-16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--sidebar-text-rgb), 0.16);
+    border-radius: var(--radius-s);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-25);
+    letter-spacing: 0.01em;
+    color: var(--sidebar-text);
+    opacity: 0.72;
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: var(--spacing-xs);
+    padding: 2px var(--spacing-xxxxs);
+  }
+
+  &__name {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    letter-spacing: 0.02em;
+    color: var(--sidebar-text);
+    opacity: 0.72;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 144px;
+  }
+
+  &__shared-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    padding: var(--spacing-xxxs) 0;
+    color: var(--sidebar-text);
+    opacity: 0.72;
+  }
+
+  &__custom-status {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-25);
+    opacity: 0.8;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    gap: var(--spacing-xxxxs);
+    padding-right: var(--spacing-l);
+    color: var(--sidebar-text);
+  }
+
+  &__call {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxs);
+    border-radius: var(--radius-s);
+  }
+
+  // ── Modifiers ──────────────────────────────────────────────
+
+  /** Settings / console nav: label only, same row height and alignment rhythm. */
+  &--text-only {
+    .channel-sidebar-item__left {
+      gap: 0;
+    }
+  }
+
+  &--active {
+    background: rgba(var(--sidebar-text-rgb), 0.12);
+
+    .channel-sidebar-item__left {
+      padding-left: var(--spacing-l);
+    }
+
+    .channel-sidebar-item__name {
+      opacity: 1;
+    }
+  }
+
+  &--status-unread,
+  &--status-mention {
+    .channel-sidebar-item__icon-container {
+      opacity: 1;
+    }
+
+    .channel-sidebar-item__name {
+      font-weight: var(--font-weight-semibold);
+      opacity: 1;
+    }
+  }
+
+  &--drafts {
+    .channel-sidebar-item__icon-container {
+      opacity: 0.64;
+    }
+
+    .channel-sidebar-item__name {
+      font-weight: var(--font-weight-regular);
+      opacity: 0.72;
+    }
+
+    .channel-sidebar-item__mention-badge > :global(*) {
+      background-color: transparent;
+      color: var(--sidebar-text);
+      padding-left: 0;
+      padding-right: var(--spacing-xxs);
+    }
+  }
+
+  &--drafts#{&}--active {
+    .channel-sidebar-item__name {
+      opacity: 1;
+    }
+  }
+
+  &--muted {
+    .channel-sidebar-item__icon-container {
+      opacity: 0.4;
+    }
+
+    .channel-sidebar-item__name {
+      opacity: 0.4;
+    }
+
+    .channel-sidebar-item__shared-icon {
+      opacity: 0.4;
+    }
+  }
+}

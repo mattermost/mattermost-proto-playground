@@ -1,0 +1,256 @@
+// ---------------------------------------------------------------------------
+// Block — Date & Range Picker (Figma v2.0.0).
+// Calendar popover for single date or date range selection.
+// ---------------------------------------------------------------------------
+.dateRangePicker {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+
+  // ---------------------------------------------------------------------------
+  // Trigger / input row
+  // ---------------------------------------------------------------------------
+  &__trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-l);
+    background-color: var(--center-channel-bg);
+    border-radius: var(--radius-s);
+    box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+    cursor: pointer;
+    user-select: none;
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+    .dateRangePicker:not(.dateRangePicker--disabled):not(.dateRangePicker--open) &:hover:not(:focus-visible) {
+      box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.24);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow:
+        inset 0 0 0 1px var(--button-bg),
+        0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
+    }
+
+    .dateRangePicker--open & {
+      box-shadow:
+        inset 0 0 0 1px var(--button-bg),
+        0 0 0 2px rgba(var(--button-bg-rgb), 0.32);
+    }
+
+    .dateRangePicker--disabled & {
+      opacity: 0.56;
+      cursor: not-allowed;
+    }
+  }
+
+  &__calendarIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+
+    svg {
+      display: block;
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+  }
+
+  &__value {
+    flex: 1 1 0;
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-regular);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    // Empty/placeholder state
+    .dateRangePicker__trigger:not([data-has-value]) & {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    transition: transform var(--duration-quick) var(--ease-transition);
+
+    svg {
+      display: block;
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+
+    .dateRangePicker--open & {
+      transform: rotate(180deg);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Popover panel
+  // ---------------------------------------------------------------------------
+  &__popover {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 200;
+    width: 340px;
+    padding: var(--spacing-l);
+    background-color: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    box-shadow: var(--elevation-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Header (month/year label + Today + prev/next)
+  // ---------------------------------------------------------------------------
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: var(--spacing-xs);
+  }
+
+  &__monthLabel {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
+
+  &__headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    flex-shrink: 0;
+  }
+
+  &__navButtons {
+    display: flex;
+    align-items: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Weekday header row
+  // ---------------------------------------------------------------------------
+  &__weekdays {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-s) 0;
+  }
+
+  &__weekday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    text-transform: uppercase;
+    letter-spacing: 0.24px;
+    text-align: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Calendar grid
+  // ---------------------------------------------------------------------------
+  &__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__week {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__dayEmpty {
+    display: block;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  &__day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-full);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(&--selected) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--today {
+      color: var(--link-color);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    &--selected {
+      background-color: var(--button-bg);
+      color: var(--button-color);
+
+      &:hover {
+        background-color: var(--button-bg);
+        opacity: 0.92;
+      }
+    }
+
+    &--in-range {
+      background-color: rgba(var(--button-bg-rgb), 0.12);
+      border-radius: 0;
+      color: var(--center-channel-color);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // State modifiers
+  // ---------------------------------------------------------------------------
+  &--disabled {
+    pointer-events: none;
+  }
+
+  &--open {
+    // chevron rotates via child selector above
+  }
+}

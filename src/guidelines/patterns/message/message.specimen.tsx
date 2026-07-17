@@ -1,8 +1,11 @@
-import Message from '@/components/ui/Message/Message';
-import Divider from '@/components/ui/Divider/Divider';
+import { Message } from '@mattermost/compass-ui';
+import { messageStyles } from '@mattermost/compass-ui';
+import { Divider } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import styles from '@/styles/library-demo/patterns.module.scss';
+
+const bodyTextClass = messageStyles['message__body-text'];
 
 export default function MessageLibrary() {
   return (
@@ -13,7 +16,7 @@ export default function MessageLibrary() {
         username="Leonard Riley"
         timestamp="Today at 9:41 AM"
       >
-        <p className={styles['patterns__body-text']}>
+        <p className={bodyTextClass}>
           Hey team, the new components are looking great!
         </p>
       </Message>
@@ -25,7 +28,7 @@ export default function MessageLibrary() {
         timestamp="Today at 9:45 AM"
         isBot
       >
-        <p className={styles['patterns__body-text']}>
+        <p className={bodyTextClass}>
           You have 3 unread messages in #general.
         </p>
       </Message>

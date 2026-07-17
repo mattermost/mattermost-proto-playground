@@ -12,7 +12,6 @@ import {
 } from '@/guidelines/_components/Type';
 import {
   IconShowcase,
-  IconSizeRamp,
   IconStyleCompare,
   FiletypeShowcase,
   Principle,
@@ -58,12 +57,15 @@ import { ChannelHeaderAnatomyStage } from '@/guidelines/_components/ChannelHeade
 import { GlobalHeaderAnatomyStage } from '@/guidelines/_components/GlobalHeaderGuidelineAnatomy';
 import { TeamSidebarAnatomyStage } from '@/guidelines/_components/TeamSidebarGuidelineAnatomy';
 import { ChannelSidebarAnatomyStage } from '@/guidelines/_components/ChannelSidebarGuidelineAnatomy';
+import { AdminConsoleSidebarAnatomyStage } from '@/guidelines/_components/AdminConsoleSidebarGuidelineAnatomy';
 import Num from '@/guidelines/_components/Num';
 import MdxAnchor from '@/guidelines/_components/MdxAnchor';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
-import Divider from '@/components/ui/Divider/Divider';
-import Chip from '@/components/ui/Chip/Chip';
+import { Divider } from '@mattermost/compass-ui';
+import { Chip } from '@mattermost/compass-ui';
+import { Combobox } from '@mattermost/compass-ui';
 import GuidelineSampleRow from '@/guidelines/_components/GuidelineSampleRow';
+import DocUiEmbed from '@/pages/_shell/DocUiEmbed';
 
 /**
  * Components made globally available inside MDX guideline pages — no import
@@ -84,7 +86,6 @@ const MDX_COMPONENTS = {
   ScaleTable,
   MarginTable,
   IconShowcase,
-  IconSizeRamp,
   IconStyleCompare,
   FiletypeShowcase,
   Principle,
@@ -119,10 +120,13 @@ const MDX_COMPONENTS = {
   GlobalHeaderAnatomyStage,
   TeamSidebarAnatomyStage,
   ChannelSidebarAnatomyStage,
+  AdminConsoleSidebarAnatomyStage,
   Num,
   AnatomyStage,
   Divider,
   Chip,
+  Combobox,
+  DocUiEmbed,
   /** Horizontal flex row for guideline inline demos; use instead of raw `<div style={{display:'flex',…}}>`. */
   SampleRow: GuidelineSampleRow,
 };

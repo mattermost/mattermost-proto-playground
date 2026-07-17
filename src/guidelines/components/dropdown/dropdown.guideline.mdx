@@ -1,4 +1,4 @@
-import Dropdown from '@/components/ui/Dropdown/Dropdown';
+import { Dropdown } from '@mattermost/compass-ui';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 
@@ -26,8 +26,8 @@ pattern.
   Menu Items.
 
 <AnatomyStage style={{gap:'1rem',flexWrap:'wrap'}}>
-  <Dropdown leadingIcon={<GlobeIcon size={16} />}>design</Dropdown>
-  <Dropdown leadingIcon={<FilterVariantIcon size={16} />}>All channels</Dropdown>
+  <Dropdown padding="Compact" leadingIcon={<GlobeIcon size={16} />}>design</Dropdown>
+  <Dropdown padding="Compact" leadingIcon={<FilterVariantIcon size={16} />}>All channels</Dropdown>
 </AnatomyStage>
 
 <Divider />
@@ -75,8 +75,8 @@ When the Dropdown sits on a dark surface — a themed sidebar, a dark
 header — switch to the inverted appearance so contrast holds.
 
 <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap',padding:'1rem',background:'var(--sidebar-header-bg)',borderRadius:'8px'}}>
-  <Dropdown appearance="Inverted">design</Dropdown>
-  <Dropdown appearance="Inverted" isOpen>design</Dropdown>
+  <Dropdown padding="Compact" appearance="Inverted">design</Dropdown>
+  <Dropdown padding="Compact" appearance="Inverted" isOpen>design</Dropdown>
 </div>
 
 <Divider />
@@ -94,4 +94,6 @@ header — switch to the inverted appearance so contrast holds.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Dropdown library page](/components/dropdown/specimen).
+[Dropdown specimen page](/components/dropdown/specimen). The `padding` prop
+sets trigger inset: `Tight` (default) or `Compact` for a slightly roomier
+trigger next to other controls.

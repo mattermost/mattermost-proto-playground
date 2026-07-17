@@ -1,0 +1,67 @@
+// ---------------------------------------------------------------------------
+// Block — Figma Mention Badge v2.0.1
+// ---------------------------------------------------------------------------
+.mention-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-m);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+
+  // Default location: Sidebar
+  background-color: var(--mention-bg);
+  color: var(--mention-color);
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers (Figma: Small, Medium, Large)
+  // ---------------------------------------------------------------------------
+  &--size-small {
+    font-size: var(--font-size-25); // 10px
+    line-height: 11px;
+    padding: 0.5px 4.5px; // same for all digit counts
+  }
+
+  &--size-medium {
+    font-size: var(--font-size-50); // 11px
+    line-height: var(--line-height-50); // 16px
+    letter-spacing: 0.22px;
+    padding: 0 var(--_mb-px-m, 5.5px); // no vertical padding; fallback = digits-2
+  }
+
+  &--size-large {
+    font-size: var(--font-size-75); // 12px
+    line-height: 15px;
+    padding: 1.5px var(--_mb-px-l, 5.5px); // fallback = digits-2
+    border-radius: 10px;
+  }
+
+  // Per-digit-count horizontal padding — Small is same for all digit counts
+  &--digits-1 {
+    --_mb-px-m: 6.5px;
+    --_mb-px-l: 7.5px;
+  }
+  &--digits-3 {
+    --_mb-px-m: 4.5px;
+    --_mb-px-l: 4px;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Location modifiers (Figma: Sidebar default, Menu Item, Icon Button, Channel)
+  // ---------------------------------------------------------------------------
+  &--location-menu-item {
+    background-color: rgba(var(--center-channel-color-rgb), 0.48);
+    color: var(--center-channel-bg);
+  }
+
+  &--location-icon-button {
+    background-color: var(--sidebar-text-active-border);
+    color: var(--button-color);
+  }
+
+  &--location-channel {
+    background-color: var(--button-bg);
+    color: var(--button-color);
+  }
+}

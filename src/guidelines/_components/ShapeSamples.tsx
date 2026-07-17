@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
-import Button from '@/components/ui/Button/Button';
-import MentionBadge from '@/components/ui/MentionBadge/MentionBadge';
-import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
-import UnreadBadge from '@/components/ui/UnreadBadge/UnreadBadge';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import TeamAvatar from '@/components/ui/TeamAvatar/TeamAvatar';
+import { Button } from '@mattermost/compass-ui';
+import { MentionBadge } from '@mattermost/compass-ui';
+import { StatusBadge } from '@mattermost/compass-ui';
+import { UnreadBadge } from '@mattermost/compass-ui';
+import { UserAvatar } from '@mattermost/compass-ui';
+import { TeamAvatar } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import styles from './ShapeSamples.module.scss';
 
@@ -22,11 +22,13 @@ const CORE_SHAPES: CoreShape[] = [
     name: 'Rectangle',
     hint: 'Global containers and full-bleed surfaces.',
     radius: '0',
+    square: true,
   },
   {
     name: 'Rounded rectangle',
     hint: 'Buttons, modals, popovers, cards.',
-    radius: '12px',
+    radius: '8px',
+    square: true,
   },
   {
     name: 'Pill',
@@ -75,6 +77,10 @@ const RADIUS_STEPS: RadiusStep[] = [
   { px: 16 },
   { px: 20 },
   { px: 24 },
+  {
+    px: 9999,
+    note: 'Full radius — pills, capsules, and fully rounded controls',
+  },
 ];
 
 export function RadiusRamp() {

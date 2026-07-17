@@ -1,14 +1,9 @@
-import { useState, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
-import PaletteOutlineIcon from '@mattermost/compass-icons/components/palette-outline';
-import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
-import { useTheme, type ThemeId } from '@/contexts/ThemeContext';
 import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
+import ThemeSwitcherControl from '@/components/layout/ThemeSwitcherControl/ThemeSwitcherControl';
+import { Icon, IconButton } from '@mattermost/compass-ui';
 import styles from './TopNav.module.scss';
 
 interface NavItem {
@@ -40,17 +35,13 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Patterns',
     activePrefix: '/patterns',
   },
+  {
+    to: categoryFirstTopicPath('layouts'),
+    label: 'Layouts',
+    activePrefix: '/layouts',
+  },
   { to: '/prototypes', label: 'Prototypes' },
-  { to: '/resources', label: 'Resources' },
 ];
-
-const THEME_LABELS: Record<ThemeId, string> = {
-  denim: 'Denim',
-  sapphire: 'Sapphire',
-  quartz: 'Quartz',
-  indigo: 'Indigo',
-  onyx: 'Onyx',
-};
 
 function pathStartsWith(pathname: string, prefix: string): boolean {
   return pathname === prefix || pathname.startsWith(prefix + '/');
@@ -106,12 +97,6 @@ interface TopNavProps {
 }
 
 export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
-  const { theme, setTheme } = useTheme();
-  const [open, setOpen] = useState(false);
-  const themeRef = useRef<HTMLDivElement>(null);
-
-  useOutsideClose(themeRef, open, () => setOpen(false));
-
   return (
     <div className={styles['top-nav']}>
       <NavLink to="/" className={styles['top-nav__logo']} aria-label="Compass home">
@@ -135,44 +120,7 @@ export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
           />
         )}
 
-        <div ref={themeRef} className={styles['top-nav__theme']}>
-          <button
-            type="button"
-            className={styles['top-nav__theme-trigger']}
-            aria-haspopup="menu"
-            aria-expanded={open}
-            onClick={() => setOpen((o) => !o)}
-          >
-            <PaletteOutlineIcon size={16} />
-            <span>Theme</span>
-            <ChevronDownIcon size={16} />
-          </button>
-          {open && (
-            <ul className={styles['top-nav__theme-menu']} role="menu">
-              {(Object.entries(THEME_LABELS) as [ThemeId, string][]).map(
-                ([id, label]) => (
-                  <li key={id} role="none">
-                    <button
-                      role="menuitem"
-                      className={[
-                        styles['top-nav__theme-option'],
-                        id === theme ? styles['top-nav__theme-option--active'] : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onClick={() => {
-                        setTheme(id);
-                        setOpen(false);
-                      }}
-                    >
-                      {label}
-                    </button>
-                  </li>
-                ),
-              )}
-            </ul>
-          )}
-        </div>
+        <ThemeSwitcherControl />
       </nav>
     </div>
   );

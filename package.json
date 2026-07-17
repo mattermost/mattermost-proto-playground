@@ -3,24 +3,36 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "generate:compass-icons": "node scripts/gen-compass-icon-manifest.mjs",
-    "prebuild": "npm run generate:compass-icons",
-    "dev": "vite",
+    "prebuild": "npm run generate:compass-icons && npm run build:ui",
+    "predev": "node scripts/ensure-compass-ui.mjs",
+    "prepreview": "node scripts/ensure-compass-ui.mjs",
+    "build:ui": "npm run build --workspace=@mattermost/compass-ui",
+    "smoke-test:ui": "node scripts/smoke-test-compass-ui-pack.mjs",
+    "dev": "npm-run-all --parallel dev:ui dev:app",
+    "dev:app": "node scripts/wait-compass-ui-dist.mjs && vite",
+    "dev:ui": "npm run dev --workspace=@mattermost/compass-ui",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "storybook": "npm run storybook --workspace=@mattermost/compass-ui"
   },
   "dependencies": {
     "@fontsource/metropolis": "^5.2.5",
     "@fontsource/open-sans": "^5.2.7",
     "@mattermost/compass-icons": "^0.1.53",
+    "@mattermost/compass-ui": "workspace:*",
     "@mdx-js/react": "^3.1.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "simplebar-react": "^3.3.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -36,6 +48,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.26",
     "globals": "^15.15.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.8.3",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",

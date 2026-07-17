@@ -1,4 +1,4 @@
-import MessageHeader from '@/components/ui/MessageHeader/MessageHeader';
+import { MessageHeader } from '@mattermost/compass-ui';
 
 The Message Header sits above every message body — username, optional bot or
 guest tag, and timestamp. It's the byline of the conversation, so the rules
@@ -12,7 +12,7 @@ Three parts on a single row, left-aligned.
 
 - <Num>1</Num> **Username** — display name. Bolder than the body. Clickable
   to open the [Profile Popover](/components/profile-popover).
-- <Num>2</Num> **Tag** — optional `Bot` or `Guest` [Label Tag](/components/tags)
+- <Num>2</Num> **Tag** — optional `Bot` or `Guest` [Tag](/components/tag)
   inline with the name.
 - <Num>3</Num> **Timestamp** — quiet, secondary-text colour. Click to copy a
   permalink to the message.
@@ -43,6 +43,6 @@ Username weight is `var(--font-weight-semibold)` — never raise to bold (700).
 ## Implementation
 
 For props and a full state matrix, see the
-[Message Header library page](/components/message-header/specimen). The header
+[Message Header specimen page](/components/message-header/specimen). The header
 is also used inside [Permalink Preview](/components/permalink-preview)
 and the message thread layouts.

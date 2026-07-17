@@ -1,4 +1,4 @@
-import AttachmentCard from '@/components/ui/AttachmentCard';
+import { AttachmentCard } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function AttachmentCardLibrary() {

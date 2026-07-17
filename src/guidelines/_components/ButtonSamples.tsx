@@ -1,14 +1,14 @@
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import Button from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
-import { Modal } from '@/components/ui/Modal';
+import { Button } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { Modal } from '@mattermost/compass-ui';
 import styles from './ButtonSamples.module.scss';
 
 export function ButtonAnatomy() {
   return (
-    <div className={styles['anatomy']}>
+    <div className={[styles['anatomy'], 'compass-doc-embed'].join(' ')}>
       <div className={styles['anatomy__chart']}>
         <Button
           size="Large"

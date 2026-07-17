@@ -1,0 +1,242 @@
+// ---------------------------------------------------------------------------
+// Block — Dropdown (Figma v2.1.3).
+// Inline trigger button composed with chevron. Multiple sizes. Light/dark variants.
+// ---------------------------------------------------------------------------
+.dropdown {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+  transition: background-color var(--duration-quick) var(--ease-transition);
+  padding: 0;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &:active:not(:disabled) {
+    background-color: rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--center-channel-bg),
+      0 0 0 5px var(--link-color);
+  }
+
+  &:disabled {
+    opacity: 0.56;
+    cursor: not-allowed;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Elements
+  // ---------------------------------------------------------------------------
+
+  // `button__label` is display: contents; label and chevron sit in `__trigger`
+  // so Button icon-slot `gap` does not sit between them (Figma label–chevron).
+  :global(.button__label) {
+    display: contents;
+  }
+
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__leadingIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: inherit;
+  }
+
+  &__label {
+    white-space: nowrap;
+    color: inherit;
+  }
+
+  &__chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: inherit;
+    transition: transform var(--duration-quick) var(--ease-transition);
+
+    svg {
+      display: block;
+      width: var(--icon-size-12);
+      height: var(--icon-size-12);
+    }
+
+    .dropdown--open & {
+      transform: rotate(180deg);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // (Figma sizes: X-Small=11px/tracking, Small=12px, Medium=14px, Large=16px, X-Large=28px)
+  // ---------------------------------------------------------------------------
+  &--size-x-small {
+    padding-left: var(--spacing-xxxs);
+    padding-right: var(--spacing-xxxxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__content {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__label {
+      font-size: var(--font-size-50);
+      line-height: var(--line-height-50);
+      letter-spacing: 0.01em;
+    }
+
+    .dropdown__leadingIcon svg {
+      width: var(--icon-size-12);
+      height: var(--icon-size-12);
+    }
+  }
+
+  &--size-small {
+    padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs)
+      var(--spacing-xxxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__content {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+
+    .dropdown__leadingIcon svg {
+      width: var(--icon-size-12);
+      height: var(--icon-size-12);
+    }
+  }
+
+  &--size-medium {
+    padding: var(--spacing-xxxxs) var(--spacing-xxxxs) var(--spacing-xxxxs)
+      var(--spacing-xxxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__content {
+      gap: var(--spacing-xs);
+    }
+
+    .dropdown__label {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+
+    .dropdown__chevron svg {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+
+    .dropdown__leadingIcon svg {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+  }
+
+  &--size-medium#{&}--padding-compact {
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+      var(--spacing-xs);
+  }
+
+  &--size-large {
+    padding: var(--spacing-xxxxs) var(--spacing-xxxs) var(--spacing-xxxxs)
+      var(--spacing-xxs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__content {
+      gap: var(--spacing-s);
+    }
+
+    .dropdown__label {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+
+    .dropdown__chevron svg {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+  }
+
+  &--size-x-large {
+    padding: 0 var(--spacing-xxs) 0 var(--spacing-xs);
+
+    .dropdown__trigger {
+      gap: var(--spacing-xxxs);
+    }
+
+    .dropdown__content {
+      gap: var(--spacing-s);
+    }
+
+    .dropdown__label {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-700);
+      line-height: var(--line-height-700);
+    }
+
+    .dropdown__chevron svg {
+      width: var(--icon-size-20);
+      height: var(--icon-size-20);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Appearance: Inverted (dark background)
+  // ---------------------------------------------------------------------------
+  &--appearance-inverted {
+    color: var(--sidebar-text);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.12);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.2);
+    }
+
+    &:focus-visible {
+      box-shadow:
+        0 0 0 3px var(--sidebar-bg),
+        0 0 0 5px var(--button-bg);
+    }
+  }
+}

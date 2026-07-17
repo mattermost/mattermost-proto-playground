@@ -1,0 +1,216 @@
+// ---------------------------------------------------------------------------
+// Block — label wrapper (flex: label(s) + switch)
+// ---------------------------------------------------------------------------
+.switch {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: var(--spacing-m);
+  font-family: var(--font-family-body);
+  color: var(--center-channel-color);
+  cursor: pointer;
+  user-select: none;
+
+  &:has(&__input:disabled) {
+    cursor: not-allowed;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &:has(&__input:disabled) &__secondary-label {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Native <input type="checkbox"> — visually hidden but in DOM for semantics,
+  // keyboard focus, and form submission. Fills track so click/focus hit area matches.
+  // ---------------------------------------------------------------------------
+  &__input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    cursor: inherit;
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Labels column
+  // ---------------------------------------------------------------------------
+  &__labels {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  &__label {
+    line-height: 1;
+  }
+
+  &__secondary-label {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    margin-top: var(--spacing-xxxxs);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Track + Knob container (switch control)
+  // ---------------------------------------------------------------------------
+  &__track {
+    position: relative;
+    flex-shrink: 0;
+    display: block;
+    box-sizing: border-box;
+    background-color: rgba(var(--center-channel-color-rgb), 0.32);
+    border-radius: var(--radius-full);
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:has(.switch__input:focus-visible) {
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
+    }
+
+    .switch:has(.switch__input:not(:disabled)):hover & {
+      background-color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+
+    &:has(.switch__input:checked) {
+      background-color: var(--button-bg);
+    }
+
+    .switch:has(.switch__input:not(:disabled)):hover
+      &:has(.switch__input:checked) {
+      background-color: var(--button-bg);
+    }
+
+    &:has(.switch__input:focus-visible:checked) {
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
+    }
+
+    &:has(.switch__input:disabled) {
+      opacity: 0.32;
+    }
+
+    &:has(.switch__input:disabled:checked) {
+      background-color: rgba(var(--color-neutral-900-rgb), 0.32);
+    }
+  }
+
+  // Knob (thumb) — white circle with elevation, slides on track via translateX (150ms)
+  &__knob {
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%) translateX(0);
+    border-radius: var(--radius-full);
+    background-color: var(--color-neutral-0);
+    box-shadow: var(--elevation-1);
+    transition: transform var(--duration-quick) var(--ease-transition);
+    pointer-events: none;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers — track dimensions, knob size, label typography
+  // Figma: Small 26×16 / 12px knob, Medium 32×20 / 16px knob, Large 40×24 / 20px knob
+  // ---------------------------------------------------------------------------
+  &--size-small {
+    .switch__track {
+      width: 26px;
+      height: 16px;
+    }
+
+    .switch__track:has(.switch__input:checked) .switch__knob {
+      transform: translateY(-50%) translateX(10px);
+    }
+
+    .switch__knob {
+      width: 12px;
+      height: 12px;
+    }
+
+    .switch__label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+
+    .switch__secondary-label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+
+  &--size-medium {
+    .switch__track {
+      width: 32px;
+      height: 20px;
+    }
+
+    .switch__track:has(.switch__input:checked) .switch__knob {
+      transform: translateY(-50%) translateX(12px); // 32 - 16 - 4
+    }
+
+    .switch__knob {
+      width: 16px;
+      height: 16px;
+    }
+
+    .switch__label {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+
+    .switch__secondary-label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+
+  &--size-large {
+    .switch__track {
+      width: 40px;
+      height: 24px;
+    }
+
+    .switch__track:has(.switch__input:checked) .switch__knob {
+      transform: translateY(-50%) translateX(16px); // 40 - 20 - 4
+    }
+
+    .switch__knob {
+      width: 20px;
+      height: 20px;
+    }
+
+    .switch__label {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+
+    .switch__secondary-label {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+  }
+
+  // Semi-bold primary label
+  &--semi-bold &__label {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // With secondary label — align switch to first line of primary label
+  &--with-secondary {
+    align-items: center;
+  }
+
+  &--with-secondary &__labels {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}

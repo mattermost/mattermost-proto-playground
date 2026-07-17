@@ -1,4 +1,4 @@
-import PopoverNotice from '@/components/ui/PopoverNotice/PopoverNotice';
+import { PopoverNotice, ShortcutTagGroup } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function PopoverNoticeLibrary() {
@@ -15,8 +15,8 @@ export default function PopoverNoticeLibrary() {
               { label: 'Dismiss', emphasis: 'tertiary' },
             ]}
           >
-            Press <kbd>Ctrl+K</kbd> to open the quick switcher and jump to any
-            channel.
+            Press <ShortcutTagGroup labels={['Ctrl', 'K']} /> to open the quick
+            switcher and jump to any channel.
           </PopoverNotice>
         </div>
         <div className={styles['components__button-row']}>
@@ -26,7 +26,8 @@ export default function PopoverNoticeLibrary() {
             variant="info"
             onClose={() => {}}
           >
-            The quick switcher is now opened with <kbd>Ctrl+K</kbd>.
+            The quick switcher is now opened with{' '}
+            <ShortcutTagGroup labels={['Ctrl', 'K']} />.
           </PopoverNotice>
         </div>
         <div className={styles['components__button-row']}>

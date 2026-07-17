@@ -1,0 +1,66 @@
+.empty-state {
+  width: 100%;
+  height: 100%;
+  background-color: var(--center-channel-bg);
+
+  // Centering lives inside the scroll viewport (SimpleBar's .simplebar-content)
+  // so short content sits visually centered while tall content scrolls.
+  :global(.simplebar-content) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+    padding-bottom: var(--spacing-xxl);
+    width: 100%;
+    padding-left: var(--spacing-xxl);
+    padding-right: var(--spacing-xxl);
+  }
+
+  &__illustration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: var(--spacing-s);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-400);
+    line-height: var(--line-height-400);
+    color: var(--center-channel-color);
+    text-align: center;
+  }
+
+  &__description {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    text-align: center;
+  }
+
+  &__action {
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+}

@@ -1,0 +1,63 @@
+import { AdminConsoleHeader } from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui';
+
+The Admin Console header is the stripe above scrolling System Console content.
+It anchors the active page title, optional edition signalling, navigation back into
+nested settings, and sparse trailing utilities.
+
+<Divider />
+
+## Anatomy
+
+Heading 500 title on centre channel ground, optionally paired with chips and back
+navigation on the leading edge.
+
+<AnatomyStage>
+  <AdminConsoleHeader
+    title="LDAP"
+    enterpriseBadge
+    showBack
+    trailing={
+      <Button emphasis="Tertiary" size="Medium">
+        Action
+      </Button>
+    }
+  />
+</AnatomyStage>
+
+- <Num>1</Num> **Stripe** — full-width bar with a subtle bottom divider from the scrolling
+  content.
+- <Num>2</Num> **Back** — optional control with vertical divider separation when the shell
+  is nested under another console route.
+- <Num>3</Num> **Title** — current page name; shorten if breadcrumbs elsewhere carry hierarchy.
+- <Num>4</Num> **Edition tag** — optional tier label beside the title when an admin-facing
+  plan signal is warranted.
+- <Num>5</Num> **Trailing** — optional actions or menus on the trailing edge,
+  used sparingly — one tertiary treatment is typical.
+
+<Divider />
+
+## Options
+
+| Option | Use when |
+| ------ | -------- |
+| Back | The admin arrived through a hierarchy and needs explicit return within the console. |
+| Enterprise tag | The page or workspace is visibly tied to a paid edition. |
+| Trailing controls | Lightweight page utilities (documentation, contextual action) belong here — not destructive or global-save actions. |
+
+<Divider />
+
+## Placement
+
+Sit the header above the scrolling System Console workspace. Combine it with
+[`Admin Panel`](/patterns/admin-panel) stacks and anchor sheet-level
+[`Save`](/components/admin-panel-footer) /
+[`Cancel`](/components/admin-panel-footer) with an [`Admin Panel Footer`](/components/admin-panel-footer)
+when the page is form-like.
+
+<Divider />
+
+## Implementation
+
+For props and examples, see the
+[Admin Console Header specimen page](/components/admin-console-header/specimen).

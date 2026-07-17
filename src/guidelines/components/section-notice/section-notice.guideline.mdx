@@ -1,4 +1,4 @@
-import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
+import { SectionNotice } from '@mattermost/compass-ui';
 
 A Section Notice is an in-context alert that lives inside a settings page,
 admin panel, or other content region. Use it to flag important information,
@@ -7,7 +7,7 @@ without yanking them out of the flow.
 
 Reach for a Section Notice when feedback is conclusive and tied to a specific
 area of the page. For transient confirmation, use a
-[Toast](/components/toast-banner). For overlay-style alerts, use a
+[Toast](/components/toast). For overlay-style alerts, use a
 [Popover Notice](/components/popover-notice).
 
 <Divider />
@@ -41,13 +41,12 @@ area of the page. For transient confirmation, use a
 
 ## Variants
 
-Five severities. Pick the one that matches the user's situation; don't pick
+Four severities. Pick the one that matches the user's situation; don't pick
 the one that matches your tone of voice.
 
 | Type    | Use when                                                                 |
 | ------- | ------------------------------------------------------------------------ |
 | Info    | Neutral context — a setting changed, a new feature is available.         |
-| Hint    | A soft suggestion that the user can take or leave.                       |
 | Success | An action just completed and the result is visible in this section.     |
 | Warning | Something needs attention soon, but nothing is broken yet.               |
 | Danger  | A blocking problem the user must resolve to continue.                    |
@@ -87,4 +86,4 @@ auto-dismiss a Warning or Danger notice.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Section Notice library page](/components/section-notice/specimen).
+[Section Notice specimen page](/components/section-notice/specimen).

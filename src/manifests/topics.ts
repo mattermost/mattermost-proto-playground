@@ -1,6 +1,10 @@
 import type { ComponentType } from 'react';
 
-export type TopicCategory = 'foundations' | 'components' | 'patterns' | 'layouts';
+export type TopicCategory =
+  | 'foundations'
+  | 'components'
+  | 'patterns'
+  | 'layouts';
 
 export type TopicStatus = 'stable' | 'beta' | 'deprecated';
 
@@ -145,7 +149,7 @@ export const TOPICS: Topic[] = [
     name: 'Iconography',
     category: 'foundations',
     status: 'stable',
-    description: 'When to use icons, sizing, and pairing with labels.',
+    description: 'When to use icons, styles, and pairing with labels.',
     visual: { kind: 'icon-grid' },
     guidelinePage: () => import('@/guidelines/foundations/iconography/iconography.guideline.mdx'),
     specimenPage: () => import('@/guidelines/foundations/iconography/iconography.specimen'),
@@ -209,6 +213,52 @@ export const TOPICS: Topic[] = [
     status: 'stable',
     guidelinePage: () => import('@/guidelines/components/action-button/action-button.guideline.mdx'),
     specimenPage: () => import('@/guidelines/components/action-button/action-button.specimen'),
+  },
+  {
+    slug: 'admin-console-header',
+    name: 'Admin Console Header',
+    category: 'components',
+    description:
+      'System Console page stripe: title, optional edition tag, optional back control.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/admin-console-header/admin-console-header.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/admin-console-header/admin-console-header.specimen'),
+  },
+  {
+    slug: 'admin-panel-header',
+    name: 'Admin Panel Header',
+    category: 'components',
+    description:
+      'System Console section rail: title, optional tags and subtitle, optional icon, trailing controls.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/admin-panel-header/admin-panel-header.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/admin-panel-header/admin-panel-header.specimen'),
+  },
+  {
+    slug: 'admin-panel-footer',
+    name: 'Admin Panel Footer',
+    category: 'components',
+    description:
+      'System Console content footer: Save and Cancel with optional validation summary.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/admin-panel-footer/admin-panel-footer.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/admin-panel-footer/admin-panel-footer.specimen'),
+  },
+  {
+    slug: 'feature-discovery-panel',
+    name: 'Feature Discovery Panel',
+    category: 'components',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.specimen'),
   },
   {
     slug: 'app-bar-item',
@@ -277,6 +327,16 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/chip/chip.specimen'),
   },
   {
+    slug: 'combobox',
+    name: 'Combobox',
+    category: 'components',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/components/combobox/combobox.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/combobox/combobox.specimen'),
+  },
+  {
     slug: 'date-range-picker',
     name: 'Date & Range Picker',
     category: 'components',
@@ -325,14 +385,6 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/error-message/error-message.specimen'),
   },
   {
-    slug: 'feature-discovery-panel',
-    name: 'Feature Discovery Panel',
-    category: 'components',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/feature-discovery-panel/feature-discovery-panel.specimen'),
-  },
-  {
     slug: 'global-banner',
     name: 'Global Banner',
     category: 'components',
@@ -373,12 +425,12 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/image-preview/image-preview.specimen'),
   },
   {
-    slug: 'label-tag',
-    name: 'Label Tag',
+    slug: 'tag',
+    name: 'Tag',
     category: 'components',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/label-tag/label-tag.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/label-tag/label-tag.specimen'),
+    guidelinePage: () => import('@/guidelines/components/tag/tag.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/components/tag/tag.specimen'),
   },
   {
     slug: 'link-preview',
@@ -581,14 +633,6 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/tabs/tabs.specimen'),
   },
   {
-    slug: 'tags',
-    name: 'Tags',
-    category: 'components',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/tags/tags.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/tags/tags.specimen'),
-  },
-  {
     slug: 'team-avatar',
     name: 'Team Avatar',
     category: 'components',
@@ -629,12 +673,12 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/thread-list-item/thread-list-item.specimen'),
   },
   {
-    slug: 'toast-banner',
-    name: 'Toast Banner',
+    slug: 'toast',
+    name: 'Toast',
     category: 'components',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/components/toast-banner/toast-banner.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/components/toast-banner/toast-banner.specimen'),
+    guidelinePage: () => import('@/guidelines/components/toast/toast.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/components/toast/toast.specimen'),
   },
   {
     slug: 'tooltip',
@@ -670,8 +714,92 @@ export const TOPICS: Topic[] = [
   },
 
   // ===========================================================================
-  // Patterns
+  // Patterns (sidebar order: alphabetical by display name)
   // ===========================================================================
+  {
+    slug: 'admin-panel',
+    name: 'Admin Panel',
+    category: 'patterns',
+    description:
+      'Bordered settings sheet: panel header and body for grouped System Console fields.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/admin-panel/admin-panel.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/admin-panel/admin-panel.specimen'),
+  },
+  {
+    slug: 'admin-console-sidebar',
+    name: 'Admin Console Sidebar',
+    category: 'patterns',
+    description:
+      'System Console navigation: identity, find settings, grouped admin pages on a dark sidebar.',
+    status: 'stable',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/admin-console-sidebar/admin-console-sidebar.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/admin-console-sidebar/admin-console-sidebar.specimen'),
+  },
+  {
+    slug: 'call-widget',
+    name: 'Call Widget',
+    category: 'patterns',
+    description:
+      'Floating active-call controls: speaker, timer, participants, mute, share, menu, and leave.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/call-widget/call-widget.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/call-widget/call-widget.specimen'),
+  },
+  {
+    slug: 'channel-header',
+    name: 'Channel Header',
+    category: 'patterns',
+    description:
+      'The header above the main channel content area displaying channel identity, membership and actions',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/channel-header/channel-header.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/channel-header/channel-header.specimen'),
+  },
+  {
+    slug: 'channel-sidebar',
+    name: 'Channel Sidebar',
+    category: 'patterns',
+    description:
+      'Primary navigation for the active team: channels and direct messages grouped in categories.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.specimen'),
+  },
+  {
+    slug: 'global-header',
+    name: 'Global Header',
+    category: 'patterns',
+    description:
+      'Full-width top bar for product switching, navigation history, search, and session controls.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/global-header/global-header.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/global-header/global-header.specimen'),
+  },
+  {
+    slug: 'message',
+    name: 'Message',
+    category: 'patterns',
+    description:
+      'User, bot, and integration messages with formatted text, link previews, images, and file attachments.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/message/message.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/message/message.specimen'),
+  },
+  {
+    slug: 'message-input',
+    name: 'Message Input',
+    category: 'patterns',
+    description:
+      'Composer for drafting messages: text area, formatting bar, attachments, emoji, and send.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/message-input/message-input.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/message-input/message-input.specimen'),
+  },
   {
     slug: 'modal',
     name: 'Modal',
@@ -695,76 +823,6 @@ export const TOPICS: Topic[] = [
       import('@/guidelines/patterns/popover-menu/popover-menu.specimen'),
   },
   {
-    slug: 'global-header',
-    name: 'Global Header',
-    category: 'patterns',
-    description:
-      'Full-width top bar for product switching, navigation history, search, and session controls.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/global-header/global-header.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/global-header/global-header.specimen'),
-  },
-  {
-    slug: 'channel-header',
-    name: 'Channel Header',
-    category: 'patterns',
-    description:
-      'The header above the main channel content area displaying channel identity, membership and actions',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/channel-header/channel-header.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/channel-header/channel-header.specimen'),
-  },
-  {
-    slug: 'message',
-    name: 'Message',
-    category: 'patterns',
-    description:
-      'User, bot, and integration messages with formatted text, link previews, images, and file attachments.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/message/message.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/message/message.specimen'),
-  },
-  {
-    slug: 'team-sidebar',
-    name: 'Team Sidebar',
-    category: 'patterns',
-    description:
-      'Leftmost strip for switching teams when a server has more than one team.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.specimen'),
-  },
-  {
-    slug: 'channel-sidebar',
-    name: 'Channel Sidebar',
-    category: 'patterns',
-    description:
-      'Primary navigation for the active team: channels and direct messages grouped in categories.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/channel-sidebar/channel-sidebar.specimen'),
-  },
-  {
-    slug: 'message-input',
-    name: 'Message Input',
-    category: 'patterns',
-    description:
-      'Composer for drafting messages: text area, formatting bar, attachments, emoji, and send.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/message-input/message-input.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/message-input/message-input.specimen'),
-  },
-  {
-    slug: 'call-widget',
-    name: 'Call Widget',
-    category: 'patterns',
-    description:
-      'Floating active-call controls: speaker, timer, participants, mute, share, menu, and leave.',
-    status: 'stable',
-    guidelinePage: () => import('@/guidelines/patterns/call-widget/call-widget.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/patterns/call-widget/call-widget.specimen'),
-  },
-  {
     slug: 'profile-popover',
     name: 'Profile Popover',
     category: 'patterns',
@@ -784,17 +842,126 @@ export const TOPICS: Topic[] = [
     guidelinePage: () => import('@/guidelines/patterns/right-sidebar/right-sidebar.guideline.mdx'),
     specimenPage: () => import('@/guidelines/patterns/right-sidebar/right-sidebar.specimen'),
   },
+  {
+    slug: 'team-sidebar',
+    name: 'Team Sidebar',
+    category: 'patterns',
+    description:
+      'Leftmost strip for switching teams when a server has more than one team.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/team-sidebar/team-sidebar.specimen'),
+  },
+  {
+    slug: 'tour-point',
+    name: 'Tour Point',
+    category: 'patterns',
+    description:
+      'Instructional callout with directional pointer, optional media, and tour navigation for guided onboarding.',
+    status: 'stable',
+    guidelinePage: () => import('@/guidelines/patterns/tour-point/tour-point.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/patterns/tour-point/tour-point.specimen'),
+  },
 
   // ===========================================================================
   // Layouts
   // ===========================================================================
   {
-    slug: 'messaging',
-    name: 'Messaging',
+    slug: 'channel',
+    name: 'Channel',
     category: 'layouts',
     status: 'stable',
-    guidelinePage: () => import('@/guidelines/layouts/messaging/messaging.guideline.mdx'),
-    specimenPage: () => import('@/guidelines/layouts/messaging/messaging.specimen'),
+    guidelinePage: () => import('@/guidelines/layouts/channel/channel.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/layouts/channel/channel.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'channel-thread',
+    name: 'Channel (thread)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full channel shell with the right sidebar showing an open thread and reply composer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/channel-thread/channel-thread.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/channel-thread/channel-thread.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'channel-info',
+    name: 'Channel (channel info)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Full channel shell with the right sidebar showing open channel info.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/channel-info/channel-info.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/channel-info/channel-info.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'modal',
+    name: 'Modal',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channel shell with a modal above a 50% black backdrop over the channel.',
+    guidelinePage: () => import('@/guidelines/layouts/modal/modal.guideline.mdx'),
+    specimenPage: () => import('@/guidelines/layouts/modal/modal.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'threads-view',
+    name: 'Threads View',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channels shell with the thread inbox, a scrollable list of threads, and the thread right sidebar open.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/threads-view/threads-view.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'call-widget',
+    name: 'Call (widget)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Channel shell with an active call shown as the in-channel floating widget.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/call-widget/call-widget.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/call-widget/call-widget.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'call-popout',
+    name: 'Call (popout)',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'Windowed call popout only; specimen wrapper has no visible frame (no channel shell).',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/call-popout/call-popout.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/call-popout/call-popout.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'admin-console',
+    name: 'Admin Console',
+    category: 'layouts',
+    status: 'stable',
+    description:
+      'System Console shell with sidebar navigation, page header, settings panels, and save footer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/admin-console/admin-console.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/admin-console/admin-console.specimen'),
     fullBleedSpecimen: true,
   },
 ];

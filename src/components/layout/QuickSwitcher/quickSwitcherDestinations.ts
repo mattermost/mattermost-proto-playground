@@ -1,11 +1,13 @@
 import { TOPICS, type Topic, type TopicCategory } from '@/manifests/topics';
-import { PROTOTYPES } from '@/router/prototypes';
+import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
+import { PROTOTYPES } from '@/manifests/prototypes';
 
 export interface QuickSwitcherDestination {
   id: string;
   path: string;
   title: string;
-  subtitle: string;
+  /** Parent → child trail shown under the title (no URL path). */
+  breadcrumb: string[];
   /** Lowercase string used for matching */
   searchText: string;
   /** Smaller sort key surfaces first when the search box is empty */
@@ -31,12 +33,12 @@ function topicSortOrder(category: TopicCategory) {
 }
 
 function topicToDestination(t: Topic): QuickSwitcherDestination {
-  const subtitle = CATEGORY_LABEL[t.category];
+  const categoryLabel = CATEGORY_LABEL[t.category];
   const path = `/${t.category}/${t.slug}`;
   const searchText = [
     t.name,
     t.slug,
-    subtitle,
+    categoryLabel,
     t.description ?? '',
     path,
   ]
@@ -47,10 +49,10 @@ function topicToDestination(t: Topic): QuickSwitcherDestination {
     id: `topic:${t.category}:${t.slug}`,
     path,
     title: t.name,
-    subtitle,
+    breadcrumb: [categoryLabel, t.name],
     searchText,
     sortKey: 300 + topicSortOrder(t.category),
- };
+  };
 }
 
 export function buildQuickSwitcherDestinations(): QuickSwitcherDestination[] {
@@ -58,47 +60,35 @@ export function buildQuickSwitcherDestinations(): QuickSwitcherDestination[] {
     {
       id: 'home',
       path: '/',
-      title: 'Compass home',
-      subtitle: 'Home',
-      searchText: 'compass home /'.toLowerCase(),
+      title: 'Home',
+      breadcrumb: ['Home'],
+      searchText: 'home /'.toLowerCase(),
       sortKey: 0,
     },
-    ...(
-      [
-        ['foundations', '/foundations'],
-        ['components', '/components'],
-        ['patterns', '/patterns'],
-        ['layouts', '/layouts'],
-      ] as const
-    ).map(([slug, path]) => ({
-      id: `category:${slug}`,
-      path,
-      title: `${CATEGORY_LABEL[slug]} — category`,
-      subtitle: 'Category',
-      searchText: `${CATEGORY_LABEL[slug]} category ${path}`.toLowerCase(),
-      sortKey: 10,
-    })),
+    ...CATEGORY_ORDER.map((slug) => {
+      const path = categoryFirstTopicPath(slug);
+      return {
+        id: `category:${slug}`,
+        path,
+        title: CATEGORY_LABEL[slug],
+        breadcrumb: [CATEGORY_LABEL[slug]],
+        searchText: `${CATEGORY_LABEL[slug]} category ${slug} ${path}`.toLowerCase(),
+        sortKey: 10,
+      };
+    }),
     {
       id: 'prototypes',
       path: '/prototypes',
       title: 'Prototypes',
-      subtitle: 'Index',
+      breadcrumb: ['Prototypes'],
       searchText: 'prototypes index /prototypes'.toLowerCase(),
-      sortKey: 20,
-    },
-    {
-      id: 'resources',
-      path: '/resources',
-      title: 'Resources',
-      subtitle: 'Index',
-      searchText: 'resources index /resources'.toLowerCase(),
       sortKey: 20,
     },
     ...PROTOTYPES.map((p) => ({
       id: `prototype:${p.id}`,
       path: p.path,
       title: p.label,
-      subtitle: 'Prototype',
+      breadcrumb: ['Prototypes', p.label],
       searchText: `${p.label} prototype ${p.path}`.toLowerCase(),
       sortKey: 30,
     })),

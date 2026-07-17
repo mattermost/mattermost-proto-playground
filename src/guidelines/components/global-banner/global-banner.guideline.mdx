@@ -1,5 +1,5 @@
-import GlobalBanner from '@/components/ui/GlobalBanner/GlobalBanner';
-import Icon from '@/components/ui/Icon/Icon';
+import { GlobalBanner } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
 import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline';
 
 Global Banners sit at the very top of the application and broadcast
@@ -32,10 +32,12 @@ action controls anchored to the right edge.
   glance.
 - <Num>3</Num> **Message** — the headline. One short sentence, semibold,
   centred. Don't wrap it onto two lines — shorten the copy instead.
-- <Num>4</Num> **Action button** — optional. An inverted Tertiary X-Small
-  button for the next step (_Renew_, _Update now_, _Learn more_).
-- <Num>5</Num> **Dismiss** — optional Inverted Icon Button anchored to the
-  right edge. Omit for banners the user can't act on.
+- <Num>4</Num> **Action button** — optional. A Tertiary X-Small button for the
+  next step (_Renew_, _Update now_, _Learn more_), tinted for light ink on the
+  banner surface.
+- <Num>5</Num> **Dismiss** — optional Icon Button anchored to the right edge,
+  using the same light-on-banner treatment. Omit for banners the user can't
+  act on.
 
 <Divider />
 
@@ -114,4 +116,4 @@ target.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Global Banner library page](/components/global-banner/specimen).
+[Global Banner specimen page](/components/global-banner/specimen).

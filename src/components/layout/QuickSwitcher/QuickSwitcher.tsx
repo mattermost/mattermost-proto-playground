@@ -1,4 +1,5 @@
 import {
+  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -6,17 +7,27 @@ import {
   useRef,
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
-  type TransitionEvent,
+  type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
-import Icon from '@/components/ui/Icon/Icon';
+import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import {
+  Icon,
+  MenuItem,
+  Scrollbar,
+  SearchInput,
+  ShortcutTagGroup,
+} from '@mattermost/compass-ui';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import {
   buildQuickSwitcherDestinations,
   type QuickSwitcherDestination,
 } from './quickSwitcherDestinations';
 import styles from './QuickSwitcher.module.scss';
+
+/** Matches `--duration-quick` (150ms) for enter/exit panel animation. */
+const EXIT_MS = 150;
 
 export interface QuickSwitcherProps {
   open: boolean;
@@ -46,16 +57,33 @@ function filterDestinations(
     .sort((a, b) => a.title.localeCompare(b.title));
 }
 
+function BreadcrumbSecondary({ crumbs }: { crumbs: string[] }): ReactNode {
+  if (crumbs.length === 0) return null;
+
+  return (
+    <span className={styles['quick-switcher__breadcrumb']}>
+      {crumbs.map((crumb, index) => (
+        <Fragment key={`${crumb}-${index}`}>
+          {index > 0 && (
+            <span className={styles['quick-switcher__breadcrumb-sep']} aria-hidden>
+              <Icon size="12" glyph={<ChevronRightIcon />} />
+            </span>
+          )}
+          <span className={styles['quick-switcher__breadcrumb-crumb']}>{crumb}</span>
+        </Fragment>
+      ))}
+    </span>
+  );
+}
+
 export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps) {
   const navigate = useNavigate();
   const isMac = useIsMac();
-  const [mounted, setMounted] = useState(false);
+  const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
   const [animateIn, setAnimateIn] = useState(false);
-  const [exiting, setExiting] = useState(false);
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   const destinations = useMemo(() => buildQuickSwitcherDestinations(), []);
@@ -64,41 +92,25 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
     [destinations, query],
   );
 
-  const requestClose = useCallback(() => {
-    setExiting(true);
-  }, []);
-
-  const finishClose = useCallback(() => {
-    setMounted(false);
-    setExiting(false);
-    setAnimateIn(false);
-    setQuery('');
-    setActiveIndex(0);
-    onOpenChange(false);
-  }, [onOpenChange]);
-
   useLayoutEffect(() => {
     if (open) {
-      setMounted(true);
-      setExiting(false);
       setQuery('');
       setActiveIndex(0);
-    } else if (mounted && !exiting) {
-      requestClose();
+      setAnimateIn(false);
     }
-  }, [open, exiting, mounted, requestClose]);
+  }, [open]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!rendered || exiting) return;
     const id = requestAnimationFrame(() => setAnimateIn(true));
     return () => cancelAnimationFrame(id);
-  }, [mounted]);
+  }, [rendered, exiting]);
 
   useEffect(() => {
-    if (mounted && animateIn && !exiting) {
+    if (rendered && animateIn && !exiting) {
       inputRef.current?.focus();
     }
-  }, [mounted, animateIn, exiting]);
+  }, [rendered, animateIn, exiting]);
 
   useEffect(() => {
     setActiveIndex((i) => (filtered.length === 0 ? 0 : Math.min(i, filtered.length - 1)));
@@ -109,46 +121,37 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
       const isModK = e.key === 'k' && (e.metaKey || e.ctrlKey);
       if (isModK) {
         e.preventDefault();
-        if (open) {
-          onOpenChange(false);
-        } else {
-          onOpenChange(true);
-        }
+        onOpenChange(!open);
         return;
       }
 
-      if (!open || !mounted) return;
+      if (!open || !rendered) return;
 
       if (e.key === 'Escape') {
         e.preventDefault();
         onOpenChange(false);
-        return;
       }
     }
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [open, mounted, onOpenChange]);
+  }, [open, rendered, onOpenChange]);
 
   useEffect(() => {
-    if (!open && !mounted) return undefined;
+    if (!rendered) return undefined;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open, mounted]);
+  }, [rendered]);
 
-  function handlePanelTransitionEnd(e: TransitionEvent<HTMLDivElement>) {
-    if (e.propertyName !== 'opacity') return;
-    if (exiting) {
-      finishClose();
-    }
-  }
-
-  function goTo(dest: QuickSwitcherDestination) {
-    navigate(dest.path);
-    onOpenChange(false);
-  }
+  const goTo = useCallback(
+    (dest: QuickSwitcherDestination) => {
+      navigate(dest.path);
+      onOpenChange(false);
+    },
+    [navigate, onOpenChange],
+  );
 
   function onListKeyDown(e: ReactKeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown') {
@@ -177,98 +180,108 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
     el?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex, filtered]);
 
-  if (!mounted) return null;
+  if (!rendered) return null;
 
-  const shortcutHint = isMac ? '⌘K' : 'Ctrl K';
+  const shortcutLabels = isMac ? ['⌘', 'K'] : ['Ctrl', 'K'];
+  const dialogVisible = animateIn && !exiting;
 
   return createPortal(
-    <div className={styles['quick-switcher']} role="presentation">
+    <div
+      className={[
+        styles['quick-switcher'],
+        dialogVisible ? styles['quick-switcher--visible'] : '',
+        exiting ? styles['quick-switcher--exiting'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      role="presentation"
+    >
       <button
         type="button"
         className={styles['quick-switcher__backdrop']}
         aria-label="Close quick switcher"
         onClick={() => onOpenChange(false)}
       />
-      <div
-        ref={panelRef}
-        className={[
-          styles['quick-switcher__panel'],
-          !exiting && animateIn ? styles['quick-switcher__panel--visible'] : '',
-          exiting ? styles['quick-switcher__panel--exiting'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Quick switcher"
-        onTransitionEnd={handlePanelTransitionEnd}
-      >
-        <div className={styles['quick-switcher__search']}>
-          <span className={styles['quick-switcher__search-icon']} aria-hidden>
-            <Icon size="20" glyph={<MagnifyIcon />} />
-          </span>
-          <input
-            ref={inputRef}
-            type="search"
-            className={styles['quick-switcher__input']}
-            placeholder="Go to page…"
-            aria-autocomplete="list"
-            aria-controls="quick-switcher-listbox"
-            aria-activedescendant={
-              filtered.length > 0 ? `quick-switcher-opt-${activeIndex}` : undefined
-            }
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setActiveIndex(0);
-            }}
-            onKeyDown={onListKeyDown}
-          />
-          <span className={styles['quick-switcher__hint']} aria-hidden>
-            {shortcutHint}
-          </span>
-        </div>
-        {filtered.length === 0 ? (
-          <p className={styles['quick-switcher__empty']}>No matching pages</p>
-        ) : (
-          <ul
-            ref={listRef}
-            id="quick-switcher-listbox"
-            className={styles['quick-switcher__list']}
-            role="listbox"
-            aria-label="Pages"
-          >
-            {filtered.map((dest, idx) => (
-              <li key={dest.id} role="presentation">
-                <button
-                  type="button"
-                  id={`quick-switcher-opt-${idx}`}
-                  data-idx={idx}
-                  role="option"
-                  aria-selected={idx === activeIndex}
-                  className={[
-                    styles['quick-switcher__item'],
-                    idx === activeIndex ? styles['quick-switcher__item--active'] : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  onClick={() => goTo(dest)}
-                  onMouseEnter={() => setActiveIndex(idx)}
+      <div className={styles['quick-switcher__dialog']}>
+        <div
+          className={styles['quick-switcher__panel']}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Go to page"
+        >
+          <div className={styles['quick-switcher__header']}>
+            <div className={styles['quick-switcher__search']}>
+              <SearchInput
+                ref={inputRef}
+                className={styles['quick-switcher__search-input']}
+                size="Large"
+                placeholder="Go to page…"
+                aria-autocomplete="list"
+                aria-controls="quick-switcher-listbox"
+                aria-activedescendant={
+                  filtered.length > 0
+                    ? `quick-switcher-opt-${activeIndex}`
+                    : undefined
+                }
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                value={query}
+                onClear={() => {
+                  setQuery('');
+                  setActiveIndex(0);
+                }}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setActiveIndex(0);
+                }}
+                onKeyDown={onListKeyDown}
+              />
+              <ShortcutTagGroup
+                className={styles['quick-switcher__shortcut']}
+                labels={shortcutLabels}
+                size="Small"
+              />
+            </div>
+          </div>
+
+          <div className={styles['quick-switcher__body']}>
+            {filtered.length === 0 ? (
+              <p className={styles['quick-switcher__empty']}>No matching pages</p>
+            ) : (
+              <Scrollbar className={styles['quick-switcher__scroll']}>
+                <ul
+                  ref={listRef}
+                  id="quick-switcher-listbox"
+                  className={styles['quick-switcher__list']}
+                  role="listbox"
+                  aria-label="Pages"
                 >
-                  <span className={styles['quick-switcher__item-title']}>
-                    {dest.title}
-                  </span>
-                  <span className={styles['quick-switcher__item-subtitle']}>
-                    {dest.subtitle} · {dest.path}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+                  {filtered.map((dest, idx) => (
+                    <li key={dest.id} role="presentation">
+                      <MenuItem
+                        id={`quick-switcher-opt-${idx}`}
+                        data-idx={idx}
+                        role="option"
+                        aria-selected={idx === activeIndex}
+                        label={dest.title}
+                        secondaryLabel={
+                          dest.breadcrumb.length > 1 ? (
+                            <BreadcrumbSecondary crumbs={dest.breadcrumb} />
+                          ) : undefined
+                        }
+                        leadingElement={false}
+                        active={idx === activeIndex}
+                        onClick={() => goTo(dest)}
+                        onMouseEnter={() => setActiveIndex(idx)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </Scrollbar>
+            )}
+          </div>
+        </div>
       </div>
     </div>,
     document.body,

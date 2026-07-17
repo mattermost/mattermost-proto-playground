@@ -1,0 +1,231 @@
+@keyframes checkbox-icon-enter {
+  from {
+    transform: scale(0.5);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Block — label wrapper
+// ---------------------------------------------------------------------------
+.checkbox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--spacing-s);
+  font-family: var(--font-family-body);
+  color: var(--center-channel-color);
+  cursor: pointer;
+  user-select: none;
+
+  &:has(&__input:disabled) {
+    cursor: not-allowed;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Native input — visually hidden, remains focusable
+  // ---------------------------------------------------------------------------
+  &__input {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    cursor: inherit;
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Visible box (custom checkbox appearance)
+  // ---------------------------------------------------------------------------
+  &__box {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background-color: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    .checkbox__input:focus-visible ~ & {
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
+    }
+
+    .checkbox:has(.checkbox__input:not(:disabled)):hover & {
+      border-color: rgba(var(--center-channel-color-rgb), 0.32);
+    }
+
+    .checkbox__input:disabled ~ & {
+      background-color: var(--center-channel-bg);
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+  }
+
+  // Checked / indeterminate fill (valid)
+  &__input:checked ~ &__box,
+  &--indeterminate &__box {
+    background-color: var(--button-bg);
+    border-color: var(--button-bg);
+
+    .checkbox__icon {
+      color: var(--color-neutral-0);
+    }
+  }
+
+  &:has(&__input:not(:disabled)):hover &__input:checked ~ &__box,
+  &:has(&__input:not(:disabled)):hover#{&}--indeterminate &__box {
+    background-color: var(--button-bg);
+    border-color: var(--button-bg);
+  }
+
+  &__input:focus-visible:checked ~ &__box,
+  &--indeterminate &__input:focus-visible ~ &__box {
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
+  }
+
+  &__input:disabled:checked ~ &__box,
+  &--indeterminate &__input:disabled ~ &__box {
+    background-color: rgba(var(--color-neutral-900-rgb), 0.32);
+    border-color: transparent;
+
+    .checkbox__icon {
+      color: var(--color-neutral-0);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Invalid (error) state
+  // ---------------------------------------------------------------------------
+  &--invalid &__box {
+    border-color: rgba(var(--color-danger-rgb), 0.5);
+  }
+
+  &--invalid &__input:checked ~ &__box,
+  #{&}--invalid#{&}--indeterminate &__box {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+
+    .checkbox__icon {
+      color: var(--color-neutral-0);
+    }
+  }
+
+  &:has(&__input:not(:disabled)):hover#{&}--invalid &__input:checked ~ &__box,
+  &:has(&__input:not(:disabled)):hover#{&}--invalid#{&}--indeterminate &__box {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+  }
+
+  &--invalid &__input:focus-visible ~ &__box {
+    box-shadow: 0 0 0 2px var(--color-danger);
+  }
+
+  &--invalid &__input:focus-visible:checked ~ &__box,
+  #{&}--invalid#{&}--indeterminate &__input:focus-visible ~ &__box {
+    border-color: rgba(var(--color-neutral-0-rgb), 0.24);
+    box-shadow: 0 0 0 2px var(--color-danger);
+  }
+
+  // Hover invalid unchecked — red border emphasis
+  &:has(&__input:not(:disabled)):hover#{&}--invalid
+    &__input:not(:checked)
+    ~ &__box {
+    border-color: var(--color-danger);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon (check / minus) — scale animation on mount
+  // ---------------------------------------------------------------------------
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-neutral-0);
+    pointer-events: none;
+    transform-origin: center;
+    animation: checkbox-icon-enter var(--duration-quick) var(--ease-entrance)
+      forwards;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label text
+  // ---------------------------------------------------------------------------
+  &__label {
+    line-height: 1;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers — box dimensions, radius, label font
+  // ---------------------------------------------------------------------------
+  &--size-small {
+    .checkbox__input {
+      width: var(--icon-size-12);
+      height: var(--icon-size-12);
+    }
+
+    .checkbox__box {
+      width: var(--icon-size-12);
+      height: var(--icon-size-12);
+      border-radius: var(--radius-xs);
+    }
+
+    .checkbox__label {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+
+  &--size-medium {
+    .checkbox__input {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+    }
+
+    .checkbox__box {
+      width: var(--icon-size-16);
+      height: var(--icon-size-16);
+      border-radius: var(--radius-xs);
+    }
+
+    .checkbox__label {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+  }
+
+  &--size-large {
+    .checkbox__input {
+      width: var(--icon-size-20);
+      height: var(--icon-size-20);
+    }
+
+    .checkbox__box {
+      width: var(--icon-size-20);
+      height: var(--icon-size-20);
+      border-radius: var(--radius-s);
+    }
+
+    .checkbox__label {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+  }
+}

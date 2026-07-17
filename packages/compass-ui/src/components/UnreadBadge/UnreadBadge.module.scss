@@ -1,0 +1,35 @@
+// ---------------------------------------------------------------------------
+// Block — Unread dot indicator (Figma Unread Badge v2.0.0)
+// ---------------------------------------------------------------------------
+.unread-badge {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // ---------------------------------------------------------------------------
+  &--size-6 {
+    width: 6px;
+    height: 6px;
+  }
+
+  &--size-8 {
+    width: 8px;
+    height: 8px;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Context modifiers — affect colour
+  // ---------------------------------------------------------------------------
+
+  // Team Icon context: matches MentionBadge fill in sidebar
+  &--context-team-icon {
+    background-color: var(--mention-bg);
+  }
+
+  // Icon Button context: uses the link/button colour
+  &--context-icon-button {
+    background-color: var(--button-bg);
+  }
+}

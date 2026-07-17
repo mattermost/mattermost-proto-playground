@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import Button from '@/components/ui/Button/Button';
+import { Button } from '@mattermost/compass-ui';
 import type {
   ButtonAppearance,
   ButtonEmphasis,
   ButtonSize,
-} from '@/components/ui/Button/Button';
-import Icon from '@/components/ui/Icon/Icon';
+} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 const EMPHASES: ButtonEmphasis[] = [
@@ -107,7 +107,7 @@ export default function ButtonLibrary() {
 
       <div className={styles['components__section']}>
         <h3 className={styles['components__section-title']}>
-          Default — enabled
+          Default
         </h3>
         <ButtonPermutationGrid
           appearance="Default"
@@ -118,7 +118,7 @@ export default function ButtonLibrary() {
 
       <div className={styles['components__section']}>
         <h3 className={styles['components__section-title']}>
-          Default — destructive
+          Destructive
         </h3>
         <ButtonPermutationGrid
           appearance="Default"
@@ -129,7 +129,7 @@ export default function ButtonLibrary() {
 
       <div className={styles['components__section']}>
         <h3 className={styles['components__section-title']}>
-          Default — disabled
+          Disabled
         </h3>
         <ButtonPermutationGrid
           appearance="Default"
@@ -141,7 +141,7 @@ export default function ButtonLibrary() {
       <div className={styles['components__button-surface--inverted']}>
         <div className={styles['components__section']}>
           <h3 className={styles['components__section-title']}>
-            Inverted — enabled
+            Inverted
           </h3>
           <ButtonPermutationGrid
             appearance="Inverted"
@@ -152,7 +152,7 @@ export default function ButtonLibrary() {
 
         <div className={styles['components__section']}>
           <h3 className={styles['components__section-title']}>
-            Inverted — destructive
+            Inverted Destructive
           </h3>
           <ButtonPermutationGrid
             appearance="Inverted"
@@ -163,7 +163,7 @@ export default function ButtonLibrary() {
 
         <div className={styles['components__section']}>
           <h3 className={styles['components__section-title']}>
-            Inverted — disabled
+            Inverted Disabled
           </h3>
           <ButtonPermutationGrid
             appearance="Inverted"

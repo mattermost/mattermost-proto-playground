@@ -19,8 +19,8 @@ UI icons should:
 
 <IconShowcase />
 
-The full library — including search, names, import paths, and the package
-overview — lives on the [Icon library page](/components/icon/specimen).
+The full set, with every glyph and its token name, is on this topic's
+[Specimen tab](/foundations/iconography/specimen).
 
 <Divider />
 
@@ -32,20 +32,6 @@ used sparingly — primarily for active states (e.g. a bookmarked item, a
 favourited channel) where the toggled-on form needs visual weight.
 
 <IconStyleCompare />
-
-<Divider />
-
-## Sizes
-
-Icons are sized by their **container**, not by the SVG's intrinsic dimensions.
-This keeps optical alignment consistent across the UI: a 24-container icon next
-to a 24-container icon will visually balance, even if the underlying glyphs have
-different bounding boxes.
-
-<IconSizeRamp />
-
-Always pick a container size that matches the surrounding type and target area —
-inline with body 100, 16 or 20 reads best; for primary nav targets, 20–24.
 
 <Divider />
 
@@ -96,7 +82,6 @@ draft from scratch when it doesn't.
 
 ## Tokens and implementation
 
-Icon container sizes are exposed as CSS custom properties, and the React
-`Icon` component handles container/SVG sizing automatically. For the Compass
-Icons package overview, the full size scale, the complete glyph library, and
-copy-ready code samples, see the [Icon library page](/components/icon/specimen).
+For every glyph, token name, and icon naming detail, go to the
+[Specimen tab](/foundations/iconography/specimen). For the Icon component specs including the full size variants, see the
+[Icon component](/components/icon).

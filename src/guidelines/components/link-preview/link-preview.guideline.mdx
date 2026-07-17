@@ -1,4 +1,4 @@
-import LinkPreview from '@/components/ui/LinkPreview/LinkPreview';
+import { LinkPreview } from '@mattermost/compass-ui';
 
 Link Previews appear under a message whenever it contains a URL with rich
 metadata — a documentation page, a blog post, a product link. They give
@@ -13,7 +13,7 @@ An Elevation 1 card stacking three text rows: site name, title, and
 description.
 
 <AnatomyStage>
-  <LinkPreview />
+  <LinkPreview onDismiss={() => {}} />
 </AnatomyStage>
 
 - <Num>1</Num> **Container** — bordered card at Elevation 1. Anchored to
@@ -57,4 +57,4 @@ description.
 ## Implementation
 
 For props, variants, and copy-ready examples, see the
-[Link Preview library page](/components/link-preview/specimen).
+[Link Preview specimen page](/components/link-preview/specimen).
