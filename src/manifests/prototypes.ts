@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import ClassificationMarkingsConfig from '@/pages/prototypes/classification-markings-config/ClassificationMarkingsConfig';
 import ExampleFlow from '@/pages/prototypes/example-flow/ExampleFlow';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -28,6 +29,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'classification-markings-config',
+    label: 'Classification Markings',
+    path: '/prototypes/classification-markings-config',
+    component: ClassificationMarkingsConfig,
   },
 ];
 
