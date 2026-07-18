@@ -135,11 +135,7 @@
   }
 
   &__popup {
-    position: absolute;
-    top: calc(100% + var(--spacing-xxs));
-    left: 0;
-    right: 0;
-    z-index: 10;
+    z-index: 1100;
     opacity: 0;
     transform: scale(0.9);
     transform-origin: top center;
@@ -155,6 +151,15 @@
       transition:
         opacity var(--duration-quick) var(--ease-entrance),
         transform var(--duration-quick) var(--ease-entrance);
+    }
+
+    // Beat PopoverMenu's width: max-content / min-width: 144px so the list
+    // matches the field.
+    > * {
+      width: 100%;
+      min-width: 100%;
+      max-width: none;
+      box-sizing: border-box;
     }
   }
 

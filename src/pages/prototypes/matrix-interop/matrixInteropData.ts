@@ -1,5 +1,3 @@
-import avatarAiko from '@/assets/avatars/Aiko Tan.png';
-import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import type {
   ChannelWorkspace,
   MattermostChannelOption,
@@ -129,14 +127,39 @@ export const INITIAL_CHANNEL_WORKSPACES: ChannelWorkspace[] = [
     id: 'ws-1',
     connectionId: 'acme',
     name: 'Nebula Networks',
-    avatarSrc: avatarAiko,
+    connectionType: 'matrix',
     status: 'online',
   },
   {
     id: 'ws-2',
     connectionId: 'globex',
     name: 'Joint Command Task Force',
-    avatarSrc: avatarMarco,
+    connectionType: 'mattermost',
+    status: 'online',
+  },
+];
+
+/** Connections offered in the channel-settings “Add workspace” menu. */
+export const ADDABLE_CHANNEL_WORKSPACES: ChannelWorkspace[] = [
+  {
+    id: 'add-nebula',
+    connectionId: 'nebula-mm',
+    name: 'Nebula Networks',
+    connectionType: 'mattermost',
+    status: 'online',
+  },
+  {
+    id: 'add-cascade',
+    connectionId: 'cascade-mm',
+    name: 'Cascade Collaborative',
+    connectionType: 'mattermost',
+    status: 'online',
+  },
+  {
+    id: 'add-acme',
+    connectionId: 'acme',
+    name: 'Acme Agency',
+    connectionType: 'matrix',
     status: 'online',
   },
 ];

@@ -1,5 +1,6 @@
 import type {
   ChangeEvent,
+  CSSProperties,
   FocusEvent,
   KeyboardEvent,
   MouseEvent,
@@ -10,10 +11,12 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import { createPortal } from 'react-dom';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import Chip from '@/components/Chip/Chip';
 import type { ChipSize } from '@/components/Chip/Chip';
@@ -23,7 +26,6 @@ import PopoverMenu, {
   PopoverMenuScroll,
 } from '@/components/PopoverMenu/PopoverMenu';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import { toKebab } from '@/utils/string';
 import styles from './Combobox.module.scss';
@@ -69,6 +71,7 @@ export interface ComboboxProps {
 }
 
 const POPUP_MAX_HEIGHT = 280;
+const POPUP_GAP_PX = 4;
 
 const CHIP_SIZE_BY_COMBOBOX: Record<ComboboxSize, ChipSize> = {
   Small: 'Small',
@@ -144,7 +147,16 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
   const listboxId = `${id}-listbox`;
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [popupStyle, setPopupStyle] = useState<CSSProperties>({
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: 0,
+    zIndex: 1100,
+  });
 
   const setInputRef = useCallback(
     (node: HTMLInputElement | null) => {
@@ -240,7 +252,57 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
     setIsOpen(true);
   }, [disabled]);
 
-  useOutsideClose(rootRef, isOpen, close);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handle(e: globalThis.MouseEvent) {
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (popupRef.current?.contains(target)) return;
+      close();
+    }
+
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [isOpen, close]);
+
+  useLayoutEffect(() => {
+    if (!popupMounted) return;
+
+    const update = () => {
+      const field = wrapperRef.current;
+      const popup = popupRef.current;
+      if (!field || !popup) return;
+
+      const rect = field.getBoundingClientRect();
+      const menuHeight = popup.getBoundingClientRect().height;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openAbove =
+        spaceBelow < menuHeight + POPUP_GAP_PX &&
+        rect.top > menuHeight + POPUP_GAP_PX;
+
+      setPopupStyle({
+        position: 'fixed',
+        top: openAbove
+          ? rect.top - POPUP_GAP_PX - menuHeight
+          : rect.bottom + POPUP_GAP_PX,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 1100,
+        transformOrigin: openAbove ? 'bottom center' : 'top center',
+      });
+    };
+
+    update();
+    const raf = requestAnimationFrame(update);
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+    };
+  }, [popupMounted, popupVisible, filteredOptions.length]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -360,7 +422,13 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
     // Delay so option mousedown can run first
     const related = e.relatedTarget as Node | null;
-    if (related && rootRef.current?.contains(related)) return;
+    if (
+      related &&
+      (rootRef.current?.contains(related) ||
+        popupRef.current?.contains(related))
+    ) {
+      return;
+    }
     setIsFocused(false);
   };
 
@@ -476,6 +544,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
     <div className={rootClass} ref={rootRef}>
       <div
         className={styles.combobox__wrapper}
+        ref={wrapperRef}
         onMouseDown={handleWrapperMouseDown}
       >
         {label != null && (
@@ -547,66 +616,72 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
         </div>
       </div>
 
-      {popupMounted && (
-        <div
-          className={[
-            styles.combobox__popup,
-            popupVisible ? styles['combobox__popup--visible'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          <PopoverMenu className={styles.combobox__menu}>
-            <PopoverMenuScroll maxHeight={POPUP_MAX_HEIGHT}>
-              {filteredOptions.length === 0 ? (
-                <p className={styles.combobox__empty}>{emptyMessage}</p>
-              ) : (
-                <ul
-                  id={listboxId}
-                  className={styles.combobox__list}
-                  role="listbox"
-                  aria-multiselectable={multiple || undefined}
-                  aria-label={
-                    typeof label === 'string' ? label : (ariaLabel ?? 'Options')
-                  }
-                >
-                  {filteredOptions.map((option, index) => {
-                    const selected = isSelected(option.value);
-                    const active = index === activeIndex;
-                    const leading = optionLeadingVisual(option);
-                    return (
-                      <li
-                        key={option.value}
-                        className={styles.combobox__option}
-                        role="presentation"
-                      >
-                        <MenuItem
-                          id={`${listboxId}-option-${option.value}`}
-                          role="option"
-                          label={option.label}
-                          secondaryLabel={option.secondaryLabel}
-                          leadingElement={leading != null}
-                          leadingVisual={leading}
-                          trailingElement={selected}
-                          active={active}
-                          disabled={option.disabled}
-                          aria-selected={selected}
-                          onMouseDown={(ev) => {
-                            // Prevent input blur before click handler
-                            ev.preventDefault();
-                          }}
-                          onMouseEnter={() => setActiveIndex(index)}
-                          onClick={() => selectOption(option)}
-                        />
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </PopoverMenuScroll>
-          </PopoverMenu>
-        </div>
-      )}
+      {popupMounted &&
+        createPortal(
+          <div
+            ref={popupRef}
+            className={[
+              styles.combobox__popup,
+              popupVisible ? styles['combobox__popup--visible'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            style={popupStyle}
+          >
+            <PopoverMenu className={styles.combobox__menu}>
+              <PopoverMenuScroll maxHeight={POPUP_MAX_HEIGHT}>
+                {filteredOptions.length === 0 ? (
+                  <p className={styles.combobox__empty}>{emptyMessage}</p>
+                ) : (
+                  <ul
+                    id={listboxId}
+                    className={styles.combobox__list}
+                    role="listbox"
+                    aria-multiselectable={multiple || undefined}
+                    aria-label={
+                      typeof label === 'string'
+                        ? label
+                        : (ariaLabel ?? 'Options')
+                    }
+                  >
+                    {filteredOptions.map((option, index) => {
+                      const selected = isSelected(option.value);
+                      const active = index === activeIndex;
+                      const leading = optionLeadingVisual(option);
+                      return (
+                        <li
+                          key={option.value}
+                          className={styles.combobox__option}
+                          role="presentation"
+                        >
+                          <MenuItem
+                            id={`${listboxId}-option-${option.value}`}
+                            role="option"
+                            label={option.label}
+                            secondaryLabel={option.secondaryLabel}
+                            leadingElement={leading != null}
+                            leadingVisual={leading}
+                            trailingElement={selected}
+                            active={active}
+                            disabled={option.disabled}
+                            aria-selected={selected}
+                            onMouseDown={(ev) => {
+                              // Prevent input blur before click handler
+                              ev.preventDefault();
+                            }}
+                            onMouseEnter={() => setActiveIndex(index)}
+                            onClick={() => selectOption(option)}
+                          />
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </PopoverMenuScroll>
+            </PopoverMenu>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 });

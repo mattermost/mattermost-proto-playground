@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type MouseEvent } from 'react';
+import { useCallback, useState, type MouseEvent } from 'react';
 import {
   AdminPanel,
   Button,
@@ -18,8 +18,8 @@ import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outli
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import MatrixConnectionEmptyIllustration from '@/assets/illustrations/matrix-connection-empty.svg?react';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { MatrixConnection } from '../matrixInteropTypes';
+import AnchoredPopoverMenu from './AnchoredPopoverMenu';
 import styles from './MatrixInteropTables.module.scss';
 
 type ConnectionsTableProps = {
@@ -58,10 +58,16 @@ export default function ConnectionsTable({
   onAddConnection,
 }: ConnectionsTableProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
-  const closeMenu = useCallback(() => setOpenMenuId(null), []);
-  useOutsideClose(menuRef, openMenuId !== null, closeMenu);
+  const closeMenu = useCallback(() => {
+    setOpenMenuId(null);
+    setMenuAnchor(null);
+  }, []);
+
+  const openConnection = openMenuId
+    ? connections.find((connection) => connection.id === openMenuId)
+    : undefined;
 
   const addConnectionButton = (
     <Button
@@ -154,83 +160,93 @@ export default function ConnectionsTable({
                 label={healthLabel(connection.health)}
               />
             </span>
-            <div className={styles['matrix-interop-tables__cell--actions']}>
-              <div
-                className={styles['matrix-interop-tables__menu-anchor']}
-                ref={openMenuId === connection.id ? menuRef : undefined}
-              >
+            <div
+              className={styles['matrix-interop-tables__cell--actions']}
+              onClick={(e: MouseEvent) => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+              <div className={styles['matrix-interop-tables__menu-anchor']}>
                 <IconButton
                   aria-label={`Actions for ${connection.name}`}
+                  aria-expanded={openMenuId === connection.id}
                   size="Small"
                   padding="Compact"
                   icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
                   onClick={(e: MouseEvent) => {
                     e.stopPropagation();
-                    setOpenMenuId((id) =>
-                      id === connection.id ? null : connection.id,
-                    );
+                    if (openMenuId === connection.id) {
+                      closeMenu();
+                      return;
+                    }
+                    setOpenMenuId(connection.id);
+                    setMenuAnchor(e.currentTarget);
                   }}
                 />
-                {openMenuId === connection.id && (
-                  <div className={styles['matrix-interop-tables__menu']}>
-                    <PopoverMenu>
-                      <PopoverMenuGroup>
-                        <MenuItem
-                          label="Edit connection"
-                          leadingVisual={
-                            <Icon glyph={<PencilOutlineIcon />} size="16" />
-                          }
-                          onClick={() => {
-                            closeMenu();
-                            onEditConnection(connection.id);
-                          }}
-                        />
-                        <MenuItem
-                          label={
-                            isConnectionPaused(connection.health)
-                              ? 'Resume connection'
-                              : 'Pause connection'
-                          }
-                          leadingVisual={
-                            <Icon
-                              glyph={
-                                isConnectionPaused(connection.health) ? (
-                                  <PlayIcon />
-                                ) : (
-                                  <PauseIcon />
-                                )
-                              }
-                              size="16"
-                            />
-                          }
-                          onClick={() => {
-                            closeMenu();
-                            onPauseConnection(connection.id);
-                          }}
-                        />
-                      </PopoverMenuGroup>
-                      <PopoverMenuDivider />
-                      <PopoverMenuGroup>
-                        <MenuItem
-                          label="Delete connection"
-                          destructive
-                          leadingVisual={
-                            <Icon glyph={<TrashCanOutlineIcon />} size="16" />
-                          }
-                          onClick={() => {
-                            closeMenu();
-                            onDeleteConnection(connection.id);
-                          }}
-                        />
-                      </PopoverMenuGroup>
-                    </PopoverMenu>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      <AnchoredPopoverMenu
+        open={openMenuId !== null && menuAnchor !== null}
+        onClose={closeMenu}
+        anchor={menuAnchor}
+      >
+        {openConnection && (
+          <PopoverMenu>
+            <PopoverMenuGroup>
+              <MenuItem
+                label="Edit connection"
+                leadingVisual={
+                  <Icon glyph={<PencilOutlineIcon />} size="16" />
+                }
+                onClick={() => {
+                  closeMenu();
+                  onEditConnection(openConnection.id);
+                }}
+              />
+              <MenuItem
+                label={
+                  isConnectionPaused(openConnection.health)
+                    ? 'Resume connection'
+                    : 'Pause connection'
+                }
+                leadingVisual={
+                  <Icon
+                    glyph={
+                      isConnectionPaused(openConnection.health) ? (
+                        <PlayIcon />
+                      ) : (
+                        <PauseIcon />
+                      )
+                    }
+                    size="16"
+                  />
+                }
+                onClick={() => {
+                  closeMenu();
+                  onPauseConnection(openConnection.id);
+                }}
+              />
+            </PopoverMenuGroup>
+            <PopoverMenuDivider />
+            <PopoverMenuGroup>
+              <MenuItem
+                label="Delete connection"
+                destructive
+                leadingVisual={
+                  <Icon glyph={<TrashCanOutlineIcon />} size="16" />
+                }
+                onClick={() => {
+                  closeMenu();
+                  onDeleteConnection(openConnection.id);
+                }}
+              />
+            </PopoverMenuGroup>
+          </PopoverMenu>
+        )}
+      </AnchoredPopoverMenu>
     </AdminPanel>
   );
 }

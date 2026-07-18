@@ -3,6 +3,7 @@ import { Button } from '@mattermost/compass-ui';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import {
+  ADDABLE_CHANNEL_WORKSPACES,
   CHANNEL_OPTIONS,
   CURRENT_CHANNEL,
   INITIAL_CHANNEL_WORKSPACES,
@@ -18,6 +19,7 @@ import type {
   SharedChannel,
 } from './matrixInteropTypes';
 import { domainFromHomeserverUrl } from './matrixInteropTypes';
+import DeleteConnectionConfirmModal from './components/DeleteConnectionConfirmModal';
 import ShareChannelModal from './components/ShareChannelModal';
 import UnmapConfirmModal from './components/UnmapConfirmModal';
 import ChannelSettingsScene from './scenes/ChannelSettingsScene';
@@ -53,6 +55,8 @@ export default function MatrixInterop() {
     useState<ShareModalContext>('admin');
   const [unmapTarget, setUnmapTarget] = useState<SharedChannel | null>(null);
   const [unmapWorkspaceId, setUnmapWorkspaceId] = useState<string | null>(null);
+  const [deleteConnectionTarget, setDeleteConnectionTarget] =
+    useState<MatrixConnection | null>(null);
   const [editingSharedChannel, setEditingSharedChannel] =
     useState<SharedChannel | null>(null);
 
@@ -141,7 +145,20 @@ export default function MatrixInterop() {
     );
   }, []);
 
-  const handleDeleteConnection = useCallback((connectionId: string) => {
+  const handleRequestDeleteConnection = useCallback(
+    (connectionId: string) => {
+      const connection = connections.find((c) => c.id === connectionId);
+      if (connection) {
+        setDeleteConnectionTarget(connection);
+      }
+    },
+    [connections],
+  );
+
+  const handleConfirmDeleteConnection = useCallback(() => {
+    if (!deleteConnectionTarget) return;
+    const connectionId = deleteConnectionTarget.id;
+
     setConnections((prev) =>
       prev.filter((connection) => connection.id !== connectionId),
     );
@@ -155,7 +172,8 @@ export default function MatrixInterop() {
       setIsCreatingConnection(false);
       setScene('connections');
     }
-  }, [activeConnectionId]);
+    setDeleteConnectionTarget(null);
+  }, [activeConnectionId, deleteConnectionTarget]);
 
   const openShareModal = useCallback((context: ShareModalContext) => {
     setEditingSharedChannel(null);
@@ -253,7 +271,7 @@ export default function MatrixInterop() {
                 id: `ws-${Date.now()}`,
                 connectionId: payload.connectionId,
                 name: connection.name,
-                avatarSrc: '',
+                connectionType: 'matrix',
                 status: 'online',
               },
             ];
@@ -285,6 +303,25 @@ export default function MatrixInterop() {
       setUnmapWorkspaceId(null);
     }
   }, [unmapTarget, unmapWorkspaceId]);
+
+  const handleAddChannelWorkspace = useCallback(
+    (workspace: ChannelWorkspace) => {
+      setChannelWorkspaces((prev) => {
+        if (prev.some((item) => item.name === workspace.name)) {
+          return prev;
+        }
+        return [
+          ...prev,
+          {
+            ...workspace,
+            id: `ws-${Date.now()}`,
+            status: 'online',
+          },
+        ];
+      });
+    },
+    [],
+  );
 
   const handleRemoveWorkspace = useCallback((workspaceId: string) => {
     const workspace = channelWorkspaces.find((w) => w.id === workspaceId);
@@ -345,7 +382,7 @@ export default function MatrixInterop() {
             onViewConnection={handleViewConnection}
             onEditConnection={handleViewConnection}
             onPauseConnection={handlePauseConnection}
-            onDeleteConnection={handleDeleteConnection}
+            onDeleteConnection={handleRequestDeleteConnection}
             onAddConnection={handleAddConnection}
             showEmptyDemo={showEmptyConnectionsDemo}
           />
@@ -379,7 +416,8 @@ export default function MatrixInterop() {
             sharingEnabled={sharingEnabled}
             onSharingEnabledChange={setSharingEnabled}
             workspaces={sharingEnabled ? channelWorkspaces : []}
-            onAddWorkspace={() => openShareModal('channel')}
+            availableWorkspaces={ADDABLE_CHANNEL_WORKSPACES}
+            onAddWorkspace={handleAddChannelWorkspace}
             onRemoveWorkspace={handleRemoveWorkspace}
             onCloseSettings={() => setScene('connections')}
           />
@@ -401,6 +439,17 @@ export default function MatrixInterop() {
           }
           onClose={closeShareModal}
           onShare={handleShare}
+        />
+      )}
+
+      {deleteConnectionTarget && (
+        <DeleteConnectionConfirmModal
+          connection={deleteConnectionTarget}
+          sharedChannelCount={
+            sharedChannels[deleteConnectionTarget.id]?.length ?? 0
+          }
+          onClose={() => setDeleteConnectionTarget(null)}
+          onConfirm={handleConfirmDeleteConnection}
         />
       )}
 

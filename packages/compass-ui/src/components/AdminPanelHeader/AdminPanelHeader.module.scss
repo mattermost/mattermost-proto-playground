@@ -19,6 +19,11 @@
 
   &--expandable &__main {
     cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    }
   }
 
   &__start {

@@ -110,8 +110,13 @@
   &__confirm-list {
     margin: 0;
     padding-left: var(--spacing-xl);
+    list-style: disc;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xxxxs);
+
+    > li {
+      display: list-item;
+    }
   }
 }

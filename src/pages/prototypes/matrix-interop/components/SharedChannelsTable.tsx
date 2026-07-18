@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type MouseEvent } from 'react';
+import { useCallback, useState, type MouseEvent } from 'react';
 import {
   AdminPanel,
   Button,
@@ -17,8 +17,8 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import ThreadsEmptyIllustration from '@/assets/illustrations/threads-empty.svg?react';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { SharedChannel } from '../matrixInteropTypes';
+import AnchoredPopoverMenu from './AnchoredPopoverMenu';
 import styles from './MatrixInteropTables.module.scss';
 
 type SharedChannelsTableProps = {
@@ -35,10 +35,16 @@ export default function SharedChannelsTable({
   onRemoveChannel,
 }: SharedChannelsTableProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
 
-  const closeMenu = useCallback(() => setOpenMenuId(null), []);
-  useOutsideClose(menuRef, openMenuId !== null, closeMenu);
+  const closeMenu = useCallback(() => {
+    setOpenMenuId(null);
+    setMenuAnchor(null);
+  }, []);
+
+  const openChannel = openMenuId
+    ? channels.find((channel) => channel.id === openMenuId)
+    : undefined;
 
   return (
     <AdminPanel
@@ -114,60 +120,66 @@ export default function SharedChannelsTable({
                 {channel.matrixRoomAlias}
               </span>
               <div className={styles['matrix-interop-tables__cell--actions']}>
-                <div
-                  className={styles['matrix-interop-tables__menu-anchor']}
-                  ref={openMenuId === channel.id ? menuRef : undefined}
-                >
+                <div className={styles['matrix-interop-tables__menu-anchor']}>
                   <IconButton
                     aria-label={`Actions for ${channel.name}`}
+                    aria-expanded={openMenuId === channel.id}
                     size="Small"
                     padding="Compact"
                     icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
                     onClick={(e: MouseEvent) => {
                       e.stopPropagation();
-                      setOpenMenuId((id) =>
-                        id === channel.id ? null : channel.id,
-                      );
+                      if (openMenuId === channel.id) {
+                        closeMenu();
+                        return;
+                      }
+                      setOpenMenuId(channel.id);
+                      setMenuAnchor(e.currentTarget);
                     }}
                   />
-                  {openMenuId === channel.id && (
-                    <div className={styles['matrix-interop-tables__menu']}>
-                      <PopoverMenu>
-                        <PopoverMenuGroup>
-                          <MenuItem
-                            label="Edit shared channel"
-                            leadingVisual={
-                              <Icon glyph={<PencilOutlineIcon />} size="16" />
-                            }
-                            onClick={() => {
-                              closeMenu();
-                              onEditChannel(channel);
-                            }}
-                          />
-                        </PopoverMenuGroup>
-                        <PopoverMenuDivider />
-                        <PopoverMenuGroup>
-                          <MenuItem
-                            label="Remove shared channel"
-                            destructive
-                            leadingVisual={
-                              <Icon glyph={<TrashCanOutlineIcon />} size="16" />
-                            }
-                            onClick={() => {
-                              closeMenu();
-                              onRemoveChannel(channel);
-                            }}
-                          />
-                        </PopoverMenuGroup>
-                      </PopoverMenu>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <AnchoredPopoverMenu
+        open={openMenuId !== null && menuAnchor !== null}
+        onClose={closeMenu}
+        anchor={menuAnchor}
+      >
+        {openChannel && (
+          <PopoverMenu>
+            <PopoverMenuGroup>
+              <MenuItem
+                label="Edit shared channel"
+                leadingVisual={
+                  <Icon glyph={<PencilOutlineIcon />} size="16" />
+                }
+                onClick={() => {
+                  closeMenu();
+                  onEditChannel(openChannel);
+                }}
+              />
+            </PopoverMenuGroup>
+            <PopoverMenuDivider />
+            <PopoverMenuGroup>
+              <MenuItem
+                label="Remove shared channel"
+                destructive
+                leadingVisual={
+                  <Icon glyph={<TrashCanOutlineIcon />} size="16" />
+                }
+                onClick={() => {
+                  closeMenu();
+                  onRemoveChannel(openChannel);
+                }}
+              />
+            </PopoverMenuGroup>
+          </PopoverMenu>
+        )}
+      </AnchoredPopoverMenu>
     </AdminPanel>
   );
 }

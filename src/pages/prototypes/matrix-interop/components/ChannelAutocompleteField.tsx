@@ -1,12 +1,9 @@
-import { useMemo, useRef, useState, type ChangeEvent, type MouseEvent } from 'react';
-import { Icon, MenuItem, PopoverMenu, PopoverMenuScroll, TextInput } from '@mattermost/compass-ui';
-import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import { useMemo } from 'react';
+import { Combobox, Icon } from '@mattermost/compass-ui';
+import type { ComboboxOption } from '@mattermost/compass-ui';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
-import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { MattermostChannelOption } from '../matrixInteropTypes';
-import styles from './ChannelAutocompleteField.module.scss';
 import modalStyles from './MatrixInteropModals.module.scss';
 
 type ChannelAutocompleteFieldProps = {
@@ -18,15 +15,13 @@ type ChannelAutocompleteFieldProps = {
   'aria-label'?: string;
 };
 
-function channelIcon(channel: MattermostChannelOption | undefined) {
-  if (!channel) {
-    return <Icon glyph={<MagnifyIcon />} size="16" />;
-  }
-
+function channelLeadingVisual(channel: MattermostChannelOption) {
   return (
     <Icon
       className={modalStyles['matrix-interop-modals__channel-icon']}
-      glyph={channel.visibility === 'public' ? <GlobeIcon /> : <LockOutlineIcon />}
+      glyph={
+        channel.visibility === 'public' ? <GlobeIcon /> : <LockOutlineIcon />
+      }
       size="16"
     />
   );
@@ -40,95 +35,52 @@ export default function ChannelAutocompleteField({
   invalid = false,
   'aria-label': ariaLabel = 'Mattermost channel',
 }: ChannelAutocompleteFieldProps) {
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const options = useMemo<ComboboxOption[]>(
+    () =>
+      channels.map((channel) => ({
+        value: channel.id,
+        label: channel.name,
+        secondaryLabel: channel.team,
+        leadingVisual: channelLeadingVisual(channel),
+      })),
+    [channels],
+  );
 
   const selectedChannel = useMemo(
     () => channels.find((channel) => channel.id === value),
     [channels, value],
   );
 
-  const displayValue = open ? query : (selectedChannel?.name ?? '');
-
-  const filteredChannels = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return channels;
-
-    return channels.filter(
-      (channel) =>
-        channel.name.toLowerCase().includes(normalized) ||
-        channel.team.toLowerCase().includes(normalized),
-    );
-  }, [channels, query]);
-
-  const leadingChannel =
-    open && query.trim()
-      ? filteredChannels[0]
-      : selectedChannel ?? filteredChannels[0];
-
-  useOutsideClose(rootRef, open, () => {
-    setOpen(false);
-    setQuery('');
-  });
-
-  const handleSelect = (channel: MattermostChannelOption) => {
-    onChange(channel.id);
-    onInputChange?.();
-    setQuery('');
-    setOpen(false);
-  };
-
   return (
-    <div className={styles['channel-autocomplete']} ref={rootRef}>
-      <TextInput
-        size="Medium"
-        value={displayValue}
-        invalid={invalid}
-        aria-label={ariaLabel}
-        aria-expanded={open}
-        aria-autocomplete="list"
-        role="combobox"
-        leadingIcon={channelIcon(leadingChannel)}
-        trailingIcon={<Icon glyph={<ChevronDownIcon />} size="16" />}
-        placeholder="Search channels"
-        onFocus={() => {
-          setOpen(true);
-          setQuery(selectedChannel?.name ?? '');
-        }}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setOpen(true);
-          setQuery(e.target.value);
-          onInputChange?.();
-        }}
-      />
-
-      {open && (
-        <div className={styles['channel-autocomplete__menu']}>
-          <PopoverMenu>
-            {filteredChannels.length > 0 ? (
-              <PopoverMenuScroll maxHeight={220}>
-                {filteredChannels.map((channel) => (
-                  <MenuItem
-                    key={channel.id}
-                    role="option"
-                    aria-selected={channel.id === value}
-                    label={channel.name}
-                    secondaryLabel={channel.team}
-                    leadingVisual={channelIcon(channel)}
-                    onMouseDown={(e: MouseEvent<HTMLButtonElement>) => e.preventDefault()}
-                    onClick={() => handleSelect(channel)}
-                  />
-                ))}
-              </PopoverMenuScroll>
-            ) : (
-              <p className={styles['channel-autocomplete__empty']}>
-                No channels match your search.
-              </p>
-            )}
-          </PopoverMenu>
-        </div>
-      )}
-    </div>
+    <Combobox
+      size="Medium"
+      options={options}
+      value={value || null}
+      onChange={(next) => {
+        if (typeof next === 'string') {
+          onChange(next);
+        }
+      }}
+      onInputChange={() => onInputChange?.()}
+      filter={(option, query) => {
+        const normalized = query.trim().toLowerCase();
+        if (!normalized) return true;
+        return (
+          option.label.toLowerCase().includes(normalized) ||
+          (option.secondaryLabel?.toLowerCase().includes(normalized) ?? false)
+        );
+      }}
+      leadingIcon={
+        selectedChannel ? (
+          channelLeadingVisual(selectedChannel)
+        ) : (
+          <Icon glyph={<GlobeIcon />} size="16" />
+        )
+      }
+      placeholder="Search channels"
+      emptyMessage="No channels match your search."
+      invalid={invalid}
+      aria-label={ariaLabel}
+    />
   );
 }

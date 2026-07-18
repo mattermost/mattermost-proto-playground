@@ -12,7 +12,7 @@
 
   &__header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: var(--spacing-s);
     padding: var(--spacing-xl) var(--spacing-xxl);
@@ -117,6 +117,17 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-m);
+
+    // Switch defaults to width: 100%; hug the track when used without a label.
+    > label {
+      width: auto;
+      flex: 0 0 auto;
+    }
+  }
+
+  &__section-copy {
+    flex: 1;
+    min-width: 0;
   }
 
   &__section-title {
@@ -151,9 +162,12 @@
     display: grid;
     grid-template-columns: 1fr 100px 40px;
     align-items: center;
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     min-height: 40px;
+
+    &:first-child {
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
   }
 
   &__workspace-name {
@@ -183,7 +197,9 @@
   }
 
   &__add-workspace {
+    position: relative;
     margin-top: var(--spacing-m);
+    width: fit-content;
   }
 
   &__divider {

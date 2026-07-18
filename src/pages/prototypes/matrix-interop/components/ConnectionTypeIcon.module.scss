@@ -1,0 +1,28 @@
+.connection-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+
+  &--mattermost {
+    color: var(--button-color);
+    background: var(--button-bg);
+  }
+
+  &--matrix {
+    color: #fff;
+    background: #000;
+  }
+
+  &__matrix-mark {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+}

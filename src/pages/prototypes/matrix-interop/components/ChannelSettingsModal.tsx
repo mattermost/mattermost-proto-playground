@@ -1,11 +1,13 @@
-import type { ChangeEvent } from 'react';
+import { useCallback, useMemo, useState, type ChangeEvent, type MouseEvent } from 'react';
 import {
   Button,
   Icon,
   IconButton,
+  MenuItem,
+  PopoverMenu,
+  PopoverMenuGroup,
   Switch,
   Tag,
-  TeamAvatar,
 } from '@mattermost/compass-ui';
 import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
@@ -16,6 +18,8 @@ import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-out
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import type { ChannelWorkspace } from '../matrixInteropTypes';
+import AnchoredPopoverMenu from './AnchoredPopoverMenu';
+import ConnectionTypeIcon from './ConnectionTypeIcon';
 import styles from './ChannelSettingsModal.module.scss';
 
 type ChannelSettingsModalProps = {
@@ -23,7 +27,9 @@ type ChannelSettingsModalProps = {
   sharingEnabled: boolean;
   onSharingEnabledChange: (enabled: boolean) => void;
   workspaces: ChannelWorkspace[];
-  onAddWorkspace: () => void;
+  /** Workspaces that can still be added (already-shared ones should be filtered out). */
+  availableWorkspaces: ChannelWorkspace[];
+  onAddWorkspace: (workspace: ChannelWorkspace) => void;
   onRemoveWorkspace: (workspaceId: string) => void;
   onClose: () => void;
 };
@@ -33,10 +39,28 @@ export default function ChannelSettingsModal({
   sharingEnabled,
   onSharingEnabledChange,
   workspaces,
+  availableWorkspaces,
   onAddWorkspace,
   onRemoveWorkspace,
   onClose,
 }: ChannelSettingsModalProps) {
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [addMenuAnchor, setAddMenuAnchor] = useState<HTMLElement | null>(null);
+
+  const closeAddMenu = useCallback(() => {
+    setAddMenuOpen(false);
+    setAddMenuAnchor(null);
+  }, []);
+
+  const addableWorkspaces = useMemo(() => {
+    const sharedConnectionIds = new Set(
+      workspaces.map((workspace) => workspace.connectionId),
+    );
+    return availableWorkspaces.filter(
+      (workspace) => !sharedConnectionIds.has(workspace.connectionId),
+    );
+  }, [availableWorkspaces, workspaces]);
+
   return (
     <div className={styles['channel-settings-modal']} role="dialog" aria-modal="true">
       <div className={styles['channel-settings-modal__header']}>
@@ -86,7 +110,7 @@ export default function ChannelSettingsModal({
           <div className={styles['channel-settings-modal__content-inner']}>
             <section>
               <div className={styles['channel-settings-modal__section-header']}>
-                <div>
+                <div className={styles['channel-settings-modal__section-copy']}>
                   <h3 className={styles['channel-settings-modal__section-title']}>
                     Share with connected workspaces
                   </h3>
@@ -118,11 +142,7 @@ export default function ChannelSettingsModal({
                           className={styles['channel-settings-modal__workspace-row']}
                         >
                           <div className={styles['channel-settings-modal__workspace-name']}>
-                            <TeamAvatar
-                              size="Small"
-                              src={workspace.avatarSrc || undefined}
-                              name={workspace.name}
-                            />
+                            <ConnectionTypeIcon type={workspace.connectionType} />
                             {workspace.name}
                           </div>
                           <div className={styles['channel-settings-modal__workspace-status']}>
@@ -151,17 +171,56 @@ export default function ChannelSettingsModal({
                     </div>
                   )}
 
-                  <div className={styles['channel-settings-modal__add-workspace']}>
-                    <Button
-                      emphasis="Tertiary"
-                      size="Small"
-                      leadingIcon={<Icon glyph={<PlusIcon />} size="12" />}
-                      trailingIcon={<Icon glyph={<ChevronDownIcon />} size="12" />}
-                      onClick={onAddWorkspace}
-                    >
-                      Add workspace
-                    </Button>
-                  </div>
+                  {addableWorkspaces.length > 0 && (
+                    <div className={styles['channel-settings-modal__add-workspace']}>
+                      <Button
+                        emphasis="Tertiary"
+                        size="Small"
+                        leadingIcon={<Icon glyph={<PlusIcon />} size="12" />}
+                        trailingIcon={
+                          <Icon glyph={<ChevronDownIcon />} size="12" />
+                        }
+                        aria-expanded={addMenuOpen}
+                        aria-haspopup="menu"
+                        onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                          if (addMenuOpen) {
+                            closeAddMenu();
+                            return;
+                          }
+                          setAddMenuOpen(true);
+                          setAddMenuAnchor(e.currentTarget);
+                        }}
+                      >
+                        Add workspace
+                      </Button>
+                      <AnchoredPopoverMenu
+                        open={addMenuOpen}
+                        onClose={closeAddMenu}
+                        anchor={addMenuAnchor}
+                        align="start"
+                      >
+                        <PopoverMenu>
+                          <PopoverMenuGroup aria-label="Available workspaces">
+                            {addableWorkspaces.map((workspace) => (
+                              <MenuItem
+                                key={workspace.id}
+                                label={workspace.name}
+                                leadingVisual={
+                                  <ConnectionTypeIcon
+                                    type={workspace.connectionType}
+                                  />
+                                }
+                                onClick={() => {
+                                  closeAddMenu();
+                                  onAddWorkspace(workspace);
+                                }}
+                              />
+                            ))}
+                          </PopoverMenuGroup>
+                        </PopoverMenu>
+                      </AnchoredPopoverMenu>
+                    </div>
+                  )}
                 </div>
               )}
             </section>
@@ -170,7 +229,7 @@ export default function ChannelSettingsModal({
 
             <section>
               <div className={styles['channel-settings-modal__section-header']}>
-                <div>
+                <div className={styles['channel-settings-modal__section-copy']}>
                   <h3 className={styles['channel-settings-modal__section-title']}>
                     Channel banner
                   </h3>

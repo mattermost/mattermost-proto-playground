@@ -54,6 +54,7 @@ export default function ConnectionDetailScene({
 
   const handleSave = () => {
     onSaveConnection(draft);
+    onBack();
   };
 
   const handleCancel = () => {

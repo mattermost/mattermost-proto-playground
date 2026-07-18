@@ -31,9 +31,11 @@ export interface ChannelWorkspace {
   id: string;
   connectionId: string;
   name: string;
-  avatarSrc: string;
+  connectionType: ChannelWorkspaceConnectionType;
   status: 'online' | 'offline';
 }
+
+export type ChannelWorkspaceConnectionType = 'mattermost' | 'matrix';
 
 export interface MattermostChannelOption {
   id: string;

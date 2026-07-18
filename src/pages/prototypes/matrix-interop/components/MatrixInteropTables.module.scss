@@ -110,14 +110,6 @@
     justify-content: flex-end;
   }
 
-  &__menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 10;
-    margin-top: var(--spacing-xxs);
-  }
-
   &__empty {
     padding: var(--spacing-xl) 0;
   }

@@ -19,7 +19,8 @@ type ChannelSettingsSceneProps = {
   sharingEnabled: boolean;
   onSharingEnabledChange: (enabled: boolean) => void;
   workspaces: ChannelWorkspace[];
-  onAddWorkspace: () => void;
+  availableWorkspaces: ChannelWorkspace[];
+  onAddWorkspace: (workspace: ChannelWorkspace) => void;
   onRemoveWorkspace: (workspaceId: string) => void;
   onCloseSettings: () => void;
 };
@@ -29,6 +30,7 @@ export default function ChannelSettingsScene({
   sharingEnabled,
   onSharingEnabledChange,
   workspaces,
+  availableWorkspaces,
   onAddWorkspace,
   onRemoveWorkspace,
   onCloseSettings,
@@ -70,6 +72,7 @@ export default function ChannelSettingsScene({
                 sharingEnabled={sharingEnabled}
                 onSharingEnabledChange={onSharingEnabledChange}
                 workspaces={workspaces}
+                availableWorkspaces={availableWorkspaces}
                 onAddWorkspace={onAddWorkspace}
                 onRemoveWorkspace={onRemoveWorkspace}
                 onClose={onCloseSettings}
