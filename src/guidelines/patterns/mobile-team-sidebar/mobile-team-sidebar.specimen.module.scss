@@ -1,0 +1,14 @@
+.mts-specimen {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-xxxl);
+  box-sizing: border-box;
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+  &__frame {
+    height: 640px;
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+  }
+}

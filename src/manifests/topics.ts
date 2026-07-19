@@ -311,6 +311,22 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/components/channel-sidebar-item/channel-sidebar-item.specimen'),
   },
   {
+    slug: 'mobile-channel-sidebar-item',
+    name: 'Mobile Channel Sidebar Item',
+    category: 'components',
+    description:
+      'Touch-sized channel row for mobile sidebars — Body 200, no hover menu.',
+    status: 'beta',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/components/mobile-channel-sidebar-item/mobile-channel-sidebar-item.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import(
+        '@/guidelines/components/mobile-channel-sidebar-item/mobile-channel-sidebar-item.specimen'
+      ),
+  },
+  {
     slug: 'checkbox',
     name: 'Checkbox',
     category: 'components',
@@ -455,6 +471,18 @@ export const TOPICS: Topic[] = [
     status: 'stable',
     guidelinePage: () => import('@/guidelines/components/menu-item/menu-item.guideline.mdx'),
     specimenPage: () => import('@/guidelines/components/menu-item/menu-item.specimen'),
+  },
+  {
+    slug: 'mobile-menu-item',
+    name: 'Mobile Menu Item',
+    category: 'components',
+    description:
+      'Touch-sized menu row for iOS sheets and action lists — Body 200, no hover.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/components/mobile-menu-item/mobile-menu-item.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/components/mobile-menu-item/mobile-menu-item.specimen'),
   },
   {
     slug: 'message-actions',
@@ -761,6 +789,94 @@ export const TOPICS: Topic[] = [
     specimenPage: () => import('@/guidelines/patterns/channel-header/channel-header.specimen'),
   },
   {
+    slug: 'mobile-navigation-bar',
+    name: 'Mobile Navigation Bar',
+    category: 'patterns',
+    description:
+      'iOS conversation top bar for Channel, DM, GM, and Bot with back, title, search, and more.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-navigation-bar/mobile-navigation-bar.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-navigation-bar/mobile-navigation-bar.specimen'),
+  },
+  {
+    slug: 'mobile-team-sidebar',
+    name: 'Mobile Team Sidebar',
+    category: 'patterns',
+    description:
+      '72px mobile team strip with servers control, team avatars, and Add team.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-team-sidebar/mobile-team-sidebar.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-team-sidebar/mobile-team-sidebar.specimen'),
+  },
+  {
+    slug: 'mobile-channel-sidebar',
+    name: 'Mobile Channel Sidebar',
+    category: 'patterns',
+    description:
+      'Mobile team channel list with Find channels, categories, and touch-sized rows.',
+    status: 'beta',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/patterns/mobile-channel-sidebar/mobile-channel-sidebar.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import(
+        '@/guidelines/patterns/mobile-channel-sidebar/mobile-channel-sidebar.specimen'
+      ),
+  },
+  {
+    slug: 'mobile-tab-bar',
+    name: 'Mobile Tab Bar',
+    category: 'patterns',
+    description:
+      'iOS bottom tab bar for Home, Search, Mentions, Saved, and Profile.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-tab-bar/mobile-tab-bar.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-tab-bar/mobile-tab-bar.specimen'),
+  },
+  {
+    slug: 'mobile-message-input',
+    name: 'Mobile Message Input',
+    category: 'patterns',
+    description:
+      'iOS channel and reply composer with focus, expand, send, and attachment thumbnails.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-message-input/mobile-message-input.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-message-input/mobile-message-input.specimen'),
+  },
+  {
+    slug: 'mobile-bottom-sheet',
+    name: 'Mobile Bottom Sheet',
+    category: 'patterns',
+    description:
+      'iOS sheet shell with handle, optional header and footer, and a body slot for menu rows.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-bottom-sheet/mobile-bottom-sheet.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-bottom-sheet/mobile-bottom-sheet.specimen'),
+  },
+  {
+    slug: 'mobile-message',
+    name: 'Mobile Message',
+    category: 'patterns',
+    description:
+      'iOS channel post with Body 200 text — no hover tint or hover message actions.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-message/mobile-message.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-message/mobile-message.specimen'),
+  },
+  {
     slug: 'channel-sidebar',
     name: 'Channel Sidebar',
     category: 'patterns',
@@ -962,6 +1078,32 @@ export const TOPICS: Topic[] = [
       import('@/guidelines/layouts/admin-console/admin-console.guideline.mdx'),
     specimenPage: () =>
       import('@/guidelines/layouts/admin-console/admin-console.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'mobile-home',
+    name: 'Mobile Home',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone home screen with team strip, channel list, and bottom tab bar.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/mobile-home/mobile-home.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-home/mobile-home.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'mobile-channel',
+    name: 'Mobile Channel',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone channel view with navigation bar, post stream, and message composer.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/mobile-channel/mobile-channel.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-channel/mobile-channel.specimen'),
     fullBleedSpecimen: true,
   },
 ];

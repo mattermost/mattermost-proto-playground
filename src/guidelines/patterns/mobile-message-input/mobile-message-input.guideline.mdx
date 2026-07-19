@@ -1,0 +1,46 @@
+The Mobile Message Input is the iOS composer at the bottom of a channel or
+thread. It starts compact when unfocused, expands into a full action row when
+the field is focused, and shows send once there is text to post.
+
+Use the Specimen tab for live Root and Reply states.
+
+<Divider />
+
+## Anatomy
+
+The Mobile Message Input brings together the following elements, from the text
+field through the action row.
+
+<MobileMessageInputAnatomyStage />
+
+- <Num>1</Num> **Text field** — Body-sized input for the message. Placeholder
+  copy is “Write to …” on Root and “Reply…” on Reply.
+- <Num>2</Num> **Expand / collapse** — Shown when focused; grows the composer over
+  the navigation bar (stopping 12px below the Dynamic Island), or collapses it
+  back.
+- <Num>3</Num> **Attachments** — Optional horizontal row of thumbnails with
+  remove controls, above the action row.
+- <Num>4</Num> **Add** — Circular plus control that opens files and media
+  actions.
+- <Num>5</Num> **Composer actions** — Mention, emoji, and slash command when
+  focused.
+- <Num>6</Num> **Send** — Primary send control, shown when there is text.
+
+<Divider />
+
+## Variants
+
+| Variant | Placeholder | Use |
+| --- | --- | --- |
+| Root | Write to … | Channel and DM composers |
+| Reply | Reply… | Thread reply composers |
+
+<Divider />
+
+## Behavior
+
+Unfocused, keep a single compact row with add, the field, and send when text is
+already present. Focus reveals expand and the full action row. Expand grows the
+composer over the navigation bar, stopping 12px below the Dynamic Island, while
+the action row stays pinned at the bottom. Prefer Large touch targets; do not
+mix desktop Message Input chrome into this pattern.

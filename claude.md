@@ -300,6 +300,27 @@ For any phone/call action, use the filled compass icon `@mattermost/compass-icon
 
 Use `var(--font-weight-semibold)` (600) wherever bold emphasis is needed. Do **not** use `var(--font-weight-bold)` (700) or `font-weight: bold` / `font-weight: 700` unless explicitly required by a Figma spec that specifies 700.
 
+## Mobile patterns: Body 200 + sibling components
+
+Mobile (iOS) Compass patterns live under Patterns → **Mobile** and use a different density and interaction model than desktop.
+
+### Typography
+
+Default body copy for mobile layouts and mobile components is **Body 200**:
+
+- `font-size: var(--font-size-200)` (16px)
+- `line-height: var(--line-height-200)` (24px)
+
+Do **not** use desktop Body 100 (`--font-size-100` / 14px) for primary mobile message text, composer fields, or similar reading content unless a Figma spec explicitly calls for a smaller step (e.g. captions, badges).
+
+### Components
+
+When a desktop pattern’s type scale, spacing, or interaction model does not match mobile Figma (especially hover-only chrome), ship a **sibling** `Mobile*` component — same approach as `MobileNavigationBar` and `MobileMessageInput`. Do **not** bolt mobile onto the desktop component with a `platform` / `density` prop unless the APIs and visuals stay nearly identical.
+
+Mobile patterns should assume touch: no hover-revealed toolbars or hover background states as the primary way to reach actions. Prefer always-visible or explicitly tapped controls (long-press / overflow can follow later).
+
+Docs: register under `topics.ts` with `status: 'beta'`, group the slug in `sections.ts` Patterns → **Mobile**, and prefer anatomy + specimen frames **without** rounded corners (full-bleed channel chrome, not card frames).
+
 ## Animation: popover panel open/close
 
 Popover panels (menus, info popovers, dropdowns) animate on mount/unmount with a combined scale + fade:

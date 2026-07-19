@@ -1,0 +1,258 @@
+.mobile-channel-layout {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+  padding: var(--spacing-xxxl);
+  box-sizing: border-box;
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+  &__shell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background-color: var(--center-channel-bg);
+    box-sizing: border-box;
+  }
+
+  &__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    box-sizing: border-box;
+
+    // Scrollbar is the sole child — fill so simplebar-content min-height: 100% resolves
+    > * {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    :global(.simplebar-content) {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &__messages {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    gap: 0;
+    // Clear the absolutely positioned composer (input chrome + home-indicator inset).
+    // Previously 7rem — a loose estimate that left a large empty band under short threads.
+    padding-bottom: calc(3.5rem + var(--device-safe-bottom, 34px));
+    box-sizing: border-box;
+  }
+
+  // Full-bleed overlay over nav + messages; sheet sits at the bottom until expanded.
+  // Expanded top clears the Dynamic Island (11px + 37px) plus a 12px gap.
+  &__composer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    pointer-events: none;
+    transition:
+      grid-template-rows var(--duration-moderate) var(--ease-transition),
+      top var(--duration-quick) var(--ease-transition);
+
+    &--expanded {
+      top: calc(11px + var(--device-island-height, 37px) + 12px);
+      grid-template-rows: 0fr 1fr;
+      pointer-events: auto;
+    }
+  }
+
+  &__composer-spacer {
+    min-height: 0;
+    pointer-events: none;
+  }
+
+  &__composer-sheet {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    pointer-events: auto;
+    // Anchor default composer to the home-indicator safe area
+    padding-bottom: var(--device-safe-bottom, 34px);
+    box-sizing: border-box;
+    transition: padding-bottom var(--duration-moderate) var(--ease-transition);
+
+    > * {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+  }
+
+  &__shell--keyboard-open &__composer-sheet {
+    padding-bottom: 0;
+  }
+
+  // Rough iOS software keyboard — placeholder only.
+  // Collapsed: no height, no paint. Open: slides up under the composer.
+  &__keyboard {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    flex-shrink: 0;
+    max-height: 0;
+    overflow: hidden;
+    background-color: #d1d5db;
+    transition: max-height var(--duration-moderate) var(--ease-transition);
+
+    &--open {
+      max-height: 336px;
+    }
+  }
+
+  &__keyboard-inner {
+    display: flex;
+    flex-direction: column;
+    height: 302px;
+    box-sizing: border-box;
+  }
+
+  &__keyboard-suggestions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: stretch;
+    height: 44px;
+    background-color: #d1d5db;
+    box-sizing: border-box;
+  }
+
+  &__keyboard-suggestion {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  &__keyboard-suggestion-divider {
+    position: absolute;
+    top: 12px;
+    bottom: 12px;
+    left: 0;
+    width: 1px;
+    background-color: rgba(0, 0, 0, 0.18);
+  }
+
+  &__keyboard-suggestion-label {
+    overflow: hidden;
+    padding: 0 8px;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1;
+    color: #000;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  &__keyboard-keys {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 8px 3px 6px;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+
+  &__keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 3px;
+
+    &--inset {
+      padding: 0 18px;
+    }
+  }
+
+  &__keyboard-key {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    max-width: 34px;
+    height: 42px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+    font-size: 23px;
+    font-weight: 400;
+    line-height: 1;
+    color: #000;
+    user-select: none;
+
+    &--mod {
+      max-width: 44px;
+    }
+
+    &--shift {
+      background-color: #fff;
+      color: #000;
+    }
+
+    &--action {
+      background-color: #a8b0bc;
+      color: #000;
+    }
+
+    &--space {
+      flex: 4.2 1 0;
+      max-width: none;
+      font-size: 16px;
+    }
+
+    &--return {
+      flex: 1.6 1 0;
+      max-width: 88px;
+      font-size: 16px;
+    }
+
+    &--label {
+      font-size: 16px;
+      text-transform: none;
+    }
+  }
+
+  &__keyboard-toolbar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    padding: 0 16px 4px;
+    box-sizing: border-box;
+  }
+
+  &__keyboard-toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: #000;
+    user-select: none;
+  }
+}

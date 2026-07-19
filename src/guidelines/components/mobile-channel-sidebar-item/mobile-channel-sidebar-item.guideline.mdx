@@ -1,0 +1,73 @@
+import {MobileChannelSidebarItem} from '@mattermost/compass-ui';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+
+The Mobile Channel Sidebar Item is the touch-sized row for switching channels,
+DMs, and group messages on phones. It mirrors the desktop
+[Channel Sidebar Item](/components/channel-sidebar-item) for leading visual,
+name, status, mentions, mute, and call — with Body 200 labels, taller hit
+targets, larger icons and avatars, and no hover overflow menu.
+
+Unlike desktop, there is no selected/active row state. Tapping a channel opens
+the conversation on a separate screen, so the list never needs to show which
+channel is current.
+
+Use it inside the [Mobile Channel Sidebar](/patterns/mobile-channel-sidebar)
+pattern. Prefer the desktop item in web sidebars.
+
+Use the Specimen tab for leading visuals, status, and decorations.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Leading visual** — icon or avatar for channel type (Public,
+  Private, Group Message, Direct Message, Threads, Drafts, Insights).
+- <Num>2</Num> **Label** — Body 200 channel, group, or user name.
+- <Num>3</Num> **Mention badge** — numeric badge when the row has unread mentions.
+- <Num>4</Num> **Trailing decorations** — call-in-progress glyph, custom status
+  emoji on DMs, shared-channel marker.
+
+There is no channel menu on mobile — overflow actions live elsewhere (long-press
+or sheets), not on hover.
+
+<AnatomyStage>
+  <div style={{width:'100%',maxWidth:'340px',padding:'0.75rem',background:'var(--sidebar-bg)',borderRadius:'8px',display:'flex',flexDirection:'column',gap:'0.25rem'}}>
+    <MobileChannelSidebarItem name="design" leadingVisual="Public" />
+    <MobileChannelSidebarItem name="design-leadership" leadingVisual="Private" status="Mention" mentionCount={3} />
+    <MobileChannelSidebarItem name="Avery, Mira" leadingVisual="Group Message" memberCount={3} status="Unread" />
+    <MobileChannelSidebarItem
+      name="Leonard Riley"
+      leadingVisual="Direct Message"
+      avatarSrc={avatarLeonard}
+      avatarAlt="Leonard Riley"
+      showAvatarStatus
+      status="Unread"
+    />
+  </div>
+</AnatomyStage>
+
+<Divider />
+
+## Status
+
+| Status  | Treatment                                      |
+| ------- | ---------------------------------------------- |
+| Read    | Resting weight; the row recedes.               |
+| Unread  | Semibold name; brighter sidebar text.          |
+| Mention | Semibold name; mention badge with count.       |
+
+Mute reduces opacity across the row regardless of status.
+
+<Divider />
+
+## Press
+
+There is no selected/active highlight. Press uses a brief tint via `:active`.
+Unlike desktop, the three-dot channel menu is never shown.
+
+<Divider />
+
+## Implementation
+
+For props and copy-ready examples, see the
+[Mobile Channel Sidebar Item specimen](/components/mobile-channel-sidebar-item/specimen).
