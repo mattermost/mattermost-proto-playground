@@ -29,6 +29,10 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Distinct automations run on a reusable agent; tool access is scoped per automation (least privilege) without editing the shared agent.',
     path: '/prototypes/scoped-executor-automations',
     component: ScopedExecutorAutomations,
+    tag: {
+      label: 'Selected',
+      type: 'Success',
+    },
   },
   {
     id: 'progressive-automation-agents',
