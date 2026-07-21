@@ -226,10 +226,10 @@ export function scriptedReplyFor(
   action: AiSuggestion['action'],
 ): string {
   if (action === 'create-workflow') {
-    return 'Got it. I’ll open a new draft in the editor and start building that workflow on the canvas.';
+    return 'Got it. I’ll open the editor behind this panel and build that workflow on the canvas.';
   }
   if (action === 'open-editor-agent') {
-    return 'Opening the workflow builder assistant so we can place triggers and steps on the canvas together.';
+    return 'I’ll place triggers and steps on the canvas while we work from this assistant.';
   }
   if (action === 'go-templates') {
     return 'For onboarding, start with “Welcome new teammates.” I’ll take you to Templates so you can use it.';
