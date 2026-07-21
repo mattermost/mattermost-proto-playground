@@ -43,6 +43,7 @@
   background: var(--center-channel-bg, #fff);
   padding: 16px 16px 16px 14px;
   border-left-width: 4px;
+  box-shadow: var(--elevation-1);
   cursor: pointer;
   font: inherit;
   color: inherit;
@@ -50,7 +51,6 @@
 
 .templates__card:hover {
   border-color: rgba(var(--button-bg-rgb, 28, 88, 217), 0.4);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .templates__category {
