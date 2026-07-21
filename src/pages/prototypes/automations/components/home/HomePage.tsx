@@ -10,6 +10,7 @@ import {
   Button,
   Checkbox,
   Chip,
+  Dropdown,
   EmptyState,
   Icon,
   IconButton,
@@ -231,21 +232,20 @@ export default function HomePage() {
           </div>
 
           <div className={styles['home__filter-trigger']} ref={filterRef}>
-            <Button
-              emphasis={attributeFilterCount > 0 ? 'Secondary' : 'Quaternary'}
+            <Dropdown
               size="Small"
-              leadingIcon={<Icon size="16" glyph={<FilterVariantIcon />} />}
+              isOpen={filtersOpen}
+              leadingIcon={<FilterVariantIcon size={16} />}
               onClick={() => {
                 setFiltersOpen((v) => !v);
                 setTagsOpen(false);
               }}
-              aria-expanded={filtersOpen}
               aria-haspopup="dialog"
             >
               {attributeFilterCount > 0
                 ? `Filters · ${attributeFilterCount}`
                 : 'Filters'}
-            </Button>
+            </Dropdown>
             {filtersOpen ? (
               <div className={styles['home__filter-panel']} role="dialog" aria-label="Filters">
                 <PopoverMenu>
@@ -306,19 +306,18 @@ export default function HomePage() {
           </div>
 
           <div className={styles['home__filter-trigger']} ref={tagsRef}>
-            <Button
-              emphasis={tagFilters.length > 0 ? 'Secondary' : 'Quaternary'}
+            <Dropdown
               size="Small"
-              leadingIcon={<Icon size="16" glyph={<TagOutlineIcon />} />}
+              isOpen={tagsOpen}
+              leadingIcon={<TagOutlineIcon size={16} />}
               onClick={() => {
                 setTagsOpen((v) => !v);
                 setFiltersOpen(false);
               }}
-              aria-expanded={tagsOpen}
               aria-haspopup="dialog"
             >
               {tagFilters.length > 0 ? `Tags · ${tagFilters.length}` : 'Tags'}
-            </Button>
+            </Dropdown>
             {tagsOpen ? (
               <div
                 className={`${styles['home__filter-panel']} ${styles['home__filter-panel--tags']}`}

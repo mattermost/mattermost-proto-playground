@@ -1,9 +1,9 @@
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import RefreshIcon from '@mattermost/compass-icons/components/refresh';
 import {
-  Button,
   Checkbox,
   Chip,
+  Dropdown,
   Icon,
   IconButton,
   PopoverMenu,
@@ -76,18 +76,17 @@ export default function AllRunsPage() {
 
       <div className={styles.history__filters}>
         <div className={styles['history__filter-trigger']} ref={filterRef}>
-          <Button
-            emphasis={statusFilters.length > 0 ? 'Secondary' : 'Quaternary'}
+          <Dropdown
             size="Small"
-            leadingIcon={<Icon size="16" glyph={<FilterVariantIcon />} />}
+            isOpen={filtersOpen}
+            leadingIcon={<FilterVariantIcon size={16} />}
             onClick={() => setFiltersOpen((v) => !v)}
-            aria-expanded={filtersOpen}
             aria-haspopup="dialog"
           >
             {statusFilters.length > 0
               ? `Filters · ${statusFilters.length}`
               : 'Filters'}
-          </Button>
+          </Dropdown>
           {filtersOpen ? (
             <div
               className={styles['history__filter-panel']}
