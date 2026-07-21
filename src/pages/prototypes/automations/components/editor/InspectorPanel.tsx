@@ -39,79 +39,81 @@ export default function InspectorPanel({
           </Button>
         </div>
         <Scrollbar className={styles.panel__body}>
-          {selectedNode.data.helpText ? (
-            <p className={styles.panel__help}>{selectedNode.data.helpText}</p>
-          ) : null}
-          <TextInput
-            label="Label"
-            value={selectedNode.data.label}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              onUpdateNode(selectedNode.id, fields, e.target.value)
-            }
-          />
-          {selectedNode.data.stepType === 'condition' ? (
-            <>
-              <TextInput
-                label="Left value"
-                value={fields.left ?? ''}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  onUpdateNode(selectedNode.id, { ...fields, left: e.target.value })
-                }
-              />
-              <Select
-                label="Operator"
-                value={fields.operator ?? 'contains'}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  onUpdateNode(selectedNode.id, {
-                    ...fields,
-                    operator: e.target.value,
-                  })
-                }
-              >
-                <option value="contains">contains</option>
-                <option value="equals">equals</option>
-                <option value="contains_any">contains any</option>
-              </Select>
-              <TextInput
-                label="Right value"
-                value={fields.right ?? ''}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  onUpdateNode(selectedNode.id, { ...fields, right: e.target.value })
-                }
-              />
-            </>
-          ) : (
+          <div className={styles.panel__stack}>
+            {selectedNode.data.helpText ? (
+              <p className={styles.panel__help}>{selectedNode.data.helpText}</p>
+            ) : null}
             <TextInput
-              label="Configuration"
-              value={fields.message ?? fields.emoji ?? fields.command ?? ''}
+              label="Label"
+              value={selectedNode.data.label}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                onUpdateNode(selectedNode.id, {
-                  ...fields,
-                  message: e.target.value,
-                })
+                onUpdateNode(selectedNode.id, fields, e.target.value)
               }
             />
-          )}
-          <div>
-            <p className={styles.panel__help}>Variables</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {['{{.Post.message}}', '{{.ChannelID}}', '{{.User.username}}'].map(
-                (v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    className={styles.agent__prompt}
-                    onClick={() =>
-                      onUpdateNode(selectedNode.id, {
-                        ...fields,
-                        message: `${fields.message ?? ''}${v}`,
-                      })
-                    }
-                  >
-                    {v}
-                  </button>
-                ),
-              )}
+            {selectedNode.data.stepType === 'condition' ? (
+              <>
+                <TextInput
+                  label="Left value"
+                  value={fields.left ?? ''}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    onUpdateNode(selectedNode.id, { ...fields, left: e.target.value })
+                  }
+                />
+                <Select
+                  label="Operator"
+                  value={fields.operator ?? 'contains'}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                    onUpdateNode(selectedNode.id, {
+                      ...fields,
+                      operator: e.target.value,
+                    })
+                  }
+                >
+                  <option value="contains">contains</option>
+                  <option value="equals">equals</option>
+                  <option value="contains_any">contains any</option>
+                </Select>
+                <TextInput
+                  label="Right value"
+                  value={fields.right ?? ''}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    onUpdateNode(selectedNode.id, { ...fields, right: e.target.value })
+                  }
+                />
+              </>
+            ) : (
+              <TextInput
+                label="Configuration"
+                value={fields.message ?? fields.emoji ?? fields.command ?? ''}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  onUpdateNode(selectedNode.id, {
+                    ...fields,
+                    message: e.target.value,
+                  })
+                }
+              />
+            )}
+            <div>
+              <p className={styles.panel__help}>Variables</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {['{{.Post.message}}', '{{.ChannelID}}', '{{.User.username}}'].map(
+                  (v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      className={styles.agent__prompt}
+                      onClick={() =>
+                        onUpdateNode(selectedNode.id, {
+                          ...fields,
+                          message: `${fields.message ?? ''}${v}`,
+                        })
+                      }
+                    >
+                      {v}
+                    </button>
+                  ),
+                )}
+              </div>
             </div>
           </div>
         </Scrollbar>
@@ -142,50 +144,54 @@ export default function InspectorPanel({
         <h2 className={styles.panel__title}>Automation</h2>
       </div>
       <Scrollbar className={styles.panel__body}>
-        <TextInput
-          label="Name"
-          value={automation.name}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => onUpdateAutomation({ name: e.target.value })}
-        />
-        <Checkbox
-          checked={automation.status === 'enabled'}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            onUpdateAutomation({
-              status: e.target.checked ? 'enabled' : 'disabled',
-            })
-          }
-        >
-          Enabled
-        </Checkbox>
-        <Select
-          label="Scope"
-          value={automation.scope}
-          onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-            onUpdateAutomation({
-              scope: e.target.value as Automation['scope'],
-            })
-          }
-        >
-          <option value="global">Global</option>
-          <option value="team">Team</option>
-          <option value="channel">Channel</option>
-        </Select>
-        <TextInput
-          label="Tags (comma-separated)"
-          value={automation.tags.join(', ')}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            onUpdateAutomation({
-              tags: e.target.value
-                .split(',')
-                .map((t: string) => t.trim())
-                .filter(Boolean),
-            })
-          }
-        />
-        <Select label="Run as" value="author" onChange={() => undefined}>
-          <option value="author">Author (recommended)</option>
-          <option value="bot">Bot account</option>
-        </Select>
+        <div className={styles.panel__stack}>
+          <TextInput
+            label="Name"
+            value={automation.name}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              onUpdateAutomation({ name: e.target.value })
+            }
+          />
+          <Checkbox
+            checked={automation.status === 'enabled'}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              onUpdateAutomation({
+                status: e.target.checked ? 'enabled' : 'disabled',
+              })
+            }
+          >
+            Enabled
+          </Checkbox>
+          <Select
+            label="Scope"
+            value={automation.scope}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              onUpdateAutomation({
+                scope: e.target.value as Automation['scope'],
+              })
+            }
+          >
+            <option value="global">Global</option>
+            <option value="team">Team</option>
+            <option value="channel">Channel</option>
+          </Select>
+          <TextInput
+            label="Tags (comma-separated)"
+            value={automation.tags.join(', ')}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              onUpdateAutomation({
+                tags: e.target.value
+                  .split(',')
+                  .map((t: string) => t.trim())
+                  .filter(Boolean),
+              })
+            }
+          />
+          <Select label="Run as" value="author" onChange={() => undefined}>
+            <option value="author">Author (recommended)</option>
+            <option value="bot">Bot account</option>
+          </Select>
+        </div>
       </Scrollbar>
     </div>
   );
