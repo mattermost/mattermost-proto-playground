@@ -464,6 +464,7 @@ export default function HomePage() {
                         <Tag label="Draft" size="X-Small" type="Default" />
                       ) : (
                         <Switch
+                          className={styles['home__status-switch']}
                           size="Small"
                           checked={a.status === 'enabled'}
                           aria-label={`Enable ${a.name}`}
