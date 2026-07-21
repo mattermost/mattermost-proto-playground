@@ -57,6 +57,8 @@ type AutomationsContextValue = {
   getRun: (runId: string) => AutomationRun | undefined;
   getHistoryFor: (automationId: string) => ChangeRevision[];
   scopes: AutomationScope[];
+  assistantOpen: boolean;
+  setAssistantOpen: (open: boolean) => void;
 };
 
 const AutomationsContext = createContext<AutomationsContextValue | null>(null);
@@ -86,6 +88,7 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState(INITIAL_HISTORY);
   const [recentIds, setRecentIds] = useState(() => loadRecentIds());
   const [toast, setToast] = useState<ToastState>(null);
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   const showToast = useCallback(
     (message: string, type: NonNullable<ToastState>['type'] = 'Info') => {
@@ -236,6 +239,8 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
       getRun,
       getHistoryFor,
       scopes: ['global', 'team', 'channel'],
+      assistantOpen,
+      setAssistantOpen,
     }),
     [
       automations,
@@ -259,6 +264,7 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
       getRunsFor,
       getRun,
       getHistoryFor,
+      assistantOpen,
     ],
   );
 

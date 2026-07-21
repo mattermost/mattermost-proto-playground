@@ -14,10 +14,15 @@
   color: var(--button-color, #fff);
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .assistant-fab:hover {
   filter: brightness(1.06);
+  transform: scale(1.04);
 }
 
 .assistant-fab--open {
@@ -38,6 +43,26 @@
   border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
   background: var(--center-channel-bg, #fff);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+  transform: translate3d(18px, 8px, 0) scale(0.98);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 180ms ease,
+    visibility 0s linear 220ms;
+  will-change: transform, opacity;
+}
+
+.assistant-panel--open {
+  transform: translate3d(0, 0, 0) scale(1);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 180ms ease,
+    visibility 0s linear 0s;
 }
 
 .assistant-panel__header {
@@ -101,4 +126,12 @@
 .assistant-panel__composer {
   border-top: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
   padding: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assistant-fab,
+  .assistant-panel,
+  .assistant-panel--open {
+    transition: none;
+  }
 }

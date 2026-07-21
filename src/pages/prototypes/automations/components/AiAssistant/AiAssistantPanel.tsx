@@ -7,7 +7,7 @@ import {
   Scrollbar,
   messageStyles,
 } from '@mattermost/compass-ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import avatarBot from '@/assets/avatars/Aiko Tan.png';
 import avatarUser from '@/assets/avatars/Danielle Okoro.png';
@@ -35,15 +35,21 @@ function nowLabel() {
   return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
-type AiAssistantPanelProps = {
-  onClose: () => void;
-};
-
-export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
+/**
+ * Persistent AI assistant panel. Stays mounted in the product shell so it can
+ * remain open while the user navigates (e.g. into the workflow builder).
+ */
+export default function AiAssistantPanel() {
   const { pathname } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
-  const { getAutomation, createAiDraft, recordRecent } = useAutomations();
+  const {
+    getAutomation,
+    createAiDraft,
+    recordRecent,
+    assistantOpen,
+    setAssistantOpen,
+  } = useAutomations();
 
   const automationId = params.id;
   const automation = automationId ? getAutomation(automationId) : undefined;
@@ -55,23 +61,52 @@ export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
 
   const suggestions = useMemo(() => suggestionsForContext(ctx), [ctx]);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
+    {
+      id: 'greet-initial',
+      role: 'assistant',
+      text: greetingForContext(ctx),
+      timestamp: nowLabel(),
+    },
+  ]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
+  const prevContextKey = useRef(`${ctx.surface}:${ctx.automationId ?? ''}`);
+  const seededOpen = useRef(false);
 
-  // Reset greeting when surface/context changes while open.
+  // First open: ensure we have a greeting for the current place.
   useEffect(() => {
+    if (!assistantOpen || seededOpen.current) return;
+    seededOpen.current = true;
     setMessages([
       {
-        id: `greet-${ctx.surface}-${Date.now()}`,
+        id: `greet-${Date.now()}`,
         role: 'assistant',
         text: greetingForContext(ctx),
         timestamp: nowLabel(),
       },
     ]);
-    setDraft('');
-    setBusy(false);
-  }, [ctx]);
+  }, [assistantOpen, ctx]);
+
+  // While open, announce context changes instead of wiping the thread.
+  useEffect(() => {
+    const key = `${ctx.surface}:${ctx.automationId ?? ''}`;
+    if (!assistantOpen) {
+      prevContextKey.current = key;
+      return;
+    }
+    if (prevContextKey.current === key) return;
+    prevContextKey.current = key;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: `ctx-${Date.now()}`,
+        role: 'assistant',
+        text: greetingForContext(ctx),
+        timestamp: nowLabel(),
+      },
+    ]);
+  }, [ctx, assistantOpen]);
 
   const runAction = (suggestion: AiSuggestion | null, prompt: string) => {
     const action = suggestion?.action ?? 'none';
@@ -101,23 +136,21 @@ export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
       ]);
       setBusy(false);
 
+      // Keep the assistant open on top while navigating behind it.
       if (action === 'create-workflow') {
         window.setTimeout(() => {
           const id = createAiDraft();
           recordRecent(id);
-          onClose();
           navigate(`${BASE}/${id}/editor?agent=1`);
-        }, 600);
+        }, 500);
       } else if (action === 'open-editor-agent' && ctx.automationId) {
         window.setTimeout(() => {
-          onClose();
           navigate(`${BASE}/${ctx.automationId}/editor?agent=1`);
-        }, 500);
+        }, 400);
       } else if (action === 'go-templates') {
         window.setTimeout(() => {
-          onClose();
           navigate(`${BASE}/templates`);
-        }, 500);
+        }, 400);
       }
     }, 450);
   };
@@ -131,7 +164,16 @@ export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
   };
 
   return (
-    <aside className={styles['assistant-panel']} aria-label="AI assistant">
+    <aside
+      className={[
+        styles['assistant-panel'],
+        assistantOpen ? styles['assistant-panel--open'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-label="AI assistant"
+      aria-hidden={!assistantOpen}
+    >
       <div className={styles['assistant-panel__header']}>
         <div className={styles['assistant-panel__title-block']}>
           <h2 className={styles['assistant-panel__title']}>Automations assistant</h2>
@@ -142,7 +184,7 @@ export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
           size="Small"
           padding="Compact"
           icon={<Icon size="16" glyph={<CloseIcon />} />}
-          onClick={onClose}
+          onClick={() => setAssistantOpen(false)}
         />
       </div>
 
@@ -176,7 +218,7 @@ export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
         )}
       </Scrollbar>
 
-      {!busy ? (
+      {assistantOpen && !busy ? (
         <div className={styles['assistant-panel__suggestions']}>
           {suggestions.map((s) => (
             <button
@@ -202,9 +244,9 @@ export default function AiAssistantPanel({ onClose }: AiAssistantPanelProps) {
           <button
             type="button"
             className={styles['assistant-panel__suggestion']}
-            disabled={busy || !draft.trim()}
+            disabled={busy || !draft.trim() || !assistantOpen}
             onClick={onSend}
-            style={{ opacity: busy || !draft.trim() ? 0.5 : 1 }}
+            style={{ opacity: busy || !draft.trim() || !assistantOpen ? 0.5 : 1 }}
           >
             Send
           </button>
