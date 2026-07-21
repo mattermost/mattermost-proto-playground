@@ -130,39 +130,6 @@
   gap: 10px;
 }
 
-.palette__legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  font-size: 11px;
-  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.64);
-}
-
-.palette__legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.palette__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.palette__dot--get {
-  background: #1c58d9;
-}
-.palette__dot--create {
-  background: #3db887;
-}
-.palette__dot--update {
-  background: #cc8b00;
-}
-.palette__dot--delete {
-  background: #d24b4b;
-}
-
 .palette__section {
   border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
   border-radius: 6px;
