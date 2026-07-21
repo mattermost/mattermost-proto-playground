@@ -14,10 +14,6 @@ export default function AppShell() {
   const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
 
-  useEffect(() => {
-    setPrototypeCenterSlot(null);
-  }, [pathname]);
-
   return (
     <div className={styles['app-shell']}>
       {!isEmbedded && prototypeEntry && (
