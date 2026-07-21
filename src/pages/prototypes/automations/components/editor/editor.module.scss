@@ -279,14 +279,22 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 12px 14px;
+  box-sizing: border-box;
+  height: 48px;
+  padding: 0 14px;
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  flex-shrink: 0;
 }
 
 .panel__title {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .panel__body {
