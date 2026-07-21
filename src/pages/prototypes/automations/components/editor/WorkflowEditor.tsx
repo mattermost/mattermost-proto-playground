@@ -191,14 +191,13 @@ function EditorInner() {
     return (
       <div className={styles.editor}>
         <div className={styles.editor__toolbar}>
-          <Button
-            emphasis="Tertiary"
+          <IconButton
+            aria-label="Back"
             size="Small"
-            leadingIcon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
+            padding="Compact"
+            icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(BASE)}
-          >
-            Back
-          </Button>
+          />
           <span>Automation not found</span>
         </div>
       </div>
@@ -216,14 +215,13 @@ function EditorInner() {
     <div className={styles.editor}>
       <div className={styles.editor__toolbar}>
         <div className={styles['editor__toolbar-left']}>
-          <Button
-            emphasis="Tertiary"
+          <IconButton
+            aria-label="Back"
             size="Small"
-            leadingIcon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
+            padding="Compact"
+            icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(BASE)}
-          >
-            Back
-          </Button>
+          />
           <h1 className={styles.editor__title}>{automation.name}</h1>
           <IconButton
             aria-label={automation.favorite ? 'Remove favorite' : 'Add favorite'}
