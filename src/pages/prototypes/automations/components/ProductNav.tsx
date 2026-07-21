@@ -1,3 +1,4 @@
+import HomeVariantOutlineIcon from '@mattermost/compass-icons/components/home-variant-outline';
 import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import {
@@ -48,7 +49,7 @@ export default function ProductNav({ teamName = 'Contributors' }: { teamName?: s
         <div className={styles['product-nav__top']}>
           <ChannelSidebarItem
             name="Home"
-            leadingVisual="Threads"
+            leadingIcon={<HomeVariantOutlineIcon size={16} />}
             active={homeActive}
             onClick={() => navigate(BASE)}
           />
