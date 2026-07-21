@@ -191,6 +191,28 @@
   gap: 6px;
 }
 
+.home__edited {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.home__edited-tip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  z-index: 12;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.home__edited:hover .home__edited-tip,
+.home__edited:focus-visible .home__edited-tip {
+  display: block;
+}
+
 .home__dot {
   width: 8px;
   height: 8px;

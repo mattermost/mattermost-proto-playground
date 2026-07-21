@@ -20,6 +20,7 @@ import {
   SearchInput,
   Switch,
   Tag,
+  Tooltip,
   useOutsideClose,
 } from '@mattermost/compass-ui';
 import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react';
@@ -46,6 +47,19 @@ const SCOPE_OPTIONS: Array<{ value: AutomationScope; label: string }> = [
 function formatWhen(iso: string | null) {
   if (!iso) return '—';
   return new Date(iso).toLocaleString();
+}
+
+function formatRelative(iso: string | null) {
+  if (!iso) return '—';
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.max(0, Math.floor(diffMs / 60000));
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString();
 }
 
 function scopeLabel(scope: AutomationScope) {
@@ -489,8 +503,19 @@ export default function HomePage() {
                     </td>
                     <td>{a.creator}</td>
                     <td>
-                      {formatWhen(a.lastEditedAt)}
-                      <div style={{ opacity: 0.64 }}>{a.lastEditedBy}</div>
+                      <span
+                        className={styles.home__edited}
+                        title={`${formatWhen(a.lastEditedAt)} · ${a.lastEditedBy}`}
+                      >
+                        {formatRelative(a.lastEditedAt)}
+                        <span className={styles['home__edited-tip']} aria-hidden>
+                          <Tooltip
+                            label={formatWhen(a.lastEditedAt)}
+                            hint={a.lastEditedBy}
+                            arrow="Top"
+                          />
+                        </span>
+                      </span>
                     </td>
                     <td
                       className={styles['home__menu-cell']}
