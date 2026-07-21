@@ -75,30 +75,6 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
         onClear={() => setQuery('')}
         size="Small"
       />
-      <div className={styles.palette__legend} aria-hidden>
-        <span>
-          <i className={[styles.palette__dot, styles['palette__dot--get']].join(' ')} />
-          Get
-        </span>
-        <span>
-          <i
-            className={[styles.palette__dot, styles['palette__dot--create']].join(' ')}
-          />
-          Create
-        </span>
-        <span>
-          <i
-            className={[styles.palette__dot, styles['palette__dot--update']].join(' ')}
-          />
-          Update
-        </span>
-        <span>
-          <i
-            className={[styles.palette__dot, styles['palette__dot--delete']].join(' ')}
-          />
-          Delete
-        </span>
-      </div>
       <Scrollbar style={{ flex: 1, minHeight: 0 }}>
         <div className={styles.palette__section}>
           <button
