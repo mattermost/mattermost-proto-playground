@@ -59,6 +59,9 @@ type AutomationsContextValue = {
   scopes: AutomationScope[];
   assistantOpen: boolean;
   setAssistantOpen: (open: boolean) => void;
+  /** Bumps when the floating assistant writes a graph so the editor can sync. */
+  aiCanvasEpoch: number;
+  applyAiGraph: (id: string, nodes: WorkflowNode[], edges: WorkflowEdge[]) => void;
 };
 
 const AutomationsContext = createContext<AutomationsContextValue | null>(null);
@@ -89,6 +92,7 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
   const [recentIds, setRecentIds] = useState(() => loadRecentIds());
   const [toast, setToast] = useState<ToastState>(null);
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const [aiCanvasEpoch, setAiCanvasEpoch] = useState(0);
 
   const showToast = useCallback(
     (message: string, type: NonNullable<ToastState>['type'] = 'Info') => {
@@ -125,6 +129,26 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
       updateAutomation(id, { nodes, edges });
     },
     [updateAutomation],
+  );
+
+  const applyAiGraph = useCallback(
+    (id: string, nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
+      setAutomations((prev) =>
+        prev.map((a) =>
+          a.id === id
+            ? {
+                ...a,
+                nodes,
+                edges,
+                lastEditedAt: new Date().toISOString(),
+                lastEditedBy: '@dev',
+              }
+            : a,
+        ),
+      );
+      setAiCanvasEpoch((n) => n + 1);
+    },
+    [],
   );
 
   const toggleFavorite = useCallback((id: string) => {
@@ -241,6 +265,8 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
       scopes: ['global', 'team', 'channel'],
       assistantOpen,
       setAssistantOpen,
+      aiCanvasEpoch,
+      applyAiGraph,
     }),
     [
       automations,
@@ -265,6 +291,8 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
       getRun,
       getHistoryFor,
       assistantOpen,
+      aiCanvasEpoch,
+      applyAiGraph,
     ],
   );
 

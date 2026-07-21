@@ -19,6 +19,10 @@ import {
   suggestionsForContext,
   type AiSuggestion,
 } from '../../data/aiAssistantContext';
+import {
+  buildAiProgressionScript,
+  graphSlice,
+} from '../../data/aiCreateScript';
 import styles from './AiAssistant.module.scss';
 
 const BASE = '/prototypes/automations';
@@ -49,6 +53,7 @@ export default function AiAssistantPanel() {
     recordRecent,
     assistantOpen,
     setAssistantOpen,
+    applyAiGraph,
   } = useAutomations();
 
   const automationId = params.id;
@@ -108,6 +113,34 @@ export default function AiAssistantPanel() {
     ]);
   }, [ctx, assistantOpen]);
 
+  const runProgressiveBuild = (automationId: string, prompt: string) => {
+    const turns = buildAiProgressionScript(prompt);
+    let i = 1;
+    const tick = () => {
+      if (i >= turns.length) {
+        setBusy(false);
+        return;
+      }
+      const turn = turns[i];
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `asst-${Date.now()}-${i}`,
+          role: 'assistant',
+          text: turn.text,
+          timestamp: nowLabel(),
+        },
+      ]);
+      if (turn.revealThroughNodeIndex != null) {
+        const slice = graphSlice(turn.revealThroughNodeIndex);
+        applyAiGraph(automationId, slice.nodes, slice.edges);
+      }
+      i += 1;
+      window.setTimeout(tick, 700);
+    };
+    window.setTimeout(tick, 400);
+  };
+
   const runAction = (suggestion: AiSuggestion | null, prompt: string) => {
     const action = suggestion?.action ?? 'none';
     const reply = scriptedReplyFor(ctx, prompt, action);
@@ -124,6 +157,45 @@ export default function AiAssistantPanel() {
     setDraft('');
     setBusy(true);
 
+    if (action === 'create-workflow') {
+      window.setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `asst-${Date.now()}`,
+            role: 'assistant',
+            text: reply,
+            timestamp: nowLabel(),
+          },
+        ]);
+        const id = createAiDraft();
+        recordRecent(id);
+        navigate(`${BASE}/${id}/editor`);
+        runProgressiveBuild(id, prompt);
+      }, 350);
+      return;
+    }
+
+    if (action === 'open-editor-agent' && ctx.automationId) {
+      const targetId = ctx.automationId;
+      window.setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `asst-${Date.now()}`,
+            role: 'assistant',
+            text: reply,
+            timestamp: nowLabel(),
+          },
+        ]);
+        if (ctx.surface !== 'editor') {
+          navigate(`${BASE}/${targetId}/editor`);
+        }
+        runProgressiveBuild(targetId, prompt);
+      }, 350);
+      return;
+    }
+
     window.setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -136,18 +208,7 @@ export default function AiAssistantPanel() {
       ]);
       setBusy(false);
 
-      // Keep the assistant open on top while navigating behind it.
-      if (action === 'create-workflow') {
-        window.setTimeout(() => {
-          const id = createAiDraft();
-          recordRecent(id);
-          navigate(`${BASE}/${id}/editor?agent=1`);
-        }, 500);
-      } else if (action === 'open-editor-agent' && ctx.automationId) {
-        window.setTimeout(() => {
-          navigate(`${BASE}/${ctx.automationId}/editor?agent=1`);
-        }, 400);
-      } else if (action === 'go-templates') {
+      if (action === 'go-templates') {
         window.setTimeout(() => {
           navigate(`${BASE}/templates`);
         }, 400);

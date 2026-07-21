@@ -21,10 +21,9 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import type { PaletteItem, WorkflowEdge, WorkflowNode } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
-import AgentPanel from './AgentPanel';
 import InspectorPanel from './InspectorPanel';
 import StepsPalette from './StepsPalette';
 import WorkflowNodeView from './WorkflowNode';
@@ -37,7 +36,6 @@ type GraphSnapshot = { nodes: WorkflowNode[]; edges: WorkflowEdge[] };
 
 function EditorInner() {
   const { id = '' } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const {
     getAutomation,
@@ -46,6 +44,7 @@ function EditorInner() {
     appendHistory,
     recordRecent,
     showToast,
+    aiCanvasEpoch,
   } = useAutomations();
   const automation = getAutomation(id);
   const { screenToFlowPosition } = useReactFlow();
@@ -57,11 +56,11 @@ function EditorInner() {
     automation?.edges ?? [],
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [agentOpen, setAgentOpen] = useState(searchParams.get('agent') === '1');
   const [actionsOpen, setActionsOpen] = useState(false);
   const [past, setPast] = useState<GraphSnapshot[]>([]);
   const [future, setFuture] = useState<GraphSnapshot[]>([]);
   const hydrated = useRef<string | null>(null);
+  const lastAiEpoch = useRef(aiCanvasEpoch);
 
   useEffect(() => {
     if (!automation) return;
@@ -78,11 +77,15 @@ function EditorInner() {
     setFuture([]);
   }, [automation, setNodes, setEdges]);
 
+  // Sync canvas when the floating assistant progressively writes the graph.
   useEffect(() => {
-    if (searchParams.get('agent') === '1') {
-      setAgentOpen(true);
-    }
-  }, [searchParams]);
+    if (!automation) return;
+    if (lastAiEpoch.current === aiCanvasEpoch) return;
+    lastAiEpoch.current = aiCanvasEpoch;
+    setNodes(automation.nodes);
+    setEdges(automation.edges);
+    setSelectedId(null);
+  }, [aiCanvasEpoch, automation, setNodes, setEdges]);
 
   const pushHistory = useCallback(
     (nextNodes: WorkflowNode[], nextEdges: WorkflowEdge[]) => {
@@ -143,7 +146,6 @@ function EditorInner() {
       };
       pushHistory([...nodes, newNode], edges);
       setSelectedId(newNode.id);
-      setAgentOpen(false);
     },
     [nodes, edges, pushHistory],
   );
@@ -294,7 +296,7 @@ function EditorInner() {
         <div className={styles.editor__canvas}>
           {nodes.length === 0 ? (
             <div className={styles.editor__blank}>
-              Add a trigger from the left, or describe a workflow with AI
+              Add a trigger from the left, or use the AI assistant to describe a workflow
             </div>
           ) : null}
           <ReactFlow
@@ -309,11 +311,6 @@ function EditorInner() {
             fitView
             onNodeClick={(_, node) => {
               setSelectedId(node.id);
-              setAgentOpen(false);
-              if (searchParams.get('agent')) {
-                searchParams.delete('agent');
-                setSearchParams(searchParams, { replace: true });
-              }
             }}
             onPaneClick={() => setSelectedId(null)}
           >
@@ -324,69 +321,54 @@ function EditorInner() {
         </div>
 
         <div className={styles.editor__side}>
-          {agentOpen ? (
-            <AgentPanel
-              onClose={() => {
-                setAgentOpen(false);
-                if (searchParams.get('agent')) {
-                  searchParams.delete('agent');
-                  setSearchParams(searchParams, { replace: true });
-                }
-              }}
-              onApplyGraph={(nextNodes, nextEdges) => {
-                pushHistory(nextNodes, nextEdges);
-              }}
-            />
-          ) : (
-            <InspectorPanel
-              automation={automation}
-              selectedNode={selectedNode}
-              onCloseNode={() => setSelectedId(null)}
-              onUpdateAutomation={(patch) => updateAutomation(automation.id, patch)}
-              onUpdateNode={(nodeId, fields, label) => {
-                const next = nodes.map((n) =>
-                  n.id === nodeId
-                    ? {
-                        ...n,
-                        data: {
-                          ...n.data,
-                          fields,
-                          label: label ?? n.data.label,
-                        },
-                      }
-                    : n,
-                );
-                pushHistory(next, edges);
-              }}
-              onDuplicateNode={(nodeId) => {
-                const source = nodes.find((n) => n.id === nodeId);
-                if (!source) return;
-                const copy: WorkflowNode = {
-                  ...source,
-                  id: `${source.id}-copy-${Date.now()}`,
-                  position: {
-                    x: source.position.x + 40,
-                    y: source.position.y + 40,
-                  },
-                  data: {
-                    ...source.data,
-                    fields: source.data.fields
-                      ? { ...source.data.fields }
-                      : undefined,
-                  },
-                };
-                pushHistory([...nodes, copy], edges);
-                setSelectedId(copy.id);
-              }}
-              onDeleteNode={(nodeId) => {
-                pushHistory(
-                  nodes.filter((n) => n.id !== nodeId),
-                  edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
-                );
-                setSelectedId(null);
-              }}
-            />
-          )}
+          <InspectorPanel
+            automation={automation}
+            selectedNode={selectedNode}
+            onCloseNode={() => setSelectedId(null)}
+            onUpdateAutomation={(patch) => updateAutomation(automation.id, patch)}
+            onUpdateNode={(nodeId, fields, label) => {
+              const next = nodes.map((n) =>
+                n.id === nodeId
+                  ? {
+                      ...n,
+                      data: {
+                        ...n.data,
+                        fields,
+                        label: label ?? n.data.label,
+                      },
+                    }
+                  : n,
+              );
+              pushHistory(next, edges);
+            }}
+            onDuplicateNode={(nodeId) => {
+              const source = nodes.find((n) => n.id === nodeId);
+              if (!source) return;
+              const copy: WorkflowNode = {
+                ...source,
+                id: `${source.id}-copy-${Date.now()}`,
+                position: {
+                  x: source.position.x + 40,
+                  y: source.position.y + 40,
+                },
+                data: {
+                  ...source.data,
+                  fields: source.data.fields
+                    ? { ...source.data.fields }
+                    : undefined,
+                },
+              };
+              pushHistory([...nodes, copy], edges);
+              setSelectedId(copy.id);
+            }}
+            onDeleteNode={(nodeId) => {
+              pushHistory(
+                nodes.filter((n) => n.id !== nodeId),
+                edges.filter((e) => e.source !== nodeId && e.target !== nodeId),
+              );
+              setSelectedId(null);
+            }}
+          />
         </div>
       </div>
     </div>
