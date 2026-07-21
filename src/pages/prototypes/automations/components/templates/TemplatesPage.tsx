@@ -17,7 +17,7 @@ export default function TemplatesPage() {
   };
 
   return (
-    <Scrollbar className={styles.templates}>
+    <div className={styles.templates}>
       <div>
         <h1 className={styles.templates__title}>Start from a template</h1>
         <p className={styles.templates__subtitle}>
@@ -25,22 +25,26 @@ export default function TemplatesPage() {
           before enabling.
         </p>
       </div>
-      <div className={styles.templates__grid}>
-        {templates.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            className={styles.templates__card}
-            style={{ borderLeftColor: t.accent }}
-            onClick={() => applyTemplate(t.id)}
-          >
-            <p className={styles.templates__category}>{t.category}</p>
-            <h2 className={styles.templates__name}>{t.name}</h2>
-            <p className={styles.templates__desc}>{t.description}</p>
-            <span className={styles.templates__cta}>Use template</span>
-          </button>
-        ))}
+      <div className={styles.templates__body}>
+        <Scrollbar style={{ height: '100%' }}>
+          <div className={styles.templates__grid}>
+            {templates.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={styles.templates__card}
+                style={{ borderLeftColor: t.accent }}
+                onClick={() => applyTemplate(t.id)}
+              >
+                <p className={styles.templates__category}>{t.category}</p>
+                <h2 className={styles.templates__name}>{t.name}</h2>
+                <p className={styles.templates__desc}>{t.description}</p>
+                <span className={styles.templates__cta}>Use template</span>
+              </button>
+            ))}
+          </div>
+        </Scrollbar>
       </div>
-    </Scrollbar>
+    </div>
   );
 }

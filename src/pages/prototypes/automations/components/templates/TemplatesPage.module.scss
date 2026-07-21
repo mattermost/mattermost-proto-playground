@@ -11,13 +11,19 @@
   margin: 0;
   font-size: 28px;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .templates__subtitle {
   margin: 6px 0 0;
-  font-size: 14px;
+  font-size: 13px;
   color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.72);
   max-width: 640px;
+}
+
+.templates__body {
+  flex: 1;
+  min-height: 0;
 }
 
 .templates__grid {
