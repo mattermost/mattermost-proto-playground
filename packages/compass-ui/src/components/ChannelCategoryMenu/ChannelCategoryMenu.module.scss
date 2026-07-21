@@ -1,0 +1,15 @@
+.channel-category-menu {
+  &__sort-trailing {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__sort-label {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: var(--center-channel-color);
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+}

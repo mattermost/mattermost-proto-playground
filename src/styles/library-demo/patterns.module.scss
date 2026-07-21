@@ -244,6 +244,13 @@
     align-items: flex-start;
   }
 
+  &__popover-menu-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+  }
+
   // ── Tour Point demo ─────────────────────────────────────────
   &__tour-point-demo {
     display: grid;

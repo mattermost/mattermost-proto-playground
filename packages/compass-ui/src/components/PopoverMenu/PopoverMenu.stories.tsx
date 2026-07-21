@@ -1,145 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
-import BellOffOutlineIcon from '@mattermost/compass-icons/components/bell-off-outline';
-import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
-import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
-import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
-import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
-import FolderMoveOutlineIcon from '@mattermost/compass-icons/components/folder-move-outline';
-import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
-import MarkAsUnreadIcon from '@mattermost/compass-icons/components/mark-as-unread';
-import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
-import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
-import AppsIcon from '@mattermost/compass-icons/components/apps';
-import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
+import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import Icon from '../Icon/Icon';
 import MenuItem from '../MenuItem/MenuItem';
-import PopoverMenu, {
-  PopoverMenuDivider,
-  PopoverMenuGroup,
-} from './PopoverMenu';
-
-function ChannelHeaderMenu() {
-  return (
-    <PopoverMenu>
-      <PopoverMenuGroup>
-        <MenuItem
-          label="View info"
-          leadingVisual={<Icon glyph={<InformationOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Mute channel"
-          leadingVisual={<Icon glyph={<BellOffOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Notification preferences"
-          leadingVisual={<Icon glyph={<BellOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Channel settings"
-          leadingVisual={<Icon glyph={<CogOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Bookmarks bar"
-          leadingVisual={<Icon glyph={<BookmarkOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Members"
-          leadingVisual={<Icon glyph={<AccountOutlineIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Move to"
-          leadingVisual={<Icon glyph={<FolderMoveOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-        <MenuItem
-          label="More actions"
-          leadingVisual={<Icon glyph={<AppsIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Leave channel"
-          destructive
-          leadingVisual={<Icon glyph={<ExitToAppIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Archive channel"
-          destructive
-          leadingVisual={<Icon glyph={<ArchiveOutlineIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-    </PopoverMenu>
-  );
-}
-
-function ChannelMenu() {
-  return (
-    <PopoverMenu style={{ width: '174px' }}>
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Mark as read"
-          leadingVisual={<Icon glyph={<MarkAsUnreadIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Favorite"
-          leadingVisual={<Icon glyph={<StarOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Mute channel"
-          leadingVisual={<Icon glyph={<BellOffOutlineIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Move to"
-          leadingVisual={<Icon glyph={<FolderMoveOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Copy link"
-          leadingVisual={<Icon glyph={<LinkVariantIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Add members"
-          leadingVisual={<Icon glyph={<AccountPlusOutlineIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Leave channel"
-          destructive
-          leadingVisual={<Icon glyph={<ExitToAppIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-    </PopoverMenu>
-  );
-}
+import ChannelCategoryMenu from '../ChannelCategoryMenu/ChannelCategoryMenu';
+import ChannelHeaderMenu from '../ChannelHeaderMenu/ChannelHeaderMenu';
+import ChannelMenu from '../ChannelMenu/ChannelMenu';
+import HelpMenu from '../HelpMenu/HelpMenu';
+import MessageMoreOptionsMenu from '../MessageMoreOptionsMenu/MessageMoreOptionsMenu';
+import PlusMenu from '../PlusMenu/PlusMenu';
+import ProductSwitcherMenu from '../ProductSwitcherMenu/ProductSwitcherMenu';
+import TeamMenu from '../TeamMenu/TeamMenu';
+import ThreadActionsMenu from '../ThreadActionsMenu/ThreadActionsMenu';
+import { TITLE_PATTERNS_POPOVER_MENU } from '../../storybook/titles';
+import PopoverMenu from './PopoverMenu';
 
 const meta = {
-  title: 'Patterns/Popover Menu',
+  title: TITLE_PATTERNS_POPOVER_MENU,
   component: PopoverMenu,
   tags: ['autodocs'],
 } satisfies Meta<typeof PopoverMenu>;
@@ -148,14 +25,73 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ChannelHeaderMenuExample: Story = {
+  name: 'Channel header menu',
   render: () => <ChannelHeaderMenu />,
 };
 
+export const ProductSwitcherMenuExample: Story = {
+  name: 'Product switcher menu',
+  render: () => (
+    <ProductSwitcherMenu
+      selectedProduct="agents"
+      additionalProducts={[
+        {
+          id: 'agents',
+          label: 'Agents',
+          icon: <CreationOutlineIcon />,
+        },
+      ]}
+    />
+  ),
+};
+
 export const ChannelMenuExample: Story = {
+  name: 'Channel menu',
   render: () => <ChannelMenu />,
 };
 
+export const HelpMenuExample: Story = {
+  name: 'Help menu',
+  render: () => <HelpMenu />,
+};
+
+export const TeamMenuExample: Story = {
+  name: 'Team menu',
+  render: () => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+      <TeamMenu />
+      <TeamMenu adminOptions createTeamPermission joinTeamPermission />
+    </div>
+  ),
+};
+
+export const PlusMenuExample: Story = {
+  name: 'Plus menu',
+  render: () => <PlusMenu />,
+};
+
+export const ChannelCategoryMenuExample: Story = {
+  name: 'Channel category menu',
+  render: () => <ChannelCategoryMenu />,
+};
+
+export const MessageMoreOptionsMenuExample: Story = {
+  name: 'Message more options menu',
+  render: () => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+      <MessageMoreOptionsMenu />
+      <MessageMoreOptionsMenu permissionToEdit={false} showFlagOption={false} />
+    </div>
+  ),
+};
+
+export const ThreadActionsMenuExample: Story = {
+  name: 'Thread actions menu',
+  render: () => <ThreadActionsMenu />,
+};
+
 export const ChildMenu: Story = {
+  name: 'Child menu',
   render: () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
       <PopoverMenu>
@@ -196,9 +132,111 @@ export const AllVariants: Story = {
             color: 'var(--center-channel-color)',
           }}
         >
+          Product switcher menu
+        </h3>
+        <ProductSwitcherMenu
+          selectedProduct="agents"
+          additionalProducts={[
+            {
+              id: 'agents',
+              label: 'Agents',
+              icon: <CreationOutlineIcon />,
+            },
+          ]}
+        />
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
           Channel menu
         </h3>
         <ChannelMenu />
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
+          Help menu
+        </h3>
+        <HelpMenu />
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
+          Team menu
+        </h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+          <TeamMenu />
+          <TeamMenu adminOptions createTeamPermission joinTeamPermission />
+        </div>
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
+          Plus menu
+        </h3>
+        <PlusMenu />
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
+          Channel category menu
+        </h3>
+        <ChannelCategoryMenu />
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
+          Message more options menu
+        </h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32 }}>
+          <MessageMoreOptionsMenu />
+          <MessageMoreOptionsMenu
+            permissionToEdit={false}
+            showFlagOption={false}
+          />
+        </div>
+      </section>
+      <section>
+        <h3
+          style={{
+            marginBottom: 12,
+            fontSize: 12,
+            color: 'var(--center-channel-color)',
+          }}
+        >
+          Thread actions menu
+        </h3>
+        <ThreadActionsMenu />
       </section>
       <section>
         <h3
