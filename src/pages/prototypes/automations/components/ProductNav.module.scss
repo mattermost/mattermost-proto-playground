@@ -18,14 +18,16 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 0 var(--spacing-s) var(--spacing-s);
+  // Match ChannelsSidebar top group: no horizontal inset — items span the
+  // full sidebar width and apply their own internal padding.
+  padding-bottom: var(--spacing-xs);
 }
 
 .product-nav__group {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 0 var(--spacing-s) var(--spacing-s);
+  padding-bottom: var(--spacing-xs);
 }
 
 .product-nav__empty {
