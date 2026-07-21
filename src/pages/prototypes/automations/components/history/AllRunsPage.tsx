@@ -77,7 +77,7 @@ export default function AllRunsPage() {
       <div className={styles.history__filters}>
         <div className={styles['history__filter-trigger']} ref={filterRef}>
           <Button
-            emphasis={statusFilters.length > 0 ? 'Secondary' : 'Tertiary'}
+            emphasis={statusFilters.length > 0 ? 'Secondary' : 'Quaternary'}
             size="Small"
             leadingIcon={<Icon size="16" glyph={<FilterVariantIcon />} />}
             onClick={() => setFiltersOpen((v) => !v)}
