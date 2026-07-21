@@ -569,7 +569,7 @@ export default function HomePage() {
                               <MenuItem
                                 label="Change history"
                                 leadingVisual={
-                                  <Icon size="16" glyph={<TimelineTextOutlineIcon />} />
+                                  <Icon size="16" glyph={<ClockOutlineIcon />} />
                                 }
                                 onClick={() => {
                                   setMenuFor(null);
