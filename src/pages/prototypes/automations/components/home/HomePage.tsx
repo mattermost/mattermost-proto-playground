@@ -11,6 +11,7 @@ import {
   Button,
   Checkbox,
   Chip,
+  EmptyState,
   Icon,
   IconButton,
   MenuItem,
@@ -25,6 +26,7 @@ import {
 } from '@mattermost/compass-ui';
 import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SearchIllustration from '@/assets/illustrations/search.svg?react';
 import { SYSTEM_TAGS } from '../../data/automationsData';
 import type { AutomationScope, AutomationStatus } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
@@ -415,19 +417,41 @@ export default function HomePage() {
         ) : null}
       </div>
 
-      <div className={styles['home__table-wrap']}>
-        {filtered.length === 0 ? (
-          <div className={styles.home__empty}>
-            <p>
-              {automations.length === 0
-                ? 'No automations yet. Create one to get started.'
-                : 'No automations match your filters.'}
-            </p>
-            <Button emphasis="Primary" size="Small" onClick={onNewBlank}>
-              New automation
-            </Button>
-          </div>
-        ) : (
+      {filtered.length === 0 ? (
+        <EmptyState
+          className={styles.home__empty}
+          illustration={{
+            'aria-label': 'Search',
+            width: '120px',
+            height: '80px',
+            children: <SearchIllustration />,
+          }}
+          title={
+            automations.length === 0 ? 'No automations yet' : 'No results found'
+          }
+          description={
+            automations.length === 0
+              ? 'Create one to get started.'
+              : 'Try adjusting your search or filters to find what you’re looking for.'
+          }
+          action={
+            automations.length === 0
+              ? {
+                  children: 'New automation',
+                  emphasis: 'Primary',
+                  size: 'Small',
+                  onClick: onNewBlank,
+                }
+              : {
+                  children: 'Clear filters',
+                  emphasis: 'Primary',
+                  size: 'Small',
+                  onClick: clearFilters,
+                }
+          }
+        />
+      ) : (
+        <div className={styles['home__table-wrap']}>
           <Scrollbar style={{ height: '100%' }}>
             <table className={styles.home__table}>
               <thead>
@@ -595,8 +619,8 @@ export default function HomePage() {
               </tbody>
             </table>
           </Scrollbar>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

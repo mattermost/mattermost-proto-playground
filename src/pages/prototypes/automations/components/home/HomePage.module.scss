@@ -239,8 +239,8 @@
 }
 
 .home__empty {
-  padding: 48px 24px;
-  text-align: center;
+  flex: 1;
+  min-height: 0;
 }
 
 .home__menu-cell {
