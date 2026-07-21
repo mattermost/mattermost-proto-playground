@@ -4,9 +4,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const BASE = '/prototypes/automations';
 
-export type AutomationsSceneId = 'home' | 'templates' | 'new' | 'runs';
+type AutomationsSceneId = 'home' | 'templates' | 'new' | 'runs';
 
-export const AUTOMATIONS_SCENES: Array<{ id: AutomationsSceneId; label: string }> = [
+const AUTOMATIONS_SCENES: Array<{ id: AutomationsSceneId; label: string }> = [
   { id: 'home', label: 'Home' },
   { id: 'templates', label: 'Templates' },
   { id: 'new', label: 'New automation' },
@@ -16,7 +16,7 @@ export const AUTOMATIONS_SCENES: Array<{ id: AutomationsSceneId; label: string }
 /** Prefer an automation that already has runs for demo navigation. */
 const RUNS_DEMO_ID = 'auto-urgent';
 
-export function resolveAutomationsScene(pathname: string): AutomationsSceneId | '' {
+function resolveAutomationsScene(pathname: string): AutomationsSceneId | '' {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
