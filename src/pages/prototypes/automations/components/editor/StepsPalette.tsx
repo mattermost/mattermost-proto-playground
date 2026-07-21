@@ -1,7 +1,7 @@
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import { Icon, Scrollbar, SearchInput } from '@mattermost/compass-ui';
 import { useMemo, useState, type ChangeEvent } from 'react';
-import { ALL_STEPS } from '../../data/actions';
+import { ACTION_STEPS, FLOW_STEPS } from '../../data/actions';
 import { ALL_TRIGGERS, TRIGGER_COUNT } from '../../data/triggers';
 import type { PaletteItem } from '../../data/types';
 import styles from './editor.module.scss';
@@ -14,6 +14,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
   const [query, setQuery] = useState('');
   const [triggersOpen, setTriggersOpen] = useState(true);
   const [actionsOpen, setActionsOpen] = useState(true);
+  const [flowOpen, setFlowOpen] = useState(true);
 
   const filteredTriggers = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -23,8 +24,14 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
 
   const filteredActions = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return ALL_STEPS;
-    return ALL_STEPS.filter((t) => t.label.toLowerCase().includes(q));
+    if (!q) return ACTION_STEPS;
+    return ACTION_STEPS.filter((t) => t.label.toLowerCase().includes(q));
+  }, [query]);
+
+  const filteredFlow = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return FLOW_STEPS;
+    return FLOW_STEPS.filter((t) => t.label.toLowerCase().includes(q));
   }, [query]);
 
   const renderItem = (item: PaletteItem) => (
@@ -105,11 +112,24 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
             className={styles['palette__section-header']}
             onClick={() => setActionsOpen((v) => !v)}
           >
-            <span>Actions & flow</span>
+            <span>Actions ({filteredActions.length})</span>
             <Icon size="16" glyph={<ChevronDownIcon />} />
           </button>
           {actionsOpen ? (
             <div className={styles.palette__items}>{filteredActions.map(renderItem)}</div>
+          ) : null}
+        </div>
+        <div className={styles.palette__section} style={{ marginTop: 10 }}>
+          <button
+            type="button"
+            className={styles['palette__section-header']}
+            onClick={() => setFlowOpen((v) => !v)}
+          >
+            <span>Flow ({filteredFlow.length})</span>
+            <Icon size="16" glyph={<ChevronDownIcon />} />
+          </button>
+          {flowOpen ? (
+            <div className={styles.palette__items}>{filteredFlow.map(renderItem)}</div>
           ) : null}
         </div>
       </Scrollbar>
