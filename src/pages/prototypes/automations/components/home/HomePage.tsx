@@ -159,7 +159,7 @@ export default function HomePage() {
         <div className={styles['home__filter-bar']}>
           <div className={styles.home__search}>
             <SearchInput
-              label="Search automations or tags…"
+              label="Search automations…"
               value={query}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               onClear={() => setQuery('')}
