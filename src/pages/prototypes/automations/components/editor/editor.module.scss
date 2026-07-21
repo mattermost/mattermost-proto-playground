@@ -213,7 +213,7 @@
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   font-size: 12px;
-  overflow: hidden;
+  // Do not clip — React Flow handles sit half outside the node bounds.
 }
 
 .node--selected {
@@ -228,6 +228,7 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.08);
+  border-radius: 5px 5px 0 0;
 }
 
 .node__header--trigger {
@@ -248,6 +249,14 @@
 .node__body {
   padding: 8px 10px;
   font-weight: 600;
+  border-radius: 0 0 5px 5px;
+}
+
+.node :global(.react-flow__handle) {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--button-bg, #1c58d9);
+  background: var(--center-channel-bg, #fff);
 }
 
 .panel {
