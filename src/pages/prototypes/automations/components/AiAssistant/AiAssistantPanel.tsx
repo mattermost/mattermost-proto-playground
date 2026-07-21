@@ -9,7 +9,7 @@ import {
 } from '@mattermost/compass-ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import avatarBot from '@/assets/avatars/Aiko Tan.png';
+import avatarBot from '@/assets/avatars/Matty.png';
 import avatarUser from '@/assets/avatars/Danielle Okoro.png';
 import { useAutomations } from '../../context/AutomationsContext';
 import {
