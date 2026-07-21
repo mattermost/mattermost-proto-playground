@@ -1,5 +1,6 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
+import RefreshIcon from '@mattermost/compass-icons/components/refresh';
 import {
   Button,
   Checkbox,
@@ -74,9 +75,13 @@ export default function RunsPage() {
           />
           <h1 className={styles.history__title}>Runs · {automation.name}</h1>
         </div>
-        <Button emphasis="Tertiary" size="X-Small" onClick={() => undefined}>
-          Refresh
-        </Button>
+          <IconButton
+            aria-label="Refresh"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<RefreshIcon />} />}
+            onClick={() => undefined}
+          />
       </div>
 
       <div className={styles.history__filters}>

@@ -1,4 +1,5 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
+import RefreshIcon from '@mattermost/compass-icons/components/refresh';
 import { Button, Icon, IconButton, Scrollbar } from '@mattermost/compass-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
@@ -37,9 +38,13 @@ export default function ChangeHistoryPage() {
           />
           <h1 className={styles.history__title}>History · {automation.name}</h1>
         </div>
-        <Button emphasis="Tertiary" size="X-Small" onClick={() => undefined}>
-          Refresh
-        </Button>
+          <IconButton
+            aria-label="Refresh"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<RefreshIcon />} />}
+            onClick={() => undefined}
+          />
       </div>
       <div className={styles['history__table-wrap']}>
         <Scrollbar style={{ height: '100%' }}>
