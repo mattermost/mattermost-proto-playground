@@ -1,11 +1,13 @@
 import {
   Button,
   Checkbox,
+  Combobox,
   Scrollbar,
   Select,
   TextInput,
 } from '@mattermost/compass-ui';
-import type { ChangeEvent } from 'react';
+import { useMemo, type ChangeEvent } from 'react';
+import { SYSTEM_TAGS } from '../../data/automationsData';
 import type { Automation, WorkflowNode } from '../../data/types';
 import styles from './editor.module.scss';
 
@@ -28,6 +30,14 @@ export default function InspectorPanel({
   onDuplicateNode,
   onDeleteNode,
 }: InspectorPanelProps) {
+  const tagOptions = useMemo(() => {
+    const tags = new Set<string>(SYSTEM_TAGS);
+    automation.tags.forEach((t) => tags.add(t));
+    return Array.from(tags)
+      .sort((a, b) => a.localeCompare(b))
+      .map((tag) => ({ value: tag, label: tag }));
+  }, [automation.tags]);
+
   if (selectedNode) {
     const fields = selectedNode.data.fields ?? {};
     return (
@@ -175,15 +185,15 @@ export default function InspectorPanel({
             <option value="team">Team</option>
             <option value="channel">Channel</option>
           </Select>
-          <TextInput
-            label="Tags (comma-separated)"
-            value={automation.tags.join(', ')}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          <Combobox
+            label="Tags"
+            placeholder="Add tags…"
+            multiple
+            options={tagOptions}
+            value={automation.tags}
+            onChange={(next) =>
               onUpdateAutomation({
-                tags: e.target.value
-                  .split(',')
-                  .map((t: string) => t.trim())
-                  .filter(Boolean),
+                tags: Array.isArray(next) ? next : next ? [next] : [],
               })
             }
           />
