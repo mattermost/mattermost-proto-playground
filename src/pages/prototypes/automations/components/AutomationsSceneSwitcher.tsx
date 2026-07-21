@@ -13,9 +13,6 @@ const AUTOMATIONS_SCENES: Array<{ id: AutomationsSceneId; label: string }> = [
   { id: 'runs', label: 'Run history' },
 ];
 
-/** Prefer an automation that already has runs for demo navigation. */
-const RUNS_DEMO_ID = 'auto-urgent';
-
 function resolveAutomationsScene(pathname: string): AutomationsSceneId | '' {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
@@ -24,7 +21,7 @@ function resolveAutomationsScene(pathname: string): AutomationsSceneId | '' {
 
   if (normalized === BASE || normalized === `${BASE}/`) return 'home';
   if (normalized.startsWith(`${BASE}/templates`)) return 'templates';
-  if (/\/runs(\/|$)/.test(normalized)) return 'runs';
+  if (normalized === `${BASE}/runs` || /\/runs(\/|$)/.test(normalized)) return 'runs';
   return '';
 }
 
@@ -63,7 +60,7 @@ export default function AutomationsSceneSwitcher({
         return;
       }
       case 'runs':
-        navigate(`${BASE}/${RUNS_DEMO_ID}/runs`);
+        navigate(`${BASE}/runs`);
         return;
       default:
         return;

@@ -45,6 +45,9 @@ export function resolveAutomationsAiContext(
   if (normalized === `${BASE}/templates`) {
     return { surface: 'templates', placeLabel: 'Templates' };
   }
+  if (normalized === `${BASE}/runs`) {
+    return { surface: 'runs', placeLabel: 'Run history' };
+  }
 
   const runDetail = normalized.match(
     new RegExp(`^${BASE}/([^/]+)/runs/([^/]+)$`),

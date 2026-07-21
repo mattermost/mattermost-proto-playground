@@ -26,7 +26,7 @@ function shouldShowSideChrome(pathname: string) {
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
-  return normalized === BASE || normalized === `${BASE}/templates`;
+  return normalized === BASE || normalized === `${BASE}/templates` || normalized === `${BASE}/runs`;
 }
 
 /**

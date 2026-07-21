@@ -4,6 +4,7 @@ import { AutomationsProvider } from './context/AutomationsContext';
 import HomePage from './components/home/HomePage';
 import TemplatesPage from './components/templates/TemplatesPage';
 import WorkflowEditor from './components/editor/WorkflowEditor';
+import AllRunsPage from './components/history/AllRunsPage';
 import RunsPage from './components/history/RunsPage';
 import RunDetailPage from './components/history/RunDetailPage';
 import ChangeHistoryPage from './components/history/ChangeHistoryPage';
@@ -19,6 +20,7 @@ export default function Automations() {
         <Route element={<AutomationsShell />}>
           <Route index element={<HomePage />} />
           <Route path="templates" element={<TemplatesPage />} />
+          <Route path="runs" element={<AllRunsPage />} />
           <Route path=":id/editor" element={<WorkflowEditor />} />
           <Route path=":id/runs" element={<RunsPage />} />
           <Route path=":id/runs/:runId" element={<RunDetailPage />} />

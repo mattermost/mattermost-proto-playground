@@ -175,6 +175,13 @@ export default function HomePage() {
           <Button
             emphasis="Tertiary"
             size="Small"
+            onClick={() => navigate(`${BASE}/runs`)}
+          >
+            Run history
+          </Button>
+          <Button
+            emphasis="Tertiary"
+            size="Small"
             onClick={() => navigate(`${BASE}/templates`)}
           >
             Templates
