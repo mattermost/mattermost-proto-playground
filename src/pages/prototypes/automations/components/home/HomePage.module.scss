@@ -65,8 +65,23 @@
   min-width: 220px;
 }
 
+.home__filter-panel--tags {
+  min-width: 260px;
+}
+
+.home__tag-search {
+  padding: 10px 12px 6px;
+}
+
+.home__tag-empty {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 12px;
+  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.56);
+}
+
 .home__filter-scroll {
-  max-height: 360px;
+  max-height: 280px;
   overflow: auto;
   padding: 4px 0;
 }

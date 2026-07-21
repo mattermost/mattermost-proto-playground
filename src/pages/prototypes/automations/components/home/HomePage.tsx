@@ -2,6 +2,7 @@ import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
+import PoundIcon from '@mattermost/compass-icons/components/pound';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import TimelineTextOutlineIcon from '@mattermost/compass-icons/components/timeline-text-outline';
@@ -69,22 +70,46 @@ export default function HomePage() {
   const [statusFilters, setStatusFilters] = useState<AutomationStatus[]>([]);
   const [scopeFilters, setScopeFilters] = useState<AutomationScope[]>([]);
   const [tagFilters, setTagFilters] = useState<string[]>([]);
+  const [tagQuery, setTagQuery] = useState('');
   const [newOpen, setNewOpen] = useState(false);
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [tagsOpen, setTagsOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+  const tagsRef = useRef<HTMLDivElement>(null);
 
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
+  const closeTags = useCallback(() => {
+    setTagsOpen(false);
+    setTagQuery('');
+  }, []);
   useOutsideClose(filterRef, filtersOpen, closeFilters);
+  useOutsideClose(tagsRef, tagsOpen, closeTags);
 
-  const activeFilterCount =
-    statusFilters.length + scopeFilters.length + tagFilters.length;
+  const attributeFilterCount = statusFilters.length + scopeFilters.length;
+  const activeFilterCount = attributeFilterCount + tagFilters.length;
 
-  const clearFilters = () => {
+  const clearAttributeFilters = () => {
     setStatusFilters([]);
     setScopeFilters([]);
+  };
+
+  const clearFilters = () => {
+    clearAttributeFilters();
     setTagFilters([]);
   };
+
+  const availableTags = useMemo(() => {
+    const fromData = new Set<string>(SYSTEM_TAGS);
+    automations.forEach((a) => a.tags.forEach((t) => fromData.add(t)));
+    return Array.from(fromData).sort((a, b) => a.localeCompare(b));
+  }, [automations]);
+
+  const matchedTags = useMemo(() => {
+    const q = tagQuery.trim().toLowerCase();
+    if (!q) return availableTags;
+    return availableTags.filter((t) => t.toLowerCase().includes(q));
+  }, [availableTags, tagQuery]);
 
   const stats = useMemo(() => {
     const enabled = automations.filter((a) => a.status === 'enabled').length;
@@ -181,16 +206,22 @@ export default function HomePage() {
               size="Small"
             />
           </div>
+
           <div className={styles['home__filter-trigger']} ref={filterRef}>
             <Button
-              emphasis={activeFilterCount > 0 ? 'Secondary' : 'Tertiary'}
+              emphasis={attributeFilterCount > 0 ? 'Secondary' : 'Tertiary'}
               size="Small"
               leadingIcon={<Icon size="16" glyph={<FilterVariantIcon />} />}
-              onClick={() => setFiltersOpen((v) => !v)}
+              onClick={() => {
+                setFiltersOpen((v) => !v);
+                setTagsOpen(false);
+              }}
               aria-expanded={filtersOpen}
               aria-haspopup="dialog"
             >
-              {activeFilterCount > 0 ? `Filters · ${activeFilterCount}` : 'Filters'}
+              {attributeFilterCount > 0
+                ? `Filters · ${attributeFilterCount}`
+                : 'Filters'}
             </Button>
             {filtersOpen ? (
               <div className={styles['home__filter-panel']} role="dialog" aria-label="Filters">
@@ -231,11 +262,64 @@ export default function HomePage() {
                         ))}
                       </div>
                     </div>
-                    <PopoverMenuDivider />
-                    <div className={styles['home__filter-group']}>
-                      <p className={styles['home__filter-section-title']}>Tags</p>
-                      <div className={styles['home__filter-options']}>
-                        {SYSTEM_TAGS.map((tag) => (
+                  </div>
+                  {attributeFilterCount > 0 ? (
+                    <>
+                      <PopoverMenuDivider />
+                      <div className={styles['home__filter-footer']}>
+                        <button
+                          type="button"
+                          className={styles['home__clear-filters']}
+                          onClick={clearAttributeFilters}
+                        >
+                          Clear filters
+                        </button>
+                      </div>
+                    </>
+                  ) : null}
+                </PopoverMenu>
+              </div>
+            ) : null}
+          </div>
+
+          <div className={styles['home__filter-trigger']} ref={tagsRef}>
+            <Button
+              emphasis={tagFilters.length > 0 ? 'Secondary' : 'Tertiary'}
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<PoundIcon />} />}
+              onClick={() => {
+                setTagsOpen((v) => !v);
+                setFiltersOpen(false);
+              }}
+              aria-expanded={tagsOpen}
+              aria-haspopup="dialog"
+            >
+              {tagFilters.length > 0 ? `Tags · ${tagFilters.length}` : 'Tags'}
+            </Button>
+            {tagsOpen ? (
+              <div
+                className={`${styles['home__filter-panel']} ${styles['home__filter-panel--tags']}`}
+                role="dialog"
+                aria-label="Tag filters"
+              >
+                <PopoverMenu>
+                  <div className={styles['home__tag-search']}>
+                    <SearchInput
+                      label="Find tags…"
+                      value={tagQuery}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setTagQuery(e.target.value)
+                      }
+                      onClear={() => setTagQuery('')}
+                      size="Small"
+                    />
+                  </div>
+                  <div className={styles['home__filter-scroll']}>
+                    <div className={styles['home__filter-options']}>
+                      {matchedTags.length === 0 ? (
+                        <p className={styles['home__tag-empty']}>No tags match</p>
+                      ) : (
+                        matchedTags.map((tag) => (
                           <Checkbox
                             key={tag}
                             size="Small"
@@ -246,20 +330,20 @@ export default function HomePage() {
                           >
                             {tag}
                           </Checkbox>
-                        ))}
-                      </div>
+                        ))
+                      )}
                     </div>
                   </div>
-                  {activeFilterCount > 0 ? (
+                  {tagFilters.length > 0 ? (
                     <>
                       <PopoverMenuDivider />
                       <div className={styles['home__filter-footer']}>
                         <button
                           type="button"
                           className={styles['home__clear-filters']}
-                          onClick={clearFilters}
+                          onClick={() => setTagFilters([])}
                         >
-                          Clear filters
+                          Clear tags
                         </button>
                       </div>
                     </>
