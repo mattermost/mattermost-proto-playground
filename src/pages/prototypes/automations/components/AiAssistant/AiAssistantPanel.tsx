@@ -300,18 +300,8 @@ export default function AiAssistantPanel() {
           placeholder="Ask how I can help…"
           value={draft}
           onChange={setDraft}
+          onSend={onSend}
         />
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-          <button
-            type="button"
-            className={styles['assistant-panel__suggestion']}
-            disabled={busy || !draft.trim() || !assistantOpen}
-            onClick={onSend}
-            style={{ opacity: busy || !draft.trim() || !assistantOpen ? 0.5 : 1 }}
-          >
-            Send
-          </button>
-        </div>
       </div>
     </aside>
   );
