@@ -191,7 +191,7 @@ export default function InspectorPanel({
             multiple
             options={tagOptions}
             value={automation.tags}
-            onChange={(next) =>
+            onChange={(next: string | string[] | null) =>
               onUpdateAutomation({
                 tags: Array.isArray(next) ? next : next ? [next] : [],
               })
