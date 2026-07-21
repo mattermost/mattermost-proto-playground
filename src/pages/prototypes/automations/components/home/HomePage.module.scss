@@ -62,10 +62,16 @@
   top: calc(100% + 6px);
   right: 0;
   z-index: 24;
-  min-width: 240px;
+  min-width: 220px;
 }
 
-.home__filter-section {
+.home__filter-scroll {
+  max-height: 360px;
+  overflow: auto;
+  padding: 4px 0;
+}
+
+.home__filter-group {
   padding: 4px 0;
 }
 
@@ -77,6 +83,17 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.56);
+}
+
+.home__filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 16px 8px;
+}
+
+.home__filter-footer {
+  padding: 4px 12px 8px;
 }
 
 .home__active-filters {

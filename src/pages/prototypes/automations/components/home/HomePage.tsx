@@ -8,14 +8,13 @@ import TimelineTextOutlineIcon from '@mattermost/compass-icons/components/timeli
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import {
   Button,
+  Checkbox,
   Chip,
   Icon,
   IconButton,
   MenuItem,
   PopoverMenu,
   PopoverMenuDivider,
-  PopoverMenuGroup,
-  PopoverMenuScroll,
   Scrollbar,
   SearchInput,
   Switch,
@@ -31,6 +30,18 @@ import styles from './HomePage.module.scss';
 
 const BASE = '/prototypes/automations';
 
+const STATUS_OPTIONS: Array<{ value: AutomationStatus; label: string }> = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'enabled', label: 'Enabled' },
+  { value: 'disabled', label: 'Disabled' },
+];
+
+const SCOPE_OPTIONS: Array<{ value: AutomationScope; label: string }> = [
+  { value: 'global', label: 'Global' },
+  { value: 'team', label: 'Team' },
+  { value: 'channel', label: 'Channel' },
+];
+
 function formatWhen(iso: string | null) {
   if (!iso) return '—';
   return new Date(iso).toLocaleString();
@@ -38,6 +49,10 @@ function formatWhen(iso: string | null) {
 
 function scopeLabel(scope: AutomationScope) {
   return scope.toUpperCase();
+}
+
+function toggleValue<T>(list: T[], value: T): T[] {
+  return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
 export default function HomePage() {
@@ -51,9 +66,9 @@ export default function HomePage() {
   } = useAutomations();
 
   const [query, setQuery] = useState('');
-  const [scopeFilter, setScopeFilter] = useState<AutomationScope | 'all'>('all');
-  const [statusFilter, setStatusFilter] = useState<AutomationStatus | 'all'>('all');
-  const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [statusFilters, setStatusFilters] = useState<AutomationStatus[]>([]);
+  const [scopeFilters, setScopeFilters] = useState<AutomationScope[]>([]);
+  const [tagFilters, setTagFilters] = useState<string[]>([]);
   const [newOpen, setNewOpen] = useState(false);
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -63,14 +78,12 @@ export default function HomePage() {
   useOutsideClose(filterRef, filtersOpen, closeFilters);
 
   const activeFilterCount =
-    (statusFilter !== 'all' ? 1 : 0) +
-    (scopeFilter !== 'all' ? 1 : 0) +
-    (tagFilter ? 1 : 0);
+    statusFilters.length + scopeFilters.length + tagFilters.length;
 
   const clearFilters = () => {
-    setStatusFilter('all');
-    setScopeFilter('all');
-    setTagFilter(null);
+    setStatusFilters([]);
+    setScopeFilters([]);
+    setTagFilters([]);
   };
 
   const stats = useMemo(() => {
@@ -82,9 +95,11 @@ export default function HomePage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return automations.filter((a) => {
-      if (scopeFilter !== 'all' && a.scope !== scopeFilter) return false;
-      if (statusFilter !== 'all' && a.status !== statusFilter) return false;
-      if (tagFilter && !a.tags.includes(tagFilter)) return false;
+      if (statusFilters.length > 0 && !statusFilters.includes(a.status)) return false;
+      if (scopeFilters.length > 0 && !scopeFilters.includes(a.scope)) return false;
+      if (tagFilters.length > 0 && !tagFilters.some((t) => a.tags.includes(t))) {
+        return false;
+      }
       if (!q) return true;
       return (
         a.name.toLowerCase().includes(q) ||
@@ -92,7 +107,7 @@ export default function HomePage() {
         a.creator.toLowerCase().includes(q)
       );
     });
-  }, [automations, query, scopeFilter, statusFilter, tagFilter]);
+  }, [automations, query, scopeFilters, statusFilters, tagFilters]);
 
   const openEditor = (id: string) => {
     recordRecent(id);
@@ -180,76 +195,73 @@ export default function HomePage() {
             {filtersOpen ? (
               <div className={styles['home__filter-panel']} role="dialog" aria-label="Filters">
                 <PopoverMenu>
-                  <PopoverMenuScroll maxHeight={360}>
-                    <PopoverMenuGroup aria-label="Status">
+                  <div className={styles['home__filter-scroll']}>
+                    <div className={styles['home__filter-group']}>
                       <p className={styles['home__filter-section-title']}>Status</p>
-                      {(
-                        [
-                          ['all', 'All'],
-                          ['draft', 'Draft'],
-                          ['enabled', 'Enabled'],
-                          ['disabled', 'Disabled'],
-                        ] as const
-                      ).map(([value, label]) => (
-                        <MenuItem
-                          key={value}
-                          label={label}
-                          leadingElement={false}
-                          trailingElement={statusFilter === value}
-                          onClick={() => setStatusFilter(value)}
-                        />
-                      ))}
-                    </PopoverMenuGroup>
+                      <div className={styles['home__filter-options']}>
+                        {STATUS_OPTIONS.map((opt) => (
+                          <Checkbox
+                            key={opt.value}
+                            size="Small"
+                            checked={statusFilters.includes(opt.value)}
+                            onChange={() =>
+                              setStatusFilters((prev) => toggleValue(prev, opt.value))
+                            }
+                          >
+                            {opt.label}
+                          </Checkbox>
+                        ))}
+                      </div>
+                    </div>
                     <PopoverMenuDivider />
-                    <PopoverMenuGroup aria-label="Scope">
+                    <div className={styles['home__filter-group']}>
                       <p className={styles['home__filter-section-title']}>Scope</p>
-                      {(
-                        [
-                          ['all', 'All'],
-                          ['global', 'Global'],
-                          ['team', 'Team'],
-                          ['channel', 'Channel'],
-                        ] as const
-                      ).map(([value, label]) => (
-                        <MenuItem
-                          key={value}
-                          label={label}
-                          leadingElement={false}
-                          trailingElement={scopeFilter === value}
-                          onClick={() => setScopeFilter(value)}
-                        />
-                      ))}
-                    </PopoverMenuGroup>
+                      <div className={styles['home__filter-options']}>
+                        {SCOPE_OPTIONS.map((opt) => (
+                          <Checkbox
+                            key={opt.value}
+                            size="Small"
+                            checked={scopeFilters.includes(opt.value)}
+                            onChange={() =>
+                              setScopeFilters((prev) => toggleValue(prev, opt.value))
+                            }
+                          >
+                            {opt.label}
+                          </Checkbox>
+                        ))}
+                      </div>
+                    </div>
                     <PopoverMenuDivider />
-                    <PopoverMenuGroup aria-label="Tags">
+                    <div className={styles['home__filter-group']}>
                       <p className={styles['home__filter-section-title']}>Tags</p>
-                      <MenuItem
-                        label="Any tag"
-                        leadingElement={false}
-                        trailingElement={tagFilter === null}
-                        onClick={() => setTagFilter(null)}
-                      />
-                      {SYSTEM_TAGS.map((tag) => (
-                        <MenuItem
-                          key={tag}
-                          label={tag}
-                          leadingElement={false}
-                          trailingElement={tagFilter === tag}
-                          onClick={() => setTagFilter(tag)}
-                        />
-                      ))}
-                    </PopoverMenuGroup>
-                  </PopoverMenuScroll>
+                      <div className={styles['home__filter-options']}>
+                        {SYSTEM_TAGS.map((tag) => (
+                          <Checkbox
+                            key={tag}
+                            size="Small"
+                            checked={tagFilters.includes(tag)}
+                            onChange={() =>
+                              setTagFilters((prev) => toggleValue(prev, tag))
+                            }
+                          >
+                            {tag}
+                          </Checkbox>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                   {activeFilterCount > 0 ? (
                     <>
                       <PopoverMenuDivider />
-                      <MenuItem
-                        label="Clear filters"
-                        leadingElement={false}
-                        onClick={() => {
-                          clearFilters();
-                        }}
-                      />
+                      <div className={styles['home__filter-footer']}>
+                        <button
+                          type="button"
+                          className={styles['home__clear-filters']}
+                          onClick={clearFilters}
+                        >
+                          Clear filters
+                        </button>
+                      </div>
                     </>
                   ) : null}
                 </PopoverMenu>
@@ -260,33 +272,40 @@ export default function HomePage() {
 
         {activeFilterCount > 0 ? (
           <div className={styles['home__active-filters']}>
-            {statusFilter !== 'all' ? (
+            {statusFilters.map((status) => (
               <Chip
+                key={`status-${status}`}
                 size="Small"
-                onRemove={() => setStatusFilter('all')}
-                removeLabel="Remove status filter"
+                onRemove={() =>
+                  setStatusFilters((prev) => prev.filter((s) => s !== status))
+                }
+                removeLabel={`Remove ${status} status filter`}
               >
-                Status: {statusFilter}
+                Status: {status}
               </Chip>
-            ) : null}
-            {scopeFilter !== 'all' ? (
+            ))}
+            {scopeFilters.map((scope) => (
               <Chip
+                key={`scope-${scope}`}
                 size="Small"
-                onRemove={() => setScopeFilter('all')}
-                removeLabel="Remove scope filter"
+                onRemove={() =>
+                  setScopeFilters((prev) => prev.filter((s) => s !== scope))
+                }
+                removeLabel={`Remove ${scope} scope filter`}
               >
-                Scope: {scopeFilter}
+                Scope: {scope}
               </Chip>
-            ) : null}
-            {tagFilter ? (
+            ))}
+            {tagFilters.map((tag) => (
               <Chip
+                key={`tag-${tag}`}
                 size="Small"
-                onRemove={() => setTagFilter(null)}
-                removeLabel="Remove tag filter"
+                onRemove={() => setTagFilters((prev) => prev.filter((t) => t !== tag))}
+                removeLabel={`Remove ${tag} tag filter`}
               >
-                Tag: {tagFilter}
+                Tag: {tag}
               </Chip>
-            ) : null}
+            ))}
             <button
               type="button"
               className={styles['home__clear-filters']}
