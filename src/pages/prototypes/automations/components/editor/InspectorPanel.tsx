@@ -1,7 +1,10 @@
+import CloseIcon from '@mattermost/compass-icons/components/close';
 import {
   Button,
   Checkbox,
   Combobox,
+  Icon,
+  IconButton,
   Scrollbar,
   Select,
   TextInput,
@@ -44,9 +47,13 @@ export default function InspectorPanel({
       <div className={styles.panel}>
         <div className={styles.panel__header}>
           <h2 className={styles.panel__title}>{selectedNode.data.label}</h2>
-          <Button emphasis="Tertiary" size="X-Small" onClick={onCloseNode}>
-            Done
-          </Button>
+          <IconButton
+            aria-label="Close"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<CloseIcon />} />}
+            onClick={onCloseNode}
+          />
         </div>
         <Scrollbar className={styles.panel__body}>
           <div className={styles.panel__stack}>
