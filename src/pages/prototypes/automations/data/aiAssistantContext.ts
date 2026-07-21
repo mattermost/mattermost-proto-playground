@@ -198,7 +198,7 @@ export function suggestionsForContext(
 export function greetingForContext(ctx: AutomationsAiContext): string {
   switch (ctx.surface) {
     case 'home':
-      return 'You’re on Automations Home. How can I help — create a workflow, find something, or explore templates?';
+      return 'How can I help — create a workflow, find something, or explore templates?';
     case 'templates':
       return 'You’re browsing templates. I can recommend one or help you describe a custom workflow.';
     case 'editor':
