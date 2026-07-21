@@ -1,8 +1,11 @@
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
+import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
+import TimelineTextOutlineIcon from '@mattermost/compass-icons/components/timeline-text-outline';
+import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import {
   Button,
   Chip,
@@ -427,7 +430,9 @@ export default function HomePage() {
                               />
                               <MenuItem
                                 label="Run history"
-                                leadingElement={false}
+                                leadingVisual={
+                                  <Icon size="16" glyph={<PlayOutlineIcon />} />
+                                }
                                 onClick={() => {
                                   setMenuFor(null);
                                   navigate(`${BASE}/${a.id}/runs`);
@@ -435,7 +440,9 @@ export default function HomePage() {
                               />
                               <MenuItem
                                 label="Change history"
-                                leadingElement={false}
+                                leadingVisual={
+                                  <Icon size="16" glyph={<TimelineTextOutlineIcon />} />
+                                }
                                 onClick={() => {
                                   setMenuFor(null);
                                   navigate(`${BASE}/${a.id}/history`);
@@ -443,7 +450,9 @@ export default function HomePage() {
                               />
                               <MenuItem
                                 label="Delete"
-                                leadingElement={false}
+                                leadingVisual={
+                                  <Icon size="16" glyph={<TrashCanOutlineIcon />} />
+                                }
                                 destructive
                                 onClick={() => setMenuFor(null)}
                               />
