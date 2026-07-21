@@ -33,7 +33,6 @@ export default function TemplatesPage() {
                 key={t.id}
                 type="button"
                 className={styles.templates__card}
-                style={{ borderLeftColor: t.accent }}
                 onClick={() => applyTemplate(t.id)}
               >
                 <p className={styles.templates__category}>{t.category}</p>
