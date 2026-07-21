@@ -232,7 +232,7 @@ export default function HomePage() {
 
           <div className={styles['home__filter-trigger']} ref={filterRef}>
             <Button
-              emphasis={attributeFilterCount > 0 ? 'Secondary' : 'Tertiary'}
+              emphasis={attributeFilterCount > 0 ? 'Secondary' : 'Quaternary'}
               size="Small"
               leadingIcon={<Icon size="16" glyph={<FilterVariantIcon />} />}
               onClick={() => {
@@ -307,7 +307,7 @@ export default function HomePage() {
 
           <div className={styles['home__filter-trigger']} ref={tagsRef}>
             <Button
-              emphasis={tagFilters.length > 0 ? 'Secondary' : 'Tertiary'}
+              emphasis={tagFilters.length > 0 ? 'Secondary' : 'Quaternary'}
               size="Small"
               leadingIcon={<Icon size="16" glyph={<TagOutlineIcon />} />}
               onClick={() => {
