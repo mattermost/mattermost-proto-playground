@@ -141,7 +141,7 @@ export default function InspectorPanel({
   return (
     <div className={styles.panel}>
       <div className={styles.panel__header}>
-        <h2 className={styles.panel__title}>Automation</h2>
+        <h2 className={styles.panel__title}>Automation Settings</h2>
       </div>
       <Scrollbar className={styles.panel__body}>
         <div className={styles.panel__stack}>
