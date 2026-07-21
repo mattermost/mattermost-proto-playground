@@ -127,6 +127,11 @@
   color: inherit;
 }
 
+.palette__section-chevron {
+  display: inline-flex;
+  opacity: 0.64;
+}
+
 .palette__items {
   display: flex;
   flex-direction: column;

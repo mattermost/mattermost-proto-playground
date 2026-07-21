@@ -83,7 +83,9 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
             onClick={() => setTriggersOpen((v) => !v)}
           >
             <span>Triggers ({TRIGGER_COUNT})</span>
-            <Icon size="16" glyph={<ChevronDownIcon />} />
+            <span className={styles['palette__section-chevron']} aria-hidden>
+              <Icon size="16" glyph={<ChevronDownIcon />} />
+            </span>
           </button>
           {triggersOpen ? (
             <div className={styles.palette__items}>{filteredTriggers.map(renderItem)}</div>
@@ -96,7 +98,9 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
             onClick={() => setActionsOpen((v) => !v)}
           >
             <span>Actions ({filteredActions.length})</span>
-            <Icon size="16" glyph={<ChevronDownIcon />} />
+            <span className={styles['palette__section-chevron']} aria-hidden>
+              <Icon size="16" glyph={<ChevronDownIcon />} />
+            </span>
           </button>
           {actionsOpen ? (
             <div className={styles.palette__items}>{filteredActions.map(renderItem)}</div>
@@ -109,7 +113,9 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
             onClick={() => setFlowOpen((v) => !v)}
           >
             <span>Flow ({filteredFlow.length})</span>
-            <Icon size="16" glyph={<ChevronDownIcon />} />
+            <span className={styles['palette__section-chevron']} aria-hidden>
+              <Icon size="16" glyph={<ChevronDownIcon />} />
+            </span>
           </button>
           {flowOpen ? (
             <div className={styles.palette__items}>{filteredFlow.map(renderItem)}</div>
