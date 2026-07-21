@@ -220,13 +220,6 @@ function EditorInner() {
           >
             Back
           </Button>
-          <span className={styles.editor__crumb}>
-            <button type="button" onClick={() => navigate(BASE)}>
-              Automations
-            </button>
-            {' / '}
-            {automation.name}
-          </span>
           <h1 className={styles.editor__title}>{automation.name}</h1>
           <Tag
             label={statusLabel}

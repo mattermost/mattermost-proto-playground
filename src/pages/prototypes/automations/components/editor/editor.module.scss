@@ -25,20 +25,6 @@
   flex-wrap: wrap;
 }
 
-.editor__crumb {
-  font-size: 13px;
-  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.64);
-}
-
-.editor__crumb button {
-  border: 0;
-  background: transparent;
-  color: var(--button-bg, #1c58d9);
-  cursor: pointer;
-  font: inherit;
-  padding: 0;
-}
-
 .editor__title {
   margin: 0;
   font-size: 16px;
