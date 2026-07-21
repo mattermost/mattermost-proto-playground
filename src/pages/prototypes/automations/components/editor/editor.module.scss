@@ -163,11 +163,11 @@
 }
 
 .palette__item--action {
-  border-left-color: #3db887;
+  border-left-color: var(--color-green-500);
 }
 
 .palette__item--flow {
-  border-left-color: #8a8d95;
+  border-left-color: var(--color-teal-500);
 }
 
 .palette__item:disabled {
@@ -176,7 +176,6 @@
 }
 
 .palette__item:hover:not(:disabled) {
-  border-color: rgba(var(--center-channel-color-rgb), 0.32);
   box-shadow: var(--elevation-1);
 }
 
@@ -207,18 +206,18 @@
 }
 
 .node__header--trigger {
-  background: rgba(28, 88, 217, 0.1);
-  color: #1c58d9;
+  background: rgba(var(--color-blue-500-rgb),0.08);
+  color: var(--color-blue-500);
 }
 
 .node__header--action {
-  background: rgba(61, 184, 135, 0.12);
-  color: #1f7a55;
+  background: rgba(var(--color-green-500-rgb),0.08);
+  color: var(--color-green-500);
 }
 
 .node__header--flow {
-  background: rgba(63, 67, 80, 0.08);
-  color: #5e6169;
+  background: rgba(var(--color-teal-500-rgb),0.08);
+  color: var(--color-teal-500);
 }
 
 .node__body {
@@ -230,8 +229,8 @@
 .node :global(.react-flow__handle) {
   width: 10px;
   height: 10px;
-  border: 2px solid var(--button-bg, #1c58d9);
-  background: var(--center-channel-bg, #fff);
+  border: 2px solid var(--button-bg);
+  background: var(--center-channel-bg);
 }
 
 .panel {
@@ -249,7 +248,7 @@
   box-sizing: border-box;
   height: 48px;
   padding: 0 14px;
-  border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   flex-shrink: 0;
 }
 
@@ -280,18 +279,18 @@
 .panel__help {
   margin: 0;
   font-size: 12px;
-  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.72);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
 }
 
 .panel__footer {
   display: flex;
   gap: 8px;
   padding: 12px 14px;
-  border-top: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
 }
 
 .agent__prompt {
-  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: 6px;
   background: #fff;
   padding: 8px 10px;
@@ -303,5 +302,5 @@
 }
 
 .agent__prompt:hover {
-  border-color: rgba(var(--button-bg-rgb, 28, 88, 217), 0.4);
+  border-color: rgba(var(--button-bg-rgb), 0.4);
 }
