@@ -63,6 +63,11 @@
   left: 0;
   z-index: 24;
   min-width: 220px;
+
+  // PopoverMenu defaults to vertical padding; filter content supplies its own.
+  :global([class*='popover-menu']) {
+    padding-block: 0;
+  }
 }
 
 .home__filter-panel--tags {
@@ -83,16 +88,15 @@
 .home__filter-scroll {
   max-height: 280px;
   overflow: auto;
-  padding: 4px 0;
 }
 
 .home__filter-group {
-  padding: 4px 0;
+  padding: 0;
 }
 
 .home__filter-section-title {
   margin: 0;
-  padding: 6px 16px 4px;
+  padding: 8px 16px 4px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -104,7 +108,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 4px 16px 8px;
+  padding: 0 16px 8px;
 }
 
 .home__filter-footer {
