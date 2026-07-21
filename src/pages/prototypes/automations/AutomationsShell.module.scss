@@ -24,6 +24,12 @@
   background: var(--sidebar-header-bg);
 }
 
+.automations-shell__team-sidebar {
+  flex: 0 0 auto;
+  display: flex;
+  min-height: 0;
+}
+
 .automations-shell__outer-panel {
   flex: 1 1 auto;
   display: flex;

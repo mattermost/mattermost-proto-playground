@@ -16,7 +16,7 @@ const BASE = '/prototypes/automations';
 /**
  * Automations left nav using Channels sidebar header, categories, and items.
  */
-export default function ProductNav() {
+export default function ProductNav({ teamName = 'Contributors' }: { teamName?: string }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { automations, favoriteIds, recentIds } = useAutomations();
@@ -43,7 +43,7 @@ export default function ProductNav() {
 
   return (
     <div className={styles['product-nav']}>
-      <ChannelsSidebarHeader teamName="Automations" />
+      <ChannelsSidebarHeader teamName={teamName} />
       <Scrollbar className={styles['product-nav__scroll']}>
         <div className={styles['product-nav__top']}>
           <ChannelSidebarItem
