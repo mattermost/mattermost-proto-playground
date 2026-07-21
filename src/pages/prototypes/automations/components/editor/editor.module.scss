@@ -289,10 +289,15 @@
 .panel__body {
   flex: 1;
   min-height: 0;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+
+  // Scrollbar className lands on the SimpleBar root; field spacing must live
+  // on the inner content node where the form children actually render.
+  :global(.simplebar-content) {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
 }
 
 .panel__help {
