@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.03);
+  background: rgba(var(--center-channel-color-rgb), 0.03);
 }
 
 .editor__toolbar {
@@ -13,8 +13,8 @@
   gap: 12px;
   flex-wrap: wrap;
   padding: 10px 16px;
-  border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
-  background: var(--center-channel-bg, #fff);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
 }
 
 .editor__toolbar-left,
@@ -32,10 +32,10 @@
 }
 
 .editor__fav--on {
-  color: var(--button-bg, #1c58d9);
+  color: var(--button-bg);
 
   &:hover:not(:disabled) {
-    color: var(--button-bg, #1c58d9);
+    color: var(--button-bg);
   }
 }
 
@@ -48,8 +48,8 @@
 
 .editor__palette {
   flex: 0 0 260px;
-  border-right: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
-  background: var(--center-channel-bg, #fff);
+  border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -78,35 +78,11 @@
 
 .editor__side {
   flex: 0 0 320px;
-  border-left: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
-  background: var(--center-channel-bg, #fff);
+  border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
   min-height: 0;
   display: flex;
   flex-direction: column;
-}
-
-.editor__fab {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  z-index: 5;
-  border: 0;
-  border-radius: 24px;
-  padding: 10px 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--button-bg, #1c58d9);
-  color: var(--button-color, #fff);
-  font: inherit;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-}
-
-.editor__fab:hover {
-  filter: brightness(1.05);
 }
 
 .editor__blank {
@@ -116,7 +92,7 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.56);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
   font-size: 14px;
   z-index: 1;
 }
@@ -131,7 +107,7 @@
 }
 
 .palette__section {
-  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -142,7 +118,7 @@
   justify-content: space-between;
   align-items: center;
   border: 0;
-  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.03);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
   padding: 8px 10px;
   font: inherit;
   font-weight: 600;
@@ -164,7 +140,7 @@
   gap: 8px;
   width: 100%;
   text-align: left;
-  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-left: 2px solid var(--button-bg);
   border-radius: 4px;
   background: #fff;
@@ -178,7 +154,7 @@
 .palette__item-icon {
   display: inline-flex;
   flex-shrink: 0;
-  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.64);
+  color: rgba(var(--center-channel-color-rgb), 0.64);
 }
 
 .palette__item-label {
@@ -316,36 +292,6 @@
   border-top: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
 }
 
-.agent__messages {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-}
-
-.agent__bubble {
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 13px;
-  line-height: 1.4;
-  max-width: 100%;
-}
-
-.agent__bubble--assistant {
-  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.06);
-}
-
-.agent__bubble--user {
-  background: rgba(var(--button-bg-rgb, 28, 88, 217), 0.12);
-  align-self: flex-end;
-}
-
-.agent__prompts {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
 .agent__prompt {
   border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
   border-radius: 6px;
@@ -360,12 +306,4 @@
 
 .agent__prompt:hover {
   border-color: rgba(var(--button-bg-rgb, 28, 88, 217), 0.4);
-}
-
-.agent__compose {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px;
-  border-top: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
 }
