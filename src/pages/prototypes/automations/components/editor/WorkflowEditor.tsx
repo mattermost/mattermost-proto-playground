@@ -1,5 +1,4 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
-import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import {
   Button,
   Icon,
@@ -322,17 +321,6 @@ function EditorInner() {
             <Controls />
             <MiniMap pannable zoomable />
           </ReactFlow>
-          <button
-            type="button"
-            className={styles.editor__fab}
-            onClick={() => {
-              setAgentOpen(true);
-              setSelectedId(null);
-            }}
-          >
-            <Icon size="16" glyph={<CreationOutlineIcon />} />
-            AI agent
-          </button>
         </div>
 
         <div className={styles.editor__side}>

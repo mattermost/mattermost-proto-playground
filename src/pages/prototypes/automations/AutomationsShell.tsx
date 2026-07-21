@@ -1,8 +1,10 @@
 import { GlobalHeader, Toast } from '@mattermost/compass-ui';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import avatar from '@/assets/avatars/Danielle Okoro.png';
 import { useAutomations } from './context/AutomationsContext';
 import ProductNav from './components/ProductNav';
+import AiAssistantFab from './components/AiAssistant/AiAssistantFab';
+import AiAssistantPanel from './components/AiAssistant/AiAssistantPanel';
 import styles from './AutomationsShell.module.scss';
 
 export interface AutomationsShellProps {
@@ -15,6 +17,7 @@ export default function AutomationsShell({
   showProductNav = true,
 }: AutomationsShellProps) {
   const { toast, dismissToast } = useAutomations();
+  const [assistantOpen, setAssistantOpen] = useState(false);
 
   return (
     <div className={styles['automations-shell']}>
@@ -31,7 +34,16 @@ export default function AutomationsShell({
             <ProductNav />
           </aside>
         ) : null}
-        <div className={styles['automations-shell__main']}>{children}</div>
+        <div className={styles['automations-shell__main']}>
+          {children}
+          {assistantOpen ? (
+            <AiAssistantPanel onClose={() => setAssistantOpen(false)} />
+          ) : null}
+          <AiAssistantFab
+            open={assistantOpen}
+            onToggle={() => setAssistantOpen((v) => !v)}
+          />
+        </div>
       </div>
       {toast ? (
         <div className={styles['automations-shell__toast']}>

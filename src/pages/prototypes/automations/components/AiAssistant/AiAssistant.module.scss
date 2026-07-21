@@ -1,0 +1,104 @@
+.assistant-fab {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--button-bg, #1c58d9);
+  color: var(--button-color, #fff);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.assistant-fab:hover {
+  filter: brightness(1.06);
+}
+
+.assistant-fab--open {
+  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.72);
+}
+
+.assistant-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  bottom: 84px;
+  width: min(400px, calc(100% - 24px));
+  z-index: 28;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  background: var(--center-channel-bg, #fff);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.assistant-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+}
+
+.assistant-panel__title-block {
+  min-width: 0;
+}
+
+.assistant-panel__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.assistant-panel__context {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.64);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assistant-panel__messages {
+  flex: 1;
+  min-height: 0;
+  padding: 8px 0;
+}
+
+.assistant-panel__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 16px 12px;
+}
+
+.assistant-panel__suggestion {
+  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border-radius: 6px;
+  background: rgba(var(--button-bg-rgb, 28, 88, 217), 0.06);
+  color: var(--button-bg, #1c58d9);
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.assistant-panel__suggestion:hover {
+  border-color: rgba(var(--button-bg-rgb, 28, 88, 217), 0.35);
+}
+
+.assistant-panel__composer {
+  border-top: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  padding: 8px;
+}

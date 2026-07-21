@@ -1,4 +1,3 @@
-import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
@@ -37,7 +36,6 @@ export default function HomePage() {
   const {
     automations,
     createBlank,
-    createAiDraft,
     setStatus,
     toggleFavorite,
     recordRecent,
@@ -71,14 +69,9 @@ export default function HomePage() {
     });
   }, [automations, query, scopeFilter, statusFilter, tagFilter]);
 
-  const openEditor = (id: string, opts?: { agent?: boolean }) => {
+  const openEditor = (id: string) => {
     recordRecent(id);
-    navigate(`${BASE}/${id}/editor${opts?.agent ? '?agent=1' : ''}`);
-  };
-
-  const onDescribeAi = () => {
-    const id = createAiDraft();
-    openEditor(id, { agent: true });
+    navigate(`${BASE}/${id}/editor`);
   };
 
   const onNewBlank = () => {
@@ -98,14 +91,6 @@ export default function HomePage() {
           </p>
         </div>
         <div className={styles.home__actions}>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<CreationOutlineIcon />} />}
-            onClick={onDescribeAi}
-          >
-            Describe with AI
-          </Button>
           <Button
             emphasis="Tertiary"
             size="Small"
@@ -136,14 +121,6 @@ export default function HomePage() {
                     onClick={() => {
                       setNewOpen(false);
                       navigate(`${BASE}/templates`);
-                    }}
-                  />
-                  <MenuItem
-                    label="Describe with AI"
-                    leadingElement={false}
-                    onClick={() => {
-                      setNewOpen(false);
-                      onDescribeAi();
                     }}
                   />
                 </PopoverMenu>
