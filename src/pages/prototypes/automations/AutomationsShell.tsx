@@ -14,24 +14,17 @@ function shouldShowProductNav(pathname: string) {
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
-  return (
-    normalized === BASE ||
-    normalized === `${BASE}/templates`
-  );
+  return normalized === BASE || normalized === `${BASE}/templates`;
 }
 
 /**
- * Persistent product chrome for Automations. Uses an Outlet so the AI FAB /
- * assistant stay mounted across route changes (e.g. Home → editor).
+ * Automations chrome following ChannelShell panel nesting (outer + inner
+ * rounded containers) with a Channels-style product sidebar.
  */
 export default function AutomationsShell() {
   const { pathname } = useLocation();
-  const {
-    toast,
-    dismissToast,
-    assistantOpen,
-    setAssistantOpen,
-  } = useAutomations();
+  const { toast, dismissToast, assistantOpen, setAssistantOpen } =
+    useAutomations();
   const showProductNav = shouldShowProductNav(pathname);
 
   return (
@@ -44,18 +37,29 @@ export default function AutomationsShell() {
         />
       </div>
       <div className={styles['automations-shell__body']}>
-        {showProductNav ? (
-          <aside className={styles['automations-shell__nav']}>
-            <ProductNav />
-          </aside>
-        ) : null}
-        <div className={styles['automations-shell__main']}>
-          <Outlet />
-          <AiAssistantPanel />
-          <AiAssistantFab
-            open={assistantOpen}
-            onToggle={() => setAssistantOpen(!assistantOpen)}
-          />
+        <div className={styles['automations-shell__outer-panel']}>
+          {showProductNav ? (
+            <aside className={styles['automations-shell__nav']}>
+              <ProductNav />
+            </aside>
+          ) : null}
+          <div
+            className={[
+              styles['automations-shell__inner-panel'],
+              !showProductNav ? styles['automations-shell__inner-panel--flush'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
+            <div className={styles['automations-shell__main']}>
+              <Outlet />
+              <AiAssistantPanel />
+              <AiAssistantFab
+                open={assistantOpen}
+                onToggle={() => setAssistantOpen(!assistantOpen)}
+              />
+            </div>
+          </div>
         </div>
       </div>
       {toast ? (

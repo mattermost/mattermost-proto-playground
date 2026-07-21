@@ -1,6 +1,9 @@
-import HomeVariantOutlineIcon from '@mattermost/compass-icons/components/home-variant-outline';
-import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
-import { Icon, Scrollbar } from '@mattermost/compass-ui';
+import {
+  ChannelSidebarItem,
+  ChannelsSidebarCategory,
+  ChannelsSidebarHeader,
+  Scrollbar,
+} from '@mattermost/compass-ui';
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAutomations } from '../context/AutomationsContext';
@@ -8,6 +11,9 @@ import styles from './ProductNav.module.scss';
 
 const BASE = '/prototypes/automations';
 
+/**
+ * Automations left nav using Channels sidebar header, categories, and items.
+ */
 export default function ProductNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -34,71 +40,56 @@ export default function ProductNav() {
   const templatesActive = pathname.startsWith(`${BASE}/templates`);
 
   return (
-    <Scrollbar className={styles['product-nav']}>
-      <div className={styles['product-nav__links']}>
-        <button
-          type="button"
-          className={[
-            styles['product-nav__link'],
-            homeActive ? styles['product-nav__link--active'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          onClick={() => navigate(BASE)}
-        >
-          <Icon size="16" glyph={<HomeVariantOutlineIcon />} />
-          Home
-        </button>
-        <button
-          type="button"
-          className={[
-            styles['product-nav__link'],
-            templatesActive ? styles['product-nav__link--active'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          onClick={() => navigate(`${BASE}/templates`)}
-        >
-          <Icon size="16" glyph={<LightningBoltOutlineIcon />} />
-          Templates
-        </button>
-      </div>
+    <div className={styles['product-nav']}>
+      <ChannelsSidebarHeader teamName="Automations" />
+      <Scrollbar className={styles['product-nav__scroll']}>
+        <div className={styles['product-nav__top']}>
+          <ChannelSidebarItem
+            name="Home"
+            leadingVisual="Threads"
+            active={homeActive}
+            onClick={() => navigate(BASE)}
+          />
+          <ChannelSidebarItem
+            name="Templates"
+            leadingVisual="Drafts"
+            active={templatesActive}
+            onClick={() => navigate(`${BASE}/templates`)}
+          />
+        </div>
 
-      <div className={styles['product-nav__section']}>
-        <h3 className={styles['product-nav__section-title']}>Favorites</h3>
-        {favorites.length === 0 ? (
-          <p className={styles['product-nav__empty']}>No favorites yet</p>
-        ) : (
-          favorites.map((a) => (
-            <button
-              key={a.id}
-              type="button"
-              className={styles['product-nav__item']}
-              onClick={() => navigate(`${BASE}/${a.id}/editor`)}
-            >
-              {a.name}
-            </button>
-          ))
-        )}
-      </div>
+        <div className={styles['product-nav__group']}>
+          <ChannelsSidebarCategory label="Favorites" showChevron />
+          {favorites.length === 0 ? (
+            <p className={styles['product-nav__empty']}>No favorites yet</p>
+          ) : (
+            favorites.map((a) => (
+              <ChannelSidebarItem
+                key={a.id}
+                name={a.name}
+                leadingVisual="Public"
+                onClick={() => navigate(`${BASE}/${a.id}/editor`)}
+              />
+            ))
+          )}
+        </div>
 
-      <div className={styles['product-nav__section']}>
-        <h3 className={styles['product-nav__section-title']}>Recents</h3>
-        {recents.length === 0 ? (
-          <p className={styles['product-nav__empty']}>No recent automations</p>
-        ) : (
-          recents.map((a) => (
-            <button
-              key={a.id}
-              type="button"
-              className={styles['product-nav__item']}
-              onClick={() => navigate(`${BASE}/${a.id}/editor`)}
-            >
-              {a.name}
-            </button>
-          ))
-        )}
-      </div>
-    </Scrollbar>
+        <div className={styles['product-nav__group']}>
+          <ChannelsSidebarCategory label="Recents" showChevron />
+          {recents.length === 0 ? (
+            <p className={styles['product-nav__empty']}>No recent automations</p>
+          ) : (
+            recents.map((a) => (
+              <ChannelSidebarItem
+                key={a.id}
+                name={a.name}
+                leadingVisual="Public"
+                onClick={() => navigate(`${BASE}/${a.id}/editor`)}
+              />
+            ))
+          )}
+        </div>
+      </Scrollbar>
+    </div>
   );
 }
