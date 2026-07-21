@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import TopNav from '@/components/layout/TopNav/TopNav';
 import PrototypeTopNav from '@/components/layout/PrototypeTopNav/PrototypeTopNav';
