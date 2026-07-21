@@ -66,6 +66,16 @@
   height: 100%;
 }
 
+// Global reset sets `svg { max-width: 100% }`, which collapses React Flow
+// edge SVGs (no intrinsic size) so connection paths never paint.
+.editor__canvas :global(.react-flow__edges svg),
+.editor__canvas :global(svg.react-flow__connectionline),
+.editor__canvas :global(.react-flow__edge-path),
+.editor__canvas :global(.react-flow__connection-path) {
+  max-width: none;
+  overflow: visible;
+}
+
 .editor__side {
   flex: 0 0 320px;
   border-left: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
