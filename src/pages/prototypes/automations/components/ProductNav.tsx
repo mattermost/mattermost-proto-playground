@@ -1,4 +1,5 @@
 import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import {
   ChannelSidebarItem,
   ChannelsSidebarCategory,
@@ -68,7 +69,7 @@ export default function ProductNav() {
               <ChannelSidebarItem
                 key={a.id}
                 name={a.name}
-                leadingVisual="Public"
+                leadingIcon={<LightningBoltOutlineIcon size={16} />}
                 onClick={() => navigate(`${BASE}/${a.id}/editor`)}
               />
             ))
@@ -84,7 +85,7 @@ export default function ProductNav() {
               <ChannelSidebarItem
                 key={a.id}
                 name={a.name}
-                leadingVisual="Public"
+                leadingIcon={<LightningBoltOutlineIcon size={16} />}
                 onClick={() => navigate(`${BASE}/${a.id}/editor`)}
               />
             ))
