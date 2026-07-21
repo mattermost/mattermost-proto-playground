@@ -1,19 +1,25 @@
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
+import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import {
   Button,
+  Chip,
   Icon,
   IconButton,
   MenuItem,
   PopoverMenu,
+  PopoverMenuDivider,
+  PopoverMenuGroup,
+  PopoverMenuScroll,
   Scrollbar,
   SearchInput,
   Switch,
   Tag,
+  useOutsideClose,
 } from '@mattermost/compass-ui';
-import { useMemo, useState, type ChangeEvent } from 'react';
+import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SYSTEM_TAGS } from '../../data/automationsData';
 import type { AutomationScope, AutomationStatus } from '../../data/types';
@@ -47,6 +53,22 @@ export default function HomePage() {
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  const closeFilters = useCallback(() => setFiltersOpen(false), []);
+  useOutsideClose(filterRef, filtersOpen, closeFilters);
+
+  const activeFilterCount =
+    (statusFilter !== 'all' ? 1 : 0) +
+    (scopeFilter !== 'all' ? 1 : 0) +
+    (tagFilter ? 1 : 0);
+
+  const clearFilters = () => {
+    setStatusFilter('all');
+    setScopeFilter('all');
+    setTagFilter(null);
+  };
 
   const stats = useMemo(() => {
     const enabled = automations.filter((a) => a.status === 'enabled').length;
@@ -131,69 +153,146 @@ export default function HomePage() {
       </div>
 
       <div className={styles.home__filters}>
-        <div className={styles.home__search}>
-          <SearchInput
-            label="Search automations or tags…"
-            value={query}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
-            onClear={() => setQuery('')}
-            size="Small"
-          />
-        </div>
-        <div className={styles['home__filter-row']}>
-          <span className={styles['home__filter-label']}>Status</span>
-          {(['all', 'draft', 'enabled', 'disabled'] as const).map((s) => (
-            <button
-              key={s}
-              type="button"
-              className={[
-                styles.home__pill,
-                statusFilter === s ? styles['home__pill--active'] : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={() => setStatusFilter(s)}
+        <div className={styles['home__filter-bar']}>
+          <div className={styles.home__search}>
+            <SearchInput
+              label="Search automations or tags…"
+              value={query}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+              onClear={() => setQuery('')}
+              size="Small"
+            />
+          </div>
+          <div className={styles['home__filter-trigger']} ref={filterRef}>
+            <Button
+              emphasis={activeFilterCount > 0 ? 'Secondary' : 'Tertiary'}
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<FilterVariantIcon />} />}
+              onClick={() => setFiltersOpen((v) => !v)}
+              aria-expanded={filtersOpen}
+              aria-haspopup="dialog"
             >
-              {s}
-            </button>
-          ))}
+              {activeFilterCount > 0 ? `Filters · ${activeFilterCount}` : 'Filters'}
+            </Button>
+            {filtersOpen ? (
+              <div className={styles['home__filter-panel']} role="dialog" aria-label="Filters">
+                <PopoverMenu>
+                  <PopoverMenuScroll maxHeight={360}>
+                    <PopoverMenuGroup aria-label="Status">
+                      <p className={styles['home__filter-section-title']}>Status</p>
+                      {(
+                        [
+                          ['all', 'All'],
+                          ['draft', 'Draft'],
+                          ['enabled', 'Enabled'],
+                          ['disabled', 'Disabled'],
+                        ] as const
+                      ).map(([value, label]) => (
+                        <MenuItem
+                          key={value}
+                          label={label}
+                          leadingElement={false}
+                          trailingElement={statusFilter === value}
+                          onClick={() => setStatusFilter(value)}
+                        />
+                      ))}
+                    </PopoverMenuGroup>
+                    <PopoverMenuDivider />
+                    <PopoverMenuGroup aria-label="Scope">
+                      <p className={styles['home__filter-section-title']}>Scope</p>
+                      {(
+                        [
+                          ['all', 'All'],
+                          ['global', 'Global'],
+                          ['team', 'Team'],
+                          ['channel', 'Channel'],
+                        ] as const
+                      ).map(([value, label]) => (
+                        <MenuItem
+                          key={value}
+                          label={label}
+                          leadingElement={false}
+                          trailingElement={scopeFilter === value}
+                          onClick={() => setScopeFilter(value)}
+                        />
+                      ))}
+                    </PopoverMenuGroup>
+                    <PopoverMenuDivider />
+                    <PopoverMenuGroup aria-label="Tags">
+                      <p className={styles['home__filter-section-title']}>Tags</p>
+                      <MenuItem
+                        label="Any tag"
+                        leadingElement={false}
+                        trailingElement={tagFilter === null}
+                        onClick={() => setTagFilter(null)}
+                      />
+                      {SYSTEM_TAGS.map((tag) => (
+                        <MenuItem
+                          key={tag}
+                          label={tag}
+                          leadingElement={false}
+                          trailingElement={tagFilter === tag}
+                          onClick={() => setTagFilter(tag)}
+                        />
+                      ))}
+                    </PopoverMenuGroup>
+                  </PopoverMenuScroll>
+                  {activeFilterCount > 0 ? (
+                    <>
+                      <PopoverMenuDivider />
+                      <MenuItem
+                        label="Clear filters"
+                        leadingElement={false}
+                        onClick={() => {
+                          clearFilters();
+                        }}
+                      />
+                    </>
+                  ) : null}
+                </PopoverMenu>
+              </div>
+            ) : null}
+          </div>
         </div>
-        <div className={styles['home__filter-row']}>
-          <span className={styles['home__filter-label']}>Scope</span>
-          {(['all', 'global', 'team', 'channel'] as const).map((s) => (
+
+        {activeFilterCount > 0 ? (
+          <div className={styles['home__active-filters']}>
+            {statusFilter !== 'all' ? (
+              <Chip
+                size="Small"
+                onRemove={() => setStatusFilter('all')}
+                removeLabel="Remove status filter"
+              >
+                Status: {statusFilter}
+              </Chip>
+            ) : null}
+            {scopeFilter !== 'all' ? (
+              <Chip
+                size="Small"
+                onRemove={() => setScopeFilter('all')}
+                removeLabel="Remove scope filter"
+              >
+                Scope: {scopeFilter}
+              </Chip>
+            ) : null}
+            {tagFilter ? (
+              <Chip
+                size="Small"
+                onRemove={() => setTagFilter(null)}
+                removeLabel="Remove tag filter"
+              >
+                Tag: {tagFilter}
+              </Chip>
+            ) : null}
             <button
-              key={s}
               type="button"
-              className={[
-                styles.home__pill,
-                scopeFilter === s ? styles['home__pill--active'] : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={() => setScopeFilter(s)}
+              className={styles['home__clear-filters']}
+              onClick={clearFilters}
             >
-              {s}
+              Clear all
             </button>
-          ))}
-        </div>
-        <div className={styles['home__filter-row']}>
-          <span className={styles['home__filter-label']}>Tags</span>
-          {SYSTEM_TAGS.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              className={[
-                styles.home__pill,
-                tagFilter === tag ? styles['home__pill--active'] : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              onClick={() => setTagFilter((t) => (t === tag ? null : tag))}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
+          </div>
+        ) : null}
       </div>
 
       <div className={styles['home__table-wrap']}>
