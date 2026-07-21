@@ -1,5 +1,5 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
-import { Button, Icon, Scrollbar } from '@mattermost/compass-ui';
+import { Button, Icon, IconButton, Scrollbar } from '@mattermost/compass-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
 import styles from './history.module.scss';
@@ -26,20 +26,21 @@ export default function ChangeHistoryPage() {
 
   return (
     <div className={styles.history}>
-      <div className={styles.history__toolbar}>
-        <Button
-          emphasis="Tertiary"
-          size="Small"
-          leadingIcon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
-          onClick={() => navigate(`${BASE}/${id}/editor`)}
-        >
-          Back to editor
-        </Button>
+      <div className={styles.history__header}>
+        <div className={styles['history__title-row']}>
+          <IconButton
+            aria-label="Back to editor"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
+            onClick={() => navigate(`${BASE}/${id}/editor`)}
+          />
+          <h1 className={styles.history__title}>History · {automation.name}</h1>
+        </div>
         <Button emphasis="Tertiary" size="X-Small" onClick={() => undefined}>
           Refresh
         </Button>
       </div>
-      <h1 className={styles.history__title}>History · {automation.name}</h1>
       <div className={styles['history__table-wrap']}>
         <Scrollbar style={{ height: '100%' }}>
           <table className={styles.history__table}>

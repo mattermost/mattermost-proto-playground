@@ -1,5 +1,5 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
-import { Button, Icon, Scrollbar, Tag } from '@mattermost/compass-ui';
+import { Button, Icon, IconButton, Scrollbar, Tag } from '@mattermost/compass-ui';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
 import styles from './history.module.scss';
@@ -30,24 +30,25 @@ export default function RunDetailPage() {
 
   return (
     <Scrollbar className={styles.history}>
-      <div className={styles.history__toolbar}>
-        <Button
-          emphasis="Tertiary"
-          size="Small"
-          leadingIcon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
-          onClick={() => navigate(`${BASE}/${id}/runs`)}
-        >
-          Back to runs
-        </Button>
+      <div className={styles.history__header}>
+        <div className={styles['history__title-row']}>
+          <IconButton
+            aria-label="Back to runs"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
+            onClick={() => navigate(`${BASE}/${id}/runs`)}
+          />
+          <h1 className={styles.history__title}>Run detail · {automation.name}</h1>
+        </div>
         <Button
           emphasis="Tertiary"
           size="Small"
           onClick={() => navigate(`${BASE}/${id}/editor`)}
         >
-          Back to editor
+          Open editor
         </Button>
       </div>
-      <h1 className={styles.history__title}>Run detail · {automation.name}</h1>
       <Tag
         label={run.status}
         size="X-Small"

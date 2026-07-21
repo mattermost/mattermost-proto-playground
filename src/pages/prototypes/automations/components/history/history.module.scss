@@ -8,18 +8,25 @@
   background: var(--center-channel-bg, #fff);
 }
 
-.history__title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.history__toolbar {
+.history__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.history__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.history__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .history__filters {
