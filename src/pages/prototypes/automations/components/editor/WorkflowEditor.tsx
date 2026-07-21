@@ -2,6 +2,7 @@ import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import {
   Button,
   Icon,
+  IconButton,
   MenuItem,
   PopoverMenu,
   Tag,
@@ -24,6 +25,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } fro
 import { useNavigate, useParams } from 'react-router-dom';
 import type { PaletteItem, WorkflowEdge, WorkflowNode } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
+import { RedoGlyph, UndoGlyph } from './historyGlyphs';
 import InspectorPanel from './InspectorPanel';
 import StepsPalette from './StepsPalette';
 import WorkflowNodeView from './WorkflowNode';
@@ -232,22 +234,22 @@ function EditorInner() {
           />
         </div>
         <div className={styles['editor__toolbar-right']}>
-          <Button
-            emphasis="Tertiary"
+          <IconButton
+            aria-label="Undo"
             size="Small"
+            padding="Compact"
             disabled={past.length === 0}
+            icon={<Icon size="16" glyph={<UndoGlyph />} />}
             onClick={undo}
-          >
-            Undo
-          </Button>
-          <Button
-            emphasis="Tertiary"
+          />
+          <IconButton
+            aria-label="Redo"
             size="Small"
+            padding="Compact"
             disabled={future.length === 0}
+            icon={<Icon size="16" glyph={<RedoGlyph />} />}
             onClick={redo}
-          >
-            Redo
-          </Button>
+          />
           <div style={{ position: 'relative' }}>
             <Button
               emphasis="Tertiary"
