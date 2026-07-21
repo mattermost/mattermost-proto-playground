@@ -1,5 +1,7 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
+import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
+import StarIcon from '@mattermost/compass-icons/components/star';
 import {
   Button,
   Icon,
@@ -48,6 +50,7 @@ function EditorInner() {
     recordRecent,
     showToast,
     aiCanvasEpoch,
+    toggleFavorite,
   } = useAutomations();
   const automation = getAutomation(id);
   const { screenToFlowPosition } = useReactFlow();
@@ -221,6 +224,18 @@ function EditorInner() {
             Back
           </Button>
           <h1 className={styles.editor__title}>{automation.name}</h1>
+          <IconButton
+            aria-label={automation.favorite ? 'Remove favorite' : 'Add favorite'}
+            size="Small"
+            padding="Compact"
+            icon={
+              <Icon
+                size="16"
+                glyph={automation.favorite ? <StarIcon /> : <StarOutlineIcon />}
+              />
+            }
+            onClick={() => toggleFavorite(automation.id)}
+          />
           <Tag
             label={statusLabel}
             size="X-Small"
