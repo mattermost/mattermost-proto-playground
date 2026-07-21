@@ -476,7 +476,7 @@ export default function HomePage() {
                       <div className={styles.home__name}>{a.name}</div>
                       <div className={styles.home__tags}>
                         {a.tags.map((tag) => (
-                          <Tag key={tag} label={tag} size="X-Small" type="Info Dim" />
+                          <Tag key={tag} label={tag} size="X-Small" />
                         ))}
                       </div>
                     </td>
