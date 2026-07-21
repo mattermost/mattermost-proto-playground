@@ -227,6 +227,7 @@ function EditorInner() {
             aria-label={automation.favorite ? 'Remove favorite' : 'Add favorite'}
             size="Small"
             padding="Compact"
+            className={automation.favorite ? styles['editor__fav--on'] : undefined}
             icon={
               <Icon
                 size="16"

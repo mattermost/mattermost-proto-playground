@@ -31,6 +31,14 @@
   font-weight: 600;
 }
 
+.editor__fav--on {
+  color: var(--button-bg, #1c58d9);
+
+  &:hover:not(:disabled) {
+    color: var(--button-bg, #1c58d9);
+  }
+}
+
 .editor__body {
   display: flex;
   flex: 1;
