@@ -3,7 +3,6 @@ import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import PoundIcon from '@mattermost/compass-icons/components/pound';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
@@ -30,6 +29,7 @@ import SearchIllustration from '@/assets/illustrations/search.svg?react';
 import { SYSTEM_TAGS } from '../../data/automationsData';
 import type { AutomationScope, AutomationStatus } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
+import TagOutlineIcon from '../icons/TagOutlineIcon';
 import styles from './HomePage.module.scss';
 
 const BASE = '/prototypes/automations';
@@ -302,7 +302,7 @@ export default function HomePage() {
             <Button
               emphasis={tagFilters.length > 0 ? 'Secondary' : 'Tertiary'}
               size="Small"
-              leadingIcon={<Icon size="16" glyph={<PoundIcon />} />}
+              leadingIcon={<Icon size="16" glyph={<TagOutlineIcon />} />}
               onClick={() => {
                 setTagsOpen((v) => !v);
                 setFiltersOpen(false);
