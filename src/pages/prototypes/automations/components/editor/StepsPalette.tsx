@@ -41,13 +41,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
       <button
         key={item.id}
         type="button"
-        className={[
-          styles.palette__item,
-          item.kind === 'action' ? styles['palette__item--action'] : '',
-          item.kind === 'flow' ? styles['palette__item--flow'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        className={styles.palette__item}
         disabled={item.disabled}
         draggable={!item.disabled}
         onDragStart={(e) => {
