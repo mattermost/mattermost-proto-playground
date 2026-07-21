@@ -1,4 +1,5 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
+import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import {
   Button,
   Icon,
@@ -281,7 +282,12 @@ function EditorInner() {
               </div>
             ) : null}
           </div>
-          <Button emphasis="Tertiary" size="Small" onClick={testRun}>
+          <Button
+            emphasis="Tertiary"
+            size="Small"
+            leadingIcon={<Icon size="16" glyph={<PlayOutlineIcon />} />}
+            onClick={testRun}
+          >
             Test run
           </Button>
           <Button emphasis="Primary" size="Small" onClick={save}>
