@@ -229,9 +229,25 @@
 }
 
 .node__body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 10px;
   font-weight: 600;
   border-radius: 0 0 5px 5px;
+}
+
+.node__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}
+
+.node__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .node :global(.react-flow__handle) {

@@ -84,6 +84,10 @@ const BY_KIND: Record<StepKind, Glyph> = {
   flow: SourceBranchIcon,
 };
 
+export function glyphForStep(kind: StepKind, stepType: string): Glyph {
+  return BY_STEP_TYPE[stepType] ?? BY_KIND[kind];
+}
+
 export function glyphForPaletteItem(item: PaletteItem): Glyph {
-  return BY_STEP_TYPE[item.stepType] ?? BY_KIND[item.kind];
+  return glyphForStep(item.kind, item.stepType);
 }
