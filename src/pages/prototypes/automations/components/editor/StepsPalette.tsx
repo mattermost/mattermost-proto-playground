@@ -73,7 +73,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
         <div className={styles.palette__section}>
           <button
             type="button"
-            className={styles['palette__section-header']}
+            className={`${styles['palette__section-header']} ${styles['palette__section-header--trigger']}`}
             onClick={() => setTriggersOpen((v) => !v)}
           >
             <span>Triggers ({TRIGGER_COUNT})</span>
@@ -88,7 +88,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
         <div className={styles.palette__section} style={{ marginTop: 10 }}>
           <button
             type="button"
-            className={styles['palette__section-header']}
+            className={`${styles['palette__section-header']} ${styles['palette__section-header--action']}`}
             onClick={() => setActionsOpen((v) => !v)}
           >
             <span>Actions ({filteredActions.length})</span>
@@ -103,7 +103,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
         <div className={styles.palette__section} style={{ marginTop: 10 }}>
           <button
             type="button"
-            className={styles['palette__section-header']}
+            className={`${styles['palette__section-header']} ${styles['palette__section-header--flow']}`}
             onClick={() => setFlowOpen((v) => !v)}
           >
             <span>Flow ({filteredFlow.length})</span>
