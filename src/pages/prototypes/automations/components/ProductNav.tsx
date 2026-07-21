@@ -1,3 +1,4 @@
+import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
 import {
   ChannelSidebarItem,
   ChannelsSidebarCategory,
@@ -52,7 +53,7 @@ export default function ProductNav() {
           />
           <ChannelSidebarItem
             name="Templates"
-            leadingVisual="Drafts"
+            leadingIcon={<IframeListOutlineIcon size={16} />}
             active={templatesActive}
             onClick={() => navigate(`${BASE}/templates`)}
           />
