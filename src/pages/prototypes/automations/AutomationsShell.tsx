@@ -1,7 +1,10 @@
 import { GlobalHeader, Toast } from '@mattermost/compass-ui';
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import avatar from '@/assets/avatars/Danielle Okoro.png';
+import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useAutomations } from './context/AutomationsContext';
+import AutomationsSceneSwitcher from './components/AutomationsSceneSwitcher';
 import ProductNav from './components/ProductNav';
 import AiAssistantFab from './components/AiAssistant/AiAssistantFab';
 import AiAssistantPanel from './components/AiAssistant/AiAssistantPanel';
@@ -23,9 +26,15 @@ function shouldShowProductNav(pathname: string) {
  */
 export default function AutomationsShell() {
   const { pathname } = useLocation();
-  const { toast, dismissToast, assistantOpen, setAssistantOpen } =
+  const { setCenterSlot } = usePrototypeChrome();
+  const { toast, dismissToast, assistantOpen, setAssistantOpen, createBlank } =
     useAutomations();
   const showProductNav = shouldShowProductNav(pathname);
+
+  useEffect(() => {
+    setCenterSlot(<AutomationsSceneSwitcher createBlank={createBlank} />);
+    return () => setCenterSlot(null);
+  }, [createBlank, setCenterSlot]);
 
   return (
     <div className={styles['automations-shell']}>
