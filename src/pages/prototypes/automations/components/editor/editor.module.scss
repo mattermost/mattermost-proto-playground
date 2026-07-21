@@ -143,10 +143,8 @@
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-left: 2px solid var(--button-bg);
   border-radius: 4px;
-  background: #fff;
+  background: var(--center-channel-bg);
   padding: 8px 10px;
-  font: inherit;
-  font-size: 13px;
   cursor: grab;
   color: inherit;
 }
