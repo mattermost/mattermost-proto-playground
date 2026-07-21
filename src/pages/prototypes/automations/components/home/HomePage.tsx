@@ -1,3 +1,4 @@
+import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
@@ -5,7 +6,6 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import PoundIcon from '@mattermost/compass-icons/components/pound';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
-import TimelineTextOutlineIcon from '@mattermost/compass-icons/components/timeline-text-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import {
   Button,
