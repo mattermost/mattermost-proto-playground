@@ -29,6 +29,7 @@
     "@mattermost/compass-icons": "^0.1.53",
     "@mattermost/compass-ui": "workspace:*",
     "@mdx-js/react": "^3.1.1",
+    "@xyflow/react": "^12.11.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.28.0",

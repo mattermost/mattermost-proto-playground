@@ -1,0 +1,123 @@
+.history {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 20px 28px;
+  gap: 16px;
+  background: var(--center-channel-bg, #fff);
+}
+
+.history__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.history__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.history__filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.history__table-wrap {
+  flex: 1;
+  min-height: 0;
+  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.history__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.history__table th,
+.history__table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.08);
+}
+
+.history__table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.56);
+  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.02);
+}
+
+.history__row {
+  cursor: pointer;
+}
+
+.history__row:hover td {
+  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.04);
+}
+
+.history__link {
+  border: 0;
+  background: transparent;
+  color: var(--button-bg, #1c58d9);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.detail__section {
+  margin-top: 16px;
+}
+
+.detail__section h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.detail__code {
+  margin: 0;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  background: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.04);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.detail__step {
+  border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.detail__step-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.detail__io {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 800px) {
+  .detail__io {
+    grid-template-columns: 1fr;
+  }
+}

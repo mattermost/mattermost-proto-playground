@@ -2,6 +2,7 @@ import ProductsIcon from '@mattermost/compass-icons/components/products';
 import ProductChannelsIcon from '@mattermost/compass-icons/components/product-channels';
 import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
 import ProductBoardsIcon from '@mattermost/compass-icons/components/product-boards';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import ArrowRightIcon from '@mattermost/compass-icons/components/arrow-right';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
@@ -17,7 +18,11 @@ import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import type { ComponentType } from 'react';
 import styles from './GlobalHeader.module.scss';
 
-export type GlobalHeaderProduct = 'Channels' | 'Playbooks' | 'Boards';
+export type GlobalHeaderProduct =
+  | 'Channels'
+  | 'Playbooks'
+  | 'Boards'
+  | 'Automations';
 
 export interface GlobalHeaderProps {
   /** Optional CSS class name. */
@@ -41,6 +46,7 @@ const PRODUCT_ICON: Record<
   Channels: ProductChannelsIcon,
   Playbooks: ProductPlaybooksIcon,
   Boards: ProductBoardsIcon,
+  Automations: LightningBoltOutlineIcon,
 };
 
 function InvertedIconButton({
