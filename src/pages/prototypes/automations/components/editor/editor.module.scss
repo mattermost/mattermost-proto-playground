@@ -182,7 +182,9 @@
 }
 
 .palette__item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   text-align: left;
   border: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.12);
@@ -194,6 +196,19 @@
   font-size: 13px;
   cursor: grab;
   color: inherit;
+}
+
+.palette__item-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.64);
+}
+
+.palette__item-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .palette__item--action {

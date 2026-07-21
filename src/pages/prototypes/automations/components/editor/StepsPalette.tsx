@@ -4,6 +4,7 @@ import { useMemo, useState, type ChangeEvent } from 'react';
 import { ACTION_STEPS, FLOW_STEPS } from '../../data/actions';
 import { ALL_TRIGGERS, TRIGGER_COUNT } from '../../data/triggers';
 import type { PaletteItem } from '../../data/types';
+import { glyphForPaletteItem } from './paletteIcons';
 import styles from './editor.module.scss';
 
 type StepsPaletteProps = {
@@ -34,30 +35,36 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
     return FLOW_STEPS.filter((t) => t.label.toLowerCase().includes(q));
   }, [query]);
 
-  const renderItem = (item: PaletteItem) => (
-    <button
-      key={item.id}
-      type="button"
-      className={[
-        styles.palette__item,
-        item.kind === 'action' ? styles['palette__item--action'] : '',
-        item.kind === 'flow' ? styles['palette__item--flow'] : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      disabled={item.disabled}
-      draggable={!item.disabled}
-      onDragStart={(e) => {
-        e.dataTransfer.setData('application/automations-step', JSON.stringify(item));
-        e.dataTransfer.effectAllowed = 'copy';
-      }}
-      onClick={() => {
-        if (!item.disabled) onAdd(item);
-      }}
-    >
-      {item.label}
-    </button>
-  );
+  const renderItem = (item: PaletteItem) => {
+    const Glyph = glyphForPaletteItem(item);
+    return (
+      <button
+        key={item.id}
+        type="button"
+        className={[
+          styles.palette__item,
+          item.kind === 'action' ? styles['palette__item--action'] : '',
+          item.kind === 'flow' ? styles['palette__item--flow'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        disabled={item.disabled}
+        draggable={!item.disabled}
+        onDragStart={(e) => {
+          e.dataTransfer.setData('application/automations-step', JSON.stringify(item));
+          e.dataTransfer.effectAllowed = 'copy';
+        }}
+        onClick={() => {
+          if (!item.disabled) onAdd(item);
+        }}
+      >
+        <span className={styles['palette__item-icon']} aria-hidden>
+          <Icon size="16" glyph={<Glyph />} />
+        </span>
+        <span className={styles['palette__item-label']}>{item.label}</span>
+      </button>
+    );
+  };
 
   return (
     <div className={styles.palette}>
