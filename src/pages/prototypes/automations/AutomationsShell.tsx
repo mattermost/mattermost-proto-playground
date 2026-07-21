@@ -21,7 +21,7 @@ const TEAMS = [
   { id: 'acme', name: 'Acme', initials: 'Ac', mentions: 3 },
 ];
 
-function shouldShowProductNav(pathname: string) {
+function shouldShowSideChrome(pathname: string) {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
@@ -32,13 +32,14 @@ function shouldShowProductNav(pathname: string) {
 /**
  * Automations chrome following ChannelShell panel nesting (team sidebar +
  * outer/inner rounded containers) with a Channels-style product sidebar.
+ * Team + product nav hide on editor and history routes for a focused canvas.
  */
 export default function AutomationsShell() {
   const { pathname } = useLocation();
   const { setCenterSlot } = usePrototypeChrome();
   const { toast, dismissToast, assistantOpen, setAssistantOpen, createBlank } =
     useAutomations();
-  const showProductNav = shouldShowProductNav(pathname);
+  const showSideChrome = shouldShowSideChrome(pathname);
 
   useEffect(() => {
     setCenterSlot(<AutomationsSceneSwitcher createBlank={createBlank} />);
@@ -55,11 +56,13 @@ export default function AutomationsShell() {
         />
       </div>
       <div className={styles['automations-shell__body']}>
-        <div className={styles['automations-shell__team-sidebar']}>
-          <TeamSidebar activeTeamId={ACTIVE_TEAM_ID} teams={TEAMS} />
-        </div>
+        {showSideChrome ? (
+          <div className={styles['automations-shell__team-sidebar']}>
+            <TeamSidebar activeTeamId={ACTIVE_TEAM_ID} teams={TEAMS} />
+          </div>
+        ) : null}
         <div className={styles['automations-shell__outer-panel']}>
-          {showProductNav ? (
+          {showSideChrome ? (
             <aside className={styles['automations-shell__nav']}>
               <ProductNav teamName={TEAM_NAME} />
             </aside>
@@ -67,7 +70,7 @@ export default function AutomationsShell() {
           <div
             className={[
               styles['automations-shell__inner-panel'],
-              !showProductNav ? styles['automations-shell__inner-panel--flush'] : '',
+              !showSideChrome ? styles['automations-shell__inner-panel--flush'] : '',
             ]
               .filter(Boolean)
               .join(' ')}
