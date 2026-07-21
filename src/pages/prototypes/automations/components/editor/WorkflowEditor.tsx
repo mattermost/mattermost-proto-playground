@@ -1,4 +1,5 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
+import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
@@ -260,13 +261,15 @@ function EditorInner() {
             onClick={redo}
           />
           <div style={{ position: 'relative' }}>
-            <Button
-              emphasis="Tertiary"
+            <IconButton
+              aria-label="Actions"
+              aria-expanded={actionsOpen}
+              aria-haspopup="menu"
               size="Small"
+              padding="Compact"
+              icon={<Icon size="16" glyph={<DotsVerticalIcon />} />}
               onClick={() => setActionsOpen((v) => !v)}
-            >
-              Actions
-            </Button>
+            />
             {actionsOpen ? (
               <div style={{ position: 'absolute', right: 0, top: '110%', zIndex: 20 }}>
                 <PopoverMenu>
