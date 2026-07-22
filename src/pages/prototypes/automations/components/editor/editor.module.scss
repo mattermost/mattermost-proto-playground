@@ -163,15 +163,11 @@
   width: 100%;
   text-align: left;
   border: 0;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-s);
   background: transparent;
   padding: 10px 8px;
   cursor: grab;
   color: inherit;
-}
-
-.palette__item:last-child {
-  border-bottom: 0;
 }
 
 .palette__item-icon {
