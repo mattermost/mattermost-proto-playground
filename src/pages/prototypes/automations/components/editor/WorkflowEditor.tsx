@@ -22,6 +22,7 @@ import {
   useNodesState,
   useReactFlow,
   type Connection,
+  type EdgeTypes,
   type NodeTypes,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -32,11 +33,13 @@ import { useAutomations } from '../../context/AutomationsContext';
 import { RedoGlyph, UndoGlyph } from './historyGlyphs';
 import InspectorPanel from './InspectorPanel';
 import StepsPalette from './StepsPalette';
+import WorkflowEdgeView from './WorkflowEdge';
 import WorkflowNodeView from './WorkflowNode';
 import styles from './editor.module.scss';
 
 const BASE = '/prototypes/automations';
 const nodeTypes: NodeTypes = { workflow: WorkflowNodeView };
+const edgeTypes: EdgeTypes = { smoothstep: WorkflowEdgeView };
 
 type GraphSnapshot = { nodes: WorkflowNode[]; edges: WorkflowEdge[] };
 
@@ -321,6 +324,7 @@ function EditorInner() {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}

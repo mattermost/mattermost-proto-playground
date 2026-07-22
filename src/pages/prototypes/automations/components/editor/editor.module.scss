@@ -81,6 +81,11 @@
   --xy-minimap-node-background-color-default: rgba(var(--center-channel-color-rgb), 0.32);
 
   --xy-background-pattern-dots-color-default: rgba(var(--center-channel-color-rgb), 0.24);
+
+  --xy-edge-stroke-default: rgba(var(--center-channel-color-rgb), 0.4);
+  --xy-edge-stroke-width-default: 1.5;
+  --xy-edge-stroke-selected-default: var(--button-bg);
+  --xy-connectionline-stroke-default: rgba(var(--center-channel-color-rgb), 0.4);
 }
 
 // Global reset sets `svg { max-width: 100% }`, which collapses React Flow
@@ -91,6 +96,35 @@
 .editor__canvas :global(.react-flow__connection-path) {
   max-width: none;
   overflow: visible;
+}
+
+.edge-label {
+  position: absolute;
+  pointer-events: none;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-50);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: var(--center-channel-bg);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  box-shadow: var(--elevation-1);
+}
+
+.edge-label--true {
+  color: var(--color-green-600);
+  background: rgba(var(--color-green-600-rgb), 0.1);
+  border-color: rgba(var(--color-green-600-rgb), 0.28);
+}
+
+.edge-label--false {
+  color: var(--color-danger);
+  background: rgba(var(--color-danger-rgb), 0.1);
+  border-color: rgba(var(--color-danger-rgb), 0.28);
 }
 
 .editor__side {
