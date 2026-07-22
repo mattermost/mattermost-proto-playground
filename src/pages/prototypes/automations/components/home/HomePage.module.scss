@@ -186,6 +186,12 @@
   :global([class*='switch__labels']) {
     flex: none;
   }
+
+  // Keep the control aligned when the label swaps Enabled ↔ Disabled.
+  :global([class*='switch__label']) {
+    display: inline-block;
+    min-width: 8ch;
+  }
 }
 
 .home__name {
