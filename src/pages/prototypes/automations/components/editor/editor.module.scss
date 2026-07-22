@@ -153,7 +153,7 @@
 .palette__items {
   display: flex;
   flex-direction: column;
-  padding: 0 8px 8px;
+  padding: 4px 8px;
 }
 
 .palette__item {
@@ -163,8 +163,7 @@
   width: 100%;
   text-align: left;
   border: 0;
-  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: 0;
+  border-radius: var(--border-radius-sm);
   background: transparent;
   padding: 10px 8px;
   cursor: grab;
