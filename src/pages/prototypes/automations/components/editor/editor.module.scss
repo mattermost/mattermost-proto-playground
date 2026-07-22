@@ -186,15 +186,15 @@
   max-width: 200px;
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: 6px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  font-size: 12px;
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-1);
+  font-size: var(--font-size-75);
   // Do not clip — React Flow handles sit half outside the node bounds.
 }
 
 .node--selected {
-  border-color: var(--button-bg, #1c58d9);
-  box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb, 28, 88, 217), 0.25);
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.25);
 }
 
 .node__header {
@@ -203,7 +203,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  border-bottom: 1px solid rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.08);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   border-radius: 5px 5px 0 0;
 }
 
@@ -313,7 +313,7 @@
 .agent__prompt {
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: 6px;
-  background: #fff;
+  background: var(--center-channel-bg);
   padding: 8px 10px;
   text-align: left;
   font: inherit;
