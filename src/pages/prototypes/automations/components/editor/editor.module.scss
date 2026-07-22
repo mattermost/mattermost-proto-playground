@@ -64,6 +64,23 @@
 .editor__canvas :global(.react-flow) {
   width: 100%;
   height: 100%;
+
+  // Theme Controls, MiniMap, and canvas dots to Mattermost tokens.
+  --xy-controls-button-background-color-default: var(--center-channel-bg);
+  --xy-controls-button-background-color-hover-default: rgba(
+    var(--center-channel-color-rgb),
+    0.08
+  );
+  --xy-controls-button-color-default: rgba(var(--center-channel-color-rgb), 0.72);
+  --xy-controls-button-color-hover-default: var(--center-channel-color);
+  --xy-controls-button-border-color-default: rgba(var(--center-channel-color-rgb), 0.16);
+  --xy-controls-box-shadow-default: var(--elevation-1);
+
+  --xy-minimap-background-color-default: var(--center-channel-bg);
+  --xy-minimap-mask-background-color-default: rgba(var(--center-channel-color-rgb), 0.12);
+  --xy-minimap-node-background-color-default: rgba(var(--center-channel-color-rgb), 0.32);
+
+  --xy-background-pattern-dots-color-default: rgba(var(--center-channel-color-rgb), 0.24);
 }
 
 // Global reset sets `svg { max-width: 100% }`, which collapses React Flow
