@@ -153,7 +153,7 @@
 .palette__items {
   display: flex;
   flex-direction: column;
-  padding: 4px 8px;
+  padding: 4px 4px;
 }
 
 .palette__item {
@@ -165,7 +165,7 @@
   border: 0;
   border-radius: var(--radius-s);
   background: transparent;
-  padding: 10px 8px;
+  padding: 10px 10px;
   cursor: grab;
   color: inherit;
 }
