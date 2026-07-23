@@ -9,6 +9,24 @@
   color: var(--sidebar-text);
 }
 
+.product-nav__header {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 52px;
+  padding: 0 var(--spacing-l);
+  flex-shrink: 0;
+}
+
+.product-nav__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  color: var(--sidebar-text);
+}
+
 .product-nav__scroll {
   flex: 1 1 auto;
   min-height: 0;

@@ -4,7 +4,6 @@ import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/light
 import {
   ChannelSidebarItem,
   ChannelsSidebarCategory,
-  ChannelsSidebarHeader,
   Scrollbar,
 } from '@mattermost/compass-ui';
 import { useMemo } from 'react';
@@ -15,9 +14,10 @@ import styles from './ProductNav.module.scss';
 const BASE = '/prototypes/automations';
 
 /**
- * Automations left nav using Channels sidebar header, categories, and items.
+ * Automations left nav using Channels sidebar categories and items.
+ * Global product scope — no team switcher in the header.
  */
-export default function ProductNav({ teamName = 'Contributors' }: { teamName?: string }) {
+export default function ProductNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { automations, favoriteIds, recentIds } = useAutomations();
@@ -44,7 +44,9 @@ export default function ProductNav({ teamName = 'Contributors' }: { teamName?: s
 
   return (
     <div className={styles['product-nav']}>
-      <ChannelsSidebarHeader teamName={teamName} />
+      <div className={styles['product-nav__header']}>
+        <h2 className={styles['product-nav__title']}>Automations</h2>
+      </div>
       <Scrollbar className={styles['product-nav__scroll']}>
         <div className={styles['product-nav__top']}>
           <ChannelSidebarItem

@@ -12,8 +12,6 @@ import styles from './AutomationsShell.module.scss';
 
 const BASE = '/prototypes/automations';
 
-const TEAM_NAME = 'Contributors';
-
 function shouldShowSideChrome(pathname: string) {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
@@ -53,7 +51,7 @@ export default function AutomationsShell() {
         <div className={styles['automations-shell__outer-panel']}>
           {showSideChrome ? (
             <aside className={styles['automations-shell__nav']}>
-              <ProductNav teamName={TEAM_NAME} />
+              <ProductNav />
             </aside>
           ) : null}
           <div
