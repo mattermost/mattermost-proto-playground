@@ -52,10 +52,12 @@ export default function InspectorPanel({
     const fields = selectedNode.data.fields ?? {};
     const helpText =
       selectedNode.data.helpText ?? helpTextForStep(selectedNode.data.stepType);
+    const kindTitle =
+      selectedNode.data.kind.charAt(0).toUpperCase() + selectedNode.data.kind.slice(1);
     return (
       <div className={styles.panel}>
         <div className={styles.panel__header}>
-          <h2 className={styles.panel__title}>{selectedNode.data.label}</h2>
+          <h2 className={styles.panel__title}>{kindTitle}</h2>
           <IconButton
             aria-label="Close"
             size="Small"
