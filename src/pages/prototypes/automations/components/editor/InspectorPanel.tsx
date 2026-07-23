@@ -18,8 +18,14 @@ import {
   SYSTEM_TAGS,
 } from '../../data/automationsData';
 import { helpTextForStep } from '../../data/stepCatalog';
-import type { Automation, WorkflowNode } from '../../data/types';
+import type { Automation, StepKind, WorkflowNode } from '../../data/types';
 import styles from './editor.module.scss';
+
+const KIND_TITLES: Record<StepKind, string> = {
+  trigger: 'Trigger',
+  action: 'Action',
+  flow: 'Flow',
+};
 
 type InspectorPanelProps = {
   automation: Automation;
@@ -52,12 +58,10 @@ export default function InspectorPanel({
     const fields = selectedNode.data.fields ?? {};
     const helpText =
       selectedNode.data.helpText ?? helpTextForStep(selectedNode.data.stepType);
-    const kindTitle =
-      selectedNode.data.kind.charAt(0).toUpperCase() + selectedNode.data.kind.slice(1);
     return (
       <div className={styles.panel}>
         <div className={styles.panel__header}>
-          <h2 className={styles.panel__title}>{kindTitle}</h2>
+          <h2 className={styles.panel__title}>{KIND_TITLES[selectedNode.data.kind]}</h2>
           <IconButton
             aria-label="Close"
             size="Small"
