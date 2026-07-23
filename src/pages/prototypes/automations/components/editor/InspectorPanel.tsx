@@ -68,7 +68,10 @@ export default function InspectorPanel({
         </div>
         <Scrollbar className={styles.panel__body}>
           <div className={styles.panel__stack}>
-            {helpText ? <p className={styles.panel__help}>{helpText}</p> : null}
+            <div className={styles['panel__intro']}>
+              <h3 className={styles['panel__step-title']}>{selectedNode.data.label}</h3>
+              {helpText ? <p className={styles.panel__help}>{helpText}</p> : null}
+            </div>
             <TextInput
               label="Label"
               value={selectedNode.data.label}
