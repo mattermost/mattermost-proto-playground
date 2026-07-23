@@ -197,7 +197,7 @@
 }
 
 .home__folder-title {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-width: 0;
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-100);
@@ -206,6 +206,7 @@
 .home__folder-count {
   flex: 0 0 auto;
   min-width: 1.5em;
+  margin-left: 2px;
   padding: 0 6px;
   border-radius: var(--radius-full);
   background: rgba(var(--center-channel-color-rgb), 0.08);
