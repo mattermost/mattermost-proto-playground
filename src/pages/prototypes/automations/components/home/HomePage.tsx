@@ -256,7 +256,6 @@ export default function HomePage() {
         <Tag
           label={scopeLabel(a.scope)}
           size="X-Small"
-          type="Info"
           casing="All Caps"
         />
       </td>
