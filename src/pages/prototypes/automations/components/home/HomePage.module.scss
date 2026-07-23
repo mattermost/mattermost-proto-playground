@@ -244,7 +244,7 @@
 
 .home__table th {
   text-align: left;
-  padding: 10px 12px;
+  padding: 6px 12px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -255,6 +255,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
+  line-height: 1.2;
 }
 
 .home__table td {
