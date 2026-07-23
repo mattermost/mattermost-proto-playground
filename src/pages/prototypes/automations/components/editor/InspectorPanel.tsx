@@ -234,7 +234,7 @@ export default function InspectorPanel({
             ))}
           </Select>
           <Select
-            label="Folder"
+            label="Team"
             value={automation.folderId || DEFAULT_AUTOMATION_FOLDER_ID}
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               onUpdateAutomation({ folderId: e.target.value })
