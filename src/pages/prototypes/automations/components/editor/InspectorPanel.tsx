@@ -11,6 +11,7 @@ import {
 } from '@mattermost/compass-ui';
 import { useMemo, type ChangeEvent } from 'react';
 import { SYSTEM_TAGS } from '../../data/automationsData';
+import { helpTextForStep } from '../../data/stepCatalog';
 import type { Automation, WorkflowNode } from '../../data/types';
 import styles from './editor.module.scss';
 
@@ -43,6 +44,8 @@ export default function InspectorPanel({
 
   if (selectedNode) {
     const fields = selectedNode.data.fields ?? {};
+    const helpText =
+      selectedNode.data.helpText ?? helpTextForStep(selectedNode.data.stepType);
     return (
       <div className={styles.panel}>
         <div className={styles.panel__header}>
@@ -57,9 +60,7 @@ export default function InspectorPanel({
         </div>
         <Scrollbar className={styles.panel__body}>
           <div className={styles.panel__stack}>
-            {selectedNode.data.helpText ? (
-              <p className={styles.panel__help}>{selectedNode.data.helpText}</p>
-            ) : null}
+            {helpText ? <p className={styles.panel__help}>{helpText}</p> : null}
             <TextInput
               label="Label"
               value={selectedNode.data.label}

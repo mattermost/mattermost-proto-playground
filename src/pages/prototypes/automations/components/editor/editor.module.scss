@@ -228,8 +228,8 @@
 }
 
 .node {
-  min-width: 160px;
-  max-width: 200px;
+  min-width: 180px;
+  max-width: 240px;
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: 6px;
   background: var(--center-channel-bg);
@@ -273,24 +273,42 @@
 
 .node__body {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   padding: 8px 10px;
-  font-weight: 600;
   border-radius: 0 0 5px 5px;
 }
 
 .node__icon {
   display: inline-flex;
   flex-shrink: 0;
+  margin-top: 1px;
   color: rgba(var(--center-channel-color-rgb), 0.64);
 }
 
-.node__label {
+.node__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
+}
+
+.node__label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+}
+
+.node__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-weight: var(--font-weight-regular);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  line-height: 1.35;
 }
 
 .node :global(.react-flow__handle) {

@@ -55,6 +55,7 @@ export const ACTION_STEPS: PaletteItem[] = [
     kind: 'action',
     stepType: 'create_channel',
     verb: 'create',
+    helpText: 'Create a new channel.',
   },
   {
     id: 'invite-user',
@@ -62,6 +63,7 @@ export const ACTION_STEPS: PaletteItem[] = [
     kind: 'action',
     stepType: 'invite_user',
     verb: 'update',
+    helpText: 'Invite a user to a team or channel.',
   },
 ];
 

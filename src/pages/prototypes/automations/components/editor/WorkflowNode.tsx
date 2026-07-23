@@ -1,5 +1,6 @@
 import { Icon } from '@mattermost/compass-ui';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { helpTextForStep } from '../../data/stepCatalog';
 import type { WorkflowNodeData } from '../../data/types';
 import { glyphForStep } from './paletteIcons';
 import styles from './editor.module.scss';
@@ -7,6 +8,7 @@ import styles from './editor.module.scss';
 export default function WorkflowNodeView({ data, selected }: NodeProps) {
   const nodeData = data as WorkflowNodeData;
   const Glyph = glyphForStep(nodeData.kind, nodeData.stepType);
+  const description = nodeData.helpText ?? helpTextForStep(nodeData.stepType);
   const headerClass = [
     styles.node__header,
     nodeData.kind === 'trigger' ? styles['node__header--trigger'] : '',
@@ -28,7 +30,12 @@ export default function WorkflowNodeView({ data, selected }: NodeProps) {
         <span className={styles.node__icon} aria-hidden>
           <Icon size="16" glyph={<Glyph />} />
         </span>
-        <span className={styles.node__label}>{nodeData.label}</span>
+        <div className={styles.node__text}>
+          <span className={styles.node__label}>{nodeData.label}</span>
+          {description ? (
+            <span className={styles.node__description}>{description}</span>
+          ) : null}
+        </div>
       </div>
       <Handle type="source" position={Position.Right} />
     </div>
