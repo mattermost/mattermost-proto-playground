@@ -1,5 +1,6 @@
 import type {
   Automation,
+  AutomationFolder,
   AutomationRun,
   ChangeRevision,
   Template,
@@ -284,6 +285,36 @@ export const AUTOMATION_BOTS: Array<{ id: string; label: string }> = [
   { id: 'moderation-bot', label: 'Moderation bot' },
 ];
 
+export const DEFAULT_AUTOMATION_FOLDER_ID = 'folder-general';
+
+export const AUTOMATION_FOLDERS: AutomationFolder[] = [
+  {
+    id: 'folder-notifications',
+    name: 'Notifications',
+    description: 'Alerts and announcements for channels and teams.',
+  },
+  {
+    id: 'folder-onboarding',
+    name: 'Onboarding',
+    description: 'Welcome flows for new teammates and channels.',
+  },
+  {
+    id: 'folder-team-rituals',
+    name: 'Team rituals',
+    description: 'Scheduled reminders and recurring team habits.',
+  },
+  {
+    id: 'folder-moderation',
+    name: 'Moderation',
+    description: 'Safety checks and policy enforcement.',
+  },
+  {
+    id: 'folder-general',
+    name: 'General',
+    description: 'Automations that don’t belong in another folder.',
+  },
+];
+
 export const INITIAL_AUTOMATIONS: Automation[] = [
   {
     id: 'auto-urgent',
@@ -292,6 +323,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'global',
     tags: ['notification', 'urgent'],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: 'folder-notifications',
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-20T18:20:29.000Z',
@@ -308,6 +340,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'team',
     tags: ['onboarding'],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: 'folder-onboarding',
     creator: '@maya',
     lastEditedBy: '@maya',
     lastEditedAt: '2026-07-18T14:10:00.000Z',
@@ -324,6 +357,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'channel',
     tags: ['reminder'],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: 'folder-team-rituals',
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-15T11:00:00.000Z',
@@ -340,6 +374,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'global',
     tags: ['moderation'],
     botId: 'moderation-bot',
+    folderId: 'folder-moderation',
     creator: '@sec',
     lastEditedBy: '@sec',
     lastEditedAt: '2026-07-12T16:40:00.000Z',
@@ -356,6 +391,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'global',
     tags: ['notification'],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: 'folder-notifications',
     creator: '@maya',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-10T08:15:00.000Z',
@@ -372,6 +408,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'channel',
     tags: ['onboarding'],
     botId: 'welcome-bot',
+    folderId: 'folder-onboarding',
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-21T12:00:00.000Z',
@@ -388,6 +425,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'team',
     tags: ['notification', 'moderation'],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: 'folder-notifications',
     creator: '@sec',
     lastEditedBy: '@sec',
     lastEditedAt: '2026-07-09T19:30:00.000Z',
@@ -404,6 +442,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     scope: 'global',
     tags: ['interactive', 'example'],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: DEFAULT_AUTOMATION_FOLDER_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-08T13:05:00.000Z',
@@ -776,6 +815,7 @@ export function createBlankAutomation(id: string): Automation {
     scope: 'global',
     tags: [],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: DEFAULT_AUTOMATION_FOLDER_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: new Date().toISOString(),
@@ -796,6 +836,7 @@ export function createFromTemplate(template: Template, id: string): Automation {
     scope: template.scope,
     tags: [...template.tags],
     botId: DEFAULT_AUTOMATION_BOT_ID,
+    folderId: DEFAULT_AUTOMATION_FOLDER_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: new Date().toISOString(),

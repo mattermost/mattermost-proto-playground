@@ -1,6 +1,8 @@
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
+import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
@@ -27,8 +29,11 @@ import {
 import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchIllustration from '@/assets/illustrations/search.svg?react';
-import { SYSTEM_TAGS } from '../../data/automationsData';
-import type { AutomationScope, AutomationStatus } from '../../data/types';
+import {
+  AUTOMATION_FOLDERS,
+  SYSTEM_TAGS,
+} from '../../data/automationsData';
+import type { Automation, AutomationScope, AutomationStatus } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
 import TagOutlineIcon from '../icons/TagOutlineIcon';
 import styles from './HomePage.module.scss';
@@ -73,6 +78,13 @@ function toggleValue<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
+type FolderSection = {
+  id: string;
+  name: string;
+  description?: string;
+  automations: Automation[];
+};
+
 export default function HomePage() {
   const navigate = useNavigate();
   const {
@@ -92,6 +104,7 @@ export default function HomePage() {
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [tagsOpen, setTagsOpen] = useState(false);
+  const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(() => new Set());
   const filterRef = useRef<HTMLDivElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
 
@@ -151,6 +164,33 @@ export default function HomePage() {
     });
   }, [automations, query, scopeFilters, statusFilters, tagFilters]);
 
+  const folderSections = useMemo((): FolderSection[] => {
+    const byFolder = new Map<string, Automation[]>();
+    filtered.forEach((a) => {
+      const list = byFolder.get(a.folderId) ?? [];
+      list.push(a);
+      byFolder.set(a.folderId, list);
+    });
+
+    const known = AUTOMATION_FOLDERS.map((folder) => ({
+      id: folder.id,
+      name: folder.name,
+      description: folder.description,
+      automations: byFolder.get(folder.id) ?? [],
+    })).filter((section) => section.automations.length > 0);
+
+    // Catch any automations whose folderId is missing from the catalog.
+    const knownIds = new Set(AUTOMATION_FOLDERS.map((f) => f.id));
+    const orphanIds = [...byFolder.keys()].filter((id) => !knownIds.has(id));
+    const orphans = orphanIds.map((id) => ({
+      id,
+      name: 'Other',
+      automations: byFolder.get(id) ?? [],
+    }));
+
+    return [...known, ...orphans];
+  }, [filtered]);
+
   const openEditor = (id: string) => {
     recordRecent(id);
     navigate(`${BASE}/${id}/editor`);
@@ -161,6 +201,158 @@ export default function HomePage() {
     const id = createBlank();
     openEditor(id);
   };
+
+  const toggleFolder = (folderId: string) => {
+    setCollapsedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderId)) next.delete(folderId);
+      else next.add(folderId);
+      return next;
+    });
+  };
+
+  const renderRow = (a: Automation) => (
+    <tr
+      key={a.id}
+      className={styles.home__row}
+      onClick={() => openEditor(a.id)}
+    >
+      <td>
+        <div className={styles.home__name}>{a.name}</div>
+        <div className={styles.home__tags}>
+          {a.tags.map((tag) => (
+            <Tag key={tag} label={tag} size="X-Small" />
+          ))}
+        </div>
+      </td>
+      <td
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        {a.status === 'draft' ? (
+          <Tag label="Draft" size="X-Small" type="Default" />
+        ) : (
+          <Switch
+            className={styles['home__status-switch']}
+            size="Small"
+            checked={a.status === 'enabled'}
+            aria-label={`Enable ${a.name}`}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setStatus(a.id, e.target.checked ? 'enabled' : 'disabled')
+            }
+          >
+            {a.status === 'enabled' ? 'Enabled' : 'Disabled'}
+          </Switch>
+        )}
+      </td>
+      <td>
+        <span className={styles.home__run}>
+          <span
+            className={[
+              styles.home__dot,
+              a.lastRunStatus === 'success' ? styles['home__dot--success'] : '',
+              a.lastRunStatus === 'failed' ? styles['home__dot--failed'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          />
+          {formatWhen(a.lastRunAt)}
+        </span>
+      </td>
+      <td>
+        <Tag
+          label={scopeLabel(a.scope)}
+          size="X-Small"
+          type="Info"
+          casing="All Caps"
+        />
+      </td>
+      <td>{a.creator}</td>
+      <td>
+        <span
+          className={styles.home__edited}
+          title={`${formatWhen(a.lastEditedAt)} · ${a.lastEditedBy}`}
+        >
+          {formatRelative(a.lastEditedAt)}
+          <span className={styles['home__edited-tip']} aria-hidden>
+            <Tooltip
+              label={formatWhen(a.lastEditedAt)}
+              hint={a.lastEditedBy}
+              arrow="Top"
+            />
+          </span>
+        </span>
+      </td>
+      <td
+        className={styles['home__menu-cell']}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <IconButton
+            aria-label={`Actions for ${a.name}`}
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<DotsVerticalIcon />} />}
+            onClick={() => setMenuFor((id) => (id === a.id ? null : a.id))}
+          />
+          {menuFor === a.id ? (
+            <div
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: '110%',
+                zIndex: 20,
+              }}
+            >
+              <PopoverMenu>
+                <MenuItem
+                  label={a.favorite ? 'Unfavorite' : 'Favorite'}
+                  leadingVisual={
+                    <Icon
+                      size="16"
+                      glyph={a.favorite ? <StarIcon /> : <StarOutlineIcon />}
+                    />
+                  }
+                  onClick={() => {
+                    toggleFavorite(a.id);
+                    setMenuFor(null);
+                  }}
+                />
+                <MenuItem
+                  label="Run history"
+                  leadingVisual={
+                    <Icon size="16" glyph={<PlayOutlineIcon />} />
+                  }
+                  onClick={() => {
+                    setMenuFor(null);
+                    navigate(`${BASE}/${a.id}/runs`);
+                  }}
+                />
+                <MenuItem
+                  label="Change history"
+                  leadingVisual={
+                    <Icon size="16" glyph={<ClockOutlineIcon />} />
+                  }
+                  onClick={() => {
+                    setMenuFor(null);
+                    navigate(`${BASE}/${a.id}/history`);
+                  }}
+                />
+                <MenuItem
+                  label="Delete"
+                  leadingVisual={
+                    <Icon size="16" glyph={<TrashCanOutlineIcon />} />
+                  }
+                  destructive
+                  onClick={() => setMenuFor(null)}
+                />
+              </PopoverMenu>
+            </div>
+          ) : null}
+        </div>
+      </td>
+    </tr>
+  );
 
   return (
     <div className={styles.home}>
@@ -423,7 +615,7 @@ export default function HomePage() {
         ) : null}
       </div>
 
-      {filtered.length === 0 ? (
+      {folderSections.length === 0 ? (
         <EmptyState
           className={styles.home__empty}
           illustration={{
@@ -457,173 +649,72 @@ export default function HomePage() {
           }
         />
       ) : (
-        <div className={styles['home__table-wrap']}>
+        <div className={styles['home__folders-wrap']}>
           <Scrollbar style={{ height: '100%' }}>
-            <table className={styles.home__table}>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Status</th>
-                  <th>Last run</th>
-                  <th>Scope</th>
-                  <th>Creator</th>
-                  <th>Last edited</th>
-                  <th aria-label="Actions" />
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((a) => (
-                  <tr
-                    key={a.id}
-                    className={styles.home__row}
-                    onClick={() => openEditor(a.id)}
-                  >
-                    <td>
-                      <div className={styles.home__name}>{a.name}</div>
-                      <div className={styles.home__tags}>
-                        {a.tags.map((tag) => (
-                          <Tag key={tag} label={tag} size="X-Small" />
-                        ))}
-                      </div>
-                    </td>
-                    <td
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
+            <div className={styles.home__folders}>
+              {folderSections.map((section) => {
+                const expanded = !collapsedFolders.has(section.id);
+                return (
+                  <section key={section.id} className={styles.home__folder}>
+                    <button
+                      type="button"
+                      className={styles['home__folder-header']}
+                      aria-expanded={expanded}
+                      onClick={() => toggleFolder(section.id)}
                     >
-                      {a.status === 'draft' ? (
-                        <Tag label="Draft" size="X-Small" type="Default" />
-                      ) : (
-                        <Switch
-                          className={styles['home__status-switch']}
-                          size="Small"
-                          checked={a.status === 'enabled'}
-                          aria-label={`Enable ${a.name}`}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setStatus(a.id, e.target.checked ? 'enabled' : 'disabled')
-                          }
-                        >
-                          {a.status === 'enabled' ? 'Enabled' : 'Disabled'}
-                        </Switch>
-                      )}
-                    </td>
-                    <td>
-                      <span className={styles.home__run}>
-                        <span
-                          className={[
-                            styles.home__dot,
-                            a.lastRunStatus === 'success'
-                              ? styles['home__dot--success']
-                              : '',
-                            a.lastRunStatus === 'failed'
-                              ? styles['home__dot--failed']
-                              : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
-                        />
-                        {formatWhen(a.lastRunAt)}
-                      </span>
-                    </td>
-                    <td>
-                      <Tag
-                        label={scopeLabel(a.scope)}
-                        size="X-Small"
-                        type="Info"
-                        casing="All Caps"
-                      />
-                    </td>
-                    <td>{a.creator}</td>
-                    <td>
                       <span
-                        className={styles.home__edited}
-                        title={`${formatWhen(a.lastEditedAt)} · ${a.lastEditedBy}`}
+                        className={[
+                          styles['home__folder-chevron'],
+                          expanded ? styles['home__folder-chevron--open'] : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        aria-hidden
                       >
-                        {formatRelative(a.lastEditedAt)}
-                        <span className={styles['home__edited-tip']} aria-hidden>
-                          <Tooltip
-                            label={formatWhen(a.lastEditedAt)}
-                            hint={a.lastEditedBy}
-                            arrow="Top"
-                          />
-                        </span>
+                        <Icon size="16" glyph={<ChevronDownIcon />} />
                       </span>
-                    </td>
-                    <td
-                      className={styles['home__menu-cell']}
-                      onClick={(e) => e.stopPropagation()}
+                      <span className={styles['home__folder-icon']} aria-hidden>
+                        <Icon size="16" glyph={<FolderOutlineIcon />} />
+                      </span>
+                      <span className={styles['home__folder-title']}>
+                        {section.name}
+                      </span>
+                      <span className={styles['home__folder-count']}>
+                        {section.automations.length}
+                      </span>
+                    </button>
+                    <div
+                      className={[
+                        styles['home__folder-collapse'],
+                        expanded ? styles['home__folder-collapse--expanded'] : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      aria-hidden={!expanded}
                     >
-                      <div style={{ position: 'relative', display: 'inline-block' }}>
-                        <IconButton
-                          aria-label={`Actions for ${a.name}`}
-                          size="Small"
-                          padding="Compact"
-                          icon={<Icon size="16" glyph={<DotsVerticalIcon />} />}
-                          onClick={() =>
-                            setMenuFor((id) => (id === a.id ? null : a.id))
-                          }
-                        />
-                        {menuFor === a.id ? (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              right: 0,
-                              top: '110%',
-                              zIndex: 20,
-                            }}
-                          >
-                            <PopoverMenu>
-                              <MenuItem
-                                label={a.favorite ? 'Unfavorite' : 'Favorite'}
-                                leadingVisual={
-                                  <Icon
-                                    size="16"
-                                    glyph={
-                                      a.favorite ? <StarIcon /> : <StarOutlineIcon />
-                                    }
-                                  />
-                                }
-                                onClick={() => {
-                                  toggleFavorite(a.id);
-                                  setMenuFor(null);
-                                }}
-                              />
-                              <MenuItem
-                                label="Run history"
-                                leadingVisual={
-                                  <Icon size="16" glyph={<PlayOutlineIcon />} />
-                                }
-                                onClick={() => {
-                                  setMenuFor(null);
-                                  navigate(`${BASE}/${a.id}/runs`);
-                                }}
-                              />
-                              <MenuItem
-                                label="Change history"
-                                leadingVisual={
-                                  <Icon size="16" glyph={<ClockOutlineIcon />} />
-                                }
-                                onClick={() => {
-                                  setMenuFor(null);
-                                  navigate(`${BASE}/${a.id}/history`);
-                                }}
-                              />
-                              <MenuItem
-                                label="Delete"
-                                leadingVisual={
-                                  <Icon size="16" glyph={<TrashCanOutlineIcon />} />
-                                }
-                                destructive
-                                onClick={() => setMenuFor(null)}
-                              />
-                            </PopoverMenu>
-                          </div>
-                        ) : null}
+                      <div className={styles['home__folder-collapse-inner']}>
+                        <div className={styles['home__table-wrap']}>
+                          <table className={styles.home__table}>
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Last run</th>
+                                <th>Scope</th>
+                                <th>Creator</th>
+                                <th>Last edited</th>
+                                <th aria-label="Actions" />
+                              </tr>
+                            </thead>
+                            <tbody>{section.automations.map(renderRow)}</tbody>
+                          </table>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
           </Scrollbar>
         </div>
       )}

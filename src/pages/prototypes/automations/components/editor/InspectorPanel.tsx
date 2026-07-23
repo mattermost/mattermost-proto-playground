@@ -12,7 +12,9 @@ import {
 import { useMemo, type ChangeEvent } from 'react';
 import {
   AUTOMATION_BOTS,
+  AUTOMATION_FOLDERS,
   DEFAULT_AUTOMATION_BOT_ID,
+  DEFAULT_AUTOMATION_FOLDER_ID,
   SYSTEM_TAGS,
 } from '../../data/automationsData';
 import { helpTextForStep } from '../../data/stepCatalog';
@@ -219,6 +221,19 @@ export default function InspectorPanel({
             {AUTOMATION_BOTS.map((bot) => (
               <option key={bot.id} value={bot.id}>
                 {bot.label}
+              </option>
+            ))}
+          </Select>
+          <Select
+            label="Folder"
+            value={automation.folderId || DEFAULT_AUTOMATION_FOLDER_ID}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              onUpdateAutomation({ folderId: e.target.value })
+            }
+          >
+            {AUTOMATION_FOLDERS.map((folder) => (
+              <option key={folder.id} value={folder.id}>
+                {folder.name}
               </option>
             ))}
           </Select>

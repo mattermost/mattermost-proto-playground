@@ -27,6 +27,8 @@ export type Automation = {
   tags: string[];
   /** Bot account that performs actions for this automation. */
   botId: string;
+  /** Folder (table group) this automation belongs to on Home. */
+  folderId: string;
   creator: string;
   lastEditedBy: string;
   lastEditedAt: string;
@@ -35,6 +37,12 @@ export type Automation = {
   favorite: boolean;
   nodes: WorkflowNode[];
   edges: WorkflowEdge[];
+};
+
+export type AutomationFolder = {
+  id: string;
+  name: string;
+  description?: string;
 };
 
 export type Template = {
