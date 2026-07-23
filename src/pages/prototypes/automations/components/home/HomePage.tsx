@@ -52,22 +52,15 @@ const SCOPE_OPTIONS: Array<{ value: AutomationScope; label: string }> = [
   { value: 'channel', label: 'Channel' },
 ];
 
-function formatWhen(iso: string | null) {
+function formatShortWhen(iso: string | null) {
   if (!iso) return '—';
-  return new Date(iso).toLocaleString();
-}
-
-function formatRelative(iso: string | null) {
-  if (!iso) return '—';
-  const diffMs = Date.now() - new Date(iso).getTime();
-  const mins = Math.max(0, Math.floor(diffMs / 60000));
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
+  return new Date(iso).toLocaleString(undefined, {
+    month: 'numeric',
+    day: 'numeric',
+    year: '2-digit',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 }
 
 function scopeLabel(scope: AutomationScope) {
@@ -256,7 +249,7 @@ export default function HomePage() {
               .filter(Boolean)
               .join(' ')}
           />
-          {formatWhen(a.lastRunAt)}
+          {formatShortWhen(a.lastRunAt)}
         </span>
       </td>
       <td>
@@ -271,12 +264,12 @@ export default function HomePage() {
       <td>
         <span
           className={styles.home__edited}
-          title={`${formatWhen(a.lastEditedAt)} · ${a.lastEditedBy}`}
+          title={`${formatShortWhen(a.lastEditedAt)} · ${a.lastEditedBy}`}
         >
-          {formatRelative(a.lastEditedAt)}
+          {formatShortWhen(a.lastEditedAt)}
           <span className={styles['home__edited-tip']} aria-hidden>
             <Tooltip
-              label={formatWhen(a.lastEditedAt)}
+              label={formatShortWhen(a.lastEditedAt)}
               hint={a.lastEditedBy}
               arrow="Top"
             />
