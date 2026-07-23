@@ -12,11 +12,10 @@ import PlusMenu from '../PlusMenu/PlusMenu';
 import ProductSwitcherMenu from '../ProductSwitcherMenu/ProductSwitcherMenu';
 import TeamMenu from '../TeamMenu/TeamMenu';
 import ThreadActionsMenu from '../ThreadActionsMenu/ThreadActionsMenu';
-import { TITLE_PATTERNS_POPOVER_MENU } from '../../storybook/titles';
 import PopoverMenu from './PopoverMenu';
 
 const meta = {
-  title: TITLE_PATTERNS_POPOVER_MENU,
+  title: 'Patterns/Popover Menu',
   component: PopoverMenu,
   tags: ['autodocs'],
 } satisfies Meta<typeof PopoverMenu>;
