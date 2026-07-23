@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AutomationsShell from './AutomationsShell';
 import { AutomationsProvider } from './context/AutomationsContext';
 import HomePage from './components/home/HomePage';
+import FoldersPage from './components/folders/FoldersPage';
 import TemplatesPage from './components/templates/TemplatesPage';
 import WorkflowEditor from './components/editor/WorkflowEditor';
 import AllRunsPage from './components/history/AllRunsPage';
@@ -19,6 +20,7 @@ export default function Automations() {
       <Routes>
         <Route element={<AutomationsShell />}>
           <Route index element={<HomePage />} />
+          <Route path="folders" element={<FoldersPage />} />
           <Route path="templates" element={<TemplatesPage />} />
           <Route path="runs" element={<AllRunsPage />} />
           <Route path=":id/editor" element={<WorkflowEditor />} />

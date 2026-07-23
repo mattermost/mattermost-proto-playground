@@ -1,6 +1,8 @@
+import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
 import HomeVariantOutlineIcon from '@mattermost/compass-icons/components/home-variant-outline';
 import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import {
   ChannelSidebarItem,
   ChannelsSidebarCategory,
@@ -40,7 +42,9 @@ export default function ProductNav() {
   );
 
   const homeActive = pathname === BASE || pathname === `${BASE}/`;
+  const foldersActive = pathname.startsWith(`${BASE}/folders`);
   const templatesActive = pathname.startsWith(`${BASE}/templates`);
+  const runsActive = pathname === `${BASE}/runs` || pathname.startsWith(`${BASE}/runs/`);
 
   return (
     <div className={styles['product-nav']}>
@@ -53,10 +57,22 @@ export default function ProductNav() {
             onClick={() => navigate(BASE)}
           />
           <ChannelSidebarItem
+            name="Folders"
+            leadingIcon={<FolderOutlineIcon size={16} />}
+            active={foldersActive}
+            onClick={() => navigate(`${BASE}/folders`)}
+          />
+          <ChannelSidebarItem
             name="Templates"
             leadingIcon={<IframeListOutlineIcon size={16} />}
             active={templatesActive}
             onClick={() => navigate(`${BASE}/templates`)}
+          />
+          <ChannelSidebarItem
+            name="Run history"
+            leadingIcon={<PlayOutlineIcon size={16} />}
+            active={runsActive}
+            onClick={() => navigate(`${BASE}/runs`)}
           />
         </div>
 

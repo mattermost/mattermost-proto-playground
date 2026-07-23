@@ -4,10 +4,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const BASE = '/prototypes/automations';
 
-type AutomationsSceneId = 'home' | 'templates' | 'new' | 'runs';
+type AutomationsSceneId = 'home' | 'folders' | 'templates' | 'new' | 'runs';
 
 const AUTOMATIONS_SCENES: Array<{ id: AutomationsSceneId; label: string }> = [
   { id: 'home', label: 'Home' },
+  { id: 'folders', label: 'Folders' },
   { id: 'templates', label: 'Templates' },
   { id: 'new', label: 'New automation' },
   { id: 'runs', label: 'Run history' },
@@ -20,6 +21,7 @@ function resolveAutomationsScene(pathname: string): AutomationsSceneId | '' {
       : pathname;
 
   if (normalized === BASE || normalized === `${BASE}/`) return 'home';
+  if (normalized.startsWith(`${BASE}/folders`)) return 'folders';
   if (normalized.startsWith(`${BASE}/templates`)) return 'templates';
   if (normalized === `${BASE}/runs` || /\/runs(\/|$)/.test(normalized)) return 'runs';
   return '';
@@ -50,6 +52,9 @@ export default function AutomationsSceneSwitcher({
     switch (id as AutomationsSceneId) {
       case 'home':
         navigate(BASE);
+        return;
+      case 'folders':
+        navigate(`${BASE}/folders`);
         return;
       case 'templates':
         navigate(`${BASE}/templates`);
