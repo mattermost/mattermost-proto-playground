@@ -10,7 +10,11 @@ import {
   TextInput,
 } from '@mattermost/compass-ui';
 import { useMemo, type ChangeEvent } from 'react';
-import { SYSTEM_TAGS } from '../../data/automationsData';
+import {
+  AUTOMATION_BOTS,
+  DEFAULT_AUTOMATION_BOT_ID,
+  SYSTEM_TAGS,
+} from '../../data/automationsData';
 import { helpTextForStep } from '../../data/stepCatalog';
 import type { Automation, WorkflowNode } from '../../data/types';
 import styles from './editor.module.scss';
@@ -205,9 +209,18 @@ export default function InspectorPanel({
               })
             }
           />
-          <Select label="Run as" value="author" onChange={() => undefined}>
-            <option value="author">Author (recommended)</option>
-            <option value="bot">Bot account</option>
+          <Select
+            label="Bot"
+            value={automation.botId || DEFAULT_AUTOMATION_BOT_ID}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              onUpdateAutomation({ botId: e.target.value })
+            }
+          >
+            {AUTOMATION_BOTS.map((bot) => (
+              <option key={bot.id} value={bot.id}>
+                {bot.label}
+              </option>
+            ))}
           </Select>
         </div>
       </Scrollbar>

@@ -25,6 +25,8 @@ export type Automation = {
   status: AutomationStatus;
   scope: AutomationScope;
   tags: string[];
+  /** Bot account that performs actions for this automation. */
+  botId: string;
   creator: string;
   lastEditedBy: string;
   lastEditedAt: string;

@@ -275,6 +275,15 @@ export const SYSTEM_TAGS = [
   'example',
 ] as const;
 
+export const DEFAULT_AUTOMATION_BOT_ID = 'automation-bot';
+
+export const AUTOMATION_BOTS: Array<{ id: string; label: string }> = [
+  { id: 'automation-bot', label: 'Automation bot' },
+  { id: 'welcome-bot', label: 'Welcome bot' },
+  { id: 'ops-bot', label: 'Ops bot' },
+  { id: 'moderation-bot', label: 'Moderation bot' },
+];
+
 export const INITIAL_AUTOMATIONS: Automation[] = [
   {
     id: 'auto-urgent',
@@ -282,6 +291,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'enabled',
     scope: 'global',
     tags: ['notification', 'urgent'],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-20T18:20:29.000Z',
@@ -297,6 +307,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'enabled',
     scope: 'team',
     tags: ['onboarding'],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@maya',
     lastEditedBy: '@maya',
     lastEditedAt: '2026-07-18T14:10:00.000Z',
@@ -312,6 +323,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'enabled',
     scope: 'channel',
     tags: ['reminder'],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-15T11:00:00.000Z',
@@ -327,6 +339,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'disabled',
     scope: 'global',
     tags: ['moderation'],
+    botId: 'moderation-bot',
     creator: '@sec',
     lastEditedBy: '@sec',
     lastEditedAt: '2026-07-12T16:40:00.000Z',
@@ -342,6 +355,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'enabled',
     scope: 'global',
     tags: ['notification'],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@maya',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-10T08:15:00.000Z',
@@ -357,6 +371,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'draft',
     scope: 'channel',
     tags: ['onboarding'],
+    botId: 'welcome-bot',
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-21T12:00:00.000Z',
@@ -372,6 +387,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'enabled',
     scope: 'team',
     tags: ['notification', 'moderation'],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@sec',
     lastEditedBy: '@sec',
     lastEditedAt: '2026-07-09T19:30:00.000Z',
@@ -387,6 +403,7 @@ export const INITIAL_AUTOMATIONS: Automation[] = [
     status: 'disabled',
     scope: 'global',
     tags: ['interactive', 'example'],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: '2026-07-08T13:05:00.000Z',
@@ -758,6 +775,7 @@ export function createBlankAutomation(id: string): Automation {
     status: 'draft',
     scope: 'global',
     tags: [],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: new Date().toISOString(),
@@ -777,6 +795,7 @@ export function createFromTemplate(template: Template, id: string): Automation {
     status: 'draft',
     scope: template.scope,
     tags: [...template.tags],
+    botId: DEFAULT_AUTOMATION_BOT_ID,
     creator: '@dev',
     lastEditedBy: '@dev',
     lastEditedAt: new Date().toISOString(),
