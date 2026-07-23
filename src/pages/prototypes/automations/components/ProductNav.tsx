@@ -44,9 +44,6 @@ export default function ProductNav() {
 
   return (
     <div className={styles['product-nav']}>
-      <div className={styles['product-nav__header']}>
-        <h2 className={styles['product-nav__title']}>Automations</h2>
-      </div>
       <Scrollbar className={styles['product-nav__scroll']}>
         <div className={styles['product-nav__top']}>
           <ChannelSidebarItem
