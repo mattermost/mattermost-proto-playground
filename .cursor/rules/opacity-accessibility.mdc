@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Opacity floors: text 72%, icons 56%
 
-Never style **text** below **72% opacity** (alpha ≥ `0.72`), or **icons** below **56% opacity** (alpha ≥ `0.56`). Low-opacity labels and icons fail contrast and read as disabled.
+Never style **text** below **72% opacity** (alpha ≥ `0.72`), or **icons** below **56% opacity** (alpha ≥ `0.56`). These floors are an internal accessibility policy: lower alpha can reduce contrast and legibility depending on foreground/background compositing, and often reads as disabled.
 
 ## Text (≥ 0.72)
 
@@ -25,7 +25,7 @@ color: var(--center-channel-color); // full opacity when hierarchy allows
 
 ## Icons (≥ 0.56)
 
-- Icon `color` / `fill` / `stroke` with alpha below `0.56`
+- Icon `color` / `fill` with alpha below `0.56`
 - `opacity` on icon elements or icon wrappers
 - Figma icon color variables with an opacity suffix below 56 — clamp to **0.56** or higher
 
