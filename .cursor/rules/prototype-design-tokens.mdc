@@ -1,0 +1,71 @@
+---
+description: Use design tokens for spacing, type, radius, color, elevation, motion — no hardcoded px/hex in prototype and UI styles
+globs: "**/prototypes/**/*.{tsx,scss,css}"
+alwaysApply: true
+---
+
+# Prototype styling: use design tokens, not hardcoded values
+
+Prototyping and UI-styling agents must reach for a token before writing a literal value. The source of truth is `src/styles/tokens.scss` (spacing, type, radius, elevation, motion, icon sizes, semantic colors) plus theme vars (`--center-channel-color`, `--center-channel-bg`, `--button-bg`, etc.) for surface/text colors that vary by theme.
+
+## Prefer tokens over literals
+
+- **Spacing** (`padding` / `margin` / `gap` / `inset`) → `--spacing-*`
+- **Type** (`font-size`, `font-weight`, `font-family`, `line-height`) → `--font-*` / `--line-height-*`
+- **Border radius** → `--radius-*`
+- **Box shadow** → `--elevation-*`
+- **Motion** (`transition-duration`, easing) → `--duration-*` + `--ease-*`
+- **Icon box sizes** → `--icon-size-*`
+- **Semantic colors** (info/success/warning/danger) → `--color-info|success|warning|danger` (and the `-rgb` counterpart for `rgba()`) — never raw palette tokens (`--color-blue-400`) or legacy theme vars (`--error-text`, `--online-indicator`) when a semantic token already covers the case
+- **Figma opacity suffixes** (e.g. `center-channel-color/8`) → `rgba(var(--token-rgb), alpha)`, with text alpha clamped to **≥ 0.72** and icon alpha clamped to **≥ 0.56**
+
+## Quick mapping
+
+| Literal | Token |
+| --- | --- |
+| `2 / 4 / 6 / 8 / 10 / 12 / 16 / 20 / 24 / 32 / 40 / 48px` spacing | `--spacing-xxxxs` … `--spacing-xxxxxl` |
+| `10 / 11 / 12 / 14 / 16 / 18 / 20 / 22 / 25 / 28 / 32 / 36 / 40px` font size | `--font-size-25` … `--font-size-1000` |
+| `600` font weight | `--font-weight-semibold` (prefer over bold/`700` unless Figma explicitly specifies 700) |
+| `2 / 4 / 8 / 12 / 16px` radius | `--radius-xs` … `--radius-xl`; fully-rounded pills → `--radius-full` |
+| `150 / 300ms` + `ease-in-out` / `ease-out` / `ease-in` | `--duration-quick` / `--duration-moderate` + `--ease-transition` / `--ease-entrance` / `--ease-exit` |
+
+## Do not
+
+```scss
+// ❌ BAD — hardcoded literals with a token match
+padding: 12px 16px;
+gap: 8px;
+font-size: 14px;
+font-weight: 700;
+border-radius: 8px;
+box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.12);
+transition: opacity 150ms ease-in-out;
+color: #386fe5;
+color: var(--center-channel-color, #3f4350); // hardcoded fallback defeats theming
+
+// ✅ GOOD
+padding: var(--spacing-m) var(--spacing-l);
+gap: var(--spacing-xs);
+font-size: var(--font-size-100);
+font-weight: var(--font-weight-semibold);
+border-radius: var(--radius-m);
+box-shadow: var(--elevation-2);
+transition: opacity var(--duration-quick) var(--ease-transition);
+color: var(--color-info);
+```
+
+- Don't hardcode `px` for spacing/type/radius when a token matches — or use the nearest token, or `calc()` of tokens, rather than a raw number.
+- Don't hardcode hex colors, or pair a token with a hex `var(--token, #fallback)`.
+- Don't hardcode `ms` durations or `ease-*` keywords for transitions when duration/ease tokens apply.
+- Don't put tokenizable spacing or font values in inline `style={{}}` in `.tsx` — use a CSS module with tokens instead.
+
+## Allowed exceptions
+
+- `1px` hairline borders
+- Visually-hidden tricks (`1px` / `-1px` off-screen positioning)
+- One-off layout sizing with no matching token (e.g. a panel `min-width: 260px`, illustration intrinsic dimensions)
+- Container/media query breakpoints
+
+## Before finishing UI work
+
+Scan every new or edited `*.module.scss` (and prototype `.tsx` inline styles) for leftover raw `px` values, hex colors, numeric `font-weight`, or hardcoded `ms`/`ease` — replace each with the matching token before considering the change done.
