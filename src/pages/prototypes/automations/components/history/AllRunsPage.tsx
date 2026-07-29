@@ -1,11 +1,8 @@
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
-import RefreshIcon from '@mattermost/compass-icons/components/refresh';
 import {
   Checkbox,
   Chip,
   Dropdown,
-  Icon,
-  IconButton,
   PopoverMenu,
   PopoverMenuDivider,
   Scrollbar,
@@ -65,16 +62,12 @@ export default function AllRunsPage() {
   return (
     <div className={styles.history}>
       <div className={styles.history__header}>
-        <div className={styles['history__title-row']}>
+        <div className={styles.history__heading}>
           <h1 className={styles.history__title}>Run history</h1>
+          <p className={styles.history__subtitle}>
+            Review recent runs across all automations.
+          </p>
         </div>
-        <IconButton
-          aria-label="Refresh"
-          size="Small"
-          padding="Compact"
-          icon={<Icon size="16" glyph={<RefreshIcon />} />}
-          onClick={() => undefined}
-        />
       </div>
 
       <RunsDashboard linkToRuns={false} />
@@ -165,11 +158,10 @@ export default function AllRunsPage() {
           <table className={styles.history__table}>
             <thead>
               <tr>
-                <th>Started</th>
                 <th>Automation</th>
+                <th>Started</th>
                 <th>Status</th>
                 <th>Duration</th>
-                <th />
               </tr>
             </thead>
             <tbody>
@@ -183,8 +175,10 @@ export default function AllRunsPage() {
                       navigate(`${BASE}/${run.automationId}/runs/${run.id}`)
                     }
                   >
+                    <td className={styles.history__name}>
+                      {automation?.name ?? run.automationId}
+                    </td>
                     <td>{new Date(run.startedAt).toLocaleString()}</td>
-                    <td>{automation?.name ?? run.automationId}</td>
                     <td>
                       <Tag
                         label={run.status}
@@ -193,17 +187,12 @@ export default function AllRunsPage() {
                       />
                     </td>
                     <td>{run.durationMs} ms</td>
-                    <td>
-                      <button type="button" className={styles.history__link}>
-                        Details
-                      </button>
-                    </td>
                   </tr>
                 );
               })}
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>
+                  <td colSpan={4}>
                     {demoEmpty || sortedRuns.length === 0
                       ? 'No runs yet.'
                       : 'No runs match this filter.'}

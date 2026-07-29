@@ -39,6 +39,7 @@ export default function SecretsPage() {
               onAdd={addSystemVariable}
               onRemove={removeSystemVariable}
               addLabel="Add"
+              addEmphasis="Primary"
               defaultAddOpen={defaultAddOpen}
             />
           </div>

@@ -276,7 +276,7 @@ export default function HomePage() {
         onKeyDown={(e) => e.stopPropagation()}
       >
         {a.status === 'draft' ? (
-          <Tag label="Draft" size="X-Small" type="Default" />
+          <span className={styles['home__status-draft']}>Draft</span>
         ) : (
           <Switch
             className={styles['home__status-switch']}
@@ -709,8 +709,8 @@ export default function HomePage() {
             automations.length === 0
               ? {
                   'aria-label': 'No automations',
-                  width: '120px',
-                  height: '100px',
+                  width: '150px',
+                  height: '125px',
                   children: <PlaybooksEmptyIllustration />,
                 }
               : {

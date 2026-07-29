@@ -55,17 +55,15 @@ export default function TemplatesPage() {
                   className={styles.templates__card}
                   onClick={() => applyTemplate(t.id)}
                 >
+                  <div className={styles.templates__art} aria-hidden>
+                    {Illustration ? (
+                      <Illustration className={styles.templates__illustration} />
+                    ) : null}
+                  </div>
                   <div className={styles.templates__copy}>
-                    <p className={styles.templates__category}>{t.category}</p>
                     <h2 className={styles.templates__name}>{t.name}</h2>
                     <p className={styles.templates__desc}>{t.description}</p>
-                    <span className={styles.templates__cta}>Use template</span>
                   </div>
-                  {Illustration ? (
-                    <div className={styles.templates__art} aria-hidden>
-                      <Illustration className={styles.templates__illustration} />
-                    </div>
-                  ) : null}
                 </button>
               );
             })}

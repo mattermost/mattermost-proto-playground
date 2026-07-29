@@ -13,6 +13,7 @@ import {
   Tabs,
   Tag,
   TextInput,
+  type ButtonEmphasis,
 } from '@mattermost/compass-ui';
 import { useEffect, useId, useMemo, useState, type ChangeEvent } from 'react';
 import type { FolderVariable } from '../../data/types';
@@ -33,6 +34,8 @@ type VariableSecretsManagerProps = {
   heading?: string;
   description?: string;
   addLabel?: string;
+  /** Toolbar Add button emphasis. Defaults to Tertiary (e.g. folder detail). */
+  addEmphasis?: ButtonEmphasis;
   /** Opens the add modal once on mount (e.g. deep-link from Home). */
   defaultAddOpen?: boolean;
 };
@@ -241,6 +244,7 @@ export default function VariableSecretsManager({
   heading,
   description,
   addLabel = 'Add',
+  addEmphasis = 'Tertiary',
   defaultAddOpen = false,
 }: VariableSecretsManagerProps) {
   const { showToast } = useAutomations();
@@ -326,7 +330,7 @@ export default function VariableSecretsManager({
             onClear={() => setQuery('')}
           />
           <Button
-            emphasis="Tertiary"
+            emphasis={addEmphasis}
             size="Small"
             leadingIcon={<PlusIcon size={16} />}
             onClick={() =>
