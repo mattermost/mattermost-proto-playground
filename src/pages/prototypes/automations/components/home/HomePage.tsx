@@ -1,6 +1,7 @@
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
+import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
@@ -27,12 +28,10 @@ import {
   useOutsideClose,
 } from '@mattermost/compass-ui';
 import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import PlaybooksEmptyIllustration from '@/assets/illustrations/playbooks-empty.svg?react';
 import SearchIllustration from '@/assets/illustrations/search.svg?react';
-import {
-  AUTOMATION_FOLDERS,
-  SYSTEM_TAGS,
-} from '../../data/automationsData';
+import { SYSTEM_TAGS } from '../../data/automationsData';
 import type { Automation, AutomationScope, AutomationStatus } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
 import FolderOpenOutlineIcon from '../icons/FolderOpenOutlineIcon';
@@ -82,13 +81,21 @@ type FolderSection = {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
-    automations,
+    automations: allAutomations,
+    folders,
     createBlank,
     setStatus,
     toggleFavorite,
     recordRecent,
+    showToast,
+    demoEmpty,
   } = useAutomations();
+  const automations = demoEmpty ? [] : allAutomations;
+
+  const folderFilter = searchParams.get('folder');
+  const folderFilterName = folders.find((f) => f.id === folderFilter)?.name;
 
   const [query, setQuery] = useState('');
   const [statusFilters, setStatusFilters] = useState<AutomationStatus[]>([]);
@@ -97,31 +104,47 @@ export default function HomePage() {
   const [tagQuery, setTagQuery] = useState('');
   const [newOpen, setNewOpen] = useState(false);
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [folderMenuFor, setFolderMenuFor] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [tagsOpen, setTagsOpen] = useState(false);
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(() => new Set());
   const filterRef = useRef<HTMLDivElement>(null);
   const tagsRef = useRef<HTMLDivElement>(null);
+  const newRef = useRef<HTMLDivElement>(null);
+  const folderMenuRef = useRef<HTMLDivElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const closeFilters = useCallback(() => setFiltersOpen(false), []);
   const closeTags = useCallback(() => {
     setTagsOpen(false);
     setTagQuery('');
   }, []);
+  const closeNew = useCallback(() => setNewOpen(false), []);
+  const closeFolderMenu = useCallback(() => setFolderMenuFor(null), []);
   useOutsideClose(filterRef, filtersOpen, closeFilters);
   useOutsideClose(tagsRef, tagsOpen, closeTags);
+  useOutsideClose(newRef, newOpen, closeNew);
+  useOutsideClose(folderMenuRef, folderMenuFor != null, closeFolderMenu);
 
   const attributeFilterCount = statusFilters.length + scopeFilters.length;
-  const activeFilterCount = attributeFilterCount + tagFilters.length;
+  const activeFilterCount =
+    attributeFilterCount + tagFilters.length + (folderFilter ? 1 : 0);
 
   const clearAttributeFilters = () => {
     setStatusFilters([]);
     setScopeFilters([]);
   };
 
+  const clearFolderFilter = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('folder');
+    setSearchParams(next, { replace: true });
+  };
+
   const clearFilters = () => {
     clearAttributeFilters();
     setTagFilters([]);
+    if (folderFilter) clearFolderFilter();
   };
 
   const availableTags = useMemo(() => {
@@ -139,6 +162,7 @@ export default function HomePage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return automations.filter((a) => {
+      if (folderFilter && a.folderId !== folderFilter) return false;
       if (statusFilters.length > 0 && !statusFilters.includes(a.status)) return false;
       if (scopeFilters.length > 0 && !scopeFilters.includes(a.scope)) return false;
       if (tagFilters.length > 0 && !tagFilters.some((t) => a.tags.includes(t))) {
@@ -151,7 +175,14 @@ export default function HomePage() {
         a.creator.toLowerCase().includes(q)
       );
     });
-  }, [automations, query, scopeFilters, statusFilters, tagFilters]);
+  }, [
+    automations,
+    folderFilter,
+    query,
+    scopeFilters,
+    statusFilters,
+    tagFilters,
+  ]);
 
   const folderSections = useMemo((): FolderSection[] => {
     const byFolder = new Map<string, Automation[]>();
@@ -161,7 +192,7 @@ export default function HomePage() {
       byFolder.set(a.folderId, list);
     });
 
-    const known = AUTOMATION_FOLDERS.map((folder) => ({
+    const known = folders.map((folder) => ({
       id: folder.id,
       name: folder.name,
       description: folder.description,
@@ -169,7 +200,7 @@ export default function HomePage() {
     })).filter((section) => section.automations.length > 0);
 
     // Catch any automations whose folderId is missing from the catalog.
-    const knownIds = new Set(AUTOMATION_FOLDERS.map((f) => f.id));
+    const knownIds = new Set(folders.map((f) => f.id));
     const orphanIds = [...byFolder.keys()].filter((id) => !knownIds.has(id));
     const orphans = orphanIds.map((id) => ({
       id,
@@ -178,7 +209,7 @@ export default function HomePage() {
     }));
 
     return [...known, ...orphans];
-  }, [filtered]);
+  }, [filtered, folders]);
 
   const openEditor = (id: string) => {
     recordRecent(id);
@@ -189,6 +220,13 @@ export default function HomePage() {
     setNewOpen(false);
     const id = createBlank();
     openEditor(id);
+  };
+
+  const onImportFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    showToast(`Import of “${file.name}” isn’t available in this prototype`, 'Info');
   };
 
   const toggleFolder = (folderId: string) => {
@@ -206,17 +244,31 @@ export default function HomePage() {
       className={styles.home__row}
       onClick={() => openEditor(a.id)}
     >
-      <td>
-        <div className={styles.home__name}>{a.name}</div>
-        <div className={styles.home__tags}>
-          {a.tags.map((tag) => (
-            <Tag
-              key={tag}
-              label={tag}
-              size="X-Small"
-              className={styles.home__tag}
-            />
-          ))}
+      <td className={styles['home__name-cell']}>
+        <div className={styles['home__name-row']}>
+          <span
+            className={styles.home__drag}
+            aria-label={`Reorder ${a.name}`}
+            role="button"
+            tabIndex={0}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <Icon size="16" glyph={<DragVerticalIcon />} />
+          </span>
+          <div className={styles['home__name-block']}>
+            <div className={styles.home__name}>{a.name}</div>
+            <div className={styles.home__tags}>
+              {a.tags.map((tag) => (
+                <Tag
+                  key={tag}
+                  label={tag}
+                  size="X-Small"
+                  className={styles.home__tag}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </td>
       <td
@@ -357,34 +409,79 @@ export default function HomePage() {
           </p>
         </div>
         <div className={styles.home__actions}>
-          <div style={{ position: 'relative' }}>
+          <div className={styles.home__split} ref={newRef}>
             <Button
+              className={styles['home__split-main']}
               emphasis="Primary"
               size="Small"
               leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+              onClick={onNewBlank}
+            >
+              New
+            </Button>
+            <Button
+              className={styles['home__split-toggle']}
+              emphasis="Primary"
+              size="Small"
+              aria-label="More create options"
+              aria-haspopup="menu"
+              aria-expanded={newOpen}
+              leadingIcon={<Icon size="16" glyph={<ChevronDownIcon />} />}
               onClick={() => setNewOpen((v) => !v)}
             >
-              New Automation
+              {'\u200b'}
             </Button>
             {newOpen ? (
-              <div style={{ position: 'absolute', right: 0, top: '110%', zIndex: 20 }}>
+              <div className={styles['home__split-menu']}>
                 <PopoverMenu>
                   <MenuItem
-                    label="Blank automation"
+                    label="New automation"
                     leadingElement={false}
                     onClick={onNewBlank}
                   />
                   <MenuItem
-                    label="From template"
+                    label="New folder"
+                    leadingElement={false}
+                    onClick={() => {
+                      setNewOpen(false);
+                      navigate(`${BASE}/folders?create=1`);
+                    }}
+                  />
+                  <MenuItem
+                    label="New variable or secret"
+                    leadingElement={false}
+                    onClick={() => {
+                      setNewOpen(false);
+                      navigate(`${BASE}/secrets?add=1`);
+                    }}
+                  />
+                  <MenuItem
+                    label="New template"
                     leadingElement={false}
                     onClick={() => {
                       setNewOpen(false);
                       navigate(`${BASE}/templates`);
                     }}
                   />
+                  <PopoverMenuDivider />
+                  <MenuItem
+                    label="Import automation"
+                    leadingElement={false}
+                    onClick={() => {
+                      setNewOpen(false);
+                      importInputRef.current?.click();
+                    }}
+                  />
                 </PopoverMenu>
               </div>
             ) : null}
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/json,.json"
+              className={styles['home__import-input']}
+              onChange={onImportFile}
+            />
           </div>
         </div>
       </div>
@@ -550,6 +647,16 @@ export default function HomePage() {
 
         {activeFilterCount > 0 ? (
           <div className={styles['home__active-filters']}>
+            {folderFilter && folderFilterName ? (
+              <Chip
+                key={`folder-${folderFilter}`}
+                size="Small"
+                onRemove={clearFolderFilter}
+                removeLabel={`Remove ${folderFilterName} folder filter`}
+              >
+                Folder: {folderFilterName}
+              </Chip>
+            ) : null}
             {statusFilters.map((status) => (
               <Chip
                 key={`status-${status}`}
@@ -598,12 +705,21 @@ export default function HomePage() {
       {folderSections.length === 0 ? (
         <EmptyState
           className={styles.home__empty}
-          illustration={{
-            'aria-label': 'Search',
-            width: '120px',
-            height: '80px',
-            children: <SearchIllustration />,
-          }}
+          illustration={
+            automations.length === 0
+              ? {
+                  'aria-label': 'No automations',
+                  width: '120px',
+                  height: '100px',
+                  children: <PlaybooksEmptyIllustration />,
+                }
+              : {
+                  'aria-label': 'Search',
+                  width: '120px',
+                  height: '80px',
+                  children: <SearchIllustration />,
+                }
+          }
           title={
             automations.length === 0 ? 'No automations yet' : 'No results found'
           }
@@ -617,13 +733,11 @@ export default function HomePage() {
               ? {
                   children: 'New automation',
                   emphasis: 'Primary',
-                  size: 'Small',
                   onClick: onNewBlank,
                 }
               : {
                   children: 'Clear filters',
-                  emphasis: 'Primary',
-                  size: 'Small',
+                  emphasis: 'Tertiary',
                   onClick: clearFilters,
                 }
           }
@@ -636,43 +750,108 @@ export default function HomePage() {
                 const expanded = !collapsedFolders.has(section.id);
                 return (
                   <section key={section.id} className={styles.home__folder}>
-                    <button
-                      type="button"
-                      className={styles['home__folder-header']}
-                      aria-expanded={expanded}
-                      onClick={() => toggleFolder(section.id)}
+                    <div
+                      className={[
+                        styles['home__folder-bar'],
+                        folderMenuFor === section.id
+                          ? styles['home__folder-bar--menu-open']
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
                     >
-                      <span className={styles['home__folder-toggle']} aria-hidden>
-                        <span className={styles['home__folder-icon']}>
-                          <Icon
-                            size="16"
-                            glyph={
-                              expanded ? (
-                                <FolderOpenOutlineIcon />
-                              ) : (
-                                <FolderOutlineIcon />
-                              )
-                            }
-                          />
-                        </span>
+                      <button
+                        type="button"
+                        className={styles['home__folder-header']}
+                        aria-expanded={expanded}
+                        onClick={() => toggleFolder(section.id)}
+                      >
                         <span
-                          className={[
-                            styles['home__folder-chevron'],
-                            expanded ? styles['home__folder-chevron--open'] : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
+                          className={styles['home__folder-toggle']}
+                          aria-hidden
                         >
-                          <Icon size="16" glyph={<ChevronDownIcon />} />
+                          <span className={styles['home__folder-icon']}>
+                            <Icon
+                              size="16"
+                              glyph={
+                                expanded ? (
+                                  <FolderOpenOutlineIcon />
+                                ) : (
+                                  <FolderOutlineIcon />
+                                )
+                              }
+                            />
+                          </span>
+                          <span
+                            className={[
+                              styles['home__folder-chevron'],
+                              expanded
+                                ? styles['home__folder-chevron--open']
+                                : '',
+                            ]
+                              .filter(Boolean)
+                              .join(' ')}
+                          >
+                            <Icon size="16" glyph={<ChevronDownIcon />} />
+                          </span>
                         </span>
-                      </span>
-                      <span className={styles['home__folder-title']}>
-                        {section.name}
-                      </span>
+                        <span className={styles['home__folder-title']}>
+                          {section.name}
+                        </span>
+                      </button>
                       <span className={styles['home__folder-count']}>
-                        {section.automations.length}
+                        {section.automations.length}{' '}
+                        {section.automations.length === 1
+                          ? 'automation'
+                          : 'automations'}
                       </span>
-                    </button>
+                      <div
+                        className={styles['home__folder-actions']}
+                        ref={
+                          folderMenuFor === section.id ? folderMenuRef : undefined
+                        }
+                      >
+                        <IconButton
+                          className={styles['home__folder-menu-btn']}
+                          aria-label={`Actions for ${section.name}`}
+                          aria-expanded={folderMenuFor === section.id}
+                          aria-haspopup="menu"
+                          size="Small"
+                          padding="Compact"
+                          icon={
+                            <Icon size="16" glyph={<DotsVerticalIcon />} />
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setFolderMenuFor((id) =>
+                              id === section.id ? null : section.id,
+                            );
+                          }}
+                        />
+                        {folderMenuFor === section.id ? (
+                          <div className={styles['home__folder-menu']}>
+                            <PopoverMenu>
+                              <MenuItem
+                                label="Edit folder"
+                                onClick={() => {
+                                  setFolderMenuFor(null);
+                                  navigate(
+                                    `${BASE}/folders?id=${encodeURIComponent(section.id)}`,
+                                  );
+                                }}
+                              />
+                              <MenuItem
+                                label="Manage folders"
+                                onClick={() => {
+                                  setFolderMenuFor(null);
+                                  navigate(`${BASE}/folders`);
+                                }}
+                              />
+                            </PopoverMenu>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
                     <div
                       className={[
                         styles['home__folder-collapse'],
@@ -687,7 +866,9 @@ export default function HomePage() {
                           <table className={styles.home__table}>
                             <thead>
                               <tr>
-                                <th>Name</th>
+                                <th className={styles['home__name-cell']}>
+                                  Name
+                                </th>
                                 <th>Status</th>
                                 <th>Last run</th>
                                 <th>Scope</th>

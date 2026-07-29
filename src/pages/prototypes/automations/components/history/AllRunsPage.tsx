@@ -36,7 +36,7 @@ function toggleValue<T>(list: T[], value: T): T[] {
  */
 export default function AllRunsPage() {
   const navigate = useNavigate();
-  const { runs, getAutomation } = useAutomations();
+  const { runs, getAutomation, demoEmpty } = useAutomations();
   const [statusFilters, setStatusFilters] = useState<RunStatus[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -45,11 +45,13 @@ export default function AllRunsPage() {
 
   const sortedRuns = useMemo(
     () =>
-      [...runs].sort(
-        (a, b) =>
-          new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-      ),
-    [runs],
+      demoEmpty
+        ? []
+        : [...runs].sort(
+            (a, b) =>
+              new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+          ),
+    [demoEmpty, runs],
   );
 
   const filtered = useMemo(
@@ -201,7 +203,11 @@ export default function AllRunsPage() {
               })}
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>No runs match this filter.</td>
+                  <td colSpan={5}>
+                    {demoEmpty || sortedRuns.length === 0
+                      ? 'No runs yet.'
+                      : 'No runs match this filter.'}
+                  </td>
                 </tr>
               ) : null}
             </tbody>

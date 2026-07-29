@@ -39,10 +39,32 @@ export type Automation = {
   edges: WorkflowEdge[];
 };
 
+export type FolderScope = 'global' | 'team';
+
+export type FolderAdmin = {
+  userId: string;
+  username: string;
+  displayName: string;
+  /** Imported avatar from `src/assets/avatars/`. Omit for initials fallback. */
+  avatarSrc?: string;
+};
+
+export type FolderVariable = {
+  kind: 'var' | 'secret';
+  name: string;
+  /** Present for variables; secrets are write-only after save. */
+  value?: string;
+  updatedAt?: string;
+};
+
 export type AutomationFolder = {
   id: string;
   name: string;
   description?: string;
+  scope: FolderScope;
+  createdAt: string;
+  admins: FolderAdmin[];
+  variables: FolderVariable[];
 };
 
 export type Template = {

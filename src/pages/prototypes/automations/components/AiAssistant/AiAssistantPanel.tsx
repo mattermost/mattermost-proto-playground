@@ -297,7 +297,7 @@ export default function AiAssistantPanel() {
       <div className={styles['assistant-panel__composer']}>
         <MessageInput
           width="narrow"
-          placeholder="Ask how I can help…"
+          placeholder="Ask Automations assistant…"
           value={draft}
           onChange={setDraft}
           onSend={onSend}

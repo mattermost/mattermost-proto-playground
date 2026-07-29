@@ -1,3 +1,9 @@
+import avatarAiko from '@/assets/avatars/Aiko Tan.png';
+import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
+import avatarDarius from '@/assets/avatars/Darius Cole.png';
+import avatarEmma from '@/assets/avatars/Emma Novak.png';
+import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
+import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import type {
   Automation,
   AutomationFolder,
@@ -287,31 +293,127 @@ export const AUTOMATION_BOTS: Array<{ id: string; label: string }> = [
 
 export const DEFAULT_AUTOMATION_FOLDER_ID = 'team-engineering';
 
+export const INITIAL_SYSTEM_VARIABLES: FolderVariable[] = [
+  {
+    kind: 'var',
+    name: 'COMPANY_NAME',
+    value: 'Acme Corp',
+    updatedAt: '2026-06-12T14:00:00.000Z',
+  },
+  {
+    kind: 'var',
+    name: 'SUPPORT_CHANNEL',
+    value: 'customer-support',
+    updatedAt: '2026-07-01T09:30:00.000Z',
+  },
+  {
+    kind: 'secret',
+    name: 'OPENAI_API_KEY',
+    updatedAt: '2026-05-20T11:00:00.000Z',
+  },
+  {
+    kind: 'secret',
+    name: 'SLACK_WEBHOOK_URL',
+    updatedAt: '2026-07-15T16:45:00.000Z',
+  },
+  {
+    kind: 'secret',
+    name: 'GITHUB_TOKEN',
+    updatedAt: '2026-04-08T08:15:00.000Z',
+  },
+];
+
 export const AUTOMATION_FOLDERS: AutomationFolder[] = [
   {
     id: 'team-engineering',
     name: 'Engineering',
     description: 'Automations for the Engineering team.',
+    scope: 'team',
+    createdAt: '2025-11-12T15:00:00.000Z',
+    admins: [
+      {
+        userId: 'u-danielle',
+        username: 'danielle',
+        displayName: 'Danielle Okoro',
+        avatarSrc: avatarDanielle,
+      },
+      {
+        userId: 'u-ethan',
+        username: 'ethan',
+        displayName: 'Ethan Brooks',
+        avatarSrc: avatarEthan,
+      },
+    ],
+    variables: [
+      { kind: 'var', name: 'ALERT_CHANNEL', value: 'engineering-alerts' },
+      { kind: 'secret', name: 'PAGERDUTY_TOKEN' },
+    ],
   },
   {
     id: 'team-sales',
     name: 'Sales',
     description: 'Automations for the Sales team.',
+    scope: 'team',
+    createdAt: '2025-12-02T10:30:00.000Z',
+    admins: [
+      {
+        userId: 'u-sofia',
+        username: 'sofia',
+        displayName: 'Sofia Bauer',
+        avatarSrc: avatarSofia,
+      },
+    ],
+    variables: [{ kind: 'var', name: 'CRM_BASE_URL', value: 'https://crm.example.com' }],
   },
   {
     id: 'team-security',
     name: 'Security',
     description: 'Automations for the Security team.',
+    scope: 'global',
+    createdAt: '2025-10-08T09:00:00.000Z',
+    admins: [
+      {
+        userId: 'u-darius',
+        username: 'darius',
+        displayName: 'Darius Cole',
+        avatarSrc: avatarDarius,
+      },
+      {
+        userId: 'u-aiko',
+        username: 'aiko',
+        displayName: 'Aiko Tan',
+        avatarSrc: avatarAiko,
+      },
+    ],
+    variables: [
+      { kind: 'secret', name: 'SIEM_API_KEY' },
+      { kind: 'var', name: 'ESCALATION_CHANNEL', value: 'security-incidents' },
+    ],
   },
   {
     id: 'team-support',
     name: 'Support',
     description: 'Automations for the Support team.',
+    scope: 'team',
+    createdAt: '2026-01-14T18:20:00.000Z',
+    admins: [
+      {
+        userId: 'u-emma',
+        username: 'emma',
+        displayName: 'Emma Novak',
+        avatarSrc: avatarEmma,
+      },
+    ],
+    variables: [],
   },
   {
     id: 'team-product',
     name: 'Product',
     description: 'Automations for the Product team.',
+    scope: 'team',
+    createdAt: '2026-02-20T13:45:00.000Z',
+    admins: [],
+    variables: [{ kind: 'var', name: 'FEEDBACK_CHANNEL', value: 'product-feedback' }],
   },
 ];
 

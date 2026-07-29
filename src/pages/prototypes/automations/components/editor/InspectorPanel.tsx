@@ -12,13 +12,13 @@ import {
 import { useMemo, type ChangeEvent } from 'react';
 import {
   AUTOMATION_BOTS,
-  AUTOMATION_FOLDERS,
   DEFAULT_AUTOMATION_BOT_ID,
   DEFAULT_AUTOMATION_FOLDER_ID,
   SYSTEM_TAGS,
 } from '../../data/automationsData';
 import { helpTextForStep } from '../../data/stepCatalog';
 import type { Automation, StepKind, WorkflowNode } from '../../data/types';
+import { useAutomations } from '../../context/AutomationsContext';
 import styles from './editor.module.scss';
 
 const KIND_TITLES: Record<StepKind, string> = {
@@ -46,6 +46,7 @@ export default function InspectorPanel({
   onDuplicateNode,
   onDeleteNode,
 }: InspectorPanelProps) {
+  const { folders } = useAutomations();
   const tagOptions = useMemo(() => {
     const tags = new Set<string>(SYSTEM_TAGS);
     automation.tags.forEach((t) => tags.add(t));
@@ -240,7 +241,7 @@ export default function InspectorPanel({
               onUpdateAutomation({ folderId: e.target.value })
             }
           >
-            {AUTOMATION_FOLDERS.map((folder) => (
+            {folders.map((folder) => (
               <option key={folder.id} value={folder.id}>
                 {folder.name}
               </option>

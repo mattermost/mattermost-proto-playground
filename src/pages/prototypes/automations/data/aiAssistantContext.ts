@@ -1,6 +1,8 @@
 export type AutomationsAiSurface =
   | 'home'
+  | 'folders'
   | 'templates'
+  | 'secrets'
   | 'editor'
   | 'runs'
   | 'run-detail'
@@ -41,6 +43,12 @@ export function resolveAutomationsAiContext(
 
   if (normalized === BASE) {
     return { surface: 'home', placeLabel: 'Home' };
+  }
+  if (normalized === `${BASE}/folders`) {
+    return { surface: 'folders', placeLabel: 'Folders' };
+  }
+  if (normalized === `${BASE}/secrets`) {
+    return { surface: 'secrets', placeLabel: 'Variables & secrets' };
   }
   if (normalized === `${BASE}/templates`) {
     return { surface: 'templates', placeLabel: 'Templates' };
@@ -119,6 +127,36 @@ export function suggestionsForContext(
           id: 'explain-home',
           label: 'What can I do on this page?',
           prompt: 'What can I do from the Automations home screen?',
+          action: 'explain',
+        },
+      ];
+    case 'folders':
+      return [
+        {
+          id: 'explain-folders',
+          label: 'What are folders for?',
+          prompt: 'What can I do on the Folders page?',
+          action: 'explain',
+        },
+        {
+          id: 'delegate-admins',
+          label: 'How do delegated admins work?',
+          prompt: 'How do delegated folder admins work?',
+          action: 'explain',
+        },
+      ];
+    case 'secrets':
+      return [
+        {
+          id: 'explain-secrets',
+          label: 'When should I use a secret vs a variable?',
+          prompt: 'When should I use a secret versus a variable?',
+          action: 'explain',
+        },
+        {
+          id: 'how-reference',
+          label: 'How do I reference these in a workflow?',
+          prompt: 'How do I reference variables and secrets in a workflow?',
           action: 'explain',
         },
       ];
@@ -202,6 +240,10 @@ export function greetingForContext(ctx: AutomationsAiContext): string {
   switch (ctx.surface) {
     case 'home':
       return 'How can I help — create a workflow, find something, or explore templates?';
+    case 'folders':
+      return 'You’re managing folders. I can explain grouping, delegated admins, or folder-scoped secrets.';
+    case 'secrets':
+      return 'You’re managing system variables and secrets. I can help you choose the right type or how to reference them.';
     case 'templates':
       return 'You’re browsing templates. I can recommend one or help you describe a custom workflow.';
     case 'editor':
@@ -242,6 +284,12 @@ export function scriptedReplyFor(
   }
   if (ctx.surface === 'home') {
     return 'From Home you can search and filter automations, star favorites, open the editor, or start from Templates. Use the + New button for a blank draft.';
+  }
+  if (ctx.surface === 'folders') {
+    return 'Folders group automations by team or global scope. Pick a folder to rename it, review workflows, add delegated admins, and manage variables and secrets shared by every automation inside.';
+  }
+  if (ctx.surface === 'secrets') {
+    return 'Variables are readable config ({{.Vars.NAME}}). Secrets are encrypted credentials ({{.Secrets.NAME}}) — their values are never shown again after save. Filter the list, copy a reference, or add a new entry from the Add button.';
   }
   if (ctx.surface === 'runs' || ctx.surface === 'run-detail') {
     return 'Open a run to see the trigger payload and each step’s input/output. Failed steps usually point to missing config or rate limits — fix those in the editor, then Test run.';

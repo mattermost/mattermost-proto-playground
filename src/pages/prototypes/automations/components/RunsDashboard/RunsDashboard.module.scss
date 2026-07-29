@@ -11,9 +11,8 @@
   min-height: 88px;
   margin: 0;
   padding: var(--spacing-l);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   border-radius: var(--radius-m);
-  background: var(--center-channel-bg);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
   color: var(--center-channel-color);
   text-align: left;
 }
@@ -37,7 +36,7 @@
     display: inline-flex;
     align-items: center;
     gap: 2px;
-    color: var(--center-channel-color);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 }
 
@@ -45,7 +44,7 @@
   margin: 0;
   font-size: var(--font-size-75);
   line-height: var(--line-height-75);
-  color: rgba(var(--center-channel-color-rgb), 0.72);
+  color: rgba(var(--center-channel-color-rgb), 0.75);
 }
 
 .runs-dashboard__value {

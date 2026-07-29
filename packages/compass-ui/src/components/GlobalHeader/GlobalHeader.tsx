@@ -72,7 +72,7 @@ function ProductBrand({ product }: { product: GlobalHeaderProduct }) {
   return (
     <div className={styles['global-header__product']}>
       <span className={styles['global-header__product-icon']} aria-hidden>
-        <Icon size="20" glyph={<ProductIcon />} />
+        <Icon size="16" glyph={<ProductIcon />} />
       </span>
       <span className={styles['global-header__product-name']}>{product}</span>
     </div>

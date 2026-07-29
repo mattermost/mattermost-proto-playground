@@ -23,10 +23,13 @@ type RunsDashboardProps = {
 
 export default function RunsDashboard({ linkToRuns = true }: RunsDashboardProps) {
   const navigate = useNavigate();
-  const { automations } = useAutomations();
+  const { automations, demoEmpty } = useAutomations();
+  const automationCount = demoEmpty ? 0 : automations.length;
 
   const runStats7d = useMemo(() => {
-    const { successful, failed } = RUN_STATS_7D;
+    const successful = demoEmpty ? 0 : RUN_STATS_7D.successful;
+    const failed = demoEmpty ? 0 : RUN_STATS_7D.failed;
+    const sparkSource = demoEmpty ? RUN_SPARKLINE.map(() => 0) : RUN_SPARKLINE;
     const total = successful + failed;
     const pct = (n: number) =>
       total === 0 ? '0%' : `${((n / total) * 100).toFixed(1)}%`;
@@ -35,13 +38,14 @@ export default function RunsDashboard({ linkToRuns = true }: RunsDashboardProps)
       failed,
       successfulPct: pct(successful),
       failedPct: pct(failed),
-      sparkMax: Math.max(...RUN_SPARKLINE, 1),
+      sparkMax: Math.max(...sparkSource, 1),
+      sparkSource,
     };
-  }, []);
+  }, [demoEmpty]);
 
   const sparkline = (
     <span className={styles['runs-dashboard__sparkline']} aria-hidden>
-      {RUN_SPARKLINE.map((count, i) => (
+      {runStats7d.sparkSource.map((count, i) => (
         <span
           key={i}
           className={styles['runs-dashboard__sparkline-bar']}
@@ -57,7 +61,7 @@ export default function RunsDashboard({ linkToRuns = true }: RunsDashboardProps)
     <div className={styles['runs-dashboard']}>
       <div className={styles['runs-dashboard__metric']}>
         <p className={styles['runs-dashboard__label']}>Total Automations</p>
-        <p className={styles['runs-dashboard__value']}>{automations.length}</p>
+        <p className={styles['runs-dashboard__value']}>{automationCount}</p>
       </div>
       <div className={styles['runs-dashboard__metric']}>
         <p className={styles['runs-dashboard__label']}>Successful · 7d</p>

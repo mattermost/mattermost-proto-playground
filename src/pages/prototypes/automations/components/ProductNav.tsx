@@ -11,6 +11,7 @@ import {
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAutomations } from '../context/AutomationsContext';
+import CodeBracesIcon from './icons/CodeBracesIcon';
 import styles from './ProductNav.module.scss';
 
 const BASE = '/prototypes/automations';
@@ -22,29 +23,37 @@ const BASE = '/prototypes/automations';
 export default function ProductNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { automations, favoriteIds, recentIds } = useAutomations();
+  const { automations, favoriteIds, recentIds, demoEmpty } = useAutomations();
 
   const favorites = useMemo(
     () =>
-      favoriteIds
-        .map((id) => automations.find((a) => a.id === id))
-        .filter((a): a is NonNullable<typeof a> => Boolean(a)),
-    [automations, favoriteIds],
+      demoEmpty
+        ? []
+        : favoriteIds
+            .map((id) => automations.find((a) => a.id === id))
+            .filter((a): a is NonNullable<typeof a> => Boolean(a)),
+    [automations, demoEmpty, favoriteIds],
   );
 
   const recents = useMemo(
     () =>
-      recentIds
-        .map((id) => automations.find((a) => a.id === id))
-        .filter((a): a is NonNullable<typeof a> => Boolean(a))
-        .slice(0, 10),
-    [automations, recentIds],
+      demoEmpty
+        ? []
+        : recentIds
+            .map((id) => automations.find((a) => a.id === id))
+            .filter((a): a is NonNullable<typeof a> => Boolean(a))
+            .slice(0, 10),
+    [automations, demoEmpty, recentIds],
   );
 
   const homeActive = pathname === BASE || pathname === `${BASE}/`;
   const foldersActive = pathname.startsWith(`${BASE}/folders`);
   const templatesActive = pathname.startsWith(`${BASE}/templates`);
-  const runsActive = pathname === `${BASE}/runs` || pathname.startsWith(`${BASE}/runs/`);
+  const secretsActive = pathname.startsWith(`${BASE}/secrets`);
+  const runsActive =
+    pathname === `${BASE}/runs`
+    || pathname.startsWith(`${BASE}/runs/`)
+    || /\/runs(\/|$)/.test(pathname);
 
   return (
     <div className={styles['product-nav']}>
@@ -67,6 +76,12 @@ export default function ProductNav() {
             leadingIcon={<IframeListOutlineIcon size={16} />}
             active={templatesActive}
             onClick={() => navigate(`${BASE}/templates`)}
+          />
+          <ChannelSidebarItem
+            name="Variables & secrets"
+            leadingIcon={<CodeBracesIcon size={16} />}
+            active={secretsActive}
+            onClick={() => navigate(`${BASE}/secrets`)}
           />
           <ChannelSidebarItem
             name="Run history"

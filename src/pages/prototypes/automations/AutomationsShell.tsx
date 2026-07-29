@@ -17,29 +17,39 @@ function shouldShowSideChrome(pathname: string) {
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
-  return normalized === BASE
-    || normalized === `${BASE}/templates`
-    || normalized === `${BASE}/folders`
-    || normalized === `${BASE}/runs`;
+  // Keep the product nav on list and run-history routes; hide only on the editor.
+  return !new RegExp(`^${BASE}/[^/]+/editor$`).test(normalized);
 }
 
 /**
  * Automations chrome with an outer/inner panel layout and Channels-style
- * product sidebar on list routes. Team sidebar is omitted — teams are
- * represented as folders on Home. Product nav also hides on editor and
- * history routes for a focused canvas.
+ * product sidebar. Team sidebar is omitted — teams are represented as
+ * folders on Home. Product nav hides on the editor for a focused canvas.
  */
 export default function AutomationsShell() {
   const { pathname } = useLocation();
   const { setCenterSlot } = usePrototypeChrome();
-  const { toast, dismissToast, assistantOpen, setAssistantOpen, createBlank } =
-    useAutomations();
+  const {
+    toast,
+    dismissToast,
+    assistantOpen,
+    setAssistantOpen,
+    createBlank,
+    demoEmpty,
+    setDemoEmpty,
+  } = useAutomations();
   const showSideChrome = shouldShowSideChrome(pathname);
 
   useEffect(() => {
-    setCenterSlot(<AutomationsSceneSwitcher createBlank={createBlank} />);
+    setCenterSlot(
+      <AutomationsSceneSwitcher
+        createBlank={createBlank}
+        demoEmpty={demoEmpty}
+        setDemoEmpty={setDemoEmpty}
+      />,
+    );
     return () => setCenterSlot(null);
-  }, [createBlank, setCenterSlot]);
+  }, [createBlank, demoEmpty, setDemoEmpty, setCenterSlot]);
 
   return (
     <div className={styles['automations-shell']}>
