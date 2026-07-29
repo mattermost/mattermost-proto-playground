@@ -54,7 +54,13 @@ export default function RunDetailPage() {
         size="X-Small"
         type={run.status === 'success' ? 'Success' : 'Danger'}
       />
-      <p style={{ margin: '8px 0 0', fontSize: 13, opacity: 0.72 }}>
+      <p
+        style={{
+          margin: '8px 0 0',
+          fontSize: 13,
+          color: 'rgba(var(--center-channel-color-rgb), 0.72)',
+        }}
+      >
         Started {new Date(run.startedAt).toLocaleString()} · {run.durationMs} ms
       </p>
 
@@ -76,7 +82,14 @@ export default function RunDetailPage() {
                 size="X-Small"
                 type={step.status === 'success' ? 'Success' : 'Danger'}
               />
-              <span style={{ opacity: 0.56, fontSize: 12 }}>{step.id}</span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color: 'rgba(var(--center-channel-color-rgb), 0.72)',
+                }}
+              >
+                {step.id}
+              </span>
             </div>
             <div className={styles.detail__io}>
               <div>

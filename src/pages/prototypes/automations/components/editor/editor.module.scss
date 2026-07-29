@@ -143,7 +143,7 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  color: rgba(var(--center-channel-color-rgb), 0.56);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
   font-size: 14px;
   z-index: 1;
 }
@@ -218,8 +218,12 @@
 }
 
 .palette__item:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+
+  .palette__item-icon {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
 }
 
 .palette__item:hover:not(:disabled) {
