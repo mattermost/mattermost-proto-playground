@@ -10,9 +10,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--spacing-m);
   flex-wrap: wrap;
-  padding: 10px 16px;
+  padding: var(--spacing-s) var(--spacing-l);
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   background: var(--center-channel-bg);
 }
@@ -21,14 +21,14 @@
 .editor__toolbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-xs);
   flex-wrap: wrap;
 }
 
 .editor__title {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
 }
 
 .editor__fav--on {
@@ -101,7 +101,7 @@
 .edge-label {
   position: absolute;
   pointer-events: none;
-  padding: 2px 8px;
+  padding: var(--spacing-xxxxs) var(--spacing-xs);
   border-radius: var(--radius-full);
   font-family: var(--font-family-body);
   font-size: var(--font-size-50);
@@ -144,7 +144,7 @@
   justify-content: center;
   pointer-events: none;
   color: rgba(var(--center-channel-color-rgb), 0.72);
-  font-size: 14px;
+  font-size: var(--font-size-100);
   z-index: 1;
 }
 
@@ -153,14 +153,18 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  padding: 12px;
-  gap: 10px;
+  padding: var(--spacing-m);
+  gap: var(--spacing-s);
 }
 
 .palette__section {
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  border-radius: 6px;
+  border-radius: var(--radius-s);
   overflow: hidden;
+
+  & + & {
+    margin-top: var(--spacing-s);
+  }
 }
 
 .palette__section-header {
@@ -170,10 +174,10 @@
   align-items: center;
   border: 0;
   background: rgba(var(--center-channel-color-rgb), 0.04);
-  padding: 8px 10px;
+  padding: var(--spacing-xs) var(--spacing-s);
   font: inherit;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-100);
   cursor: pointer;
   color: inherit;
 }
@@ -187,19 +191,19 @@
 .palette__items {
   display: flex;
   flex-direction: column;
-  padding: 4px 4px;
+  padding: var(--spacing-xxxs) var(--spacing-xxxs);
 }
 
 .palette__item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-xs);
   width: 100%;
   text-align: left;
   border: 0;
   border-radius: var(--radius-s);
   background: transparent;
-  padding: 10px 10px;
+  padding: var(--spacing-s) var(--spacing-s);
   cursor: grab;
   color: inherit;
 }
@@ -235,7 +239,7 @@
   min-width: 180px;
   max-width: 240px;
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-  border-radius: 6px;
+  border-radius: var(--radius-s);
   background: var(--center-channel-bg);
   box-shadow: var(--elevation-1);
   font-size: var(--font-size-75);
@@ -248,13 +252,13 @@
 }
 
 .node__header {
-  padding: 6px 10px;
-  font-weight: 700;
-  font-size: 11px;
+  padding: var(--spacing-xxs) var(--spacing-s);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-50);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  border-radius: 5px 5px 0 0;
+  border-radius: var(--radius-s) var(--radius-s) 0 0;
 }
 
 .node__header--trigger,
@@ -278,9 +282,9 @@
 .node__body {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 0 0 5px 5px;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: 0 0 var(--radius-s) var(--radius-s);
 }
 
 .node__icon {
@@ -293,7 +297,7 @@
 .node__text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--spacing-xxxxs);
   min-width: 0;
 }
 
@@ -316,8 +320,8 @@
 }
 
 .node :global(.react-flow__handle) {
-  width: 10px;
-  height: 10px;
+  width: var(--icon-size-10);
+  height: var(--icon-size-10);
   border: 2px solid var(--button-bg);
   background: var(--center-channel-bg);
 }
@@ -333,18 +337,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: var(--spacing-xs);
   box-sizing: border-box;
-  height: 48px;
-  padding: 0 14px;
+  height: var(--spacing-xxxxxl);
+  padding: 0 calc(var(--spacing-m) + var(--spacing-xxxxs));
   border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   flex-shrink: 0;
 }
 
 .panel__title {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
   min-width: 0;
   overflow: hidden;
@@ -356,19 +360,19 @@
   flex: 1;
   min-height: 0;
   // SimpleBar copies root padding onto `.simplebar-content` as an inline style.
-  padding: 14px;
+  padding: calc(var(--spacing-m) + var(--spacing-xxxxs));
 }
 
 .panel__stack {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--spacing-xxl);
 }
 
 .panel__intro {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-xxxs);
 }
 
 .panel__step-title {
@@ -381,25 +385,31 @@
 
 .panel__help {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--font-size-75);
   color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xxs);
 }
 
 .panel__footer {
   display: flex;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-m) calc(var(--spacing-m) + var(--spacing-xxxxs));
   border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
 }
 
 .agent__prompt {
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  border-radius: 6px;
+  border-radius: var(--radius-s);
   background: var(--center-channel-bg);
-  padding: 8px 10px;
+  padding: var(--spacing-xs) var(--spacing-s);
   text-align: left;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--font-size-75);
   cursor: pointer;
   color: inherit;
 }

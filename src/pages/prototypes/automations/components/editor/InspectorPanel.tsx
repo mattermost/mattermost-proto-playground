@@ -129,7 +129,7 @@ export default function InspectorPanel({
             )}
             <div>
               <p className={styles.panel__help}>Variables</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <div className={styles.panel__chips}>
                 {['{{.Post.message}}', '{{.ChannelID}}', '{{.User.username}}'].map(
                   (v) => (
                     <button

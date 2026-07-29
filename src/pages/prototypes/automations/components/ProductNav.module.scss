@@ -17,7 +17,7 @@
 .product-nav__top {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--spacing-xxxxs);
   // Match ChannelsSidebar top group: no horizontal inset — items span the
   // full sidebar width and apply their own internal padding.
   padding-top: var(--spacing-s);
@@ -27,13 +27,13 @@
 .product-nav__group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--spacing-xxxxs);
   padding-bottom: var(--spacing-xs);
 }
 
 .product-nav__empty {
   margin: 0;
-  padding: 4px var(--spacing-l);
+  padding: var(--spacing-xxxs) var(--spacing-l);
   font-family: var(--font-family-body);
   font-size: var(--font-size-100);
   line-height: var(--line-height-100);

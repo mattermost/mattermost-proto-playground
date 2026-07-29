@@ -85,7 +85,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
             <div className={styles.palette__items}>{filteredTriggers.map(renderItem)}</div>
           ) : null}
         </div>
-        <div className={styles.palette__section} style={{ marginTop: 10 }}>
+        <div className={styles.palette__section}>
           <button
             type="button"
             className={`${styles['palette__section-header']} ${styles['palette__section-header--action']}`}
@@ -100,7 +100,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
             <div className={styles.palette__items}>{filteredActions.map(renderItem)}</div>
           ) : null}
         </div>
-        <div className={styles.palette__section} style={{ marginTop: 10 }}>
+        <div className={styles.palette__section}>
           <button
             type="button"
             className={`${styles['palette__section-header']} ${styles['palette__section-header--flow']}`}

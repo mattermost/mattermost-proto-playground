@@ -63,9 +63,7 @@ export default function ChangeHistoryPage() {
                 <tr key={rev.id}>
                   <td>#{rev.revision}</td>
                   <td>{rev.change}</td>
-                  <td style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12 }}>
-                    {rev.by}
-                  </td>
+                  <td className={styles.history__mono}>{rev.by}</td>
                   <td>{new Date(rev.when).toLocaleString()}</td>
                   <td>
                     <button

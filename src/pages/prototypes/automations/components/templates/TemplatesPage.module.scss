@@ -70,8 +70,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid var(--button-bg);
-      outline-offset: 2px;
+      outline: var(--spacing-xxxxs) solid var(--button-bg);
+      outline-offset: var(--spacing-xxxxs);
     }
   }
 
@@ -80,7 +80,7 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    height: 160px;
+    height: calc(var(--spacing-xxxxl) * 4);
     background: rgba(var(--center-channel-color-rgb), 0.04);
     pointer-events: none;
     overflow: hidden;
@@ -97,7 +97,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-xxxxs);
-    padding: 20px;
+    padding: var(--spacing-xl);
     min-width: 0;
   }
 

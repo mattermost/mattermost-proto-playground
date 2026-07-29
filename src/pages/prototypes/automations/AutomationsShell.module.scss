@@ -20,7 +20,7 @@
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  padding: 0 4px 4px;
+  padding: 0 var(--spacing-xxxs) var(--spacing-xxxs);
   background: var(--sidebar-header-bg);
 }
 
@@ -82,7 +82,7 @@
 
 .automations-shell__toast {
   position: fixed;
-  bottom: 24px;
+  bottom: var(--spacing-xxl);
   left: 50%;
   transform: translateX(-50%);
   z-index: 40;

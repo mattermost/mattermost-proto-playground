@@ -36,14 +36,14 @@
   &__layout {
     display: grid;
     grid-template-columns: 260px minmax(0, 1fr);
-    gap: 24px;
+    gap: var(--spacing-xxl);
     align-items: start;
   }
 
   &__rail {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--spacing-s);
     border-radius: var(--radius-l);
     position: sticky;
     top: 0;
@@ -53,8 +53,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    min-height: 24px;
+    gap: var(--spacing-xs);
+    min-height: var(--icon-size-24);
   }
 
   &__railTitle {
@@ -67,7 +67,7 @@
 
   &__railAdd {
     flex: 0 0 auto;
-    margin-right: -4px;
+    margin-right: calc(-1 * var(--spacing-xxxs));
   }
 
   &__railList {
@@ -86,8 +86,8 @@
   &__create {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 12px;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     border-radius: var(--radius-m);
     background: var(--center-channel-bg);
@@ -102,21 +102,21 @@
   &__createActions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: var(--spacing-xs);
   }
 
   &__main {
     min-width: 0;
-    padding: 4px 0 0;
+    padding: var(--spacing-xxxs) 0 0;
   }
 
   &__detailHead {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
-    padding-bottom: 16px;
-    margin-bottom: 20px;
+    gap: var(--spacing-l);
+    padding-bottom: var(--spacing-l);
+    margin-bottom: var(--spacing-xl);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
@@ -127,9 +127,9 @@
   &__nameRow {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-xs);
     flex-wrap: wrap;
-    min-height: 24px;
+    min-height: var(--icon-size-24);
 
     &:hover .folders__renameBtn,
     &:focus-within .folders__renameBtn,
@@ -164,8 +164,8 @@
   &__detailMeta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 4px;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xxxs);
     flex-wrap: wrap;
   }
 
@@ -192,32 +192,32 @@
   &__renameActions {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--spacing-xxxs);
     flex: 0 0 auto;
-    min-height: 24px;
+    min-height: var(--icon-size-24);
   }
 
   &__detailActions {
     position: relative;
     display: flex;
-    gap: 8px;
+    gap: var(--spacing-xs);
     flex-shrink: 0;
   }
 
   &__detailMenu {
     position: absolute;
-    top: calc(100% + 4px);
+    top: calc(100% + var(--spacing-xxxs));
     right: 0;
     z-index: 20;
     min-width: 180px;
   }
 
   &__section {
-    margin-top: 28px;
+    margin-top: calc(var(--spacing-xxl) + var(--spacing-xxxs));
   }
 
   &__sectionTitle {
-    margin: 0 0 10px;
+    margin: 0 0 var(--spacing-s);
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-semibold);
   }
@@ -226,8 +226,8 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
+    gap: var(--spacing-l);
+    margin-bottom: var(--spacing-m);
   }
 
   &__sectionIntro {
@@ -235,7 +235,7 @@
     flex: 1 1 auto;
 
     .folders__sectionTitle {
-      margin: 0 0 4px;
+      margin: 0 0 var(--spacing-xxxs);
     }
 
     .folders__muted {
@@ -248,7 +248,7 @@
   }
 
   &__muted {
-    margin: 0 0 12px;
+    margin: 0 0 var(--spacing-m);
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
     color: rgba(var(--center-channel-color-rgb), 0.72);
@@ -267,7 +267,7 @@
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: var(--font-size-100);
 
     th,
     td {
@@ -296,7 +296,7 @@
 
     th {
       text-align: left;
-      padding: 6px 12px;
+      padding: var(--spacing-xxs) var(--spacing-m);
       font-size: var(--font-size-25);
       font-weight: var(--font-weight-semibold);
       letter-spacing: 0.04em;
@@ -308,7 +308,7 @@
     }
 
     td {
-      padding: 12px;
+      padding: var(--spacing-m);
       border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
       vertical-align: middle;
       overflow: hidden;
@@ -341,7 +341,7 @@
   &__wfStatus {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--spacing-xxs);
     font-size: var(--font-size-100);
     color: rgba(var(--center-channel-color-rgb), 0.72);
 
@@ -357,13 +357,13 @@
   &__runStat {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--spacing-xxs);
   }
 
   &__runDot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+    border-radius: var(--radius-full);
     flex-shrink: 0;
     background: rgba(var(--center-channel-color-rgb), 0.35);
 
@@ -381,16 +381,16 @@
   }
 
   &__wfDot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+    border-radius: var(--radius-full);
     flex-shrink: 0;
     background: rgba(var(--center-channel-color-rgb), 0.35);
   }
 
   &__admins {
     list-style: none;
-    margin: 12px 0;
+    margin: var(--spacing-m) 0;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -399,8 +399,8 @@
   &__admin {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 8px;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-xs);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     transition: background var(--duration-quick) var(--ease-transition);
 
@@ -436,7 +436,7 @@
   &__adminPicker {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-m);
     min-height: 200px;
   }
 
@@ -451,10 +451,10 @@
   &__adminResult {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--spacing-s);
     width: 100%;
     margin: 0;
-    padding: 10px 8px;
+    padding: var(--spacing-s) var(--spacing-xs);
     border: 0;
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     background: transparent;
@@ -472,7 +472,7 @@
   &__adminResultText {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--spacing-xxxxs);
     min-width: 0;
   }
 
