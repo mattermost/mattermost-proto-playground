@@ -116,7 +116,7 @@ When adding or editing token lists on specimen pages:
 
 - **No duplicate label column** — If the token name is the copy-paste source of truth (e.g. `--spacing-xxxxs`, `--duration-quick`), do not add a separate short-name column (`xxxxs`, `Quick`) beside it. The token string is enough; a second column repeats the same idea and clutters the layout.
 - **Token and value text must not look “disabled”** — Style token identifiers and primary values (`150ms`, `16px`, easing keywords) with `var(--font-size-75)` or another readable step, `var(--font-family-mono)` where appropriate, and **full** `var(--center-channel-color)`. Avoid tiny sizes (e.g. `10px`) and avoid low `opacity` on those cells — that reads as greyed-out UI instead of documentation.
-- **Descriptions as secondary tier** — Supporting sentences can use `rgba(var(--center-channel-color-rgb), 0.72)` so they sit slightly behind the token/value without looking washed out.
+- **Descriptions as secondary tier** — Supporting sentences can use `rgba(var(--center-channel-color-rgb), 0.72)` so they sit slightly behind the token/value without looking washed out. Never take UI text below 72% opacity or icons below 56% (see Opacity floors rule below).
 - **Elevation** — Use `foundations__elevation-rows` / `foundations__elevation-row`: leading `<code>` token (em dash for level 0 where no variable exists), a small preview tile with the shadow applied, then the summary text. Row dividers match spacing and animation (`border-top` on the first row, `border-bottom` between rows).
 - **Shape (radius)** — Use `foundations__shape-rows` / `foundations__shape-row`: token, resolved pixel value, then a preview box with `border-radius` from the token. Same row dividers as spacing and animation.
 
@@ -258,7 +258,7 @@ When adding or editing `packages/compass-ui/**/*.stories.tsx`, keep story-only c
 - Story labels and demo text should use `var(--center-channel-color)`, not neutral-derived tokens like `--color-neutral-*` or `--color-text-secondary`.
 - Preview surfaces and wrappers should use `var(--center-channel-bg)`.
 - Inverted story surfaces should use `var(--sidebar-header-bg)`, and labels inside those surfaces should use `var(--sidebar-text)`.
-- Use `rgba(var(--center-channel-color-rgb), <alpha>)` for intentionally secondary text, borders, or subtle fills.
+- Use `rgba(var(--center-channel-color-rgb), <alpha>)` for intentionally secondary text, borders, or subtle fills. For **text** `color`, alpha must be **≥ 0.72**; for **icons**, **≥ 0.56** (see Opacity floors rule below).
 - Let `@mattermost/compass-ui/styles` provide the base body font and native heading font. Do not hardcode font families in stories.
 - Storybook Docs tab chrome and Docs controls are themed in `packages/compass-ui/.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.
 
@@ -283,6 +283,8 @@ border-color: rgba(var(--color-warning-rgb), 0.16);
 
 When a Figma color variable has a suffix (e.g. `center-channel-color-8`, `sidebar-text-24`, `button-bg-16`, `color-danger-12`), the suffix encodes an opacity percentage. Do **not** look for a suffixed CSS token — it doesn't exist. Instead, use the root token's `-rgb` counterpart inside `rgba()`, with the suffix converted to a decimal alpha (divide by 100).
 
+**Text / icon exception:** if the Figma variable is used as **text** `color` and the suffix is below 72, clamp alpha to **0.72**. If used as an **icon** color and the suffix is below 56, clamp to **0.56**. Backgrounds, borders, and fills may still use the mapped alpha as written.
+
 
 | Figma variable           | CSS                                           |
 | ------------------------ | --------------------------------------------- |
@@ -291,6 +293,12 @@ When a Figma color variable has a suffix (e.g. `center-channel-color-8`, `sideba
 | `button-bg/16`           | `rgba(var(--button-bg-rgb), 0.16)`            |
 | `color-danger/12`        | `rgba(var(--color-danger-rgb), 0.12)`         |
 
+
+## Opacity floors: text 72%, icons 56%
+
+Never style UI **text** below **72% opacity** (alpha ≥ `0.72`), or **icons** below **56% opacity** (alpha ≥ `0.56`). This includes `rgba()` / `hsla()` used as `color` / `fill` / `stroke`, and `opacity` on text or icon elements. Secondary/muted copy should use at least `rgba(var(--center-channel-color-rgb), 0.72)`; muted icons at least `0.56`.
+
+Lower alpha is fine for non-text, non-icon surfaces (backgrounds, borders, fills, overlays). Entrance/exit animations may temporarily fade content; resting visible text must land at ≥ 0.72 and icons at ≥ 0.56.
 
 ## Iconography: phone icon is always filled
 
