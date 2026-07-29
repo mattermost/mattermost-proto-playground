@@ -16,6 +16,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { RunStatus } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
+import RunsDashboard from '../RunsDashboard/RunsDashboard';
 import styles from './history.module.scss';
 
 const BASE = '/prototypes/automations';
@@ -73,6 +74,8 @@ export default function AllRunsPage() {
           onClick={() => undefined}
         />
       </div>
+
+      <RunsDashboard linkToRuns={false} />
 
       <div className={styles.history__filters}>
         <div className={styles['history__filter-trigger']} ref={filterRef}>

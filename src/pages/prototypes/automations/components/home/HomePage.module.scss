@@ -16,15 +16,17 @@
 
 .home__title {
   margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+  font-size: var(--font-size-700);
+  font-weight: var(--font-weight-semibold);
   line-height: 1.2;
 }
 
-.home__stats {
+.home__subtitle {
   margin: 6px 0 0;
-  font-size: 13px;
-  color: rgba(var(--center-channel-color-rgb, 63, 67, 80), 0.72);
+  max-width: 42em;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
 }
 
 .home__actions {
@@ -178,22 +180,47 @@
   border-bottom-color: rgba(var(--center-channel-color-rgb), 0.12);
 }
 
-.home__folder-chevron {
+.home__folder-toggle {
+  position: relative;
   display: inline-flex;
   flex-shrink: 0;
+  width: var(--icon-size-16);
+  height: var(--icon-size-16);
+}
+
+.home__folder-icon {
+  display: inline-flex;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+  transition: opacity var(--duration-quick) var(--ease-transition);
+}
+
+.home__folder-chevron {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: rgba(var(--center-channel-color-rgb), 0.56);
+  opacity: 0;
   transform: rotate(-90deg);
-  transition: transform var(--duration-moderate) var(--ease-transition);
+  transition:
+    opacity var(--duration-quick) var(--ease-transition),
+    transform var(--duration-moderate) var(--ease-transition);
+  pointer-events: none;
 }
 
 .home__folder-chevron--open {
   transform: rotate(0deg);
 }
 
-.home__folder-icon {
-  display: inline-flex;
-  flex-shrink: 0;
-  color: rgba(var(--center-channel-color-rgb), 0.64);
+.home__folder-header:hover .home__folder-icon,
+.home__folder-header:focus-visible .home__folder-icon {
+  opacity: 0;
+}
+
+.home__folder-header:hover .home__folder-chevron,
+.home__folder-header:focus-visible .home__folder-chevron {
+  opacity: 1;
 }
 
 .home__folder-title {
@@ -347,6 +374,10 @@
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 4px;
+
+  .home__tag {
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
 }
 
 .home__run {

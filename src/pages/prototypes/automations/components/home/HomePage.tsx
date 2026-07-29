@@ -35,6 +35,8 @@ import {
 } from '../../data/automationsData';
 import type { Automation, AutomationScope, AutomationStatus } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
+import FolderOpenOutlineIcon from '../icons/FolderOpenOutlineIcon';
+import RunsDashboard from '../RunsDashboard/RunsDashboard';
 import TagOutlineIcon from '../icons/TagOutlineIcon';
 import styles from './HomePage.module.scss';
 
@@ -134,12 +136,6 @@ export default function HomePage() {
     return availableTags.filter((t) => t.toLowerCase().includes(q));
   }, [availableTags, tagQuery]);
 
-  const stats = useMemo(() => {
-    const enabled = automations.filter((a) => a.status === 'enabled').length;
-    const disabled = automations.filter((a) => a.status === 'disabled').length;
-    return { total: automations.length, enabled, disabled };
-  }, [automations]);
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return automations.filter((a) => {
@@ -214,7 +210,12 @@ export default function HomePage() {
         <div className={styles.home__name}>{a.name}</div>
         <div className={styles.home__tags}>
           {a.tags.map((tag) => (
-            <Tag key={tag} label={tag} size="X-Small" />
+            <Tag
+              key={tag}
+              label={tag}
+              size="X-Small"
+              className={styles.home__tag}
+            />
           ))}
         </div>
       </td>
@@ -351,26 +352,11 @@ export default function HomePage() {
       <div className={styles.home__header}>
         <div>
           <h1 className={styles.home__title}>Automations</h1>
-          <p className={styles.home__stats}>
-            {stats.total} automations · {stats.enabled} enabled · {stats.disabled}{' '}
-            disabled
+          <p className={styles.home__subtitle}>
+            Automate repetitive tasks that respond to environment triggers.
           </p>
         </div>
         <div className={styles.home__actions}>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            onClick={() => navigate(`${BASE}/runs`)}
-          >
-            Run history
-          </Button>
-          <Button
-            emphasis="Tertiary"
-            size="Small"
-            onClick={() => navigate(`${BASE}/templates`)}
-          >
-            Templates
-          </Button>
           <div style={{ position: 'relative' }}>
             <Button
               emphasis="Primary"
@@ -378,7 +364,7 @@ export default function HomePage() {
               leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
               onClick={() => setNewOpen((v) => !v)}
             >
-              New
+              New Automation
             </Button>
             {newOpen ? (
               <div style={{ position: 'absolute', right: 0, top: '110%', zIndex: 20 }}>
@@ -402,6 +388,8 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      <RunsDashboard />
 
       <div className={styles.home__filters}>
         <div className={styles['home__filter-bar']}>
@@ -654,19 +642,29 @@ export default function HomePage() {
                       aria-expanded={expanded}
                       onClick={() => toggleFolder(section.id)}
                     >
-                      <span
-                        className={[
-                          styles['home__folder-chevron'],
-                          expanded ? styles['home__folder-chevron--open'] : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                        aria-hidden
-                      >
-                        <Icon size="16" glyph={<ChevronDownIcon />} />
-                      </span>
-                      <span className={styles['home__folder-icon']} aria-hidden>
-                        <Icon size="16" glyph={<FolderOutlineIcon />} />
+                      <span className={styles['home__folder-toggle']} aria-hidden>
+                        <span className={styles['home__folder-icon']}>
+                          <Icon
+                            size="16"
+                            glyph={
+                              expanded ? (
+                                <FolderOpenOutlineIcon />
+                              ) : (
+                                <FolderOutlineIcon />
+                              )
+                            }
+                          />
+                        </span>
+                        <span
+                          className={[
+                            styles['home__folder-chevron'],
+                            expanded ? styles['home__folder-chevron--open'] : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                        >
+                          <Icon size="16" glyph={<ChevronDownIcon />} />
+                        </span>
                       </span>
                       <span className={styles['home__folder-title']}>
                         {section.name}
