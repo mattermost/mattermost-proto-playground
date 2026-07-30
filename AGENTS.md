@@ -1,6 +1,6 @@
 # Agent guidance (shared)
 
-Shared instructions for Cursor, Claude Code, and other agents. `claude.md` imports this file via `@AGENTS.md`.
+Shared instructions for Cursor, Claude Code, and other agents. `CLAUDE.md` imports this file via `@AGENTS.md`.
 
 ## Design system layers
 

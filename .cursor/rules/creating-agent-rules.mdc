@@ -21,7 +21,7 @@ Claude path nudges (thin): `.claude/rules/guidelines.md`, `.claude/rules/prototy
 
 ## Efficiency
 
-- Do **not** `@import` large files from `claude.md` (only `@AGENTS.md`).
+- Do **not** `@import` large files from `CLAUDE.md` (only `@AGENTS.md`).
 - Do **not** set `alwaysApply: true` unless the rule must hit every turn (prefer `globs` / agent-requested `description`).
 - Put mapping tables and bad/good examples in the styling pair or nested AGENTS — not root AGENTS.
 - Never leave the only copy of a must-follow rule solely under `.cursor/rules` or solely under `.claude/rules` without the AGENTS / dual-file pattern.
