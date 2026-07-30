@@ -1,0 +1,44 @@
+---
+description: How to add agent guidance — keep claude.md lean, avoid Cursor/Claude duplication
+alwaysApply: true
+---
+
+# Creating agent rules (Cursor + Claude)
+
+Prefer **one source of truth**. Do not paste the same tables/prose into both `claude.md` and `.cursor/rules/`.
+
+## Where content lives
+
+| Guidance | Put it in |
+| --- | --- |
+| Cross-cutting must-dos every agent needs (short) | `claude.md` |
+| Narrow / file-specific / long examples or mapping tables | `.cursor/rules/*.mdc` with `globs` (and `alwaysApply: false` unless truly global) |
+| Already documented in `claude.md` | Thin Cursor rule that **points** at that section — do not copy it |
+
+`claude.md` is the **index**, not the encyclopedia. It is always loaded into agent context — every extra section costs tokens on every turn.
+
+## Size heuristics
+
+- Prefer Cursor rules **under ~50 lines**, one concern each.
+- If a new chunk is **>~40 lines** or only applies to some files, do **not** dump it into `claude.md` — add/extend a `.mdc` rule (or a small doc) and leave a **5-line summary + pointer** in `claude.md` only when Claude Code must see it.
+- Before adding to `claude.md`, check whether an existing section or `.cursor/rules/` file already covers it.
+
+## Cursor rule format
+
+`.cursor/rules/<name>.mdc` with YAML frontmatter:
+
+```yaml
+---
+description: Short rule picker blurb
+globs: "**/optional/path/**/*.{tsx,scss}"  # omit or leave broad only if needed
+alwaysApply: false  # true only for truly global nudges
+---
+```
+
+Actionable checklist + bad/good examples. No duplicate of `claude.md`.
+
+## Checklist before finishing
+
+- [ ] Single source of truth (no duplicated mapping tables)
+- [ ] `claude.md` stayed short or only gained a pointer/summary
+- [ ] Narrow rules use `globs`; `alwaysApply: true` is justified

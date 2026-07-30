@@ -1,5 +1,7 @@
 # Project instructions for AI
 
+When adding or changing agent guidance (Cursor rules or this file), follow `.cursor/rules/creating-agent-rules.mdc` — keep this file lean and avoid duplicating long checklists.
+
 ## Design system: Foundations, Components, Patterns, and Layouts
 
 The design system is organized in four layers, from the most basic style guidance to full screens.
