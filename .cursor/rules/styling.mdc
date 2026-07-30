@@ -1,6 +1,9 @@
 ---
 description: Styling — BEM, tokens, motion, opacity, Scrollbars
-globs: "**/*.{module.scss,scss}"
+globs:
+  - "**/*.module.scss"
+  - "**/tokens.scss"
+  - "src/styles/**/*.scss"
 alwaysApply: false
 ---
 

@@ -20,7 +20,7 @@ For multi-scene prototypes, put scene/entry controls in the **center slot**:
 
 Multi-scene prototypes under `src/pages/prototypes/<slug>/`:
 
-```
+```text
 <Slug>.tsx            # Orchestrator: scene state, chrome, switch
 <slug>Data.ts         # Fixtures (optional)
 <slug>Scenes.ts       # Scene ids + labels (optional)

@@ -10,8 +10,8 @@ Every docs entry is a **topic** in `src/manifests/topics.ts` with Guidelines / S
 ## Steps
 
 1. Pick the category from the four-layer model: Foundations / Components / Patterns / Layouts (URL prefix).
-2. Author an MDX guideline page under `src/guidelines/<category>/` (required).
-3. Optionally author a `*.specimen.tsx` under `src/guidelines/<category>/<slug>/` (overview-style topics may omit; tab strip hides).
+2. Author an MDX guideline page at `src/guidelines/<category>/<slug>/<slug>.guideline.mdx` (required).
+3. Optionally author a specimen file at `src/guidelines/<category>/<slug>/<slug>.specimen.tsx` (overview-style topics may omit; tab strip hides).
 4. Add a `Topic` entry to `TOPICS` in `src/manifests/topics.ts`. For a sidebar group, list the slug under the right `topicSections[<category>]` in `src/manifests/sections.ts`; otherwise it falls under "Other".
 
 ## Also

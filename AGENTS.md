@@ -12,12 +12,7 @@ Before writing new UI, audit `src/components/` (and Compass UI). Reuse an existi
 
 ## Shared React hooks
 
-If these exist in `src/hooks/`, use them instead of duplicating logic:
-
-| Hook | File | Use when |
-| --- | --- | --- |
-| `useExitAnimation` | `useExitAnimation.ts` | Keep a panel mounted for `durationMs` after `open` becomes false so exit CSS can run. Returns `{ rendered, exiting }`. |
-| `useOutsideClose` | `useOutsideClose.ts` | Close a dropdown/menu on `mousedown` outside a container `ref` while `open`. |
+Check `src/hooks/` before duplicating logic. Key hooks: `useExitAnimation` (exit animations), `useOutsideClose` (click-outside behavior).
 
 `ProfilePopover` is content only — do not fork it for positioning; compose a page-local wrapper or a shared layout hook (e.g. `useAnchoredToRect`).
 
@@ -32,14 +27,12 @@ If these exist in `src/hooks/`, use them instead of duplicating logic:
 
 Prefer design tokens from `src/styles/tokens.scss` over hardcoded px/hex/ms. Full BEM, tokens, motion, opacity, and Scrollbars rules load when editing styles — see the styling rule pair below.
 
-## Index (conditional guidance)
+## Area-specific guidance
 
-| Area | Read when working in / on |
-| --- | --- |
-| [src/guidelines/AGENTS.md](src/guidelines/AGENTS.md) | Docs guidelines, specimens, MDX |
-| [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) | Prototypes |
-| [packages/compass-ui/AGENTS.md](packages/compass-ui/AGENTS.md) | Compass UI Storybook |
-| [.claude/rules/styling.md](.claude/rules/styling.md) / [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc) | `*.module.scss` and other styling (keep both files in sync) |
-| [.cursor/skills/add-docs-topic/SKILL.md](.cursor/skills/add-docs-topic/SKILL.md) | Adding a docs topic (procedure) |
-| [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) | Scaffolding a multi-scene prototype (procedure) |
-| [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) | Adding or changing agent guidance |
+- [src/guidelines/AGENTS.md](src/guidelines/AGENTS.md) — Docs guidelines, specimens, MDX
+- [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) — Prototypes
+- [packages/compass-ui/AGENTS.md](packages/compass-ui/AGENTS.md) — Compass UI Storybook
+- [.claude/rules/styling.md](.claude/rules/styling.md) / [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc) — Styling (keep both files in sync)
+- [.cursor/skills/add-docs-topic/SKILL.md](.cursor/skills/add-docs-topic/SKILL.md) — Adding a docs topic (procedure)
+- [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype (procedure)
+- [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
