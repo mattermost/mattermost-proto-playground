@@ -216,6 +216,46 @@ Single-scene or very small prototypes can stay flat (one page file + optional mo
 
 Use **`scenes/`**, not `views/` — that matches existing prototypes in this repo.
 
+## Prefer design tokens over hardcoded values
+
+When writing or editing styles (especially prototypes under `src/pages/prototypes/`), reach for a token from `src/styles/tokens.scss` before writing a literal. Theme surfaces/text use Mattermost theme vars (`--center-channel-color`, `--center-channel-bg`, `--button-bg`, etc.).
+
+| Concern | Tokens |
+| ------- | ------ |
+| Spacing (`padding` / `margin` / `gap` / `inset`) | `--spacing-xxxxs` (2px) … `--spacing-xxxxxl` (48px) |
+| Font size | `--font-size-25` (10px) … `--font-size-1000` (40px) |
+| Font weight | `--font-weight-regular` / `--font-weight-semibold` (prefer semibold over bold/`700` unless Figma specifies 700) |
+| Line height | `--line-height-*` (same scale steps as font size) |
+| Border radius | `--radius-xs` … `--radius-xl`; pills → `--radius-full` |
+| Box shadow | `--elevation-1` … `--elevation-6` |
+| Icon box sizes | `--icon-size-10` … `--icon-size-104` |
+
+```scss
+// ❌ BAD
+padding: 12px 16px;
+gap: 8px;
+font-size: 14px;
+border-radius: 8px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
+color: #386fe5;
+color: var(--center-channel-color, #3f4350);
+
+// ✅ GOOD
+padding: var(--spacing-m) var(--spacing-l);
+gap: var(--spacing-xs);
+font-size: var(--font-size-100);
+border-radius: var(--radius-m);
+box-shadow: var(--elevation-2);
+color: var(--color-info);
+```
+
+- Prefer the nearest token or `calc()` of tokens over a raw `px` when nothing matches exactly.
+- Do not put tokenizable spacing or font values in inline `style={{}}` — use a CSS module.
+- **Allowed exceptions:** `1px` hairline borders; visually-hidden `1px` / `-1px` tricks; one-off layout widths with no token (e.g. `min-width: 260px`); container/media breakpoints.
+- Before finishing UI work, scan new/edited `*.module.scss` (and prototype inline styles) for leftover raw `px`, hex, numeric `font-weight`, or hardcoded `ms` / `ease`.
+
+Motion, semantic colors, Figma opacity suffixes, and opacity floors are covered in the sections below.
+
 ## Animation: easing and duration
 
 Always use the animation tokens from `tokens.scss` — never hard-code durations or easing keywords directly.
