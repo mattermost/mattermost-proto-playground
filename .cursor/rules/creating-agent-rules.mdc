@@ -1,5 +1,6 @@
 ---
 description: How to add agent guidance — AGENTS.md tiers, dual styling rules, skills; avoid always-on bloat
+globs: "claude.md,.cursor/rules/**/*.mdc"
 alwaysApply: false
 ---
 
