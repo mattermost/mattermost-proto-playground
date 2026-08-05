@@ -1,0 +1,419 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: rgba(var(--center-channel-color-rgb), 0.03);
+}
+
+.editor__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-m);
+  flex-wrap: wrap;
+  padding: var(--spacing-s) var(--spacing-l);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
+}
+
+.editor__toolbar-left,
+.editor__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.editor__title {
+  margin: 0;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
+}
+
+.editor__fav--on {
+  color: var(--button-bg);
+
+  &:hover:not(:disabled) {
+    color: var(--button-bg);
+  }
+}
+
+.editor__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.editor__palette {
+  flex: 0 0 260px;
+  border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.editor__canvas {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.editor__canvas :global(.react-flow) {
+  width: 100%;
+  height: 100%;
+
+  // Theme Controls, MiniMap, and canvas dots to Mattermost tokens.
+  --xy-controls-button-background-color-default: var(--center-channel-bg);
+  --xy-controls-button-background-color-hover-default: rgba(
+    var(--center-channel-color-rgb),
+    0.08
+  );
+  --xy-controls-button-color-default: rgba(var(--center-channel-color-rgb), 0.72);
+  --xy-controls-button-color-hover-default: var(--center-channel-color);
+  --xy-controls-button-border-color-default: rgba(var(--center-channel-color-rgb), 0.16);
+  --xy-controls-box-shadow-default: var(--elevation-1);
+
+  --xy-minimap-background-color-default: var(--center-channel-bg);
+  --xy-minimap-mask-background-color-default: rgba(var(--center-channel-color-rgb), 0.12);
+  --xy-minimap-node-background-color-default: rgba(var(--center-channel-color-rgb), 0.32);
+
+  --xy-background-pattern-dots-color-default: rgba(var(--center-channel-color-rgb), 0.24);
+
+  --xy-edge-stroke-default: rgba(var(--center-channel-color-rgb), 0.4);
+  --xy-edge-stroke-width-default: 1.5;
+  --xy-edge-stroke-selected-default: var(--button-bg);
+  --xy-connectionline-stroke-default: rgba(var(--center-channel-color-rgb), 0.4);
+}
+
+// Global reset sets `svg { max-width: 100% }`, which collapses React Flow
+// edge SVGs (no intrinsic size) so connection paths never paint.
+.editor__canvas :global(.react-flow__edges svg),
+.editor__canvas :global(svg.react-flow__connectionline),
+.editor__canvas :global(.react-flow__edge-path),
+.editor__canvas :global(.react-flow__connection-path) {
+  max-width: none;
+  overflow: visible;
+}
+
+.edge-label {
+  position: absolute;
+  pointer-events: none;
+  padding: var(--spacing-xxxxs) var(--spacing-xs);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-50);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: var(--center-channel-bg);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  box-shadow: var(--elevation-1);
+}
+
+.edge-label--true {
+  color: var(--color-green-600);
+  background: rgba(var(--color-green-600-rgb), 0.1);
+  border-color: rgba(var(--color-green-600-rgb), 0.28);
+}
+
+.edge-label--false {
+  color: var(--color-danger);
+  background: rgba(var(--color-danger-rgb), 0.1);
+  border-color: rgba(var(--color-danger-rgb), 0.28);
+}
+
+.editor__side {
+  flex: 0 0 320px;
+  border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor__blank {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-size: var(--font-size-100);
+  z-index: 1;
+}
+
+.palette {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: var(--spacing-m);
+  gap: var(--spacing-s);
+}
+
+.palette__section {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+
+  & + & {
+    margin-top: var(--spacing-s);
+  }
+}
+
+.palette__section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 0;
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  padding: var(--spacing-xs) var(--spacing-s);
+  font: inherit;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-100);
+  cursor: pointer;
+  color: inherit;
+}
+
+.palette__section-chevron {
+  display: inline-flex;
+  opacity: 0.64;
+  color: inherit;
+}
+
+.palette__items {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xxxs) var(--spacing-xxxs);
+}
+
+.palette__item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  padding: var(--spacing-s) var(--spacing-s);
+  cursor: grab;
+  color: inherit;
+}
+
+.palette__item-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}
+
+.palette__item-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette__item:disabled {
+  cursor: not-allowed;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+
+  .palette__item-icon {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}
+
+.palette__item:hover:not(:disabled) {
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+
+}
+
+.node {
+  min-width: 180px;
+  max-width: 240px;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-1);
+  font-size: var(--font-size-75);
+  // Do not clip — React Flow handles sit half outside the node bounds.
+}
+
+.node--selected {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.25);
+}
+
+.node__header {
+  padding: var(--spacing-xxs) var(--spacing-s);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-50);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-s) var(--radius-s) 0 0;
+}
+
+.node__header--trigger,
+.palette__section-header--trigger {
+  background: rgba(var(--color-blue-500-rgb), 0.08);
+  color: var(--color-blue-500);
+}
+
+.node__header--action,
+.palette__section-header--action {
+  background: rgba(var(--color-green-600-rgb), 0.08);
+  color: var(--color-green-600);
+}
+
+.node__header--flow,
+.palette__section-header--flow {
+  background: rgba(var(--color-teal-700-rgb), 0.08);
+  color: var(--color-teal-700);
+}
+
+.node__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: 0 0 var(--radius-s) var(--radius-s);
+}
+
+.node__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}
+
+.node__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxxs);
+  min-width: 0;
+}
+
+.node__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--font-weight-semibold);
+  color: var(--center-channel-color);
+}
+
+.node__description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-weight: var(--font-weight-regular);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  line-height: 1.35;
+}
+
+.node :global(.react-flow__handle) {
+  width: var(--icon-size-10);
+  height: var(--icon-size-10);
+  border: 2px solid var(--button-bg);
+  background: var(--center-channel-bg);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  box-sizing: border-box;
+  height: var(--spacing-xxxxxl);
+  padding: 0 calc(var(--spacing-m) + var(--spacing-xxxxs));
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  flex-shrink: 0;
+}
+
+.panel__title {
+  margin: 0;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel__body {
+  flex: 1;
+  min-height: 0;
+  // SimpleBar copies root padding onto `.simplebar-content` as an inline style.
+  padding: calc(var(--spacing-m) + var(--spacing-xxxxs));
+}
+
+.panel__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxl);
+}
+
+.panel__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxs);
+}
+
+.panel__step-title {
+  margin: 0;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
+  color: var(--center-channel-color);
+}
+
+.panel__help {
+  margin: 0;
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.panel__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xxs);
+}
+
+.panel__footer {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-m) calc(var(--spacing-m) + var(--spacing-xxxxs));
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+}
+
+.agent__prompt {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  padding: var(--spacing-xs) var(--spacing-s);
+  text-align: left;
+  font: inherit;
+  font-size: var(--font-size-75);
+  cursor: pointer;
+  color: inherit;
+}
+
+.agent__prompt:hover {
+  border-color: rgba(var(--button-bg-rgb), 0.4);
+}

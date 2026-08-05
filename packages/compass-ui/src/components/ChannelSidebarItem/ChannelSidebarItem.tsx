@@ -6,6 +6,7 @@ import ChartLineIcon from '@mattermost/compass-icons/components/chart-line';
 import CircleMultipleOutlineIcon from '@mattermost/compass-icons/components/circle-multiple-outline';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
+import type { ReactNode } from 'react';
 import DialpadIcon from '@/icons/DialpadIcon';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import MentionBadge from '@/components/MentionBadge/MentionBadge';
@@ -35,6 +36,8 @@ export interface ChannelSidebarItemProps {
   hideLeadingVisual?: boolean;
   /** Leading visual type. Default: Public. Ignored when `hideLeadingVisual`. */
   leadingVisual?: ChannelSidebarItemLeadingVisual;
+  /** Custom leading icon. When set, replaces the preset `leadingVisual` glyph. */
+  leadingIcon?: ReactNode;
   /** Read/unread/mention state. Default: Read. */
   status?: ChannelSidebarItemStatus;
   /** Highlighted as the currently active item. */
@@ -110,6 +113,7 @@ export default function ChannelSidebarItem({
   name,
   hideLeadingVisual = false,
   leadingVisual = 'Public',
+  leadingIcon,
   status = 'Read',
   active = false,
   muted = false,
@@ -124,11 +128,13 @@ export default function ChannelSidebarItem({
   onClick,
 }: ChannelSidebarItemProps) {
   const isDM = !hideLeadingVisual && leadingVisual === 'Direct Message';
-  const isDrafts = !hideLeadingVisual && leadingVisual === 'Drafts';
+  const isDrafts =
+    !hideLeadingVisual && leadingVisual === 'Drafts' && leadingIcon == null;
   const effectiveStatus = isDrafts && status === 'Unread' ? 'Read' : status;
   const hasMentionBadge = effectiveStatus === 'Mention';
   const isChannelOrDM =
     !hideLeadingVisual &&
+    leadingIcon == null &&
     ['Public', 'Private', 'Group Message', 'Direct Message'].includes(
       leadingVisual,
     );
@@ -173,13 +179,15 @@ export default function ChannelSidebarItem({
       <div className={styles['channel-sidebar-item__left']}>
         {!hideLeadingVisual && (
           <div className={iconContainerClass}>
-            <LeadingVisualContent
-              leadingVisual={leadingVisual}
-              memberCount={memberCount}
-              avatarSrc={avatarSrc}
-              avatarAlt={avatarAlt}
-              showAvatarStatus={showAvatarStatus}
-            />
+            {leadingIcon ?? (
+              <LeadingVisualContent
+                leadingVisual={leadingVisual}
+                memberCount={memberCount}
+                avatarSrc={avatarSrc}
+                avatarAlt={avatarAlt}
+                showAvatarStatus={showAvatarStatus}
+              />
+            )}
           </div>
         )}
         <div className={styles['channel-sidebar-item__content']}>

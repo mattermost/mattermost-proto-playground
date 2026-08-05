@@ -28,8 +28,12 @@ export default function AppRouter() {
 
         <Route path="/prototypes" element={<PrototypesIndex />} />
 
-        {PROTOTYPES.map(({ id, path, component: Component }) => (
-          <Route key={id} path={path} element={<Component />} />
+        {PROTOTYPES.map(({ id, path, component: Component, nested }) => (
+          <Route
+            key={id}
+            path={nested ? `${path}/*` : path}
+            element={<Component />}
+          />
         ))}
       </Route>
     </Routes>
