@@ -142,7 +142,7 @@
       opacity: 0.72;
     }
 
-    .mobile-channel-sidebar-item__mention-badge > :global(*) {
+    .mobile-channel-sidebar-item__mention-badge > * {
       background-color: transparent;
       color: var(--sidebar-text);
       padding-left: 0;

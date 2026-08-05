@@ -1,4 +1,6 @@
 .mobile-modal-navigation-bar {
+  $root: &;
+
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -84,11 +86,11 @@
   }
 
   &--subtitle {
-    .mobile-modal-navigation-bar__titles {
+    #{$root}__titles {
       padding-top: 0;
     }
 
-    .mobile-modal-navigation-bar__title {
+    #{$root}__title {
       width: 100%;
     }
   }

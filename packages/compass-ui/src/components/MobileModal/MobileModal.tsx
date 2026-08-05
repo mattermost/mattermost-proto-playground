@@ -57,7 +57,6 @@ export default function MobileModal({
     <div
       className={rootClass}
       role='dialog'
-      aria-modal='true'
       aria-label={title}
     >
       <div className={styles['mobile-modal__nav']}>

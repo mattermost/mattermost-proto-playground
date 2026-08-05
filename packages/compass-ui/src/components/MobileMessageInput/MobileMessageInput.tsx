@@ -168,18 +168,23 @@ export default function MobileMessageInput({
     .filter(Boolean)
     .join(' ');
 
-  const renderSendButton = (compact: boolean) => (
-    <button
-      type='button'
-      className={styles['mobile-message-input__send']}
-      aria-label='Send'
-      onClick={onSend}
-      tabIndex={hasText && (compact ? !showFocusedChrome : showFocusedChrome) ? undefined : -1}
-      aria-hidden={!hasText}
-    >
-      <Icon size='20' glyph={<SendIcon />} />
-    </button>
-  );
+  const renderSendButton = (compact: boolean) => {
+    const visible =
+      hasText && (compact ? !showFocusedChrome : showFocusedChrome);
+
+    return (
+      <button
+        type='button'
+        className={styles['mobile-message-input__send']}
+        aria-label='Send'
+        onClick={onSend}
+        tabIndex={visible ? undefined : -1}
+        aria-hidden={!visible}
+      >
+        <Icon size='20' glyph={<SendIcon />} />
+      </button>
+    );
+  };
 
   return (
     <div ref={rootRef} className={rootClass}>
@@ -229,7 +234,9 @@ export default function MobileMessageInput({
         <div
           className={[
             styles['mobile-message-input__trailing'],
-            hasText ? styles['mobile-message-input__trailing--visible'] : '',
+            hasText && !showFocusedChrome
+              ? styles['mobile-message-input__trailing--visible']
+              : '',
           ]
             .filter(Boolean)
             .join(' ')}
@@ -315,7 +322,9 @@ export default function MobileMessageInput({
             <div
               className={[
                 styles['mobile-message-input__primary'],
-                hasText ? styles['mobile-message-input__primary--visible'] : '',
+                hasText && showFocusedChrome
+                  ? styles['mobile-message-input__primary--visible']
+                  : '',
               ]
                 .filter(Boolean)
                 .join(' ')}

@@ -142,7 +142,7 @@
     }
   }
 
-  &--focused:not(.mobile-message-input--expanded) &__textarea {
+  &--focused:not(#{&}--expanded) &__textarea {
     max-height: calc(var(--line-height-200) * 4);
     overflow-y: auto;
   }

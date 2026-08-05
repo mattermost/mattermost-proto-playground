@@ -81,6 +81,7 @@ export default function MobileModalStage({
           .filter(Boolean)
           .join(' ')}
         aria-hidden={rendered}
+        inert={rendered}
       >
         {children}
       </div>
