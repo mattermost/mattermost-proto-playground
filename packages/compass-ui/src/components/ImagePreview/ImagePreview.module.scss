@@ -2,10 +2,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  max-width: 100%;
+  min-width: 0;
 
   &__stage {
     display: grid;
     align-items: start;
+    // Preferred preview width; max-width lets it shrink inside messages
+    width: 428px;
+    max-width: 100%;
 
     > * {
       grid-area: 1 / 1;
@@ -17,12 +22,13 @@
   // ---------------------------------------------------------------------------
   &__frame {
     position: relative;
+    box-sizing: border-box;
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     border-radius: var(--radius-s);
     overflow: hidden;
-    // Default 16:9 at a common preview width
-    width: 428px;
-    height: 240px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
     opacity: 0;
     transform: scale(0.98);
     transform-origin: top left;
@@ -49,6 +55,7 @@
 
     &:not(&--visible) {
       height: 0;
+      aspect-ratio: unset;
       border-color: transparent;
       box-shadow: none;
     }
@@ -68,16 +75,22 @@
   }
 
   &--ratio-4-3 {
-    .image-preview__frame {
+    .image-preview__stage {
       width: 320px;
-      height: 240px;
+    }
+
+    .image-preview__frame {
+      aspect-ratio: 4 / 3;
     }
   }
 
   &--ratio-1-1 {
-    .image-preview__frame {
+    .image-preview__stage {
       width: 240px;
-      height: 240px;
+    }
+
+    .image-preview__frame {
+      aspect-ratio: 1 / 1;
     }
   }
 
