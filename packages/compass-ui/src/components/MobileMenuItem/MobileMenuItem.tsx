@@ -8,8 +8,8 @@ import styles from './MobileMenuItem.module.scss';
 
 export interface MobileMenuItemProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Primary label text. */
-  label: string;
+  /** Primary label text (string or rich content, e.g. bold modifiers). */
+  label: ReactNode;
   /** Optional secondary label. */
   secondaryLabel?: ReactNode;
   /**

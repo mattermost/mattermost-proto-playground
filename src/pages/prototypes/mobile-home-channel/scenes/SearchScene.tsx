@@ -1,26 +1,56 @@
 import {useState} from 'react';
-import {EmptyState, MobileSearch} from '@mattermost/compass-ui';
-import MessageSearchEmptyIllustration from '@/assets/illustrations/message-search-empty.svg?react';
+import {
+  MobileSearch,
+  MobileSearchSuggestions,
+  Scrollbar,
+} from '@mattermost/compass-ui';
 
 export default function SearchScene() {
   const [query, setQuery] = useState('');
 
   return (
     <MobileSearch value={query} onChange={setQuery}>
-      <EmptyState
-        illustration={{
-          'aria-label': 'Search',
-          width: '120px',
-          height: '80px',
-          children: <MessageSearchEmptyIllustration />,
-        }}
-        title={query.trim() ? 'No results found' : 'Search messages'}
-        description={
-          query.trim()
-            ? 'Try adjusting your search or filters to find what you’re looking for.'
-            : 'Find messages, files, and people across your teams.'
-        }
-      />
+      <Scrollbar>
+        <MobileSearchSuggestions
+          options={[
+            {
+              id: 'from',
+              modifier: 'From:',
+              description: ' a specific user',
+              onClick: () => setQuery((prev) => `${prev}from:`.trimStart()),
+            },
+            {
+              id: 'in',
+              modifier: 'In:',
+              description: ' a specific channel',
+              onClick: () => setQuery((prev) => `${prev}in:`.trimStart()),
+            },
+            {
+              id: 'on',
+              modifier: 'On:',
+              description: ' a specific date',
+              onClick: () => setQuery((prev) => `${prev}on:`.trimStart()),
+            },
+          ]}
+          recent={[
+            {
+              id: '1',
+              query: 'Welcome in:town-square',
+              onSelect: () => setQuery('Welcome in:town-square'),
+            },
+            {
+              id: '2',
+              query: 'Figma',
+              onSelect: () => setQuery('Figma'),
+            },
+            {
+              id: '3',
+              query: 'RC Test from:amy.blais',
+              onSelect: () => setQuery('RC Test from:amy.blais'),
+            },
+          ]}
+        />
+      </Scrollbar>
     </MobileSearch>
   );
 }

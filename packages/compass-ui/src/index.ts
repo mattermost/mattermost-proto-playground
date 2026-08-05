@@ -52,6 +52,7 @@ export * from './components/MobileTeamSidebar/index';
 export * from './components/MobileHome/index';
 export * from './components/MobileSearch/index';
 export * from './components/MobileSearchField/index';
+export * from './components/MobileSearchSuggestions/index';
 export * from './components/MobileMentions/index';
 export * from './components/MobileSavedMessages/index';
 export * from './components/MobileProfile/index';

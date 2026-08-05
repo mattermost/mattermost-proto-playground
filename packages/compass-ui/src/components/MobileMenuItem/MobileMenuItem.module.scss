@@ -103,7 +103,10 @@
     line-height: var(--line-height-200);
     font-weight: var(--font-weight-regular);
     white-space: nowrap;
-    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   &__secondary-label-inline {
