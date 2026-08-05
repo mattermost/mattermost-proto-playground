@@ -1,0 +1,8 @@
+.mobile-modal-navigation-bar-anatomy {
+  &__frame {
+    width: 100%;
+    max-width: 414px;
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+  }
+}

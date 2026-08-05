@@ -1,0 +1,39 @@
+import {MobileTabBar} from '@mattermost/compass-ui';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+
+The Mobile Tab Bar is the primary bottom navigation on Mobile Home. Five
+destinations — Home, Search, Mentions, Saved, and Profile — sit on a light
+surface with a top shadow and bottom safe-area padding for the home indicator.
+
+There is no desktop sibling; pair it with
+[Mobile Team Sidebar](/patterns/mobile-team-sidebar) and
+[Mobile Channel Sidebar](/patterns/mobile-channel-sidebar) in
+[Mobile Home](/layouts/mobile-home).
+
+Use the Specimen tab for active states.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Tab row** — Five equal slots with icon (or avatar) and a small
+  caption label.
+- <Num>2</Num> **Active indicator** — Short bar at the top of the selected tab;
+  icon and label use button-bg.
+- <Num>3</Num> **Mention badge** — Optional count on Mentions.
+- <Num>4</Num> **Safe area** — Bottom padding clears the home indicator.
+
+<AnatomyStage style={{maxWidth:'393px',margin:'0 auto',overflow:'hidden',borderRadius:'8px',boxShadow:'var(--elevation-2)'}}>
+  <MobileTabBar activeTab="home" profileSrc={avatarLeonard} profileAlt="Leonard Riley" mentionsBadge={3} />
+</AnatomyStage>
+
+<Divider />
+
+## Behavior
+
+Wire `activeTab` and `onTabChange` for local selection. Inactive icons use muted
+center-channel color; the active tab uses button-bg for both the indicator and
+icon. Profile uses a `UserAvatar` with status.
+
+Channel navigation stays in the channel list above — tab changes here are home
+chrome only until product routing is wired.

@@ -1,0 +1,26 @@
+The Mobile Profile layout is the Profile tab destination on phones — large
+avatar, display name, and handle above a white rounded content sheet. System
+chrome belongs to the device frame; pair with the
+[Mobile Tab Bar](/patterns/mobile-tab-bar) for the full tab shell.
+
+Use the Specimen tab for the live composition.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Avatar** — 120px user avatar with optional status.
+- <Num>2</Num> **Display name** — Large title in the sidebar-colored top
+  region.
+- <Num>3</Num> **Handle** — Username line under the display name.
+- <Num>4</Num> **Content sheet** — Center-channel surface with rounded top
+  corners for settings rows or other profile content.
+
+<Divider />
+
+## Behavior
+
+Keep the profile header fixed while sheet content scrolls. Compose
+`MobileMenuItem` rows as children of `MobileProfile` — typically Online,
+custom status, Your Profile, Settings, and Log out (with a secondary server
+label), separated into groups with hairline dividers.

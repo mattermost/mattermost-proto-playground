@@ -1,0 +1,29 @@
+.mobile-modal-anatomy {
+  &__frame {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 414px;
+    height: 100%;
+    min-height: 360px;
+    margin: 0 auto;
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+  }
+
+  &__slot {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    padding: var(--spacing-xxl);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    text-align: center;
+    box-sizing: border-box;
+  }
+}

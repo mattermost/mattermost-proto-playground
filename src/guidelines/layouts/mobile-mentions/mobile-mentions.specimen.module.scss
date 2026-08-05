@@ -1,0 +1,26 @@
+.mobile-mentions-layout {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+  padding: var(--spacing-xxxl);
+  box-sizing: border-box;
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+  &__shell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background-color: var(--sidebar-bg);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--spacing-m);
+    box-sizing: border-box;
+  }
+}

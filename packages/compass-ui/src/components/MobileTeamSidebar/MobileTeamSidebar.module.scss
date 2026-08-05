@@ -1,0 +1,69 @@
+.mobile-team-sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  width: 72px;
+  height: 100%;
+  box-sizing: border-box;
+
+  &__servers {
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+    // Figma Servers: pt 8 / pb 12 / px 16
+    padding: var(--spacing-xs) var(--spacing-l) var(--spacing-m);
+  }
+
+  &__servers-button {
+    border-radius: var(--radius-m);
+  }
+
+  &__teams-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-height: 0;
+    padding: var(--spacing-m) var(--spacing-s);
+    box-sizing: border-box;
+    background-color: var(--sidebar-header-bg);
+    border-top-right-radius: var(--radius-l);
+    overflow: hidden;
+  }
+
+  &__teams {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__team {
+    position: relative;
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-m);
+    -webkit-tap-highlight-color: transparent;
+
+    &:focus-visible {
+      outline: 2px solid var(--sidebar-text-active-border);
+      outline-offset: 2px;
+    }
+  }
+
+  &__unread {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    z-index: 2;
+    box-shadow: 0 0 0 2px var(--sidebar-header-bg, #192a4d);
+  }
+
+  &__add {
+    border-radius: var(--radius-m);
+  }
+}

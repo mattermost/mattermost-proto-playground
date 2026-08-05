@@ -1,0 +1,51 @@
+The Mobile Navigation Bar is the iOS conversation chrome at the top of a channel,
+DM, GM, or bot screen. It sits on the sidebar surface under the system status
+area and keeps back, title, and primary actions in a fixed three-column layout.
+
+Use the Specimen tab for live variants.
+
+<Divider />
+
+## Anatomy
+
+The Mobile Navigation Bar brings together the following elements, ordered from
+back navigation on the left through primary actions on the right.
+
+<MobileNavigationBarAnatomyStage />
+
+- <Num>1</Num> **Back** — Returns to the previous screen (channels list or prior
+  route).
+- <Num>2</Num> **Mention badge** — Optional count beside back when the user has
+  unread mentions elsewhere.
+- <Num>3</Num> **Title** — Channel name, person name, participant list, or bot
+  name. Truncates with an ellipsis when long.
+- <Num>4</Num> **Subtitle** — Secondary affordance under the title (member count,
+  View info, or custom status). Usually includes a trailing chevron when it
+  opens info.
+- <Num>5</Num> **Search** — Opens search in the current conversation.
+- <Num>6</Num> **More** — Overflow menu for additional channel or conversation
+  actions.
+
+<Divider />
+
+## Variants
+
+The chrome is the same for every conversation type. Only the title and subtitle
+change:
+
+| Variant | Title | Subtitle |
+| --- | --- | --- |
+| Channel | Channel name | Member count with chevron |
+| GM | Participant names | Member count with chevron |
+| DM | Display name | View info with chevron |
+| Bot | Bot name | View info with chevron |
+| DM with custom status | Display name | Emoji and status text (no chevron) |
+
+<Divider />
+
+## Behavior
+
+Keep the bar fixed while conversation content scrolls beneath it. The bar
+includes the status-bar spacer so sidebar color continues under the system
+status UI. Prefer Large touch targets on the icon buttons; do not mix desktop
+Channel Header controls into this pattern.

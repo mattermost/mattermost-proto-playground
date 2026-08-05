@@ -1,0 +1,44 @@
+The Mobile Modal is the nearly full-height iOS sheet for focused tasks such as
+Settings. It pairs the
+[Mobile Modal Navigation Bar](/patterns/mobile-modal-navigation-bar) with a
+scrollable content slot for any body — menu lists, forms, or custom layouts.
+
+This is distinct from the [Mobile Bottom Sheet](/patterns/mobile-bottom-sheet),
+which is a shorter card with a drag handle for secondary actions.
+
+Use the Specimen tab for a Settings example and a Child screen. For the full
+device composition over a previous view, see the
+[Mobile Modal](/layouts/mobile-modal) layout.
+
+<Divider />
+
+## Anatomy
+
+The modal is composed of the following parts.
+
+<MobileModalAnatomyStage />
+
+- <Num>1</Num> **Modal Top Nav Bar** — Close (Parent) or Back (Child), title,
+  optional subtitle or avatar, and optional trailing actions.
+- <Num>2</Num> **Content slot** — Flexible body region. Scrolls independently
+  under the fixed nav. Compose with [Mobile Menu Items](/components/mobile-menu-item)
+  or any other content.
+
+<Divider />
+
+## Behavior
+
+Keep the nav fixed while the body scrolls. Prefer Parent for the root modal and
+Child when pushing nested screens inside the same sheet.
+
+Backdrop, status-bar inset, and previous-view presentation are handled by
+playground `MobileModalStage` — this pattern owns the sheet chrome and body
+slot. The Specimen tab uses that stage for reference.
+
+<Divider />
+
+## Content
+
+The body is intentionally unopinionated. Settings UIs typically use grouped
+Mobile Menu Items; other flows can place forms, lists, or custom blocks in the
+same slot.

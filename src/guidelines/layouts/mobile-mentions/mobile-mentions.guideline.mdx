@@ -1,0 +1,24 @@
+The Mobile Mentions layout is the Mentions tab destination on phones —
+“Recent mentions” with a short subtitle above a white rounded content sheet.
+System chrome belongs to the device frame; pair with the
+[Mobile Tab Bar](/patterns/mobile-tab-bar) for the full tab shell.
+
+Use the Specimen tab for the live composition.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Large title** — “Recent mentions” in the sidebar-colored top
+  region.
+- <Num>2</Num> **Subtitle** — Explains that the list is messages the user was
+  mentioned in.
+- <Num>3</Num> **Content sheet** — Center-channel surface with rounded top
+  corners for the mention list or empty state.
+
+<Divider />
+
+## Behavior
+
+Keep the title block fixed while sheet content scrolls. Compose
+`MobileMessage` rows (or `EmptyState`) as children of `MobileMentions`.

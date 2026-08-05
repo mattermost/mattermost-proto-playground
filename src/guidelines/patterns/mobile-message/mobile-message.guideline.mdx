@@ -1,0 +1,46 @@
+The Mobile Message is a single post in an iOS channel or thread. It uses Body
+200 for reading text, keeps the author header always visible, and does not rely
+on hover to reveal actions.
+
+Use the Specimen tab for live examples. Prefer the desktop
+[Message](/patterns/message) pattern on web and desktop layouts.
+
+<Divider />
+
+## Anatomy
+
+The Mobile Message brings together the following elements.
+
+<MobileMessageAnatomyStage />
+
+- <Num>1</Num> **Pinned & Saved Indicators** — Pin and bookmark labels when the
+  post is pinned or saved.
+- <Num>2</Num> **Channel indicator** — Optional
+  [Channel Info Message Header](/components/channel-info-msg-header) with the
+  source channel and team (when multiple teams). Used in Mentions and Saved.
+- <Num>3</Num> **Avatar** — Author photo or initials via
+  [User Avatar](/components/user-avatar).
+- <Num>4</Num> **Header** — Author name (Body 200 semibold), optional bot tag,
+  and timestamp.
+- <Num>5</Num> **Message text** — Primary body copy at Body 200; supports Markdown
+  in product.
+- <Num>6</Num> **Link Preview** — Unfurled link from the text. See
+  [Link Preview](/components/link-preview).
+- <Num>7</Num> **Images** — Image thumbnails for media in the post. See
+  [Image Preview](/components/image-preview).
+- <Num>8</Num> **Attachments & reactions** — File cards and emoji reactions in the
+  footer slot.
+
+In the component, **Link Preview** and **image previews** map to optional
+`linkPreview` and `imagePreviews` props. Use `children` for the main text, then
+those slots, and `footer` for attachments, reactions, or other trailing content.
+
+<Divider />
+
+## Behavior
+
+On tap/press, tint the message surface with button-bg at 8% opacity over the
+center-channel background. There is no hover Message Actions toolbar — touch
+actions (long-press, overflow) can be added later without changing the default
+resting state. Keep Body 200 for primary reading text; do not mix desktop
+Message typography or hover chrome into this pattern.

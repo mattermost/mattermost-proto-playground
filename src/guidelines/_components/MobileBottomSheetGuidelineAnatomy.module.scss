@@ -1,0 +1,14 @@
+.mobile-bottom-sheet-anatomy {
+  &__frame {
+    position: relative;
+    width: 100%;
+    max-width: 414px;
+    height: 520px;
+    overflow: hidden;
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__footer-btn {
+    width: 100%;
+  }
+}

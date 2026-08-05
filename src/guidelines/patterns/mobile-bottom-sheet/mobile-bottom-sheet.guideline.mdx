@@ -1,0 +1,51 @@
+The Mobile Bottom Sheet is the standard iOS sheet that slides up over channel
+content for secondary actions and choices. It carries an optional header, a
+scrollable body (usually [Mobile Menu Items](/components/mobile-menu-item)),
+and an optional footer with a primary [Button](/components/button).
+
+Use the Specimen tab for full, simple, and interactive examples.
+
+<Divider />
+
+## Anatomy
+
+The sheet is composed of the following parts.
+
+<MobileBottomSheetAnatomyStage />
+
+- <Num>1</Num> **Backdrop** — Dims content behind the sheet; tap dismisses.
+- <Num>2</Num> **Drag handle** — Visual affordance above the card (gesture
+  dismiss is not required in this pattern yet).
+- <Num>3</Num> **Card** — Rounded top corners, channel background, border, and
+  elevation; respects the home-indicator safe area.
+- <Num>4</Num> **Header** — Optional leading visual (for example a team avatar),
+  title, and subtitle.
+- <Num>5</Num> **Body** — Slot for actions or content; typically Mobile Menu
+  Items.
+- <Num>6</Num> **Footer** — Optional region below a hairline, often a full-width
+  primary Button.
+
+<Divider />
+
+## Behavior
+
+Open with `open`; close via backdrop tap, Escape, or an explicit control that
+calls `onClose`. The sheet slides up on entrance and down on exit. Prefer one
+primary footer action when a footer is present.
+
+Compose body rows with Mobile Menu Item — do not use desktop Menu Item sizing
+inside the sheet.
+
+<Divider />
+
+## Variants
+
+### Full standard
+
+Leading visual, title, subtitle, menu body, and primary footer — matches the
+standards reference sheet.
+
+### Title + body
+
+Title and menu rows only when no avatar or footer is needed (for example a
+short action list).
