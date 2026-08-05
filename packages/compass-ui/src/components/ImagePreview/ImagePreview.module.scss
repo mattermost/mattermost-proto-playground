@@ -8,6 +8,8 @@
   &__stage {
     display: grid;
     align-items: start;
+    container-type: inline-size;
+
     // Preferred preview width; max-width lets it shrink inside messages
     width: 428px;
     max-width: 100%;
@@ -27,8 +29,7 @@
     border-radius: var(--radius-s);
     overflow: hidden;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    height: auto;
+    height: 0;
     opacity: 0;
     transform: scale(0.98);
     transform-origin: top left;
@@ -41,6 +42,7 @@
       box-shadow var(--duration-quick) var(--ease-exit);
 
     &--visible {
+      height: 56.25cqw; // 16:9
       opacity: 1;
       transform: scale(1);
       pointer-events: auto;
@@ -54,8 +56,6 @@
     }
 
     &:not(&--visible) {
-      height: 0;
-      aspect-ratio: unset;
       border-color: transparent;
       box-shadow: none;
     }
@@ -79,8 +79,8 @@
       width: 320px;
     }
 
-    .image-preview__frame {
-      aspect-ratio: 4 / 3;
+    .image-preview__frame--visible {
+      height: 75cqw; // 4:3
     }
   }
 
@@ -89,8 +89,8 @@
       width: 240px;
     }
 
-    .image-preview__frame {
-      aspect-ratio: 1 / 1;
+    .image-preview__frame--visible {
+      height: 100cqw; // 1:1
     }
   }
 
