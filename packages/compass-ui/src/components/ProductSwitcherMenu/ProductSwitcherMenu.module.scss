@@ -1,0 +1,19 @@
+.product-switcher-menu {
+  &__product-item {
+    color: var(--center-channel-color);
+
+    :global([class*='menu-item__label']) {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    :global([class*='menu-item__leading-visual']) {
+      color: var(--button-bg);
+    }
+  }
+
+  // Cancel MenuItem leading-visual padding so 24px product icons match Figma slot width
+  &__product-icon {
+    display: inline-flex;
+    margin: calc(-1 * var(--spacing-xxxs));
+  }
+}
