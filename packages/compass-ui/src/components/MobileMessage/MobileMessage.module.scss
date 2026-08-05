@@ -17,6 +17,20 @@
     );
   }
 
+  &__channel {
+    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+    margin: 0 calc(var(--spacing-l) * -1);
+  }
+
+  &__channel-header {
+    width: 100%;
+    padding-left: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
+    box-sizing: border-box;
+  }
+
   &__pinned {
     flex-shrink: 0;
     width: 100%;

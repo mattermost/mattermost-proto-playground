@@ -1,0 +1,33 @@
+The Mobile Modal layout is the nearly full-height iOS sheet presented over a
+channel (or other) screen on phones. An iPhone device frame holds the previous
+view as a scaled peek, with the [Mobile Modal](/patterns/mobile-modal) sheet
+sliding up above it. System chrome belongs to the device frame.
+
+Use the Specimen tab for the live layout.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Device frame** — The iPhone chrome that sets the phone-sized
+  canvas, including the status bar, Dynamic Island, side buttons, and home
+  indicator.
+- <Num>2</Num> **Previous view peek** — The screen behind the modal (often
+  [Mobile Channel](/layouts/mobile-channel)), scaled and faded so the sheet
+  reads as layered.
+- <Num>3</Num> **Mobile Modal** — Modal Top Nav Bar plus a scrollable content
+  slot. See [Mobile Modal](/patterns/mobile-modal) and
+  [Mobile Modal Navigation Bar](/patterns/mobile-modal-navigation-bar).
+
+<Divider />
+
+## Behavior
+
+Present the modal below the status bar so rounded top corners remain visible
+against the peek. Prefer Parent (Close) for the root sheet and Child (Back) for
+nested screens inside the same modal. Keep the nav fixed while modal body
+content scrolls. The bottom tab bar is not shown while a modal is open.
+
+Unlike the desktop [Modal](/layouts/modal) layout, Mobile Modal fills most of
+the phone height as a sheet rather than a centered dialog over a dimmed channel
+shell.

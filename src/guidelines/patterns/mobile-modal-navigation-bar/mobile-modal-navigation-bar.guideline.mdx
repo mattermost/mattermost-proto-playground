@@ -1,0 +1,52 @@
+The Mobile Modal Navigation Bar is the iOS chrome at the top of a modal sheet.
+It sits on the sidebar surface with rounded top corners and keeps close or back,
+title, and optional trailing actions in a fixed three-column layout.
+
+This is a sibling of the [Mobile Navigation Bar](/patterns/mobile-navigation-bar)
+used on conversation screens — do not reuse conversation variants for modal
+chrome.
+
+Use the Specimen tab for live variants.
+
+<Divider />
+
+## Anatomy
+
+The Mobile Modal Navigation Bar brings together the following elements, ordered
+from leading dismissal on the left through optional actions on the right.
+
+<MobileModalNavigationBarAnatomyStage />
+
+- <Num>1</Num> **Leading control** — Close on Parent modals, or Back on Child
+  screens pushed within a modal stack.
+- <Num>2</Num> **Title** — Modal heading. Truncates with an ellipsis when long.
+- <Num>3</Num> **Subtitle** — Optional secondary line under the title (for
+  example the channel or context name). When present, the title avatar is not
+  shown.
+- <Num>4</Num> **App avatar** — Optional 24px avatar before the title for
+  integration or app context. Use when there is no subtitle.
+- <Num>5</Num> **Text action** — Optional trailing label (for example Done or
+  Save).
+- <Num>6</Num> **Trailing icon** — Optional icon button (for example Send).
+
+<Divider />
+
+## Variants
+
+| Variant | Leading control | Typical use |
+| --- | --- | --- |
+| Parent | Close | Root modal presented over a channel or home |
+| Child | Back | Nested screen inside an open modal |
+
+Optional subtitle, title avatar (without subtitle), text action, and trailing
+icon can combine on either variant.
+
+<Divider />
+
+## Behavior
+
+Keep the bar fixed while modal content scrolls beneath it. Rounded top corners
+belong on this bar so the sheet reads as a card over the screen below. Prefer
+Large touch targets on icon buttons. Prefer the
+[Mobile Modal](/patterns/mobile-modal) shell when you need the nav plus a
+scrollable body slot.

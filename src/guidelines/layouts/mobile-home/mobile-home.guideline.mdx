@@ -3,9 +3,12 @@ team strip, channel list, and bottom tab bar inside an iPhone device frame.
 System chrome (status bar, Dynamic Island, home indicator) belongs to the
 device frame; sidebars and the tab bar pad their own safe areas.
 
-Use the Specimen tab for the live composition. Conversation view is covered by
-[Mobile Channel](/layouts/mobile-channel) — Home is where you pick a destination;
-Channel is the thread itself.
+Use the Specimen tab for the live composition. Other tab destinations are
+covered by [Mobile Search](/layouts/mobile-search),
+[Mobile Mentions](/layouts/mobile-mentions),
+[Mobile Saved](/layouts/mobile-saved), and
+[Mobile Profile](/layouts/mobile-profile). Conversation view is covered by
+[Mobile Channel](/layouts/mobile-channel).
 
 <Divider />
 
@@ -30,3 +33,6 @@ Keep the team strip and tab bar fixed while the channel list scrolls. Tab
 selection in this specimen is local UI state only — channel taps navigate to a
 separate conversation screen (Mobile Channel), so the list does not show a
 selected row. Prefer Large touch targets and Body 200 list labels throughout.
+
+Compose with the `MobileHome` layout component, passing team sidebar, channel
+sidebar, and tab bar slots.

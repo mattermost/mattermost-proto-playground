@@ -59,6 +59,8 @@ import { TeamSidebarAnatomyStage } from '@/guidelines/_components/TeamSidebarGui
 import { ChannelSidebarAnatomyStage } from '@/guidelines/_components/ChannelSidebarGuidelineAnatomy';
 import { AdminConsoleSidebarAnatomyStage } from '@/guidelines/_components/AdminConsoleSidebarGuidelineAnatomy';
 import { MobileNavigationBarAnatomyStage } from '@/guidelines/_components/MobileNavigationBarGuidelineAnatomy';
+import { MobileModalNavigationBarAnatomyStage } from '@/guidelines/_components/MobileModalNavigationBarGuidelineAnatomy';
+import { MobileModalAnatomyStage } from '@/guidelines/_components/MobileModalGuidelineAnatomy';
 import { MobileMessageInputAnatomyStage } from '@/guidelines/_components/MobileMessageInputGuidelineAnatomy';
 import { MobileMessageAnatomyStage } from '@/guidelines/_components/MobileMessageGuidelineAnatomy';
 import { MobileBottomSheetAnatomyStage } from '@/guidelines/_components/MobileBottomSheetGuidelineAnatomy';
@@ -126,6 +128,8 @@ const MDX_COMPONENTS = {
   ChannelSidebarAnatomyStage,
   AdminConsoleSidebarAnatomyStage,
   MobileNavigationBarAnatomyStage,
+  MobileModalNavigationBarAnatomyStage,
+  MobileModalAnatomyStage,
   MobileMessageInputAnatomyStage,
   MobileMessageAnatomyStage,
   MobileBottomSheetAnatomyStage,

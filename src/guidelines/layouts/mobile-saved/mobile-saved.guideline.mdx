@@ -1,0 +1,24 @@
+The Mobile Saved Messages layout is the Saved tab destination on phones —
+large title and subtitle above a white rounded content sheet. System chrome
+belongs to the device frame; pair with the
+[Mobile Tab Bar](/patterns/mobile-tab-bar) for the full tab shell.
+
+Use the Specimen tab for the live composition.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Large title** — “Saved messages” in the sidebar-colored top
+  region.
+- <Num>2</Num> **Subtitle** — Explains that items were saved for follow-up.
+- <Num>3</Num> **Content sheet** — Center-channel surface with rounded top
+  corners for the saved list or empty state.
+
+<Divider />
+
+## Behavior
+
+Keep the title block fixed while sheet content scrolls. Compose
+`MobileMessage` rows (without pinned/saved indicators — the screen context is
+already Saved) or `EmptyState` as children of `MobileSavedMessages`.

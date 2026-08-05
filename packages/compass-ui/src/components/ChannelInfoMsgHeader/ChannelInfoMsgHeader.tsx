@@ -10,24 +10,46 @@ export interface ChannelInfoMsgHeaderTab {
 }
 
 export interface ChannelInfoMsgHeaderProps {
-  /** Tab entries to display. */
+  /**
+   * Channel (or section) label — primary API for Mentions / Saved message
+   * indicators. Prefer this over `tabs` for a single channel chip.
+   */
+  channelName?: string;
+  /** Called when the channel label is pressed (`channelName` mode). */
+  onChannelClick?: () => void;
+  /**
+   * Multi-section tabs for channel info panels. Used when `channelName` is
+   * omitted.
+   */
   tabs?: ChannelInfoMsgHeaderTab[];
-  /** Team name shown after the tab divider. Omit to hide. */
+  /**
+   * Team name after the channel divider. Omit when the workspace has only one
+   * team or the team is already clear from context.
+   */
   teamName?: string;
   /** Optional CSS class name. */
   className?: string;
 }
 
 /**
- * Tab-style header bar within the channel info panel. Shows section labels
- * (e.g. "Spec Reviews") and an optional team name. Corresponds to Figma
- * Channel Info Message Header v1.0.1.
+ * Channel + optional team label bar. Used above messages in Mentions / Saved
+ * lists and as section tabs in the channel info panel.
+ *
+ * @see Figma Components — Channel Info Message Header
+ * @see https://www.figma.com/design/VLpUbaoHEh2GR3XekSqmI6/Components---Channel-Info-Message-Header?node-id=1215-615
  */
 export default function ChannelInfoMsgHeader({
-  tabs = [{ label: 'Spec Reviews', active: true }],
-  teamName = 'Contributors',
+  channelName,
+  onChannelClick,
+  tabs,
+  teamName,
   className = '',
 }: ChannelInfoMsgHeaderProps) {
+  const resolvedTabs: ChannelInfoMsgHeaderTab[] =
+    channelName != null && channelName !== ''
+      ? [{label: channelName, onClick: onChannelClick}]
+      : (tabs ?? [{label: 'Spec Reviews', active: true}]);
+
   const rootClass = [styles['channel-info-msg-header'], className]
     .filter(Boolean)
     .join(' ');
@@ -35,9 +57,9 @@ export default function ChannelInfoMsgHeader({
   return (
     <div className={rootClass}>
       <div className={styles['channel-info-msg-header__container']}>
-        {tabs.map((tab, index) => (
+        {resolvedTabs.map((tab, index) => (
           <div
-            key={index}
+            key={`${tab.label}-${index}`}
             className={[
               styles['channel-info-msg-header__tab-area'],
               tab.active
@@ -48,7 +70,7 @@ export default function ChannelInfoMsgHeader({
               .join(' ')}
           >
             <button
-              type="button"
+              type='button'
               className={[
                 styles['channel-info-msg-header__tab'],
                 tab.active
@@ -63,7 +85,7 @@ export default function ChannelInfoMsgHeader({
             </button>
           </div>
         ))}
-        {teamName != null && (
+        {teamName != null && teamName !== '' && (
           <div className={styles['channel-info-msg-header__team']}>
             <span className={styles['channel-info-msg-header__team-name']}>
               {teamName}

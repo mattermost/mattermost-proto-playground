@@ -485,6 +485,22 @@ export const TOPICS: Topic[] = [
       import('@/guidelines/components/mobile-menu-item/mobile-menu-item.specimen'),
   },
   {
+    slug: 'mobile-search-field',
+    name: 'Mobile Search Field',
+    category: 'components',
+    description:
+      'Sidebar-styled search control for phones — magnifier and input on translucent sidebar fill.',
+    status: 'beta',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/components/mobile-search-field/mobile-search-field.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import(
+        '@/guidelines/components/mobile-search-field/mobile-search-field.specimen'
+      ),
+  },
+  {
     slug: 'message-actions',
     name: 'Message Actions',
     category: 'components',
@@ -801,6 +817,34 @@ export const TOPICS: Topic[] = [
       import('@/guidelines/patterns/mobile-navigation-bar/mobile-navigation-bar.specimen'),
   },
   {
+    slug: 'mobile-modal-navigation-bar',
+    name: 'Mobile Modal Navigation Bar',
+    category: 'patterns',
+    description:
+      'iOS modal top bar with Parent close or Child back, title, optional subtitle, and trailing actions.',
+    status: 'beta',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/patterns/mobile-modal-navigation-bar/mobile-modal-navigation-bar.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import(
+        '@/guidelines/patterns/mobile-modal-navigation-bar/mobile-modal-navigation-bar.specimen'
+      ),
+  },
+  {
+    slug: 'mobile-modal',
+    name: 'Mobile Modal',
+    category: 'patterns',
+    description:
+      'Nearly full-height iOS modal sheet with Modal Top Nav Bar and a scrollable content slot.',
+    status: 'beta',
+    guidelinePage: () =>
+      import('@/guidelines/patterns/mobile-modal/mobile-modal.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/patterns/mobile-modal/mobile-modal.specimen'),
+  },
+  {
     slug: 'mobile-team-sidebar',
     name: 'Mobile Team Sidebar',
     category: 'patterns',
@@ -1094,6 +1138,60 @@ export const TOPICS: Topic[] = [
     fullBleedSpecimen: true,
   },
   {
+    slug: 'mobile-search',
+    name: 'Mobile Search',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone Search tab with large title, sidebar search field, and content sheet.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/mobile-search/mobile-search.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-search/mobile-search.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'mobile-mentions',
+    name: 'Mobile Mentions',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone Mentions tab with recent-mentions header and content sheet.',
+    guidelinePage: () =>
+      import(
+        '@/guidelines/layouts/mobile-mentions/mobile-mentions.guideline.mdx'
+      ),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-mentions/mobile-mentions.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'mobile-saved',
+    name: 'Mobile Saved',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone Saved tab with saved-messages header and content sheet.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/mobile-saved/mobile-saved.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-saved/mobile-saved.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'mobile-profile',
+    name: 'Mobile Profile',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone Profile tab with avatar header and settings content sheet.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/mobile-profile/mobile-profile.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-profile/mobile-profile.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
     slug: 'mobile-channel',
     name: 'Mobile Channel',
     category: 'layouts',
@@ -1104,6 +1202,19 @@ export const TOPICS: Topic[] = [
       import('@/guidelines/layouts/mobile-channel/mobile-channel.guideline.mdx'),
     specimenPage: () =>
       import('@/guidelines/layouts/mobile-channel/mobile-channel.specimen'),
+    fullBleedSpecimen: true,
+  },
+  {
+    slug: 'mobile-modal',
+    name: 'Mobile Modal',
+    category: 'layouts',
+    status: 'beta',
+    description:
+      'iPhone nearly full-height modal sheet over a scaled previous-view peek.',
+    guidelinePage: () =>
+      import('@/guidelines/layouts/mobile-modal/mobile-modal.guideline.mdx'),
+    specimenPage: () =>
+      import('@/guidelines/layouts/mobile-modal/mobile-modal.specimen'),
     fullBleedSpecimen: true,
   },
 ];

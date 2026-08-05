@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {
   MobileChannelsSidebar,
+  MobileHome,
   MobileTabBar,
   MobileTeamSidebar,
   type MobileTabBarTab,
@@ -24,8 +25,8 @@ export default function MobileHomeLibrary() {
   return (
     <div className={styles['mobile-home-layout']}>
       <DeviceFrame insetContent={false} statusBarStyle='light'>
-        <div className={styles['mobile-home-layout__shell']}>
-          <div className={styles['mobile-home-layout__body']}>
+        <MobileHome
+          teamSidebar={
             <MobileTeamSidebar
               activeTeamId={activeTeamId}
               onSelectTeam={setActiveTeamId}
@@ -43,6 +44,8 @@ export default function MobileHomeLibrary() {
                 },
               ]}
             />
+          }
+          channelsSidebar={
             <MobileChannelsSidebar
               teamName={
                 activeTeamId === 'design' ? 'Design' : 'Contributors'
@@ -57,15 +60,17 @@ export default function MobileHomeLibrary() {
               avatarEmmaNovak={avatarEmmaNovak}
               avatarEthanBrooks={avatarEthanBrooks}
             />
-          </div>
-          <MobileTabBar
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            profileSrc={avatarLeonard}
-            profileAlt='Leonard Riley'
-            mentionsBadge={2}
-          />
-        </div>
+          }
+          tabBar={
+            <MobileTabBar
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              profileSrc={avatarLeonard}
+              profileAlt='Leonard Riley'
+              mentionsBadge={2}
+            />
+          }
+        />
       </DeviceFrame>
     </div>
   );

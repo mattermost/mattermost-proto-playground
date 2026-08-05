@@ -8,21 +8,4 @@
   padding: var(--spacing-xxxl);
   box-sizing: border-box;
   background-color: rgba(var(--center-channel-color-rgb), 0.04);
-
-  &__shell {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    padding-top: var(--device-status-bar-height, 54px);
-    background-color: var(--sidebar-bg);
-    box-sizing: border-box;
-  }
-
-  &__body {
-    display: flex;
-    flex: 1 1 auto;
-    min-height: 0;
-    min-width: 0;
-  }
 }

@@ -103,6 +103,7 @@ export default function MobileTabBar({
               <span className={styles['mobile-tab-bar__icon']}>
                 {tab.icon}
                 {tab.id === 'mentions' &&
+                  !active &&
                   mentionsBadge != null &&
                   mentionsBadge > 0 && (
                     <span className={styles['mobile-tab-bar__badge']}>

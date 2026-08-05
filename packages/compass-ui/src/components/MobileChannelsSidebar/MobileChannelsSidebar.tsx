@@ -1,8 +1,8 @@
 import {useMemo, type ReactNode} from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import MobileChannelSidebarItem from '@/components/MobileChannelSidebarItem/MobileChannelSidebarItem';
+import MobileSearchField from '@/components/MobileSearchField/MobileSearchField';
 import IconButton from '@/components/IconButton/IconButton';
 import Icon from '@/components/Icon/Icon';
 import Scrollbar from '@/components/Scrollbar/Scrollbar';
@@ -41,6 +41,12 @@ export interface MobileChannelsSidebarProps {
   showUnreadsCategory?: boolean;
   channelNameOverrides?: Record<string, string>;
   onItemClick?: (name: string) => void;
+  /** Controlled value for the Find channels field. */
+  findChannelsValue?: string;
+  /** Called when the Find channels field changes. */
+  onFindChannelsChange?: (value: string) => void;
+  /** Find channels placeholder. Default: Find channels…. */
+  findChannelsPlaceholder?: string;
   avatarAikoTan?: string;
   avatarArjunPatel?: string;
   avatarDanielOkoro?: string;
@@ -64,6 +70,9 @@ export default function MobileChannelsSidebar({
   showUnreadsCategory = true,
   channelNameOverrides,
   onItemClick,
+  findChannelsValue = '',
+  onFindChannelsChange,
+  findChannelsPlaceholder = 'Find channels…',
   avatarAikoTan = '',
   avatarArjunPatel = '',
   avatarDanielOkoro = '',
@@ -145,16 +154,12 @@ export default function MobileChannelsSidebar({
       </div>
 
       <div className={styles['mobile-channels-sidebar__navigator']}>
-        <div className={styles['mobile-channels-sidebar__find-channels']}>
-          <span className={styles['mobile-channels-sidebar__find-channels-icon']}>
-            <MagnifyIcon size={20} />
-          </span>
-          <span
-            className={styles['mobile-channels-sidebar__find-channels-label']}
-          >
-            Find channels…
-          </span>
-        </div>
+        <MobileSearchField
+          value={findChannelsValue}
+          placeholder={findChannelsPlaceholder}
+          aria-label='Find channels'
+          onChange={(event) => onFindChannelsChange?.(event.target.value)}
+        />
       </div>
 
       <div className={styles['mobile-channels-sidebar__top-group']}>

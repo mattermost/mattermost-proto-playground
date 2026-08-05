@@ -23,7 +23,8 @@
   }
 
   &__frame {
-    overflow: hidden;
+    // Keep overflow visible so the tab bar’s upward cast shadow isn’t clipped
+    overflow: visible;
     border-radius: var(--radius-m);
     box-shadow: var(--elevation-2);
     // Specimens outside DeviceFrame still need a bottom inset for the home area

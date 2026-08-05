@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react';
+import ChannelInfoMsgHeader from '@/components/ChannelInfoMsgHeader/ChannelInfoMsgHeader';
 import Tag from '@/components/Tag/Tag';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import PinnedSavedIndicators from '@/components/PinnedSavedIndicators/PinnedSavedIndicators';
@@ -13,6 +14,18 @@ export interface MobileMessageProps {
   botLabel?: string;
   /** When true, Pinned + Saved row appears at the top of the message container. */
   showPinnedSavedIndicators?: boolean;
+  /**
+   * Channel name shown in a Channel Info Message Header above the post —
+   * used in Mentions / Saved lists.
+   */
+  channelName?: string;
+  /**
+   * Optional team name after the channel divider. Omit when the workspace has
+   * only one team or the team is already clear from context.
+   */
+  teamName?: string;
+  /** Called when the channel label is pressed. */
+  onChannelClick?: () => void;
   /** Merged onto the root element (e.g. documentation modifiers). */
   className?: string;
   /**
@@ -37,6 +50,9 @@ export default function MobileMessage({
   isBot = false,
   botLabel = 'Bot',
   showPinnedSavedIndicators = false,
+  channelName,
+  teamName,
+  onChannelClick,
   className = '',
   children,
   linkPreview,
@@ -47,6 +63,16 @@ export default function MobileMessage({
 
   return (
     <div className={rootClass}>
+      {channelName != null && channelName !== '' && (
+        <div className={styles['mobile-message__channel']}>
+          <ChannelInfoMsgHeader
+            className={styles['mobile-message__channel-header']}
+            channelName={channelName}
+            teamName={teamName}
+            onChannelClick={onChannelClick}
+          />
+        </div>
+      )}
       {showPinnedSavedIndicators && (
         <div className={styles['mobile-message__pinned']}>
           <PinnedSavedIndicators />

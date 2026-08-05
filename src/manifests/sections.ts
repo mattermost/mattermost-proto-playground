@@ -144,7 +144,11 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Mobile',
-      slugs: ['mobile-channel-sidebar-item', 'mobile-menu-item'],
+      slugs: [
+        'mobile-channel-sidebar-item',
+        'mobile-menu-item',
+        'mobile-search-field',
+      ],
     },
     {
       label: 'Navigation',
@@ -168,6 +172,8 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       label: 'Mobile',
       slugs: [
         'mobile-navigation-bar',
+        'mobile-modal-navigation-bar',
+        'mobile-modal',
         'mobile-team-sidebar',
         'mobile-channel-sidebar',
         'mobile-tab-bar',
@@ -184,7 +190,28 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
   layouts: [
     {
       label: 'Mobile',
-      slugs: ['mobile-home', 'mobile-channel'],
+      slugs: [
+        'mobile-home',
+        'mobile-search',
+        'mobile-mentions',
+        'mobile-saved',
+        'mobile-profile',
+        'mobile-channel',
+        'mobile-modal',
+      ],
+    },
+    {
+      label: 'Webapp',
+      slugs: [
+        'channel',
+        'channel-thread',
+        'channel-info',
+        'modal',
+        'threads-view',
+        'call-widget',
+        'call-popout',
+        'admin-console',
+      ],
     },
   ],
 };
