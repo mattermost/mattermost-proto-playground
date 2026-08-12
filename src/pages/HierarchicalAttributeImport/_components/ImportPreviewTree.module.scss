@@ -1,0 +1,36 @@
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+}
+
+.removed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-danger);
+  }
+
+  &__row {
+    text-decoration: line-through;
+    text-decoration-color: rgba(var(--color-danger-rgb), 0.48);
+  }
+
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    color: var(--color-danger);
+  }
+
+  &__label {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}

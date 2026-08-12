@@ -54,7 +54,7 @@ import {
   type ReqValue,
 } from '@/pages/GlobalMembershipPolicy/gmpData';
 import {
-  GMP_ROUTES,
+  GMP_SIMPLIFIED_ROUTES,
   GMP_SIDEBAR_CATEGORIES,
 } from '@/pages/GlobalMembershipPolicy/gmpConsole';
 
@@ -196,7 +196,7 @@ export default function GlobalMembershipPolicySimplified() {
   const removeManualChannel = (id: string) =>
     setManualChannels((prev) => prev.filter((c) => c.id !== id));
 
-  const goToList = () => navigate(GMP_ROUTES.list);
+  const goToList = () => navigate(GMP_SIMPLIFIED_ROUTES.list);
 
   const handleSidebarClick = (itemId: string) => {
     setActive(itemId);
@@ -541,6 +541,7 @@ function RequirementRow({
       <div className={styles['gmp__req-cell']}>
         <SimplifiedValuePicker
           userAttrId={req.userAttrId}
+          attrKind={kind}
           literalKey={req.userAttrId}
           value={req.value}
           multi={multi}

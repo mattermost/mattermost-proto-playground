@@ -5,7 +5,7 @@ import ConsolePageHeader from '@/components/ui/ConsolePageHeader/ConsolePageHead
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import AdminPanelFooter from '@/components/ui/AdminPanelFooter/AdminPanelFooter';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import MvpConnectionPill from './_components/MvpConnectionPill';
+import MvpPluginStatusPill from './_components/MvpPluginStatusPill';
 import GuardrailDialog, {
   type GuardrailContext,
   type GuardrailKind,
@@ -32,12 +32,20 @@ import MvpMarkingsPage from './_components/MvpMarkingsPage';
 import MvpCatalogListing, {
   READONLY_ATTR_ID,
 } from './_components/MvpCatalogListing';
-import { MVP_RESOURCES } from './_components/mvpModel';
-import { connectionStatus } from './_components/mvpTerms';
+import {
+  MVP_RESOURCES,
+  attributeMissingRequiredDefault,
+} from './_components/mvpModel';
+import { pluginStatus } from './_components/mvpTerms';
 import WalkthroughFocusProvider from '@/components/walkthrough/WalkthroughFocusProvider';
 import styles from './AttributeHubMVPNext.module.scss';
 
-type GuardrailState = { kind: GuardrailKind; context: GuardrailContext } | null;
+type GuardrailState = {
+  kind: GuardrailKind;
+  context: GuardrailContext;
+  /** Deferred mutation applied on confirm (self-edit-warning is non-blocking). */
+  pendingChange?: { resource: ResourceKind; next: Partial<ResourceConfig> };
+} | null;
 
 function subtitle(a: HubAttribute): string {
   const resources = a.appliesTo
@@ -133,6 +141,14 @@ function initialEditorState(
 export default function AttributeHubMVPNext() {
   const params = readParams();
   const allowedOn = params.get('allowed') === 'on';
+  /**
+   * Walkthrough demo affordance — no seed attribute is simultaneously
+   * Users-applied, manually managed, AND policy-bound, so there is no
+   * naturally-qualifying row to demo the self-edit warning against. This
+   * param forces the "policy-bound" condition below for `?guardrail=self-edit`
+   * deep links; the real gate is `usedByPolicies > 0` (see §4.3 of the spec).
+   */
+  const guardrailDemo = params.get('guardrail') === 'self-edit';
 
   const [attributes, setAttributes] = useState<HubAttribute[]>(HUB_ATTRIBUTES);
   const initialEditor = initialEditorState(params, HUB_ATTRIBUTES);
@@ -166,16 +182,46 @@ export default function AttributeHubMVPNext() {
 
   const displayNameRef = useRef<HTMLInputElement | null>(null);
   const creating = draft !== null && selectedId === null;
+  const guardrailDemoTriggered = useRef(false);
 
   useEffect(() => {
     if (creating) displayNameRef.current?.focus();
   }, [creating]);
 
+  /** Walkthrough deep link — pre-opens the self-edit warning (see `guardrailDemo`). */
+  useEffect(() => {
+    if (guardrailDemoTriggered.current || !guardrailDemo || !draft) {
+      return;
+    }
+    const usersCfg = draft.appliesTo.find((c) => c.resource === 'Users');
+    if (!usersCfg || usersCfg.whoCanSet.relationalDefault === 'Members') {
+      return;
+    }
+    guardrailDemoTriggered.current = true;
+    setGuardrail({
+      kind: 'self-edit-warning',
+      context: {
+        attributeName: attributeLabel(draft),
+        policies:
+          draft.usedByPolicies > 0
+            ? draft.policyNames
+            : ['Program-AURORA access', 'Duty roster clearance gate'],
+      },
+      pendingChange: {
+        resource: 'Users',
+        next: {
+          whoCanSet: { relationalDefault: 'Members', grants: usersCfg.whoCanSet.grants },
+        },
+      },
+    });
+  }, [draft, guardrailDemo]);
+
   const dirty =
     draft != null && snapshotAttribute(draft) !== savedSnapshot;
   const saveEnabled =
     draft != null &&
-    (draft.displayName?.trim().length ?? 0) + draft.name.trim().length > 0;
+    (draft.displayName?.trim().length ?? 0) + draft.name.trim().length > 0 &&
+    !attributeMissingRequiredDefault(draft);
 
   const filtered = useMemo(() => {
     return attributes.filter((a) => {
@@ -248,13 +294,43 @@ export default function AttributeHubMVPNext() {
     }));
   };
 
-  const bindingChange = (resource: ResourceKind, next: Partial<ResourceConfig>) => {
+  const applyBinding = (resource: ResourceKind, next: Partial<ResourceConfig>) => {
     mutate((a) => ({
       ...a,
       appliesTo: a.appliesTo.map((c) =>
         c.resource === resource ? { ...c, ...next } : c,
       ),
     }));
+  };
+
+  /**
+   * Self-edit warning (confirmed requirement, §4.3): switching Users'
+   * "Who can set" to Member on a policy-bound attribute shows a non-blocking
+   * warning naming the affected policies before the change takes effect.
+   */
+  const bindingChange = (resource: ResourceKind, next: Partial<ResourceConfig>) => {
+    if (resource === 'Users' && draft) {
+      const current = draft.appliesTo.find((c) => c.resource === 'Users');
+      const switchingToMembers =
+        next.whoCanSet?.relationalDefault === 'Members' &&
+        current?.whoCanSet.relationalDefault !== 'Members';
+      const policyBound = draft.usedByPolicies > 0 || guardrailDemo;
+      if (switchingToMembers && policyBound) {
+        setGuardrail({
+          kind: 'self-edit-warning',
+          context: {
+            attributeName: attributeLabel(draft),
+            policies:
+              draft.usedByPolicies > 0
+                ? draft.policyNames
+                : ['Program-AURORA access', 'Duty roster clearance gate'],
+          },
+          pendingChange: { resource, next },
+        });
+        return;
+      }
+    }
+    applyBinding(resource, next);
   };
 
   const readIntoFilteringChange = (value: boolean) => {
@@ -274,13 +350,31 @@ export default function AttributeHubMVPNext() {
   };
 
   const removeResource = (resource: ResourceKind) => {
-    mutate((a) => ({
-      ...a,
-      appliesTo: a.appliesTo.filter((c) => c.resource !== resource),
-    }));
+    if (!draft) {
+      return;
+    }
+    setGuardrail({
+      kind: 'remove-binding',
+      context: {
+        attributeName: attributeLabel(draft),
+        resource,
+        policies: draft.usedByPolicies > 0 ? draft.policyNames : [],
+      },
+    });
   };
 
   const confirmGuardrail = () => {
+    if (guardrail?.kind === 'remove-binding') {
+      const resource = guardrail.context.resource as ResourceKind | undefined;
+      if (resource) {
+        mutate((a) => ({
+          ...a,
+          appliesTo: a.appliesTo.filter((c) => c.resource !== resource),
+        }));
+      }
+    } else if (guardrail?.kind === 'self-edit-warning' && guardrail.pendingChange) {
+      applyBinding(guardrail.pendingChange.resource, guardrail.pendingChange.next);
+    }
     setGuardrail(null);
   };
 
@@ -364,13 +458,23 @@ export default function AttributeHubMVPNext() {
     }
   };
 
-  const openDeactivate = (id: string) => {
-    const a = attributes.find((x) => x.id === id);
-    if (!a) return;
-    setGuardrail({
-      kind: 'deactivate-blocked',
-      context: { attributeName: a.name, bindingCount: 6, policies: a.policyNames },
-    });
+  const duplicateAttribute = (id: string) => {
+    const source = attributes.find((a) => a.id === id);
+    if (!source) {
+      return;
+    }
+    const copyName = `${source.name} (copy)`;
+    const copy: HubAttribute = {
+      ...structuredClone(source),
+      id: newAttributeId(),
+      name: copyName,
+      displayName: source.displayName ? `${source.displayName} (copy)` : undefined,
+      usedByPolicies: 0,
+      policyNames: [],
+      mirroredBy: undefined,
+      valuesLink: undefined,
+    };
+    setAttributes((prev) => [...prev, copy]);
   };
 
   const reorderAttributes = (activeId: string, overId: string) => {
@@ -429,10 +533,7 @@ export default function AttributeHubMVPNext() {
             }}
             trailing={
               draft && !creating && isSourceOwned(draft) ? (
-                <MvpConnectionPill
-                  status={connectionStatus(draft)}
-                  size="Medium"
-                />
+                <MvpPluginStatusPill status={pluginStatus(draft)} size="Medium" />
               ) : undefined
             }
           />
@@ -476,7 +577,7 @@ export default function AttributeHubMVPNext() {
                     onOpenDetail={openDetail}
                     onOpenMarkings={openMarkings}
                     onReorderAttributes={reorderAttributes}
-                    onDeactivate={openDeactivate}
+                    onDuplicate={duplicateAttribute}
                     onDelete={openDelete}
                   />
                 )}

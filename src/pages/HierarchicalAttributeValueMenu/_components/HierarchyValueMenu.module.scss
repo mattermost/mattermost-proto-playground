@@ -1,0 +1,77 @@
+.value-menu {
+  position: relative;
+  width: 312px;
+
+  &--compact {
+    width: 284px;
+  }
+
+  &__surface {
+    width: 100%;
+    max-width: none;
+    padding-top: 0;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs);
+  }
+
+  &__title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-50);
+    letter-spacing: var(--letter-spacing-wide-1);
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 var(--spacing-xxs) var(--spacing-xxs);
+  }
+
+  &__tree {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 var(--spacing-xxs) var(--spacing-xxs);
+  }
+
+  // Children are nested DOM, so one step of padding per group produces the
+  // cumulative indent. 12px per level keeps a 4-deep branch inside 312px.
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding-left: 12px;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-s) var(--spacing-s) var(--spacing-m);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__footer {
+    display: block;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

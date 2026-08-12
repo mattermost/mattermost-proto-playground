@@ -1,9 +1,18 @@
 import SyncIcon from '@mattermost/compass-icons/components/sync';
+import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
 import OpenInNewIcon from '@mattermost/compass-icons/components/open-in-new';
 import Icon from '@/components/ui/Icon/Icon';
 import type { HubAttribute } from '@/pages/AttributeManagementHub/hubData';
-import { connectionStatus, manageConnectionHref } from './mvpTerms';
-import MvpConnectionPill from './MvpConnectionPill';
+import {
+  isCoreSyncSource,
+  pluginStatus,
+  manageConnectionHref,
+  managedSourceActionLabel,
+  managedSourceBarLabel,
+  managedSourceDisconnectedHint,
+  managedSourceReadOnlyHint,
+} from './mvpTerms';
+import MvpPluginStatusPill from './MvpPluginStatusPill';
 import styles from './MvpManagedSourceBar.module.scss';
 
 export interface MvpManagedSourceBarProps {
@@ -20,8 +29,8 @@ export default function MvpManagedSourceBar({
   layout = 'default',
   onManageConnection,
 }: MvpManagedSourceBarProps) {
-  const system = attribute.source.system;
-  const status = connectionStatus(attribute);
+  const coreSync = isCoreSyncSource(attribute);
+  const plugin = pluginStatus(attribute);
 
   const handleManageConnection = () => {
     if (onManageConnection) {
@@ -29,7 +38,7 @@ export default function MvpManagedSourceBar({
       return;
     }
     window.open(
-      manageConnectionHref(system),
+      manageConnectionHref(attribute.source.system),
       '_blank',
       'noopener,noreferrer',
     );
@@ -46,29 +55,28 @@ export default function MvpManagedSourceBar({
     >
       <div className={styles['bar__row']}>
         <span className={styles['bar__label']}>
-          <Icon size="16" glyph={<SyncIcon />} />
-          Managed by {system}
+          <Icon
+            size="16"
+            glyph={coreSync ? <SyncIcon /> : <PowerPlugOutlineIcon />}
+          />
+          {managedSourceBarLabel(attribute)}
         </span>
-        <MvpConnectionPill status={status} />
+        <MvpPluginStatusPill status={plugin} />
         <button
           type="button"
           className={styles['bar__link']}
           onClick={handleManageConnection}
         >
-          Manage connection
+          {managedSourceActionLabel(attribute)}
           <Icon size="16" glyph={<OpenInNewIcon />} />
         </button>
       </div>
-      {status === 'broken' && (
+      {plugin === 'disconnected' && (
         <p className={styles['bar__hint']}>
-          The connection to {system} needs attention. Values may be out of date
-          until it is restored.
+          {managedSourceDisconnectedHint(attribute)}
         </p>
       )}
-      <p className={styles['bar__hint']}>
-        Name, type, and values are owned by the external source and are read-only
-        here.
-      </p>
+      <p className={styles['bar__hint']}>{managedSourceReadOnlyHint(attribute)}</p>
     </div>
   );
 }

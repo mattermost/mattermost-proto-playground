@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import SyncIcon from '@mattermost/compass-icons/components/sync';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
@@ -29,7 +29,10 @@ import {
 import {
   editorHref,
   GMP_ROUTES,
+  GMP_SIMPLIFIED_ROUTES,
   GMP_SIDEBAR_CATEGORIES,
+  isSimplifiedGmpContext,
+  simplifiedEditorHref,
 } from '@/pages/GlobalMembershipPolicy/gmpConsole';
 import WalkthroughFocusProvider from '@/components/walkthrough/WalkthroughFocusProvider';
 
@@ -97,6 +100,8 @@ function SyncStatusBadge({ status }: { status: SyncJobStatus }) {
 
 export default function GlobalMembershipPolicyList() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isSimplified = isSimplifiedGmpContext(searchParams);
   const [active, setActive] = useState('membership-policies');
   const [search, setSearch] = useState('');
   const [policies, setPolicies] = useState(MEMBERSHIP_POLICY_LIST);
@@ -115,13 +120,15 @@ export default function GlobalMembershipPolicyList() {
   }, [policies, search]);
 
   function openEditor(policyId?: string) {
-    navigate(editorHref(policyId));
+    navigate(
+      isSimplified ? simplifiedEditorHref(policyId) : editorHref(policyId),
+    );
   }
 
   function handleSidebarClick(itemId: string) {
     setActive(itemId);
     if (itemId === 'membership-policies') {
-      navigate(GMP_ROUTES.list);
+      navigate(isSimplified ? GMP_SIMPLIFIED_ROUTES.list : GMP_ROUTES.list);
     }
   }
 

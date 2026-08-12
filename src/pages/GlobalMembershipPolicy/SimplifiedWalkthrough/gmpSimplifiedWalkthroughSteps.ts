@@ -1,6 +1,6 @@
 import {
   CHANNEL_ATTRIBUTES_PREVIEW,
-  GMP_ROUTES,
+  GMP_SIMPLIFIED_ROUTES,
 } from '@/pages/GlobalMembershipPolicy/gmpConsole';
 
 export type WalkthroughSection =
@@ -74,6 +74,7 @@ const DRAGON_MANUAL = `${SIMPLIFIED_EDITOR}?policy=dragon-spacecraft&scope=manua
 const NORTHERN_MANUAL = `${SIMPLIFIED_EDITOR}?policy=northern-command&scope=manual`;
 // Literal-only preset — Confidential floor, manual scope (existing behavior).
 const LITERAL_DEMO = `${SIMPLIFIED_EDITOR}?policy=literal-demo&scope=manual`;
+const TEXT_DEPT_DEMO = `${SIMPLIFIED_EDITOR}?policy=text-department-demo&scope=manual`;
 // Test-matching modal deep-links (Part B): View 1 list, View 2 per-channel.
 const DS_TEST_LIST = `${SIMPLIFIED_EDITOR}?policy=ds-program&scope=manual&test=list`;
 const DS_TEST_CHANNEL = `${SIMPLIFIED_EDITOR}?policy=ds-program&scope=manual&test=channel`;
@@ -96,7 +97,10 @@ export const GMP_WALKTHROUGH_STEPS: WalkthroughStep[] = [
       'Membership policy table',
       'Add policy — opens the simplified editor in later steps',
     ],
-    preview: { kind: 'iframe', path: withFocus(GMP_ROUTES.list, 'policy-table') },
+    preview: {
+      kind: 'iframe',
+      path: withFocus(GMP_SIMPLIFIED_ROUTES.list, 'policy-table'),
+    },
   },
   {
     id: 'ch-attr-what',
@@ -140,7 +144,10 @@ export const GMP_WALKTHROUGH_STEPS: WalkthroughStep[] = [
       'Sidebar — Membership Policies nav item',
       'Policy table — name, scope summary, row actions',
     ],
-    preview: { kind: 'iframe', path: withFocus(GMP_ROUTES.list, 'sidebar-nav') },
+    preview: {
+      kind: 'iframe',
+      path: withFocus(GMP_SIMPLIFIED_ROUTES.list, 'sidebar-nav'),
+    },
   },
   {
     id: 'open-editor',
@@ -225,6 +232,26 @@ export const GMP_WALKTHROUGH_STEPS: WalkthroughStep[] = [
       'Literal-only attributes (e.g. Nationality) show no Channel attribute option',
     ],
     preview: { kind: 'iframe', path: LITERAL_DEMO },
+  },
+  {
+    id: 'text-attribute',
+    section: 'list',
+    railGroup: 'Membership requirements',
+    title: 'Text attributes: fixed string or channel attribute',
+    useCase:
+      'Example policy: Department text match — compare free-text department labels',
+    bullets: [
+      'Text-type user attributes (e.g. User: department) have no preset value list — focus the empty field to open the channel-attribute menu, or type a fixed string directly',
+      'As soon as you type, the menu closes; clear the field while focused and the menu returns with the schema-paired channel attribute (User: department → Channel: department)',
+      'Pick the channel attribute to compare user text to each channel’s own department value',
+      'When a channel attribute is selected, open the menu again to switch back via “Enter fixed text”',
+    ],
+    lookFor: [
+      'Empty text field — focus opens a menu with Channel: department',
+      'Typing dismisses the menu; clearing the field brings it back',
+      'Selecting Channel: department replaces the input with the blue token',
+    ],
+    preview: { kind: 'iframe', path: TEXT_DEPT_DEMO },
   },
   {
     id: 'test-users-list',
@@ -470,6 +497,9 @@ export const GMP_WALKTHROUGH_STEPS: WalkthroughStep[] = [
       'VP-3: Re-evaluation cadence (~15 min) is configurable',
     ],
     lookFor: [],
-    preview: { kind: 'iframe', path: withFocus(GMP_ROUTES.list, 'sync-jobs') },
+    preview: {
+      kind: 'iframe',
+      path: withFocus(GMP_SIMPLIFIED_ROUTES.list, 'sync-jobs'),
+    },
   },
 ];

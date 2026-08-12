@@ -1,0 +1,275 @@
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__explainer {
+    margin: 0;
+    max-width: 640px;
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__tree {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    overflow: hidden;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-l) var(--spacing-m);
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__root-add {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+  }
+
+  // Visually-hidden live region for the hybrid peek announcement.
+  &__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+.tree {
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--disabled {
+      opacity: 0.55;
+    }
+
+    // Read-only reference stub: dimmed, no interactive spine affordances.
+    &--stub {
+      background: rgba(var(--center-channel-color-rgb), 0.03);
+    }
+
+    // Transient highlight after a "jump to anchor".
+    &--highlight {
+      background: rgba(var(--color-info-rgb), 0.16);
+    }
+  }
+
+  &__twist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+  }
+
+  &__twist-spacer {
+    display: inline-block;
+    width: 16px;
+  }
+
+  &__reorder {
+    display: inline-flex;
+    align-items: center;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__drag {
+    display: inline-flex;
+    align-items: center;
+    cursor: grab;
+  }
+
+  &__multi {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-info);
+  }
+
+  &__flag {
+    font-size: var(--font-size-50);
+    color: var(--color-warning);
+  }
+
+  &__chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  // Hybrid on-demand spatial peek toggle.
+  &__peek {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: 2px var(--spacing-xs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    font-family: var(--font-family);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+
+    &--on {
+      border-color: rgba(var(--color-info-rgb), 0.48);
+      background: rgba(var(--color-info-rgb), 0.08);
+      color: var(--color-info);
+    }
+  }
+
+  &__peek-text {
+    line-height: 1;
+  }
+
+  &__child-add {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+  }
+}
+
+.stub {
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    font-size: var(--font-size-200);
+    line-height: 1;
+  }
+
+  &__link {
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-family: var(--font-family);
+    font-size: var(--font-size-75);
+    font-style: italic;
+    cursor: pointer;
+    transition: color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      color: var(--button-bg);
+      text-decoration: underline;
+    }
+  }
+}
+
+// Parent chip (GA-1 / GA-4) — a node's ADDITIONAL parent, shown on its own row.
+// Deliberately distinct from a held-value chip (ColoredRankedInputChip is a
+// filled, banner-colored pill): this is an OUTLINED pill with a directional
+// "opens elsewhere" glyph, so it never reads as a selected value. ARIA carries
+// "also a child of {parent}" so the distinction survives without color (AC-16(5)).
+.parent-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+  border-radius: var(--radius-full, 999px);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  overflow: hidden;
+
+  &__body {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    height: 100%;
+    padding: 0 var(--spacing-xs);
+    border: none;
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    font-family: var(--font-family);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__label {
+    line-height: 1;
+  }
+
+  &__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 var(--spacing-xxs);
+    border: none;
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--color-danger-rgb), 0.08);
+      color: var(--color-danger);
+    }
+  }
+}

@@ -1,0 +1,174 @@
+.lineage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  min-width: 0;
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__scroll {
+    max-width: 100%;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-75);
+  }
+
+  &__caption {
+    padding: var(--spacing-s) var(--spacing-m);
+    text-align: start;
+    font-size: var(--font-size-75);
+    line-height: 1.5;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__th {
+    padding: var(--spacing-xs) var(--spacing-m);
+    text-align: start;
+    vertical-align: bottom;
+    white-space: nowrap;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__row {
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.03);
+    }
+
+    &--selected {
+      background: rgba(var(--button-bg-rgb), 0.08);
+    }
+
+    // Out-of-coverage rows are de-emphasised, but the "Outside" text tag in the
+    // Coverage column is what actually carries the meaning — never opacity alone.
+    &--out {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__row-head {
+    padding: var(--spacing-xs) var(--spacing-m);
+    text-align: start;
+    vertical-align: top;
+    white-space: nowrap;
+    font-weight: var(--font-weight-regular);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__td {
+    padding: var(--spacing-xs) var(--spacing-m);
+    vertical-align: top;
+    color: inherit;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__value {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--link-color);
+    text-align: start;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+
+    &[aria-pressed='true'] {
+      color: var(--button-bg);
+      text-decoration: underline;
+    }
+  }
+
+  &__held {
+    display: block;
+    margin-top: var(--spacing-xxxxs);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+  }
+
+  &__paths {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__path {
+    line-height: 1.5;
+    color: inherit;
+  }
+
+  &__path-step {
+    white-space: nowrap;
+  }
+
+  &__path-sep {
+    padding: 0 var(--spacing-xxxxs);
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__list {
+    display: block;
+    max-width: 320px;
+    line-height: 1.5;
+    color: inherit;
+  }
+
+  &__muted {
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__num {
+    font-variant-numeric: tabular-nums;
+    color: inherit;
+  }
+
+  &__tag {
+    display: inline-block;
+    padding: var(--spacing-xxxxs) var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+
+    &--in {
+      color: var(--color-success);
+      background: rgba(var(--color-success-rgb), 0.12);
+    }
+
+    &--out {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+}

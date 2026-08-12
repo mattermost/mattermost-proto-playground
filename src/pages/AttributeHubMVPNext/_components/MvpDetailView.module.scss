@@ -22,7 +22,9 @@
   }
 
   &__key {
-    padding-top: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    min-height: 32px;
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
     color: rgba(var(--center-channel-color-rgb), 0.75);
@@ -31,7 +33,7 @@
   &__field {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: 0;
     min-width: 0;
   }
 
@@ -39,27 +41,65 @@
     max-width: 360px;
   }
 
-  &__display-row {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    max-width: 360px;
+  &__type-label {
+    min-height: 32px;
   }
 
   &__display-input {
-    flex: 1 1 auto;
-    min-width: 0;
+    max-width: 360px;
   }
 
-  &__name-toggle-label {
+  &__unique-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: fit-content;
+    max-width: 360px;
+    min-height: 32px;
+    margin-top: var(--spacing-xxxxs);
+
+    &--editing {
+      width: fit-content;
+    }
+  }
+
+  &__unique-label {
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-semibold);
     color: rgba(var(--center-channel-color-rgb), 0.56);
     white-space: nowrap;
   }
 
+  &__unique-value {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+  }
+
+  &__unique-input {
+    width: auto;
+    min-width: 10rem;
+    max-width: 240px;
+  }
+
+  &__unique-action {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--link-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   &__hint {
-    margin: 0;
+    margin: var(--spacing-xxxxs) 0 0;
     font-size: var(--font-size-75);
     color: rgba(var(--center-channel-color-rgb), 0.56);
     line-height: 1.4;

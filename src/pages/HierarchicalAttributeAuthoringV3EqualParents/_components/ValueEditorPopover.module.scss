@@ -1,0 +1,231 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  // TextInput defaults to max-width: 300px; stretch to match nav rows below.
+  &__name-input {
+    max-width: none;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    align-self: flex-start;
+    padding: var(--spacing-xxxs) var(--spacing-xxs);
+    margin-left: calc(-1 * var(--spacing-xxs));
+    border: 0;
+    border-radius: var(--radius-s);
+    background: none;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 1px;
+    }
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    background: none;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-100);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 1px;
+    }
+  }
+
+  &__nav-label {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__nav-value {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-size: var(--font-size-75);
+  }
+
+  &__divider {
+    height: 1px;
+    margin: var(--spacing-xxs) 0;
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+  }
+
+  &__row-top {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__row-label {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    overflow-wrap: anywhere;
+  }
+
+  &__row-grant {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  // "Show under this parent" — display-only, so it reads as a quiet text action.
+  &__show-here {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--link-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--button-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+
+    &:disabled {
+      color: rgba(var(--center-channel-color-rgb), 0.4);
+      text-decoration: none;
+      cursor: not-allowed;
+    }
+  }
+
+  &__confirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-warning-rgb), 0.08);
+  }
+
+  &__confirm-text {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: var(--center-channel-color);
+  }
+
+  &__confirm-actions {
+    display: inline-flex;
+    gap: var(--spacing-xxs);
+  }
+
+  &__empty {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__gate {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__reject {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.08);
+    color: var(--color-danger);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+  }
+
+  &__danger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: none;
+    color: var(--color-danger);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--color-danger-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--color-danger-rgb), 0.64);
+      outline-offset: 1px;
+    }
+  }
+}

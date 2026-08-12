@@ -3,3 +3,29 @@
   flex-direction: column;
   gap: var(--spacing-l);
 }
+
+.editability {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.caveat {
+  margin: 0;
+  max-width: 600px;
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: var(--radius-s);
+  border: 1px solid rgba(var(--color-warning-rgb), 0.16);
+  background-color: rgba(var(--color-warning-rgb), 0.04);
+  font-size: var(--font-size-75);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.8);
+}
+
+.reflection {
+  margin: 0;
+  max-width: 600px;
+  font-size: var(--font-size-75);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}

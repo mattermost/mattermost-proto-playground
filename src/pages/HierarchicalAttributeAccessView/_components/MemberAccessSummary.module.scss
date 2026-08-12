@@ -1,0 +1,107 @@
+.me {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  box-sizing: border-box;
+  padding: var(--spacing-l);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__held {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding-top: var(--spacing-m);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__section-title {
+    margin: 0;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__sentence {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: 1.5;
+    color: var(--center-channel-color);
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xxs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__chip {
+    display: inline-flex;
+  }
+
+  &__paths {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__paths-title {
+    margin: 0;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__path-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__path {
+    font-size: var(--font-size-75);
+    line-height: 1.5;
+    color: var(--center-channel-color);
+  }
+}

@@ -4,6 +4,9 @@
   gap: var(--spacing-m);
 
   &__none {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
     margin: 0;
     font-size: var(--font-size-100);
     color: rgba(var(--center-channel-color-rgb), 0.64);
@@ -22,6 +25,7 @@
     align-items: center;
     gap: var(--spacing-xs);
     min-width: 0;
+    min-height: 32px;
   }
 
   &__chip {

@@ -1,0 +1,269 @@
+.demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-xs) var(--spacing-xxl);
+  border-bottom: 1px dashed rgba(var(--center-channel-color-rgb), 0.24);
+  background: rgba(var(--center-channel-color-rgb), 0.03);
+
+  &__label {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__note {
+    margin-left: auto;
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+}
+
+// Step rail
+.rail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-m);
+  margin: 0 0 var(--spacing-m);
+  padding: 0;
+  list-style: none;
+
+  &__step {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+
+    &[data-state='todo'] {
+      opacity: 0.5;
+    }
+  }
+
+  &__dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-full, 999px);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    .rail__step[data-state='active'] & {
+      border-color: var(--button-bg);
+      background: var(--button-bg);
+      color: var(--button-color);
+    }
+
+    .rail__step[data-state='done'] & {
+      border-color: var(--color-success);
+      background: rgba(var(--color-success-rgb), 0.12);
+      color: var(--color-success);
+    }
+  }
+
+  &__label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+}
+
+.phase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-s);
+}
+
+// Upload
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__formats {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+
+    code {
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-50);
+      padding: 0 var(--spacing-xxs);
+      border-radius: var(--radius-xs, 2px);
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+    }
+  }
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-m);
+  border: 1px dashed rgba(var(--center-channel-color-rgb), 0.24);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-s);
+    background: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--button-bg);
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__file {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__meta {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__ready {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-full, 999px);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--color-success);
+    background: rgba(var(--color-success-rgb), 0.08);
+  }
+}
+
+// Transient status
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-xxxl) 0;
+
+  &__text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+// Violations
+.violations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-m);
+    border: 1px solid rgba(var(--color-danger-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.04);
+  }
+
+  &__kind {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    min-width: 72px;
+    height: 20px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-full, 999px);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--color-danger);
+    border: 1px solid rgba(var(--color-danger-rgb), 0.32);
+    background: rgba(var(--color-danger-rgb), 0.08);
+  }
+
+  &__msg {
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+  }
+}
+
+// Stats head
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-m);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 84px;
+  padding: var(--spacing-s) var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+
+  &__n {
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__label {
+    font-size: var(--font-size-50);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}
+
+// Acknowledgement
+.ack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

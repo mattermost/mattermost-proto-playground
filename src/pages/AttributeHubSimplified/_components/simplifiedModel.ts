@@ -290,6 +290,35 @@ export function ceilingModesFor(
   ];
 }
 
+/**
+ * Flattened inheritance options for the primary (non-Advanced) dropdown.
+ *
+ * The On/Off toggle is folded in as the leading `off` option, so one control
+ * carries the whole decision. Labels name the PARENT explicitly ("the team's
+ * value", not "the parent value") because this field now sits directly above
+ * "Changing the value" — and both constrain direction. Naming the parent keeps
+ * the axes apart: this one is structural (relative to the parent), the one
+ * below it is temporal (relative to the value's own prior state).
+ */
+export function inheritanceModesFor(
+  type: SimplifiedAttrType,
+  parentLabel: string,
+): { key: CeilingMode; label: string }[] {
+  const parent = parentLabel.toLowerCase();
+  const modes: { key: CeilingMode; label: string }[] = [
+    { key: 'off', label: `Does not inherit from the ${parent}` },
+    { key: 'no-constraint', label: `Inherits the ${parent}'s value as a default` },
+  ];
+  if (comparesRank(type)) {
+    modes.push(
+      { key: 'no-below', label: `Cannot go below the ${parent}'s value` },
+      { key: 'no-above', label: `Cannot go above the ${parent}'s value` },
+    );
+  }
+  modes.push({ key: 'locked', label: `Locked to the ${parent}'s value` });
+  return modes;
+}
+
 export function ceilingSummaryLabel(mode: CeilingMode): string | null {
   switch (mode) {
     case 'off':

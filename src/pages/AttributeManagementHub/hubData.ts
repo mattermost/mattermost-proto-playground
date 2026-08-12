@@ -25,6 +25,10 @@ export type SourceSystem = 'UAS' | 'LDAP' | 'SAML' | 'SCIM';
 export interface Source {
   kind: 'manual' | 'synced';
   system?: SourceSystem;
+  /** Installed plugin that owns this attribute (shown in MVP UI instead of system id). */
+  pluginName?: string;
+  /** When false, the plugin is installed but disabled for this attribute. */
+  pluginActive?: boolean;
   state?: SyncState;
   /** One-line status shown on the Source section. */
   status?: string;
@@ -108,6 +112,8 @@ export interface ResourceConfig {
   disabledValueIds?: string[];
   /** Pre-filled when a new resource instance is created without a value. */
   defaultValueId?: string | null;
+  /** Channels — `showWhere` is a default that channel admins may change per channel. */
+  displayOverridable?: boolean;
 }
 
 /** Capability delegation — owner + delegates per capability. */
@@ -669,6 +675,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     source: {
       kind: 'synced',
       system: 'UAS',
+      pluginName: 'User Attribute Sync',
       state: 'Synced',
       status: 'Last synced 6 minutes ago · pull every 15m',
       fieldMap: 'local.clearance ← uas.profile.clearance_level',
@@ -712,6 +719,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     source: {
       kind: 'synced',
       system: 'UAS',
+      pluginName: 'User Attribute Sync',
       state: 'Stale',
       status:
         'Missed the last 2 scheduled pulls — last success 2 days ago. Values may be out of date.',

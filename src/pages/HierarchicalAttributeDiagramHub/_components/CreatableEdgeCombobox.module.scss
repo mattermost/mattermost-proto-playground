@@ -1,0 +1,75 @@
+.cbx {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: var(--spacing-xs) var(--spacing-s) 0;
+
+  &__error {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.08);
+    color: var(--color-danger);
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+  }
+
+  &__list-wrap {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+
+    // Opt-in floating overlay: portaled to <body>, fixed under the input, and
+    // stacked above the host popover (whose menu sits at z-index 1000) so it
+    // escapes the popover's overflow clip and never grows its box.
+    &--overlay {
+      position: fixed;
+      z-index: 1001;
+      box-shadow: var(--elevation-2);
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: var(--spacing-xxs);
+    list-style: none;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    color: var(--center-channel-color);
+    font-size: var(--font-size-100);
+    cursor: pointer;
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+    }
+
+    &--create {
+      color: var(--button-bg);
+      font-weight: var(--font-weight-semibold);
+
+      strong {
+        font-weight: var(--font-weight-semibold);
+      }
+    }
+  }
+
+  &__row-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
+import { useRef, useState } from 'react';
+import SyncIcon from '@mattermost/compass-icons/components/sync';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
-import Modal from '@/components/ui/Modal/Modal';
+import FixedPopoverMenu from '@/components/ui/FixedPopoverMenu/FixedPopoverMenu';
+import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
+import MenuItem from '@/components/ui/MenuItem/MenuItem';
 import {
   isSourceOwned,
   type HubAttribute,
@@ -25,7 +28,8 @@ export default function MvpSourceSection({
   attribute,
   onConnect,
 }: MvpSourceSectionProps) {
-  const [connectOpen, setConnectOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
 
   if (isSourceOwned(attribute)) {
     return null;
@@ -33,68 +37,42 @@ export default function MvpSourceSection({
 
   return (
     <div className={styles['source']}>
-      <button
-        type="button"
-        className={styles['source__connect']}
-        onClick={() => setConnectOpen(true)}
-      >
-        <Icon size="16" glyph={<PowerPlugOutlineIcon />} />
-        Connect an external source
-      </button>
-
-      {connectOpen && (
-        <div className={styles['connect']} role="presentation">
-          <button
-            type="button"
-            className={styles['connect__scrim']}
-            aria-label="Close"
-            onClick={() => setConnectOpen(false)}
-          />
-          <div className={styles['connect__dialog']}>
-            <Modal
-              size="Small"
-              title="Connect an external source"
-              subtitle="Sync this attribute's options and values from an identity provider."
-              onClose={() => setConnectOpen(false)}
-              footer={
-                <Button
-                  emphasis="Tertiary"
-                  onClick={() => setConnectOpen(false)}
-                >
-                  Cancel
-                </Button>
-              }
-            >
-              <div className={styles['connect__body']}>
-                <p className={styles['connect__lead']}>
-                  Choose a provider. Once connected, options and assigned values
-                  become read-only in Mattermost and are managed at the source.
-                </p>
-                <div className={styles['connect__options']}>
-                  {CONNECT_SOURCE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.system}
-                      type="button"
-                      className={styles['connect__option']}
-                      onClick={() => {
-                        onConnect(opt.system);
-                        setConnectOpen(false);
-                      }}
-                    >
-                      <span className={styles['connect__option-title']}>
-                        {opt.title}
-                      </span>
-                      <span className={styles['connect__option-desc']}>
-                        {opt.description}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </Modal>
-          </div>
-        </div>
-      )}
+      <div ref={triggerRef} className={styles['source__trigger']}>
+        <Button
+          className={styles['source__connect']}
+          emphasis="Quaternary"
+          size="Small"
+          leadingIcon={<Icon size="16" glyph={<SyncIcon />} />}
+          trailingIcon={<Icon size="16" glyph={<ChevronDownIcon />} />}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          onClick={() => setOpen((current) => !current)}
+        >
+          Link to external source
+        </Button>
+        <FixedPopoverMenu
+          open={open}
+          onClose={() => setOpen(false)}
+          anchorRef={triggerRef}
+          align="start"
+        >
+          <PopoverMenu aria-label="Link to external source">
+            {CONNECT_SOURCE_OPTIONS.map((opt) => (
+              <MenuItem
+                key={opt.system}
+                leadingElement={false}
+                label={opt.title}
+                secondaryLabel={opt.description}
+                secondaryLabelPosition="Below"
+                onClick={() => {
+                  setOpen(false);
+                  onConnect(opt.system);
+                }}
+              />
+            ))}
+          </PopoverMenu>
+        </FixedPopoverMenu>
+      </div>
     </div>
   );
 }

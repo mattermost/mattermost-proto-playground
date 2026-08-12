@@ -1,0 +1,126 @@
+.gve {
+  &__primary-note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-info-rgb), 0.08);
+    color: var(--center-channel-color);
+  }
+
+  &__primary-text {
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__primary-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__primary-tag {
+    margin-left: auto;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-info);
+  }
+
+  &__make-primary {
+    margin-left: auto;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--button-bg);
+    font-family: var(--font-family);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    &:hover:not(:disabled) {
+      text-decoration: underline;
+    }
+  }
+
+  &__reject {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    margin: 0 var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.08);
+    color: var(--color-danger);
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+  }
+
+  &__picker-note {
+    margin: 0;
+    padding: 0 var(--spacing-s) var(--spacing-xs);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    line-height: 1.4;
+  }
+
+  // Read-only Children list (02b P-D) — shared across all three approaches.
+  &__children {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-s);
+  }
+
+  &__children-title {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__children-empty {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__children-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__child {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-s);
+    background: none;
+    color: var(--center-channel-color);
+    font-family: var(--font-family);
+    font-size: var(--font-size-75);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__child-label {
+    line-height: 1.2;
+  }
+}

@@ -2,10 +2,12 @@ import ResourceConfigPanel from '@/pages/AttributeManagementHub/_components/Appl
 import {
   type HubAttribute,
   type ResourceConfig,
+  whoCanSetIsEditable,
 } from '@/pages/AttributeManagementHub/hubData';
 import MvpWhoCanSetEditor from './MvpWhoCanSetEditor';
 import MvpNextUsersWhoCanSetEditor from './MvpNextUsersWhoCanSetEditor';
-import { MVP_NEXT_PROFILE_DISPLAY_OPTIONS } from './mvpNextConstants';
+import { MVP_NEXT_PROFILE_DISPLAY_OPTIONS, MVP_NEXT_USERS_WHO_CAN_SET_HINT } from './mvpNextConstants';
+import { managedSourceConfigLabel } from './mvpTerms';
 import styles from './MvpResourceConfigPanel.module.scss';
 
 export interface MvpResourceConfigPanelProps {
@@ -28,6 +30,7 @@ export default function MvpResourceConfigPanel({
   onReadIntoFilteringChange,
 }: MvpResourceConfigPanelProps) {
   const isUsers = config.resource === 'Users';
+  const whoCanSetEditable = whoCanSetIsEditable(attribute, config);
 
   return (
     <div className={styles['panel']}>
@@ -37,18 +40,31 @@ export default function MvpResourceConfigPanel({
         onChange={onChange}
         onReadIntoFilteringChange={onReadIntoFilteringChange}
         layout="simplified"
+        adjacentRequiredAndDefault
+        requireDefaultWhenRequired
+        managedByPluginName={
+          attribute.source.kind === 'synced'
+            ? managedSourceConfigLabel(attribute)
+            : undefined
+        }
         suppressInheritance
         userProfileDisplayOptions={
           isUsers ? MVP_NEXT_PROFILE_DISPLAY_OPTIONS : undefined
         }
         whoCanSetHint={
-          isUsers
-            ? 'Choose Member or Sysadmin.'
-            : 'Multiple roles can be selected.'
+          !whoCanSetEditable
+            ? null
+            : isUsers
+              ? MVP_NEXT_USERS_WHO_CAN_SET_HINT
+              : 'Multiple roles can be selected.'
         }
         whoCanSetSlot={
           isUsers ? (
-            <MvpNextUsersWhoCanSetEditor config={config} onChange={onChange} />
+            <MvpNextUsersWhoCanSetEditor
+              attribute={attribute}
+              config={config}
+              onChange={onChange}
+            />
           ) : (
             <MvpWhoCanSetEditor
               attribute={attribute}

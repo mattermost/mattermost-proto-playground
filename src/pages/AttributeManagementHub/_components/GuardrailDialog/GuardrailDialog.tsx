@@ -12,7 +12,8 @@ export type GuardrailKind =
   | 'delete-blocked'
   | 'unlink-gated'
   | 'source-stale'
-  | 'remove-binding';
+  | 'remove-binding'
+  | 'self-edit-warning';
 
 export interface GuardrailContext {
   attributeName: string;
@@ -40,7 +41,18 @@ export interface GuardrailDialogProps {
   onLinkExisting?: () => void;
 }
 
-function copyFor(kind: GuardrailKind, c: GuardrailContext) {
+interface GuardrailCopy {
+  title: string;
+  tone: 'Info' | 'Warning' | 'Danger';
+  noticeTitle: string;
+  body: string;
+  confirmLabel?: string;
+  primary?: { label: string; kind: 'link' };
+  /** Confirm button styling — defaults to true (matches existing destructive gates). */
+  destructive?: boolean;
+}
+
+function copyFor(kind: GuardrailKind, c: GuardrailContext): GuardrailCopy {
   switch (kind) {
     case 'duplicate-name':
       return {
@@ -117,6 +129,18 @@ function copyFor(kind: GuardrailKind, c: GuardrailContext) {
         primary: undefined,
       };
     }
+    case 'self-edit-warning': {
+      const count = c.policies?.length ?? 0;
+      return {
+        title: 'Members can set their own value',
+        tone: 'Warning' as const,
+        noticeTitle: `${c.attributeName} is used by ${count} ${count === 1 ? 'policy' : 'policies'}`,
+        body: 'Letting members set their own value means self-reported data now feeds those policies. This is a warning, not a block — you can still proceed.',
+        confirmLabel: 'Allow self-edit',
+        primary: undefined,
+        destructive: false,
+      };
+    }
   }
 }
 
@@ -132,7 +156,13 @@ export default function GuardrailDialog({
   const policies = context.policies ?? [];
 
   return (
-    <div className={styles['guardrail']} role="presentation">
+    <div
+      className={styles['guardrail']}
+      role="presentation"
+      data-tour-focus={
+        kind === 'self-edit-warning' ? 'self-edit-warning-dialog' : undefined
+      }
+    >
       <button
         type="button"
         className={styles['guardrail__scrim']}
@@ -155,7 +185,11 @@ export default function GuardrailDialog({
                 </Button>
               )}
               {copy.confirmLabel && (
-                <Button emphasis="Primary" destructive onClick={onConfirm}>
+                <Button
+                  emphasis="Primary"
+                  destructive={copy.destructive ?? true}
+                  onClick={onConfirm}
+                >
                   {copy.confirmLabel}
                 </Button>
               )}

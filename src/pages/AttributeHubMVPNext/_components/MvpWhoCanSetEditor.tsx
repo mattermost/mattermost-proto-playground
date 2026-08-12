@@ -16,6 +16,8 @@ import {
   type ResourceConfig,
 } from '@/pages/AttributeManagementHub/hubData';
 import { applySettersList, selectedSetters } from './mvpModel';
+import { syncSetterDisplayLabel, syncSetterLockedHint } from './mvpTerms';
+import { mvpSetterRoleDisplayLabel } from './mvpNextConstants';
 import { setterRoleOptions, type SetterRoleOption } from './setterPickerData';
 import styles from './MvpWhoCanSetEditor.module.scss';
 
@@ -31,12 +33,23 @@ function matchesQuery(value: string, query: string): boolean {
   return value.toLowerCase().includes(query.trim().toLowerCase());
 }
 
+function roleMatchesQuery(role: SetterRoleOption, query: string): boolean {
+  if (query.trim() === '') {
+    return true;
+  }
+  return (
+    matchesQuery(role.name, query) ||
+    matchesQuery(mvpSetterRoleDisplayLabel(role.name), query)
+  );
+}
+
 /**
  * MVP (P0) "Who can set the value" picker: a single field showing a relational
  * default plus an "Other roles" submenu. Trimmed copy — no inheritance lock,
  * no policy-locked "Members" guardrail (policy binding is out of P0's UI).
  */
 export default function MvpWhoCanSetEditor({
+  attribute,
   config,
   onChange,
 }: MvpWhoCanSetEditorProps) {
@@ -64,7 +77,7 @@ export default function MvpWhoCanSetEditor({
         (role) =>
           role.group === 'resource' &&
           !selectedNames.has(role.name) &&
-          (query.trim() === '' || matchesQuery(role.name, query)),
+          roleMatchesQuery(role, query),
       ),
     [query, rolePool, selectedNames],
   );
@@ -75,7 +88,7 @@ export default function MvpWhoCanSetEditor({
         (role) =>
           role.group === 'system' &&
           !selectedNames.has(role.name) &&
-          (query.trim() === '' || matchesQuery(role.name, query)),
+          roleMatchesQuery(role, query),
       ),
     [query, rolePool, selectedNames],
   );
@@ -109,9 +122,11 @@ export default function MvpWhoCanSetEditor({
   if (syncLocked) {
     return (
       <div className={styles['setter__locked']}>
-        <Chip size="Medium">{wcs.relationalDefault}</Chip>
+        <Chip size="Medium">
+          {syncSetterDisplayLabel(attribute, wcs.relationalDefault)}
+        </Chip>
         <span className={styles['setter__hint']}>
-          Set by the sync system — not editable.
+          {syncSetterLockedHint(attribute, wcs.relationalDefault)}
         </span>
       </div>
     );
@@ -129,7 +144,7 @@ export default function MvpWhoCanSetEditor({
             leadingIcon={<AccountOutlineIcon />}
             onRemove={() => removeRole(subject)}
           >
-            {subject}
+            {mvpSetterRoleDisplayLabel(subject)}
           </Chip>
         ))}
         <input
@@ -182,7 +197,7 @@ export default function MvpWhoCanSetEditor({
                   {filteredResourceRoles.map((role) => (
                     <MenuItem
                       key={role.name}
-                      label={role.name}
+                      label={mvpSetterRoleDisplayLabel(role.name)}
                       secondaryLabel={
                         role.memberCount > 0 ? `${role.memberCount} users` : undefined
                       }
@@ -199,7 +214,7 @@ export default function MvpWhoCanSetEditor({
                   {filteredSystemRoles.map((role) => (
                     <MenuItem
                       key={role.name}
-                      label={role.name}
+                      label={mvpSetterRoleDisplayLabel(role.name)}
                       secondaryLabel={`${role.memberCount} users`}
                       secondaryLabelPosition="Inline"
                       leadingVisual={<Icon size="16" glyph={<AccountOutlineIcon />} />}

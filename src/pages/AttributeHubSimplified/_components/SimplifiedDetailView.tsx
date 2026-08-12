@@ -1,6 +1,9 @@
+import OpenInNewIcon from '@mattermost/compass-icons/components/open-in-new';
 import Select from '@/components/ui/Select/Select';
 import TextInput from '@/components/ui/TextInput/TextInput';
 import ConsolePanel from '@/components/ui/ConsolePanel/ConsolePanel';
+import Button from '@/components/ui/Button/Button';
+import Icon from '@/components/ui/Icon/Icon';
 import {
   isPolicyLocked,
   isSourceOwned,
@@ -15,6 +18,8 @@ import AppliesToSection, {
   type AppliesToRowSummaryVariant,
 } from './AppliesToSection';
 import WhoCanEdit from './WhoCanEdit';
+import ValueEditabilityField from './ValueEditabilityField';
+import { getEditability, setEditability } from './editabilityModel';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import {
   SIMPLIFIED_ATTR_TYPES,
@@ -59,6 +64,18 @@ export interface SimplifiedDetailViewProps {
   nameRef?: (el: HTMLInputElement | null) => void;
   /** Collapsed applies-to row summary display. */
   appliesToRowSummary?: AppliesToRowSummaryVariant;
+  /** Channel-attributes alignment (walkthrough 2026-08-06). */
+  channelAlignment?: boolean;
+  /** Move the "Changing the value" rule onto each Applies-to binding. */
+  perResourceEditability?: boolean;
+}
+
+/**
+ * Classification keeps its own setup page in this variation — the hub defers to
+ * it rather than duplicating the presets and colors (Abhijit, 00:12:21).
+ */
+function usesClassificationSetupPage(attribute: HubAttribute): boolean {
+  return attribute.id === 'classification';
 }
 
 export default function SimplifiedDetailView({
@@ -89,6 +106,8 @@ export default function SimplifiedDetailView({
   onUnlinkValues,
   nameRef,
   appliesToRowSummary = 'chips',
+  channelAlignment = false,
+  perResourceEditability = false,
 }: SimplifiedDetailViewProps) {
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
@@ -124,7 +143,7 @@ export default function SimplifiedDetailView({
       {/* Merged Definition = Name · Type · adaptive Values (+ synced status). */}
       <ConsolePanel
         title="Definition"
-        subtitle="Name, type, options, and editors."
+        subtitle={channelAlignment ? 'Name, type, and options.' : 'Name, type, options, and editors.'}
       >
         <div className={styles['detail__def']}>
           <div className={styles['detail__row']}>
@@ -176,6 +195,22 @@ export default function SimplifiedDetailView({
             <div className={styles['detail__row']}>
               <span className={styles['detail__key']}>Options</span>
               <div className={styles['detail__field']}>
+                {channelAlignment && usesClassificationSetupPage(attribute) && (
+                  <p className={styles['detail__external']}>
+                    Presets and marking colors are configured on Classification
+                    Markings.
+                    <Button
+                      emphasis="Tertiary"
+                      size="Small"
+                      trailingIcon={
+                        <Icon size="12" glyph={<OpenInNewIcon />} />
+                      }
+                      onClick={() => undefined}
+                    >
+                      Open
+                    </Button>
+                  </p>
+                )}
                 <DefinitionValues
                   attribute={attribute}
                   attributes={attributes}
@@ -198,16 +233,36 @@ export default function SimplifiedDetailView({
             </div>
           )}
 
-          <div className={styles['detail__row']}>
-            <span className={styles['detail__key']}>Who can edit</span>
-            <div className={styles['detail__field']}>
-              <WhoCanEdit
-                attribute={attribute}
-                editors={editors}
-                onChange={onEditorsChange}
-              />
+          {channelAlignment && !perResourceEditability && (
+            <div className={styles['detail__row']}>
+              <span className={styles['detail__key']}>
+                Changing the value
+              </span>
+              <div className={styles['detail__field']}>
+                <ValueEditabilityField
+                  attribute={attribute}
+                  value={getEditability(attribute)}
+                  onChange={(next) => {
+                    setEditability(attribute.id, next);
+                    onDefinitionChange({});
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          )}
+
+          {!channelAlignment && (
+            <div className={styles['detail__row']}>
+              <span className={styles['detail__key']}>Who can edit</span>
+              <div className={styles['detail__field']}>
+                <WhoCanEdit
+                  attribute={attribute}
+                  editors={editors}
+                  onChange={onEditorsChange}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </ConsolePanel>
 
@@ -231,6 +286,8 @@ export default function SimplifiedDetailView({
           onAddResource={onAddResource}
           onRemoveResource={onRemoveResource}
           rowSummaryVariant={appliesToRowSummary}
+          channelAlignment={channelAlignment}
+          perResourceEditability={perResourceEditability}
         />
       </ConsolePanel>
     </div>

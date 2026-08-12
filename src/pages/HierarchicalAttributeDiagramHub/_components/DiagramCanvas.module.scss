@@ -1,0 +1,183 @@
+.surface {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-m);
+  flex-wrap: wrap;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+
+  &__line {
+    display: inline-block;
+    width: 20px;
+    height: 0;
+    border-top: 2px solid rgba(var(--center-channel-color-rgb), 0.56);
+
+    &--dotted {
+      border-top-style: dotted;
+      margin-left: var(--spacing-s);
+    }
+  }
+}
+
+.note {
+  margin: 0;
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  line-height: 1.4;
+}
+
+.canvas-scroll {
+  max-height: 560px;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+}
+
+.canvas {
+  position: relative;
+  padding: 0;
+
+  &__svg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  &__edge {
+    stroke: rgba(var(--center-channel-color-rgb), 0.48);
+    stroke-width: 1.5;
+
+    &--additional {
+      stroke: rgba(var(--color-info-rgb), 0.8);
+      stroke-dasharray: 3 3;
+    }
+  }
+}
+
+.node-group {
+  position: absolute;
+}
+
+.node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-s);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.32);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-1);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    box-shadow var(--duration-quick) var(--ease-transition),
+    border-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    border-color: rgba(var(--button-bg-rgb), 0.48);
+    box-shadow: var(--elevation-2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 2px;
+  }
+
+  &[aria-expanded='true'] {
+    border-color: var(--button-bg);
+    box-shadow: var(--elevation-2);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+  }
+
+  &__label {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__tag {
+    flex: 0 0 auto;
+    padding: 0 var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}
+
+// ── Ghost create-and-connect affordances ──────────────────────────────────────
+// Hidden until the node group is hovered or contains focus; revealed with a fade.
+// pointer-events:none while hidden so the invisible target can't be mis-clicked,
+// but keyboard focus still reaches them (focus is not blocked by pointer-events),
+// and focusing one reveals it via :focus-within.
+.ghost {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px dashed rgba(var(--button-bg-rgb), 0.56);
+  border-radius: var(--radius-full);
+  background: var(--center-channel-bg);
+  color: var(--button-bg);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-quick) var(--ease-transition);
+
+  &--parent {
+    left: -32px;
+  }
+
+  &--child {
+    right: -32px;
+  }
+
+  &:hover {
+    background: rgba(var(--button-bg-rgb), 0.08);
+    border-style: solid;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 2px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.node-group:hover .ghost,
+.node-group:focus-within .ghost {
+  opacity: 1;
+  pointer-events: auto;
+}

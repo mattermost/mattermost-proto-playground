@@ -1,0 +1,44 @@
+@keyframes bounded-popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bounded-popover {
+  position: fixed;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-4);
+  transform-origin: top left;
+  animation: bounded-popover-in var(--duration-quick) var(--ease-entrance);
+
+  &--above {
+    transform-origin: bottom left;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: var(--spacing-m) var(--spacing-l);
+  }
+}

@@ -1,0 +1,167 @@
+.user-attrs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  width: 100%;
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+    overflow: hidden;
+  }
+
+  &__band {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-l);
+    min-height: 96px;
+    padding: 0 var(--spacing-xxl) var(--spacing-s);
+    background-color: var(--button-bg);
+  }
+
+  &__avatar {
+    display: inline-flex;
+    margin-bottom: calc(var(--spacing-xxxl) * -1);
+  }
+
+  &__band-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    padding-bottom: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__name {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-400);
+    color: var(--button-color);
+  }
+
+  &__userid {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--button-color-rgb), 0.72);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-xxxl) var(--spacing-xxl) var(--spacing-xxl);
+  }
+
+  &__role {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-l) var(--spacing-xxl);
+    align-items: start;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    color: var(--center-channel-color);
+  }
+
+  &__readonly {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__divider {
+    height: 1px;
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__section-title {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    letter-spacing: var(--letter-spacing-wide-1);
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__static {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-height: 40px;
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    background-color: var(--center-channel-bg);
+  }
+
+  &__static-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__static-value {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__placeholder {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__static-caret {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-l) var(--spacing-xxl);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__actions-end {
+    margin-left: auto;
+  }
+}

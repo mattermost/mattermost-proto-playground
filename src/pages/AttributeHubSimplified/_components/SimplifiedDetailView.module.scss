@@ -52,4 +52,15 @@
     font-size: var(--font-size-75);
     color: var(--color-warning);
   }
+
+  &__external {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
 }

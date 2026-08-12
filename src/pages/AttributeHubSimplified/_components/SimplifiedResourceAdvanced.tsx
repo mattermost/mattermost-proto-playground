@@ -27,6 +27,8 @@ export interface SimplifiedResourceAdvancedProps {
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
   onAddResourceValue: (label: string) => void;
+  /** Channel-attributes alignment drops per-resource option subsets. */
+  hideAllowedOptions?: boolean;
 }
 
 function inheritanceOn(attributeId: string, config: ResourceConfig): boolean {
@@ -52,6 +54,7 @@ export default function SimplifiedResourceAdvanced({
   config,
   onChange,
   onAddResourceValue,
+  hideAllowedOptions = false,
 }: SimplifiedResourceAdvancedProps) {
   const { resource } = config;
   const showInheritFromTeam =
@@ -61,9 +64,10 @@ export default function SimplifiedResourceAdvanced({
   const inheritanceVisible = showInheritFromTeam || showInheritFromChannel;
   const inheritOn = inheritanceVisible && inheritanceOn(attribute.id, config);
   const customName = resourceName(attribute.id, resource).trim();
-  const optionsCustomized = allowedOptionsCustomized(attribute, config);
+  const optionsCustomized =
+    !hideAllowedOptions && allowedOptionsCustomized(attribute, config);
   const showAllowedOptions =
-    takesValueList(attribute) && attribute.values.length > 0;
+    !hideAllowedOptions && takesValueList(attribute) && attribute.values.length > 0;
 
   const parentLabel = inheritanceParentLabel(resource);
 

@@ -1,0 +1,37 @@
+.rename {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__scanning {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__cross-owner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.06);
+    border: 1px solid rgba(var(--color-danger-rgb), 0.2);
+    color: var(--color-danger);
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+
+    svg {
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}

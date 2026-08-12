@@ -50,7 +50,7 @@ The Foundations index page uses a **curated bento layout** (`src/pages/topics/Fo
 - `/prototypes` → `PrototypesIndex`; individual prototypes registered in the `PROTOTYPES` array in the same file
 - `/resources` → `ResourcesIndex`
 
-To add a new prototype flow, add a page under `src/pages/` and an entry to the `PROTOTYPES` array — it becomes both a sidebar nav item and a route.
+To add a new prototype flow, add a page under `src/pages/` and an entry to the `PROTOTYPES` array — it becomes both a sidebar nav item and a route. Also add the entry's `id` to `INITIATIVE_OF` in `src/manifests/prototypes.ts` so it groups under the right initiative on `/prototypes`; unmapped ids fall back to the "Other" initiative (a visible cue on the page to tag it). `PrototypeGroup` remains the broad category (card accent + "Recently Updated" tag); `Initiative` is the finer project axis that drives the accordion.
 
 ### Doc shell: prose vs. non-prose
 

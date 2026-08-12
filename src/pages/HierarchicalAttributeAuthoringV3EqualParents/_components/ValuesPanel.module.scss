@@ -1,0 +1,514 @@
+.values {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+  }
+
+  &__header-text {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xxs);
+  }
+
+  &__explainer {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.5;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+  // Reachability in full is a whole prototype of its own, so this is a text link
+  // out to it rather than a panel restating the tree.
+  &__access-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    color: var(--link-color);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--button-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+  }
+
+  &__settings-trigger {
+    flex-shrink: 0;
+  }
+
+  &__settings-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__settings-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.06);
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__note-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  // Trailing action in a note (e.g. Dismiss) — never squashed by the sentence.
+  &__note-action {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  &__tree {
+    // Per-depth step — wider than the default spacing-l so tiers read clearly.
+    --values-tree-indent-step: calc(var(--spacing-xl) + var(--spacing-s));
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    overflow: hidden;
+
+    // Rows carry a bottom divider; the last one would double up with the
+    // container edge, so pull the final branch back over it.
+    > div:last-child {
+      margin-bottom: -1px;
+    }
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-l) var(--spacing-m);
+    font-size: var(--font-size-100);
+    line-height: 1.5;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  // Mounted only while a drag is in flight. Blocked (rather than silently
+  // destructive) for a value with several parents: dragging it out would cut
+  // grants on branches the author is not looking at.
+  &__root-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s);
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.32);
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition);
+
+    &--over {
+      border-color: rgba(var(--color-info-rgb), 0.64);
+      background: rgba(var(--color-info-rgb), 0.08);
+      color: var(--color-info);
+    }
+
+    &--blocked {
+      border-style: solid;
+      border-color: rgba(var(--color-warning-rgb), 0.32);
+      background: rgba(var(--color-warning-rgb), 0.06);
+      color: rgba(var(--center-channel-color-rgb), 0.75);
+    }
+  }
+
+  &__add {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__limits {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  // ── Rows ───────────────────────────────────────────────────────────────────
+
+  &__row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-height: 36px;
+    padding: var(--spacing-xxs) var(--spacing-s);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover .values__actions,
+    &:focus-within .values__actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &__row--reference {
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+  }
+
+  &__row--highlight {
+    background: rgba(var(--color-info-rgb), 0.16);
+  }
+
+  // No rail down a group. Indentation already draws the cascade, so a spine only
+  // restated the layout — the same redundancy that took the per-row "grants access
+  // to N values" chip off this surface.
+
+  &__row--dragging {
+    opacity: 0.5;
+  }
+
+  // ── Drop gap: the target BETWEEN two rows ──────────────────────────────────
+  // Mounted only while a drag is in flight. Collapsed to a thin strip so the list
+  // does not reflow when a drag starts, with a generous invisible hit area: the
+  // insertion line is 2px, the target it belongs to is 10px.
+  &__gap {
+    position: relative;
+    height: 10px;
+    margin: -5px 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding-right: var(--spacing-s);
+
+    &--over .values__gap-line {
+      height: 2px;
+      background: var(--color-info);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+  }
+
+  // The insertion indicator. Geometry, not hue alone (WCAG 1.4.1): it grows from
+  // a hairline to a solid bar with a leading dot when the gap is the active target.
+  &__gap-line {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--color-info-rgb), 0.32);
+    transition:
+      height var(--duration-quick) var(--ease-transition),
+      background-color var(--duration-quick) var(--ease-transition);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 6px;
+      height: 6px;
+      transform: translate(-50%, -50%);
+      border-radius: var(--radius-full);
+      background: var(--color-info);
+      opacity: 0;
+      transition: opacity var(--duration-quick) var(--ease-transition);
+    }
+  }
+
+  // Valid drop target under the pointer.
+  &__row--drop {
+    background: rgba(var(--color-info-rgb), 0.12);
+    box-shadow: inset 0 0 0 1px rgba(var(--color-info-rgb), 0.48);
+  }
+
+  &__gutter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    flex-shrink: 0;
+  }
+
+  // Grip drag handle — the drag SOURCE. Visually distinct from the chevron
+  // (dotted glyph, grab cursor) and dimmed until the row is hovered.
+  &__grip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(var(--center-channel-color-rgb), 0.32);
+    cursor: grab;
+    transition: color var(--duration-quick) var(--ease-transition);
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__row:hover .values__grip,
+  &__row:focus-within .values__grip {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // This occurrence's place in THIS parent's list. Deliberately quiet — it is a
+  // position, not a rank, and a loud badge in an access-control console would read
+  // as precedence.
+  /**
+   * ITEM 3 — the numeral is an ordered-list MARKER, not a badge on the value.
+   *
+   * It lives in the gutter at the row's own indent, so numerals at one depth form
+   * a clean right-aligned column and several 1-2-3 runs at different depths stop
+   * reading as one sequence. Tabular figures keep the column true at 2 digits.
+   * Muted and light-weight so it never competes with the value name.
+   */
+  &__pos {
+    flex-shrink: 0;
+    min-width: 14px;
+    text-align: right;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-size: var(--font-size-50);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+    line-height: 1;
+  }
+
+  /** Holds the column open on unnumbered rows so names stay aligned. */
+  &__pos-spacer {
+    flex-shrink: 0;
+    min-width: 14px;
+  }
+
+  &__twist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-s);
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 1px;
+    }
+  }
+
+  &__twist-spacer {
+    display: inline-block;
+    width: 20px;
+  }
+
+  &__ref-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // The value name. Interactive on the row where it is edited, plain text on a
+  // reference row — so nothing that looks clickable is inert, and nothing
+  // clickable looks inert.
+  &__name {
+    padding: var(--spacing-xxxxs) var(--spacing-xxs);
+    margin-left: calc(-1 * var(--spacing-xxs));
+    border: 0;
+    border-radius: var(--radius-s);
+    background: none;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 1px;
+    }
+  }
+
+  &__name-static {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  // Multi-parent cue. Words + glyph, never hue alone (WCAG 1.4.1).
+  &__also {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    height: 22px;
+    padding: 0 var(--spacing-xs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.32);
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.12);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 1px;
+    }
+  }
+
+  // Jump back to the row where the value is edited. AA contrast, underlined,
+  // and actually interactive.
+  &__jump {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--link-color);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--button-bg);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  // Inline drawer under a row: the ordering control, or the add field.
+  &__drawer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-s);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+  }
+
+  &__drawer-title {
+    margin: 0;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__drawer-help {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  // Value ranking radios in the settings popover — mirrors GMP scope options.
+  &__relation-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__relation-option {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__relation-label {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__relation-help {
+    margin: 0;
+    // Medium radio (16px) + label gap (8px) + alignment nudge.
+    padding-left: 28px;
+    font-size: var(--font-size-75);
+    line-height: 1.5;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+  &__add-child {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+}

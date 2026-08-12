@@ -1,0 +1,111 @@
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xl) 0;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    p {
+      margin: 0;
+      font-size: var(--font-size-100);
+    }
+  }
+
+  &__stats {
+    display: flex;
+    gap: var(--spacing-m);
+    flex-wrap: wrap;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-s) var(--spacing-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+    min-width: 88px;
+  }
+
+  &__stat-n {
+    font-family: var(--font-family-heading, inherit);
+    font-size: var(--font-size-400);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__stat-label {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__edges-head {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__edges {
+    height: 240px;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+  }
+
+  &__edge-list {
+    list-style: none;
+    margin: 0;
+    padding: var(--spacing-xs) 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      padding: var(--spacing-xxs) var(--spacing-m);
+      font-size: var(--font-size-75);
+
+      &:hover {
+        background: rgba(var(--center-channel-color-rgb), 0.03);
+      }
+    }
+  }
+
+  &__edge-parent {
+    color: rgba(var(--center-channel-color-rgb), 0.7);
+  }
+
+  &__edge-arrow {
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+  }
+
+  &__edge-child {
+    color: var(--center-channel-color);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__violations {
+    margin: 0;
+    padding-left: var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+    line-height: 1.4;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}

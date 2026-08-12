@@ -1,0 +1,94 @@
+.hierarchy {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  background: var(--center-channel-bg);
+  overflow: hidden;
+
+  &__invariant {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-m);
+    background: rgba(var(--color-success-rgb), 0.06);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__tree {
+    padding: var(--spacing-s) 0;
+  }
+
+  &__node {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-top: var(--spacing-xxs);
+    padding-bottom: var(--spacing-xxs);
+    padding-right: var(--spacing-m);
+    cursor: pointer;
+    outline: none;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &--highlighted {
+      background: rgba(var(--button-bg-rgb), 0.12);
+    }
+
+    &--highlighted:hover {
+      background: rgba(var(--button-bg-rgb), 0.16);
+    }
+
+    &--refreshing {
+      opacity: 0.6;
+    }
+  }
+
+  &__twist,
+  &__twist-spacer {
+    display: inline-flex;
+    width: 14px;
+    flex: 0 0 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+
+  &__swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
+    flex: 0 0 auto;
+    box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__label {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__refreshing-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__also {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding-top: 2px;
+    padding-bottom: var(--spacing-xxs);
+    padding-right: var(--spacing-m);
+    font-size: var(--font-size-75);
+    font-style: italic;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}

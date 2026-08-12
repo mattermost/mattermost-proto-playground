@@ -112,10 +112,20 @@ function readParams(): URLSearchParams {
 export interface AttributeHubSimplifiedProps {
   /** Collapsed applies-to row summary — chips (default) or inline secondary text. */
   appliesToRowSummary?: 'chips' | 'inline';
+  /**
+   * Channel Attributes walkthrough alignment (2026-08-06): banner open to every
+   * attribute type, display location a per-channel default, value-editability
+   * rule on the attribute, and classification deferred to its own setup page.
+   */
+  channelAlignment?: boolean;
+  /** Move the "Changing the value" rule onto each Applies-to binding. */
+  perResourceEditability?: boolean;
 }
 
 export default function AttributeHubSimplified({
   appliesToRowSummary = 'chips',
+  channelAlignment = false,
+  perResourceEditability = false,
 }: AttributeHubSimplifiedProps = {}) {
   const params = readParams();
 
@@ -681,6 +691,8 @@ export default function AttributeHubSimplified({
                     nameRef.current = el;
                   }}
                   appliesToRowSummary={appliesToRowSummary}
+                  channelAlignment={channelAlignment}
+                  perResourceEditability={perResourceEditability}
                 />
               ) : (
                 <CatalogListing

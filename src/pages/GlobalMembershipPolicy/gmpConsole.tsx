@@ -5,12 +5,21 @@ import ServerVariantIcon from '@mattermost/compass-icons/components/server-varia
 
 import type { ConsoleSidebarCategoryData } from '@/components/ui/ConsoleSidebar/ConsoleSidebar';
 
+export const GMP_SIMPLIFIED_VARIANT = 'simplified';
+
 export const GMP_ROUTES = {
   list: '/prototypes/global-membership-policies',
   editor: '/prototypes/global-membership-policy-long-form',
   guided: '/prototypes/global-membership-policy-guided',
   walkthrough: '/prototypes/global-membership-policy-walkthrough',
   simulate: '/prototypes/global-membership-policy-simulate',
+} as const;
+
+/** Routes for the simplified GMP editor + walkthrough — never link to long-form. */
+export const GMP_SIMPLIFIED_ROUTES = {
+  list: `/prototypes/global-membership-policies?variant=${GMP_SIMPLIFIED_VARIANT}`,
+  editor: '/prototypes/global-membership-policy-simplified',
+  walkthrough: '/prototypes/global-membership-policy-simplified-walkthrough',
 } as const;
 
 /** Global Attributes hub filtered to Channels — walkthrough primer. */
@@ -65,9 +74,24 @@ export const GMP_SIDEBAR_CATEGORIES: ConsoleSidebarCategoryData[] = [
   },
 ];
 
+export function isSimplifiedGmpContext(
+  search: string | URLSearchParams,
+): boolean {
+  const params =
+    typeof search === 'string' ? new URLSearchParams(search) : search;
+  return params.get('variant') === GMP_SIMPLIFIED_VARIANT;
+}
+
 export function editorHref(policyId?: string): string {
   if (policyId == null || policyId === 'new') {
     return GMP_ROUTES.editor;
   }
   return `${GMP_ROUTES.editor}?policy=${encodeURIComponent(policyId)}`;
+}
+
+export function simplifiedEditorHref(policyId?: string): string {
+  if (policyId == null || policyId === 'new') {
+    return GMP_SIMPLIFIED_ROUTES.editor;
+  }
+  return `${GMP_SIMPLIFIED_ROUTES.editor}?policy=${encodeURIComponent(policyId)}`;
 }

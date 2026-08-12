@@ -12,7 +12,6 @@ import {
   defaultValueHint,
   hasInheritanceParent,
   isChannelDisplayHidden,
-  isSourceOwned,
   postDisplayIncludes,
   postDisplayLabel,
   POST_DISPLAY_LOCATIONS,
@@ -29,6 +28,7 @@ import {
   type DisplayWhere,
   type PostDisplayLoc,
 } from '../../hubData';
+import { inheritanceParentLabel } from '@/pages/AttributeHubMVP/_components/mvpTerms';
 import styles from './ResourceConfigPanel.module.scss';
 
 export interface ResourceConfigPanelProps {
@@ -45,8 +45,30 @@ export interface ResourceConfigPanelProps {
   suppressInheritance?: boolean;
   /** Override profile-display segmented options (default: Always show / Hide when empty). */
   userProfileDisplayOptions?: { key: UserProfileDisplay; label: string }[];
-  /** Hint under the who-can-set field when `whoCanSetSlot` is provided. */
-  whoCanSetHint?: string;
+  /** Hint under the who-can-set field when `whoCanSetSlot` is provided. Pass `null` to suppress. */
+  whoCanSetHint?: string | null;
+  /** Channels/Posts — render Required immediately above Default value. */
+  adjacentRequiredAndDefault?: boolean;
+  /** When Required is on, Default value must be selected (inline error + no None). */
+  requireDefaultWhenRequired?: boolean;
+  /** Plugin name for read-in / source-controlled copy (MVP shows plugin, not system id). */
+  managedByPluginName?: string;
+  /**
+   * Channel-attributes alignment (walkthrough 2026-08-06): the banner is no
+   * longer classification-only, display location is a per-channel default
+   * rather than a hard-code, and Required states its locking consequence.
+   */
+  channelAlignment?: boolean;
+  /**
+   * "Changing the value" rule for this binding. Rendered after who-can-set on
+   * every resource except Users, whose values come from the source system.
+   */
+  valueEditabilitySlot?: ReactNode;
+  /**
+   * Inheritance rule for this binding, promoted out of Advanced to a primary
+   * field. Renders directly ABOVE "Changing the value" (Design Crit 2026-08-10).
+   */
+  inheritanceSlot?: ReactNode;
 }
 
 interface FieldProps {
@@ -54,13 +76,15 @@ interface FieldProps {
   hint?: ReactNode;
   children: ReactNode;
   layout?: 'default' | 'simplified';
+  /** Walkthrough deep-link anchor — see `data-tour-focus` convention. */
+  focusId?: string;
 }
 
-function Field({ label, hint, children, layout = 'default' }: FieldProps) {
+function Field({ label, hint, children, layout = 'default', focusId }: FieldProps) {
   const hintBelowControl = layout === 'simplified';
 
   return (
-    <div className={styles['field']}>
+    <div className={styles['field']} data-tour-focus={focusId}>
       <div className={styles['field__head']}>
         <span className={styles['field__label']}>{label}</span>
         {hint != null && !hintBelowControl && (
@@ -205,12 +229,15 @@ function ChannelDisplaySelect({
   attribute,
   value,
   onChange,
+  channelAlignment = false,
 }: {
   attribute: HubAttribute;
   value: DisplayWhere[] | undefined;
   onChange: (next: DisplayWhere[]) => void;
+  channelAlignment?: boolean;
 }) {
-  const bannerSupported = supportsChannelBanner(attribute);
+  // Banner is no longer classification-only — any attribute can reach it.
+  const bannerSupported = channelAlignment || supportsChannelBanner(attribute);
 
   return (
     <div
@@ -346,17 +373,28 @@ export default function ResourceConfigPanel({
   layout = 'default',
   suppressInheritance = false,
   userProfileDisplayOptions,
-  whoCanSetHint = 'Multiple roles can be selected.',
+  whoCanSetHint,
+  adjacentRequiredAndDefault = false,
+  requireDefaultWhenRequired = false,
+  managedByPluginName: managedByPluginNameProp,
+  channelAlignment = false,
+  valueEditabilitySlot,
+  inheritanceSlot,
 }: ResourceConfigPanelProps) {
   const profileDisplayOptions = userProfileDisplayOptions ?? [
     { key: 'always' as const, label: 'Always show' },
     { key: 'hide-empty' as const, label: 'Hide when empty' },
   ];
-  const sourceOwned = isSourceOwned(attribute);
+  const resolvedWhoCanSetHint =
+    whoCanSetHint === null
+      ? undefined
+      : whoCanSetHint ?? (whoCanSetSlot ? 'Multiple roles can be selected.' : undefined);
   const isUsers = config.resource === 'Users';
   const isChannels = config.resource === 'Channels';
   const isPosts = config.resource === 'Posts';
   const readIntoSourceControlled = readIntoForced(attribute);
+  const sourceControlledLabel =
+    managedByPluginNameProp ?? attribute.source.system ?? 'the source';
   const showReadIntoReflection = !isUsers && readIntoActive(attribute);
   const showInheritFromTeam =
     isChannels && hasInheritanceParent(attribute, 'Channels');
@@ -374,6 +412,107 @@ export default function ResourceConfigPanel({
   )
     ? (config.defaultValueId ?? '')
     : '';
+  const defaultValueRequired =
+    requireDefaultWhenRequired && config.required && showDefaultValue;
+  const defaultValueMissing = defaultValueRequired && !currentDefaultId;
+  const groupRequiredWithDefault =
+    adjacentRequiredAndDefault && (isChannels || isPosts);
+
+  const requiredHint = channelAlignment
+    ? config.required
+      ? `A value must be chosen when the ${config.resource.slice(0, -1).toLowerCase()} is created. Any that exist without one stay locked, and an admin is notified.`
+      : `Optional — this attribute can still be added to a ${config.resource.slice(0, -1).toLowerCase()} after it is created.`
+    : 'The resource must have a value before it can be created or saved.';
+
+  const requiredField = !isUsers ? (
+    <Field
+      layout={layout}
+      label="Required"
+      hint={requiredHint}
+      focusId={`${config.resource.toLowerCase()}-required`}
+    >
+      <Switch
+        size="Small"
+        checked={config.required}
+        onChange={(e) => onChange({ required: e.target.checked })}
+      >
+        {config.required ? 'On' : 'Off'}
+      </Switch>
+    </Field>
+  ) : null;
+
+  const defaultValueField = showDefaultValue ? (
+    <Field
+      layout={layout}
+      label="Default value"
+      hint={
+        defaultValueRequired ? (
+          <>
+            {defaultValueHint(config.resource)}
+            <p className={styles['note']}>
+              Also applied to existing {config.resource.toLowerCase()} that have
+              no value set.
+            </p>
+          </>
+        ) : (
+          defaultValueHint(config.resource)
+        )
+      }
+      focusId={`${config.resource.toLowerCase()}-default-value`}
+    >
+      <Select
+        className={styles['default-value-select']}
+        size="Medium"
+        width="fit"
+        value={currentDefaultId}
+        invalid={defaultValueMissing}
+        aria-label="Default value"
+        aria-required={defaultValueRequired || undefined}
+        onChange={(e) =>
+          onChange({
+            defaultValueId: e.target.value === '' ? null : e.target.value,
+          })
+        }
+      >
+        {!defaultValueRequired && <option value="">None</option>}
+        {defaultValueRequired && !currentDefaultId && (
+          <option value="" disabled>
+            Select a value…
+          </option>
+        )}
+        {assignableValues.map((value) => (
+          <option key={value.id} value={value.id}>
+            {value.tier != null
+              ? `${value.label} (Tier ${value.tier})`
+              : value.label}
+          </option>
+        ))}
+      </Select>
+      {defaultValueMissing && (
+        <p className={styles['field__error']}>
+          Select a default value when Required is on.
+        </p>
+      )}
+    </Field>
+  ) : null;
+
+  const whoCanSetField =
+    whoCanSetSlot != null ? (
+      <Field
+        layout={layout}
+        label="Who can set the value"
+        hint={resolvedWhoCanSetHint}
+        focusId={`${config.resource.toLowerCase()}-who-can-set`}
+      >
+        <div className={styles['combobox-slot']}>{whoCanSetSlot}</div>
+      </Field>
+    ) : (
+      <WhoCanSetEditor
+        attribute={attribute}
+        config={config}
+        onChange={onChange}
+      />
+    );
 
   return (
     <div
@@ -384,25 +523,21 @@ export default function ResourceConfigPanel({
         .filter(Boolean)
         .join(' ')}
     >
-      {!isUsers && (
-        <Field
-          layout={layout}
-          label="Required"
-          hint="The resource must have a value before it can be created or saved."
-        >
-          <Switch
-            size="Small"
-            checked={config.required}
-            disabled={sourceOwned}
-            onChange={(e) => onChange({ required: e.target.checked })}
-          >
-            {config.required ? 'On' : 'Off'}
-          </Switch>
-        </Field>
+      {!groupRequiredWithDefault && requiredField}
+
+      {groupRequiredWithDefault && (
+        <>
+          {requiredField}
+          {defaultValueField}
+        </>
       )}
 
       {isUsers && (
-        <Field layout={layout} label="Profile display">
+        <Field
+          layout={layout}
+          label="Profile display"
+          focusId="users-profile-display"
+        >
           <Segmented<UserProfileDisplay>
             value={config.userProfileDisplay ?? 'hide-empty'}
             ariaLabel="Profile display"
@@ -416,6 +551,7 @@ export default function ResourceConfigPanel({
         <Field
           layout={layout}
           label="Value visibility"
+          focusId="users-value-visibility"
           hint={
             <>
               When restricted, users only see their own assigned value. Other
@@ -423,9 +559,8 @@ export default function ResourceConfigPanel({
               attribute appears.
               {readIntoSourceControlled && (
                 <p className={styles['note']}>
-                  For {attribute.source.system}-synced attributes, value
-                  visibility is configured at the source. Shown here for
-                  reference, not editable in Mattermost.
+                  Value visibility is configured by {sourceControlledLabel} and
+                  shown here for reference, not editable in Mattermost.
                 </p>
               )}
             </>
@@ -452,7 +587,7 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {showInheritFromTeam && !suppressInheritance && (
+      {showInheritFromTeam && !suppressInheritance && !inheritanceSlot && (
         <InheritFromParentField
           parentLabel="team"
           parentKind="team"
@@ -467,28 +602,45 @@ export default function ResourceConfigPanel({
       {isChannels && (
         <Field
           layout={layout}
-          label="Display location"
+          label={channelAlignment ? 'Default display location' : 'Display location'}
+          focusId="channels-display-location"
           hint={
-            <>
-              Multiple locations can be selected. Uncheck all to hide.
-              {!isChannelDisplayHidden(config.showWhere) &&
-                channelDisplayIncludes(config.showWhere, 'Banner') && (
+            channelAlignment ? (
+              <>
+                Multiple locations can be selected. Uncheck all to hide.
+                {channelDisplayIncludes(config.showWhere, 'Banner') && (
                   <p className={styles['note']}>
-                    Shown as a banner at the top of the channel.
+                    Banner attributes are concatenated into one strip at the top
+                    of the channel. Channel admins can replace the generated
+                    text.
                   </p>
                 )}
-            </>
+              </>
+            ) : layout === 'simplified' ? (
+              'Multiple locations can be selected. Uncheck all to hide.'
+            ) : (
+              <>
+                Multiple locations can be selected. Uncheck all to hide.
+                {!isChannelDisplayHidden(config.showWhere) &&
+                  channelDisplayIncludes(config.showWhere, 'Banner') && (
+                    <p className={styles['note']}>
+                      Shown as a banner at the top of the channel.
+                    </p>
+                  )}
+              </>
+            )
           }
         >
           <ChannelDisplaySelect
             attribute={attribute}
             value={config.showWhere}
             onChange={(next) => onChange({ showWhere: next })}
+            channelAlignment={channelAlignment}
           />
         </Field>
       )}
 
-      {showInheritFromChannel && !suppressInheritance && (
+      {showInheritFromChannel && !suppressInheritance && !inheritanceSlot && (
         <InheritFromParentField
           parentLabel="channel"
           parentKind="channel"
@@ -500,26 +652,31 @@ export default function ResourceConfigPanel({
         />
       )}
 
-      {isPosts && (
+      {isPosts && !channelAlignment && (
         <Field
           layout={layout}
           label="Display location"
+          focusId="posts-display-location"
           hint={
-            <>
-              Multiple locations can be selected. Uncheck all to hide.
-              {!isChannelDisplayHidden(config.showWhere) &&
-                postDisplayIncludes(config.showWhere, 'Composer') && (
-                  <p className={styles['note']}>
-                    Shown in the message input while composing a post.
-                  </p>
-                )}
-              {!isChannelDisplayHidden(config.showWhere) &&
-                postDisplayIncludes(config.showWhere, 'Header') && (
-                  <p className={styles['note']}>
-                    Shown on the message in the channel timeline.
-                  </p>
-                )}
-            </>
+            layout === 'simplified' ? (
+              'Multiple locations can be selected. Uncheck all to hide.'
+            ) : (
+              <>
+                Multiple locations can be selected. Uncheck all to hide.
+                {!isChannelDisplayHidden(config.showWhere) &&
+                  postDisplayIncludes(config.showWhere, 'Composer') && (
+                    <p className={styles['note']}>
+                      Shown in the message input while composing a post.
+                    </p>
+                  )}
+                {!isChannelDisplayHidden(config.showWhere) &&
+                  postDisplayIncludes(config.showWhere, 'Header') && (
+                    <p className={styles['note']}>
+                      Shown on the message in the channel timeline.
+                    </p>
+                  )}
+              </>
+            )
           }
         >
           <PostDisplaySelect
@@ -529,51 +686,31 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {whoCanSetSlot != null ? (
+      {inheritanceSlot && !isUsers && (
         <Field
           layout={layout}
-          label="Who can set the value"
-          hint={whoCanSetHint}
+          label={`Inherit from ${
+            inheritanceParentLabel(config.resource) ?? 'parent'
+          }`}
+          focusId={`${config.resource.toLowerCase()}-inheritance`}
         >
-          <div className={styles['combobox-slot']}>{whoCanSetSlot}</div>
+          {inheritanceSlot}
         </Field>
-      ) : (
-        <WhoCanSetEditor
-          attribute={attribute}
-          config={config}
-          onChange={onChange}
-        />
       )}
 
-      {showDefaultValue && (
+      {whoCanSetField}
+
+      {valueEditabilitySlot && !isUsers && (
         <Field
           layout={layout}
-          label="Default value"
-          hint={defaultValueHint(config.resource)}
+          label="Changing the value"
+          focusId={`${config.resource.toLowerCase()}-value-editability`}
         >
-          <Select
-            className={styles['default-value-select']}
-            size="Medium"
-            width="fit"
-            value={currentDefaultId}
-            aria-label="Default value"
-            onChange={(e) =>
-              onChange({
-                defaultValueId: e.target.value === '' ? null : e.target.value,
-              })
-            }
-          >
-            <option value="">None</option>
-            {assignableValues.map((value) => (
-              <option key={value.id} value={value.id}>
-                {value.tier != null
-                  ? `${value.label} (Tier ${value.tier})`
-                  : value.label}
-              </option>
-            ))}
-          </Select>
+          {valueEditabilitySlot}
         </Field>
       )}
+
+      {!groupRequiredWithDefault && defaultValueField}
     </div>
   );
 }

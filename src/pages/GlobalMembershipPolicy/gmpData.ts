@@ -17,7 +17,7 @@
 
 // ─── Attribute + operator model (mirrors the who-block requirement rows) ──────
 
-export type AttrKind = 'ranked' | 'select' | 'multiselect';
+export type AttrKind = 'ranked' | 'select' | 'multiselect' | 'text';
 
 /** Type-aware operator sets. */
 export const OPERATORS: Record<AttrKind, { id: string; label: string }[]> = {
@@ -34,6 +34,10 @@ export const OPERATORS: Record<AttrKind, { id: string; label: string }[]> = {
     { id: 'includes', label: 'includes' },
     { id: 'includes-any', label: 'includes any of' },
   ],
+  text: [
+    { id: 'is', label: 'is' },
+    { id: 'contains', label: 'contains' },
+  ],
 };
 
 /** A user attribute — left side of a "who" requirement row. */
@@ -46,7 +50,7 @@ export interface UserAttrOption {
 export const USER_ATTRS: UserAttrOption[] = [
   { id: 'clearance', label: 'User: Clearance', kind: 'ranked' },
   { id: 'program', label: 'User: Program', kind: 'select' },
-  { id: 'department', label: 'User: department', kind: 'select' },
+  { id: 'department', label: 'User: department', kind: 'text' },
   { id: 'nationality', label: 'User: Nationality', kind: 'select' },
   { id: 'coi', label: 'User: Community of interest', kind: 'multiselect' },
 ];
@@ -61,7 +65,7 @@ export interface ChannelVarOption {
 export const CHANNEL_VARIABLES: ChannelVarOption[] = [
   { id: 'ch-classification', label: 'Channel: Classification', kind: 'ranked' },
   { id: 'ch-program', label: 'Channel: Program', kind: 'select' },
-  { id: 'ch-department', label: 'Channel: department', kind: 'select' },
+  { id: 'ch-department', label: 'Channel: department', kind: 'text' },
   { id: 'ch-releasability', label: 'Channel: Releasability', kind: 'select' },
 ];
 
@@ -77,11 +81,6 @@ export const LITERALS: Record<string, { id: string; label: string }[]> = {
     { id: 'dragon-spacecraft', label: 'Dragon Spacecraft' },
     { id: 'falcon-heavy', label: 'Falcon Heavy' },
     { id: 'starlink', label: 'Starlink' },
-  ],
-  department: [
-    { id: 'engineering', label: 'Engineering' },
-    { id: 'operations', label: 'Operations' },
-    { id: 'intelligence', label: 'Intelligence' },
   ],
   nationality: [
     { id: 'usa', label: 'USA' },
@@ -141,6 +140,16 @@ export const DRAGON_SPACECRAFT_REQUIREMENTS: Requirement[] = [
   },
 ];
 
+/** Text-attribute example — fixed string OR schema-paired channel attribute. */
+export const TEXT_DEPARTMENT_REQUIREMENTS: Requirement[] = [
+  {
+    id: 'req-1',
+    userAttrId: 'department',
+    operatorId: 'is',
+    value: { mode: 'literal', labels: ['Operations'] },
+  },
+];
+
 /** Northern Command — coalition clearance + nationality gate. */
 export const NORTHERN_COMMAND_REQUIREMENTS: Requirement[] = [
   {
@@ -179,6 +188,27 @@ export const SEED_LITERAL_REQUIREMENTS: Requirement[] = [
     userAttrId: 'clearance',
     operatorId: 'at-least',
     value: { mode: 'literal', labels: ['Confidential'] },
+  },
+];
+
+/**
+ * Literal-only requirements: fixed values on both sides, no channel attribute
+ * referenced anywhere. This is the shape that still does useful work in a
+ * single-level enclave, where comparing clearance to a channel's classification
+ * could never deny anyone.
+ */
+export const STATIC_VALUE_REQUIREMENTS: Requirement[] = [
+  {
+    id: 'req-1',
+    userAttrId: 'clearance',
+    operatorId: 'at-least',
+    value: { mode: 'literal', labels: ['Secret'] },
+  },
+  {
+    id: 'req-2',
+    userAttrId: 'program',
+    operatorId: 'is',
+    value: { mode: 'literal', labels: ['Dragon Spacecraft'] },
   },
 ];
 
@@ -314,11 +344,41 @@ export interface ManualChannel {
 }
 
 export const MANUAL_CHANNELS: ManualChannel[] = [
-  { id: 'ch-mountain', name: 'Mountain Initiative', team: 'River City', private: true, autoAdd: false },
-  { id: 'ch-agents', name: 'Agents Network', team: 'Capital District', private: true, autoAdd: false },
-  { id: 'ch-clearance', name: 'Operation Clearance', team: 'Capital District', private: true, autoAdd: true },
-  { id: 'ch-drill', name: 'Drill Discussion', team: 'River City', private: true, autoAdd: true },
-  { id: 'ch-alpine', name: 'Alpine Project', team: 'Capital District', private: true, autoAdd: false },
+  {
+    id: 'ch-mountain',
+    name: 'Mountain Initiative',
+    team: 'River City',
+    private: true,
+    autoAdd: false,
+  },
+  {
+    id: 'ch-agents',
+    name: 'Agents Network',
+    team: 'Capital District',
+    private: true,
+    autoAdd: false,
+  },
+  {
+    id: 'ch-clearance',
+    name: 'Operation Clearance',
+    team: 'Capital District',
+    private: true,
+    autoAdd: true,
+  },
+  {
+    id: 'ch-drill',
+    name: 'Drill Discussion',
+    team: 'River City',
+    private: true,
+    autoAdd: true,
+  },
+  {
+    id: 'ch-alpine',
+    name: 'Alpine Project',
+    team: 'Capital District',
+    private: true,
+    autoAdd: false,
+  },
 ];
 
 /** Manually-selected teams — seeds the Teams tab (manual-only this iteration). */
@@ -439,6 +499,11 @@ export const MEMBERSHIP_POLICY_LIST: MembershipPolicyListItem[] = [
     name: 'NOFORN handling',
     appliesTo: '8 channels',
   },
+  {
+    id: 'text-department-demo',
+    name: 'Department text match',
+    appliesTo: '12 channels',
+  },
 ];
 
 export type SyncJobStatus = 'Pending' | 'Success' | 'Failure';
@@ -527,9 +592,23 @@ export const POLICY_EDITOR_PRESETS: Record<string, PolicyEditorPreset> = {
     channelConditions: [],
     manualChannels: MANUAL_CHANNELS,
   },
+  'static-values': {
+    requirements: STATIC_VALUE_REQUIREMENTS,
+    scope: 'manual',
+    channelConditions: [],
+    manualChannels: MANUAL_CHANNELS,
+  },
+  'text-department-demo': {
+    requirements: TEXT_DEPARTMENT_REQUIREMENTS,
+    scope: 'manual',
+    channelConditions: [],
+    manualChannels: MANUAL_CHANNELS,
+  },
 };
 
-export function policyEditorPreset(policyId: string | null): PolicyEditorPreset {
+export function policyEditorPreset(
+  policyId: string | null,
+): PolicyEditorPreset {
   if (policyId != null && POLICY_EDITOR_PRESETS[policyId] != null) {
     return POLICY_EDITOR_PRESETS[policyId];
   }
@@ -542,7 +621,8 @@ export const TERMS = {
   editorTitle: 'Edit membership policy',
   newTitle: 'New membership policy',
   nameLabel: 'Membership policy name',
-  nameHelp: 'Give your policy a name that will be used to identify it in the policies list.',
+  nameHelp:
+    'Give your policy a name that will be used to identify it in the policies list.',
   whoTitle: 'Membership requirements',
   whoSubtitle: 'Set the attribute conditions a member must meet',
   requirementsLabel: 'Attribute requirements',
@@ -559,7 +639,8 @@ export const TERMS = {
 // ─── Lookups ──────────────────────────────────────────────────────────────────
 
 export const userAttr = (id: string) => USER_ATTRS.find((a) => a.id === id);
-export const channelVar = (id: string) => CHANNEL_VARIABLES.find((v) => v.id === id);
+export const channelVar = (id: string) =>
+  CHANNEL_VARIABLES.find((v) => v.id === id);
 export const compatibleVariables = (kind: AttrKind) =>
   CHANNEL_VARIABLES.filter((v) => v.kind === kind);
 
@@ -645,9 +726,17 @@ export const SIM_MEMBERS: Record<string, SimMember> = {
   emma: { key: 'emma', name: 'Emma Novak', role: 'Mission operations' },
   david: { key: 'david', name: 'David Liang', role: 'Avionics engineer' },
   arjun: { key: 'arjun', name: 'Arjun Patel', role: 'Ground systems' },
-  danielle: { key: 'danielle', name: 'Danielle Okoro', role: 'Systems integration' },
+  danielle: {
+    key: 'danielle',
+    name: 'Danielle Okoro',
+    role: 'Systems integration',
+  },
   darius: { key: 'darius', name: 'Darius Cole', role: 'Guidance & control' },
-  isabella: { key: 'isabella', name: 'Isabella Cruz', role: 'Payload engineer' },
+  isabella: {
+    key: 'isabella',
+    name: 'Isabella Cruz',
+    role: 'Payload engineer',
+  },
   leila: { key: 'leila', name: 'Leila Haddad', role: 'Range safety officer' },
   lukas: { key: 'lukas', name: 'Lukas Meyer', role: 'Coalition liaison' },
   sofia: { key: 'sofia', name: 'Sofia Bauer', role: 'Contractor — cleared' },
@@ -712,7 +801,16 @@ export const SIM_CHANNELS: SimChannel[] = [
     program: 'Dragon Spacecraft',
     members: {
       added: [M.ethan],
-      kept: [M.aiko, M.marco, M.emma, M.david, M.arjun, M.danielle, M.darius, M.isabella],
+      kept: [
+        M.aiko,
+        M.marco,
+        M.emma,
+        M.david,
+        M.arjun,
+        M.danielle,
+        M.darius,
+        M.isabella,
+      ],
       removed: [],
     },
   },
@@ -739,7 +837,10 @@ export function isOverClearance(
   channel: SimChannel,
   admin: SimulateAdmin = SIMULATE_ADMIN,
 ): boolean {
-  return classificationRank(channel.classification) > classificationRank(admin.clearance);
+  return (
+    classificationRank(channel.classification) >
+    classificationRank(admin.clearance)
+  );
 }
 
 /**
@@ -834,7 +935,9 @@ export const SIM_BATCH_IMPACT: BatchImpact = {
   totalKept: 1720,
   totalRemoved: 38,
   overClearanceRemovalBand: '6–20',
-  topAffected: SIM_CHANNELS.filter((c) => !isOverClearance(c) && channelDiff(c).removed > 0)
+  topAffected: SIM_CHANNELS.filter(
+    (c) => !isOverClearance(c) && channelDiff(c).removed > 0,
+  )
     .map((c) => ({ channel: c, diff: channelDiff(c) }))
     .sort((a, b) => b.diff.removed - a.diff.removed),
 };
@@ -903,7 +1006,8 @@ export function simDefaultPinnedChannel(
   return (
     visibleSimChannels(admin)
       .filter((c) => !isOverClearance(c, admin))
-      .sort((a, b) => channelDiff(b).removed - channelDiff(a).removed)[0] ?? null
+      .sort((a, b) => channelDiff(b).removed - channelDiff(a).removed)[0] ??
+    null
   );
 }
 
@@ -932,7 +1036,8 @@ export function personOutcomeForChannel(
 ): PersonChannelOutcome {
   if (channel.members.added.some((m) => m.key === member.key)) return 'added';
   if (channel.members.kept.some((m) => m.key === member.key)) return 'kept';
-  if (channel.members.removed.some((m) => m.key === member.key)) return 'removed';
+  if (channel.members.removed.some((m) => m.key === member.key))
+    return 'removed';
   return 'not-a-member';
 }
 
@@ -1104,7 +1209,8 @@ export function changesetTotals(rows: ChangesetChannel[]): ChangesetTotals {
   };
 }
 
-export const CHANGESET_OVER_CLEARANCE_NOTE = SIM_BATCH_OVER_CLEARANCE_DESCRIPTION;
+export const CHANGESET_OVER_CLEARANCE_NOTE =
+  SIM_BATCH_OVER_CLEARANCE_DESCRIPTION;
 
 export const CHANGESET_ISSO_NOTE =
   'Routing sends this changeset to a second approver (ISSO) as a persistable approval record. Persistence model is pending PM/Security review.';
@@ -1137,7 +1243,12 @@ export function cohortPreview(
   value: string | null,
   entitled = true,
 ): CohortPreview {
-  if (userAttrId == null || operatorId == null || value == null || value === '') {
+  if (
+    userAttrId == null ||
+    operatorId == null ||
+    value == null ||
+    value === ''
+  ) {
     return { label: '', tone: 'neutral', hint: '' };
   }
   if (!entitled) {
@@ -1174,7 +1285,11 @@ export function cohortPreview(
   if (userAttrId === 'nationality') {
     // A rare single-nationality literal narrows sharply.
     if (value === 'AUS' || value === 'CAN') {
-      return { label: '~ 0 users — this may match no one', tone: 'narrow', hint };
+      return {
+        label: '~ 0 users — this may match no one',
+        tone: 'narrow',
+        hint,
+      };
     }
     return { label: '~ 20–50 users match', tone: 'neutral', hint };
   }
@@ -1240,7 +1355,9 @@ export const VALID_TEST_MATCHING_PANELS: TestMatchingPanelId[] = [
 export function isTestMatchingPanel(
   value: string | null,
 ): value is TestMatchingPanelId {
-  return value != null && (VALID_TEST_MATCHING_PANELS as string[]).includes(value);
+  return (
+    value != null && (VALID_TEST_MATCHING_PANELS as string[]).includes(value)
+  );
 }
 
 // ─── Simplified-editor additive model (Simplified/ scene ONLY) ────────────────
@@ -1264,7 +1381,9 @@ export const SCHEMA_PAIR: Record<string, string> = {
 };
 
 /** The single schema-paired channel variable for a user attribute, if any. */
-export function pairedChannelVar(userAttrId: string): ChannelVarOption | undefined {
+export function pairedChannelVar(
+  userAttrId: string,
+): ChannelVarOption | undefined {
   const varId = SCHEMA_PAIR[userAttrId];
   return varId ? channelVar(varId) : undefined;
 }
@@ -1610,7 +1729,9 @@ export const simplifiedChannelById = (id: string) =>
 export const SIMPLIFIED_DEFAULT_CHANNEL_ID = 'smt-innovation';
 
 /** Short "+X / −Y" affected summary for a View 1 channel row. */
-export function simplifiedAffectedSummary(channel: SimplifiedTestChannel): string {
+export function simplifiedAffectedSummary(
+  channel: SimplifiedTestChannel,
+): string {
   return `+${channel.allowed.length} allowed · −${channel.removed.length} removed`;
 }
 

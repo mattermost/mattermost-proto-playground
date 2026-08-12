@@ -124,6 +124,7 @@ export function toggleSetterSelection(
 export function summaryChips(
   attribute: HubAttribute,
   cfg: ResourceConfig,
+  aligned = false,
 ): string[] {
   const chips: string[] = [
     cfg.required ? 'Requirement: Required' : 'Requirement: Optional',
@@ -154,7 +155,7 @@ export function summaryChips(
   }
 
   if (cfg.resource === 'Posts') {
-    chips.push(postDisplaySummary(cfg));
+    if (!aligned) chips.push(postDisplaySummary(cfg));
     if (hasInheritanceParent(attribute, 'Posts')) {
       const label = inheritanceChipLabel(cfg);
       if (label) chips.push(label);
@@ -170,7 +171,11 @@ export function summaryChips(
     chips.push('Who sets: None selected');
   }
 
-  if (takesValueList(attribute) && attribute.values.length > 0) {
+  if (
+    !aligned &&
+    takesValueList(attribute) &&
+    attribute.values.length > 0
+  ) {
     const disabled = (cfg.disabledValueIds ?? []).length;
     chips.push(
       disabled === 0
@@ -202,6 +207,7 @@ export function summaryChips(
 export function summaryLine(
   attribute: HubAttribute,
   cfg: ResourceConfig,
+  aligned = false,
 ): string {
   const segments: string[] = [
     cfg.required ? 'Required' : 'Optional',
@@ -234,14 +240,16 @@ export function summaryLine(
   }
 
   if (cfg.resource === 'Posts') {
-    const shown = (cfg.showWhere ?? [])
-      .filter((loc) => loc !== 'Hidden')
-      .map((loc) => postDisplayLabel(loc as PostDisplayLoc));
-    segments.push(
-      shown.length === 0
-        ? 'Display: hidden'
-        : `Display: ${shown.join(' + ')}`,
-    );
+    if (!aligned) {
+      const shown = (cfg.showWhere ?? [])
+        .filter((loc) => loc !== 'Hidden')
+        .map((loc) => postDisplayLabel(loc as PostDisplayLoc));
+      segments.push(
+        shown.length === 0
+          ? 'Display: hidden'
+          : `Display: ${shown.join(' + ')}`,
+      );
+    }
     if (hasInheritanceParent(attribute, 'Posts')) {
       const label = ceilingSummaryLabel(resolveCeiling(cfg));
       if (label) segments.push(label);
@@ -257,7 +265,11 @@ export function summaryLine(
     segments.push('Set by: none');
   }
 
-  if (takesValueList(attribute) && attribute.values.length > 0) {
+  if (
+    !aligned &&
+    takesValueList(attribute) &&
+    attribute.values.length > 0
+  ) {
     const disabled = (cfg.disabledValueIds ?? []).length;
     segments.push(
       disabled === 0

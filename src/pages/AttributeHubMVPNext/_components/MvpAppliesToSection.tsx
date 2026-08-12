@@ -5,15 +5,42 @@ import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
 import EmptyState from '@/components/ui/EmptyState/EmptyState';
 import { resourceIcon } from '@/pages/AttributeManagementHub/resourceIcons';
-import type {
-  HubAttribute,
-  ResourceConfig,
-  ResourceKind,
+import {
+  isSourceOwned,
+  type HubAttribute,
+  type ResourceConfig,
+  type ResourceKind,
 } from '@/pages/AttributeManagementHub/hubData';
+import { readWalkthroughFocus } from '@/components/walkthrough/walkthroughFocus';
 import MvpAddResourceMenu from './MvpAddResourceMenu';
 import MvpResourceEditorBody from './MvpResourceEditorBody';
 import { summaryLine } from './mvpModel';
 import styles from './MvpAppliesToSection.module.scss';
+
+/**
+ * Walkthrough deep links land on a specific sub-control (e.g. `channels-required`)
+ * inside a resource's collapsed card. Map each such focus id to the resource it
+ * lives on so the matching card auto-expands instead of requiring a manual click.
+ */
+const RESOURCE_FOR_FOCUS_ID: Record<string, ResourceKind> = {
+  'applies-users': 'Users',
+  'applies-channels': 'Channels',
+  'applies-posts': 'Posts',
+  'users-profile-display': 'Users',
+  'users-value-visibility': 'Users',
+  'users-who-can-set': 'Users',
+  'self-edit-warning-dialog': 'Users',
+  'channels-required': 'Channels',
+  'channels-default-value': 'Channels',
+  'channels-display-location': 'Channels',
+  'channels-who-can-set': 'Channels',
+  'channels-remove-resource': 'Channels',
+  'posts-required': 'Posts',
+  'posts-default-value': 'Posts',
+  'posts-display-location': 'Posts',
+  'posts-who-can-set': 'Posts',
+  'posts-remove-resource': 'Posts',
+};
 
 export interface MvpAppliesToSectionProps {
   attribute: HubAttribute;
@@ -39,7 +66,14 @@ export default function MvpAppliesToSection({
   allowedOn,
 }: MvpAppliesToSectionProps) {
   const applied = attribute.appliesTo;
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(() => {
+    const focus = readWalkthroughFocus();
+    const resource = focus != null ? RESOURCE_FOR_FOCUS_ID[focus] : undefined;
+    if (resource && applied.some((c) => c.resource === resource)) {
+      return { [resource]: true };
+    }
+    return {};
+  });
   const [highlighted, setHighlighted] = useState<ResourceKind | null>(null);
   const rowRefs = useRef<Partial<Record<ResourceKind, HTMLDivElement>>>({});
 
@@ -72,7 +106,7 @@ export default function MvpAppliesToSection({
   return (
     <div className={styles['applies']}>
       {applied.length === 0 ? (
-        <div className={styles['applies__empty']}>
+        <div className={styles['applies__empty']} data-tour-focus="applies-empty">
           <EmptyState
             title="No resources yet"
             description="Add a resource to apply this attribute to users, channels, or posts."
@@ -97,6 +131,8 @@ export default function MvpAppliesToSection({
             {applied.map((cfg) => {
               const isOpen = !!expanded[cfg.resource];
               const isHighlighted = highlighted === cfg.resource;
+              const removeDisabled =
+                isSourceOwned(attribute) && cfg.resource === 'Users';
               return (
                 <div
                   key={cfg.resource}
@@ -114,6 +150,7 @@ export default function MvpAppliesToSection({
                   ]
                     .filter(Boolean)
                     .join(' ')}
+                  data-tour-focus={`applies-${cfg.resource.toLowerCase()}`}
                 >
                   <div className={styles['row__head-bar']}>
                     <button
@@ -151,10 +188,12 @@ export default function MvpAppliesToSection({
                       ]
                         .filter(Boolean)
                         .join(' ')}
+                      data-tour-focus={`${cfg.resource.toLowerCase()}-remove-resource`}
                       emphasis="Quaternary"
                       size="Small"
                       destructive
-                      tabIndex={isOpen ? 0 : -1}
+                      disabled={removeDisabled}
+                      tabIndex={isOpen && !removeDisabled ? 0 : -1}
                       aria-hidden={!isOpen}
                       onClick={() => onRemoveResource(cfg.resource)}
                     >

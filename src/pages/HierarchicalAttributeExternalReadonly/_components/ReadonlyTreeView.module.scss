@@ -1,0 +1,319 @@
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__filter-note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-l);
+  padding: var(--spacing-xs) var(--spacing-s);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.02);
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    flex: 1 1 260px;
+    min-width: 200px;
+  }
+
+  &__toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+.tree {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+}
+
+.group {
+  display: contents;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-height: 34px;
+  padding: var(--spacing-xxs) var(--spacing-s);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &--stub {
+    background: rgba(var(--center-channel-color-rgb), 0.03);
+  }
+
+  &--disabled {
+    opacity: 0.55;
+  }
+
+  &--match {
+    background: rgba(var(--color-info-rgb), 0.06);
+  }
+
+  &--highlight {
+    background: rgba(var(--color-info-rgb), 0.16);
+  }
+
+  &__gutter {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &__twist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid rgba(var(--button-bg-rgb), 0.72);
+      outline-offset: 1px;
+      border-radius: var(--radius-xs, 2px);
+    }
+  }
+
+  &__twist-spacer {
+    display: inline-block;
+    width: 16px;
+  }
+
+  &__dot {
+    flex-shrink: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full, 999px);
+    box-shadow: 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__multi {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-info);
+  }
+
+  &__chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__flag {
+    font-size: var(--font-size-50);
+    color: var(--color-warning);
+  }
+
+  // Diff badge (import-preview only; default off — never rendered by the
+  // read-only external view). Meaning is carried by the WORD, not colour alone
+  // (AC-16(5) / 508); the tint is a secondary cue.
+  &__diff {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-full, 999px);
+    border: 1px solid transparent;
+    font-size: var(--font-size-25, 10px);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+
+    &--added {
+      color: var(--color-success);
+      border-color: rgba(var(--color-success-rgb), 0.32);
+      background: rgba(var(--color-success-rgb), 0.08);
+    }
+
+    &--changed {
+      color: var(--color-warning);
+      border-color: rgba(var(--color-warning-rgb), 0.32);
+      background: rgba(var(--color-warning-rgb), 0.08);
+    }
+
+    &--removed {
+      color: var(--color-danger);
+      border-color: rgba(var(--color-danger-rgb), 0.32);
+      background: rgba(var(--color-danger-rgb), 0.08);
+    }
+  }
+
+  // Subtle row tint per diff status (secondary to the badge word).
+  &--diff-added {
+    background: rgba(var(--color-success-rgb), 0.04);
+  }
+
+  &--diff-changed {
+    background: rgba(var(--color-warning-rgb), 0.05);
+  }
+
+  &--diff-removed {
+    background: rgba(var(--color-danger-rgb), 0.04);
+  }
+}
+
+// Read-only reference stub occurrence.
+.stub {
+  &__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    font-size: var(--font-size-200);
+    line-height: 1;
+  }
+
+  &__link {
+    padding: 0;
+    border: none;
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    font-family: var(--font-family);
+    font-size: var(--font-size-75);
+    font-style: italic;
+    cursor: pointer;
+    transition: color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--button-bg);
+      text-decoration: underline;
+    }
+  }
+}
+
+// Read-only cross-reference chip (extra parent), when in-place stubs are OFF.
+.pchip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  height: 22px;
+  padding: 0 var(--spacing-xs);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+  border-radius: var(--radius-full, 999px);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  color: rgba(var(--center-channel-color-rgb), 0.75);
+  font-family: var(--font-family);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--center-channel-color);
+  }
+
+  &__label {
+    line-height: 1;
+  }
+
+  &--restricted {
+    border-style: dashed;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: default;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+}
+
+// Count-suppressed masked placeholder: one row per RUN of restricted siblings,
+// no label, no count. AC-16(5) marking without relying on color alone (a lock
+// glyph + the word "Restricted" carry the meaning).
+.restricted {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-height: 34px;
+  padding: var(--spacing-xxs) var(--spacing-s);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(var(--center-channel-color-rgb), 0.02),
+      rgba(var(--center-channel-color-rgb), 0.02) 6px,
+      rgba(var(--center-channel-color-rgb), 0.05) 6px,
+      rgba(var(--center-channel-color-rgb), 0.05) 12px
+    );
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__hint {
+    font-size: var(--font-size-50);
+    font-style: italic;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xxl) var(--spacing-m);
+  border: 1px dashed rgba(var(--center-channel-color-rgb), 0.24);
+  border-radius: var(--radius-s);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  text-align: center;
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__text {
+    margin: 0;
+    max-width: 380px;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}

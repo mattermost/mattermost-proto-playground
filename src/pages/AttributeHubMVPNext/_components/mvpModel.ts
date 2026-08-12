@@ -4,6 +4,8 @@ import {
   defaultResourceConfig,
   postDisplayLabel,
   readIntoActive,
+  SYNC_WHO_SETS,
+  takesValueList,
   whoCanSetIsEditable,
   type HubAttribute,
   type PostDisplayLoc,
@@ -12,8 +14,21 @@ import {
   type WhoCanSet,
   type WhoSets,
 } from '@/pages/AttributeManagementHub/hubData';
-import { mvpNextProfileDisplayLabel } from './mvpNextConstants';
+import {
+  MVP_NEXT_USERS_SETTER_MEMBER_LABEL,
+  mvpNextProfileDisplayInlineSummary,
+  mvpNextProfileDisplayLabel,
+  mvpSetterRoleDisplayLabel,
+} from './mvpNextConstants';
+import { syncSetterDisplayLabel } from './mvpTerms';
 import { readUsersSetterMode } from './MvpNextUsersWhoCanSetEditor';
+
+function whoSetsDisplayLabel(attribute: HubAttribute, setter: string): string {
+  if (SYNC_WHO_SETS.includes(setter as WhoSets)) {
+    return syncSetterDisplayLabel(attribute, setter);
+  }
+  return mvpSetterRoleDisplayLabel(setter);
+}
 
 /**
  * MVP (P0) applies-to model. Local copy trimmed to P0 scope:
@@ -129,10 +144,21 @@ export function summaryChips(
 
   const setters = selectedSetters(cfg);
   if (cfg.resource === 'Users') {
-    const mode = readUsersSetterMode(cfg);
-    chips.push(`Who sets: ${mode === 'sysadmin' ? 'Sysadmin' : 'Member'}`);
+    if (
+      cfg.whoCanSet.relationalDefault != null &&
+      SYNC_WHO_SETS.includes(cfg.whoCanSet.relationalDefault)
+    ) {
+      chips.push(
+        `Who sets: ${syncSetterDisplayLabel(attribute, cfg.whoCanSet.relationalDefault)}`,
+      );
+    } else {
+      const mode = readUsersSetterMode(cfg);
+      chips.push(
+        `Who sets: ${mode === 'sysadmin' ? mvpSetterRoleDisplayLabel('System admin') : MVP_NEXT_USERS_SETTER_MEMBER_LABEL}`,
+      );
+    }
   } else if (setters.length === 1) {
-    chips.push(`Who sets: ${setters[0]}`);
+    chips.push(`Who sets: ${whoSetsDisplayLabel(attribute, setters[0])}`);
   } else if (setters.length > 1) {
     chips.push(`Who sets: ${setters.length} roles`);
   } else if (cfg.required) {
@@ -170,9 +196,7 @@ export function summaryLine(
   }
 
   if (cfg.resource === 'Users') {
-    segments.push(
-      mvpNextProfileDisplayLabel(cfg.userProfileDisplay).toLowerCase(),
-    );
+    segments.push(mvpNextProfileDisplayInlineSummary(cfg.userProfileDisplay));
     segments.push(
       readIntoActive(attribute)
         ? 'Visibility: own values only'
@@ -202,10 +226,21 @@ export function summaryLine(
 
   const setters = selectedSetters(cfg);
   if (cfg.resource === 'Users') {
-    const mode = readUsersSetterMode(cfg);
-    segments.push(`Who sets: ${mode === 'sysadmin' ? 'Sysadmin' : 'Member'}`);
+    if (
+      cfg.whoCanSet.relationalDefault != null &&
+      SYNC_WHO_SETS.includes(cfg.whoCanSet.relationalDefault)
+    ) {
+      segments.push(
+        `Set by ${syncSetterDisplayLabel(attribute, cfg.whoCanSet.relationalDefault)}`,
+      );
+    } else {
+      const mode = readUsersSetterMode(cfg);
+      segments.push(
+        `Who sets: ${mode === 'sysadmin' ? mvpSetterRoleDisplayLabel('System admin') : MVP_NEXT_USERS_SETTER_MEMBER_LABEL}`,
+      );
+    }
   } else if (setters.length === 1) {
-    segments.push(`Set by ${setters[0]}`);
+    segments.push(`Set by ${whoSetsDisplayLabel(attribute, setters[0])}`);
   } else if (setters.length > 1) {
     segments.push(`Set by ${setters.length} roles`);
   } else if (cfg.required) {
@@ -231,4 +266,33 @@ export function summaryLine(
 /** Fresh default config for a newly-enabled resource. */
 export function newResourceConfig(resource: ResourceKind): ResourceConfig {
   return defaultResourceConfig(resource);
+}
+
+/** Channels/Posts with Required on must pick a default when values are assignable. */
+export function resourceBindingMissingRequiredDefault(
+  attribute: HubAttribute,
+  config: ResourceConfig,
+): boolean {
+  if (config.resource !== 'Channels' && config.resource !== 'Posts') {
+    return false;
+  }
+  if (!config.required) {
+    return false;
+  }
+  if (!whoCanSetIsEditable(attribute, config)) {
+    return false;
+  }
+  if (!takesValueList(attribute)) {
+    return false;
+  }
+  if (assignableValuesForResource(attribute, config).length === 0) {
+    return false;
+  }
+  return !config.defaultValueId;
+}
+
+export function attributeMissingRequiredDefault(attribute: HubAttribute): boolean {
+  return attribute.appliesTo.some((cfg) =>
+    resourceBindingMissingRequiredDefault(attribute, cfg),
+  );
 }

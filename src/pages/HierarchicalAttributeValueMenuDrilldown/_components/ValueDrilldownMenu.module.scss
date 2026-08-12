@@ -1,0 +1,162 @@
+.value-drilldown {
+  position: relative;
+  width: 312px;
+
+  &--compact {
+    width: 284px;
+  }
+
+  &__surface {
+    width: 100%;
+    max-width: none;
+    padding-top: 0;
+  }
+
+  // Header sits outside the menu list, so it is styled as panel chrome rather
+  // than as a row.
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs);
+  }
+
+  &__level {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    margin-left: -4px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-s);
+    background: none;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.12);
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--button-bg);
+    }
+  }
+
+  // Root level: the field name, as an eyebrow. Matches the inline build exactly.
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-50);
+    letter-spacing: var(--letter-spacing-wide-1);
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    // Inside a level the header names a VALUE, so it is set as a value: sentence
+    // case, full contrast, one step up.
+    &--level {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+      letter-spacing: normal;
+      text-transform: none;
+      color: var(--center-channel-color);
+    }
+  }
+
+  // Ancestors of the current level. One line, always — the middle is dropped in
+  // copy rather than wrapped, because two header lines cost more than the hop.
+  &__crumb {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0 var(--spacing-xxs) var(--spacing-xxs);
+  }
+
+  &__separator {
+    height: 1px;
+    margin: var(--spacing-xxs) var(--spacing-xs);
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  // The children of the level. No per-level indent exists in this build — the
+  // panel body IS the level, so depth is carried by the header, not by padding.
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__group-label {
+    display: block;
+    padding: var(--spacing-xxs) var(--spacing-xs) 2px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-50);
+    letter-spacing: var(--letter-spacing-wide-1);
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-s) var(--spacing-s) var(--spacing-m);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__footer {
+    display: block;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Level changes move focus to a row and the header is outside the menu, so the
+  // new level is announced here or not at all.
+  &__announce {
+    @include visually-hidden;
+  }
+}

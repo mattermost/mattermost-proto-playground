@@ -1,0 +1,42 @@
+.hover-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  &__bubble {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-xxs));
+    left: 50%;
+    z-index: 30;
+    width: max-content;
+    max-width: 260px;
+    transform: translateX(-50%) scale(0.9);
+    transform-origin: bottom center;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity var(--duration-quick) var(--ease-exit),
+      transform var(--duration-quick) var(--ease-exit);
+  }
+
+  &:hover &__bubble,
+  &:focus-within &__bubble {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    transition:
+      opacity var(--duration-quick) var(--ease-entrance),
+      transform var(--duration-quick) var(--ease-entrance);
+  }
+
+  &--end &__bubble {
+    left: auto;
+    right: 0;
+    transform: translateX(0) scale(0.9);
+    transform-origin: bottom right;
+  }
+
+  &--end:hover &__bubble,
+  &--end:focus-within &__bubble {
+    transform: translateX(0) scale(1);
+  }
+}

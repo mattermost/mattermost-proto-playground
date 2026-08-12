@@ -35,7 +35,7 @@ export default function MvpAddResourceMenu({
   const available = MVP_RESOURCES.filter((r) => !applied.includes(r));
 
   return (
-    <div>
+    <div data-tour-focus="add-resource-menu">
       <div ref={triggerRef}>
         <Button
           emphasis={emphasis}

@@ -47,12 +47,32 @@ import AttributeManagementClassificationSetup from '@/pages/AttributeManagementC
 import MembershipPolicyEditorGeneric from '@/pages/MembershipPolicyEditorGeneric/MembershipPolicyEditorGeneric';
 import CreateChannelClassificationPicker from '@/pages/CreateChannelClassificationPicker/CreateChannelClassificationPicker';
 import AttributeManagementHub from '@/pages/AttributeManagementHub/AttributeManagementHub';
+import HierarchicalAttributeAuthoring from '@/pages/HierarchicalAttributeAuthoring/HierarchicalAttributeAuthoring';
+import HierarchicalAttributeAuthoringV2 from '@/pages/HierarchicalAttributeAuthoringV2/HierarchicalAttributeAuthoringV2';
+import HierarchicalAttributeAuthoringRefined from '@/pages/HierarchicalAttributeAuthoringRefined/HierarchicalAttributeAuthoringRefined';
+import HierarchicalAttributeAuthoringV3 from '@/pages/HierarchicalAttributeAuthoringV3/HierarchicalAttributeAuthoringV3';
+import HierarchicalAttributeAuthoringV3EqualParents from '@/pages/HierarchicalAttributeAuthoringV3EqualParents/HierarchicalAttributeAuthoringV3EqualParents';
+import HierarchicalAttributeValuePicker from '@/pages/HierarchicalAttributeValuePicker/HierarchicalAttributeValuePicker';
+import HierarchicalAttributeValueMenu from '@/pages/HierarchicalAttributeValueMenu/HierarchicalAttributeValueMenu';
+import HierarchicalAttributeValueMenuDrilldown from '@/pages/HierarchicalAttributeValueMenuDrilldown/HierarchicalAttributeValueMenuDrilldown';
+import ValueMenuUserPage from '@/pages/HierarchicalAttributeValueMenu/ValueMenuUserPage';
+import ValueMenuChannelPage from '@/pages/HierarchicalAttributeValueMenu/ValueMenuChannelPage';
+import HierarchicalAttributeAccessView from '@/pages/HierarchicalAttributeAccessView/HierarchicalAttributeAccessView';
+import HierarchicalAttributeBoundedValue from '@/pages/HierarchicalAttributeBoundedValue/HierarchicalAttributeBoundedValue';
+import HierarchicalAttributeNonTree from '@/pages/HierarchicalAttributeNonTree/HierarchicalAttributeNonTree';
+import HierarchicalAttributeDiagramHub from '@/pages/HierarchicalAttributeDiagramHub/HierarchicalAttributeDiagramHub';
+import HierarchicalAttributeExternalReadonly from '@/pages/HierarchicalAttributeExternalReadonly/HierarchicalAttributeExternalReadonly';
+import HierarchicalAttributeImport from '@/pages/HierarchicalAttributeImport/HierarchicalAttributeImport';
+import HierarchicalAttributeImportMvp from '@/pages/HierarchicalAttributeImportMvp/HierarchicalAttributeImportMvp';
 import AttributeHubBasicsAdvanced from '@/pages/AttributeHubBasicsAdvanced/AttributeHubBasicsAdvanced';
 import AttributeHubStreamlined from '@/pages/AttributeHubStreamlined/AttributeHubStreamlined';
 import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubSimplified';
 import AttributeHubSimplifiedInlineSummary from '@/pages/AttributeHubSimplifiedInlineSummary/AttributeHubSimplifiedInlineSummary';
+import AttributeHubChannelAligned from '@/pages/AttributeHubChannelAligned/AttributeHubChannelAligned';
+import AttributeHubChannelAlignedPerResource from '@/pages/AttributeHubChannelAlignedPerResource/AttributeHubChannelAlignedPerResource';
 import AttributeHubMVP from '@/pages/AttributeHubMVP/AttributeHubMVP';
 import AttributeHubMVPNext from '@/pages/AttributeHubMVPNext/AttributeHubMVPNext';
+import AttributeManagementWalkthrough from '@/pages/AttributeHubMVPNext/Walkthrough/AttributeManagementWalkthrough';
 import WhoCanSetOptions from '@/pages/WhoCanSetOptions/WhoCanSetOptions';
 import GlobalMembershipPolicyList from '@/pages/GlobalMembershipPolicy/List/GlobalMembershipPolicyList';
 import GlobalMembershipPolicyWalkthrough from '@/pages/GlobalMembershipPolicy/Walkthrough/GlobalMembershipPolicyWalkthrough';
@@ -74,6 +94,7 @@ import ChannelAttributesPrimary from '@/pages/ChannelAttributes/ChannelAttribute
 import ChannelAttributesVariantA from '@/pages/ChannelAttributes/variants/VariantAHeaderDensity';
 import ChannelAttributesVariantB from '@/pages/ChannelAttributes/variants/VariantBBannerComposition';
 import ChannelAttributesPropagation from '@/pages/ChannelAttributes/propagation/PropagationHarness';
+import ClassificationClearanceQuestions from '@/pages/ClassificationClearanceQuestions/ClassificationClearanceQuestions';
 
 export type PrototypeGroup =
   | 'navigation'
@@ -108,6 +129,230 @@ export const GROUP_META: Record<PrototypeGroup, GroupMeta> = {
     label: 'Platform & Calls',
     accentColor: 'var(--color-cyan-400)',
   },
+};
+
+// ── Initiatives ──────────────────────────────────────────────────────────────
+// A finer-grained axis than PrototypeGroup: the actual project/initiative a
+// prototype belongs to. PrototypeGroup stays the broad category (drives card
+// accent color + the "Recently Updated" tag); Initiative drives the accordion
+// grouping on the index page. `group` on InitiativeMeta is the category the
+// initiative rolls up into.
+
+export type Initiative =
+  | 'global-navigation'
+  | 'attribute-management'
+  | 'global-membership-policies'
+  | 'channel-attributes'
+  | 'hierarchical-attributes'
+  | 'channel-permission-rules'
+  | 'team-membership-policies'
+  | 'session-attributes'
+  | 'data-spillage'
+  | 'discoverable-private-channels'
+  | 'program-based-encryption'
+  | 'platform-calls'
+  | 'other';
+
+export type InitiativeMeta = {
+  label: string;
+  group: PrototypeGroup;
+  blurb?: string;
+};
+
+export const INITIATIVE_META: Record<Initiative, InitiativeMeta> = {
+  'attribute-management': {
+    label: 'Attribute Management',
+    group: 'zero-trust-abac',
+    blurb:
+      'Define-once attribute catalog — hub, System Console variations, and the ruthlessly-scoped MVP.',
+  },
+  'global-membership-policies': {
+    label: 'Global Membership Policies',
+    group: 'zero-trust-abac',
+    blurb:
+      'System-level membership policies: editors, simulate surfaces, and two-uses disambiguation.',
+  },
+  'channel-attributes': {
+    label: 'Channel Attributes & Smart Labeling',
+    group: 'zero-trust-abac',
+    blurb: 'Attribute identity on channels with server-side need-to-know masking.',
+  },
+  'hierarchical-attributes': {
+    label: 'Hierarchical Attributes',
+    group: 'zero-trust-abac',
+    blurb: 'Ranked attribute inheritance — dual-direction leader / challenger flows.',
+  },
+  'channel-permission-rules': {
+    label: 'Channel Permission Rules',
+    group: 'zero-trust-abac',
+    blurb: 'Channel-level permission authoring and the rule-vs-policy clarity direction.',
+  },
+  'team-membership-policies': {
+    label: 'Team Membership Policies',
+    group: 'zero-trust-abac',
+    blurb: 'ABAC enforcement extended to team join / leave flows.',
+  },
+  'session-attributes': {
+    label: 'Session & Environmental Attributes',
+    group: 'zero-trust-abac',
+    blurb: 'Session-scoped Zero Trust access decisions and policy-outcome simulation.',
+  },
+  'global-navigation': {
+    label: 'Global Navigation Redesign',
+    group: 'navigation',
+    blurb: 'Competing global navigation architectures on a locked information architecture.',
+  },
+  'data-spillage': {
+    label: 'Data Spillage Handling',
+    group: 'data-policy',
+    blurb: '“Seen by” / “Delivered to” exposure rosters, removal flows, and console config.',
+  },
+  'discoverable-private-channels': {
+    label: 'Discoverable Private Channels (DPC)',
+    group: 'data-policy',
+    blurb:
+      'Per-channel discoverability for private channels — Browse, switcher, request-to-join, and four design approaches.',
+  },
+  'program-based-encryption': {
+    label: 'Program-Based Encryption',
+    group: 'encryption-privacy',
+    blurb: 'SAP channel key isolation, content masking, and masked-policy notices.',
+  },
+  'platform-calls': {
+    label: 'Platform & Calls',
+    group: 'calls-platform',
+    blurb: 'Calls participant flows and template / reference prototypes.',
+  },
+  other: {
+    label: 'Other',
+    group: 'calls-platform',
+    blurb: 'Prototypes not yet assigned to an initiative — add a mapping in INITIATIVE_OF.',
+  },
+};
+
+// Prototype id → initiative. Centralized here (rather than a field on every
+// entry) so the entry list stays untouched; a prototype with no mapping falls
+// back to 'other', a visible cue on the index page to tag it here.
+const INITIATIVE_OF: Record<string, Initiative> = {
+  // Global Navigation Redesign
+  'nav-concepts-index': 'global-navigation',
+  'nav-n01-products-top-strip': 'global-navigation',
+  'nav-n02-products-left-rail': 'global-navigation',
+  'nav-n03-classic-team-strip': 'global-navigation',
+  'nav-n04-compact-team': 'global-navigation',
+  'nav-n05-channel-centric': 'global-navigation',
+
+  // Attribute Management
+  'who-can-set-options': 'attribute-management',
+  'narrow-track-classification-options': 'attribute-management',
+  'attribute-management-hub': 'attribute-management',
+  'classification-clearance-questions': 'attribute-management',
+  'attribute-hub-mvp': 'attribute-management',
+  'attribute-management-walkthrough': 'attribute-management',
+  'attribute-hub-mvp-next': 'attribute-management',
+  'attribute-hub-simplified': 'attribute-management',
+  'attribute-hub-simplified-inline-summary': 'attribute-management',
+  'attribute-hub-channel-aligned': 'attribute-management',
+  'attribute-hub-channel-aligned-per-resource': 'attribute-management',
+  'attribute-hub-basics-advanced': 'attribute-management',
+  'attribute-hub-streamlined': 'attribute-management',
+  'attribute-management-classification-setup': 'attribute-management',
+  'create-channel-classification-picker': 'attribute-management',
+  'attribute-management': 'attribute-management',
+  'attribute-management-table': 'attribute-management',
+  'attribute-management-resource-values': 'attribute-management',
+  'attribute-management-console': 'attribute-management',
+  'attribute-management-console-counts': 'attribute-management',
+  'attribute-management-b': 'attribute-management',
+  'attribute-system': 'attribute-management',
+
+  // Global Membership Policies
+  'membership-policy-editor-generic': 'global-membership-policies',
+  'global-membership-policy-walkthrough': 'global-membership-policies',
+  'global-membership-policies': 'global-membership-policies',
+  'global-membership-policy-long-form': 'global-membership-policies',
+  'global-membership-policy-simplified': 'global-membership-policies',
+  'global-membership-policy-simplified-walkthrough': 'global-membership-policies',
+  'global-membership-policy-guided': 'global-membership-policies',
+  'global-membership-policy-simulate': 'global-membership-policies',
+  'global-membership-policy-simulate-chips': 'global-membership-policies',
+  'global-membership-policy-simulate-inline-strip': 'global-membership-policies',
+  'global-membership-policy-simulate-pinpoint': 'global-membership-policies',
+  'global-membership-policy-simulate-changeset': 'global-membership-policies',
+  'global-membership-policy-cohort-preview': 'global-membership-policies',
+  'gmp-disambiguation-role-framing': 'global-membership-policies',
+  'gmp-disambiguation-split-card': 'global-membership-policies',
+  'gmp-disambiguation-tabbed-revamp': 'global-membership-policies',
+
+  // Hierarchical Attributes
+  'hierarchical-attributes-landing': 'hierarchical-attributes',
+  'hierarchical-attributes-d1': 'hierarchical-attributes',
+  'hierarchical-attributes-d1-modal-only': 'hierarchical-attributes',
+  'hierarchical-attributes-d1-policy-editor': 'hierarchical-attributes',
+  'hierarchical-attributes-d1-user-config': 'hierarchical-attributes',
+  'hierarchical-attributes-d2': 'hierarchical-attributes',
+  'hierarchical-attributes-d3': 'hierarchical-attributes',
+  'hierarchical-attributes-state-matrix': 'hierarchical-attributes',
+  'hierarchical-attribute-type-authoring': 'hierarchical-attributes',
+  'hierarchical-attribute-authoring-v2': 'hierarchical-attributes',
+  'hierarchical-attribute-authoring-refined': 'hierarchical-attributes',
+  'hierarchical-attribute-nontree': 'hierarchical-attributes',
+  'hierarchical-attribute-diagram-hub': 'hierarchical-attributes',
+  'hierarchical-attribute-external-readonly': 'hierarchical-attributes',
+  'hierarchical-attribute-import': 'hierarchical-attributes',
+  'hierarchical-attribute-import-mvp': 'hierarchical-attributes',
+  'hierarchical-attribute-authoring-v3': 'hierarchical-attributes',
+  'hierarchical-attribute-authoring-v3-equal-parents': 'hierarchical-attributes',
+  'hierarchical-attribute-value-picker': 'hierarchical-attributes',
+  'hierarchical-attribute-value-menu': 'hierarchical-attributes',
+  'hierarchical-attribute-value-menu-drilldown': 'hierarchical-attributes',
+  'hierarchical-attribute-value-menu-user': 'hierarchical-attributes',
+  'hierarchical-attribute-value-menu-channel': 'hierarchical-attributes',
+  'hierarchical-attribute-access-view': 'hierarchical-attributes',
+  'hierarchical-attribute-bounded-value': 'hierarchical-attributes',
+
+  // Channel Attributes & Smart Labeling
+  'channel-attributes': 'channel-attributes',
+  'channel-attributes-primary': 'channel-attributes',
+  'channel-attributes-variant-a': 'channel-attributes',
+  'channel-attributes-variant-b': 'channel-attributes',
+  'channel-attributes-propagation': 'channel-attributes',
+
+  // Channel Permission Rules
+  'channel-permission-rules': 'channel-permission-rules',
+  'channel-permission-rules-final': 'channel-permission-rules',
+
+  // Team Membership Policies
+  'membership-policies-teams': 'team-membership-policies',
+
+  // Session & Environmental Attributes
+  'session-attributes': 'session-attributes',
+  'simulate-access': 'session-attributes',
+
+  // Data Spillage Handling
+  'data-spillage-seen-by': 'data-spillage',
+  'data-spillage-delivered-wizard': 'data-spillage',
+  'data-spillage-delivered-inline': 'data-spillage',
+  'data-spillage-delivered-hybrid': 'data-spillage',
+  'data-spillage-delivered-v4': 'data-spillage',
+  'data-spillage-console': 'data-spillage',
+
+  // Discoverable Private Channels (DPC)
+  'dpc-comparison': 'discoverable-private-channels',
+  'dpc-v2-a1': 'discoverable-private-channels',
+  'dpc-v2-walkthrough': 'discoverable-private-channels',
+  'dpc-a1': 'discoverable-private-channels',
+  'dpc-a2': 'discoverable-private-channels',
+  'dpc-a3': 'discoverable-private-channels',
+  'dpc-a4': 'discoverable-private-channels',
+
+  // Program-Based Encryption
+  'pbe-final-v2': 'program-based-encryption',
+  'masking-notice-options': 'program-based-encryption',
+
+  // Platform & Calls
+  'external-call-participants': 'platform-calls',
+  'example-flow': 'platform-calls',
 };
 
 export type PrototypeCollection = 'attribute-management';
@@ -164,6 +409,140 @@ export const PROTOTYPES: PrototypeEntry[] = [
     isPrimary: true,
     collections: ['attribute-management'],
   },
+  // Graph (Hierarchical) attribute type — Phase 6a authoring surface. Toggleable
+  // read-only hierarchy view = SD-1 Roster (off) vs SD-3 Ledger + Map (on). (2026-07-17)
+  {
+    id: 'hierarchical-attribute-type-authoring',
+    label: 'Hierarchical Attribute Type · Authoring',
+    path: '/prototypes/hierarchical-attribute-type-authoring',
+    component: HierarchicalAttributeAuthoring,
+    group: 'zero-trust-abac',
+    description:
+      'Phase 6a authoring surface for the Graph (Hierarchical) attribute type, built inside System Console → Attribute Management. A single field-detail page with a toggleable read-only hierarchy view: toggle OFF = SD-1 "Roster" (parent-picker Options table only); toggle ON = SD-3 "Ledger + Map" (table + read-only multi-appears DAG tree + cross-highlight). Real edge/parent DAG model (dozens-scale programs; genuine multi-parent nodes Mission Casper + JTF Sentinel) with inline cycle / depth-100 / limit rejection, two-reason delete gate (distinct tooltips), pre-commit-blocking rename→policy-impact warning with cross-owner blast radius, reachability "Test coverage" preview, batch import/verify showing the full edge list, shared-Option-pool applies-to, read-only inherited rows, and a simulated live-update indicator. Deep-linkable via ?sd=roster|ledger and ?state=empty|populated|validation-rejected|delete-blocked|read-only-inherited|import-validating|import-summary|loading|error. Masking / policy editor are a later pass.',
+    addedAt: '2026-07-17',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Graph (Hierarchical) attribute type — Phase 6b authoring surface, RD-C
+  // "Anchor + Reference Stubs". Extends the DECIDED AttributeHubSimplified detail
+  // shell (does not mutate it). One editable anchor per option + read-only stub
+  // rows under extra parents; multi-parent authoring via a new Parents pane in
+  // the value-editor popover. (2026-07-23)
+  {
+    id: 'hierarchical-attribute-authoring-v2',
+    label: 'Hierarchical Attribute · Authoring',
+    path: '/prototypes/hierarchical-attribute-authoring-v2',
+    component: HierarchicalAttributeAuthoringV2,
+    group: 'zero-trust-abac',
+    description:
+      'Phase 6b authoring surface for the Graph (Hierarchical) attribute type, built as an extension of the DECIDED Attribute Management → Simplified detail shell (Definition: Name/Type/Options/Who-can-edit + Applies-to). Implements RD-C "Anchor + Reference Stubs": a multi-parent option is fully editable in ONE place (the anchor, under its first-declared parent, reusing the base tree row), and shows as a read-only, dimmed reference stub (↳ "also appears here · edit under {parent}", activatable to jump to the anchor) under every additional parent. Second+ parents are added from a new Parents pane in the chip popover (mirrors the base Rank pane); the picker excludes self + descendants so cycles are unselectable and commit re-checks fail-closed. A "Make this the primary location" re-anchors; a quiet "Collapse cross-references" toggle degrades to RD-A for dense graphs. Adjacency-list store, tree is a projection. Per-value policy usage cut (VP-1); delete gate is structural only. Programs seed, code-names only (Mission Casper, JTF Sentinel). A bake-off ?ui= dimension selects how a 2nd+ parent is represented — stubs (read-only reference rows, the control), chips (extra parents as removable chips on the node’s own row, no stub rows), or hybrid (chips by default plus an on-demand spatial peek that transiently materializes one node’s stubs). All three share the same adjacency model, popover (now with a read-only Children list), progressive-disclosure toggle, cycle safety and structural delete gate. Deep-links: ?ui=stubs|chips|hybrid (default stubs) × ?state=populated|empty|cycle-rejected|delete-blocked|loading|error.',
+    addedAt: '2026-07-23',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Graph (Hierarchical) attribute type — refined tree authoring surface. Starts
+  // FROM the GA-4 hybrid (chips + peek) design and applies a senior-UX polish
+  // pass. NEW, self-contained; imports the v2 adjacency model read-only, does not
+  // modify any existing prototype. (2026-07-24)
+  {
+    id: 'hierarchical-attribute-authoring-refined',
+    label: 'Hierarchical Attribute · Authoring (refined tree)',
+    path: '/prototypes/hierarchical-attribute-authoring-refined',
+    component: HierarchicalAttributeAuthoringRefined,
+    group: 'zero-trust-abac',
+    description:
+      'Refined tree authoring surface for the Graph (Hierarchical) attribute type, built inside System Console → Attribute Management. Starts from the GA-4 “Chips + peek (hybrid)” design and applies a senior-UX polish pass (authoring surface only). Refinements over hybrid: (1) a single global “Show cross-references in place” toggle above the tree replaces the per-node peek — on = every multi-parent node materializes its read-only stubs in place, off = extra parents ride as chips on the node’s own row (chips keep activate-to-jump); (2) the left gutter is a chevron + a grip drag handle — the up/down reorder arrows are gone (sibling order is cosmetic in a DAG); (3) drag a row by its grip onto another row to re-parent it (or onto the root drop zone to make it top-level), cycle-safe and fail-closed, with a keyboard-operable “Move under…” equivalent in the popover Parents pane; (4) a right-side action cluster (add child · parents · rename · delete) revealed on hover/focus and kept in the tab order so it is keyboard-reachable; (5) inline “Add option under” from the cluster; (6) the two toggles grouped into one compact toolbar with a one-line explainer and tightened row height. Same functionality/guardrails as hybrid: adjacency-list store with a projected tree, one editable home (anchor = first parent, re-anchorable), cycle safety (descendant exclusion + fail-closed re-check), structural-only delete gate (VP-1, no per-value policy), single-column role=tree. Programs seed (SEED_V2), code-names only (Mission Casper, JTF Sentinel). Deep-links: ?state=populated|empty|cycle-rejected|delete-blocked|loading|error · ?seed=classification (swaps the graph for classification tiers with handling markings as children — NOFORN hangs under Confidential/Secret/Top Secret at once; used by the classification-vs-clearance customer deck) · ?demo=off (hides the prototype-demo band for customer embeds) · ?focus=options (scrolls straight to the option tree).',
+    addedAt: '2026-07-24',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Graph (Hierarchical) attribute type — Phase 6 NON-TREE re-pass. Three
+  // genuinely non-tree representations of the same multi-parent DAG on one
+  // ?viz= switcher; NO indented tree in any of them. Authoring surface only.
+  // Shares the v2 adjacency model (read-only import). (2026-07-23)
+  {
+    id: 'hierarchical-attribute-nontree',
+    label: 'Hierarchical Attribute · Non-tree representations',
+    path: '/prototypes/hierarchical-attribute-nontree',
+    component: HierarchicalAttributeNonTree,
+    group: 'zero-trust-abac',
+    description:
+      'Phase 6 non-tree re-pass for the Graph (Hierarchical) attribute type, built inside System Console → Attribute Management. Explores THREE genuinely non-tree representations of the same multi-parent DAG value structure on one ?viz= switcher — no indented tree in any of them. viz=table: NT-1 lineage / two-column relationships table (one row per value; Parents and Children as removable chips; symmetric edge editing) with NT-2 path-list folded in as an expandable per-row reachability layer (primary path + N more → all full root→node paths as text). viz=matrix: NT-3 adjacency matrix (rows = potential parents, columns = potential children; toggle a cell to set/remove one edge — the most direct edge editor; diagonal + would-loop cells disabled with reasons; family-clustered ordering). viz=graph: NT-4 read-only depth-layered node-link diagram (solid line = primary/anchor parent, dotted = additional parents — the org-chart multi-parent idiom) PAIRED with an authoritative keyboard/SR editable node/edge list; the diagram is aria-hidden decorative and the list is the source of truth. All three share the SAME imported v2 adjacency model, the SAME demo band, the SAME data (SEED_V2 populated; empty create-from-scratch), and the SAME functionality: add value, add/remove a parent edge (cycle-safe — picker/cells exclude descendants, commit re-checks fail-closed), and a structural-only delete gate (VP-1, no per-value policy). Programs seed, code-names only (Mission Casper 2 parents, JTF Sentinel 3 parents). Deep-links: ?viz=table|matrix|graph (default table) × ?state=populated|empty|cycle-rejected|delete-blocked|loading|error.',
+    addedAt: '2026-07-23',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Graph (Hierarchical) attribute type — NT-4b interactive node-link diagram
+  // dropped into the FULL attribute detail page (Definition + Applies-to), with
+  // an improved add-value UX (on-node ghost create-and-connect) and a redesigned
+  // parent/child popover (single creatable combobox per direction). NEW and
+  // self-contained; imports the shared adjacency model read-only, forks the NT-4b
+  // diagram + popover, and reuses the AttributeHubSimplified panel layout without
+  // modifying any existing prototype. (2026-07-24)
+  {
+    id: 'hierarchical-attribute-diagram-hub',
+    label: 'Hierarchical Attribute · Diagram (hub page)',
+    path: '/prototypes/hierarchical-attribute-diagram-hub',
+    component: HierarchicalAttributeDiagramHub,
+    group: 'zero-trust-abac',
+    description:
+      'NT-4b interactive node-link diagram embedded in the full attribute-management detail page, built inside System Console → Attribute Management. Mirrors the AttributeHubSimplified detail layout: a Definition ConsolePanel (Name · Type=Hierarchical · Options=the interactive diagram · Who-can-edit) plus an Applies-to ConsolePanel — the diagram is the Options content inside the panel, not a bare full-screen canvas. Two authoring improvements over NT-4b: (1) on-node ghost "+" affordances — hovering or keyboard-focusing a node reveals a ghost add-parent (upstream/left) and ghost add-child (downstream/right) that create a new value AND auto-connect it in one gesture (cycle-safe/fail-closed), then open the new node for rename, with the standalone "Add value" control kept for dropping an independent top-level node; (2) a redesigned per-node popover whose Parents and Children sub-panes each collapse the old Select+Add plus TextInput+Create double-mechanism into ONE creatable combobox ("Add or create a parent/child…") — type to filter eligible existing values, or create-and-link a brand-new one from the same input, keyboard-operable (type, arrow, Enter). Removable parent/child chips and a lighter exclusion note are kept, as are rename, color swatches, deactivate, and the structural-only delete gate (VP-1). Shares the v2 adjacency model (read-only import); cycle-safe both directions; no per-value policy. Ghosts are the sighted fast path, the combobox is the accessible equivalent; connector lines are aria-hidden and nodes are focusable buttons carrying their local edges in the aria-label. Programs seed, code-names only. Deep-links: ?state=populated|empty|cycle-rejected|delete-blocked|loading|error.',
+    addedAt: '2026-07-24',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Graph (Hierarchical) attribute type — EXTERNAL read-only VIEW. A separate
+  // surface for an attribute whose values are owned/synced by an external source
+  // (a UAS): view + filter the hierarchy, with non-accessible values masked or
+  // hidden. All editing affordances removed. NEW and self-contained; imports the
+  // v2 adjacency model + refined projection read-only; modifies no existing
+  // prototype. (2026-07-28)
+  {
+    id: 'hierarchical-attribute-external-readonly',
+    label: 'Hierarchical Attribute · External (read-only)',
+    path: '/prototypes/hierarchical-attribute-external-readonly',
+    component: HierarchicalAttributeExternalReadonly,
+    group: 'zero-trust-abac',
+    description:
+      'Read-only viewer for a Graph (Hierarchical) attribute whose values are managed OUTSIDE Mattermost (a Unified Attribute Service / external source) and synced in. Built inside System Console → Attribute Management on the same detail shell as the authoring surfaces, but every edit affordance is stripped: no Add value / Add child, no drag / reparent grip, no right-side action cluster, no create controls, no editable popover, no "Allow cross-references" authoring toggle. A managed-source banner states values are owned by the external source and read-only here. Clicking a value opens a READ-ONLY detail popover (parents + children as non-interactive chips, color, source — no controls). Kept as pure view aids: the expand/collapse chevron and the "Show cross-references in place" viewing toggle (anchor spine + read-only reference stubs). Adds a filter box that narrows to matching values while keeping their ANCESTORS for path context, plus a "Show only values I can access" toggle. Non-accessible values are handled two ways via ?mask=: masked (identity suppressed but hierarchy POSITION kept — a lock/"Restricted" placeholder, AC-16(5) marking without color-alone) or hidden (omitted entirely, most count-leak-safe). Count-leak defense (threat T1): contiguous restricted siblings collapse into ONE non-enumerated "Restricted" affordance — never N numbered placeholders, never a "+N" count. Single-column role=tree, no canvas, reasonable 508/keyboard/SR. Shares the SEED_V2 adjacency graph (Mission Casper, JTF Sentinel), code-names only. Deep-links: ?state=populated|empty|filtered-no-results|loading|error (default populated) × ?mask=masked|hidden (default masked, orthogonal to state).',
+    addedAt: '2026-07-28',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Import a hierarchical (multi-parent DAG) value structure — the plan/apply
+  // commit flow (04d Direction B, hybridized with C's diff surface). NEW and
+  // self-contained; imports the read-only tree + v2 model + graph math read-only.
+  // Adds only a backward-compatible, default-off diff-badge prop to the shared
+  // ReadonlyTreeRow — existing prototypes behave unchanged. (2026-07-29)
+  {
+    id: 'hierarchical-attribute-import',
+    label: 'Hierarchical Attribute · Import',
+    path: '/prototypes/hierarchical-attribute-import',
+    component: HierarchicalAttributeImport,
+    group: 'zero-trust-abac',
+    description:
+      'Full-page import flow for a Graph (Hierarchical) attribute whose values are authored OUTSIDE Mattermost and uploaded from local media (air-gapped IL5 — file upload, never a live pull). Implements the fail-closed “plan/apply” commit spine: upload → validate-ALL (all-or-nothing, read-only) → human-verifiable PREVIEW → explicit acknowledgement (never one-click) → re-validate + atomic commit with a stale-guard → result. The PREVIEW renders the parsed graph into the SAME read-only role=tree the values will live in (verify the DAG shape, not a flat list). On RE-IMPORT it renders added/changed/removed diff badges on the tree PLUS a companion screen-reader-primary lineage-table diff (changed subset by default, show-all toggle) — the AC-3 surface where a single re-parented edge is obvious. Violations list EVERY problem (cycle + duplicate + orphan) and block commit; there is no “commit anyway” and no skip-bad-rows. Idempotent “No changes” result on a matching re-import; fail-closed “nothing was committed” rollback on error; stale-guard blocks a commit if the graph drifted since preview. Notes where the AU-2/AU-3 audit before/after edge diff fires. Shares SEED_V2 (Mission Casper, JTF Sentinel), code-names only. Deep-links: ?step=upload|validating|violations|preview-first|preview-reimport|ack|committing|committed|no-changes|error|stale × ?payload=clean|reimport|violations × ?drift=1 (simulate concurrent re-sync).',
+    addedAt: '2026-07-29',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  // Hierarchical value import — the LIGHTWEIGHT P0 counterpart to the full
+  // plan/apply flow. Built inside the Attribute Management MVP edit screen: the
+  // whole import collapses to one inline action in the Definition Options row.
+  // NEW and self-contained; imports the MVP screen styles + read-only tree
+  // projection + graph math read-only; modifies no existing prototype. (2026-07-29)
+  {
+    id: 'hierarchical-attribute-import-mvp',
+    label: 'Hierarchical Attribute · Import (MVP, lightweight)',
+    path: '/prototypes/hierarchical-attribute-import-mvp',
+    component: HierarchicalAttributeImportMvp,
+    group: 'zero-trust-abac',
+    description:
+      'Lightweight P0 inline import of a hierarchical (graph/DAG) value set, built INSIDE the Attribute Management MVP edit-attribute screen — the lightweight counterpart to the heavyweight full-page plan/apply flow at /prototypes/hierarchical-attribute-import. The entire import collapses to a SINGLE action inside the Definition panel’s Options row (this is a Hierarchical attribute, which the MVP type list otherwise excludes): pick a canned file → click Import → the whole payload is parsed + validated inline (all-or-nothing). Valid applies IMMEDIATELY — the hierarchy renders in place as a compact read-only indented tree with a light inline confirmation (“Imported 14 options from programs.json”) and an Undo — with NO preview page, NO acknowledge checkbox, and NO separate commit button anywhere. Invalid applies nothing and shows a compact inline error listing every problem (“Couldn’t import — 1 loop, 1 duplicate name, 1 unknown parent”) with a “Choose another file” affordance. Re-import over existing options just replaces them with a one-line caution (“This replaced the previous N options”) + Undo — no diff, no multi-step. Undo is the safety net in place of an acknowledge gate. No backend: the file pick is backed by two canned edge-list payloads (clean 14-node Programs seed; a draft with a planted cycle + duplicate label + orphan parent) selectable in the demo band. Reuses the MVP console shell + Definition/Applies-to layout, the RD-C read-only tree projection, and the shared graph math (wouldCreateCycle / depthOf / SEED_V2) read-only. Code-names only. Deep-links: ?state=empty|imported|import-error|replace (default empty) × ?payload=clean|violations (default clean).',
+    addedAt: '2026-07-29',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
   // Global Attributes MVP (P0) — ruthlessly-scoped cut for dev handoff (2026-07-08)
   {
     id: 'attribute-hub-mvp',
@@ -172,9 +551,20 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: AttributeHubMVPNext,
     group: 'zero-trust-abac',
     description:
-      'P0 scope cut of Global Attributes (epic MM-69673) — active working iteration. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. System Console Save pattern, Display name field, Users profile display (Always/When set/Hidden), Member/Sysadmin who-can-set, no Usage column. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on, ?resource=Channels|Users|Posts (comma-separated).',
+      'P0 scope cut of Global Attributes (epic MM-69673) — active working iteration. Define an attribute once + choose which of Users/Channels/Posts can use it — no assignment/enforcement. System Console Save pattern, Display name field, Users profile display (Always/When set/Hidden), Member/System Administrator who-can-set, no Usage column. Deep-links: ?attr=<id>, ?flow=new, ?allowed=on, ?resource=Channels|Users|Posts (comma-separated).',
     addedAt: '2026-07-08',
     isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'attribute-management-walkthrough',
+    label: 'Attribute Management · Walkthrough',
+    path: '/prototypes/attribute-management-walkthrough',
+    component: AttributeManagementWalkthrough,
+    group: 'zero-trust-abac',
+    description:
+      'Interactive click-through tour of the shipped Attribute Management (MVP/P0) prototype: why the Hub exists and where it lives, the catalog and its confirmed name/type/delete/deactivate guards, the no-wizard create flow, the Applies-to mechanic across Users/Channels/Posts (including the new self-edit warning for policy-bound attributes), governance and catalog masking, four defense-context customer stories built on the seeded attributes, the Users-vs-Channels/Posts licensing split, mobile posture, and a confirmed-vs-future-considerations wrap-up. Live iframe previews deep-link into `/prototypes/attribute-hub-mvp` via `?attr=`, `?flow=new`, and `?focus=`.',
+    addedAt: '2026-07-30',
     collections: ['attribute-management'],
   },
   {
@@ -212,6 +602,30 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Copy of the Simplified hub with an alternate Applies-to row display: collapsed resources show a single-line secondary summary (key–value segments joined with middle dots, truncated on overflow) under the resource title instead of summary chips. Compare side-by-side with the chip variant. Deep-links: ?attr=<id>, ?flow=new.',
     addedAt: '2026-07-08',
+    collections: ['attribute-management'],
+  },
+  // Channel Attributes walkthrough alignment (2026-08-06)
+  {
+    id: 'attribute-hub-channel-aligned',
+    label: 'Attribute Management · Channel-attributes aligned',
+    path: '/prototypes/attribute-hub-channel-aligned',
+    component: AttributeHubChannelAligned,
+    group: 'zero-trust-abac',
+    description:
+      'Inline-summary hub carrying the decisions from the Channel Attributes walkthrough (2026-08-06). Five changes: (1) the channel banner is no longer classification-only — any attribute type can be banner-eligible, and the hint states that banner attributes concatenate into one strip a channel admin can override; (2) "Display location" becomes "Default display location" with a "Channel admins can change this per channel" opt-in, replacing the hard-coded display logic; (3) a new attribute-level "Changing the value after it\'s set" rule whose options derive from the attribute type — Ranked/Ranked-hierarchical offer raise-only (the default, since raising can only shrink who qualifies), Hierarchical offers narrow-only (descendants of the current option, well-defined on a multi-parent DAG), Multiselect offers add-only/remove-only with an operator caveat because neither direction is unambiguously safe, and Select/Text offer editable or locked; the rule scopes to Channels/Posts/Teams and reflects out to the source system for Users; (4) Required states its consequence — channels created without a value stay locked and an admin is notified — and optional bindings say the attribute can still be added after creation; (5) Classification defers to the Classification Markings page for presets and colors instead of duplicating them. Deep-links: ?attr=<id>, ?flow=new.',
+    addedAt: '2026-08-10',
+    collections: ['attribute-management'],
+  },
+  // Channel-attributes alignment — editability per resource (2026-08-06)
+  {
+    id: 'attribute-hub-channel-aligned-per-resource',
+    label: 'Attribute Management \u00b7 Channel-attributes aligned (per-resource rule)',
+    path: '/prototypes/attribute-hub-channel-aligned-per-resource',
+    component: AttributeHubChannelAlignedPerResource,
+    group: 'zero-trust-abac',
+    description:
+      'Same channel-attributes alignment, with the "Changing the value" rule moved out of Definition and onto each resource inside Applies to \u2014 it sits directly under "Who can set the value", so who sets it and whether they can change it later read as one thought. Because the rule is scoped to the binding, the attribute-level version\u0027s "Applies to Channels, Posts, Teams" explainer and its Users reflection line both disappear; Users simply has no such control, since its values come from the source system. Copy is shortened to a self-describing option list \u2014 Can be changed / Can only be raised / Can only be narrowed / Values can be added, not removed / Values can be removed, not added / Cannot be changed \u2014 with a supporting line only where the label needs one (raise-only shows the concrete allowed direction, locked says to create a new channel instead). Options still derive from attribute type, and each resource can now carry a different rule. Deep-links: ?attr=<id>, ?flow=new.',
+    addedAt: '2026-08-10',
     collections: ['attribute-management'],
   },
   // Drill-in re-ideation after "kitchen sink" feedback — A/B comparison (2026-07-06)
@@ -816,7 +1230,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: DPCComparison,
     group: 'data-policy',
     description:
-      'Side-by-side comparison of four Data Policy Confirmation design approaches.',
+      'Side-by-side comparison of four Discoverable Private Channels design approaches.',
     addedAt: '2025-12-15',
     isPrimary: true,
   },
@@ -847,7 +1261,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: A1,
     group: 'data-policy',
     description:
-      'Direct acknowledgment gate before policy-controlled actions.',
+      'Confirm-and-Commit gate before enabling the Discoverable toggle on a private channel.',
     addedAt: '2025-10-15',
   },
   {
@@ -857,7 +1271,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: A2,
     group: 'data-policy',
     description:
-      'Guided step wizard to declare intent before policy enforcement.',
+      'Multi-step intent wizard before marking a channel as Discoverable.',
     addedAt: '2025-10-15',
   },
   {
@@ -867,7 +1281,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: A3,
     group: 'data-policy',
     description:
-      'Pre-approved recipient list for policy-compliant sharing.',
+      'Curated directory of discoverable private channels with filter chips.',
     addedAt: '2025-10-15',
   },
   {
@@ -877,7 +1291,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: A4,
     group: 'data-policy',
     description:
-      'Async approval request flow for policy overrides.',
+      'Knock-by-reference async approval flow for join requests.',
     addedAt: '2025-10-15',
   },
 
@@ -989,6 +1403,138 @@ export const PROTOTYPES: PrototypeEntry[] = [
     addedAt: '2026-07-09',
     collections: ['attribute-management'],
   },
+  // Running order for the four classification-vs-clearance customer questions.
+  // Frames the EXISTING prototypes rather than adding screens: every stage is
+  // attribute-hub-mvp or global-membership-policy-long-form at a deep-linked
+  // state, or the classification-markings mockup.
+  {
+    id: 'classification-clearance-questions',
+    label: 'Classification vs Clearance · Customer Questions',
+    path: '/prototypes/classification-clearance-questions',
+    component: ClassificationClearanceQuestions,
+    group: 'zero-trust-abac',
+    description:
+      'Sales-runnable running order for the four open classification-vs-clearance questions: one shared value list or two, handling paired with the level or separate, whether clearance is ever actually compared or every user is cleared to system high, and whether the server global classification is enforced as a limit (PRFAQ Theme 3.5). Ask-first by construction: while asking, the question fills the view and the presenter notes are open; the screens stay hidden until an explicit reveal, which collapses the ask to a strip and hands the screen to the prototype (with a Hide-the-visuals return). Alternatives are segregated into labelled APPROACH groups picked before the screen inside them, so three ways of modelling something never read as one three-step flow. No new screens: every stage is `attribute-hub-mvp`, `hierarchical-attribute-authoring-refined` (?seed=classification, handling nested under each tier with NOFORN multi-parent), or `global-membership-policy-long-form`, each deep-linked to the right state (?attr=clearance, ?attr=caveat, ?sim=channel, ?policy=static-values for literal-only rules), or a scrolled region of `classification-markings-concept.png`. Deep link: ?q=1..4.',
+    addedAt: '2026-07-31',
+    collections: ['attribute-management'],
+  },
+  // ── Hierarchical attributes: post-guild-meeting rebuild (2026-08-01) ────────
+  // Four NEW surfaces answering the 2026-07-30 Attributes Guild meeting and a
+  // re-read of the Graph Property Fields + Property Permissions tech specs. All
+  // additive: every earlier hierarchical-attribute prototype is untouched, and
+  // these import the existing DAG math (graphModel.ts) read-only rather than
+  // forking it. See specs/graph-attributes/CHANGE-REQUEST-2026-07-30-guild-alignment.md.
+  {
+    id: 'hierarchical-attribute-authoring-v3',
+    label: 'Hierarchical Attribute · Authoring (v3, corrected)',
+    path: '/prototypes/hierarchical-attribute-authoring-v3',
+    component: HierarchicalAttributeAuthoringV3,
+    group: 'zero-trust-abac',
+    description:
+      'Authoring surface for the Hierarchical (graph) attribute type, rebuilt to fix defects the refined-tree surface shipped with. (1) A display toggle can no longer hide a relationship: every parent edge is always rendered in place, the chips-vs-stubs mode is gone, and the remaining cross-reference setting is authoring-only (it gates CREATING a second parent, never display) — the old toggle silently removed four real parent links from the render, and chips mode made two parents read as childless leaves while their own editor panes listed a child. (2) "Primary parent" is retired: the anchor is derived from parent createAt rather than parentIds[0] (the backend stores parents as an unordered set with no order column), the tag reads "Shown here", the action reads "Show under this parent", and helper text states that all parents grant access equally. (3) The delete gate is DAG-aware — it blocks only on children that would genuinely be orphaned, and names them. (4) Direction-explicit language throughout, because an edge is a privilege grant and not containment: every row carries a persistent "grants access to N values" metric, multi-parent shows a visible "also under X" (the old chip read backwards), adding a parent raises a consequence confirm naming the population that gains access, and a parent with 2+ children carries an inline incomparability note plus a "Link in order…" action that chains them most-privileged-first — the fix for the live TLP ambiguity where the same rendered picture means either unordered facets or a ranked ladder. (5) A real create state intercepts the known-bad merged model: the type chooser leads with the discriminating question and routes "Both — levels AND groups?" to two attributes, states irreversibility on the chooser itself, and detects a single unbranched chain to print the direction sentence. (6) Ownership is read-only in core — three five-rung human ladders plus a machine-owner badge, no add/remove control. Programs seed only; the old classification preset is deliberately NOT carried forward (five unrelated tier roots both over-deny on the level axis and over-grant on the caveat axis). Deep-links: ?state=populated|empty|create|cycle-rejected|delete-blocked|delete-safe|grant-confirm|chain-detected|loading|error · ?demo=off.',
+    addedAt: '2026-08-01',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'hierarchical-attribute-authoring-v3-equal-parents',
+    label: 'Hierarchical Attribute · Authoring (v3, equal parents)',
+    path: '/prototypes/hierarchical-attribute-authoring-v3-equal-parents',
+    component: HierarchicalAttributeAuthoringV3EqualParents,
+    group: 'zero-trust-abac',
+    description:
+      'V3 authoring variant with no home/editing occurrence. Every parent edge renders the same full row — rename, add-child, delete, expand/collapse, and per-parent reordering — instead of pointer rows with "Edit under…". Multi-parent values show a link-icon "N parents" tag on every occurrence; all parents grant equally and the Parents pane lists them without a "Shown here" pin. Same Programs seed, DAG math, grant confirms, and list settings as hierarchical-attribute-authoring-v3. Deep-links: ?state=populated|empty|create|cycle-rejected|delete-blocked|delete-safe|grant-confirm|ordering|single-chain|loading|error · ?ranking=ranked · ?demo=off.',
+    addedAt: '2026-08-05',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'hierarchical-attribute-value-picker',
+    label: 'Hierarchical Attribute · Value picker (multi-tree)',
+    path: '/prototypes/hierarchical-attribute-value-picker',
+    component: HierarchicalAttributeValuePicker,
+    group: 'zero-trust-abac',
+    description:
+      'The value-SELECTION surface for a Hierarchical (graph) attribute whose option pool is a forest — the case an engineer explicitly deferred to design ("how do we present the UX for that when it is different trees?"). Not an authoring surface. Built twice over, because the semantics invert: on the SUBJECT side (assigning programs to a user) selecting a higher value grants more and multiple values are disjunctive; on the RESOURCE side (marking a channel) selecting a higher value makes the channel more accessible and multiple values are CONJUNCTIVE, so adding one narrows who can enter — the opposite of how tags and labels behave. The consequence is a live sentence, not an icon. Redundancy is handled asymmetrically: subject-side {Air Operations, Raptor Flight} is harmless and only flagged, but resource-side the same pair collapses to "Air Operations or above" and leaves the tighter Raptor marking visible yet INERT, so that hard-warns. Cross-tree selection is allowed with an incomparability notice and a live qualifying-user count; zero qualifying users requires an explicit confirm and gates the Create button. One row per value always — never duplicate rows for a multi-parent value — with a breadcrumb path and an "also under" line. Primary control is a search-first flat list with root filter chips (scale-free, one row per value, near-free 508 behaviour as a listbox); secondary is "Browse hierarchy" scoped to a single root. Option pool is masked to the viewer down-set with absolute count suppression: no "+N more", no totals of anything withheld, and out-of-scope typeahead returns plain "No results". Deep-links: ?side=subject|resource · ?state=empty|selected|redundant|inert-marking|cross-tree|zero-qualifying|browse|loading|error · ?viewer=admin|restricted · ?demo=off.',
+    addedAt: '2026-08-01',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'hierarchical-attribute-access-view',
+    label: 'Hierarchical Attribute · Access view (coverage)',
+    path: '/prototypes/hierarchical-attribute-access-view',
+    component: HierarchicalAttributeAccessView,
+    group: 'zero-trust-abac',
+    description:
+      'Read-only access/coverage explainer — the "click a value, see what access you have" surface two stakeholders asked to have in the product after a 3D Three.js visualization was demoed at the 2026-07-30 guild meeting (specs/graph-attributes/graph-attributes-visualization.html, titled "covers() on a classification lattice"). This re-houses that interaction rather than porting it: select a value and everything it covers stays lit while the rest dims, edges carry explicit arrowheads (the existing diagram hub has none, so direction was inferred from left-to-right position — which breaks for exactly the cross-branch edges that matter). The renderer is deliberately NOT 3D: a WebGL canvas has no DOM, keyboard path or screen-reader semantics, which is not shippable in a multi-classification interface; the reference also builds the whole lattice client-side, and value names plus relationships are a compartmentation map. So the diagram is 2D and keyboard-operable (arrow keys follow edges and columns, Enter selects, Escape resets, live region announces each result) with a lineage TABLE as a peer surface usable as the only view — the 508 answer, and the idiom already used for the import preview. Two scopings: admin sees the whole graph, what a value grants, who can already reach it, and the inUseCount/policyRefCount the model has always carried but no prototype rendered; member sees only their own down-set plus their own path. The member variant closes a real leak path — explaining "you can enter because Falcon Wing is above you" discloses an ancestor outside the viewer down-set — by scoping the graph before it reaches the component and re-filtering surviving parent pointers, so no out-of-scope name can surface in a path, a count or a sentence. Deep-links: ?viewer=admin|member · ?select=<value-id> · ?compare=<value-id> · ?view=diagram|table|both · ?state=populated|empty|loading|error · ?demo=off.',
+    addedAt: '2026-08-01',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'hierarchical-attribute-bounded-value',
+    label: 'Hierarchical Attribute · Bounded + inherited values',
+    path: '/prototypes/hierarchical-attribute-bounded-value',
+    component: HierarchicalAttributeBoundedValue,
+    group: 'zero-trust-abac',
+    description:
+      'UX for two backend behaviours from the Property Permissions Proposal that had no design: BOUNDS (a value capped by another entity value — write.value.bounds:[linked] is the server-side guard that rejects a save above the cap on every write including later edits, read.option.bounds:[linked] is only the convenience that narrows the picker) and DERIVATION (a post inheriting its channel value, where there is NO per-value provenance marker at all — a stored value is explicit, absence means derived, so reverting to inherited is literally clearing the value). Caps chain: post <= channel <= system. Fail-closed is absolute: an unresolvable reference offers NOTHING and rejects the save, and the copy says so without ever implying "no limit" — a genuinely new empty state meaning fail-closed rather than unconfigured. Three surfaces: post composer (inherited default, capped picker, clear-to-re-inherit, rejected write with no bypass, cap-unresolvable), channel settings (raise-but-never-lower, the visible cap chain, and the still-open question of what happens when a parent value later drops below already-set child values), and System Console setup (derivation mode, which bound leaf is the guard vs the convenience, the linked-field relationship that makes comparison meaningful, and the second-field escape hatch since derivation cannot vary per value). On the open parent-drops-below-child question this prototype takes a position to argue against: BLOCK the change, name the conflicting posts, resolve each explicitly — because flagging leaves content mismarked indefinitely, re-checking silently rewrites other authors markings, and a read-side clamp is already ruled out as under-marking. Marked as a proposal, not settled backend behaviour. Ordered levels are modelled as the rank reading AND as a strict parent chain so the "graph generalises rank to within" claim is checkable; a Programs example exercises true within semantics with a multi-parent node. Deep-links: ?surface=post|channel|setup · ?state=inherited|explicit|rejected|cap-unresolved|conflict|graph-cap · ?scheme=levels|programs · ?demo=off.',
+    addedAt: '2026-08-01',
+    collections: ['attribute-management'],
+  },
+  // Hierarchical attribute VALUE MENU — the lightweight value picker on the three
+  // real host surfaces. Rebuilt 2026-08-05 from role=menu + flyout submenus to
+  // role=tree + inline expansion: a selectable branch value is unimplementable in
+  // a menu (ARIA defines activating a parent menuitem as "open the submenu", so
+  // there is no keyboard path to selecting it), Compass forbids submenu-of-submenu,
+  // and shipping Mattermost makes a submenu parent non-activatable on desktop.
+  // hierarchical-attribute-value-picker stays as the flat-list alternative.
+  {
+    id: 'hierarchical-attribute-value-menu',
+    label: 'Hierarchical Attribute · Value menu (all surfaces)',
+    path: '/prototypes/hierarchical-attribute-value-menu',
+    component: HierarchicalAttributeValueMenu,
+    group: 'zero-trust-abac',
+    description:
+      'Lightweight value picker for a Hierarchical (graph) attribute, built to the three real host surfaces rather than a full-page panel. A combobox trigger discloses a role=tree popup with aria-multiselectable, and children expand INLINE and indented — no flyouts, which is what lets a ~300px popover live inside a 400px sidebar. Every row is a treeitem: a 24x32 chevron button (its own accessible name, "Expand Air Operations") expands, and the rest of the row toggles selection, so a branch value is selectable without ambiguity — Carbon states this row rule directly, and it is the whole reason to use a tree instead of a menu. Keyboard is the APG treeview contract: arrows move, Right/Left expand and collapse, Space toggles selection, and expansion and selection share no key. Selection is STRICT — selecting a parent selects only that parent, because implicit descendant selection would silently widen an access grant — but a collapsed parent surfaces what it hides as "2 selected inside" rather than by checking its own box, which would misstate what is assigned. A multi-parent value renders ONCE, at its canonical parent, with "Also under Dragon Spacecraft" on its row; it does not repeat under its other parents, so there is one value, one control, one state, and no aria-owns question for a DAG node. No position numerals anywhere in the picker: the shipping [2] Captain / [4] TS badge works because rank is one flat global ladder, whereas a graph ordinal is per-parent, so two chips both reading 2 would imply a comparability the data lacks — numerals stay in the authoring surface. Typing flips the body to a flat one-row-per-value result list with breadcrumb paths. Consequence copy stays tiny: one aria-live footer line, plus inline notices under the field only for the two dangerous resource-side cases (an ancestor making a tighter marking inert, and nothing qualifying). Deep-links: ?surface=user|create-channel|channel-info · ?ranking=ranked|unranked (order only) · ?state=empty|selected|redundant|inert-marking|nothing-qualifies|search|expanded · ?demo=off.',
+
+    addedAt: '2026-08-04',
+    isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'hierarchical-attribute-value-menu-user',
+    label: 'Hierarchical Attribute · Value menu (user attributes)',
+    path: '/prototypes/hierarchical-attribute-value-menu-user',
+    component: ValueMenuUserPage,
+    group: 'zero-trust-abac',
+    description:
+      'The subject side on its own: System Console → User Configuration, with the two-column USER ATTRIBUTES grid rendered for context (Device_Type as chips, Department, Rank as "2 Captain", Clearance as "4 TS", Resource) and Program as the live hierarchical multiselect. Selected values sit as chips with a remove affordance inside the control, matching Device_Type — no position numerals on them, since a per-parent ordinal shown without its parent means nothing. Subject-side redundancy — holding both a value and its own ancestor — is a quiet hint with a one-click fix, never a block, because recording a specific read-on has audit value. Deep-links: ?ranking=unranked|ranked · ?state=empty|selected|redundant|search|submenu · ?demo=off.',
+    addedAt: '2026-08-04',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'hierarchical-attribute-value-menu-channel',
+    label: 'Hierarchical Attribute · Value menu (channel)',
+    path: '/prototypes/hierarchical-attribute-value-menu-channel',
+    component: ValueMenuChannelPage,
+    group: 'zero-trust-abac',
+    description:
+      'The resource side: the Channel Info right-hand sidebar by default, and the create-channel modal via ?surface=create-channel. The RHS is the tightest space of the three surfaces, and it is why the picker expands inline rather than in flyouts — a 300px menu with side flyouts does not fit a 400px sidebar. Both hosts show CHANNEL ATTRIBUTES rows with a value chip as the menu trigger; create-channel also exercises a flat single-select Classification with coloured chips (UNCLASSIFIED / CUI / CONFIDENTIAL / SECRET / TOP SECRET) alongside the hierarchical Program, so the flat and hierarchical cases appear in one host. Resource-side semantics are conjunctive: every marking must be held, so adding a value NARROWS who can enter — the opposite of a tag. Two inline warnings, only when they apply: an ancestor that makes a tighter marking inert, and a marking nobody qualifies for. Deep-links: ?surface=channel-info|create-channel · ?ranking=unranked|ranked · ?state=empty|selected|inert-marking|nothing-qualifies|search|submenu · ?demo=off.',
+    addedAt: '2026-08-04',
+    collections: ['attribute-management'],
+  },
+  // Drill-in submenu variation of the value menu — the standard-submenu answer,
+  // for side-by-side comparison with the inline-tree version. (2026-08-05)
+  {
+    id: 'hierarchical-attribute-value-menu-drilldown',
+    label: 'Hierarchical Attribute · Value menu (drill-in submenus)',
+    path: '/prototypes/hierarchical-attribute-value-menu-drilldown',
+    component: HierarchicalAttributeValueMenuDrilldown,
+    group: 'zero-trust-abac',
+    description:
+      'The same value picker as hierarchical-attribute-value-menu, using DRILL-IN SUBMENUS instead of an inline tree — built to compare the two, since the spec can only specify one. Drilling into a parent replaces the panel body with that parent level rather than opening a flyout: no flyout means no ~300px panel beside a ~300px menu inside a 400px sidebar, no depth cap, and no conflict with Compass forbidding submenu-triggering-submenu. Mattermost already ships this shape — sub_menu.tsx converts submenus to a full drill-in on mobile and renders its header above and OUTSIDE role=menu, which is where this puts the back button and level name. Two rules make a selectable branch conformant here: a navigation row is navigation ONLY (plain menuitem with aria-haspopup, no checkmark, no aria-checked — ARIA defines activating a parent menuitem as opening its submenu, so such a row has no keyboard path to selection), and the parent value lives as the FIRST menuitemcheckbox of its own level above a separator, so selection state exists in exactly one place. This is the inverse of the earlier flyout build, which made the root row selectable AND duplicated the parent inside the submenu — one value, two roles, state in two places. The self row is distinguished from the header three ways: the header names a location with a back arrow, the row states its grant ("and everything under it"), and an "Inside Falcon Wing" heading separates it from the children. Because every root value is a navigation row, selection is disclosed as TEXT on those rows ("Selected", "2 selected inside") — a statement rather than a state, so nothing announces a state the row cannot change. Typing exits the drill-in entirely to a flat one-row-per-value result list with breadcrumb paths, flush with no reserved chevron column — the escape hatch from N round trips, which is this pattern main cost versus the tree. Multi-parent values render once at their canonical parent with "Also under Dragon Spacecraft". No position numerals anywhere. Trade-off against the tree: more familiar and more compact, but one level at a time, so what is selected across branches is not visible at a glance and siblings cannot be compared laterally. Deep-links: ?surface=user|create-channel|channel-info · ?ranking=ranked|unranked · ?state=empty|selected|redundant|inert-marking|nothing-qualifies|search|drilled · ?demo=off.',
+    addedAt: '2026-08-05',
+    collections: ['attribute-management'],
+  },
 ];
 
 export function getPrototypeByPath(pathname: string): PrototypeEntry | undefined {
@@ -1003,4 +1549,32 @@ export function getCollectionPrototypes(
   return PROTOTYPES.filter((p) => p.collections?.includes(collection)).sort(
     (a, b) => b.addedAt.localeCompare(a.addedAt),
   );
+}
+
+export function getInitiativeOf(id: string): Initiative {
+  return INITIATIVE_OF[id] ?? 'other';
+}
+
+export type InitiativeGroup = {
+  initiative: Initiative;
+  entries: PrototypeEntry[];
+};
+
+// Group entries by initiative. Each initiative's entries are sorted newest-first,
+// and the initiatives themselves are ordered by their most-recent entry.
+export function getInitiativeGroups(
+  entries: PrototypeEntry[] = PROTOTYPES,
+): InitiativeGroup[] {
+  const byInitiative = new Map<Initiative, PrototypeEntry[]>();
+  for (const p of entries) {
+    const initiative = getInitiativeOf(p.id);
+    if (!byInitiative.has(initiative)) byInitiative.set(initiative, []);
+    byInitiative.get(initiative)!.push(p);
+  }
+  for (const arr of byInitiative.values()) {
+    arr.sort((a, b) => b.addedAt.localeCompare(a.addedAt));
+  }
+  return [...byInitiative.entries()]
+    .map(([initiative, es]) => ({ initiative, entries: es }))
+    .sort((a, b) => b.entries[0].addedAt.localeCompare(a.entries[0].addedAt));
 }

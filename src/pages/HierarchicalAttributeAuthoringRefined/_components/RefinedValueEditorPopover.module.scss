@@ -1,0 +1,170 @@
+// Fixed-size popover shell. Owns the chrome (border · radius · bg · shadow) so
+// the base `.ve` element classes can be reused for the inner controls without
+// depending on the `.ve` root. A STABLE width + STABLE height means switching
+// main ↔ Parents ↔ Children never grows/shrinks/moves the box; overflow is
+// absorbed by the internal Scrollbars, not by the outer box changing size.
+.popover {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 384px;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elevation-3);
+
+  &__viewport {
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s);
+  }
+}
+
+.gve {
+  // "Move under…" block — the keyboard-operable reparent (drag equivalent).
+  &__move {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-s);
+  }
+
+  &__move-title {
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__move-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__move-top {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    align-self: flex-start;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--button-bg);
+    font-family: var(--font-family);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    &:hover:not(:disabled) {
+      text-decoration: underline;
+    }
+  }
+
+  &__primary-tag {
+    margin-left: auto;
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-info);
+  }
+
+  &__make-primary {
+    margin-left: auto;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--button-bg);
+    font-family: var(--font-family);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    &:hover:not(:disabled) {
+      text-decoration: underline;
+    }
+  }
+
+  &__reject {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    margin: 0 var(--spacing-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.08);
+    color: var(--color-danger);
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+  }
+
+  &__picker-note {
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-xs);
+    font-size: var(--font-size-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    line-height: 1.4;
+  }
+
+  // Custom-color control — styled like a swatch, wrapping a native color input.
+  &__custom {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px dashed rgba(var(--center-channel-color-rgb), 0.32);
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    &--active {
+      border-style: solid;
+      border-color: var(--button-bg);
+      color: var(--button-color);
+    }
+  }
+
+  &__custom-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    opacity: 0;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+}

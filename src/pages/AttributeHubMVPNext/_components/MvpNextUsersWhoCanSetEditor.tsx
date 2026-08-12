@@ -4,13 +4,20 @@ import Radio from '@/components/ui/Radio/Radio';
 import {
   SYNC_WHO_SETS,
   accessCap,
+  type HubAttribute,
   type ResourceConfig,
 } from '@/pages/AttributeManagementHub/hubData';
+import { syncSetterDisplayLabel, syncSetterLockedHint } from './mvpTerms';
+import {
+  MVP_NEXT_USERS_SETTER_MEMBER_LABEL,
+  MVP_NEXT_USERS_SETTER_SYSADMIN_LABEL,
+} from './mvpNextConstants';
 import styles from './MvpNextUsersWhoCanSetEditor.module.scss';
 
 export type UsersSetterMode = 'member' | 'sysadmin';
 
 export interface MvpNextUsersWhoCanSetEditorProps {
+  attribute: HubAttribute;
   config: ResourceConfig;
   onChange: (next: Partial<ResourceConfig>) => void;
 }
@@ -30,8 +37,9 @@ function applyUsersSetterMode(mode: UsersSetterMode): Partial<ResourceConfig> {
   };
 }
 
-/** Users binding — Member or Sysadmin who-can-edit-value control (MVP · Next). */
+/** Users binding — Member or System Administrator who-can-edit-value control (MVP · Next). */
 export default function MvpNextUsersWhoCanSetEditor({
+  attribute,
   config,
   onChange,
 }: MvpNextUsersWhoCanSetEditorProps) {
@@ -44,9 +52,11 @@ export default function MvpNextUsersWhoCanSetEditor({
   if (syncLocked) {
     return (
       <div className={styles['locked']}>
-        <Chip size="Medium">{wcs.relationalDefault}</Chip>
+        <Chip size="Medium">
+          {syncSetterDisplayLabel(attribute, wcs.relationalDefault)}
+        </Chip>
         <span className={styles['locked__hint']}>
-          Set by the sync system — not editable.
+          {syncSetterLockedHint(attribute, wcs.relationalDefault)}
         </span>
       </div>
     );
@@ -62,7 +72,7 @@ export default function MvpNextUsersWhoCanSetEditor({
         checked={mode === 'member'}
         onChange={() => onChange(applyUsersSetterMode('member'))}
       >
-        Member
+        {MVP_NEXT_USERS_SETTER_MEMBER_LABEL}
       </Radio>
       <Radio
         className={styles['setter__radio']}
@@ -72,7 +82,7 @@ export default function MvpNextUsersWhoCanSetEditor({
         checked={mode === 'sysadmin'}
         onChange={() => onChange(applyUsersSetterMode('sysadmin'))}
       >
-        Sysadmin
+        {MVP_NEXT_USERS_SETTER_SYSADMIN_LABEL}
       </Radio>
     </div>
   );

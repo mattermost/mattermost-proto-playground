@@ -23,6 +23,10 @@ export interface AppliesToSectionProps {
   onRemoveResource: (resource: ResourceKind) => void;
   /** Collapsed row summary — chips (default) or single-line secondary text. */
   rowSummaryVariant?: AppliesToRowSummaryVariant;
+  /** Channel-attributes alignment (walkthrough 2026-08-06). */
+  channelAlignment?: boolean;
+  /** Show the "Changing the value" rule on each binding instead of on the attribute. */
+  perResourceEditability?: boolean;
 }
 
 /**
@@ -37,6 +41,8 @@ export default function AppliesToSection({
   onAddResource,
   onRemoveResource,
   rowSummaryVariant = 'chips',
+  channelAlignment = false,
+  perResourceEditability = false,
 }: AppliesToSectionProps) {
   const applied = attribute.appliesTo;
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -143,7 +149,7 @@ export default function AppliesToSection({
                       </span>
                       {rowSummaryVariant === 'chips' ? (
                         <span className={styles['row__chips']}>
-                          {summaryChips(attribute, cfg).map((chip) => (
+                          {summaryChips(attribute, cfg, channelAlignment).map((chip) => (
                             <Chip key={chip} size="Small">
                               {chip}
                             </Chip>
@@ -152,9 +158,9 @@ export default function AppliesToSection({
                       ) : (
                         <span
                           className={styles['row__meta']}
-                          title={summaryLine(attribute, cfg)}
+                          title={summaryLine(attribute, cfg, channelAlignment)}
                         >
-                          {summaryLine(attribute, cfg)}
+                          {summaryLine(attribute, cfg, channelAlignment)}
                         </span>
                       )}
                     </span>
@@ -194,6 +200,8 @@ export default function AppliesToSection({
                           onAddResourceValue(cfg.resource, label)
                         }
                         onReadIntoFilteringChange={onReadIntoFilteringChange}
+                        channelAlignment={channelAlignment}
+                        perResourceEditability={perResourceEditability}
                       />
                     )}
                   </div>

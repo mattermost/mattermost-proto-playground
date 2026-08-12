@@ -1,0 +1,108 @@
+.drilldown-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  width: 100%;
+  min-height: 32px;
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  border-radius: var(--radius-s);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &:focus-visible {
+    outline: none;
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: inset 0 0 0 2px var(--button-bg);
+  }
+
+  &__control {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // Same width as the checkbox, drawn as nothing. Alignment without a claim.
+  &__control-slot {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__chip {
+    display: inline-flex;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  &__qualifier,
+  &__also,
+  &__note,
+  &__path {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__qualifier,
+  &__also {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__path {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  // Selection a navigation row holds or conceals. Text, not a control: it is the
+  // one honest way to disclose state on a row that cannot change it.
+  &__note {
+    color: var(--button-bg);
+  }
+
+  &__chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 20px;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &--navigation {
+    &:hover .drilldown-row__chevron {
+      color: var(--center-channel-color);
+    }
+  }
+
+  // The level's own value. Sits above the separator, so it gets a faint fill to
+  // read as the panel's subject rather than as the first of the children.
+  &--self {
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &--selected {
+    .drilldown-row__control {
+      color: var(--button-bg);
+    }
+  }
+}

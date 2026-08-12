@@ -116,12 +116,13 @@ export default function SimplifiedWhoCanSetEditor({
     : 'Enter roles to allow setting this value…';
 
   if (inheritLock.locked && inheritLock.parent) {
-    const parentLabel = inheritLock.parent.toLowerCase();
+    // Singular noun — the parent kind is plural ("Teams"), the possessive is not.
+    const parentLabel = inheritLock.parent.replace(/s$/, '').toLowerCase();
     return (
       <SectionNotice
         type="Info"
         title="Locked to inherited value"
-        description={`This value is locked to the ${parentLabel}’s value. Turn off "Lock to ${parentLabel}’s value" on ${resource} to allow changes.`}
+        description={`Every ${resource.replace(/s$/, '').toLowerCase()} uses the ${parentLabel}’s value, so there is no setter to choose. Change "Inherit from ${inheritLock.parent.replace(/s$/, '')}" above to allow edits.`}
       />
     );
   }

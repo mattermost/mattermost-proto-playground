@@ -1,0 +1,19 @@
+@keyframes anchored-value-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.anchored-value-menu {
+  position: fixed;
+  z-index: 1000;
+  width: max-content;
+  animation: anchored-value-menu-in var(--duration-quick) var(--ease-entrance);
+  transform-origin: top left;
+}

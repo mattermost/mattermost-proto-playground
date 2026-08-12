@@ -1,39 +1,38 @@
 import { useRef, useState, type DragEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
-import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
-import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
-import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
+import OpenInNewIcon from '@mattermost/compass-icons/components/open-in-new';
 import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
-import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
+import SyncIcon from '@mattermost/compass-icons/components/sync';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
-import IconButton from '@/components/ui/IconButton/IconButton';
 import Chip from '@/components/ui/Chip/Chip';
 import SearchInput from '@/components/ui/SearchInput/SearchInput';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import Select from '@/components/ui/Select/Select';
 import EmptyState from '@/components/ui/EmptyState/EmptyState';
-import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
 import FixedPopoverMenu from '@/components/ui/FixedPopoverMenu/FixedPopoverMenu';
-import PopoverMenu, {
-  PopoverMenuDivider,
-} from '@/components/ui/PopoverMenu/PopoverMenu';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import InfoHint from '@/pages/AttributeManagementHub/_components/InfoHint/InfoHint';
+import PopoverMenu from '@/components/ui/PopoverMenu/PopoverMenu';
 import {
   SOURCE_FILTERS,
-  isPolicyLocked,
   isSourceOwned,
-  policyLabel,
   type HubAttribute,
   type ResourceKind,
 } from '@/pages/AttributeManagementHub/hubData';
 import { MVP_RESOURCES } from './mvpModel';
-import { connectionStatus, optionCountLabel } from './mvpTerms';
-import MvpConnectionPill from './MvpConnectionPill';
+import { mvpDeleteBlockedTooltip } from './mvpNextConstants';
+import {
+  isCoreSyncSource,
+  pluginStatus,
+  optionCountLabel,
+  managedSourceListingLabel,
+  mvpManualSourceOwnershipLabel,
+  mvpSourceFilterLabel,
+} from './mvpTerms';
+import MvpPluginStatusPill from './MvpPluginStatusPill';
+import MvpAttrTypeLabel from './MvpAttrTypeLabel';
+import MvpAttributeRowActionsMenu from './MvpAttributeRowActionsMenu';
 import styles from './MvpCatalogListing.module.scss';
 
 /** The seed's ranked-hierarchical attribute — read-only in the MVP listing. */
@@ -53,15 +52,15 @@ export interface MvpCatalogListingProps {
   onOpenDetail: (id: string) => void;
   onOpenMarkings: (id: string) => void;
   onReorderAttributes: (activeId: string, overId: string) => void;
-  onDeactivate: (id: string) => void;
+  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 }
 
 /**
  * MVP attribute listing: search + resource/source filters + "+ New attribute" +
- * row actions (edit / deactivate / delete). Drag-to-reorder matches Simplified.
- * The ranked-hierarchical Classification attribute renders read-only with a note
- * that it is configured in its own section.
+ * row actions (edit / duplicate / delete). Drag-to-reorder matches Simplified.
+ * The ranked-hierarchical Classification attribute renders read-only and opens
+ * the dedicated markings page (open-in-new affordance).
  */
 export default function MvpCatalogListing({
   attributes,
@@ -77,14 +76,13 @@ export default function MvpCatalogListing({
   onOpenDetail,
   onOpenMarkings,
   onReorderAttributes,
-  onDeactivate,
+  onDuplicate,
   onDelete,
 }: MvpCatalogListingProps) {
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
   const [menuId, setMenuId] = useState<string | null>(null);
-  const menuWrapRef = useRef<HTMLDivElement>(null);
 
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -129,7 +127,7 @@ export default function MvpCatalogListing({
     <div className={styles['listing']}>
       <div className={styles['filters']}>
         <div className={styles['filters__controls']}>
-          <div className={styles['filters__search']}>
+          <div className={styles['filters__search']} data-tour-focus="catalog-search">
             <SearchInput
               className={styles['filters__searchInput']}
               size="Medium"
@@ -184,7 +182,7 @@ export default function MvpCatalogListing({
             </FixedPopoverMenu>
           </div>
 
-          <div className={styles['filters__source']}>
+          <div className={styles['filters__source']} data-tour-focus="source-filter">
             <Select
               className={styles['filters__select']}
               size="Medium"
@@ -194,7 +192,7 @@ export default function MvpCatalogListing({
             >
               {SOURCE_FILTERS.map((s) => (
                 <option key={s} value={s}>
-                  {s}
+                  {mvpSourceFilterLabel(s)}
                 </option>
               ))}
             </Select>
@@ -202,6 +200,7 @@ export default function MvpCatalogListing({
         </div>
 
         <Button
+          data-tour-focus="new-attribute-button"
           emphasis="Primary"
           leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
           onClick={onNewAttribute}
@@ -209,12 +208,6 @@ export default function MvpCatalogListing({
           New attribute
         </Button>
       </div>
-
-      <SectionNotice
-        type="Hint"
-        title="Edit access via System Console roles"
-        description="Delegated Granular Administration controls who can manage attributes across the catalog. It does not assign per-attribute edit permissions."
-      />
 
       {filtered.length === 0 ? (
         <div className={styles['listing__empty']}>
@@ -252,7 +245,8 @@ export default function MvpCatalogListing({
             <tbody>
               {filtered.map((a) => {
                 const synced = isSourceOwned(a);
-                const locked = isPolicyLocked(a);
+                const deleteBlockedReason = mvpDeleteBlockedTooltip(a);
+                const deleteBlocked = deleteBlockedReason != null;
                 const readOnly = a.id === READONLY_ATTR_ID;
                 const isDragging = dragId === a.id;
                 const isDragOver = dragOverId === a.id && dragId !== a.id;
@@ -305,17 +299,14 @@ export default function MvpCatalogListing({
                       </button>
                     </td>
                     <td>
-                      <div className={styles['table__name-block']}>
-                        <span className={styles['table__name']}>{a.name}</span>
-                        {readOnly && (
-                          <span className={styles['table__sub']}>
-                            Read-only — open the markings page
-                          </span>
-                        )}
-                      </div>
+                      <span className={styles['table__name']}>{a.name}</span>
                     </td>
                     <td>
-                      <span className={styles['table__type']}>{a.type}</span>
+                      <MvpAttrTypeLabel
+                        type={a.type}
+                        label={readOnly ? 'Hierarchical' : undefined}
+                        className={styles['table__type']}
+                      />
                     </td>
                     <td>
                       <div className={styles['table__chips']}>
@@ -331,13 +322,27 @@ export default function MvpCatalogListing({
                     <td>
                       {synced ? (
                         <div className={styles['table__source']}>
-                          <span className={styles['table__source-name']}>
-                            {a.source.system}
+                          <span className={styles['table__source-label']}>
+                            <Icon
+                              size="16"
+                              glyph={
+                                isCoreSyncSource(a) ? (
+                                  <SyncIcon />
+                                ) : (
+                                  <PowerPlugOutlineIcon />
+                                )
+                              }
+                            />
+                            {managedSourceListingLabel(a)}
                           </span>
-                          <MvpConnectionPill status={connectionStatus(a)} />
+                          {pluginStatus(a) === 'disconnected' && (
+                            <MvpPluginStatusPill status="disconnected" />
+                          )}
                         </div>
                       ) : (
-                        <span className={styles['table__muted']}>Managed here</span>
+                        <span className={styles['table__source-label']}>
+                          {mvpManualSourceOwnershipLabel(a)}
+                        </span>
                       )}
                     </td>
                     <td className={styles['table__col-count']}>
@@ -347,89 +352,39 @@ export default function MvpCatalogListing({
                     </td>
                     <td
                       className={styles['table__actions']}
+                      data-tour-focus={
+                        !readOnly && deleteBlocked
+                          ? 'row-menu-delete-blocked'
+                          : undefined
+                      }
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className={styles['table__actions-row']}>
                         {readOnly ? (
-                          <InfoHint
-                            label="Read-only — opens the markings page"
-                            arrow="Right"
+                          <button
+                            type="button"
+                            className={styles['table__open-markings']}
+                            aria-label="Open Classification Markings"
+                            onClick={() => onOpenMarkings(a.id)}
                           >
-                            <span className={styles['table__lock']}>
-                              <Icon size="16" glyph={<ChevronRightIcon />} />
-                            </span>
-                          </InfoHint>
+                            <Icon size="16" glyph={<OpenInNewIcon />} />
+                          </button>
                         ) : (
-                          <>
-                            {locked && (
-                              <InfoHint
-                                label={`Locked — ${policyLabel(a.usedByPolicies).toLowerCase()}`}
-                                arrow="Right"
-                              >
-                                <span className={styles['table__lock']}>
-                                  <Icon size="12" glyph={<LockOutlineIcon />} />
-                                </span>
-                              </InfoHint>
-                            )}
-                            <div
-                              className={styles['table__menu-wrap']}
-                              ref={menuId === a.id ? menuWrapRef : undefined}
-                            >
-                              <IconButton
-                                size="Small"
-                                aria-label={`More actions for ${a.name}`}
-                                aria-haspopup="menu"
-                                aria-expanded={menuId === a.id}
-                                icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
-                                onClick={() =>
-                                  setMenuId((c) => (c === a.id ? null : a.id))
-                                }
-                              />
-                              <FixedPopoverMenu
-                                open={menuId === a.id}
-                                onClose={() => setMenuId(null)}
-                                anchorRef={menuWrapRef}
-                                align="end"
-                                className={styles['table__menu']}
-                              >
-                                <PopoverMenu aria-label={`${a.name} actions`}>
-                                  <MenuItem
-                                    label="Edit attribute"
-                                    leadingVisual={
-                                      <Icon size="16" glyph={<PencilOutlineIcon />} />
-                                    }
-                                    onClick={() => {
-                                      setMenuId(null);
-                                      onOpenDetail(a.id);
-                                    }}
-                                  />
-                                  <PopoverMenuDivider />
-                                  <MenuItem
-                                    label="Deactivate attribute"
-                                    destructive
-                                    leadingVisual={
-                                      <Icon size="16" glyph={<PowerPlugOutlineIcon />} />
-                                    }
-                                    onClick={() => {
-                                      setMenuId(null);
-                                      onDeactivate(a.id);
-                                    }}
-                                  />
-                                  <MenuItem
-                                    label="Delete attribute"
-                                    destructive
-                                    leadingVisual={
-                                      <Icon size="16" glyph={<TrashCanOutlineIcon />} />
-                                    }
-                                    onClick={() => {
-                                      setMenuId(null);
-                                      onDelete(a.id);
-                                    }}
-                                  />
-                                </PopoverMenu>
-                              </FixedPopoverMenu>
-                            </div>
-                          </>
+                          <MvpAttributeRowActionsMenu
+                            attributeName={a.name}
+                            open={menuId === a.id}
+                            deleteDisabled={deleteBlocked}
+                            deleteDisabledReason={deleteBlockedReason}
+                              onToggle={() =>
+                                setMenuId((current) =>
+                                  current === a.id ? null : a.id,
+                                )
+                              }
+                              onClose={() => setMenuId(null)}
+                              onEdit={() => onOpenDetail(a.id)}
+                              onDuplicate={() => onDuplicate(a.id)}
+                            onDelete={() => onDelete(a.id)}
+                          />
                         )}
                       </div>
                     </td>
