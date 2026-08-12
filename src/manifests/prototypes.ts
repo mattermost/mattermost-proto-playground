@@ -367,6 +367,11 @@ export type PrototypeEntry = {
   addedAt: string; // ISO date YYYY-MM-DD, used for recency sorting
   isPrimary?: boolean; // primary/index entry for a group — shown in the "Recently Updated" strip
   collections?: PrototypeCollection[];
+  /**
+   * Superseded — keep the route alive so shared links don't 404, but hide the
+   * card from /prototypes so it can't be mistaken for current work.
+   */
+  unlisted?: boolean;
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
@@ -614,6 +619,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Inline-summary hub carrying the decisions from the Channel Attributes walkthrough (2026-08-06). Five changes: (1) the channel banner is no longer classification-only — any attribute type can be banner-eligible, and the hint states that banner attributes concatenate into one strip a channel admin can override; (2) "Display location" becomes "Default display location" with a "Channel admins can change this per channel" opt-in, replacing the hard-coded display logic; (3) a new attribute-level "Changing the value after it\'s set" rule whose options derive from the attribute type — Ranked/Ranked-hierarchical offer raise-only (the default, since raising can only shrink who qualifies), Hierarchical offers narrow-only (descendants of the current option, well-defined on a multi-parent DAG), Multiselect offers add-only/remove-only with an operator caveat because neither direction is unambiguously safe, and Select/Text offer editable or locked; the rule scopes to Channels/Posts/Teams and reflects out to the source system for Users; (4) Required states its consequence — channels created without a value stay locked and an admin is notified — and optional bindings say the attribute can still be added after creation; (5) Classification defers to the Classification Markings page for presets and colors instead of duplicating them. Deep-links: ?attr=<id>, ?flow=new.',
     addedAt: '2026-08-10',
+    unlisted: true, // superseded by attribute-hub-channel-aligned-per-resource
     collections: ['attribute-management'],
   },
   // Channel-attributes alignment — editability per resource (2026-08-06)

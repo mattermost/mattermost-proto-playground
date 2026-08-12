@@ -51,8 +51,11 @@ const CATEGORY_ORDER: PrototypeGroup[] = [
   'calls-platform',
 ];
 
-const recentFeatured = getRecentFeatured(PROTOTYPES);
-const initiativeGroups = getInitiativeGroups(PROTOTYPES);
+// Superseded prototypes keep their route but drop off the index.
+const LISTED_PROTOTYPES = PROTOTYPES.filter((entry) => !entry.unlisted);
+
+const recentFeatured = getRecentFeatured(LISTED_PROTOTYPES);
+const initiativeGroups = getInitiativeGroups(LISTED_PROTOTYPES);
 
 // Categories that actually have prototypes, in the fixed display order.
 const activeCategories = CATEGORY_ORDER.filter((cat) =>
@@ -112,7 +115,7 @@ export default function PrototypesIndex() {
       <div
         className={`${shellStyles['doc-shell__body']} ${shellStyles['doc-shell__body--standalone']}`}
       >
-        {PROTOTYPES.length === 0 && (
+        {LISTED_PROTOTYPES.length === 0 && (
           <p className={styles['prototypes-index__empty']}>
             No prototypes registered yet. Add entries to <code>PROTOTYPES</code> in{' '}
             <code>src/manifests/prototypes.ts</code>.
