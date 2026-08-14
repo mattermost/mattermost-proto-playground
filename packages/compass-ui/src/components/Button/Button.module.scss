@@ -2,19 +2,30 @@
 // Block
 // ---------------------------------------------------------------------------
 .button {
+  // Host semantic colors with Denim prototype fallbacks. Not written on :root.
+  --_button-bg: var(--button-bg, #1c58d9);
+  --_button-color: var(--button-color, #ffffff);
+  --_link-color: var(--link-color, #174ab5);
+  --_error-text: var(--error-text, #d24b4e);
+  --_center-channel-bg: var(--center-channel-bg, #ffffff);
+  --_center-channel-color: var(--center-channel-color, #3f4350);
+  --_sidebar-bg: var(--sidebar-bg, #1e325c);
+  --_sidebar-text: var(--sidebar-text, #ffffff);
+  --_font-body: var(--font-family-body, 'Open Sans');
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-xs);
-  font-family: var(--font-family-body);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--radius-s);
+  gap: var(--spacing-xs, 8px);
+  font-family: var(--_font-body);
+  font-weight: var(--font-weight-semibold, 600);
+  border-radius: var(--radius-s, 4px);
   border: 0;
   cursor: pointer;
   transition:
-    background-color var(--duration-quick) var(--ease-transition),
-    color var(--duration-quick) var(--ease-transition),
-    box-shadow var(--duration-quick) var(--ease-transition);
+    background-color var(--duration-quick, 150ms) var(--ease-transition, ease-in-out),
+    color var(--duration-quick, 150ms) var(--ease-transition, ease-in-out),
+    box-shadow var(--duration-quick, 150ms) var(--ease-transition, ease-in-out);
 
   &:focus-visible {
     outline: none;
@@ -42,38 +53,38 @@
   // Size modifiers
   // ---------------------------------------------------------------------------
   &--size-x-small {
-    padding: var(--spacing-xxxs) var(--spacing-m);
+    padding: var(--spacing-xxxs, 4px) var(--spacing-m, 12px);
 
     .button__label {
-      font-size: var(--font-size-75);
-      line-height: var(--line-height-75);
+      font-size: var(--font-size-75, 12px);
+      line-height: var(--line-height-75, 16px);
     }
   }
 
   &--size-small {
-    padding: var(--spacing-xs) var(--spacing-l);
+    padding: var(--spacing-xs, 8px) var(--spacing-l, 16px);
 
     .button__label {
-      font-size: var(--font-size-75);
-      line-height: var(--line-height-75);
+      font-size: var(--font-size-75, 12px);
+      line-height: var(--line-height-75, 16px);
     }
   }
 
   &--size-medium {
-    padding: var(--spacing-s) var(--spacing-xl);
+    padding: var(--spacing-s, 10px) var(--spacing-xl, 20px);
 
     .button__label {
-      font-size: var(--font-size-100);
-      line-height: var(--line-height-100);
+      font-size: var(--font-size-100, 14px);
+      line-height: var(--line-height-100, 20px);
     }
   }
 
   &--size-large {
-    padding: var(--spacing-m) var(--spacing-xxl);
+    padding: var(--spacing-m, 12px) var(--spacing-xxl, 24px);
 
     .button__label {
-      font-size: var(--font-size-200);
-      line-height: var(--line-height-200);
+      font-size: var(--font-size-200, 16px);
+      line-height: var(--line-height-200, 24px);
     }
   }
 
@@ -81,99 +92,96 @@
   // Emphasis modifiers
   // ---------------------------------------------------------------------------
   &--emphasis-primary {
-    background-color: var(--button-bg);
-    color: var(--button-color);
+    background-color: var(--_button-bg);
+    color: var(--_button-color);
 
     &:hover:not(:disabled) {
-      background:
-        linear-gradient(
-          0deg,
-          rgba(var(--color-neutral-1100-rgb), 0.08) 0%,
-          rgba(var(--color-neutral-1100-rgb), 0.08) 100%
-        ),
-        var(--button-bg);
+      background-color: color-mix(
+        in srgb,
+        var(--_button-bg) 92%,
+        var(--_center-channel-color)
+      );
     }
     &:active:not(:disabled) {
-      background:
-        linear-gradient(
-          0deg,
-          rgba(var(--color-neutral-1100-rgb), 0.16) 0%,
-          rgba(var(--color-neutral-1100-rgb), 0.16) 100%
-        ),
-        var(--button-bg);
+      background-color: color-mix(
+        in srgb,
+        var(--_button-bg) 84%,
+        var(--_center-channel-color)
+      );
     }
     &:disabled {
-      background-color: rgba(var(--center-channel-color-rgb), 0.08);
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      background-color: color-mix(in srgb, var(--_center-channel-color) 8%, transparent);
+      color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--button-bg);
+        0 0 0 3px var(--_center-channel-bg),
+        0 0 0 5px var(--_button-bg);
     }
   }
 
   &--emphasis-secondary {
     background-color: transparent;
-    color: var(--link-color);
-    box-shadow: inset 0 0 0 1px var(--link-color);
+    color: var(--_link-color);
+    box-shadow: inset 0 0 0 1px var(--_link-color);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.08);
+      background-color: color-mix(in srgb, var(--_link-color) 8%, transparent);
     }
     &:active:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.16);
+      background-color: color-mix(in srgb, var(--_link-color) 16%, transparent);
     }
     &:disabled {
-      box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.32);
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      box-shadow: inset 0 0 0 1px
+        color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
+      color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
-        inset 0 0 0 1px var(--link-color),
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--link-color);
+        inset 0 0 0 1px var(--_link-color),
+        0 0 0 3px var(--_center-channel-bg),
+        0 0 0 5px var(--_link-color);
     }
   }
 
   &--emphasis-tertiary {
-    background-color: rgba(var(--link-color-rgb), 0.08);
-    color: var(--link-color);
+    background-color: color-mix(in srgb, var(--_link-color) 8%, transparent);
+    color: var(--_link-color);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.12);
+      background-color: color-mix(in srgb, var(--_link-color) 12%, transparent);
     }
     &:active:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.16);
+      background-color: color-mix(in srgb, var(--_link-color) 16%, transparent);
     }
     &:disabled {
-      background-color: rgba(var(--center-channel-color-rgb), 0.08);
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      background-color: color-mix(in srgb, var(--_center-channel-color) 8%, transparent);
+      color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--button-bg);
+        0 0 0 3px var(--_center-channel-bg),
+        0 0 0 5px var(--_button-bg);
     }
   }
 
   &--emphasis-quaternary {
     background-color: transparent;
-    color: var(--link-color);
+    color: var(--_link-color);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.08);
+      background-color: color-mix(in srgb, var(--_link-color) 8%, transparent);
     }
     &:active:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.12);
+      background-color: color-mix(in srgb, var(--_link-color) 12%, transparent);
     }
     &:disabled {
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
-        0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--link-color);
+        0 0 0 3px var(--_center-channel-bg),
+        0 0 0 5px var(--_link-color);
     }
   }
 
@@ -182,88 +190,96 @@
   // ---------------------------------------------------------------------------
   &--destructive {
     &.button--emphasis-primary {
-      background-color: var(--color-danger);
-      color: var(--button-color);
+      background-color: var(--_error-text);
+      color: var(--_button-color);
 
       &:hover:not(:disabled) {
-        background-color: var(--color-danger);
+        background-color: color-mix(
+          in srgb,
+          var(--_error-text) 92%,
+          var(--_center-channel-color)
+        );
       }
       &:active:not(:disabled) {
-        background-color: var(--color-danger);
+        background-color: color-mix(
+          in srgb,
+          var(--_error-text) 84%,
+          var(--_center-channel-color)
+        );
       }
       &:disabled {
-        background-color: rgba(var(--center-channel-color-rgb), 0.08);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--_center-channel-color) 8%, transparent);
+        color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 3px var(--_center-channel-bg),
+          0 0 0 5px var(--_error-text);
       }
     }
 
     &.button--emphasis-secondary {
-      color: var(--color-danger);
-      box-shadow: inset 0 0 0 1px var(--color-danger);
+      color: var(--_error-text);
+      box-shadow: inset 0 0 0 1px var(--_error-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.08);
+        background-color: color-mix(in srgb, var(--_error-text) 8%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--_error-text) 16%, transparent);
       }
       &:disabled {
-        box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.32);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        box-shadow: inset 0 0 0 1px
+          color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
+        color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          inset 0 0 0 1px var(--color-danger),
-          0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          inset 0 0 0 1px var(--_error-text),
+          0 0 0 3px var(--_center-channel-bg),
+          0 0 0 5px var(--_error-text);
       }
     }
 
     &.button--emphasis-tertiary {
-      background-color: rgba(var(--color-danger-rgb), 0.08);
-      color: var(--color-danger);
+      background-color: color-mix(in srgb, var(--_error-text) 8%, transparent);
+      color: var(--_error-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--_error-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--_error-text) 16%, transparent);
       }
       &:disabled {
-        background-color: rgba(var(--center-channel-color-rgb), 0.08);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--_center-channel-color) 8%, transparent);
+        color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 3px var(--_center-channel-bg),
+          0 0 0 5px var(--_error-text);
       }
     }
 
     &.button--emphasis-quaternary {
-      color: var(--color-danger);
+      color: var(--_error-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.08);
+        background-color: color-mix(in srgb, var(--_error-text) 8%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--_error-text) 16%, transparent);
       }
       &:disabled {
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 3px var(--_center-channel-bg),
+          0 0 0 5px var(--_error-text);
       }
     }
-
   }
 
   // ---------------------------------------------------------------------------
@@ -271,87 +287,87 @@
   // ---------------------------------------------------------------------------
   &--appearance-inverted {
     &.button--emphasis-primary {
-      background-color: var(--sidebar-text);
-      color: var(--sidebar-bg);
+      background-color: var(--_sidebar-text);
+      color: var(--_sidebar-bg);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.92);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 92%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.88);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 88%, transparent);
       }
       &:disabled {
-        background-color: rgba(var(--sidebar-text-rgb), 0.08);
-        color: rgba(var(--sidebar-text-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 8%, transparent);
+        color: color-mix(in srgb, var(--_sidebar-text) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--sidebar-bg),
-          0 0 0 5px var(--button-bg);
+          0 0 0 3px var(--_sidebar-bg),
+          0 0 0 5px var(--_button-bg);
       }
     }
 
     &.button--emphasis-secondary {
-      color: var(--sidebar-text);
-      box-shadow: inset 0 0 0 1px var(--sidebar-text);
+      color: var(--_sidebar-text);
+      box-shadow: inset 0 0 0 1px var(--_sidebar-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.2);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 20%, transparent);
       }
       &:disabled {
-        box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.32);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        box-shadow: inset 0 0 0 1px
+          color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
+        color: color-mix(in srgb, var(--_center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          inset 0 0 0 1px var(--sidebar-text),
-          0 0 0 3px var(--sidebar-bg),
-          0 0 0 5px var(--button-bg);
+          inset 0 0 0 1px var(--_sidebar-text),
+          0 0 0 3px var(--_sidebar-bg),
+          0 0 0 5px var(--_button-bg);
       }
     }
 
     &.button--emphasis-tertiary {
-      background-color: rgba(var(--sidebar-text-rgb), 0.08);
-      color: var(--sidebar-text);
+      background-color: color-mix(in srgb, var(--_sidebar-text) 8%, transparent);
+      color: var(--_sidebar-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 16%, transparent);
       }
       &:disabled {
-        background-color: rgba(var(--sidebar-text-rgb), 0.08);
-        color: rgba(var(--sidebar-text-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 8%, transparent);
+        color: color-mix(in srgb, var(--_sidebar-text) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--sidebar-bg),
-          0 0 0 5px var(--button-bg);
+          0 0 0 3px var(--_sidebar-bg),
+          0 0 0 5px var(--_button-bg);
       }
     }
 
     &.button--emphasis-quaternary {
-      color: var(--sidebar-text);
+      color: var(--_sidebar-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.2);
+        background-color: color-mix(in srgb, var(--_sidebar-text) 20%, transparent);
       }
       &:disabled {
-        color: rgba(var(--sidebar-text-rgb), 0.32);
+        color: color-mix(in srgb, var(--_sidebar-text) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--color-neutral-1100),
-          0 0 0 5px var(--color-neutral-0);
+          0 0 0 3px var(--_sidebar-bg),
+          0 0 0 5px var(--_sidebar-text);
       }
     }
-
   }
 }

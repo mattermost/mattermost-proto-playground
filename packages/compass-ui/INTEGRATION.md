@@ -65,7 +65,9 @@ import '@mattermost/compass-ui/component-styles';
 | `@mattermost/compass-ui/styles` | CSS variables (tokens), themes, reset |
 | `@mattermost/compass-ui/component-styles` | Component CSS modules, SimpleBar base CSS |
 
-Components assume CSS variables are present — they do not import tokens directly.
+**Button** does not require `/styles`. Import `component-styles` and the hashed Button CSS. Colors come from host semantic variables (`--button-bg`, `--error-text`, `--center-channel-color`, …) when the host has already themed the page (e.g. Mattermost `applyTheme()`). Prototype fallbacks (Denim hex) apply if those vars are unset.
+
+Do **not** load `/styles` into Mattermost webapp — it includes a global reset and `:root` / `data-theme` overlays that fight Bootstrap and `applyTheme()`. Other primitives still expect `/styles` (or equivalent tokens) until they are productionized the same way.
 
 ### 2. Set a theme
 
@@ -76,6 +78,8 @@ Components assume CSS variables are present — they do not import tokens direct
 Supported themes: `denim`, `sapphire`, `quartz`, `indigo`, `onyx`.
 
 In React apps, toggle via `document.documentElement.setAttribute('data-theme', theme)` or your existing theme context.
+
+Mattermost webapp: skip `data-theme`. Button follows CSS variables already written by `applyTheme()`.
 
 ### 3. Load fonts (recommended)
 
@@ -156,16 +160,17 @@ Add to `webapp/channels/package.json` (alongside legacy `@mattermost/compass-com
 
 ```tsx
 import { Button } from '@mattermost/compass-ui';
-import '@mattermost/compass-ui/styles';
 import '@mattermost/compass-ui/component-styles';
 ```
 
-Load styles once at the app bootstrap (same entry that loads global webapp SCSS).
+Load `component-styles` once at app bootstrap (same entry that loads global webapp SCSS). Do **not** import `@mattermost/compass-ui/styles` in channels.
+
+Button dual-stamps legacy Mattermost classes (`btn`, `btn-primary`, `btn-danger`, …) alongside hashed Compass classes so existing `.btn` selectors keep working during migration.
 
 ### Webpack checklist
 
 - [ ] ESM + CJS: package ships both (`module` / `main` fields).
-- [ ] CSS: `@mattermost/compass-ui/styles` and `/component-styles` resolve without extra loaders beyond existing CSS pipeline.
+- [ ] CSS: `@mattermost/compass-ui/component-styles` resolves without extra loaders beyond the existing CSS pipeline. Do not load `/styles` in channels.
 - [ ] CSS modules: hashed class names from `component-styles` match rendered components.
 - [ ] No duplicate React — one version across workspaces.
 - [ ] `@mattermost/compass-icons` already external in webapp; keep as peer, do not bundle twice.
@@ -183,7 +188,7 @@ Load styles once at the app bootstrap (same entry that loads global webapp SCSS)
 
 ### Theme alignment
 
-Mattermost webapp may already set theme CSS variables. Confirm `data-theme` or equivalent vars match Compass token names (`--center-channel-bg`, `--button-bg`, etc.). Spike with one component (`Button`) before wide rollout.
+Mattermost webapp already writes the semantic CSS variables Button consumes (`--button-bg`, `--error-text`, `--center-channel-color`, …) via `applyTheme()`. Do not also set Compass `data-theme` in channels.
 
 ---
 
@@ -252,10 +257,10 @@ npm publish --access=public --tag alpha --workspace=@mattermost/compass-ui
 | Symptom | Fix |
 |---------|-----|
 | `Failed to resolve @mattermost/compass-ui/styles` | Run `npm run build:ui` — `dist/compass-ui.css` must exist |
-| Unstyled components (flat gray UI) | Import both `/styles` and `/component-styles` at app entry |
+| Unstyled components (flat gray UI) | Import `/component-styles`. Playground/docs still import `/styles` for tokens used by non-Button primitives. |
 | Scrollbars missing thumb/track | Ensure `simplebar-react` is installed; `component-styles` includes SimpleBar CSS |
 | `@/components/Icon` errors in dev | Do not alias package to source; use built `dist/` |
-| Wrong colors | Set `data-theme` on `<html>` |
+| Wrong colors | Host must set semantic CSS vars (`--button-bg`, `--error-text`, …). Playground: `data-theme` on `<html>` via `/styles`. |
 | Workspace link missing | Run `npm install` from repo root, not inside `packages/compass-ui` |
 
 ---

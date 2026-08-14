@@ -35,4 +35,5 @@ Prefer design tokens from `src/styles/tokens.scss` over hardcoded px/hex/ms. Ful
 - [.claude/rules/styling.md](.claude/rules/styling.md) / [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc) — Styling (keep both files in sync)
 - [.cursor/skills/add-docs-topic/SKILL.md](.cursor/skills/add-docs-topic/SKILL.md) — Adding a docs topic (procedure)
 - [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype (procedure)
+- [.cursor/skills/productionize-compass-component/SKILL.md](.cursor/skills/productionize-compass-component/SKILL.md) — Productionizing Compass UI for the Mattermost `@shared` contract
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance

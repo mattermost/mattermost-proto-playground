@@ -11,3 +11,5 @@ When adding or editing `packages/compass-ui/**/*.stories.tsx`:
 - Docs tab chrome: `packages/compass-ui/.storybook/docs-theme.css`.
 
 General styling tokens, opacity floors, and motion: see the repo styling rule (`.claude/rules/styling.md` / `.cursor/rules/styling.mdc`).
+
+Productionizing a primitive for Mattermost webapp / `@mattermost/shared` contract: [.cursor/skills/productionize-compass-component/SKILL.md](../../.cursor/skills/productionize-compass-component/SKILL.md).

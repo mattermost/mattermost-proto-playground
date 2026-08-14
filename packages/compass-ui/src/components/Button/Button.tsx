@@ -1,7 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import Icon from '@/components/Icon/Icon';
 import type { IconSize } from '@/components/Icon/Icon';
 import { toKebab } from '@/utils/string';
+import { mattermostButtonClasses } from './buttonClasses';
 import styles from './Button.module.scss';
 
 export type ButtonEmphasis =
@@ -41,24 +42,29 @@ const SIZE_ICON_MAP: Record<ButtonSize, IconSize> = {
 };
 
 /**
- * Button component matching Figma/Compass variants.
+ * Button matching Figma/Compass variants.
  * Use leadingIcon and trailingIcon with the Icon component for icons.
+ * Host theme CSS variables (--button-bg, --error-text, …) color the button;
+ * prototype fallbacks apply when those vars are unset.
  *
  * @see https://compass.mattermost.com/29be2c109/p/40e456-buttons
  */
-export default function Button({
-  appearance = 'Default',
-  className = '',
-  destructive = false,
-  emphasis = 'Primary',
-  children,
-  leadingIcon,
-  size = 'Medium',
-  trailingIcon,
-  disabled,
-  type = 'button',
-  ...rest
-}: ButtonProps) {
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    appearance = 'Default',
+    className = '',
+    destructive = false,
+    emphasis = 'Primary',
+    children,
+    leadingIcon,
+    size = 'Medium',
+    trailingIcon,
+    disabled,
+    type = 'button',
+    ...rest
+  },
+  ref,
+) {
   const iconSize = SIZE_ICON_MAP[size];
   const emphasisClass = styles[`button--emphasis-${toKebab(emphasis)}`];
   const sizeClass = styles[`button--size-${toKebab(size)}`];
@@ -67,6 +73,7 @@ export default function Button({
   const destructiveClass = destructive ? styles['button--destructive'] : '';
 
   const rootClass = [
+    mattermostButtonClasses({ appearance, destructive, emphasis, size }),
     styles.button,
     emphasisClass,
     sizeClass,
@@ -78,7 +85,13 @@ export default function Button({
     .join(' ');
 
   return (
-    <button className={rootClass} type={type} disabled={disabled} {...rest}>
+    <button
+      {...rest}
+      ref={ref}
+      className={rootClass}
+      type={type}
+      disabled={disabled}
+    >
       {leadingIcon != null ? (
         <span className={styles['button__icon-slot']} aria-hidden>
           {typeof leadingIcon === 'boolean' ? (
@@ -100,4 +113,8 @@ export default function Button({
       ) : null}
     </button>
   );
-}
+});
+
+Button.displayName = 'Button';
+
+export default Button;
