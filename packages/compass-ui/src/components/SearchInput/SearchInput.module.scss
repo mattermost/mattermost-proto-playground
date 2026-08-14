@@ -1,0 +1,268 @@
+// ---------------------------------------------------------------------------
+// Block — Search Input (Figma: State(Default/Focus/Filled) × Size S/M/L).
+// Text input with leading magnifier icon. Optional clear button when filled.
+// Field chrome aligned with Text Input (wrapper, label, icon spacing, sizes).
+// ---------------------------------------------------------------------------
+.searchInput {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  // ---------------------------------------------------------------------------
+  // Wrapper (bordered container; has top space for floated label)
+  // ---------------------------------------------------------------------------
+  &__wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background-color: var(--center-channel-bg);
+    border-radius: var(--radius-s);
+    box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+    .searchInput:has(.searchInput__input:not(:disabled)):hover:not(:focus-within) & {
+      box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.24);
+    }
+
+    .searchInput:has(.searchInput__input:focus-visible) & {
+      box-shadow:
+        inset 0 0 0 1px var(--button-bg),
+        0 0 0 1px var(--button-bg);
+    }
+
+    .searchInput:has(.searchInput__input:disabled) & {
+      background-color: var(--center-channel-bg);
+      opacity: 0.56;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Floating label
+  // ---------------------------------------------------------------------------
+  &__label {
+    position: absolute;
+    left: var(--spacing-xs);
+    top: 50%;
+    padding: 0 var(--spacing-xxxs);
+    transform: translateY(-50%);
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-25);
+    font-weight: var(--font-weight-regular);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    background-color: var(--center-channel-bg);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 24px);
+    transition:
+      transform var(--duration-quick) var(--ease-transition),
+      font-size var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition),
+      top var(--duration-quick) var(--ease-transition),
+      left var(--duration-quick) var(--ease-transition);
+
+    .searchInput--label-floated & {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Inner row (leading icon + input + trailing clear)
+  // ---------------------------------------------------------------------------
+  &__inner {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__input {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-25);
+    font-weight: var(--font-weight-regular);
+    color: var(--center-channel-color);
+
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  &__leadingIcon,
+  &__trailingIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__leadingIcon {
+    margin-right: var(--spacing-xs);
+    pointer-events: none;
+  }
+
+  &__trailingIcon {
+    margin-left: var(--spacing-xs);
+  }
+
+  &__clearButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: inherit;
+    transition: color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      color: var(--center-channel-color);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers (fixed height; label floats within same height, no wrapper growth)
+  // ---------------------------------------------------------------------------
+  &--size-small {
+    .searchInput__wrapper {
+      min-height: 32px;
+    }
+
+    .searchInput__inner {
+      padding: var(--spacing-xs) var(--spacing-m);
+    }
+
+    .searchInput__input {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-25);
+    }
+
+    &.searchInput--label-floated .searchInput__label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &--size-medium {
+    .searchInput__wrapper {
+      min-height: 40px;
+    }
+
+    .searchInput__inner {
+      padding: var(--spacing-s) var(--spacing-l);
+    }
+
+    .searchInput__input {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+
+    .searchInput__label {
+      font-size: var(--font-size-100);
+      left: var(--spacing-m);
+    }
+
+    &.searchInput--label-floated .searchInput__label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &--size-large {
+    .searchInput__wrapper {
+      min-height: 48px;
+    }
+
+    .searchInput__inner {
+      padding: var(--spacing-m) var(--spacing-l);
+    }
+
+    .searchInput__input {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+
+    .searchInput__label {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+      left: var(--spacing-m);
+    }
+
+    &.searchInput--label-floated .searchInput__label {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Leading icon: offset resting label; reset left when floated
+  // ---------------------------------------------------------------------------
+  &--has-leading-icon {
+    .searchInput__label {
+      left: var(
+        --spacing-xxxl
+      ); // Small: 12px padding + 16px icon + 8px gap − 4px label-padding
+    }
+
+    &.searchInput--label-floated .searchInput__label {
+      left: var(--spacing-xs);
+    }
+
+    &.searchInput--size-medium,
+    &.searchInput--size-large {
+      .searchInput__label {
+        left: 36px; // 16px padding + 16px icon + 8px gap − 4px label-padding
+      }
+
+      &.searchInput--label-floated .searchInput__label {
+        left: var(--spacing-m);
+      }
+    }
+  }
+
+  &:has(.searchInput__input:focus-visible) .searchInput__label {
+    color: var(--button-bg);
+  }
+
+  // Hide placeholder while the floating label is in the resting position to prevent overlap.
+  &:has(.searchInput__label):not(&--label-floated)
+    .searchInput__input::placeholder {
+    color: transparent;
+  }
+}

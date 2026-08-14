@@ -61,12 +61,15 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
         'more-unreads-banner',
         'new-message-banner',
         'search-tip-banner',
-        'toast-banner',
       ],
     },
     {
       label: 'Calls',
-      slugs: ['call-participant-avatar'],
+      slugs: [
+        'call-participant-avatar',
+        'reaction-pill',
+        'recording-pill',
+      ],
     },
     {
       label: 'Admin Console',
@@ -88,13 +91,20 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Feedback and Notices',
-      slugs: ['error-message', 'section-notice'],
+      slugs: [
+        'error-message',
+        'popover-notice',
+        'section-notice',
+        'toast',
+        'tooltip',
+      ],
     },
     {
       label: 'Forms and Input',
       slugs: [
         'checkbox',
         'chip',
+        'combobox',
         'date-range-picker',
         'dropdown',
         'radio',
@@ -133,12 +143,16 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
       ],
     },
     {
-      label: 'Navigation',
-      slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
+      label: 'Mobile',
+      slugs: [
+        'mobile-channel-sidebar-item',
+        'mobile-menu-item',
+        'mobile-search-field',
+      ],
     },
     {
-      label: 'Overlays and Layering',
-      slugs: ['popover-notice', 'tooltip'],
+      label: 'Navigation',
+      slugs: ['app-bar-item', 'channel-sidebar-item', 'menu-item'],
     },
     {
       label: 'Progress Indicators',
@@ -146,15 +160,7 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     },
     {
       label: 'Status Indicators',
-      slugs: [
-        'label-tag',
-        'mention-badge',
-        'reaction-pill',
-        'recording-pill',
-        'status-badge',
-        'tags',
-        'unread-badge',
-      ],
+      slugs: ['tag', 'mention-badge', 'status-badge', 'unread-badge'],
     },
     {
       label: 'System Console',
@@ -178,6 +184,51 @@ export const topicSections: Partial<Record<TopicCategory, SectionGroup[]>> = {
     {
       label: 'Admin Console',
       slugs: ['admin-panel', 'admin-console-sidebar'],
+    },
+    {
+      label: 'Mobile',
+      slugs: [
+        'mobile-navigation-bar',
+        'mobile-modal-navigation-bar',
+        'mobile-modal',
+        'mobile-team-sidebar',
+        'mobile-channel-sidebar',
+        'mobile-tab-bar',
+        'mobile-message',
+        'mobile-message-input',
+        'mobile-bottom-sheet',
+      ],
+    },
+    {
+      label: 'Onboarding',
+      slugs: ['tour-point'],
+    },
+  ],
+  layouts: [
+    {
+      label: 'Mobile',
+      slugs: [
+        'mobile-home',
+        'mobile-search',
+        'mobile-mentions',
+        'mobile-saved',
+        'mobile-profile',
+        'mobile-channel',
+        'mobile-modal',
+      ],
+    },
+    {
+      label: 'Webapp',
+      slugs: [
+        'channel',
+        'channel-thread',
+        'channel-info',
+        'modal',
+        'threads-view',
+        'call-widget',
+        'call-popout',
+        'admin-console',
+      ],
     },
   ],
 };

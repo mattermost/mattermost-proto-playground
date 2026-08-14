@@ -1,4 +1,4 @@
-import GlobalHeader from '@/components/ui/GlobalHeader/GlobalHeader';
+import { GlobalHeader } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 

@@ -1,0 +1,32 @@
+.mmnb-specimen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxl);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--spacing-xxxl);
+  box-sizing: border-box;
+
+  &__stage {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__label {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__frame {
+    width: 100%;
+    max-width: 414px;
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+  }
+}

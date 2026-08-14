@@ -1,6 +1,6 @@
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import Icon from '@/components/ui/Icon/Icon';
-import TextInput from '@/components/ui/TextInput/TextInput';
+import { Icon } from '@mattermost/compass-ui';
+import { TextInput } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function TextInputLibrary() {

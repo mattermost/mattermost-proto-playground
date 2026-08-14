@@ -1,0 +1,284 @@
+// ---------------------------------------------------------------------------
+// Block — call participant avatar with overlays (Figma Call Participant Avatar)
+// ---------------------------------------------------------------------------
+.call-participant-avatar {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  border-radius: var(--radius-m);
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      background-color: rgba(var(--sidebar-text-rgb), 0.08);
+    }
+  }
+
+  &:focus-within {
+    background-color: rgba(var(--sidebar-text-rgb), 0.08);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Elements
+  // ---------------------------------------------------------------------------
+  &__host-actions {
+    position: absolute;
+    top: var(--spacing-xxxxs);
+    right: var(--spacing-xxxxs);
+    z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover &__host-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &:focus-within &__host-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &__container {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__image {
+    display: block;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+  }
+
+  // Fallback avatar rendered for non-'user' participant kinds
+  // (external-link guests and dial-in callers). Sized via inline width/height
+  // so it matches the image variants across size modifiers.
+  &__fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: var(--center-channel-bg, var(--color-neutral-0));
+    background-color: var(--color-neutral-400);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Kind modifiers — override fallback color for specific participant kinds
+  // ---------------------------------------------------------------------------
+  &--kind-external-link {
+    .call-participant-avatar__fallback {
+      background-color: var(--color-neutral-400);
+    }
+  }
+
+  &--kind-dial-in {
+    .call-participant-avatar__fallback {
+      background-color: var(--color-success);
+    }
+  }
+
+  // Talking indicator — glowing ring around the avatar
+  &__talking-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: var(--radius-full);
+    border: 3px solid var(--online-indicator, var(--color-success));
+    pointer-events: none;
+  }
+
+  // Generic badge base (mute, unmuted, reaction, raised-hand)
+  &__badge {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+
+    svg {
+      display: block;
+      fill: currentColor;
+    }
+
+    &--muted {
+      bottom: 0;
+      right: 0;
+      background-color: var(--color-indigo-600);
+      color: var(--center-channel-bg, var(--color-neutral-0));
+    }
+
+    &--unmuted {
+      bottom: 0;
+      right: 0;
+      background-color: var(--online-indicator, var(--color-success));
+      color: var(--center-channel-bg, var(--color-neutral-0));
+    }
+
+    &--reaction {
+      bottom: 0;
+      left: 0;
+      background-color: var(--color-indigo-600);
+      color: var(--center-channel-bg, var(--color-neutral-0));
+    }
+
+    &--raised-hand {
+      bottom: 0;
+      left: 0;
+      background-color: var(--center-channel-bg, var(--color-neutral-0));
+      color: var(--color-orange-400);
+    }
+  }
+
+  &__name {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--button-color, var(--color-neutral-0));
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    text-align: center;
+  }
+
+  &__host-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--spacing-xxs);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--color-neutral-0-rgb), 0.08);
+    color: var(--center-channel-bg, var(--color-neutral-0));
+    font-size: var(--font-size-25);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-25);
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // ---------------------------------------------------------------------------
+  &--size-large {
+    padding: var(--spacing-xl);
+    gap: var(--spacing-m);
+
+    .call-participant-avatar__image {
+      width: 120px;
+      height: 120px;
+    }
+
+    .call-participant-avatar__badge {
+      padding: var(--spacing-xs);
+
+      svg {
+        width: var(--icon-size-20);
+        height: var(--icon-size-20);
+      }
+    }
+
+    .call-participant-avatar__badge--reaction,
+    .call-participant-avatar__badge--raised-hand {
+      font-size: var(--font-size-400);
+      line-height: var(--line-height-100);
+    }
+  }
+
+  &--size-medium {
+    padding: var(--spacing-l);
+    gap: var(--spacing-m);
+
+    .call-participant-avatar__image {
+      width: 96px;
+      height: 96px;
+    }
+
+    .call-participant-avatar__badge {
+      padding: var(--spacing-xxs);
+
+      svg {
+        width: var(--icon-size-16);
+        height: var(--icon-size-16);
+      }
+    }
+
+    .call-participant-avatar__badge--reaction,
+    .call-participant-avatar__badge--raised-hand {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-25);
+    }
+  }
+
+  &--size-small {
+    padding: var(--spacing-m);
+    gap: var(--spacing-s);
+
+    .call-participant-avatar__host-actions {
+      top: var(--spacing-xxxxs);
+      right: var(--spacing-xxxxs);
+    }
+
+    .call-participant-avatar__image {
+      width: 72px;
+      height: 72px;
+    }
+
+    .call-participant-avatar__badge {
+      padding: var(--spacing-xxxs);
+
+      svg {
+        width: var(--icon-size-16);
+        height: var(--icon-size-16);
+      }
+    }
+
+    .call-participant-avatar__badge--reaction,
+    .call-participant-avatar__badge--raised-hand {
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-25);
+    }
+  }
+
+  &--size-x-small {
+    padding: var(--spacing-m);
+    gap: var(--spacing-xxs);
+
+    .call-participant-avatar__host-actions {
+      top: 0;
+      right: 0;
+    }
+
+    .call-participant-avatar__image {
+      width: 56px;
+      height: 56px;
+    }
+
+    .call-participant-avatar__badge {
+      padding: var(--spacing-xxxs);
+
+      svg {
+        width: var(--icon-size-12);
+        height: var(--icon-size-12);
+      }
+    }
+
+    .call-participant-avatar__badge--reaction,
+    .call-participant-avatar__badge--raised-hand {
+      font-size: var(--font-size-75);
+      line-height: 12px;
+    }
+
+    .call-participant-avatar__name {
+      font-size: var(--font-size-50);
+      letter-spacing: 0.01em;
+    }
+  }
+}

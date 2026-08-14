@@ -1,89 +1,20 @@
-import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
-import AppsIcon from '@mattermost/compass-icons/components/apps';
-import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
-import BellOffOutlineIcon from '@mattermost/compass-icons/components/bell-off-outline';
-import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
-import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
-import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
-import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
-import FolderMoveOutlineIcon from '@mattermost/compass-icons/components/folder-move-outline';
-import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import Icon from '@/components/ui/Icon/Icon';
-import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import PopoverMenu, {
-  PopoverMenuDivider,
-  PopoverMenuGroup,
-} from '@/components/ui/PopoverMenu';
+import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
+import {
+  ChannelCategoryMenu,
+  ChannelHeaderMenu,
+  ChannelMenu,
+  HelpMenu,
+  Icon,
+  MenuItem,
+  MessageMoreOptionsMenu,
+  PlusMenu,
+  PopoverMenu,
+  ProductSwitcherMenu,
+  TeamMenu,
+  ThreadActionsMenu,
+} from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/patterns.module.scss';
-
-function ChannelHeaderMenuExample() {
-  return (
-    <PopoverMenu>
-      <PopoverMenuGroup>
-        <MenuItem
-          label="View info"
-          leadingVisual={<Icon glyph={<InformationOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Mute channel"
-          leadingVisual={<Icon glyph={<BellOffOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Notification preferences"
-          leadingVisual={<Icon glyph={<BellOutlineIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Channel settings"
-          leadingVisual={<Icon glyph={<CogOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Bookmarks bar"
-          leadingVisual={<Icon glyph={<BookmarkOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Members"
-          leadingVisual={<Icon glyph={<AccountOutlineIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Move to"
-          leadingVisual={<Icon glyph={<FolderMoveOutlineIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-        <MenuItem
-          label="More actions"
-          leadingVisual={<Icon glyph={<AppsIcon />} size="16" />}
-          trailingElement
-          trailingVisual={<Icon glyph={<ChevronRightIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-      <PopoverMenuDivider />
-      <PopoverMenuGroup>
-        <MenuItem
-          label="Leave channel"
-          destructive
-          leadingVisual={<Icon glyph={<ExitToAppIcon />} size="16" />}
-        />
-        <MenuItem
-          label="Archive channel"
-          destructive
-          leadingVisual={<Icon glyph={<ArchiveOutlineIcon />} size="16" />}
-        />
-      </PopoverMenuGroup>
-    </PopoverMenu>
-  );
-}
 
 export default function PopoverMenuLibrary() {
   return (
@@ -96,12 +27,131 @@ export default function PopoverMenuLibrary() {
       </header>
 
       <section className={styles['patterns__section']}>
-        <h2 className={styles['patterns__section-title']}>Channel menu</h2>
+        <h2 className={styles['patterns__section-title']}>Channel header menu</h2>
         <p className={styles['patterns__variant-label']}>
-          Parent elevation, dividers, submenu chevrons, destructive actions
+          Header overflow pattern: settings, members, more actions, archive
         </p>
         <div className={styles['patterns__popover-menu-demo']}>
-          <ChannelHeaderMenuExample />
+          <ChannelHeaderMenu />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Product switcher menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Built-in products plus Agents via additionalProducts; trailing check
+          on the active product
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <ProductSwitcherMenu
+            selectedProduct="agents"
+            additionalProducts={[
+              {
+                id: 'agents',
+                label: 'Agents',
+                icon: <CreationOutlineIcon />,
+              },
+            ]}
+          />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Channel menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Narrow width (174px): read/favorite/mute, move submenu, link and
+          members, destructive leave
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <ChannelMenu />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Help menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Compact width, single group, Menu Item rows with leading icons
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <HelpMenu />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Team menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Default: secondary label on Invite, join team permission, link-style
+          footer row
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <TeamMenu />
+        </div>
+        <p
+          className={styles['patterns__variant-label']}
+          style={{ marginTop: 'var(--spacing-l)' }}
+        >
+          With admin and create team (Manage members, Manage groups, Create a
+          team)
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <TeamMenu adminOptions createTeamPermission joinTeamPermission />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Plus menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Channel actions, category creation, invite row with secondary label
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <PlusMenu />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Channel category menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Category actions, sort row with trailing detail and chevron, browse /
+          create channels, create new category
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <ChannelCategoryMenu />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>
+          Message more options menu
+        </h2>
+        <p className={styles['patterns__variant-label']}>
+          Keyboard hints, remind submenu chevron, copy actions, optional edit and
+          flag rows
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <MessageMoreOptionsMenu />
+        </div>
+        <p
+          className={styles['patterns__variant-label']}
+          style={{ marginTop: 'var(--spacing-l)' }}
+        >
+          Without edit or flag (view-only permissions)
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <MessageMoreOptionsMenu
+            permissionToEdit={false}
+            showFlagOption={false}
+          />
+        </div>
+      </section>
+
+      <section className={styles['patterns__section']}>
+        <h2 className={styles['patterns__section-title']}>Thread actions menu</h2>
+        <p className={styles['patterns__variant-label']}>
+          Thread follow and open actions, shortcuts on unread/save, copy link
+          group
+        </p>
+        <div className={styles['patterns__popover-menu-demo']}>
+          <ThreadActionsMenu />
         </div>
       </section>
 

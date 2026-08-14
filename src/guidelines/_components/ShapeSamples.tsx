@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
-import Button from '@/components/ui/Button/Button';
-import MentionBadge from '@/components/ui/MentionBadge/MentionBadge';
-import StatusBadge from '@/components/ui/StatusBadge/StatusBadge';
-import UnreadBadge from '@/components/ui/UnreadBadge/UnreadBadge';
-import UserAvatar from '@/components/ui/UserAvatar/UserAvatar';
-import TeamAvatar from '@/components/ui/TeamAvatar/TeamAvatar';
+import { Button } from '@mattermost/compass-ui';
+import { MentionBadge } from '@mattermost/compass-ui';
+import { StatusBadge } from '@mattermost/compass-ui';
+import { UnreadBadge } from '@mattermost/compass-ui';
+import { UserAvatar } from '@mattermost/compass-ui';
+import { TeamAvatar } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import styles from './ShapeSamples.module.scss';
 

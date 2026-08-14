@@ -243,4 +243,42 @@
     gap: var(--spacing-xs);
     align-items: flex-start;
   }
+
+  &__popover-menu-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+  }
+
+  // ── Tour Point demo ─────────────────────────────────────────
+  &__tour-point-demo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    align-items: start;
+    padding: var(--spacing-xl);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+
+    .patterns__variant-label {
+      margin-bottom: var(--spacing-xs);
+    }
+  }
+
+  &__tour-point-demo-cell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__tour-point-single-demo {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+  }
 }

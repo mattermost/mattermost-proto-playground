@@ -1,0 +1,30 @@
+.search-tip-banner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  gap: var(--spacing-l);
+  padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-xxxs)
+    var(--spacing-m);
+  background-color: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  box-shadow: var(--elevation-2);
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    height: 24px;
+    overflow: hidden;
+  }
+
+  &__text {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+  }
+}

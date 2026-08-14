@@ -21,31 +21,26 @@ const SPACING_TOKENS: SpacingToken[] = [
   { token: '--spacing-xxxxxl', px: 48 },
 ];
 
-export default function SpacingLibrary() {
+export function SpacingScaleContent() {
   return (
-    <>
-      <p>
-        Use spacing tokens for every gap, margin, and padding. Working from the
-        scale keeps rhythm consistent across components.
-      </p>
-
-      <div className={styles['foundations__spacing-rows']}>
-        {SPACING_TOKENS.map(({ token, px, desc }) => (
-          <div key={token} className={styles['foundations__spacing-row']}>
-            <code className={styles['foundations__spacing-token']}>{token}</code>
-            <span className={styles['foundations__spacing-value']}>{px}px</span>
-            <div className={styles['foundations__spacing-bar-track']}>
-              <div
-                className={styles['foundations__spacing-bar']}
-                style={{ width: `${px}px` }}
-              />
-            </div>
-            <span className={styles['foundations__spacing-desc']}>
-              {desc ?? ''}
-            </span>
+    <div className={styles['foundations__spacing-rows']}>
+      {SPACING_TOKENS.map(({ token, px, desc }) => (
+        <div key={token} className={styles['foundations__spacing-row']}>
+          <code className={styles['foundations__spacing-token']}>{token}</code>
+          <span className={styles['foundations__spacing-value']}>{px}px</span>
+          <div className={styles['foundations__spacing-bar-track']}>
+            <div
+              className={styles['foundations__spacing-bar']}
+              style={{ width: `${px}px` }}
+            />
           </div>
-        ))}
-      </div>
-    </>
+          <span className={styles['foundations__spacing-desc']}>{desc ?? ''}</span>
+        </div>
+      ))}
+    </div>
   );
+}
+
+export default function SpacingLibrary() {
+  return <SpacingScaleContent />;
 }

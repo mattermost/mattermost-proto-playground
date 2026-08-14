@@ -1,0 +1,72 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  /* Column flex parents use align-items: stretch; keep tags intrinsic-width */
+  width: fit-content;
+  max-width: 100%;
+  border-radius: var(--radius-s);
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    line-height: var(--line-height-25);
+  }
+
+  // Size modifiers
+  &--size-x-small {
+    gap: var(--spacing-xxxs);
+    padding: 0 var(--spacing-xxxs);
+    font-size: var(--font-size-25);
+    letter-spacing: 0.1px;
+  }
+
+  &--size-small {
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxxxs) var(--spacing-xxs);
+    font-size: var(--font-size-75);
+  }
+
+  // Type modifiers
+  &--type-default {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--center-channel-color);
+  }
+
+  &--type-info {
+    background-color: var(--color-blue-300);
+    color: var(--color-neutral-0);
+  }
+
+  &--type-info-dim {
+    background-color: rgba(var(--color-blue-500-rgb), 0.12);
+    color: var(--color-blue-500);
+  }
+
+  &--type-danger {
+    background-color: var(--color-red-400);
+    color: var(--color-neutral-0);
+  }
+
+  &--type-success {
+    background-color: var(--color-green-500);
+    color: var(--color-neutral-0);
+  }
+
+  &--type-warning {
+    background-color: var(--color-yellow-400);
+    color: var(--center-channel-color);
+  }
+
+  // Casing modifier
+  &--casing-all-caps {
+    text-transform: uppercase;
+  }
+}

@@ -1,0 +1,26 @@
+---
+description: Mobile Compass patterns use Body 200 and sibling Mobile* components
+globs: "**/mobile*/**/*.{tsx,scss},**/Mobile*/**/*.{tsx,scss},**/layouts/mobile*/**/*.{tsx,scss}"
+alwaysApply: false
+---
+
+# Mobile patterns: Body 200 + sibling components
+
+## Typography
+
+Default body copy for mobile layouts and `Mobile*` components is **Body 200**:
+
+- `font-size: var(--font-size-200)`
+- `line-height: var(--line-height-200)`
+
+Do not use desktop Body 100 (`--font-size-100`) for primary mobile reading text (messages, composer, list labels) unless Figma specifies a smaller step.
+
+## Components
+
+Prefer a sibling `Mobile*` component when mobile differs in type, spacing, or interaction (no hover toolbars) — same as `MobileNavigationBar` / `MobileMessageInput`. Avoid a `platform="mobile"` prop on the desktop component unless the APIs stay nearly identical.
+
+Assume touch: no hover-revealed actions or hover row backgrounds as the primary interaction.
+
+## Docs
+
+Group under Patterns → Mobile. Specimen/anatomy preview frames should not use rounded corners for channel chrome.

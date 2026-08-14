@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import CallPopout from '@/components/ui/CallPopout/CallPopout';
+import { CallPopout } from '@mattermost/compass-ui';
 import {
   DIAL_IN_NUMBER,
   DIAL_IN_PIN,
   EXTERNAL_LINK,
   INTERNAL_LINK,
-} from '@/pages/ExternalCallParticipants/externalCallParticipants.constants';
-import { CALL_PARTICIPANTS } from '@/pages/ExternalCallParticipants/externalCallParticipants.fixtures';
+} from '@/fixtures/calls/callConstants';
+import { CALL_PARTICIPANTS } from '@/fixtures/calls/callParticipants';
 import styles from './call-popout.specimen.module.scss';
 
 const callLinkProps = {

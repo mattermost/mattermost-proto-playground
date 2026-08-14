@@ -1,4 +1,4 @@
-import ChannelsSidebar from '@/components/ui/ChannelsSidebar/ChannelsSidebar';
+import { ChannelsSidebar } from '@mattermost/compass-ui';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';

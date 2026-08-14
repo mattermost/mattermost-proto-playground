@@ -1,0 +1,95 @@
+.pagination-dots {
+  display: inline-flex;
+  overflow: hidden;
+
+  // ---------------------------------------------------------------------------
+  // Orientation modifiers
+  // ---------------------------------------------------------------------------
+  &--horizontal {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &--vertical {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Inverted style modifier (sidebar / dark chrome)
+  // ---------------------------------------------------------------------------
+  &--inverted {
+    .pagination-dots__dot {
+      background-color: rgba(var(--sidebar-text-rgb), 0.4);
+    }
+
+    .pagination-dots__dot--active {
+      background-color: var(--sidebar-text);
+      box-shadow: 0 0 0 4px rgba(var(--sidebar-text-rgb), 0.16);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // On primary / info surfaces (Tour Point, etc.) — uses button label tokens
+  // ---------------------------------------------------------------------------
+  &--on-primary {
+    .pagination-dots__dot {
+      background-color: rgba(var(--button-color-rgb), 0.4);
+    }
+
+    .pagination-dots__dot--active {
+      background-color: var(--button-color);
+      box-shadow: 0 0 0 4px rgba(var(--button-color-rgb), 0.24);
+    }
+
+    .pagination-dots__item:focus-visible .pagination-dots__dot {
+      box-shadow:
+        0 0 0 3px var(--color-info),
+        0 0 0 5px var(--button-color);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Elements
+  // ---------------------------------------------------------------------------
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    &:focus-visible {
+      outline: none;
+
+      .pagination-dots__dot {
+        box-shadow:
+          0 0 0 3px var(--center-channel-bg),
+          0 0 0 5px var(--link-color);
+      }
+    }
+  }
+
+  &__dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background-color: rgba(var(--center-channel-color-rgb), 0.24);
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      width var(--duration-quick) var(--ease-transition),
+      height var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &--active {
+      background-color: var(--button-bg);
+      box-shadow: 0 0 0 4px rgba(var(--button-bg-rgb), 0.16);
+    }
+  }
+}

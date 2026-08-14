@@ -1,0 +1,9 @@
+.mobile-message-input-anatomy {
+  &__frame {
+    width: 100%;
+    max-width: 414px;
+    overflow: hidden;
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    box-shadow: var(--elevation-2);
+  }
+}

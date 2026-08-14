@@ -1,29 +1,26 @@
-import ChannelInfoMsgHeader from '@/components/ui/ChannelInfoMsgHeader/ChannelInfoMsgHeader';
+import { ChannelInfoMsgHeader } from '@mattermost/compass-ui';
 
-The Channel Info Message Header is a slim tab bar that anchors the top of a
-channel's information panel. It identifies the active section and, when
-useful, names the team the channel belongs to.
+The Channel Info Message Header names a channel (or section) and, when useful,
+the team it belongs to. Use it above posts in Mentions and Saved lists, or as
+section tabs at the top of a channel info panel.
 
-Use it inside the channel info right sidebar — not as a general tab pattern.
-For free-floating tabs, reach for the Tabs component.
+For free-floating tabs elsewhere, reach for the Tabs component.
 
 <Divider />
 
 ## Anatomy
 
-- <Num>1</Num> **Tab** — the section label. The active tab is semibold and
-  carries an underline.
-- <Num>2</Num> **Tab area** — interactive hit target around the label.
-- <Num>3</Num> **Team name** — optional label after the tabs identifying
-  which team owns the channel.
+- <Num>1</Num> **Channel label** — Pressable name of the source channel (or
+  active section in a multi-tab panel).
+- <Num>2</Num> **Divider** — Separates the channel label from the team when a
+  team is shown.
+- <Num>3</Num> **Team name** — Optional passive label after the divider. Hide
+  it for single-team workspaces or when the team is already clear.
 
 <AnatomyStage>
   <div style={{width:'100%',maxWidth:'420px',border:'1px solid rgba(var(--center-channel-color-rgb),0.16)',borderRadius:'8px',overflow:'hidden',background:'var(--center-channel-bg)'}}>
     <ChannelInfoMsgHeader
-      tabs={[
-        { label: 'Spec Reviews', active: true },
-        { label: 'Drafts' },
-      ]}
+      channelName="Spec Reviews"
       teamName="Contributors"
     />
   </div>
@@ -33,15 +30,23 @@ For free-floating tabs, reach for the Tabs component.
 
 ## Behavior
 
-- Only one tab is active at a time. Clicking another tab swaps the panel
-  content beneath the header.
-- The team name is a passive label — it doesn't navigate. Hide it when the
-  context is unambiguous (single-team workspaces, or panels nested inside the
-  team they belong to).
+- In Mentions / Saved, pass `channelName` and optional `teamName` on each
+  message (or via `MobileMessage`’s matching props).
+- In a channel info panel with multiple sections, pass `tabs` instead and keep
+  only one tab active at a time.
+- The team name does not navigate — hide it when the context is unambiguous.
 
 <Divider />
 
 ## Implementation
+
+```tsx
+<ChannelInfoMsgHeader
+  channelName="UX Design"
+  teamName="Contributors"
+  onChannelClick={() => {}}
+/>
+```
 
 For props, variants, and copy-ready examples, see the
 [Channel Info Msg Header specimen page](/components/channel-info-msg-header/specimen).

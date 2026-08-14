@@ -1,6 +1,6 @@
-import Message from '@/components/ui/Message/Message';
-import messageStyles from '@/components/ui/Message/Message.module.scss';
-import Divider from '@/components/ui/Divider/Divider';
+import { Message } from '@mattermost/compass-ui';
+import { messageStyles } from '@mattermost/compass-ui';
+import { Divider } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import styles from '@/styles/library-demo/patterns.module.scss';

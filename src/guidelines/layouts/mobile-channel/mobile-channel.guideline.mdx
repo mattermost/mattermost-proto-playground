@@ -1,0 +1,35 @@
+The Mobile Channel layout is the primary Mattermost channel experience on
+phones — an iPhone device frame that holds the Mobile Navigation Bar, post
+stream, and message composer. System chrome (status bar, Dynamic Island, and
+home indicator) belongs to the device frame; the navigation bar paints the
+sidebar surface under the status area.
+
+Use the Specimen tab for the live layout.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Device frame** — The iPhone chrome that sets the phone-sized
+  canvas, including the status bar, Dynamic Island, side buttons, and home
+  indicator.
+- <Num>2</Num> **Mobile Navigation Bar** — Conversation top bar with back, title,
+  subtitle, search, and more. See [Mobile Navigation Bar](/patterns/mobile-navigation-bar).
+- <Num>3</Num> **Post stream** — Scrollable list of
+  [Mobile Messages](/patterns/mobile-message) for the active channel.
+- <Num>4</Num> **Message composer** — Mobile Message Input for writing and
+  sending posts. See [Mobile Message Input](/patterns/mobile-message-input).
+
+<Divider />
+
+## Behavior
+
+Keep the navigation bar fixed while the post stream scrolls. The bottom tab bar
+is hidden in channel view — primary destinations are reached by leaving the
+conversation. Respect the device safe areas so content and controls are not
+obscured by the status bar or home indicator. Prefer Large touch targets on
+primary actions.
+
+Unlike the desktop [Channel](/layouts/channel) layout, Mobile Channel has no
+team sidebar, channel sidebar, global header, or right sidebar — conversation
+chrome is concentrated in the Mobile Navigation Bar.

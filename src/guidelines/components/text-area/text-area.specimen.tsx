@@ -1,4 +1,4 @@
-import TextArea from '@/components/ui/TextArea/TextArea';
+import { TextArea } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function TextAreaLibrary() {

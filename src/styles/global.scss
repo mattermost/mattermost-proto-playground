@@ -1,8 +1,4 @@
-@use 'tokens';
-@use 'reset';
-@use 'themes';
-
-// Base body styles — CSS variables from tokens + themes
+// App shell styles — tokens/themes come from @mattermost/compass-ui/styles
 body {
   font-family: var(--font-family-base);
   font-size: var(--font-size-100);

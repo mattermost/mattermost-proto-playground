@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import AdminPanel, {
+import {
   type AdminPanelExpandedState,
-} from '@/components/ui/AdminPanel/AdminPanel';
-import Icon from '@/components/ui/Icon/Icon';
-import IconButton from '@/components/ui/IconButton/IconButton';
+  AdminPanel} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { IconButton } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function AdminPanelPatternSpecimen() {

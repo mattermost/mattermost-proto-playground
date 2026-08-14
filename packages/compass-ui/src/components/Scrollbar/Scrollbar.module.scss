@@ -1,0 +1,67 @@
+// Wrapper around SimpleBar. Class names emitted by SimpleBar are global, so
+// we escape with :global to override them. Thin, transparent track and a
+// translucent thumb that adapts to light and dark surfaces via
+// --center-channel-color-rgb (overridable per-instance through the `color`
+// prop, which writes --scrollbar-color).
+
+.scrollbar {
+  // Fill the parent by default. SimpleBar's inner .simplebar-wrapper uses
+  // `height: inherit`, so the root must resolve to a real dimension for the
+  // overlay to scroll. Consumers in fixed/max-height contexts (e.g. menus)
+  // pass `style={{ maxHeight }}` to clamp.
+  width: 100%;
+  height: 100%;
+  // Play nicely with flex parents — SimpleBar's root is a flex column by
+  // default and otherwise won't shrink below its content's intrinsic height.
+  min-height: 0;
+
+  // Vertical track sits flush on the right edge.
+  :global(.simplebar-track.simplebar-vertical) {
+    width: 8px;
+  }
+
+  // Horizontal track sits flush on the bottom edge.
+  :global(.simplebar-track.simplebar-horizontal) {
+    height: 8px;
+  }
+
+  // The thumb itself is rendered via ::before so we can pad it on all sides.
+  :global(.simplebar-scrollbar)::before {
+    left: 2px;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    border-radius: 3px;
+    background-color: rgba(
+      var(--scrollbar-color, var(--center-channel-color-rgb)),
+      0.24
+    );
+    transition:
+      opacity var(--duration-quick) var(--ease-exit),
+      background-color var(--duration-quick) var(--ease-transition);
+  }
+
+  // SimpleBar applies simplebar-visible when content overflows. The default
+  // CSS uses opacity 0.5; we drive opacity from our own bg alpha and let
+  // simplebar control visibility only.
+  :global(.simplebar-scrollbar.simplebar-visible)::before {
+    opacity: 1;
+  }
+
+  // Slightly stronger thumb when the user is dragging or hovering the track.
+  :global(.simplebar-track:hover .simplebar-scrollbar)::before,
+  :global(.simplebar-scrollbar.simplebar-hover)::before {
+    opacity: 1;
+    background-color: rgba(
+      var(--scrollbar-color, var(--center-channel-color-rgb)),
+      0.4
+    );
+  }
+
+  // The track should still receive clicks/drags even though SimpleBar marks
+  // it pointer-events: none by default (it's re-enabled only while dragging).
+  // Allowing pointer events here lets users click-to-jump on the track.
+  :global(.simplebar-track) {
+    pointer-events: auto;
+  }
+}

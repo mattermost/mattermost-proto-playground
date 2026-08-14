@@ -1,0 +1,34 @@
+The Mobile Channel Sidebar is the primary team navigation list on phones —
+header with team title and org subtitle, Find channels field, pinned rows, and
+categorized [Mobile Channel Sidebar Items](/components/mobile-channel-sidebar-item).
+It mirrors the desktop [Channel Sidebar](/patterns/channel-sidebar) structure
+with Body 200 rows, Heading-scale team title, and fluid width (not a fixed
+desktop column).
+
+Compose it with [Mobile Team Sidebar](/patterns/mobile-team-sidebar) and
+[Mobile Tab Bar](/patterns/mobile-tab-bar) in the
+[Mobile Home](/layouts/mobile-home) layout.
+
+Use the Specimen tab for a live list.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Header** — Team name (Heading 700) with chevron, optional org
+  subtitle, and Add channels control.
+- <Num>2</Num> **Find channels** — [Mobile Search Field](/components/mobile-search-field)
+  with placeholder “Find channels…”.
+- <Num>3</Num> **Top group** — Pinned rows such as Threads and Drafts.
+- <Num>4</Num> **Categories** — Collapsible section headers and channel / DM rows
+  via Mobile Channel Sidebar Item.
+
+<Divider />
+
+## Behavior
+
+Rows use touch sizing and press feedback only — no selected/active highlight and
+no hover menus. Wire taps through `onItemClick` (typically navigate to the
+channel page). The list fills the height above the tab bar when used in Mobile
+Home. The home layout pads the status bar so the channel list and team strip
+start below system chrome.

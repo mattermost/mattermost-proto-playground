@@ -1,4 +1,4 @@
-import ChannelInfoMsgHeader from '@/components/ui/ChannelInfoMsgHeader/ChannelInfoMsgHeader';
+import { ChannelInfoMsgHeader } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ChannelInfoMsgHeaderLibrary() {
@@ -6,12 +6,23 @@ export default function ChannelInfoMsgHeaderLibrary() {
     <>
       <div className={styles['components__button-block']}>
         <div className={styles['components__button-row']}>
-          <span className={styles['components__instance-label']}>Default</span>
-          <ChannelInfoMsgHeader />
+          <span className={styles['components__instance-label']}>
+            Channel + team (Mentions / Saved)
+          </span>
+          <ChannelInfoMsgHeader
+            channelName='Spec Reviews'
+            teamName='Contributors'
+          />
         </div>
         <div className={styles['components__button-row']}>
           <span className={styles['components__instance-label']}>
-            Multiple tabs
+            Channel only
+          </span>
+          <ChannelInfoMsgHeader channelName='UX Design' />
+        </div>
+        <div className={styles['components__button-row']}>
+          <span className={styles['components__instance-label']}>
+            Multiple tabs (channel info panel)
           </span>
           <ChannelInfoMsgHeader
             tabs={[
@@ -19,7 +30,7 @@ export default function ChannelInfoMsgHeaderLibrary() {
               { label: 'Files' },
               { label: 'Pinned' },
             ]}
-            teamName="Contributors"
+            teamName='Contributors'
           />
         </div>
       </div>

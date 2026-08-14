@@ -1,7 +1,7 @@
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
-import ChannelSidebarItem from '@/components/ui/ChannelSidebarItem/ChannelSidebarItem';
+import { ChannelSidebarItem } from '@mattermost/compass-ui';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function ChannelSidebarItemLibrary() {

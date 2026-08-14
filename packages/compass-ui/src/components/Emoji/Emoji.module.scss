@@ -1,0 +1,24 @@
+// ---------------------------------------------------------------------------
+// Block
+// ---------------------------------------------------------------------------
+.emoji {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // ---------------------------------------------------------------------------
+  $sizes: 10, 12, 16, 20, 24, 28, 32, 40, 52, 64, 104;
+
+  @each $size in $sizes {
+    &--size-#{$size} {
+      width: var(--icon-size-#{$size});
+      height: var(--icon-size-#{$size});
+      font-size: var(--icon-size-#{$size});
+    }
+  }
+}

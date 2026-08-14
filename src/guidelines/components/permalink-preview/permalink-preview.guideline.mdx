@@ -1,4 +1,5 @@
-import PermalinkPreview from '@/components/ui/PermalinkPreview/PermalinkPreview';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import { PermalinkPreview } from '@mattermost/compass-ui';
 
 A Permalink Preview renders an inline card for a message that another
 message links to. Sender, timestamp, body, and origin channel — enough
@@ -8,11 +9,11 @@ context to recognise the quoted message without leaving where you are.
 
 ## Anatomy
 
-An `Elevation 1` card with a [Message Header](/components/message-header)
+An Elevation 1 card with a [Message Header](/components/message-header)
 on top, the message body in the middle, and an origin footer at the bottom.
 
-- <Num>1</Num> **Container** — `Elevation 1` rounded surface. Max width
-  700px.
+- <Num>1</Num> **Container** — Elevation 1 rounded surface. Max width
+  700px. Elevates to Elevation 2 on hover.
 - <Num>2</Num> **Message Header** — author avatar, name, timestamp. Avatar
   displays inline (smaller than in the main stream).
 - <Num>3</Num> **Body** — the quoted message text. Truncated past ~100px;
@@ -22,11 +23,12 @@ on top, the message body in the middle, and an origin footer at the bottom.
 
 <AnatomyStage>
   <PermalinkPreview
-    avatarSrc=""
+    avatarSrc={avatarLeonard}
     authorName="Leonard Riley"
     timestamp="10:43 AM"
     messageText="At eu sed tristique gravida et fames vel pellentesque. Urna phasellus integer eu tempor mauris amet sagittis. Mollis risus mi felis magna."
     originalChannel="~Desktop App"
+    onDismiss={() => {}}
   />
 </AnatomyStage>
 
@@ -53,6 +55,11 @@ density.
 ## Behavior
 
 - **Click** anywhere on the preview to navigate to the original message.
+- **Hover** raises the card to Elevation 2 and darkens the border, matching
+  Link Preview.
+- **Removable by the author.** A small dismiss control fades in on hover
+  for the message author only — recipients can't remove a preview from
+  someone else's message.
 - **Truncation** kicks in past 100px of body height — append a `Show more`
   link that expands the preview in place.
 - **Max width** is 700px, matching message-stream width.

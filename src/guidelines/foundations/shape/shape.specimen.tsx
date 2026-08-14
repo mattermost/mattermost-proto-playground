@@ -9,28 +9,25 @@ const RADII = [
   { token: '--radius-full', value: '9999px' },
 ];
 
-export default function ShapeLibrary() {
+export function ShapeRadiiContent() {
   return (
-    <>
-      <p>
-        Corner radii are expressed as tokens so surfaces stay consistent across
-        components. Use the variable that matches the control or container role.
-      </p>
-
-      <div className={styles['foundations__shape-rows']}>
-        {RADII.map(({ token, value }) => (
-          <div key={token} className={styles['foundations__shape-row']}>
-            <code className={styles['foundations__shape-token']}>{token}</code>
-            <span className={styles['foundations__shape-value']}>{value}</span>
-            <div className={styles['foundations__shape-preview']}>
-              <div
-                className={styles['foundations__shape-box']}
-                style={{ borderRadius: `var(${token})` }}
-              />
-            </div>
+    <div className={styles['foundations__shape-rows']}>
+      {RADII.map(({ token, value }) => (
+        <div key={token} className={styles['foundations__shape-row']}>
+          <code className={styles['foundations__shape-token']}>{token}</code>
+          <span className={styles['foundations__shape-value']}>{value}</span>
+          <div className={styles['foundations__shape-preview']}>
+            <div
+              className={styles['foundations__shape-box']}
+              style={{ borderRadius: `var(${token})` }}
+            />
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ))}
+    </div>
   );
+}
+
+export default function ShapeLibrary() {
+  return <ShapeRadiiContent />;
 }

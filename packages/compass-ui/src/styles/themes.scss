@@ -1,0 +1,293 @@
+// ============================================================
+// Theme Custom Properties
+// Applied via data-theme attribute on <html>
+// e.g. <html data-theme="onyx">
+//
+// Default theme: Denim
+//
+// Opacity: Use -rgb variables with rgba() for theme-aware transparency:
+//   background: rgba(var(--sidebar-bg-rgb), 0.12);
+//   border-color: rgba(var(--button-bg-rgb), 0.24);
+// ============================================================
+
+// ============================================================
+// Denim (default)
+// ============================================================
+:root,
+[data-theme='denim'] {
+  // Sidebar
+  --sidebar-bg: var(--color-indigo-500);
+  --sidebar-bg-rgb: var(--color-indigo-500-rgb);
+  --sidebar-header-bg: #192a4d;
+  --sidebar-header-bg-rgb: 25, 42, 77;
+  --sidebar-team-bg: #162545;
+  --sidebar-team-bg-rgb: 22, 37, 69;
+  --sidebar-text: var(--color-neutral-0);
+  --sidebar-text-rgb: var(--color-neutral-0-rgb);
+  --sidebar-text-hover-bg: var(--color-indigo-400);
+  --sidebar-text-hover-bg-rgb: var(--color-indigo-400-rgb);
+  --sidebar-text-active-border: var(--color-blue-300);
+  --sidebar-text-active-border-rgb: var(--color-blue-300-rgb);
+  --sidebar-text-active-color: var(--color-neutral-0);
+  --sidebar-unread-text: var(--color-neutral-0);
+  --sidebar-header-text-color: var(--color-neutral-0);
+
+  // Center channel
+  --center-channel-bg: var(--color-neutral-0);
+  --center-channel-bg-rgb: var(--color-neutral-0-rgb);
+  --center-channel-color: var(--color-neutral-900);
+  --center-channel-color-rgb: var(--color-neutral-900-rgb);
+
+  // Buttons
+  --button-bg: var(--color-blue-500);
+  --button-bg-rgb: var(--color-blue-500-rgb);
+  --button-color: var(--color-neutral-0);
+  --button-color-rgb: var(--color-neutral-0-rgb);
+
+  // Interactions
+  --link-color: var(--color-blue-600);
+  --link-color-rgb: var(--color-blue-600-rgb);
+  --error-text: var(--color-red-400);
+  --error-text-rgb: var(--color-red-400-rgb);
+  --mention-bg: var(--color-neutral-0);
+  --mention-bg-rgb: var(--color-neutral-0-rgb);
+  --mention-color: var(--color-indigo-500);
+  --mention-color-rgb: var(--color-indigo-500-rgb);
+  --mention-highlight-bg: var(--color-yellow-200);
+  --mention-highlight-link: var(--color-neutral-1100);
+  --new-message-separator: var(--color-yellow-600);
+
+  // Status
+  --online-indicator: var(--color-green-500);
+  --away-indicator: var(--color-yellow-500);
+  --dnd-indicator: var(--color-red-400);
+
+  // Misc
+  --calls-bg: var(--color-indigo-600);
+  --calls-bg-rgb: var(--color-indigo-600-rgb);
+  --logo-color: var(--color-indigo-500);
+}
+
+// ============================================================
+// Sapphire
+// ============================================================
+[data-theme='sapphire'] {
+  // Sidebar
+  --sidebar-bg: #1543a3;
+  --sidebar-bg-rgb: 21, 67, 163;
+  --sidebar-header-bg: #123b91;
+  --sidebar-header-bg-rgb: 18, 59, 145;
+  --sidebar-team-bg: #123582;
+  --sidebar-team-bg-rgb: 18, 53, 130;
+  --sidebar-text: var(--color-neutral-0);
+  --sidebar-text-rgb: var(--color-neutral-0-rgb);
+  --sidebar-text-hover-bg: #2a58ba;
+  --sidebar-text-hover-bg-rgb: 42, 88, 186;
+  --sidebar-text-active-border: var(--color-cyan-300);
+  --sidebar-text-active-border-rgb: var(--color-cyan-300-rgb);
+  --sidebar-text-active-color: var(--color-neutral-0);
+  --sidebar-unread-text: var(--color-neutral-0);
+  --sidebar-header-text-color: var(--color-neutral-0);
+
+  // Center channel
+  --center-channel-bg: var(--color-neutral-0);
+  --center-channel-bg-rgb: var(--color-neutral-0-rgb);
+  --center-channel-color: var(--color-neutral-900);
+  --center-channel-color-rgb: var(--color-neutral-900-rgb);
+
+  // Buttons
+  --button-bg: var(--color-blue-500);
+  --button-bg-rgb: var(--color-blue-500-rgb);
+  --button-color: var(--color-neutral-0);
+
+  // Interactions
+  --link-color: var(--color-blue-600);
+  --link-color-rgb: var(--color-blue-600-rgb);
+  --error-text: var(--color-red-300);
+  --error-text-rgb: var(--color-red-300-rgb);
+  --mention-bg: var(--color-neutral-0);
+  --mention-bg-rgb: var(--color-neutral-0-rgb);
+  --mention-color: #1543a3;
+  --mention-color-rgb: 21, 67, 163;
+  --mention-highlight-bg: var(--color-teal-200);
+  --mention-highlight-link: var(--color-teal-800);
+  --new-message-separator: var(--color-yellow-400);
+
+  // Status
+  --online-indicator: var(--color-green-500);
+  --away-indicator: var(--color-yellow-500);
+  --dnd-indicator: var(--color-red-400);
+
+  // Misc
+  --calls-bg: #091d48;
+  --calls-bg-rgb: 9, 29, 72;
+  --logo-color: var(--color-indigo-500);
+}
+
+// ============================================================
+// Quartz
+// ============================================================
+[data-theme='quartz'] {
+  // Sidebar
+  --sidebar-bg: var(--color-neutral-50);
+  --sidebar-bg-rgb: var(--color-neutral-50-rgb);
+  --sidebar-header-bg: #ebecef;
+  --sidebar-header-bg-rgb: 235, 236, 239;
+  --sidebar-team-bg: #e5e7eb;
+  --sidebar-team-bg-rgb: 229, 231, 235;
+  --sidebar-text: var(--color-neutral-1100);
+  --sidebar-text-rgb: var(--color-neutral-1100-rgb);
+  --sidebar-text-hover-bg: #e8eaed;
+  --sidebar-text-hover-bg-rgb: 232, 234, 237;
+  --sidebar-text-active-border: var(--color-cyan-500);
+  --sidebar-text-active-border-rgb: var(--color-cyan-500-rgb);
+  --sidebar-text-active-color: var(--color-neutral-1100);
+  --sidebar-unread-text: var(--color-neutral-1100);
+  --sidebar-header-text-color: var(--color-neutral-1100);
+
+  // Center channel
+  --center-channel-bg: var(--color-neutral-0);
+  --center-channel-bg-rgb: var(--color-neutral-0-rgb);
+  --center-channel-color: var(--color-neutral-900);
+  --center-channel-color-rgb: var(--color-neutral-900-rgb);
+
+  // Buttons
+  --button-bg: var(--color-blue-500);
+  --button-bg-rgb: var(--color-blue-500-rgb);
+  --button-color: var(--color-neutral-0);
+
+  // Interactions
+  --link-color: var(--color-blue-600);
+  --link-color-rgb: var(--color-blue-600-rgb);
+  --error-text: var(--color-red-400);
+  --error-text-rgb: var(--color-red-400-rgb);
+  --mention-bg: var(--color-blue-500);
+  --mention-bg-rgb: var(--color-blue-500-rgb);
+  --mention-color: var(--color-neutral-0);
+  --mention-color-rgb: var(--color-neutral-0-rgb);
+  --mention-highlight-bg: var(--color-teal-200);
+  --mention-highlight-link: var(--color-teal-800);
+  --new-message-separator: var(--color-teal-600);
+
+  // Status
+  --online-indicator: var(--color-green-500);
+  --away-indicator: var(--color-yellow-500);
+  --dnd-indicator: var(--color-red-400);
+
+  // Misc
+  --calls-bg: var(--color-neutral-1050);
+  --calls-bg-rgb: var(--color-neutral-1050-rgb);
+  --logo-color: var(--color-indigo-500);
+}
+
+// ============================================================
+// Indigo
+// ============================================================
+[data-theme='indigo'] {
+  // Sidebar
+  --sidebar-bg: #151e32;
+  --sidebar-bg-rgb: 21, 30, 50;
+  --sidebar-header-bg: #182339;
+  --sidebar-header-bg-rgb: 24, 35, 57;
+  --sidebar-team-bg: #1c2740;
+  --sidebar-team-bg-rgb: 28, 39, 64;
+  --sidebar-text: var(--color-neutral-0);
+  --sidebar-text-rgb: var(--color-neutral-0-rgb);
+  --sidebar-text-hover-bg: #222c3f;
+  --sidebar-text-hover-bg-rgb: 34, 44, 63;
+  --sidebar-text-active-border: #4a7ce8;
+  --sidebar-text-active-border-rgb: 74, 124, 232;
+  --sidebar-text-active-color: var(--color-neutral-0);
+  --sidebar-unread-text: var(--color-neutral-0);
+  --sidebar-header-text-color: var(--color-neutral-0);
+
+  // Center channel
+  --center-channel-bg: #111827;
+  --center-channel-bg-rgb: 17, 24, 39;
+  --center-channel-color: var(--color-neutral-150);
+  --center-channel-color-rgb: var(--color-neutral-150-rgb);
+
+  // Buttons
+  --button-bg: #4a7ce8;
+  --button-bg-rgb: 74, 124, 232;
+  --button-color: var(--color-neutral-0);
+
+  // Interactions
+  --link-color: var(--color-blue-300);
+  --link-color-rgb: var(--color-blue-300-rgb);
+  --error-text: var(--color-red-300);
+  --error-text-rgb: var(--color-red-300-rgb);
+  --mention-bg: #4a7ce8;
+  --mention-bg-rgb: 74, 124, 232;
+  --mention-color: var(--color-neutral-0);
+  --mention-color-rgb: var(--color-neutral-0-rgb);
+  --mention-highlight-bg: var(--color-blue-700);
+  --mention-highlight-link: var(--color-teal-100);
+  --new-message-separator: var(--color-yellow-400);
+
+  // Status
+  --online-indicator: var(--color-green-500);
+  --away-indicator: var(--color-yellow-500);
+  --dnd-indicator: var(--color-red-400);
+
+  // Misc
+  --calls-bg: #222c3f;
+  --calls-bg-rgb: 34, 44, 63;
+  --logo-color: var(--color-neutral-0);
+}
+
+// ============================================================
+// Onyx
+// ============================================================
+[data-theme='onyx'] {
+  // Sidebar
+  --sidebar-bg: #202228;
+  --sidebar-bg-rgb: 32, 34, 40;
+  --sidebar-header-bg: #24272d;
+  --sidebar-header-bg-rgb: 36, 39, 45;
+  --sidebar-team-bg: #292c33;
+  --sidebar-team-bg-rgb: 41, 44, 51;
+  --sidebar-text: var(--color-neutral-0);
+  --sidebar-text-rgb: var(--color-neutral-0-rgb);
+  --sidebar-text-hover-bg: #25262a;
+  --sidebar-text-hover-bg-rgb: 37, 38, 42;
+  --sidebar-text-active-border: #4a7ce8;
+  --sidebar-text-active-border-rgb: 74, 124, 232;
+  --sidebar-text-active-color: var(--color-neutral-0);
+  --sidebar-unread-text: var(--color-neutral-0);
+  --sidebar-header-text-color: var(--color-neutral-0);
+
+  // Center channel
+  --center-channel-bg: #191b1f;
+  --center-channel-bg-rgb: 25, 27, 31;
+  --center-channel-color: var(--color-neutral-150);
+  --center-channel-color-rgb: var(--color-neutral-150-rgb);
+
+  // Buttons
+  --button-bg: #4a7ce8;
+  --button-bg-rgb: 74, 124, 232;
+  --button-color: var(--color-neutral-0);
+
+  // Interactions
+  --link-color: var(--color-blue-300);
+  --link-color-rgb: var(--color-blue-300-rgb);
+  --error-text: var(--color-red-300);
+  --error-text-rgb: var(--color-red-300-rgb);
+  --mention-bg: #4a7ce8;
+  --mention-bg-rgb: 74, 124, 232;
+  --mention-color: var(--color-neutral-0);
+  --mention-color-rgb: var(--color-neutral-0-rgb);
+  --mention-highlight-bg: var(--color-teal-800);
+  --mention-highlight-link: var(--color-teal-100);
+  --new-message-separator: var(--color-yellow-400);
+
+  // Status
+  --online-indicator: var(--color-green-500);
+  --away-indicator: var(--color-yellow-500);
+  --dnd-indicator: var(--color-red-400);
+
+  // Misc
+  --calls-bg: #24262d;
+  --calls-bg-rgb: 36, 38, 45;
+  --logo-color: var(--color-neutral-0);
+}

@@ -1,0 +1,28 @@
+The Mobile Search layout is the Search tab destination on phones — large
+title and sidebar search field above a white rounded content sheet. System
+chrome belongs to the device frame; pair with the
+[Mobile Tab Bar](/patterns/mobile-tab-bar) for the full tab shell.
+
+The idle sheet shows search modifiers (From / In / On), a Show more link, and
+recent searches. Compose that with `MobileSearchSuggestions`, or pass results
+as children when a query is active.
+
+Use the Specimen tab for the live composition.
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Large title** — “Search” in the sidebar-colored top region.
+- <Num>2</Num> **Search field** — [Mobile Search Field](/components/mobile-search-field)
+  with placeholder for messages and files, on a translucent sidebar fill.
+- <Num>3</Num> **Content sheet** — Center-channel surface with rounded top
+  corners for modifiers, recent history, or results.
+
+<Divider />
+
+## Behavior
+
+Keep the title and search field fixed while sheet content scrolls. Home,
+Mentions, Saved, and Profile share the same sheet chrome via related mobile
+layouts.

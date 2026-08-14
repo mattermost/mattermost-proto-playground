@@ -1,4 +1,4 @@
-import CallParticipantAvatar from '@/components/ui/CallParticipantAvatar/CallParticipantAvatar';
+import { CallParticipantAvatar } from '@mattermost/compass-ui';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
@@ -80,7 +80,7 @@ down to the call sidebar.
 | Large  | 120px  | Call popout grid, single-participant focus.               |
 | Medium | 96px   | Multi-participant grid in the call window.                |
 | Small  | 72px   | Compact grid; sidebar previews.                           |
-| XS     | 56px   | Roster lists; dense participant rows.                     |
+| X-Small | 56px   | Roster lists; dense participant rows.                     |
 
 <div
   style={{
@@ -96,7 +96,7 @@ down to the call sidebar.
   <CallParticipantAvatar src={avatarLeonard} alt="Large" name="Large" size="Large" muteState="unmuted" />
   <CallParticipantAvatar src={avatarLeonard} alt="Medium" name="Medium" size="Medium" muteState="unmuted" />
   <CallParticipantAvatar src={avatarLeonard} alt="Small" name="Small" size="Small" muteState="unmuted" />
-  <CallParticipantAvatar src={avatarLeonard} alt="XS" name="XS" size="XS" muteState="unmuted" />
+  <CallParticipantAvatar src={avatarLeonard} alt="X-Small" name="X-Small" size="X-Small" muteState="unmuted" />
 </div>
 
 <Divider />
@@ -133,9 +133,9 @@ and dial-ins are unambiguous.
 
 - **Hover / focus** — the avatar sits in a rounded tile with padding that scales
   by size. Hovering lightly highlights the tile on pointer devices; keyboard
-  focus inside the tile uses the same highlight. With `host` and
-  `hostControls`, an overflow menu control appears in the corner on hover or
-  when focus is inside the tile.
+  focus inside the tile uses the same highlight. By default, an overflow menu
+  control (•••) appears in the top-right corner on hover or when focus is inside
+  the tile. Pass `hostControls={false}` to hide it.
 - **Muted / Unmuted** — always show the mic badge during a call so state is
   unambiguous; absence reads as "we don't know".
 - **Talking** — pulse the ring only while audio is detected; remove

@@ -1,21 +1,22 @@
 import { useState } from 'react';
-import MessageInput from '@/components/ui/MessageInput';
-import MessageSeparator from '@/components/ui/MessageSeparator/MessageSeparator';
-import Message from '@/components/ui/Message/Message';
-import CallWidget from '@/components/ui/CallWidget/CallWidget';
-import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
+import { ChannelHeader } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-ui';
+import { MessageInput } from '@mattermost/compass-ui';
+import { MessageSeparator } from '@mattermost/compass-ui';
+import { Message } from '@mattermost/compass-ui';
+import { CallWidget } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
+import { shellStyles } from '@mattermost/compass-ui';
 import {
   DIAL_IN_NUMBER,
   DIAL_IN_PIN,
   EXTERNAL_LINK,
   INTERNAL_LINK,
-} from '@/pages/ExternalCallParticipants/externalCallParticipants.constants';
-import { CALL_PARTICIPANTS } from '@/pages/ExternalCallParticipants/externalCallParticipants.fixtures';
-import ExternalCallChannelsShell from '@/pages/ExternalCallParticipants/ExternalCallChannelsShell';
+} from '@/fixtures/calls/callConstants';
+import { CALL_PARTICIPANTS } from '@/fixtures/calls/callParticipants';
 
 const callLinkProps = {
   internalLink: INTERNAL_LINK,
@@ -34,7 +35,16 @@ export default function CallWidgetLayout() {
   const [sharing, setSharing] = useState(false);
 
   return (
-    <ExternalCallChannelsShell
+    <ChannelShell
+      channelHeader={
+        <ChannelHeader
+          type="Channel"
+          name="UX Design"
+          description="Design reviews and ongoing work."
+          memberCount={24}
+          pinnedCount={2}
+        />
+      }
       floating={
         <CallWidget
           participants={CALL_PARTICIPANTS}
@@ -68,7 +78,7 @@ export default function CallWidgetLayout() {
       }
     >
       <div className={shellStyles['channel-shell__messages']}>
-        <Scrollbars>
+        <Scrollbar>
           <div className={shellStyles['channel-shell__messages-list']}>
             <MessageSeparator type="Date" label="Today" />
 
@@ -97,12 +107,12 @@ export default function CallWidgetLayout() {
               </p>
             </Message>
           </div>
-        </Scrollbars>
+        </Scrollbar>
       </div>
 
       <div className={shellStyles['channel-shell__message-input']}>
         <MessageInput placeholder="Write to UX Design" />
       </div>
-    </ExternalCallChannelsShell>
+    </ChannelShell>
   );
 }

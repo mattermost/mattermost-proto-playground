@@ -1,0 +1,206 @@
+// ---------------------------------------------------------------------------
+// Block — Text Area (Figma v2.0.0). Multi-line text input with floating label.
+// ---------------------------------------------------------------------------
+.textArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  // ---------------------------------------------------------------------------
+  // Wrapper (bordered container)
+  // ---------------------------------------------------------------------------
+  &__wrapper {
+    position: relative;
+    background-color: var(--center-channel-bg);
+    border-radius: var(--radius-s);
+    box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.16);
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+    .textArea:has(.textArea__input:not(:disabled)):hover:not(:focus-within) & {
+      box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.24);
+    }
+
+    .textArea:has(.textArea__input:focus-visible) & {
+      box-shadow:
+        inset 0 0 0 1px var(--button-bg),
+        0 0 0 1px var(--button-bg);
+    }
+
+    .textArea:has(.textArea__input:disabled) & {
+      background-color: var(--center-channel-bg);
+      opacity: 0.56;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Floating label
+  // ---------------------------------------------------------------------------
+  &__label {
+    position: absolute;
+    left: var(--spacing-xs);
+    top: var(--spacing-s);
+    padding: 0 var(--spacing-xxxs);
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-regular);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    background-color: var(--center-channel-bg);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 24px);
+    transition:
+      font-size var(--duration-quick) var(--ease-transition),
+      top var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    .textArea--label-floated & {
+      top: 0;
+      transform: translateY(-50%);
+      font-size: var(--font-size-25);
+      line-height: 14px;
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Textarea element
+  // ---------------------------------------------------------------------------
+  &__input {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    resize: vertical;
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-regular);
+    color: var(--center-channel-color);
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      resize: none;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Character counter
+  // ---------------------------------------------------------------------------
+  &__counter {
+    margin-top: var(--spacing-xxxs);
+    font-family: 'Open Sans', sans-serif;
+    font-size: var(--font-size-25);
+    line-height: 14px;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Size modifiers
+  // ---------------------------------------------------------------------------
+  &--size-small {
+    .textArea__input {
+      padding: var(--spacing-xs) var(--spacing-m);
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+
+    .textArea__label {
+      top: var(--spacing-xs);
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-25);
+    }
+
+    &.textArea--label-floated .textArea__label {
+      top: 0;
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &--size-medium {
+    .textArea__input {
+      padding: var(--spacing-s) var(--spacing-l);
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+
+    .textArea__label {
+      top: var(--spacing-s);
+      left: var(--spacing-m);
+      font-size: var(--font-size-100);
+    }
+
+    &.textArea--label-floated .textArea__label {
+      top: 0;
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &--size-large {
+    .textArea__input {
+      padding: var(--spacing-m) var(--spacing-l);
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+
+    .textArea__label {
+      top: var(--spacing-m);
+      left: var(--spacing-m);
+      font-size: var(--font-size-200);
+      line-height: var(--line-height-200);
+    }
+
+    &.textArea--label-floated .textArea__label {
+      top: 0;
+      font-size: var(--font-size-25);
+      line-height: 14px;
+    }
+  }
+
+  &:has(.textArea__input:focus-visible) .textArea__label {
+    color: var(--button-bg);
+  }
+
+  // Hide placeholder while the floating label is in the resting position to prevent overlap.
+  &:has(.textArea__label):not(&--label-floated) .textArea__input::placeholder {
+    color: transparent;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Invalid modifier
+  // ---------------------------------------------------------------------------
+  &--invalid {
+    .textArea__wrapper {
+      box-shadow: inset 0 0 0 1px var(--error-text);
+    }
+
+    &:has(.textArea__input:focus-visible) .textArea__wrapper {
+      box-shadow:
+        inset 0 0 0 1px var(--error-text),
+        0 0 0 1px var(--error-text);
+    }
+
+    .textArea__label {
+      color: var(--error-text);
+    }
+
+    &:has(.textArea__input:focus-visible) .textArea__label {
+      color: var(--error-text);
+    }
+  }
+}
