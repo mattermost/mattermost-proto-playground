@@ -6,6 +6,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versioning follo
 
 ## [Unreleased]
 
+### Changed
+
+- **Button** paints from host semantic theme vars (`--button-bg`, `--error-text`, `--link-color`, `--center-channel-*`, `--sidebar-*`) with `color-mix` for alpha. Drops Compass-only `--color-danger` / `--color-neutral-1100` and does not add local `--_*` aliases or hex fallbacks.
+
 ### Added
 
 - Storybook coverage for Tier 1 components (in progress).

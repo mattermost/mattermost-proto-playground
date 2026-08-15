@@ -1,6 +1,9 @@
 // ---------------------------------------------------------------------------
 // Block
 // ---------------------------------------------------------------------------
+// Colors are host semantic vars (applyTheme / Compass /styles). No local
+// aliases or hex fallbacks — if the host set the vars, the button is themed.
+// Alpha uses color-mix on those hex vars so we do not need -rgb twins.
 .button {
   display: inline-flex;
   align-items: center;
@@ -85,26 +88,22 @@
     color: var(--button-color);
 
     &:hover:not(:disabled) {
-      background:
-        linear-gradient(
-          0deg,
-          rgba(var(--color-neutral-1100-rgb), 0.08) 0%,
-          rgba(var(--color-neutral-1100-rgb), 0.08) 100%
-        ),
-        var(--button-bg);
+      background-color: color-mix(
+        in srgb,
+        var(--button-bg) 92%,
+        var(--center-channel-color)
+      );
     }
     &:active:not(:disabled) {
-      background:
-        linear-gradient(
-          0deg,
-          rgba(var(--color-neutral-1100-rgb), 0.16) 0%,
-          rgba(var(--color-neutral-1100-rgb), 0.16) 100%
-        ),
-        var(--button-bg);
+      background-color: color-mix(
+        in srgb,
+        var(--button-bg) 84%,
+        var(--center-channel-color)
+      );
     }
     &:disabled {
-      background-color: rgba(var(--center-channel-color-rgb), 0.08);
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      background-color: color-mix(in srgb, var(--center-channel-color) 8%, transparent);
+      color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
@@ -119,14 +118,15 @@
     box-shadow: inset 0 0 0 1px var(--link-color);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.08);
+      background-color: color-mix(in srgb, var(--link-color) 8%, transparent);
     }
     &:active:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.16);
+      background-color: color-mix(in srgb, var(--link-color) 16%, transparent);
     }
     &:disabled {
-      box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.32);
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      box-shadow: inset 0 0 0 1px
+        color-mix(in srgb, var(--center-channel-color) 32%, transparent);
+      color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
@@ -137,18 +137,18 @@
   }
 
   &--emphasis-tertiary {
-    background-color: rgba(var(--link-color-rgb), 0.08);
+    background-color: color-mix(in srgb, var(--link-color) 8%, transparent);
     color: var(--link-color);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.12);
+      background-color: color-mix(in srgb, var(--link-color) 12%, transparent);
     }
     &:active:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.16);
+      background-color: color-mix(in srgb, var(--link-color) 16%, transparent);
     }
     &:disabled {
-      background-color: rgba(var(--center-channel-color-rgb), 0.08);
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      background-color: color-mix(in srgb, var(--center-channel-color) 8%, transparent);
+      color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
@@ -162,13 +162,13 @@
     color: var(--link-color);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.08);
+      background-color: color-mix(in srgb, var(--link-color) 8%, transparent);
     }
     &:active:not(:disabled) {
-      background-color: rgba(var(--link-color-rgb), 0.12);
+      background-color: color-mix(in srgb, var(--link-color) 12%, transparent);
     }
     &:disabled {
-      color: rgba(var(--center-channel-color-rgb), 0.32);
+      color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
     }
     &:focus-visible {
       box-shadow:
@@ -180,90 +180,99 @@
   // ---------------------------------------------------------------------------
   // Destructive + emphasis
   // ---------------------------------------------------------------------------
+  // --error-text is the host theme var. --color-danger is Compass-only.
   &--destructive {
     &.button--emphasis-primary {
-      background-color: var(--color-danger);
+      background-color: var(--error-text);
       color: var(--button-color);
 
       &:hover:not(:disabled) {
-        background-color: var(--color-danger);
+        background-color: color-mix(
+          in srgb,
+          var(--error-text) 92%,
+          var(--center-channel-color)
+        );
       }
       &:active:not(:disabled) {
-        background-color: var(--color-danger);
+        background-color: color-mix(
+          in srgb,
+          var(--error-text) 84%,
+          var(--center-channel-color)
+        );
       }
       &:disabled {
-        background-color: rgba(var(--center-channel-color-rgb), 0.08);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--center-channel-color) 8%, transparent);
+        color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
           0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 5px var(--error-text);
       }
     }
 
     &.button--emphasis-secondary {
-      color: var(--color-danger);
-      box-shadow: inset 0 0 0 1px var(--color-danger);
+      color: var(--error-text);
+      box-shadow: inset 0 0 0 1px var(--error-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.08);
+        background-color: color-mix(in srgb, var(--error-text) 8%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--error-text) 16%, transparent);
       }
       &:disabled {
-        box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.32);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        box-shadow: inset 0 0 0 1px
+          color-mix(in srgb, var(--center-channel-color) 32%, transparent);
+        color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          inset 0 0 0 1px var(--color-danger),
+          inset 0 0 0 1px var(--error-text),
           0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 5px var(--error-text);
       }
     }
 
     &.button--emphasis-tertiary {
-      background-color: rgba(var(--color-danger-rgb), 0.08);
-      color: var(--color-danger);
+      background-color: color-mix(in srgb, var(--error-text) 8%, transparent);
+      color: var(--error-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--error-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--error-text) 16%, transparent);
       }
       &:disabled {
-        background-color: rgba(var(--center-channel-color-rgb), 0.08);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--center-channel-color) 8%, transparent);
+        color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
           0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 5px var(--error-text);
       }
     }
 
     &.button--emphasis-quaternary {
-      color: var(--color-danger);
+      color: var(--error-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.08);
+        background-color: color-mix(in srgb, var(--error-text) 8%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--error-text) 16%, transparent);
       }
       &:disabled {
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
           0 0 0 3px var(--center-channel-bg),
-          0 0 0 5px var(--color-danger);
+          0 0 0 5px var(--error-text);
       }
     }
-
   }
 
   // ---------------------------------------------------------------------------
@@ -275,14 +284,14 @@
       color: var(--sidebar-bg);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.92);
+        background-color: color-mix(in srgb, var(--sidebar-text) 92%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.88);
+        background-color: color-mix(in srgb, var(--sidebar-text) 88%, transparent);
       }
       &:disabled {
-        background-color: rgba(var(--sidebar-text-rgb), 0.08);
-        color: rgba(var(--sidebar-text-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--sidebar-text) 8%, transparent);
+        color: color-mix(in srgb, var(--sidebar-text) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
@@ -296,14 +305,15 @@
       box-shadow: inset 0 0 0 1px var(--sidebar-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--sidebar-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.2);
+        background-color: color-mix(in srgb, var(--sidebar-text) 20%, transparent);
       }
       &:disabled {
-        box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.32);
-        color: rgba(var(--center-channel-color-rgb), 0.32);
+        box-shadow: inset 0 0 0 1px
+          color-mix(in srgb, var(--center-channel-color) 32%, transparent);
+        color: color-mix(in srgb, var(--center-channel-color) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
@@ -314,18 +324,18 @@
     }
 
     &.button--emphasis-tertiary {
-      background-color: rgba(var(--sidebar-text-rgb), 0.08);
+      background-color: color-mix(in srgb, var(--sidebar-text) 8%, transparent);
       color: var(--sidebar-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--sidebar-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.16);
+        background-color: color-mix(in srgb, var(--sidebar-text) 16%, transparent);
       }
       &:disabled {
-        background-color: rgba(var(--sidebar-text-rgb), 0.08);
-        color: rgba(var(--sidebar-text-rgb), 0.32);
+        background-color: color-mix(in srgb, var(--sidebar-text) 8%, transparent);
+        color: color-mix(in srgb, var(--sidebar-text) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
@@ -338,20 +348,19 @@
       color: var(--sidebar-text);
 
       &:hover:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.12);
+        background-color: color-mix(in srgb, var(--sidebar-text) 12%, transparent);
       }
       &:active:not(:disabled) {
-        background-color: rgba(var(--sidebar-text-rgb), 0.2);
+        background-color: color-mix(in srgb, var(--sidebar-text) 20%, transparent);
       }
       &:disabled {
-        color: rgba(var(--sidebar-text-rgb), 0.32);
+        color: color-mix(in srgb, var(--sidebar-text) 32%, transparent);
       }
       &:focus-visible {
         box-shadow:
-          0 0 0 3px var(--color-neutral-1100),
-          0 0 0 5px var(--color-neutral-0);
+          0 0 0 3px var(--sidebar-bg),
+          0 0 0 5px var(--sidebar-text);
       }
     }
-
   }
 }

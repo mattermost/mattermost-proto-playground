@@ -183,7 +183,9 @@ Load styles once at the app bootstrap (same entry that loads global webapp SCSS)
 
 ### Theme alignment
 
-Mattermost webapp may already set theme CSS variables. Confirm `data-theme` or equivalent vars match Compass token names (`--center-channel-bg`, `--button-bg`, etc.). Spike with one component (`Button`) before wide rollout.
+Mattermost already writes the semantic CSS variables Compass primitives should consume (`--button-bg`, `--error-text`, `--link-color`, `--center-channel-*`, `--sidebar-*`) via `applyTheme()`. Do not set Compass `data-theme` in channels, and do not import `@mattermost/compass-ui/styles` there — that overlay fights `applyTheme()`.
+
+Button is the reference: it uses those host names directly (no component-local aliases or Denim hex fallbacks) and `color-mix` for alpha so it does not need `-rgb` twins. Layout tokens (`--spacing-*`, `--font-size-*`, …) still come from Compass `/styles` in the playground; the webapp needs those tokens or per-property fallbacks if `/styles` is not loaded.
 
 ---
 
