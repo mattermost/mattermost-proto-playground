@@ -12,10 +12,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versioning follo
 - `scripts/smoke-test-compass-ui-pack.mjs` — tarball install + Vite consumer build gate.
 - `INTEGRATION.md` — consumer setup guide for Vite and Mattermost webapp.
 
-### Changed
-
-- **Button** is `forwardRef<HTMLButtonElement>` with `displayName`, native attr passthrough, and dual-stamped Mattermost `.btn*` classes (including the primary+destructive quirk). Hover/destructive/disabled colors use host semantic theme vars (`--button-bg`, `--error-text`, `--link-color`, `--center-channel-color`, `--sidebar-*`) with Denim hex fallbacks — not foundation palette tokens. `/styles` is not required for Button.
-
 ## [0.1.0-alpha.0] - 2026-06-25
 
 First alpha extracted from `mattermost-proto-playground`.
