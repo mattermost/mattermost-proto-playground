@@ -12,12 +12,12 @@ Reference implementation: `packages/compass-ui/src/components/Button/`. Details 
 ## Architecture (do not reopen)
 
 - Compass is **not** the theme engine. Do not call `applyTheme`, touch Redux, or add a ThemeProvider / CompassProvider unless the primitive needs host-injected data (emoji URLs).
-- Consume host semantic CSS variables (`--button-bg`, `--button-color`, `--error-text`, `--link-color`, `--center-channel-color` / `-rgb`, `--sidebar-*`). A Mattermost page that already ran `applyTheme()` must theme the component with no wrapper.
-- Do **not** import `@mattermost/compass-ui/styles` as a requirement (reset + `:root` / `data-theme` overlays fight Bootstrap and `applyTheme()`). Ship hashed `component-styles` plus per-property fallbacks.
-- Hover / destructive / disabled / focus: semantic theme vars only — never foundation palette (`--color-neutral-1100`, `--color-danger`, `--color-red-*`).
+- Consume host semantic CSS variables directly (`--button-bg`, `--button-color`, `--error-text`, `--link-color`, `--center-channel-color`, `--center-channel-bg`, `--sidebar-*`). A Mattermost page that already ran `applyTheme()` themes the component with no wrapper.
+- Do **not** import `@mattermost/compass-ui/styles` as a requirement (reset + `:root` / `data-theme` overlays fight Bootstrap and `applyTheme()`).
+- Hover / destructive / disabled / focus: those same host vars only — never foundation palette (`--color-neutral-1100`, `--color-danger`, `--color-red-*`).
 - `react-intl` is a **host** peer. Labels are `children: ReactNode` (or other `ReactNode` slots) so `<FormattedMessage>` works under the webapp `IntlProvider`. No hardcoded English copy (`"Close"`, `"Remove"`).
 - Keep the Figma API (PascalCase: `emphasis="Primary"`, `size="Medium"`). Do not switch to shared’s lowercase props.
-- Playground must keep working: it still loads `/styles`. Hashed classes style the control; if theme vars are unset, Denim hex / spacing fallbacks apply **on the component**, never by writing semantic colors onto `:root`.
+- Playground still loads `/styles`, which already sets the same semantic names. Do not add component-local `--_*` aliases or Denim hex fallbacks.
 
 ## Chrome vs behavior
 
@@ -42,14 +42,14 @@ Named + default export so `import {Button} from '@mattermost/compass-ui'` works.
 ## CSS / tokens
 
 - BEM + CSS modules; styling rule still applies (`packages/compass-ui` + `.cursor/rules/styling.mdc`).
-- Prefer `color-mix(in srgb, var(--semantic) …)` over `rgba(var(--foo-rgb), α)` so Mattermost’s `--error-text` (hex) works without `--error-text-rgb` vs `--error-text-color-rgb` mismatch.
-- Local `--_*` custom properties on the **block** for theme fallbacks (e.g. `--_button-bg: var(--button-bg, #1c58d9)`). Never assign `--button-bg` / `--center-channel-color` on `:root`.
-- Spacing / type / motion: `var(--spacing-s, 10px)` (and similar) so the control lays out if the host has no Compass layout tokens. Do **not** redefine `--radius-s` / `--elevation-*` / `--radius-full` on `:root` (name collisions with Mattermost).
+- Use the host var name as-is: `var(--button-bg)`, `var(--error-text)`. No `--_*` locals, no `var(--button-bg, #1c58d9)` fallbacks, no writes of semantic colors onto `:root`.
+- Prefer `color-mix(in srgb, var(--semantic) …)` over `rgba(var(--foo-rgb), α)` so hex host vars work without a correctly named `-rgb` twin (`--error-text` vs `--error-text-color-rgb`).
+- Layout tokens (`--spacing-*`, `--font-size-*`, `--duration-quick`, …) stay as `var(--spacing-s)` — the playground `/styles` sheet provides them. Do **not** redefine `--radius-s` / `--elevation-*` / `--radius-full` on `:root` (name collisions with Mattermost).
 - Do not add a tokens-only `:root` sheet in the same PR unless the user asks.
 
 ## New vs convert
 
-**Convert:** change the existing folder in `packages/compass-ui/src/components/<Name>/`. Preserve Storybook stories and Figma props. Update `INTEGRATION.md` + `CHANGELOG.md` `[Unreleased]`.
+**Convert:** change the existing folder in `packages/compass-ui/src/components/<Name>/`. Preserve Storybook stories and Figma props.
 
 **New:** same contract from day one. Do not ship a prototype-only primitive if the intent is webapp consumption.
 
@@ -62,11 +62,9 @@ Skip for a first pass: ChannelShell / sidebars / product patterns, anything that
 - [ ] forwardRef + displayName
 - [ ] Native attr passthrough; rest before ref/className
 - [ ] children / slots are ReactNode; no hardcoded English
-- [ ] Semantic theme vars only; no foundation palette in themed chrome
-- [ ] Component-scoped fallbacks; no :root semantic color writes
+- [ ] Host semantic theme vars only; no foundation palette
+- [ ] No --_* aliases or hex fallbacks
 - [ ] Dual-stamp host classes if a shared mapping exists
-- [ ] /styles not required; playground still works with /styles loaded
-- [ ] INTEGRATION.md notes the exception; CHANGELOG Unreleased updated
 - [ ] Typecheck: npm run typecheck in packages/compass-ui
 ```
 

@@ -5,7 +5,7 @@
 | Lives in Compass | Stays in the Mattermost host |
 | --- | --- |
 | Visual chrome, hashed CSS, Figma props | `ThemeProvider` / `applyTheme` / `css-vars-ponyfill` |
-| `forwardRef`, dual-stamp, fallbacks | Redux, Client4, routing, `trackEvent` |
+| `forwardRef`, dual-stamp | Redux, Client4, routing, `trackEvent` |
 | Optional later: `CompassProvider` for emoji URL hooks | `SharedProvider` bindings, `window.WebappUtils` |
 | Stamp `a11y__modal` / `a11y__popup` when converting overlays | `A11yController`, `useFocusTrap`, stacked modals |
 
@@ -44,13 +44,15 @@ Prop adapter when swapping a shared Button call site:
 - `variant="inverted"` → `appearance="Inverted"`
 - icons as children → `leadingIcon` / `trailingIcon` when converting (shared stuffed icons in `children`)
 
-## Token gaps (Mattermost CSS vars only)
+## Tokens
 
-Host already has semantic colors and `--radius-s`. Missing layout tokens (Button uses fallbacks): `--spacing-*`, `--font-family-body`, `--font-weight-semibold`, `--font-size-75/100/200`, `--line-height-*`, `--duration-quick`, `--ease-transition`.
+Host `applyTheme()` already writes the semantic colors Button uses: `--button-bg`, `--button-color`, `--error-text`, `--link-color`, `--center-channel-bg`, `--center-channel-color`, `--sidebar-bg`, `--sidebar-text`. Use those names directly.
 
-Mattermost `--error-text-color-rgb` vs Compass `--error-text-rgb`: avoid RGB triplets; use `color-mix` on `--error-text`.
+`--color-danger` / `--color-neutral-1100` are Compass-only — do not use them.
 
-Do not clobber `--radius-full` (Mattermost `50%` vs Compass `9999px`) or `--elevation-*`.
+Prefer `color-mix` on the hex var. Mattermost’s RGB twin for error is `--error-text-color-rgb`, not `--error-text-rgb`.
+
+Layout tokens (`--spacing-*`, `--font-size-*`, `--duration-quick`, …) are not theme vars. Playground `/styles` sets them. Do not clobber `--radius-full` (Mattermost `50%` vs Compass `9999px`) or `--elevation-*`.
 
 ## Next primitives (suggested order)
 

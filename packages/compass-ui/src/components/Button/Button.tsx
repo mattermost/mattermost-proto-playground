@@ -43,9 +43,7 @@ const SIZE_ICON_MAP: Record<ButtonSize, IconSize> = {
 
 /**
  * Button matching Figma/Compass variants.
- * Use leadingIcon and trailingIcon with the Icon component for icons.
- * Host theme CSS variables (--button-bg, --error-text, …) color the button;
- * prototype fallbacks apply when those vars are unset.
+ * Colors come from host semantic theme vars (`--button-bg`, `--error-text`, …).
  *
  * @see https://compass.mattermost.com/29be2c109/p/40e456-buttons
  */
