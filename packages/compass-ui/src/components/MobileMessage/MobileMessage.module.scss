@@ -1,0 +1,130 @@
+.mobile-message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-l);
+  background-color: var(--center-channel-bg);
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:active,
+  &--state-active {
+    background-color: color-mix(
+      in srgb,
+      var(--button-bg) 8%,
+      var(--center-channel-bg)
+    );
+  }
+
+  &__channel {
+    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+    margin: 0 calc(var(--spacing-l) * -1);
+  }
+
+  &__channel-header {
+    width: 100%;
+    padding-left: var(--spacing-xs);
+    padding-right: var(--spacing-xs);
+    box-sizing: border-box;
+  }
+
+  &__pinned {
+    flex-shrink: 0;
+    width: 100%;
+    min-width: 0;
+  }
+
+  &__layout {
+    display: flex;
+    gap: var(--spacing-m);
+    align-items: flex-start;
+  }
+
+  &__avatar-col {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+
+    > * {
+      align-self: center;
+    }
+  }
+
+  &__username {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+    white-space: nowrap;
+  }
+
+  &__timestamp {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    white-space: nowrap;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  /** Primary copy block inside `children` — Body 200 for mobile reading. */
+  &__body-text {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
+  &__link-preview-slot {
+    min-width: 0;
+  }
+
+  &__footer-slot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  &__images-slot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    min-width: 0;
+
+    > * {
+      flex: 0 1 auto;
+      align-self: flex-start;
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+}

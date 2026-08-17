@@ -1,0 +1,38 @@
+The Mobile Home layout is the primary Mattermost landing screen on phones —
+team strip, channel list, and bottom tab bar inside an iPhone device frame.
+System chrome (status bar, Dynamic Island, home indicator) belongs to the
+device frame; sidebars and the tab bar pad their own safe areas.
+
+Use the Specimen tab for the live composition. Other tab destinations are
+covered by [Mobile Search](/layouts/mobile-search),
+[Mobile Mentions](/layouts/mobile-mentions),
+[Mobile Saved](/layouts/mobile-saved), and
+[Mobile Profile](/layouts/mobile-profile). Conversation view is covered by
+[Mobile Channel](/layouts/mobile-channel).
+
+<Divider />
+
+## Anatomy
+
+- <Num>1</Num> **Device frame** — iPhone canvas with status bar and home
+  indicator.
+- <Num>2</Num> **Mobile Team Sidebar** — 72px strip for servers and teams. See
+  [Mobile Team Sidebar](/patterns/mobile-team-sidebar).
+- <Num>3</Num> **Mobile Channel Sidebar** — Team header, Find channels, and
+  categorized rows. See
+  [Mobile Channel Sidebar](/patterns/mobile-channel-sidebar) and
+  [Mobile Channel Sidebar Item](/components/mobile-channel-sidebar-item).
+- <Num>4</Num> **Mobile Tab Bar** — Home, Search, Mentions, Saved, and Profile.
+  See [Mobile Tab Bar](/patterns/mobile-tab-bar).
+
+<Divider />
+
+## Behavior
+
+Keep the team strip and tab bar fixed while the channel list scrolls. Tab
+selection in this specimen is local UI state only — channel taps navigate to a
+separate conversation screen (Mobile Channel), so the list does not show a
+selected row. Prefer Large touch targets and Body 200 list labels throughout.
+
+Compose with the `MobileHome` layout component, passing team sidebar, channel
+sidebar, and tab bar slots.

@@ -1,0 +1,28 @@
+.mobile-mentions {
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-800);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-800);
+    letter-spacing: -0.32px;
+    color: var(--sidebar-text);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-200);
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+  }
+}

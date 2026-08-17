@@ -1,0 +1,30 @@
+.mobile-tab-screen {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  padding-top: var(--device-status-bar-height, 54px);
+  background-color: var(--sidebar-bg);
+  box-sizing: border-box;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    padding:  var(--spacing-xl);
+    box-sizing: border-box;
+    background-color: var(--sidebar-bg);
+  }
+
+  &__sheet {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    background-color: var(--center-channel-bg);
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+  }
+}
