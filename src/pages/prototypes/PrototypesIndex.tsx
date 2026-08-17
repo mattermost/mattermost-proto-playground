@@ -8,7 +8,6 @@ import {
   getInitiativeGroups,
 } from '@/manifests/prototypes';
 import type {
-  PrototypeEntry,
   PrototypeGroup,
   Initiative,
 } from '@/manifests/prototypes';
@@ -25,23 +24,6 @@ function formatDate(iso: string): string {
   });
 }
 
-// One featured entry per group, sorted by group's most recent addedAt. Top 4.
-function getRecentFeatured(entries: PrototypeEntry[]): PrototypeEntry[] {
-  const byGroup = new Map<PrototypeGroup, PrototypeEntry[]>();
-  for (const p of entries) {
-    if (!byGroup.has(p.group)) byGroup.set(p.group, []);
-    byGroup.get(p.group)!.push(p);
-  }
-
-  const featured: PrototypeEntry[] = [];
-  for (const groupEntries of byGroup.values()) {
-    const sorted = [...groupEntries].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
-    featured.push(sorted.find((e) => e.isPrimary) ?? sorted[0]);
-  }
-
-  return featured.sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(0, 4);
-}
-
 // Category filter order — broadest / most-active first.
 const CATEGORY_ORDER: PrototypeGroup[] = [
   'zero-trust-abac',
@@ -54,7 +36,6 @@ const CATEGORY_ORDER: PrototypeGroup[] = [
 // Superseded prototypes keep their route but drop off the index.
 const LISTED_PROTOTYPES = PROTOTYPES.filter((entry) => !entry.unlisted);
 
-const recentFeatured = getRecentFeatured(LISTED_PROTOTYPES);
 const initiativeGroups = getInitiativeGroups(LISTED_PROTOTYPES);
 
 // Categories that actually have prototypes, in the fixed display order.
@@ -121,41 +102,6 @@ export default function PrototypesIndex() {
             <code>src/manifests/prototypes.ts</code>.
           </p>
         )}
-
-        {/* ── Recently Updated ──────────────────────────────────────────── */}
-        <section className={styles['prototypes-index__section']}>
-          <h2 className={styles['prototypes-index__section-heading']}>Recently Updated</h2>
-          <div className={styles['prototypes-index__recent-grid']}>
-            {recentFeatured.map((p) => {
-              const meta = GROUP_META[p.group];
-              return (
-                <Link
-                  key={p.id}
-                  to={p.path}
-                  className={styles['prototypes-index__feature-card']}
-                  style={{ '--proto-accent': meta.accentColor } as CSSProperties}
-                >
-                  <div className={styles['prototypes-index__card-accent']} />
-                  <div className={styles['prototypes-index__card-body']}>
-                    <div className={styles['prototypes-index__card-tag']}>{meta.label}</div>
-                    <div className={styles['prototypes-index__card-title']}>{p.label}</div>
-                    {p.description && (
-                      <div className={styles['prototypes-index__card-desc']}>{p.description}</div>
-                    )}
-                    <div className={styles['prototypes-index__card-footer']}>
-                      <span className={styles['prototypes-index__card-date']}>
-                        {formatDate(p.addedAt)}
-                      </span>
-                      <span className={styles['prototypes-index__card-arrow']} aria-hidden="true">
-                        →
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
 
         {/* ── By initiative (filterable accordion) ──────────────────────── */}
         <section className={styles['prototypes-index__section']}>
