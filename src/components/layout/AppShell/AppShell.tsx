@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useState, type ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import TopNav from '@/components/layout/TopNav/TopNav';
 import PrototypeTopNav from '@/components/layout/PrototypeTopNav/PrototypeTopNav';
@@ -12,7 +12,9 @@ export default function AppShell() {
   const prototypeEntry = getPrototypeByPath(pathname);
   const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
 
-  useEffect(() => {
+  /* Layout effect, not passive: parent passive effects run AFTER child ones, so a
+     passive reset here would clobber the slot a prototype just set on mount. */
+  useLayoutEffect(() => {
     setPrototypeCenterSlot(null);
   }, [pathname]);
 
