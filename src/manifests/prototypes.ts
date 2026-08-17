@@ -44,6 +44,7 @@ import DeliveredV4Page from '@/pages/DataSpillageDelivered/DeliveredV4Page';
 import DataSpillageConsole from '@/pages/DataSpillageConsole/DataSpillageConsole';
 import NarrowTrackClassificationOptions from '@/pages/NarrowTrackClassificationOptions/NarrowTrackClassificationOptions';
 import AttributeManagementClassificationSetup from '@/pages/AttributeManagementClassificationSetup/AttributeManagementClassificationSetup';
+import ClassificationMarkingsConfig from '@/pages/ClassificationMarkingsConfig/ClassificationMarkingsConfig';
 import MembershipPolicyEditorGeneric from '@/pages/MembershipPolicyEditorGeneric/MembershipPolicyEditorGeneric';
 import CreateChannelClassificationPicker from '@/pages/CreateChannelClassificationPicker/CreateChannelClassificationPicker';
 import AttributeManagementHub from '@/pages/AttributeManagementHub/AttributeManagementHub';
@@ -95,6 +96,7 @@ import ChannelAttributesVariantA from '@/pages/ChannelAttributes/variants/Varian
 import ChannelAttributesVariantB from '@/pages/ChannelAttributes/variants/VariantBBannerComposition';
 import ChannelAttributesPropagation from '@/pages/ChannelAttributes/propagation/PropagationHarness';
 import ClassificationClearanceQuestions from '@/pages/ClassificationClearanceQuestions/ClassificationClearanceQuestions';
+import ClassificationEnforcementLinkingOptions from '@/pages/ClassificationEnforcementLinkingOptions/ClassificationEnforcementLinkingOptions';
 
 export type PrototypeGroup =
   | 'navigation'
@@ -247,6 +249,7 @@ const INITIATIVE_OF: Record<string, Initiative> = {
   'narrow-track-classification-options': 'attribute-management',
   'attribute-management-hub': 'attribute-management',
   'classification-clearance-questions': 'attribute-management',
+  'classification-enforcement-linking-options': 'attribute-management',
   'attribute-hub-mvp': 'attribute-management',
   'attribute-management-walkthrough': 'attribute-management',
   'attribute-hub-mvp-next': 'attribute-management',
@@ -257,6 +260,7 @@ const INITIATIVE_OF: Record<string, Initiative> = {
   'attribute-hub-basics-advanced': 'attribute-management',
   'attribute-hub-streamlined': 'attribute-management',
   'attribute-management-classification-setup': 'attribute-management',
+  'classification-markings-config': 'attribute-management',
   'create-channel-classification-picker': 'attribute-management',
   'attribute-management': 'attribute-management',
   'attribute-management-table': 'attribute-management',
@@ -667,6 +671,17 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Classification modeled as ONE ranked-hierarchical attribute: ranked tiers form the spine compared against Clearance, with display-only sub-markings (Official use only; TLP branch) nested beneath. Releasability is a separate Select attribute (compared against Nationality). Detail view renders the hierarchy as a tree with rank badges, a "Display only" tag on nested rows, and a "Linked to Clearance" scale indicator. Deep-linkable via ?attr=classification|releasability|clearance.',
     addedAt: '2026-07-03',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'classification-markings-config',
+    label: 'Classification Markings · levels source',
+    path: '/prototypes/classification-markings-config',
+    component: ClassificationMarkingsConfig,
+    group: 'zero-trust-abac',
+    description:
+      'Redesigned Classification Markings page answering two pieces of PR #37755 feedback: (1) support linking an EXISTING ranked user attribute instead of always creating a new "Clearance" one, and (2) delete the standalone "Classification Enforcement" section. Resolves the preset-vs-linked-attribute conflict by promoting the preset dropdown into a single "Classification levels source" control whose options are Presets / Custom / ranked user attributes — one declared source, no ambiguity. Preset and Custom SEED an editable list (copy semantics); an attribute LINKS it (reference semantics: text and rank read-only, colors always editable here because a ranked attribute carries no colors). Enforcement collapses to one checkbox ("Use these levels as user clearances") in preset/custom mode and to a status line in attribute mode, since a linked user attribute already is the clearance attribute. Scenes: Preset · Linked attribute · Drift (upstream value added + reordered) · Broken link (attribute deleted, convert-to-custom recovery) · No ranked attributes.',
+    addedAt: '2026-08-14',
     collections: ['attribute-management'],
   },
   {
@@ -1422,6 +1437,25 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Sales-runnable running order for the four open classification-vs-clearance questions: one shared value list or two, handling paired with the level or separate, whether clearance is ever actually compared or every user is cleared to system high, and whether the server global classification is enforced as a limit (PRFAQ Theme 3.5). Ask-first by construction: while asking, the question fills the view and the presenter notes are open; the screens stay hidden until an explicit reveal, which collapses the ask to a strip and hands the screen to the prototype (with a Hide-the-visuals return). Alternatives are segregated into labelled APPROACH groups picked before the screen inside them, so three ways of modelling something never read as one three-step flow. No new screens: every stage is `attribute-hub-mvp`, `hierarchical-attribute-authoring-refined` (?seed=classification, handling nested under each tier with NOFORN multi-parent), or `global-membership-policy-long-form`, each deep-linked to the right state (?attr=clearance, ?attr=caveat, ?sim=channel, ?policy=static-values for literal-only rules), or a scrolled region of `classification-markings-concept.png`. Deep link: ?q=1..4.',
     addedAt: '2026-07-31',
+    collections: ['attribute-management'],
+  },
+  // Design-review mockup for the shipped Classification Enforcement section
+  // (single "Enable clearance attribute" checkbox, always creates a new
+  // Clearance attribute 1:1 with the preset). Two proposals on one switcher:
+  // Mockup A adds a create-new/use-existing choice (existing attribute's
+  // values render read-only, no per-level mapping step — that mapping is a
+  // separate open question); Mockup B repositions + renames the control
+  // inline under "Classification preset" instead of its own section. Not a
+  // Phase 6 gate deliverable — a discussion aid for PR review feedback.
+  {
+    id: 'classification-enforcement-linking-options',
+    label: 'Classification Enforcement · Linking options (discussion)',
+    path: '/prototypes/classification-enforcement-linking-options',
+    component: ClassificationEnforcementLinkingOptions,
+    group: 'zero-trust-abac',
+    description:
+      'Discussion mockup for the shipped Classification Markings → Classification Enforcement section: today it is a single "Enable clearance attribute" checkbox that always creates a new Clearance attribute permanently linked 1:1 to the page’s preset, with no picker and no create-new/use-existing choice. Four scenes on one switcher: (1) the shipped baseline; (2) Mockup A with "Use an existing ranked attribute" added as a sibling choice to create-new, existing attribute’s values shown read-only with no separate mapping step and an inline note that the preset does not apply in this mode (pending design decision, left visibly open rather than resolved); (3) the same Mockup A with "Use an existing ranked attribute" selected; (4) Mockup B, which drops the separate "Classification Enforcement" section header and moves the (renamed) control inline under "Classification preset" as one property of the page’s setup rather than its own feature area. Deep link: ?scene=baseline|mockup-a-create|mockup-a-existing|mockup-b.',
+    addedAt: '2026-08-14',
     collections: ['attribute-management'],
   },
   // ── Hierarchical attributes: post-guild-meeting rebuild (2026-08-01) ────────

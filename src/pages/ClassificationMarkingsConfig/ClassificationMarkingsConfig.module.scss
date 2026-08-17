@@ -1,0 +1,434 @@
+@keyframes cm-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cm-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cm {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  strong {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    max-width: 1100px;
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+
+  // ── Card ─────────────────────────────────────────────────────
+  &__card {
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-1);
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l) var(--spacing-xl);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__card-head-text {
+    min-width: 0;
+  }
+
+  &__sr-only {
+    @include visually-hidden;
+  }
+
+  &__card-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__card-subtitle {
+    margin: var(--spacing-xxs) 0 0;
+    font-size: var(--font-size-100);
+    line-height: 20px;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l) var(--spacing-xl);
+  }
+
+  // ── Field row (label left, control right) ────────────────────
+  &__field {
+    display: flex;
+    gap: var(--spacing-xl);
+    align-items: flex-start;
+    padding: var(--spacing-l) var(--spacing-xl);
+  }
+
+  &__label {
+    width: 200px;
+    flex-shrink: 0;
+    padding-top: 6px;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__control {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__radios {
+    display: flex;
+    gap: var(--spacing-l);
+    align-items: center;
+  }
+
+  &__help {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 18px;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    max-width: 640px;
+  }
+
+  &__link {
+    color: var(--link-color);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+
+  &__divider {
+    height: 1px;
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__select-wrap {
+    position: relative;
+    max-width: 420px;
+  }
+
+  // ── Source dropdown (custom menu, not a native select) ───────
+  &__source-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+    width: 100%;
+    height: 40px;
+    padding: 0 var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.48);
+    }
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--button-bg);
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.32);
+    }
+
+    svg {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__source-trigger-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__source-menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 20;
+    min-width: 260px;
+    animation: cm-menu-in var(--duration-quick) var(--ease-entrance);
+  }
+
+  /* A dependent option of the control above it — indented, not a new field row. */
+  &__suboption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-xs);
+  }
+
+  // ── Levels table ─────────────────────────────────────────────
+  &__table {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-s);
+    overflow: hidden;
+  }
+
+  &__thead {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) 56px;
+    align-items: center;
+    padding: var(--spacing-xs) 0;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__th {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    padding: var(--spacing-xxs) var(--spacing-s);
+  }
+
+  &__th-handle,
+  &__th-actions {
+    height: 1px;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr) 56px;
+    align-items: center;
+    min-height: 48px;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-left: 3px solid transparent;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--warn {
+      border-left-color: var(--color-warning);
+      background: rgba(var(--color-warning-rgb), 0.04);
+    }
+  }
+
+  &__cell {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__cell-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__cell-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__drag {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.48);
+    cursor: grab;
+  }
+
+  &__lock {
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__input {
+    width: 100%;
+    height: 32px;
+    padding: 0 var(--spacing-s);
+    border: 1px solid transparent;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--button-bg);
+      background: var(--center-channel-bg);
+    }
+  }
+
+  /* Locked text is rendered as text, not a disabled input — disabled inputs
+     drop out of tab order and lose their value to some assistive tech. */
+  &__text-locked {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+    padding: 0 var(--spacing-s);
+  }
+
+  // ── Color cell ───────────────────────────────────────────────
+  &__color {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    cursor: pointer;
+  }
+
+  &__swatch-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &__swatch {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: var(--radius-xs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__hex {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__set-color {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxs) var(--spacing-s);
+    border: 1px dashed rgba(var(--color-warning-rgb), 0.48);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    cursor: pointer;
+
+    svg {
+      color: var(--color-warning);
+    }
+
+    &:hover {
+      background: rgba(var(--color-warning-rgb), 0.08);
+    }
+  }
+
+  &__rank {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  /* Text label beside the warning border — meaning is never colour-only. */
+  &__needs-color {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-warning);
+  }
+
+  &__empty {
+    padding: var(--spacing-l);
+    text-align: center;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__add {
+    display: flex;
+  }
+
+  &__level-select {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    max-width: 420px;
+  }
+
+  // ── Dialog ───────────────────────────────────────────────────
+  &__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background: rgba(0, 0, 0, 0.32);
+    animation: cm-scrim-in var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__dialog-body {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: 20px;
+    color: var(--center-channel-color);
+  }
+
+
+  &__dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}
