@@ -24,11 +24,13 @@ import { MVP_RESOURCES } from './mvpModel';
 import { mvpDeleteBlockedTooltip } from './mvpNextConstants';
 import {
   isCoreSyncSource,
+  isExternallyLinked,
   pluginStatus,
   optionCountLabel,
   managedSourceListingLabel,
   mvpManualSourceOwnershipLabel,
   mvpSourceFilterLabel,
+  linkedSourceListingLabel,
 } from './mvpTerms';
 import MvpPluginStatusPill from './MvpPluginStatusPill';
 import MvpAttrTypeLabel from './MvpAttrTypeLabel';
@@ -339,6 +341,11 @@ export default function MvpCatalogListing({
                             <MvpPluginStatusPill status="disconnected" />
                           )}
                         </div>
+                      ) : isExternallyLinked(a) ? (
+                        <span className={styles['table__source-label']}>
+                          <Icon size="16" glyph={<SyncIcon />} />
+                          {linkedSourceListingLabel(a)}
+                        </span>
                       ) : (
                         <span className={styles['table__source-label']}>
                           {mvpManualSourceOwnershipLabel(a)}

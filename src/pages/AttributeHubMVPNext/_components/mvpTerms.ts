@@ -40,6 +40,7 @@ function countAllOptions(values: AttrValue[]): number {
 }
 
 export function optionCountLabel(a: HubAttribute): string {
+  if (isExternallyLinked(a)) return 'Synced';
   if (a.type === 'Text') return 'Free text';
   const n =
     a.type === 'Ranked-hierarchical'
@@ -270,6 +271,77 @@ export const CONNECT_SOURCE_OPTIONS: ConnectSourceOption[] = [
     description: 'Map values from SAML at sign-in',
   },
 ];
+
+/** LDAP / SAML field mappings on a locally-managed attribute (not source-owned). */
+export type LinkableSource = 'LDAP' | 'SAML';
+
+export interface LinkedMapping {
+  system: LinkableSource;
+  mapped: string;
+}
+
+export function linkSourceTitle(system: LinkableSource): string {
+  return system === 'LDAP' ? 'AD/LDAP' : 'SAML';
+}
+
+export function isExternallyLinked(attribute: HubAttribute): boolean {
+  return Boolean(attribute.ldapLink || attribute.samlLink);
+}
+
+export function linkedMappings(attribute: HubAttribute): LinkedMapping[] {
+  const links: LinkedMapping[] = [];
+  if (attribute.ldapLink) {
+    links.push({ system: 'LDAP', mapped: attribute.ldapLink });
+  }
+  if (attribute.samlLink) {
+    links.push({ system: 'SAML', mapped: attribute.samlLink });
+  }
+  return links;
+}
+
+export function remainingLinkTargets(
+  attribute: HubAttribute,
+): Array<{ system: LinkableSource; title: string; description: string }> {
+  return CONNECT_SOURCE_OPTIONS.filter(
+    (opt): opt is ConnectSourceOption & { system: LinkableSource } => {
+      if (opt.system === 'LDAP') return !attribute.ldapLink;
+      if (opt.system === 'SAML') return !attribute.samlLink;
+      return false;
+    },
+  );
+}
+
+export function linkedSourceListingLabel(attribute: HubAttribute): string {
+  return linkedMappings(attribute)
+    .map((link) => linkSourceTitle(link.system))
+    .join(', ');
+}
+
+export function applyExternalLink(
+  attribute: HubAttribute,
+  system: LinkableSource,
+  mapped: string,
+): HubAttribute {
+  const converting = attribute.type !== 'Text';
+  return {
+    ...attribute,
+    type: 'Text',
+    values: converting ? [] : attribute.values,
+    ldapLink: system === 'LDAP' ? mapped : attribute.ldapLink,
+    samlLink: system === 'SAML' ? mapped : attribute.samlLink,
+  };
+}
+
+export function removeExternalLink(
+  attribute: HubAttribute,
+  system: LinkableSource,
+): HubAttribute {
+  return {
+    ...attribute,
+    ldapLink: system === 'LDAP' ? undefined : attribute.ldapLink,
+    samlLink: system === 'SAML' ? undefined : attribute.samlLink,
+  };
+}
 
 /** Deep link out to the installed plugin configuration ("Plugin settings"). */
 export function manageConnectionHref(system: SourceSystem | undefined): string {

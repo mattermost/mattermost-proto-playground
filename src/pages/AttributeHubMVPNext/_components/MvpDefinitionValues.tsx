@@ -6,6 +6,7 @@ import {
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
 import MvpManagedSourceBar from './MvpManagedSourceBar';
+import { isExternallyLinked } from './mvpTerms';
 import styles from './MvpDefinitionValues.module.scss';
 
 export interface MvpDefinitionValuesProps {
@@ -35,12 +36,17 @@ export default function MvpDefinitionValues({
     <MvpManagedSourceBar attribute={attribute} layout="in-options" />
   ) : null;
 
+  // Linked LDAP/SAML mappings own this row via MvpSourceSection.
+  if (isExternallyLinked(attribute)) {
+    return managedBar;
+  }
+
   // Text — no enumerated values.
   if (attribute.type === 'Text') {
     return (
       <div className={styles['values']}>
         <p className={styles['values__none']}>
-          Text attributes have no preset values — a value is typed in per
+          Text attributes have no preset values. A value is typed in per
           resource.
         </p>
         {managedBar}

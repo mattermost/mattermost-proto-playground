@@ -221,7 +221,8 @@ export const ATTRIBUTE_MANAGEMENT_WALKTHROUGH_STEPS: WalkthroughStep[] = [
     title: 'Type and options',
     bullets: [
       'P0 creatable types: Select, Multiselect, Ranked, Text — Ranked-Hierarchical is cut (Classification is the one pre-existing exception, read-only)',
-      'Options is a chip-based value list for Select/Multiselect/Ranked; Text has no preset values — a value is typed in per resource',
+      'Options is a chip-based value list for Select/Multiselect/Ranked; Text has no preset values. A value is typed in per resource',
+      'Link to AD/LDAP or SAML maps a remote field and converts the attribute to Text. One source can still add the other; both linked hides the Link action until one is removed. Click the chip to edit the mapping, × to remove it',
       'Individual option values already in use elsewhere (`inUseCount > 0`) cannot be deleted, only disabled — this preserves existing assignments while blocking new ones (§3.4)',
     ],
     lookFor: ['Type selector', 'Options chip editor'],

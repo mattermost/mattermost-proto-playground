@@ -25,7 +25,6 @@ import {
   type HubAttribute,
   type ResourceConfig,
   type ResourceKind,
-  type SourceSystem,
 } from '@/pages/AttributeManagementHub/hubData';
 import MvpDetailView from './_components/MvpDetailView';
 import MvpMarkingsPage from './_components/MvpMarkingsPage';
@@ -36,7 +35,13 @@ import {
   MVP_RESOURCES,
   attributeMissingRequiredDefault,
 } from './_components/mvpModel';
-import { pluginStatus } from './_components/mvpTerms';
+import {
+  applyExternalLink,
+  isExternallyLinked,
+  pluginStatus,
+  removeExternalLink,
+  type LinkableSource,
+} from './_components/mvpTerms';
 import WalkthroughFocusProvider from '@/components/walkthrough/WalkthroughFocusProvider';
 import styles from './AttributeHubMVPNext.module.scss';
 
@@ -238,7 +243,11 @@ export default function AttributeHubMVPNext() {
       }
       if (source !== 'All sources') {
         if (source === 'Managed here') {
-          if (a.source.kind !== 'manual') return false;
+          if (a.source.kind !== 'manual' || isExternallyLinked(a)) return false;
+        } else if (source === 'LDAP') {
+          if (a.source.system !== 'LDAP' && !a.ldapLink) return false;
+        } else if (source === 'SAML') {
+          if (a.source.system !== 'SAML' && !a.samlLink) return false;
         } else if (a.source.system !== source) {
           return false;
         }
@@ -337,8 +346,12 @@ export default function AttributeHubMVPNext() {
     mutate((a) => ({ ...a, readIntoFiltering: value }));
   };
 
-  const connectSource = (_system: SourceSystem) => {
-    // Demo — modal closes on selection; no transient connected state in the UI.
+  const linkSource = (system: LinkableSource, mapped: string) => {
+    mutate((a) => applyExternalLink(a, system, mapped));
+  };
+
+  const unlinkSource = (system: LinkableSource) => {
+    mutate((a) => removeExternalLink(a, system));
   };
 
   const addResource = (resource: ResourceKind) => {
@@ -557,7 +570,8 @@ export default function AttributeHubMVPNext() {
                     onAddResource={addResource}
                     onRemoveResource={removeResource}
                     allowedOn={allowedOn}
-                    onConnectSource={connectSource}
+                    onLinkSource={linkSource}
+                    onUnlinkSource={unlinkSource}
                     displayNameRef={(el) => {
                       displayNameRef.current = el;
                     }}

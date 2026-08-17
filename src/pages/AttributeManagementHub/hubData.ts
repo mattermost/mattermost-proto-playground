@@ -165,6 +165,13 @@ export interface HubAttribute {
   description: string;
   values: AttrValue[];
   source: Source;
+  /**
+   * CPA-style field mappings. Independent of `source.kind === 'synced'`
+   * (plugin/UAS ownership). An attribute may map to LDAP, SAML, or both.
+   * Linking forces type to Text.
+   */
+  ldapLink?: string;
+  samlLink?: string;
   appliesTo: ResourceConfig[];
   /** Read-only "used by N policies" — not a link. */
   usedByPolicies: number;

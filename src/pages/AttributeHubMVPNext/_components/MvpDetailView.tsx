@@ -9,14 +9,18 @@ import {
   type HubAttribute,
   type ResourceConfig,
   type ResourceKind,
-  type SourceSystem,
 } from '@/pages/AttributeManagementHub/hubData';
 import MvpDefinitionValues from './MvpDefinitionValues';
 import MvpAppliesToSection from './MvpAppliesToSection';
 import MvpAddResourceMenu from './MvpAddResourceMenu';
 import MvpSourceSection from './MvpSourceSection';
-import MvpAttrTypeLabel from './MvpAttrTypeLabel';
 import { mvpAttrTypeIcon } from './mvpAttrTypeIcons';
+import {
+  isExternallyLinked,
+  linkedMappings,
+  linkSourceTitle,
+  type LinkableSource,
+} from './mvpTerms';
 import Icon from '@/components/ui/Icon/Icon';
 import styles from './MvpDetailView.module.scss';
 
@@ -46,8 +50,8 @@ export interface MvpDetailViewProps {
   onRemoveResource: (resource: ResourceKind) => void;
   /** OPEN — reveal allowed-value subsets (?allowed=on). */
   allowedOn: boolean;
-  /** Connect an external source (LDAP / SAML) — demo modal only. */
-  onConnectSource: (system: SourceSystem) => void;
+  onLinkSource: (system: LinkableSource, mapped: string) => void;
+  onUnlinkSource: (system: LinkableSource) => void;
   displayNameRef?: (el: HTMLInputElement | null) => void;
 }
 
@@ -63,7 +67,8 @@ export default function MvpDetailView({
   onAddResource,
   onRemoveResource,
   allowedOn,
-  onConnectSource,
+  onLinkSource,
+  onUnlinkSource,
   displayNameRef,
 }: MvpDetailViewProps) {
   const [nameEditing, setNameEditing] = useState(false);
@@ -71,8 +76,9 @@ export default function MvpDetailView({
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
+  const externallyLinked = isExternallyLinked(attribute);
   const nameReadOnly = sourceOwned;
-  const typeReadOnly = sourceOwned || policyLocked;
+  const typeReadOnly = sourceOwned || policyLocked || externallyLinked;
 
   useEffect(() => {
     setNameEditing(false);
@@ -193,32 +199,34 @@ export default function MvpDetailView({
           <div className={styles['detail__row']} data-tour-focus="attr-type">
             <span className={styles['detail__key']}>Type</span>
             <div className={styles['detail__field']}>
-              {typeReadOnly ? (
-                <MvpAttrTypeLabel
-                  type={attribute.type}
-                  className={styles['detail__type-label']}
-                />
-              ) : (
-                <Select
-                  className={styles['detail__input']}
-                  size="Medium"
-                  value={attribute.type}
-                  aria-label="Attribute type"
-                  leadingIcon={
-                    <Icon size="16" glyph={mvpAttrTypeIcon(attribute.type)} />
-                  }
-                  onChange={(e) =>
-                    onDefinitionChange({ type: e.target.value as AttrType })
-                  }
-                >
-                  {typeOptions.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </Select>
+              <Select
+                className={styles['detail__input']}
+                size="Medium"
+                value={attribute.type}
+                aria-label="Attribute type"
+                readOnly={typeReadOnly}
+                leadingIcon={
+                  <Icon size="16" glyph={mvpAttrTypeIcon(attribute.type)} />
+                }
+                onChange={(e) =>
+                  onDefinitionChange({ type: e.target.value as AttrType })
+                }
+              >
+                {typeOptions.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </Select>
+              {externallyLinked && !sourceOwned && (
+                <p className={styles['detail__hint']}>
+                  Locked to Text while linked to{' '}
+                  {linkedMappings(attribute)
+                    .map((link) => linkSourceTitle(link.system))
+                    .join(' and ')}.
+                </p>
               )}
-              {policyLocked && !sourceOwned && (
+              {policyLocked && !sourceOwned && !externallyLinked && (
                 <p className={styles['detail__lock']}>
                   Locked — used by {attribute.usedByPolicies}{' '}
                   {attribute.usedByPolicies === 1 ? 'policy' : 'policies'}.
@@ -240,7 +248,8 @@ export default function MvpDetailView({
               {!sourceOwned && (
                 <MvpSourceSection
                   attribute={attribute}
-                  onConnect={onConnectSource}
+                  onLink={onLinkSource}
+                  onUnlink={onUnlinkSource}
                 />
               )}
             </div>
