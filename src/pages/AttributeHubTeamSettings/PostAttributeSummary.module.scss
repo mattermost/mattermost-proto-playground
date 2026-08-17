@@ -1,0 +1,223 @@
+.summary-wrap {
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+  text-align: left;
+  font: inherit;
+  max-width: 100%;
+
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 2px;
+    border-radius: var(--radius-s);
+  }
+
+  &__overflow {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 20px;
+    padding: 0 var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+    pointer-events: none;
+  }
+}
+
+.hover-card {
+  // position / top / left come from fixed portal styles in TSX
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 280px;
+  max-width: 360px;
+  margin-top: var(--spacing-xxs);
+  padding: var(--spacing-xs) 0;
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-4);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  transform-origin: top left;
+  animation: post-attr-hover-in var(--duration-quick) var(--ease-entrance);
+
+  // Hit-area bridge across the visual gap so leaving the pills doesn't close
+  // the card before the pointer reaches it.
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: var(--spacing-xxs);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-xs);
+  }
+
+  &__title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__edit {
+    appearance: none;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--button-bg);
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+  }
+
+  &__divider {
+    flex-shrink: 0;
+    width: 100%;
+    padding: var(--spacing-xs) 0;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 100%;
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: var(--spacing-xxs) 0;
+    list-style: none;
+  }
+
+  &__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xxs) var(--spacing-l);
+  }
+
+  &__name {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    overflow-wrap: anywhere;
+  }
+
+  &__value {
+    flex: 0 0 auto;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    text-align: right;
+  }
+}
+
+@keyframes post-attr-hover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-s);
+  max-width: 100%;
+
+  &--above {
+    margin-top: 0;
+    margin-bottom: var(--spacing-s);
+  }
+
+  &__add {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    align-self: flex-start;
+    margin: 0;
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    border: none;
+    border-radius: var(--radius-s);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+
+    &:hover {
+      color: var(--center-channel-color);
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__add-icon {
+    display: inline-flex;
+  }
+}

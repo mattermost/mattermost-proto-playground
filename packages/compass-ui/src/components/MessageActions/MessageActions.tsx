@@ -8,6 +8,7 @@ import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-o
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import AppsIcon from '@mattermost/compass-icons/components/apps';
 import ReplyOutlineIcon from '@mattermost/compass-icons/components/reply-outline';
+import PlusIcon from '@mattermost/compass-icons/components/plus';
 import styles from './MessageActions.module.scss';
 
 export type MessageActionsType = 'Center Channel' | 'RHS' | 'Search Results';
@@ -21,6 +22,11 @@ export interface MessageActionsProps extends HTMLAttributes<HTMLDivElement> {
   collapsedReplyThreads?: boolean;
   /** Whether quick reactions are shown. Default: true. */
   quickReactions?: boolean;
+  /**
+   * When set, shows an “Add attribute” action that opens a picker from the
+   * button anchor (post-attributes prototypes).
+   */
+  onAddAttribute?: (anchor: HTMLElement) => void;
   /** Optional CSS class name. */
   className?: string;
 }
@@ -34,6 +40,7 @@ export default function MessageActions({
   visible = true,
   collapsedReplyThreads = true,
   quickReactions = true,
+  onAddAttribute,
   className = '',
   ...rest
 }: MessageActionsProps) {
@@ -43,6 +50,16 @@ export default function MessageActions({
   const isRHS = type === 'RHS';
   const isSearchResults = type === 'Search Results';
   const showQuickReactions = quickReactions && collapsedReplyThreads;
+
+  const addAttributeButton = onAddAttribute ? (
+    <IconButton
+      aria-label="Add attribute"
+      size="Small"
+      padding="Compact"
+      icon={<Icon size="16" glyph={<PlusIcon />} />}
+      onClick={(event) => onAddAttribute(event.currentTarget)}
+    />
+  ) : null;
 
   const rootClass = [styles['message-actions'], className]
     .filter(Boolean)
@@ -126,6 +143,7 @@ export default function MessageActions({
             padding="Compact"
             icon={<Icon size="16" glyph={<ReplyOutlineIcon />} />}
           />
+          {addAttributeButton}
           <IconButton
             aria-label="More actions"
             size="Small"
@@ -137,12 +155,15 @@ export default function MessageActions({
 
       {/* RHS actions */}
       {isRHS && (
-        <IconButton
-          aria-label="More actions"
-          size="Small"
-          padding="Compact"
-          icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
-        />
+        <>
+          {addAttributeButton}
+          <IconButton
+            aria-label="More actions"
+            size="Small"
+            padding="Compact"
+            icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+          />
+        </>
       )}
 
       {/* Search results additional buttons */}

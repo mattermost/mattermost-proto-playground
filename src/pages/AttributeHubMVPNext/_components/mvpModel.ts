@@ -177,6 +177,13 @@ export function summaryChips(
       chips.push(`Default: ${value.label}`);
     }
   }
+  if (cfg.applyDefaultToExisting && (cfg.resource === 'Channels' || cfg.resource === 'Posts')) {
+    chips.push(
+      cfg.resource === 'Channels'
+        ? 'Apply to existing channels'
+        : 'Apply to existing posts',
+    );
+  }
 
   return chips;
 }
@@ -258,6 +265,13 @@ export function summaryLine(
     if (value) {
       segments.push(`Default: ${value.label}`);
     }
+  }
+  if (cfg.applyDefaultToExisting && (cfg.resource === 'Channels' || cfg.resource === 'Posts')) {
+    segments.push(
+      cfg.resource === 'Channels'
+        ? 'Apply to existing channels'
+        : 'Apply to existing posts',
+    );
   }
 
   return segments.join(' · ');

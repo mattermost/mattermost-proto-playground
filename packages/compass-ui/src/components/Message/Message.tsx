@@ -6,7 +6,7 @@ import type { MessageActionsType } from '@/components/MessageActions/MessageActi
 import PinnedSavedIndicators from '@/components/PinnedSavedIndicators/PinnedSavedIndicators';
 import styles from './Message.module.scss';
 
-type MessageProps = {
+export type MessageProps = {
   avatarSrc?: string;
   avatarAlt: string;
   username: string;
@@ -17,6 +17,11 @@ type MessageProps = {
   messageActionsType?: MessageActionsType;
   /** When false, the hover Message Actions toolbar is omitted. Default: true. */
   showMessageActions?: boolean;
+  /**
+   * When set, Message Actions includes “Add attribute”. Receives the trigger
+   * anchor so a picker popover can open from it.
+   */
+  onAddAttribute?: (anchor: HTMLElement) => void;
   /** When true, Pinned + Saved row appears at the top of the message container. */
   showPinnedSavedIndicators?: boolean;
   /** Merged onto the root element (e.g. documentation modifiers). */
@@ -45,6 +50,7 @@ export default function Message({
   botLabel,
   messageActionsType = 'Center Channel',
   showMessageActions = true,
+  onAddAttribute,
   showPinnedSavedIndicators = false,
   className = '',
   children,
@@ -77,7 +83,10 @@ export default function Message({
             </div>
             {showMessageActions && (
               <div className={styles['message__actions-slot']}>
-                <MessageActions type={messageActionsType} />
+                <MessageActions
+                  type={messageActionsType}
+                  onAddAttribute={onAddAttribute}
+                />
               </div>
             )}
           </div>

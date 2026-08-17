@@ -29,6 +29,26 @@ export const RELATIONAL_DEFAULTS: Record<ResourceKind, WhoSets[]> = {
   Posts: ['Post author', 'Channel admin', 'System admin'],
 };
 
+/** Channel-settings scope — this channel and posts within it. */
+export function resourceDisplayName(
+  resource: ResourceKind,
+  channelAlignment = false,
+): string {
+  if (!channelAlignment) return resource;
+  if (resource === 'Channels') return 'This channel';
+  if (resource === 'Posts') return 'Posts in this channel';
+  return resource;
+}
+
+export function channelAlignedResourceLabels(): Partial<
+  Record<ResourceKind, string>
+> {
+  return {
+    Channels: 'This channel',
+    Posts: 'Posts in this channel',
+  };
+}
+
 /** All system-configured roles for the "Other roles" submenu. */
 export const OTHER_SYSTEM_ROLES = [
   'Security Administrators',
@@ -196,6 +216,16 @@ export function summaryChips(
       chips.push(`Default: ${value.label}`);
     }
   }
+  if (
+    cfg.applyDefaultToExisting &&
+    (cfg.resource === 'Channels' || cfg.resource === 'Posts')
+  ) {
+    chips.push(
+      cfg.resource === 'Channels'
+        ? 'Apply to existing channels'
+        : 'Apply to existing posts',
+    );
+  }
 
   return chips;
 }
@@ -289,6 +319,16 @@ export function summaryLine(
     if (value) {
       segments.push(`Default: ${value.label}`);
     }
+  }
+  if (
+    cfg.applyDefaultToExisting &&
+    (cfg.resource === 'Channels' || cfg.resource === 'Posts')
+  ) {
+    segments.push(
+      cfg.resource === 'Channels'
+        ? 'Apply to existing channels'
+        : 'Apply to existing posts',
+    );
   }
 
   return segments.join(' · ');

@@ -1,0 +1,11 @@
+.create-channel-sidebar {
+  width: 240px;
+
+  &__add-wrap {
+    display: inline-flex;
+  }
+
+  &__menu {
+    z-index: 40;
+  }
+}

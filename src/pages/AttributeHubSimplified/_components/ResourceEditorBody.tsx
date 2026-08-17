@@ -141,7 +141,8 @@ export default function ResourceEditorBody({
         onReadIntoFilteringChange={onReadIntoFilteringChange}
         layout="simplified"
         channelAlignment={channelAlignment}
-        requireDefaultWhenRequired={channelAlignment}
+        adjacentRequiredAndDefault
+        requireDefaultWhenRequired
         inheritanceSlot={inheritanceSlot}
         valueEditabilitySlot={editabilitySlot}
         suppressInheritance

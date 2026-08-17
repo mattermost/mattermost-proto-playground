@@ -1,0 +1,99 @@
+.channel-thread-view {
+  &__rhs-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background-color: var(--center-channel-bg);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__rhs-header-bar {
+    height: auto;
+    min-height: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  &__rhs-header-attrs {
+    padding: 0 var(--spacing-m) var(--spacing-s);
+  }
+
+  &__thread-root-wrap--clickable {
+    cursor: pointer;
+    border-radius: var(--radius-s);
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__thread-root-wrap--clickable:hover &__thread-root,
+  &__thread-root-wrap--selected &__thread-root {
+    background: rgba(var(--button-bg-rgb), 0.06);
+    outline: 1px solid rgba(var(--button-bg-rgb), 0.16);
+  }
+
+  &__thread-root {
+    border-radius: var(--radius-s);
+  }
+
+  &__attr-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: var(--spacing-xxxxxl);
+  }
+
+  &__attr-scrim {
+    position: absolute;
+    inset: 0;
+    appearance: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: default;
+  }
+
+  &__attr-dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 704px;
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  &__attr-modal-body {
+    padding: var(--spacing-l) var(--spacing-xl) var(--spacing-xl);
+  }
+
+  &__attr-modal-message {
+    padding: 0;
+    background: transparent;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  &__post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: calc(var(--spacing-xxs) / 4);
+  }
+
+  &__meta-chip {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--center-channel-color);
+    font-weight: var(--font-weight-semibold);
+  }
+}

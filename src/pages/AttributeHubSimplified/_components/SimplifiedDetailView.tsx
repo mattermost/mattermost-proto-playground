@@ -22,15 +22,18 @@ import ValueEditabilityField from './ValueEditabilityField';
 import { getEditability, setEditability } from './editabilityModel';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import {
+  OPTION_SWATCHES,
   SIMPLIFIED_ATTR_TYPES,
   assignSequentialTiers,
   comparesRank,
   displayType,
   markHierarchical,
+  optionMeta,
   stripTiers,
   type SimplifiedAttrType,
   type ValueLinkConfig,
 } from './simplifiedModel';
+import { channelAlignedResourceLabels } from './appliesToModel';
 import styles from './SimplifiedDetailView.module.scss';
 
 export interface SimplifiedDetailViewProps {
@@ -68,11 +71,16 @@ export interface SimplifiedDetailViewProps {
   channelAlignment?: boolean;
   /** Move the "Changing the value" rule onto each Applies-to binding. */
   perResourceEditability?: boolean;
+  /**
+   * Open Classification Markings — presets and colors are edited there; the
+   * Definition panel stays locked and only previews them.
+   */
+  onOpenMarkings?: (attributeId: string) => void;
 }
 
 /**
- * Classification keeps its own setup page in this variation — the hub defers to
- * it rather than duplicating the presets and colors (Abhijit, 00:12:21).
+ * Classification keeps its own markings page in this variation — the hub shows
+ * a locked preview and defers presets/colors there (Abhijit, 00:12:21).
  */
 function usesClassificationSetupPage(attribute: HubAttribute): boolean {
   return attribute.id === 'classification';
@@ -108,13 +116,33 @@ export default function SimplifiedDetailView({
   appliesToRowSummary = 'chips',
   channelAlignment = false,
   perResourceEditability = false,
+  onOpenMarkings,
 }: SimplifiedDetailViewProps) {
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
-  const nameReadOnly = sourceOwned;
+  const classificationLocked =
+    channelAlignment && usesClassificationSetupPage(attribute);
+  const nameReadOnly = sourceOwned || classificationLocked;
   const typeReadOnly =
-    sourceOwned || policyLocked || valueLink?.mode === 'exact';
+    sourceOwned ||
+    policyLocked ||
+    valueLink?.mode === 'exact' ||
+    classificationLocked;
   const currentType = displayType(attribute);
+  const markingColorPreview = classificationLocked
+    ? attribute.values
+        .filter((v) => v.tier != null)
+        .map((v) => {
+          const color = optionMeta(v.id).color;
+          const swatch = OPTION_SWATCHES.find((s) => s.token === color);
+          return {
+            id: v.id,
+            label: v.label,
+            color: color ?? null,
+            swatchLabel: swatch?.label ?? 'None',
+          };
+        })
+    : [];
 
   const handleTypeChange = (next: SimplifiedAttrType) => {
     const wasRanked = comparesRank(currentType);
@@ -181,11 +209,25 @@ export default function SimplifiedDetailView({
                   </option>
                 ))}
               </Select>
-              {policyLocked && !sourceOwned && (
+              {classificationLocked && !sourceOwned && (
+                <p className={styles['detail__lock']}>
+                  Locked on this page — edit nested markings and colors on
+                  Classification Markings.
+                </p>
+              )}
+              {policyLocked && !classificationLocked && !sourceOwned && (
                 <p className={styles['detail__lock']}>
                   Locked — used by {attribute.usedByPolicies}{' '}
                   {attribute.usedByPolicies === 1 ? 'policy' : 'policies'}.
                   Changing the type could break them.
+                </p>
+              )}
+              {policyLocked && classificationLocked && !sourceOwned && (
+                <p className={styles['detail__lock']}>
+                  Locked — used by {attribute.usedByPolicies}{' '}
+                  {attribute.usedByPolicies === 1 ? 'policy' : 'policies'}.
+                  Nested markings and colors are edited on Classification
+                  Markings.
                 </p>
               )}
             </div>
@@ -195,21 +237,54 @@ export default function SimplifiedDetailView({
             <div className={styles['detail__row']}>
               <span className={styles['detail__key']}>Options</span>
               <div className={styles['detail__field']}>
-                {channelAlignment && usesClassificationSetupPage(attribute) && (
-                  <p className={styles['detail__external']}>
-                    Presets and marking colors are configured on Classification
-                    Markings.
-                    <Button
-                      emphasis="Tertiary"
-                      size="Small"
-                      trailingIcon={
-                        <Icon size="12" glyph={<OpenInNewIcon />} />
-                      }
-                      onClick={() => undefined}
-                    >
-                      Open
-                    </Button>
-                  </p>
+                {classificationLocked && (
+                  <>
+                    <p className={styles['detail__external']}>
+                      Presets and marking colors are configured on Classification
+                      Markings.
+                      <Button
+                        emphasis="Tertiary"
+                        size="Small"
+                        trailingIcon={
+                          <Icon size="12" glyph={<OpenInNewIcon />} />
+                        }
+                        onClick={() => onOpenMarkings?.(attribute.id)}
+                      >
+                        Open
+                      </Button>
+                    </p>
+                    {markingColorPreview.length > 0 && (
+                      <div className={styles['detail__colors']}>
+                        <span className={styles['detail__colors-label']}>
+                          Marking colors
+                        </span>
+                        <ul className={styles['detail__colors-list']}>
+                          {markingColorPreview.map((row) => (
+                            <li
+                              key={row.id}
+                              className={styles['detail__colors-item']}
+                            >
+                              <span
+                                className={styles['detail__colors-swatch']}
+                                style={
+                                  row.color
+                                    ? { background: row.color }
+                                    : undefined
+                                }
+                                aria-hidden
+                              />
+                              <span className={styles['detail__colors-copy']}>
+                                {row.label}
+                                <span className={styles['detail__colors-meta']}>
+                                  {row.swatchLabel}
+                                </span>
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
                 )}
                 <DefinitionValues
                   attribute={attribute}
@@ -228,6 +303,15 @@ export default function SimplifiedDetailView({
                   onLinkValues={onLinkValues}
                   onEditLink={onEditLink}
                   onUnlinkValues={onUnlinkValues}
+                  forceReadOnly={classificationLocked}
+                  hideSourceActions={classificationLocked}
+                  linkedNoticeDescription={
+                    classificationLocked
+                      ? `Options mirror ${
+                          valueLink?.attributeName ?? 'Clearance'
+                        }. Labels and ranks stay in sync; edit nested markings and colors on Classification Markings.`
+                      : undefined
+                  }
                 />
               </div>
             </div>
@@ -275,6 +359,14 @@ export default function SimplifiedDetailView({
             applied={attribute.appliesTo.map((c) => c.resource)}
             onAdd={onAddResource}
             align="end"
+            resourceLabels={
+              channelAlignment ? channelAlignedResourceLabels() : undefined
+            }
+            allowedResources={
+              channelAlignment
+                ? (['Channels', 'Posts'] as ResourceKind[])
+                : undefined
+            }
           />
         }
       >

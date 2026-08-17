@@ -1,0 +1,304 @@
+.create-channel-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+
+  &__sys-link {
+    appearance: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: var(--button-bg);
+    font: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+  }
+
+  &__host {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: var(--spacing-xxxxxl);
+    pointer-events: auto;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    appearance: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: default;
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    min-width: 0;
+    max-height: 100%;
+    overflow: hidden;
+    pointer-events: auto;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+  }
+
+  &__type-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-s);
+  }
+
+  &__type-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-m) var(--spacing-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    cursor: pointer;
+    text-align: left;
+    transition:
+      border-color var(--duration-quick) var(--ease-transition),
+      background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      border-color: rgba(var(--button-bg-rgb), 0.32);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--selected {
+      border-color: var(--button-bg);
+      background:
+        linear-gradient(
+          rgba(var(--button-bg-rgb), 0.04),
+          rgba(var(--button-bg-rgb), 0.04)
+        ),
+        var(--center-channel-bg);
+
+      .create-channel-modal__type-icon {
+        color: var(--button-bg);
+      }
+    }
+  }
+
+  &__type-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__type-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    min-width: 0;
+  }
+
+  &__type-title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__type-sub {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__type-check {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    color: var(--button-bg);
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+
+    // Compass TextInput/TextArea default to 300px; modal fields span the body.
+    > :first-child {
+      max-width: none;
+    }
+  }
+
+  &__url {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__help {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__attrs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding-top: var(--spacing-l);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__attrs-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__attrs-title {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__attrs-help {
+    // Cancel section gap so title→subtitle stays tight; rows still get gap-m below.
+    margin: calc(var(--spacing-xxxxs) - var(--spacing-m)) 0 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__attrs-rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__attr-row {
+    display: grid;
+    grid-template-columns: 148px 1fr;
+    gap: var(--spacing-s);
+    align-items: center;
+  }
+
+  &__attr-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__picker {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+  }
+
+  &__picker-trigger {
+    appearance: none;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 32px;
+    margin: 0;
+    padding: 2px 4px;
+    border: none;
+    border-radius: var(--radius-s);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: var(--center-channel-color);
+    text-align: left;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &--open {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--empty {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+
+  &__picker-chips {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-xs);
+  }
+}

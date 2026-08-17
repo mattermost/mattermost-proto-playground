@@ -8,25 +8,25 @@ import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
 import {
   assignableValuesForResource,
+  applyDefaultToExistingLabel,
   channelDisplayIncludes,
   defaultValueHint,
   hasInheritanceParent,
   isChannelDisplayHidden,
-  postDisplayIncludes,
-  postDisplayLabel,
-  POST_DISPLAY_LOCATIONS,
   readIntoActive,
   readIntoForced,
   resolveInheritMode,
   supportsChannelBanner,
+  supportsDefaultBackfill,
   takesValueList,
+  unmarkedInstanceCount,
+  unmarkedInstanceCountLabel,
   whoCanSetIsEditable,
   type HubAttribute,
   type InheritMode,
   type ResourceConfig,
   type UserProfileDisplay,
   type DisplayWhere,
-  type PostDisplayLoc,
 } from '../../hubData';
 import { inheritanceParentLabel } from '@/pages/AttributeHubMVP/_components/mvpTerms';
 import styles from './ResourceConfigPanel.module.scss';
@@ -81,22 +81,30 @@ interface FieldProps {
 }
 
 function Field({ label, hint, children, layout = 'default', focusId }: FieldProps) {
-  const hintBelowControl = layout === 'simplified';
+  if (layout === 'simplified') {
+    return (
+      <div
+        className={[styles['field'], styles['field--simplified']]
+          .filter(Boolean)
+          .join(' ')}
+        data-tour-focus={focusId}
+      >
+        <span className={styles['field__label']}>{label}</span>
+        <div className={styles['field__control']}>
+          {children}
+          {hint != null && <div className={styles['field__hint']}>{hint}</div>}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles['field']} data-tour-focus={focusId}>
       <div className={styles['field__head']}>
         <span className={styles['field__label']}>{label}</span>
-        {hint != null && !hintBelowControl && (
-          <div className={styles['field__hint']}>{hint}</div>
-        )}
+        {hint != null && <div className={styles['field__hint']}>{hint}</div>}
       </div>
-      <div className={styles['field__control']}>
-        {children}
-        {hint != null && hintBelowControl && (
-          <div className={styles['field__hint']}>{hint}</div>
-        )}
-      </div>
+      <div className={styles['field__control']}>{children}</div>
     </div>
   );
 }
@@ -209,22 +217,6 @@ function toggleChannelLocation(
   return next.length === 0 ? (['Hidden'] as DisplayWhere[]) : next;
 }
 
-function togglePostLocation(
-  current: DisplayWhere[] | undefined,
-  loc: PostDisplayLoc,
-): DisplayWhere[] {
-  const visible = isChannelDisplayHidden(current)
-    ? ([] as DisplayWhere[])
-    : (current ?? []).filter((entry) => entry !== 'Hidden');
-
-  const has = visible.includes(loc);
-  const next = has
-    ? visible.filter((entry) => entry !== loc)
-    : [...visible, loc];
-
-  return next.length === 0 ? (['Hidden'] as DisplayWhere[]) : next;
-}
-
 function ChannelDisplaySelect({
   attribute,
   value,
@@ -265,32 +257,6 @@ function ChannelDisplaySelect({
             Banner
           </Checkbox>
         )}
-    </div>
-  );
-}
-
-function PostDisplaySelect({
-  value,
-  onChange,
-}: {
-  value: DisplayWhere[] | undefined;
-  onChange: (next: DisplayWhere[]) => void;
-}) {
-  return (
-    <div
-      className={styles['display-locations']}
-      role="group"
-      aria-label="Display locations"
-    >
-      {POST_DISPLAY_LOCATIONS.map((loc) => (
-        <Checkbox
-          key={loc}
-          checked={postDisplayIncludes(value, loc)}
-          onChange={() => onChange(togglePostLocation(value, loc))}
-        >
-          {postDisplayLabel(loc)}
-        </Checkbox>
-      ))}
     </div>
   );
 }
@@ -374,7 +340,7 @@ export default function ResourceConfigPanel({
   suppressInheritance = false,
   userProfileDisplayOptions,
   whoCanSetHint,
-  adjacentRequiredAndDefault = false,
+  adjacentRequiredAndDefault: _adjacentRequiredAndDefault = false,
   requireDefaultWhenRequired = false,
   managedByPluginName: managedByPluginNameProp,
   channelAlignment = false,
@@ -400,28 +366,36 @@ export default function ResourceConfigPanel({
     isChannels && hasInheritanceParent(attribute, 'Channels');
   const showInheritFromChannel =
     isPosts && hasInheritanceParent(attribute, 'Posts');
-  const showDefaultValue =
-    whoCanSetIsEditable(attribute, config) &&
-    takesValueList(attribute) &&
-    assignableValuesForResource(attribute, config).length > 0;
-  const assignableValues = showDefaultValue
+  const assignableValues = takesValueList(attribute)
     ? assignableValuesForResource(attribute, config)
     : [];
+  // Required Channels/Posts still need a default (and backfill) even when
+  // who-can-set is locked by inheritance — otherwise Classification hides it.
+  const showDefaultValue =
+    assignableValues.length > 0 &&
+    (whoCanSetIsEditable(attribute, config) ||
+      (config.required && supportsDefaultBackfill(config.resource)));
   const currentDefaultId = assignableValues.some(
     (v) => v.id === config.defaultValueId,
   )
     ? (config.defaultValueId ?? '')
     : '';
   const defaultValueRequired =
-    requireDefaultWhenRequired && config.required && showDefaultValue;
+    (requireDefaultWhenRequired || channelAlignment) &&
+    config.required &&
+    showDefaultValue;
   const defaultValueMissing = defaultValueRequired && !currentDefaultId;
-  const groupRequiredWithDefault =
-    adjacentRequiredAndDefault && (isChannels || isPosts);
+  // Keep Required → Default → backfill together on Channels/Posts.
+  const groupRequiredWithDefault = isChannels || isPosts;
 
   const requiredHint = channelAlignment
-    ? config.required
-      ? `A value must be chosen when the ${config.resource.slice(0, -1).toLowerCase()} is created. Any that exist without one stay locked, and an admin is notified.`
-      : `Optional — this attribute can still be added to a ${config.resource.slice(0, -1).toLowerCase()} after it is created.`
+    ? isChannels
+      ? config.required
+        ? 'A value must be set on this channel.'
+        : 'Optional — this attribute can still be added to this channel later.'
+      : config.required
+        ? `A value must be chosen when a ${config.resource.slice(0, -1).toLowerCase()} is created in this channel. Any that exist without one stay locked, and an admin is notified.`
+        : `Optional — this attribute can still be added to a ${config.resource.slice(0, -1).toLowerCase()} after it is created.`
     : 'The resource must have a value before it can be created or saved.';
 
   const requiredField = !isUsers ? (
@@ -434,65 +408,118 @@ export default function ResourceConfigPanel({
       <Switch
         size="Small"
         checked={config.required}
-        onChange={(e) => onChange({ required: e.target.checked })}
+        onChange={(e) =>
+          onChange({
+            required: e.target.checked,
+            ...(e.target.checked ? {} : { applyDefaultToExisting: false }),
+          })
+        }
       >
         {config.required ? 'On' : 'Off'}
       </Switch>
     </Field>
   ) : null;
 
+  // Channel settings configure a single channel — backfilling "existing
+  // channels" does not apply. Posts-in-this-channel can still backfill.
+  const showDefaultBackfill =
+    supportsDefaultBackfill(config.resource) &&
+    config.required &&
+    assignableValues.length > 0 &&
+    !(channelAlignment && isChannels);
+  const unmarkedCount = showDefaultBackfill
+    ? unmarkedInstanceCount(attribute.id, config.resource)
+    : 0;
+  const backfillEnabled = Boolean(currentDefaultId);
+  const resourceNoun = config.resource.toLowerCase();
+
   const defaultValueField = showDefaultValue ? (
     <Field
       layout={layout}
       label="Default value"
       hint={
-        defaultValueRequired ? (
-          <>
-            {defaultValueHint(config.resource)}
-            <p className={styles['note']}>
-              Also applied to existing {config.resource.toLowerCase()} that have
-              no value set.
-            </p>
-          </>
-        ) : (
-          defaultValueHint(config.resource)
-        )
+        channelAlignment && isChannels
+          ? 'Used when this channel has no value set.'
+          : showDefaultBackfill
+            ? channelAlignment && isPosts
+              ? 'Applies to newly created posts in this channel only.'
+              : `Applies to newly created ${resourceNoun} only.`
+            : defaultValueHint(config.resource)
       }
       focusId={`${config.resource.toLowerCase()}-default-value`}
     >
-      <Select
-        className={styles['default-value-select']}
-        size="Medium"
-        width="fit"
-        value={currentDefaultId}
-        invalid={defaultValueMissing}
-        aria-label="Default value"
-        aria-required={defaultValueRequired || undefined}
-        onChange={(e) =>
-          onChange({
-            defaultValueId: e.target.value === '' ? null : e.target.value,
-          })
-        }
-      >
-        {!defaultValueRequired && <option value="">None</option>}
-        {defaultValueRequired && !currentDefaultId && (
-          <option value="" disabled>
-            Select a value…
-          </option>
+      <div className={styles['control-slot']}>
+        <Select
+          className={styles['default-value-select']}
+          size="Medium"
+          width="fit"
+          value={currentDefaultId}
+          invalid={defaultValueMissing}
+          aria-label="Default value"
+          aria-required={defaultValueRequired || undefined}
+          onChange={(e) =>
+            onChange({
+              defaultValueId: e.target.value === '' ? null : e.target.value,
+              ...(e.target.value === ''
+                ? { applyDefaultToExisting: false }
+                : {}),
+            })
+          }
+        >
+          {!defaultValueRequired && <option value="">None</option>}
+          {defaultValueRequired && !currentDefaultId && (
+            <option value="" disabled>
+              Select a value…
+            </option>
+          )}
+          {assignableValues.map((value) => (
+            <option key={value.id} value={value.id}>
+              {value.tier != null
+                ? `${value.label} (Tier ${value.tier})`
+                : value.label}
+            </option>
+          ))}
+        </Select>
+        {defaultValueMissing && (
+          <p className={styles['field__error']}>
+            Select a default value when Required is on.
+          </p>
         )}
-        {assignableValues.map((value) => (
-          <option key={value.id} value={value.id}>
-            {value.tier != null
-              ? `${value.label} (Tier ${value.tier})`
-              : value.label}
-          </option>
-        ))}
-      </Select>
-      {defaultValueMissing && (
-        <p className={styles['field__error']}>
-          Select a default value when Required is on.
-        </p>
+      </div>
+    </Field>
+  ) : null;
+
+  const backfillField = showDefaultBackfill ? (
+    <Field
+      layout={layout}
+      label={
+        isChannels
+          ? 'Existing channels'
+          : channelAlignment
+            ? 'Existing posts in this channel'
+            : 'Existing posts'
+      }
+      hint={unmarkedInstanceCountLabel(
+        unmarkedCount,
+        config.resource,
+        attribute.displayName?.trim() || attribute.name,
       )}
+      focusId={`${config.resource.toLowerCase()}-apply-existing`}
+    >
+      <div className={styles['control-slot']}>
+        <Checkbox
+          size="Medium"
+          checked={Boolean(config.applyDefaultToExisting)}
+          disabled={!backfillEnabled}
+          onChange={(e) =>
+            onChange({ applyDefaultToExisting: e.target.checked })
+          }
+        >
+          {channelAlignment && isPosts
+            ? 'Apply to previously created posts in this channel'
+            : applyDefaultToExistingLabel(config.resource)}
+        </Checkbox>
+      </div>
     </Field>
   ) : null;
 
@@ -529,6 +556,7 @@ export default function ResourceConfigPanel({
         <>
           {requiredField}
           {defaultValueField}
+          {backfillField}
         </>
       )}
 
@@ -652,40 +680,6 @@ export default function ResourceConfigPanel({
         />
       )}
 
-      {isPosts && !channelAlignment && (
-        <Field
-          layout={layout}
-          label="Display location"
-          focusId="posts-display-location"
-          hint={
-            layout === 'simplified' ? (
-              'Multiple locations can be selected. Uncheck all to hide.'
-            ) : (
-              <>
-                Multiple locations can be selected. Uncheck all to hide.
-                {!isChannelDisplayHidden(config.showWhere) &&
-                  postDisplayIncludes(config.showWhere, 'Composer') && (
-                    <p className={styles['note']}>
-                      Shown in the message input while composing a post.
-                    </p>
-                  )}
-                {!isChannelDisplayHidden(config.showWhere) &&
-                  postDisplayIncludes(config.showWhere, 'Header') && (
-                    <p className={styles['note']}>
-                      Shown on the message in the channel timeline.
-                    </p>
-                  )}
-              </>
-            )
-          }
-        >
-          <PostDisplaySelect
-            value={config.showWhere}
-            onChange={(next) => onChange({ showWhere: next })}
-          />
-        </Field>
-      )}
-
       {inheritanceSlot && !isUsers && (
         <Field
           layout={layout}
@@ -694,7 +688,7 @@ export default function ResourceConfigPanel({
           }`}
           focusId={`${config.resource.toLowerCase()}-inheritance`}
         >
-          {inheritanceSlot}
+          <div className={styles['control-slot']}>{inheritanceSlot}</div>
         </Field>
       )}
 
@@ -706,11 +700,12 @@ export default function ResourceConfigPanel({
           label="Changing the value"
           focusId={`${config.resource.toLowerCase()}-value-editability`}
         >
-          {valueEditabilitySlot}
+          <div className={styles['control-slot']}>{valueEditabilitySlot}</div>
         </Field>
       )}
 
       {!groupRequiredWithDefault && defaultValueField}
+      {!groupRequiredWithDefault && backfillField}
     </div>
   );
 }

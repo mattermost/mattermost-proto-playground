@@ -52,6 +52,12 @@ export interface DefinitionValuesProps {
   onLinkValues: () => void;
   onEditLink: () => void;
   onUnlinkValues: () => void;
+  /** Force options non-editable even when not policy/source locked. */
+  forceReadOnly?: boolean;
+  /** Hide connect / link / unlink affordances under Options. */
+  hideSourceActions?: boolean;
+  /** Override the exact-link SectionNotice description. */
+  linkedNoticeDescription?: string;
 }
 
 /** Whether a tier is referenced by an access policy (demo heuristic). */
@@ -300,6 +306,9 @@ export default function DefinitionValues({
   onLinkValues,
   onEditLink,
   onUnlinkValues,
+  forceReadOnly = false,
+  hideSourceActions = false,
+  linkedNoticeDescription,
 }: DefinitionValuesProps) {
   const [draft, setDraft] = useState('');
   const [editing, setEditing] = useState<{
@@ -313,13 +322,16 @@ export default function DefinitionValues({
   const linked = isValueLinked(attribute);
   const exactLinked = valueLink?.mode === 'exact';
   const mappedLinked = valueLink?.mode === 'mapped';
-  const editable = !sourceOwned && !locked && !exactLinked;
+  const editable =
+    !forceReadOnly && !sourceOwned && !locked && !exactLinked;
   const type = displayType(attribute);
   const isTree = isTreeType(type);
   const ranked = comparesRank(type);
   const tierCount = attribute.values.filter((v) => v.tier != null).length;
-  const showConnect = !sourceOwned && type !== 'Text' && !linked;
-  const showLink = canLinkValues(attribute) && !linked;
+  const showConnect =
+    !hideSourceActions && !sourceOwned && type !== 'Text' && !linked;
+  const showLink =
+    !hideSourceActions && canLinkValues(attribute) && !linked;
   const sourceAttribute = valueLink
     ? attributes.find((item) => item.id === valueLink.attributeId)
     : undefined;
@@ -342,6 +354,18 @@ export default function DefinitionValues({
       return managedSourceBar;
     }
     if (linked && valueLink) {
+      if (hideSourceActions) {
+        return (
+          <div className={styles['values__linked-footer']}>
+            <span className={styles['values__linked-copy']}>
+              <Icon size="16" glyph={<LinkVariantIcon />} />
+              {exactLinked
+                ? `Exact match with ${valueLink.attributeName} — options sync from the source catalog.`
+                : `Mapped to ${valueLink.attributeName} — ranks compare via your mapping.`}
+            </span>
+          </div>
+        );
+      }
       return (
         <div className={styles['values__linked-footer']}>
           <span className={styles['values__linked-copy']}>
@@ -459,7 +483,10 @@ export default function DefinitionValues({
         <SectionNotice
           type="Info"
           title="Shared value scale"
-          description={`Options mirror ${valueLink.attributeName}. Labels and ranks stay in sync; edit the source attribute to change them.`}
+          description={
+            linkedNoticeDescription ??
+            `Options mirror ${valueLink.attributeName}. Labels and ranks stay in sync; edit the source attribute to change them.`
+          }
         />
       )}
 

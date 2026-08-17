@@ -9,7 +9,7 @@ import { resourceIcon } from '@/pages/AttributeManagementHub/resourceIcons';
 import type { HubAttribute, ResourceConfig, ResourceKind } from '@/pages/AttributeManagementHub/hubData';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import ResourceEditorBody from './ResourceEditorBody';
-import { summaryChips, summaryLine } from './appliesToModel';
+import { summaryChips, summaryLine, resourceDisplayName, channelAlignedResourceLabels } from './appliesToModel';
 import styles from './AppliesToSection.module.scss';
 
 export type AppliesToRowSummaryVariant = 'chips' | 'inline';
@@ -49,6 +49,21 @@ export default function AppliesToSection({
   const [highlighted, setHighlighted] = useState<ResourceKind | null>(null);
   const rowRefs = useRef<Partial<Record<ResourceKind, HTMLDivElement>>>({});
 
+  // Required channel/post bindings open by default so Required + default +
+  // backfill are visible without an extra click (e.g. Classification → Channels).
+  useEffect(() => {
+    const next: Record<string, boolean> = {};
+    for (const cfg of attribute.appliesTo) {
+      if (
+        cfg.required &&
+        (cfg.resource === 'Channels' || cfg.resource === 'Posts')
+      ) {
+        next[cfg.resource] = true;
+      }
+    }
+    setExpanded(next);
+  }, [attribute.id]);
+
   const toggle = (resource: ResourceKind) =>
     setExpanded((current) => ({ ...current, [resource]: !current[resource] }));
 
@@ -73,6 +88,12 @@ export default function AppliesToSection({
   }, [highlighted]);
 
   const appliedResources = applied.map((c) => c.resource);
+  const addMenuLabels = channelAlignment
+    ? channelAlignedResourceLabels()
+    : undefined;
+  const addMenuAllowed = channelAlignment
+    ? (['Channels', 'Posts'] as ResourceKind[])
+    : undefined;
 
   return (
     <div className={styles['applies']}>
@@ -80,7 +101,11 @@ export default function AppliesToSection({
         <div className={styles['applies__empty']}>
           <EmptyState
             title="No resources yet"
-            description="Add a resource to apply this attribute to users, channels, posts, or teams."
+            description={
+              channelAlignment
+                ? 'Add a resource to apply this attribute to this channel or posts within it.'
+                : 'Add a resource to apply this attribute to users, channels, posts, or teams.'
+            }
           />
           <div className={[styles['applies__footer'], styles['applies__footer--center']].join(' ')}>
             <AddResourceMenu
@@ -88,6 +113,8 @@ export default function AppliesToSection({
               onAdd={handleAddResource}
               emphasis="Primary"
               size="Medium"
+              resourceLabels={addMenuLabels}
+              allowedResources={addMenuAllowed}
             />
           </div>
         </div>
@@ -145,7 +172,7 @@ export default function AppliesToSection({
                     >
                       <span className={styles['row__name']}>
                         {resourceIcon(cfg.resource)}
-                        {cfg.resource}
+                        {resourceDisplayName(cfg.resource, channelAlignment)}
                       </span>
                       {rowSummaryVariant === 'chips' ? (
                         <span className={styles['row__chips']}>
@@ -211,7 +238,12 @@ export default function AppliesToSection({
           })}
           </div>
           <div className={styles['applies__footer']}>
-            <AddResourceMenu applied={appliedResources} onAdd={handleAddResource} />
+            <AddResourceMenu
+              applied={appliedResources}
+              onAdd={handleAddResource}
+              resourceLabels={addMenuLabels}
+              allowedResources={addMenuAllowed}
+            />
           </div>
         </>
       )}

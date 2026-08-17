@@ -26,10 +26,4 @@
     box-sizing: border-box;
     padding: var(--spacing-xl) var(--spacing-xxl) var(--spacing-xxxl);
   }
-
-  &__create-actions {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-s);
-  }
 }

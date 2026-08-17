@@ -15,6 +15,36 @@ export type AttrType =
   | 'Multiselect'
   | 'Text';
 
+/** All types offered when creating or editing an attribute. */
+export const ATTR_TYPE_OPTIONS: AttrType[] = [
+  'Text',
+  'Select',
+  'Multiselect',
+  'Ranked',
+  'Ranked-hierarchical',
+];
+
+export function attrTypeLabel(type: AttrType): string {
+  switch (type) {
+    case 'Multiselect':
+      return 'Multi-select';
+    case 'Ranked-hierarchical':
+      return 'Ranked hierarchical';
+    default:
+      return type;
+  }
+}
+
+/** Types that define a selectable options list. */
+export function takesValueListForType(type: AttrType): boolean {
+  return (
+    type === 'Select' ||
+    type === 'Multiselect' ||
+    type === 'Ranked' ||
+    type === 'Ranked-hierarchical'
+  );
+}
+
 export type ResourceKind = 'Users' | 'Channels' | 'Posts' | 'Teams';
 
 /** External-sync state. Text + color, never color alone. */
@@ -82,6 +112,64 @@ export const POST_DISPLAY_LOCATIONS: PostDisplayLoc[] = [
 
 export type InheritMode = 'off' | 'inherit' | 'inherit-lock';
 
+/** Whether an assigned value may change after it is set on a resource. */
+export type ValueEditability = 'editable' | 'ratchet' | 'locked';
+
+export const VALUE_EDITABILITY_OPTIONS: ValueEditability[] = [
+  'editable',
+  'ratchet',
+  'locked',
+];
+
+export const VALUE_EDITABILITY_LABEL: Record<ValueEditability, string> = {
+  editable: 'Editable',
+  ratchet: 'Can only lower',
+  locked: 'Locked after set',
+};
+
+/** Ranked types may ratchet (lower-only) after set; select types may not. */
+export function supportsRatchetValueEditability(type: AttrType): boolean {
+  return type === 'Ranked' || type === 'Ranked-hierarchical';
+}
+
+export function valueEditabilityOptionsForType(
+  type: AttrType,
+): ValueEditability[] {
+  if (supportsRatchetValueEditability(type)) {
+    return VALUE_EDITABILITY_OPTIONS;
+  }
+  return VALUE_EDITABILITY_OPTIONS.filter((option) => option !== 'ratchet');
+}
+
+export function coerceValueEditabilityForType(
+  type: AttrType,
+  editability: ValueEditability | undefined,
+): ValueEditability {
+  const resolved = editability ?? 'editable';
+  if (resolved === 'ratchet' && !supportsRatchetValueEditability(type)) {
+    return 'editable';
+  }
+  return resolved;
+}
+
+export function coerceAppliesToForType(
+  type: AttrType,
+  appliesTo: ResourceConfig[],
+): ResourceConfig[] {
+  return appliesTo.map((cfg) => {
+    const valueEditability = coerceValueEditabilityForType(
+      type,
+      cfg.valueEditability,
+    );
+    if (valueEditability === cfg.valueEditability) return cfg;
+    return { ...cfg, valueEditability };
+  });
+}
+
+export function resolveValueEditability(cfg: ResourceConfig): ValueEditability {
+  return cfg.valueEditability ?? 'editable';
+}
+
 export type UserProfileDisplay = 'always' | 'hide-empty' | 'hidden';
 
 /**
@@ -112,8 +200,16 @@ export interface ResourceConfig {
   disabledValueIds?: string[];
   /** Pre-filled when a new resource instance is created without a value. */
   defaultValueId?: string | null;
+  /**
+   * When Required + a default are set: also write that default onto existing
+   * instances that have no value (opt-in backfill). Defaults apply to new
+   * instances only unless this is true.
+   */
+  applyDefaultToExisting?: boolean;
   /** Channels — `showWhere` is a default that channel admins may change per channel. */
   displayOverridable?: boolean;
+  /** Whether the value may change after assignment. */
+  valueEditability?: ValueEditability;
 }
 
 /** Capability delegation — owner + delegates per capability. */
@@ -347,6 +443,38 @@ export function postDisplayLabel(loc: PostDisplayLoc): string {
   }
 }
 
+export function toggleChannelLocation(
+  current: DisplayWhere[] | undefined,
+  loc: 'Header' | 'Sidebar' | 'Banner',
+): DisplayWhere[] {
+  const visible = isChannelDisplayHidden(current)
+    ? ([] as DisplayWhere[])
+    : (current ?? []).filter((entry) => entry !== 'Hidden');
+
+  const has = visible.includes(loc);
+  const next = has
+    ? visible.filter((entry) => entry !== loc)
+    : [...visible, loc];
+
+  return next.length === 0 ? (['Hidden'] as DisplayWhere[]) : next;
+}
+
+export function togglePostLocation(
+  current: DisplayWhere[] | undefined,
+  loc: PostDisplayLoc,
+): DisplayWhere[] {
+  const visible = isChannelDisplayHidden(current)
+    ? ([] as DisplayWhere[])
+    : (current ?? []).filter((entry) => entry !== 'Hidden');
+
+  const has = visible.includes(loc);
+  const next = has
+    ? visible.filter((entry) => entry !== loc)
+    : [...visible, loc];
+
+  return next.length === 0 ? (['Hidden'] as DisplayWhere[]) : next;
+}
+
 export function supportsChannelBanner(attribute: HubAttribute): boolean {
   return (
     attribute.type === 'Ranked-hierarchical' || attribute.type === 'Ranked'
@@ -354,7 +482,7 @@ export function supportsChannelBanner(attribute: HubAttribute): boolean {
 }
 
 export function takesValueList(attribute: HubAttribute): boolean {
-  return attribute.type !== 'Text';
+  return takesValueListForType(attribute.type);
 }
 
 export function listValuesForOverlay(attribute: HubAttribute): AttrValue[] {
@@ -405,6 +533,67 @@ export function defaultValueHint(resource: ResourceKind): string {
       return _exhaustive;
     }
   }
+}
+
+/** Resource kinds that support opt-in default backfill onto existing instances. */
+export function supportsDefaultBackfill(resource: ResourceKind): boolean {
+  return resource === 'Channels' || resource === 'Posts';
+}
+
+/**
+ * Demo fixture — how many existing instances lack a value for this attribute.
+ * Stable per attribute so the backfill count feels realistic in the prototype.
+ */
+export function unmarkedInstanceCount(
+  attributeId: string,
+  resource: ResourceKind,
+): number {
+  if (!supportsDefaultBackfill(resource)) return 0;
+
+  const fixtures: Record<string, Partial<Record<'Channels' | 'Posts', number>>> =
+    {
+      classification: { Channels: 12, Posts: 84 },
+      program: { Channels: 47 },
+      caveat: { Channels: 31, Posts: 112 },
+    };
+
+  if (resource !== 'Channels' && resource !== 'Posts') return 0;
+  const known = fixtures[attributeId]?.[resource];
+  if (known != null) return known;
+
+  return resource === 'Channels' ? 28 : 156;
+}
+
+export function applyDefaultToExistingLabel(resource: ResourceKind): string {
+  switch (resource) {
+    case 'Channels':
+      return 'Apply to previously created channels';
+    case 'Posts':
+      return 'Apply to previously created posts';
+    default:
+      return 'Apply to previously created items';
+  }
+}
+
+export function unmarkedInstanceCountLabel(
+  count: number,
+  resource: ResourceKind,
+  attributeName: string,
+): string {
+  const noun =
+    resource === 'Channels'
+      ? count === 1
+        ? 'channel'
+        : 'channels'
+      : resource === 'Posts'
+        ? count === 1
+          ? 'post'
+          : 'posts'
+        : count === 1
+          ? 'item'
+          : 'items';
+  const name = attributeName.trim() || 'this attribute';
+  return `${count.toLocaleString()} ${noun} ${count === 1 ? 'doesn’t' : 'don’t'} have ${name} set`;
 }
 
 /** Reuse is offered only for manually-managed, not-yet-linked attributes. */
@@ -633,8 +822,10 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
           ),
         ),
         showWhere: ['Header', 'Sidebar', 'Banner'],
-        inheritMode: 'inherit-lock',
+        inheritMode: 'off',
         disabledValueIds: [],
+        defaultValueId: 'unclassified',
+        applyDefaultToExisting: false,
       },
       {
         resource: 'Posts',
@@ -768,9 +959,11 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     appliesTo: [
       {
         resource: 'Channels',
-        required: false,
+        required: true,
         whoCanSet: whoCanSet('Channel admin'),
         showWhere: ['Header', 'Sidebar'],
+        defaultValueId: 'cav-noforn',
+        applyDefaultToExisting: false,
       },
       {
         resource: 'Posts',

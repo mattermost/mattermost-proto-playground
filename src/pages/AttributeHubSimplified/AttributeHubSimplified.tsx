@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import ConsoleSidebar from '@/components/ui/ConsoleSidebar/ConsoleSidebar';
 import sidebarStyles from '@/components/ui/ConsoleSidebar/ConsoleSidebar.module.scss';
 import ConsolePageHeader from '@/components/ui/ConsolePageHeader/ConsolePageHeader';
-import Button from '@/components/ui/Button/Button';
+import AdminPanelFooter from '@/components/ui/AdminPanelFooter/AdminPanelFooter';
 import Scrollbars from '@/components/ui/Scrollbars/Scrollbars';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import SyncPill from '@/pages/AttributeManagementHub/_components/SyncPill/SyncPill';
@@ -33,6 +33,7 @@ import SimplifiedDetailView from './_components/SimplifiedDetailView';
 import ConnectSourceModal from './_components/ConnectSourceModal';
 import CatalogListing from './_components/CatalogListing';
 import LinkValuesModal from './_components/LinkValuesModal';
+import ClassificationMarkingsPage from './_components/ClassificationMarkingsPage';
 import {
   displayType,
   syncValuesWithType,
@@ -98,10 +99,52 @@ function blankAttribute(): HubAttribute {
   };
 }
 
+function normalizeAttribute(a: HubAttribute): HubAttribute {
+  return {
+    ...a,
+    name: a.name.trim(),
+  };
+}
+
+function snapshotAttribute(a: HubAttribute): string {
+  return JSON.stringify(normalizeAttribute(a));
+}
+
 function readParams(): URLSearchParams {
   return typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search)
     : new URLSearchParams();
+}
+
+function initialEditorState(
+  params: URLSearchParams,
+  catalog: HubAttribute[],
+): {
+  draft: HubAttribute | null;
+  selectedId: string | null;
+  savedSnapshot: string;
+} {
+  if (params.get('flow') === 'new') {
+    const blank = blankAttribute();
+    return {
+      draft: blank,
+      selectedId: null,
+      savedSnapshot: snapshotAttribute(blank),
+    };
+  }
+  const attrId = params.get('attr');
+  if (attrId) {
+    const attr = catalog.find((a) => a.id === attrId);
+    if (attr) {
+      const clone = structuredClone(attr);
+      return {
+        draft: clone,
+        selectedId: attrId,
+        savedSnapshot: snapshotAttribute(clone),
+      };
+    }
+  }
+  return { draft: null, selectedId: null, savedSnapshot: '' };
 }
 
 /**
@@ -128,14 +171,14 @@ export default function AttributeHubSimplified({
   perResourceEditability = false,
 }: AttributeHubSimplifiedProps = {}) {
   const params = readParams();
+  const initialEditor = initialEditorState(params, HUB_ATTRIBUTES);
 
   const [attributes, setAttributes] = useState<HubAttribute[]>(HUB_ATTRIBUTES);
   const [selectedId, setSelectedId] = useState<string | null>(
-    params.get('flow') === 'new' ? null : params.get('attr'),
+    initialEditor.selectedId,
   );
-  const [draft, setDraft] = useState<HubAttribute | null>(
-    params.get('flow') === 'new' ? blankAttribute() : null,
-  );
+  const [draft, setDraft] = useState<HubAttribute | null>(initialEditor.draft);
+  const [savedSnapshot, setSavedSnapshot] = useState(initialEditor.savedSnapshot);
   const [editorsById, setEditorsById] = useState<Record<string, Editors>>({});
 
   const [selectedResources, setSelectedResources] = useState<ResourceKind[]>([]);
@@ -146,19 +189,52 @@ export default function AttributeHubSimplified({
   >(null);
   const [guardrail, setGuardrail] = useState<GuardrailState>(null);
   const [linkValuesOpen, setLinkValuesOpen] = useState(false);
+  /** Classification Markings editor (?markings=classification). */
+  const [markingsId, setMarkingsId] = useState<string | null>(() =>
+    params.get('markings'),
+  );
 
   const nameRef = useRef<HTMLInputElement | null>(null);
-  const creating = draft !== null;
+  const creating = draft !== null && selectedId === null;
 
   // Auto-focus Name on create-mode open.
   useEffect(() => {
     if (creating) nameRef.current?.focus();
   }, [creating]);
 
+  // Keep shareable deep links in sync: ?attr=<id>, ?markings=<id>, ?flow=new.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const next = new URLSearchParams(window.location.search);
+    if (markingsId) {
+      next.set('markings', markingsId);
+    } else {
+      next.delete('markings');
+    }
+    if (creating) {
+      next.set('flow', 'new');
+      next.delete('attr');
+    } else {
+      next.delete('flow');
+      if (selectedId) next.set('attr', selectedId);
+      else next.delete('attr');
+    }
+    const qs = next.toString();
+    const url = `${window.location.pathname}${qs ? `?${qs}` : ''}`;
+    if (url !== `${window.location.pathname}${window.location.search}`) {
+      window.history.replaceState(null, '', url);
+    }
+  }, [selectedId, markingsId, creating]);
+
   const persisted = selectedId
     ? attributes.find((a) => a.id === selectedId) ?? null
     : null;
   const active = draft ?? persisted;
+
+  const dirty =
+    draft != null && snapshotAttribute(draft) !== savedSnapshot;
+  const saveEnabled =
+    draft != null && draft.name.trim().length > 0 && !!draft.type;
 
   const editors: Editors = active
     ? editorsById[active.id] ?? editorsFor(active)
@@ -191,13 +267,9 @@ export default function AttributeHubSimplified({
       prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r],
     );
 
-  // ── Mutation on the active attribute (persisted or draft) ─────────────────
+  // ── Mutation on the working draft only (Save commits to the catalog) ──────
   const mutate = (fn: (a: HubAttribute) => HubAttribute) => {
-    if (draft) {
-      setDraft((d) => (d ? fn(d) : d));
-    } else if (selectedId) {
-      setAttributes((prev) => prev.map((a) => (a.id === selectedId ? fn(a) : a)));
-    }
+    setDraft((current) => (current ? fn(current) : current));
   };
 
   // Assign missing ranks when opening a ranked attribute.
@@ -539,24 +611,93 @@ export default function AttributeHubSimplified({
 
   // ── Detail / create navigation ────────────────────────────────────────────
   const openDetail = (id: string) => {
-    setDraft(null);
+    const attr = attributes.find((a) => a.id === id);
+    if (!attr) return;
+    const clone = structuredClone(attr);
+    setDraft(clone);
+    setSavedSnapshot(snapshotAttribute(clone));
     setSelectedId(id);
+    setMarkingsId(null);
   };
+
+  const openMarkings = (id: string) => {
+    setMarkingsId(id);
+    setDraft(null);
+    setSavedSnapshot('');
+    // Keep selectedId so Back returns to the Classification detail.
+    if (!selectedId) setSelectedId(id);
+  };
+
+  const closeMarkings = () => {
+    const returnId = markingsId ?? selectedId;
+    setMarkingsId(null);
+    if (!returnId) return;
+    const attr = attributes.find((a) => a.id === returnId);
+    if (!attr) {
+      setSelectedId(returnId);
+      return;
+    }
+    const clone = structuredClone(attr);
+    setDraft(clone);
+    setSavedSnapshot(snapshotAttribute(clone));
+    setSelectedId(returnId);
+  };
+
+  const markingsAttr = markingsId
+    ? attributes.find((a) => a.id === markingsId) ?? null
+    : null;
+
+  const clearanceAttributes = useMemo(
+    () =>
+      attributes.filter(
+        (a) =>
+          a.appliesTo.some((c) => c.resource === 'Users') &&
+          (a.type === 'Ranked' || a.type === 'Ranked-hierarchical'),
+      ),
+    [attributes],
+  );
 
   const startCreate = () => {
+    const blank = blankAttribute();
     setSelectedId(null);
-    setDraft(blankAttribute());
+    setMarkingsId(null);
+    setDraft(blank);
+    setSavedSnapshot(snapshotAttribute(blank));
   };
 
-  const cancelCreate = () => setDraft(null);
+  const handleSave = () => {
+    if (!draft || !saveEnabled) return;
+    const saved = normalizeAttribute(draft);
+    if (creating) {
+      setAttributes((prev) => [...prev, saved]);
+      setSelectedId(saved.id);
+    } else if (selectedId) {
+      setAttributes((prev) =>
+        prev.map((a) => (a.id === selectedId ? saved : a)),
+      );
+    }
+    const nextDraft = structuredClone(saved);
+    setDraft(nextDraft);
+    setSavedSnapshot(snapshotAttribute(nextDraft));
+  };
 
-  const commitCreate = () => {
-    if (!draft) return;
-    const created: HubAttribute = { ...draft, name: draft.name.trim() };
-    setAttributes((prev) => [...prev, created]);
-    // Editors keyed by draft.id carry over — the persisted attribute reuses the id.
+  const handleCancel = () => {
+    if (creating) {
+      setDraft(null);
+      setSavedSnapshot('');
+      setSelectedId(null);
+      return;
+    }
+    if (selectedId) {
+      const attr = attributes.find((a) => a.id === selectedId);
+      if (!attr) return;
+      const reset = structuredClone(attr);
+      setDraft(reset);
+      setSavedSnapshot(snapshotAttribute(reset));
+      return;
+    }
     setDraft(null);
-    setSelectedId(created.id);
+    setSavedSnapshot('');
   };
 
   const openDelete = (id: string) => {
@@ -570,7 +711,11 @@ export default function AttributeHubSimplified({
       return;
     }
     setAttributes((prev) => prev.filter((x) => x.id !== id));
-    if (selectedId === id) setSelectedId(null);
+    if (selectedId === id) {
+      setSelectedId(null);
+      setDraft(null);
+      setSavedSnapshot('');
+    }
   };
 
   const reorderAttributes = (activeId: string, overId: string) => {
@@ -596,8 +741,6 @@ export default function AttributeHubSimplified({
     });
   };
 
-  const createEnabled = !!draft && draft.name.trim().length > 0 && !!draft.type;
-
   return (
     <div className={styles['console']}>
       <ConsoleSidebar
@@ -611,45 +754,40 @@ export default function AttributeHubSimplified({
       <div className={styles['console__center']}>
         <ConsolePageHeader
           title={
-            creating
-              ? 'New attribute'
-              : active
-                ? active.name || 'Untitled attribute'
-                : 'Manage Attributes'
+            markingsAttr
+              ? 'Classification Markings'
+              : creating
+                ? 'New attribute'
+                : draft
+                  ? draft.name || 'Untitled attribute'
+                  : 'Manage Attributes'
           }
           subtitle={
-            creating
-              ? draft && (draft.values.length > 0 || draft.appliesTo.length > 0)
-                ? subtitle(draft)
-                : 'Not yet usable in policies — add values and a resource.'
-              : active
-                ? subtitle(active)
-                : 'Create attributes once and configure where they apply across users, channels, posts, and teams.'
+            markingsAttr
+              ? undefined
+              : creating
+                ? draft && (draft.values.length > 0 || draft.appliesTo.length > 0)
+                  ? subtitle(draft)
+                  : 'Not yet usable in policies — add values and a resource.'
+                : draft
+                  ? subtitle(draft)
+                  : 'Create attributes once and configure where they apply across users, channels, posts, and teams.'
           }
-          backButton={!!active}
+          backButton={!!draft || !!markingsAttr}
           onBack={() => {
+            if (markingsAttr) {
+              closeMarkings();
+              return;
+            }
             setDraft(null);
+            setSavedSnapshot('');
             setSelectedId(null);
           }}
           trailing={
-            creating ? (
-              <div className={styles['console__create-actions']}>
-                <Button emphasis="Tertiary" size="Medium" onClick={cancelCreate}>
-                  Cancel
-                </Button>
-                <Button
-                  emphasis="Primary"
-                  size="Medium"
-                  disabled={!createEnabled}
-                  onClick={commitCreate}
-                >
-                  Create attribute
-                </Button>
-              </div>
-            ) : active && isSourceOwned(active) && active.source.state ? (
+            draft && !creating && !markingsAttr && isSourceOwned(draft) && draft.source.state ? (
               <SyncPill
-                state={active.source.state}
-                system={active.source.system}
+                state={draft.source.state}
+                system={draft.source.system}
                 size="Medium"
               />
             ) : undefined
@@ -658,9 +796,15 @@ export default function AttributeHubSimplified({
         <div className={styles['console__scroll']}>
           <Scrollbars>
             <div className={styles['console__content']}>
-              {active ? (
+              {markingsAttr ? (
+                <ClassificationMarkingsPage
+                  clearanceAttributes={clearanceAttributes}
+                  onCancel={closeMarkings}
+                  onSave={closeMarkings}
+                />
+              ) : draft ? (
                 <SimplifiedDetailView
-                  attribute={active}
+                  attribute={draft}
                   attributes={attributes}
                   valueLink={activeValueLink}
                   creating={creating}
@@ -693,6 +837,7 @@ export default function AttributeHubSimplified({
                   appliesToRowSummary={appliesToRowSummary}
                   channelAlignment={channelAlignment}
                   perResourceEditability={perResourceEditability}
+                  onOpenMarkings={openMarkings}
                 />
               ) : (
                 <CatalogListing
@@ -715,6 +860,14 @@ export default function AttributeHubSimplified({
             </div>
           </Scrollbars>
         </div>
+        {draft && !markingsAttr && (
+          <AdminPanelFooter
+            saveLabel={creating ? 'Create attribute' : 'Save'}
+            saveDisabled={!dirty || !saveEnabled}
+            onSave={handleSave}
+            onCancel={handleCancel}
+          />
+        )}
       </div>
 
       {active && connectSourceMode && (

@@ -54,6 +54,8 @@ export interface ChannelHeaderProps {
   onInfoClick?: () => void;
   /** Whether the info button is in a toggled (active) state. */
   infoToggled?: boolean;
+  /** Optional metadata after the channel name (e.g. attribute chips). */
+  metaSlot?: ReactNode;
   className?: string;
 }
 
@@ -73,6 +75,7 @@ export default function ChannelHeader({
   callButton,
   onInfoClick,
   infoToggled = false,
+  metaSlot,
   className = '',
 }: ChannelHeaderProps) {
   const isSimple = type === 'Threads' || type === 'Drafts';
@@ -107,36 +110,54 @@ export default function ChannelHeader({
   return (
     <div className={rootClass}>
       <div className={styles['channel-header__left']}>
-        <div className={styles['channel-header__top-row']}>
-          <IconButton
-            size="X-Small"
-            aria-label={
-              favorited ? 'Remove from favorites' : 'Add to favorites'
-            }
-            onClick={onFavoriteClick}
-            icon={
-              favorited ? (
-                <span
-                  style={{ color: 'var(--button-bg)', display: 'inline-flex' }}
-                >
-                  <StarIcon size={18} />
-                </span>
-              ) : (
-                <StarOutlineIcon size={18} />
-              )
-            }
-          />
+        <div className={styles['channel-header__primary-row']}>
+          <div className={styles['channel-header__top-row']}>
+            <IconButton
+              size="X-Small"
+              aria-label={
+                favorited ? 'Remove from favorites' : 'Add to favorites'
+              }
+              onClick={onFavoriteClick}
+              icon={
+                favorited ? (
+                  <span
+                    style={{
+                      color: 'var(--button-bg)',
+                      display: 'inline-flex',
+                    }}
+                  >
+                    <StarIcon size={18} />
+                  </span>
+                ) : (
+                  <StarOutlineIcon size={18} />
+                )
+              }
+            />
 
-          {hasDmAvatar && (
-            <div className={styles['channel-header__identity']}>
-              <UserAvatar
-                src={avatarSrc!}
-                alt={name}
-                size="24"
-                status={type === 'DM' ? avatarStatus : false}
-              />
-              {type === 'Bot' ? (
-                <div className={styles['channel-header__bot-name-group']}>
+            {hasDmAvatar && (
+              <div className={styles['channel-header__identity']}>
+                <UserAvatar
+                  src={avatarSrc!}
+                  alt={name}
+                  size="24"
+                  status={type === 'DM' ? avatarStatus : false}
+                />
+                {type === 'Bot' ? (
+                  <div className={styles['channel-header__bot-name-group']}>
+                    <button
+                      className={styles['channel-header__name-area']}
+                      type="button"
+                      onClick={onNameClick}
+                    >
+                      <span className={styles['channel-header__name']}>
+                        {name}
+                      </span>
+                    </button>
+                    <span className={styles['channel-header__bot-tag']}>
+                      <Tag label="BOT" casing="All Caps" />
+                    </span>
+                  </div>
+                ) : (
                   <button
                     className={styles['channel-header__name-area']}
                     type="button"
@@ -145,86 +166,84 @@ export default function ChannelHeader({
                     <span className={styles['channel-header__name']}>
                       {name}
                     </span>
+                    <Icon size="16" glyph={<ChevronDownIcon />} />
                   </button>
-                  <span className={styles['channel-header__bot-tag']}>
-                    <Tag label="BOT" casing="All Caps" />
-                  </span>
-                </div>
-              ) : (
-                <button
-                  className={styles['channel-header__name-area']}
-                  type="button"
-                  onClick={onNameClick}
-                >
-                  <span className={styles['channel-header__name']}>{name}</span>
+                )}
+              </div>
+            )}
+
+            {!hasDmAvatar && (
+              <button
+                className={styles['channel-header__name-area']}
+                type="button"
+                onClick={onNameClick}
+              >
+                <span className={styles['channel-header__name']}>{name}</span>
+                {showChevron && (
                   <Icon size="16" glyph={<ChevronDownIcon />} />
-                </button>
+                )}
+              </button>
+            )}
+
+            <div className={styles['channel-header__stat-icons']}>
+              {muted && (
+                <IconButton
+                  size="X-Small"
+                  aria-label="Notifications muted"
+                  icon={<Icon size="12" glyph={<BellOffOutlineIcon />} />}
+                />
+              )}
+              {showMembers && (
+                <IconButton
+                  size="X-Small"
+                  aria-label={`${memberCount} members`}
+                  count={memberCount}
+                  icon={<Icon size="12" glyph={<AccountOutlineIcon />} />}
+                />
+              )}
+              {pinnedCount != null && (
+                <IconButton
+                  size="X-Small"
+                  aria-label={`${pinnedCount} pinned messages`}
+                  count={pinnedCount}
+                  icon={<Icon size="12" glyph={<PinOutlineIcon />} />}
+                />
+              )}
+              {showFiles && (
+                <IconButton
+                  size="X-Small"
+                  aria-label="Files"
+                  icon={<Icon size="12" glyph={<FileTextOutlineIcon />} />}
+                />
               )}
             </div>
-          )}
-
-          {!hasDmAvatar && (
-            <button
-              className={styles['channel-header__name-area']}
-              type="button"
-              onClick={onNameClick}
-            >
-              <span className={styles['channel-header__name']}>{name}</span>
-              {showChevron && <Icon size="16" glyph={<ChevronDownIcon />} />}
-            </button>
-          )}
-
-          <div className={styles['channel-header__stat-icons']}>
-            {muted && (
-              <IconButton
-                size="X-Small"
-                aria-label="Notifications muted"
-                icon={<Icon size="12" glyph={<BellOffOutlineIcon />} />}
-              />
-            )}
-            {showMembers && (
-              <IconButton
-                size="X-Small"
-                aria-label={`${memberCount} members`}
-                count={memberCount}
-                icon={<Icon size="12" glyph={<AccountOutlineIcon />} />}
-              />
-            )}
-            {pinnedCount != null && (
-              <IconButton
-                size="X-Small"
-                aria-label={`${pinnedCount} pinned messages`}
-                count={pinnedCount}
-                icon={<Icon size="12" glyph={<PinOutlineIcon />} />}
-              />
-            )}
-            {showFiles && (
-              <IconButton
-                size="X-Small"
-                aria-label="Files"
-                icon={<Icon size="12" glyph={<FileTextOutlineIcon />} />}
-              />
-            )}
           </div>
+
+          {metaSlot && (
+            <div className={styles['channel-header__meta']}>{metaSlot}</div>
+          )}
         </div>
 
-        <div className={styles['channel-header__description']}>
-          {description ?? null}
-        </div>
+        {description && (
+          <div className={styles['channel-header__description']}>
+            {description}
+          </div>
+        )}
       </div>
 
       <div className={styles['channel-header__right']}>
-        {showCallButton && (callButton ?? (
-          <Button
-            className={styles['channel-header__call-btn']}
-            emphasis="Quaternary"
-            size="Small"
-            leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
-            onClick={onCallClick}
-          >
-            Start a Call
-          </Button>
-        ))}
+        {showCallButton &&
+          (callButton ?? (
+            <Button
+              className={styles['channel-header__call-btn']}
+              emphasis="Quaternary"
+              size="Small"
+              leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+              onClick={onCallClick}
+            >
+              Start a Call
+            </Button>
+          ))}
         <IconButton
           size="Small"
           aria-label="Channel info"

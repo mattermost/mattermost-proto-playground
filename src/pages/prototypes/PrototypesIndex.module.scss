@@ -36,57 +36,6 @@
   }
 }
 
-// ── Recently Updated — 4-column feature card grid ────────────────────────────
-
-.prototypes-index__recent-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-l);
-
-  @media (max-width: 840px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-// ── Feature card (Recently Updated strip) ────────────────────────────────────
-
-.prototypes-index__feature-card {
-  --proto-accent: rgba(var(--center-channel-color-rgb), 0.32);
-
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  border-radius: var(--radius-l);
-  background-color: var(--center-channel-bg);
-  color: var(--center-channel-color);
-  text-decoration: none;
-  overflow: hidden;
-  transition:
-    border-color var(--duration-quick) var(--ease-transition),
-    box-shadow var(--duration-quick) var(--ease-transition),
-    transform var(--duration-quick) var(--ease-transition);
-
-  &:hover {
-    border-color: rgba(var(--center-channel-color-rgb), 0.20);
-    box-shadow: var(--elevation-2);
-    transform: translateY(-2px);
-
-    .prototypes-index__card-arrow {
-      transform: translateX(3px);
-    }
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
-  }
-}
-
 // ── Toolbar: category filter + expand/collapse ───────────────────────────────
 
 .prototypes-index__toolbar {
@@ -366,26 +315,6 @@
   gap: var(--spacing-xxs);
   padding: var(--spacing-m);
   flex: 1;
-
-  .prototypes-index__feature-card & {
-    padding: var(--spacing-l);
-    gap: var(--spacing-xs);
-  }
-}
-
-.prototypes-index__card-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px var(--spacing-xs);
-  border-radius: var(--radius-full);
-  background-color: rgba(var(--center-channel-color-rgb), 0.07);
-  font-size: var(--font-size-50);
-  font-weight: var(--font-weight-semibold);
-  color: rgba(var(--center-channel-color-rgb), 0.72);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  width: fit-content;
-  margin-bottom: var(--spacing-xxs);
 }
 
 .prototypes-index__card-title {
@@ -393,11 +322,6 @@
   font-weight: var(--font-weight-semibold);
   color: var(--center-channel-color);
   line-height: var(--line-height-100);
-
-  .prototypes-index__feature-card & {
-    font-size: var(--font-size-200);
-    line-height: var(--line-height-200);
-  }
 }
 
 .prototypes-index__card-desc {
@@ -415,13 +339,6 @@
   }
 }
 
-.prototypes-index__card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: var(--spacing-xs);
-}
-
 .prototypes-index__card-date {
   font-size: var(--font-size-75);
   color: rgba(var(--center-channel-color-rgb), 0.48);
@@ -429,13 +346,6 @@
   .prototypes-index__card & {
     margin-top: var(--spacing-xs);
   }
-}
-
-.prototypes-index__card-arrow {
-  font-size: var(--font-size-200);
-  color: rgba(var(--center-channel-color-rgb), 0.40);
-  transition: transform var(--duration-quick) var(--ease-transition);
-  line-height: 1;
 }
 
 // ── Empty state ───────────────────────────────────────────────────────────────

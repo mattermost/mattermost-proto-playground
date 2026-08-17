@@ -5,124 +5,6 @@
 
   &--simplified {
     gap: 0;
-
-    .field {
-      display: grid;
-      grid-template-columns: 176px 1fr;
-      column-gap: var(--spacing-m);
-      align-items: start;
-      padding: var(--spacing-m) 0;
-      border-bottom-color: rgba(var(--center-channel-color-rgb), 0.08);
-
-      &__head {
-        display: contents;
-      }
-
-      &__label {
-        grid-column: 1;
-        grid-row: 1;
-        align-self: start;
-        display: flex;
-        align-items: center;
-        min-height: 32px;
-        font-size: var(--font-size-100);
-        font-weight: var(--font-weight-semibold);
-        color: rgba(var(--center-channel-color-rgb), 0.75);
-        text-transform: none;
-        letter-spacing: normal;
-      }
-
-      &__hint {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-xs);
-        width: 100%;
-        font-size: var(--font-size-75);
-        color: rgba(var(--center-channel-color-rgb), 0.64);
-        line-height: 1.4;
-      }
-
-      &__error {
-        margin: 0;
-        font-size: var(--font-size-75);
-        color: var(--error-text);
-        line-height: 1.4;
-      }
-
-      &__control {
-        grid-column: 2;
-        grid-row: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        align-self: start;
-        gap: var(--spacing-xs);
-        min-height: 32px;
-        padding-top: 0;
-
-        > :first-child:not(.field__stack):not(.value-visibility):not(.combobox-slot):not(.inherit-control):not(.default-value-select) {
-          display: flex;
-          align-items: center;
-          min-height: 32px;
-          max-width: 100%;
-        }
-
-        .default-value-select {
-          align-self: flex-start;
-        }
-
-        .combobox-slot {
-          width: 100%;
-          max-width: 600px;
-          align-self: flex-start;
-
-          > :first-child {
-            display: flex;
-            align-items: center;
-            min-height: 32px;
-          }
-        }
-
-        .value-visibility {
-          align-self: stretch;
-          width: 100%;
-          gap: var(--spacing-s);
-
-          &__radio:first-child {
-            min-height: 32px;
-            align-items: center;
-          }
-        }
-      }
-
-      &__stack {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-s);
-        width: 100%;
-
-        > :first-child {
-          display: flex;
-          align-items: center;
-          align-self: stretch;
-          min-height: 32px;
-          width: 100%;
-        }
-      }
-    }
-
-    .reflection {
-      padding: 0;
-      border: none;
-      background: transparent;
-      color: rgba(var(--center-channel-color-rgb), 0.72);
-    }
-
-    .note {
-      margin: 0;
-    }
   }
 }
 
@@ -136,6 +18,114 @@
 
   &:last-child {
     border-bottom: 0;
+  }
+
+  // Explicit two-column row — avoid display:contents (misaligns controls).
+  &--simplified {
+    grid-template-columns: 176px minmax(0, 1fr);
+    gap: 0;
+    column-gap: var(--spacing-m);
+    align-items: start;
+    padding: var(--spacing-m) 0;
+    border-bottom-color: rgba(var(--center-channel-color-rgb), 0.08);
+
+    .field__label {
+      grid-column: 1;
+      align-self: start;
+      display: flex;
+      align-items: center;
+      min-height: 32px;
+      font-size: var(--font-size-100);
+      font-weight: var(--font-weight-semibold);
+      color: rgba(var(--center-channel-color-rgb), 0.75);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .field__control {
+      grid-column: 2;
+      justify-self: start;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-xs);
+      min-height: 32px;
+      width: auto;
+      max-width: 100%;
+      min-width: 0;
+
+      // Compass UI form controls default to width 100%; keep this column
+      // content-sized so labels sit next to compact controls.
+      > :first-child:not(.field__stack):not(.value-visibility):not(.combobox-slot):not(.display-locations):not(.control-slot) {
+        width: auto;
+        max-width: 100%;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .field__hint {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      width: 100%;
+      max-width: 600px;
+      font-size: var(--font-size-75);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+      line-height: 1.4;
+    }
+
+    .field__error {
+      margin: 0;
+      font-size: var(--font-size-75);
+      color: var(--error-text);
+      line-height: 1.4;
+    }
+
+    .default-value-select,
+    .control-slot,
+    .combobox-slot {
+      align-self: flex-start;
+      margin-inline: 0;
+    }
+
+    .control-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--spacing-xs);
+      width: auto;
+      max-width: 600px;
+    }
+
+    .combobox-slot {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .value-visibility {
+      align-self: stretch;
+      width: 100%;
+      gap: var(--spacing-s);
+
+      &__radio:first-child {
+        min-height: 32px;
+        align-items: center;
+      }
+    }
+
+    .reflection {
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+
+    .note {
+      margin: 0;
+    }
   }
 
   &__head {
@@ -155,7 +145,7 @@
 
   &__hint {
     font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
     line-height: 1.4;
   }
 
@@ -172,6 +162,21 @@
     align-items: flex-start;
     gap: var(--spacing-xs);
     min-height: 28px;
+  }
+
+  &__error {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: var(--error-text);
+    line-height: 1.4;
+  }
+
+  &__stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    width: 100%;
   }
 }
 
@@ -243,6 +248,16 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-m) var(--spacing-l);
+  width: auto;
+  max-width: 100%;
+
+  // Checkbox roots are width: 100% by default; without this they each take a
+  // full row and the Header / Sidebar / Banner group stacks vertically.
+  > * {
+    width: auto;
+    max-width: 100%;
+    flex: 0 1 auto;
+  }
 }
 
 .value-visibility {
@@ -262,8 +277,30 @@
 .note {
   margin: 0;
   font-size: var(--font-size-75);
-  color: rgba(var(--center-channel-color-rgb), 0.64);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
   line-height: 1.4;
+}
+
+.backfill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xxs);
+  margin-top: var(--spacing-xs);
+  max-width: 420px;
+
+  > * {
+    width: auto;
+    max-width: 100%;
+  }
+
+  &__count {
+    margin: 0;
+    padding-left: calc(var(--spacing-l) + var(--spacing-xs));
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: 1.4;
+  }
 }
 
 .reflection {
@@ -301,4 +338,23 @@
   font-weight: var(--font-weight-semibold);
   text-decoration: underline;
   cursor: help;
+}
+
+.control-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  width: auto;
+  max-width: 600px;
+
+  > * {
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+.combobox-slot {
+  width: 100%;
+  max-width: 600px;
 }

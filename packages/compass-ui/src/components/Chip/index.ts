@@ -1,2 +1,2 @@
 export { default as Chip } from './Chip';
-export type { ChipProps, ChipSize } from './Chip';
+export type { ChipProps, ChipSize, ChipTone } from './Chip';
