@@ -26,6 +26,7 @@ import {
   assignSequentialTiers,
   comparesRank,
   displayType,
+  isExactMirror,
   markHierarchical,
   stripTiers,
   type SimplifiedAttrType,
@@ -113,7 +114,7 @@ export default function SimplifiedDetailView({
   const policyLocked = isPolicyLocked(attribute);
   const nameReadOnly = sourceOwned;
   const typeReadOnly =
-    sourceOwned || policyLocked || valueLink?.mode === 'exact';
+    sourceOwned || policyLocked || isExactMirror(attribute, valueLink);
   const currentType = displayType(attribute);
 
   const handleTypeChange = (next: SimplifiedAttrType) => {

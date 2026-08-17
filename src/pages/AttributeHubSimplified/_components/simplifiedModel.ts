@@ -73,6 +73,11 @@ export function comparesRank(type: SimplifiedAttrType): boolean {
   return type === 'Ranked' || type === 'Ranked-hierarchical';
 }
 
+/** Short form (header/mobile abbreviation) is offered on flat option types only. */
+export function supportsShortForm(type: SimplifiedAttrType): boolean {
+  return type === 'Select' || type === 'Multiselect' || type === 'Ranked';
+}
+
 // ── Terminology (Simplified) ───────────────────────────────────────────────
 // "values" → "Options" for the option domain; "Value" stays for the discrete
 // assigned value; "Tier" stays for a ranked position.
@@ -108,6 +113,8 @@ export interface OptionMeta {
   colorFromSource?: boolean;
   /** locale → translated label. */
   translations?: Record<string, string>;
+  /** Optional abbreviation for tight surfaces (headers, mobile). */
+  shortForm?: string;
 }
 
 const OPTION_META: Record<string, OptionMeta> = {
@@ -124,9 +131,13 @@ const OPTION_META: Record<string, OptionMeta> = {
     color: 'var(--color-green-500)',
   },
   // Clearance tiers carry a source-provided color (synced from UAS).
-  'cl-3': { color: 'var(--color-red-500)', colorFromSource: true },
-  'cl-2': { color: 'var(--color-orange-500)', colorFromSource: true },
-  'cl-1': { color: 'var(--color-green-500)', colorFromSource: true },
+  'cl-3': { color: 'var(--color-red-500)', colorFromSource: true, shortForm: 'PB' },
+  'cl-2': { color: 'var(--color-orange-500)', colorFromSource: true, shortForm: 'PA' },
+  'cl-1': { color: 'var(--color-green-500)', colorFromSource: true, shortForm: 'U' },
+  // Caveat / Releasability — Multiselect short forms for tight channel chrome.
+  'cav-noforn': { shortForm: 'NF' },
+  'cav-rel-gbr': { shortForm: 'GBR' },
+  'cav-rel-can': { shortForm: 'CAN' },
 };
 
 export function optionMeta(valueId: string): OptionMeta {
@@ -423,9 +434,10 @@ export function findValueByLabel(
 
 // ── Value linking (exact match + define mapping) ───────────────────────────
 //
-// Scene-local extension of baseline `valuesLink`. Exact match mirrors the
-// source catalog (read-only here). Mapped mode keeps local labels but pins
-// each option to a source option so rank comparison stays consistent.
+// Scene-local extension of baseline `valuesLink`. Exact match shares one
+// catalog: `catalogOwnerId` is the attribute whose options both use.
+// Mapped mode keeps both catalogs and pins each local option to one on the
+// linked attribute so rank comparison stays consistent.
 
 export type ValueLinkMode = 'exact' | 'mapped';
 
@@ -433,8 +445,36 @@ export interface ValueLinkConfig {
   attributeId: string;
   attributeName: string;
   mode: ValueLinkMode;
-  /** Local value id → source value id (mapped mode). */
+  /**
+   * Exact match: which attribute owns the shared catalog.
+   * Defaults to `attributeId` (the linked attribute) when omitted.
+   */
+  catalogOwnerId?: string;
+  /** Local value id → linked-attribute value id (mapped mode). */
   mappings?: Record<string, string>;
+}
+
+/** Canonical catalog for an exact-match link. */
+export function catalogOwnerIdOf(config: ValueLinkConfig): string {
+  return config.catalogOwnerId ?? config.attributeId;
+}
+
+/** This attribute mirrors another catalog (options are read-only here). */
+export function isExactMirror(
+  attribute: HubAttribute,
+  config: ValueLinkConfig | null,
+): boolean {
+  if (!config || config.mode !== 'exact') return false;
+  return catalogOwnerIdOf(config) !== attribute.id;
+}
+
+/** This attribute owns the shared catalog the linked attribute mirrors. */
+export function isExactCatalogOwner(
+  attribute: HubAttribute,
+  config: ValueLinkConfig | null,
+): boolean {
+  if (!config || config.mode !== 'exact') return false;
+  return catalogOwnerIdOf(config) === attribute.id;
 }
 
 const VALUE_LINK_CONFIG: Record<string, ValueLinkConfig> = {

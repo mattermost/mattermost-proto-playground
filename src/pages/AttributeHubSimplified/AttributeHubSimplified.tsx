@@ -40,6 +40,7 @@ import {
   comparesRank,
   findValueByLabel,
   markResourceIntroducedValue,
+  catalogOwnerIdOf,
   resolveValueLink,
   setValueLinkConfig,
   suggestValueMappings,
@@ -478,9 +479,25 @@ export default function AttributeHubSimplified({
         }));
       }
     }
-    if (guardrail?.kind === 'unlink-gated' && active) {
-      mutate((a) => ({ ...a, valuesLink: undefined }));
+    if (guardrail?.kind === 'unlink-gated' && active && activeValueLink) {
+      const otherId = activeValueLink.attributeId;
+      const otherName = activeValueLink.attributeName;
+      const clearLink = (attribute: HubAttribute): HubAttribute => {
+        if (attribute.id !== active.id && attribute.id !== otherId) {
+          return attribute;
+        }
+        return {
+          ...attribute,
+          valuesLink: undefined,
+          mirroredBy: (attribute.mirroredBy ?? []).filter(
+            (name) => name !== active.name && name !== otherName,
+          ),
+        };
+      };
+      mutate(clearLink);
+      setAttributes((prev) => prev.map(clearLink));
       setValueLinkConfig(active.id, null);
+      setValueLinkConfig(otherId, null);
     }
     if (guardrail?.kind === 'delete-blocked') {
       // no-op — informational block
@@ -490,32 +507,73 @@ export default function AttributeHubSimplified({
 
   const handleLinkValues = (config: ValueLinkConfig) => {
     if (!active) return;
-    const src = attributes.find((attribute) => attribute.id === config.attributeId);
-    if (!src) return;
+    const linked = attributes.find((attribute) => attribute.id === config.attributeId);
+    if (!linked) return;
 
-    mutate((a) => {
-      const next: HubAttribute = {
-        ...a,
-        valuesLink: {
-          attributeId: config.attributeId,
-          attributeName: config.attributeName,
-        },
-      };
-      if (config.mode === 'exact') {
-        next.values = src.values.map((value) => ({ ...value }));
-        if (comparesRank(displayType(src))) {
-          next.type = src.type;
-        }
+    const ownerId =
+      config.mode === 'exact' ? catalogOwnerIdOf(config) : undefined;
+    const owner = ownerId === active.id ? active : linked;
+    const mirror = ownerId === active.id ? linked : active;
+
+    const applyLink = (attribute: HubAttribute): HubAttribute => {
+      if (config.mode === 'mapped') {
+        if (attribute.id !== active.id) return attribute;
+        return {
+          ...attribute,
+          valuesLink: {
+            attributeId: linked.id,
+            attributeName: linked.name,
+          },
+        };
       }
-      return next;
-    });
-    setValueLinkConfig(active.id, {
+
+      if (attribute.id === mirror.id) {
+        return {
+          ...attribute,
+          valuesLink: {
+            attributeId: owner.id,
+            attributeName: owner.name,
+          },
+          values: owner.values.map((value) => ({ ...value })),
+          type: comparesRank(displayType(owner)) ? owner.type : attribute.type,
+          mirroredBy: (attribute.mirroredBy ?? []).filter(
+            (name) => name !== owner.name,
+          ),
+        };
+      }
+
+      if (attribute.id === owner.id) {
+        return {
+          ...attribute,
+          valuesLink: undefined,
+          mirroredBy: Array.from(
+            new Set([...(attribute.mirroredBy ?? []), mirror.name]),
+          ),
+        };
+      }
+
+      return attribute;
+    };
+
+    mutate(applyLink);
+    setAttributes((prev) => prev.map(applyLink));
+
+    const stored: ValueLinkConfig = {
       ...config,
       mappings:
         config.mode === 'mapped'
-          ? config.mappings ?? suggestValueMappings(active.values, src.values)
+          ? config.mappings ?? suggestValueMappings(active.values, linked.values)
           : undefined,
-    });
+    };
+    setValueLinkConfig(active.id, stored);
+    if (config.mode === 'exact') {
+      setValueLinkConfig(mirror.id, {
+        attributeId: owner.id,
+        attributeName: owner.name,
+        mode: 'exact',
+        catalogOwnerId: owner.id,
+      });
+    }
     setLinkValuesOpen(false);
   };
 

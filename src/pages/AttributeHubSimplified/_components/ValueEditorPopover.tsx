@@ -32,6 +32,8 @@ export interface ValueEditorPopoverProps {
   ranked: boolean;
   /** Total ranked positions, for the rank picker range. */
   tierCount: number;
+  /** Short form field — Select, Multiselect, and Ranked only. */
+  showShortForm: boolean;
   /** Editing disabled (policy-locked or source-owned). */
   readOnly: boolean;
   anchorRef: RefObject<HTMLElement | null>;
@@ -47,13 +49,15 @@ export interface ValueEditorPopoverProps {
  * editable label, Rank/Tier chevron, Colors swatch row (incl. a color coming
  * from the connected external source), Translations, Deactivate, Remove.
  *
- * Color + translations live in the scene-local option-meta side table; label,
- * rank, deactivate and remove flow back through the parent's value mutators.
+ * Color, translations, and short form live in the scene-local option-meta
+ * side table; label, rank, deactivate and remove flow back through the
+ * parent's value mutators.
  */
 export default function ValueEditorPopover({
   value,
   ranked,
   tierCount,
+  showShortForm,
   readOnly,
   anchorRef,
   onClose,
@@ -98,12 +102,31 @@ export default function ValueEditorPopover({
             <div className={styles['ve__label-field']}>
               <TextInput
                 size="Medium"
+                label="Name"
                 value={value.label}
                 readOnly={readOnly}
-                aria-label="Option label"
+                aria-label="Name"
                 onChange={(e) => onRelabel(e.target.value)}
               />
             </div>
+
+            {showShortForm && (
+              <div className={styles['ve__short-field']}>
+                <TextInput
+                  size="Medium"
+                  label="Short form"
+                  value={meta.shortForm ?? ''}
+                  readOnly={readOnly}
+                  maxLength={16}
+                  aria-label="Short form"
+                  onChange={(e) => commitMeta({ shortForm: e.target.value })}
+                />
+                <p className={styles['ve__field-hint']}>
+                  Shown in headers and other tight spaces. Leave blank to use
+                  the full label.
+                </p>
+              </div>
+            )}
 
             {ranked && (
               <button

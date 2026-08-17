@@ -27,10 +27,13 @@ import {
   canLinkValues,
   comparesRank,
   displayType,
+  isExactCatalogOwner,
+  isExactMirror,
   isTreeType,
   isValueLinked,
   mappedSourceValue,
   optionColorScheme,
+  supportsShortForm,
   type ValueLinkConfig,
 } from './simplifiedModel';
 import styles from './DefinitionValues.module.scss';
@@ -313,7 +316,9 @@ export default function DefinitionValues({
   const linked = isValueLinked(attribute);
   const exactLinked = valueLink?.mode === 'exact';
   const mappedLinked = valueLink?.mode === 'mapped';
-  const editable = !sourceOwned && !locked && !exactLinked;
+  const mirrorsCatalog = isExactMirror(attribute, valueLink);
+  const ownsCatalog = isExactCatalogOwner(attribute, valueLink);
+  const editable = !sourceOwned && !locked && !mirrorsCatalog;
   const type = displayType(attribute);
   const isTree = isTreeType(type);
   const ranked = comparesRank(type);
@@ -346,9 +351,11 @@ export default function DefinitionValues({
         <div className={styles['values__linked-footer']}>
           <span className={styles['values__linked-copy']}>
             <Icon size="16" glyph={<LinkVariantIcon />} />
-            {exactLinked
-              ? `Exact match with ${valueLink.attributeName} — options sync from the source catalog.`
-              : `Mapped to ${valueLink.attributeName} — ranks compare via your mapping.`}
+            {ownsCatalog
+              ? `${valueLink.attributeName} uses this catalog — edit options here.`
+              : exactLinked
+                ? `Options sync from ${valueLink.attributeName}. Edit them there.`
+                : `Mapped to ${valueLink.attributeName} — ranks compare via your mapping.`}
           </span>
           <div className={styles['values__source-actions']}>
             {mappedLinked && (
@@ -455,11 +462,19 @@ export default function DefinitionValues({
         />
       )}
 
-      {exactLinked && valueLink && (
+      {mirrorsCatalog && valueLink && (
         <SectionNotice
           type="Info"
           title="Shared value scale"
-          description={`Options mirror ${valueLink.attributeName}. Labels and ranks stay in sync; edit the source attribute to change them.`}
+          description={`Options mirror ${valueLink.attributeName}. Labels and ranks stay in sync; edit ${valueLink.attributeName} to change them.`}
+        />
+      )}
+
+      {ownsCatalog && valueLink && (
+        <SectionNotice
+          type="Info"
+          title="Shared value scale"
+          description={`${valueLink.attributeName} mirrors this catalog. Labels and ranks stay in sync; edit options here.`}
         />
       )}
 
@@ -575,7 +590,7 @@ export default function DefinitionValues({
             <p className={styles['values__edit-hint']}>
               {mappedLinked
                 ? 'Click an option to edit its label. Rank comparison follows your mapping.'
-                : 'Click an option to edit its label, color, or translations.'}
+                : 'Click an option to edit its label, short form, color, or translations.'}
             </p>
           )}
         </div>
@@ -588,6 +603,7 @@ export default function DefinitionValues({
           value={editing.value}
           ranked={editing.ranked}
           tierCount={tierCount}
+          showShortForm={supportsShortForm(type)}
           readOnly={!editable}
           anchorRef={anchorRef}
           onClose={() => setEditing(null)}

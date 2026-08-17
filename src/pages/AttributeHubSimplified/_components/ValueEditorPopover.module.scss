@@ -14,7 +14,32 @@
   box-shadow: var(--elevation-3);
 
   &__label-field {
-    padding: var(--spacing-xxs);
+    padding: var(--spacing-s) var(--spacing-xxs) var(--spacing-xxs);
+
+    > * {
+      width: 100%;
+      max-width: none;
+    }
+  }
+
+  &__short-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-s) var(--spacing-xxs) var(--spacing-xxs);
+
+    > *:first-child {
+      width: 100%;
+      max-width: none;
+    }
+  }
+
+  &__field-hint {
+    margin: 0;
+    padding: 0 var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    line-height: 1.4;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
   }
 
   &__nav-row {
