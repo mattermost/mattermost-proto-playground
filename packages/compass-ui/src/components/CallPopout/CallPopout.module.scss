@@ -215,35 +215,35 @@
   &__header-right button,
   &__controls-left button,
   &__controls-middle button {
-    color: rgba(var(--color-neutral-0-rgb), 0.64);
+    color: color-mix(in srgb, var(--neutral-0) 64%, transparent);
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.16);
-      color: var(--color-neutral-0);
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
     }
 
     &:active:not(:disabled):not([data-active='true']) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.24);
+      background-color: color-mix(in srgb, var(--neutral-0) 24%, transparent);
     }
 
     &[data-active='true']:not(:disabled) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.16);
-      color: var(--color-neutral-0);
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
     }
   }
 
   &__controls-left button,
   &__controls-middle button {
-    background-color: rgba(var(--color-neutral-0-rgb), 0.08);
+    background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
   }
 
   &__controls-right button {
     background-color: var(--error-text);
-    color: var(--color-neutral-0);
+    color: var(--neutral-0);
 
     &:hover:not(:disabled) {
       background-color: var(--color-red-600);
-      color: var(--color-neutral-0);
+      color: var(--neutral-0);
     }
   }
 }

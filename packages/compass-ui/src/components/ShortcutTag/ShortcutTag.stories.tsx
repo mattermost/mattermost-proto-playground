@@ -68,7 +68,7 @@ export const AllVariants: Story = {
             borderRadius: location === 'Tooltips' ? 8 : undefined,
             backgroundColor:
               location === 'Tooltips'
-                ? 'var(--color-neutral-1100, #1b1d22)'
+                ? 'var(--neutral-1200)'
                 : undefined,
           }}
         >

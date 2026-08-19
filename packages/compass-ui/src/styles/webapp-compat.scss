@@ -1,0 +1,10 @@
+// Bridge Compass foundation tokens to Mattermost webapp unthemed neutral names.
+// Always-dark components use --neutral-* (webapp canonical). Load after tokens.scss so
+// Storybook/playground expose token values under webapp names; webapp embed may already
+// define --neutral-* on :root.
+
+:root {
+  --neutral-0: var(--color-neutral-0, #ffffff);
+  --neutral-900: var(--color-neutral-900, #3f4350);
+  --neutral-1200: var(--color-neutral-1200, #090a0b);
+}
