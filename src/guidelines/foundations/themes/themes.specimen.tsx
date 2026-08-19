@@ -8,7 +8,7 @@ const THEME_GROUPS = [
     tokens: [
       'sidebar-bg',
       'sidebar-header-bg',
-      'sidebar-team-background',
+      'sidebar-teambar-bg',
       'sidebar-text',
       'sidebar-text-hover-bg',
       'sidebar-text-active-border',
