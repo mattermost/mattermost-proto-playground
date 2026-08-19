@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-The Vite dev server will start; open the URL shown in the terminal. For a production build and local preview, use `npm run build` and `npm run preview`.
+The Vite dev server will start; open the URL shown in the terminal.
 
 ## Project structure
 
