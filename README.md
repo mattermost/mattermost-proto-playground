@@ -4,7 +4,7 @@ A playground to prototype and test Mattermost UI components and flows. For inter
 
 ## Setup
 
-Requires Node.js 24+ and npm 11+ (see `.nvmrc` for the recommended version).
+Requires Node.js 24.x and npm 11.x (see `.nvmrc` for the recommended version).
 
 Clone the repo.
 
