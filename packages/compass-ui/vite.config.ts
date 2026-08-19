@@ -5,12 +5,15 @@ import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import path from 'path';
 import { compassUiGlobalStyles } from './vite-plugin-global-styles';
 
+const isWatchBuild = process.argv.includes('--watch');
+
 export default defineConfig({
   plugins: [
     react(),
     libInjectCss(),
     compassUiGlobalStyles(),
     dts({
+      tsconfigPath: path.resolve(__dirname, 'tsconfig.build.json'),
       include: ['src'],
       exclude: ['**/*.stories.tsx', 'src/styles/entry.scss'],
       rollupTypes: false,
@@ -29,7 +32,7 @@ export default defineConfig({
     },
   },
   build: {
-    emptyOutDir: true,
+    emptyOutDir: !isWatchBuild,
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'CompassUI',
