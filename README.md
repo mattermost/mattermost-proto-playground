@@ -4,10 +4,19 @@ A playground to prototype and test Mattermost UI components and flows. For inter
 
 ## Setup
 
-Clone the repo, then:
+Requires Node.js 20+ and npm 10+ (see `.nvmrc` for the recommended version).
+
+Clone the repo.
+
+On first clone, install dependencies:
 
 ```bash
 npm install
+```
+
+Then start the dev server:
+
+```bash
 npm run dev
 ```
 

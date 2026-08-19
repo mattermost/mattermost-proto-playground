@@ -1,3 +1,4 @@
+@use "sass:list";
 // ---------------------------------------------------------------------------
 // Block — stacked overlapping user avatar group (Figma Avatar Group v1.0.1)
 // ---------------------------------------------------------------------------
@@ -100,10 +101,10 @@
     (64, 9, 'font-size-400', 2), (72, 10, 'font-size-500', 2);
 
   @each $config in $sizes {
-    $s: nth($config, 1);
-    $o: nth($config, 2);
-    $fs: nth($config, 3);
-    $ow: nth($config, 4);
+    $s: list.nth($config, 1);
+    $o: list.nth($config, 2);
+    $fs: list.nth($config, 3);
+    $ow: list.nth($config, 4);
 
     &--size-#{$s} {
       padding-right: #{$o}px;
