@@ -185,13 +185,12 @@ Load styles once at the app bootstrap (same entry that loads global webapp SCSS)
 
 Mattermost webapp already sets theme CSS variables (`--center-channel-bg`, `--button-bg`, `--error-text`, `--online-indicator`, etc.) and fixed semantic RGB (`--semantic-color-info|success|warning|danger`).
 
-Compass `tokens.scss` bridges these so the same `--color-*` names work in webapp and standalone:
+Compass bridges these in two places:
 
-- `--color-danger` / `-rgb` prefer `--error-text` / `--error-text-color-rgb`, then `--semantic-color-danger`, then the Compass palette.
-- `--color-info|success|warning` prefer `--semantic-color-*`, then the Compass palette.
-- Presence (StatusBadge) uses `--online-indicator` / `--away-indicator` / `--dnd-indicator` directly.
+- **Tokens** (`tokens.scss`): `--color-info|success|warning|danger` prefer `--semantic-color-*`, then the Compass palette. These stay fixed semantics (not theme-customizable error roles).
+- **Components**: error / destructive UI uses `var(--error-text, var(--color-danger))` (and `--error-text-color-rgb` for `rgba()`). Presence uses `--online-indicator` / `--away-indicator` / `--dnd-indicator`.
 
-Confirm `data-theme` or host vars match Compass theme role names before wide rollout. Spike with one component (`Button` destructive / `SectionNotice` danger) first.
+Confirm host vars match Compass theme role names before wide rollout. Spike with `Button` destructive / `SectionNotice` danger first.
 
 ---
 

@@ -8,7 +8,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: var(--color-danger);
+    color: var(--error-text, var(--color-danger));
     padding-top: 1px;
   }
 
@@ -16,7 +16,7 @@
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-75);
-    color: var(--color-danger);
+    color: var(--error-text, var(--color-danger));
     flex: 1 0 0;
     min-width: 0;
   }

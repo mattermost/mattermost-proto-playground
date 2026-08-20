@@ -250,21 +250,21 @@
   // ---------------------------------------------------------------------------
   &--invalid {
     .textInput__wrapper {
-      box-shadow: inset 0 0 0 1px var(--error-text);
+      box-shadow: inset 0 0 0 1px var(--error-text, var(--color-danger));
     }
 
     &:has(.textInput__input:focus-visible) .textInput__wrapper {
       box-shadow:
-        inset 0 0 0 1px var(--error-text),
-        0 0 0 1px var(--error-text);
+        inset 0 0 0 1px var(--error-text, var(--color-danger)),
+        0 0 0 1px var(--error-text, var(--color-danger));
     }
 
     .textInput__label {
-      color: var(--error-text);
+      color: var(--error-text, var(--color-danger));
     }
 
     &:has(.textInput__input:focus-visible) .textInput__label {
-      color: var(--error-text);
+      color: var(--error-text, var(--color-danger));
     }
   }
 }

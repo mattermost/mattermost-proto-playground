@@ -74,11 +74,11 @@
   }
 
   &--type-danger {
-    background-color: rgba(var(--color-danger-rgb), 0.04);
-    border-color: rgba(var(--color-danger-rgb), 0.16);
+    background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.04);
+    border-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.16);
 
     .section-notice__icon {
-      color: var(--color-danger);
+      color: var(--error-text, var(--color-danger));
     }
   }
 

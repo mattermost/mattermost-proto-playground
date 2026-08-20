@@ -91,7 +91,7 @@
   }
 
   &--type-danger {
-    background-color: var(--color-danger);
+    background-color: var(--error-text, var(--color-danger));
   }
 
   &--type-info {

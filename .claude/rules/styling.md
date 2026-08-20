@@ -94,20 +94,26 @@ Never hard-code durations or easing keywords — use tokens:
 
 ## Semantic colors
 
-Author with `--color-info|success|warning|danger` (and `-rgb` for `rgba()`). Never raw palette (e.g. `--color-blue-400`).
+Fixed intent colors: `--color-info|success|warning|danger` (and `-rgb` for `rgba()`). Never raw palette (e.g. `--color-blue-400`).
 
-Tokens resolve with host/theme fallbacks (defined in `tokens.scss`):
+In `tokens.scss` these prefer webapp `--semantic-color-*` when hosted, else the Compass palette.
 
-| Token | Resolution order |
+**Themeable error / destructive UI** (validation, destructive buttons, danger notices): reference the webapp theme role first:
+
+```scss
+color: var(--error-text, var(--color-danger));
+background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
+```
+
+**Presence** is not semantic: use `--online-indicator`, `--away-indicator`, `--dnd-indicator` (optional `--color-*` fallback). Do not use `--color-success|warning|danger` alone for StatusBadge / presence.
+
+| Token | Role |
 | --- | --- |
-| `--color-info` / `-rgb` | `--semantic-color-info` → blue-400 |
-| `--color-success` / `-rgb` | `--semantic-color-success` → green-600 (package) |
-| `--color-warning` / `-rgb` | `--semantic-color-warning` → yellow-600 |
-| `--color-danger` / `-rgb` | `--error-text` / `--error-text-color-rgb` → `--semantic-color-danger` → red-500 |
-
-So danger UI (buttons, notices, validation) tracks Mattermost themeable `--error-text` when present; info/success/warning track fixed webapp `--semantic-color-*` when hosted.
-
-**Presence** is not semantic: use `--online-indicator`, `--away-indicator`, `--dnd-indicator` (optional Compass `--color-*` fallback). Do not use `--color-success|warning|danger` for StatusBadge / presence.
+| `--color-info` / `-rgb` | Fixed semantic → `--semantic-color-info` → blue-400 |
+| `--color-success` / `-rgb` | Fixed semantic → `--semantic-color-success` → green-600 (package) |
+| `--color-warning` / `-rgb` | Fixed semantic → `--semantic-color-warning` → yellow-600 |
+| `--color-danger` / `-rgb` | Fixed semantic → `--semantic-color-danger` → red-500 (fallback only for themed error UI) |
+| `--error-text` / `--error-text-color-rgb` | Themeable error role (prefer in error/destructive components) |
 
 ## Figma opacity suffixes
 

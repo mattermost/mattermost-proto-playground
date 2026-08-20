@@ -354,8 +354,9 @@
 
   // ============================================================
   // Semantic colors
-  // Prefer host/theme role vars when present (Mattermost webapp),
-  // then webapp --semantic-color-* RGB, then Compass palette.
+  // Prefer webapp --semantic-color-* RGB when hosted, else Compass palette.
+  // Themeable error/destructive UI should use --error-text in components
+  // (with --color-danger as fallback), not an alias here.
   // ============================================================
   --color-info-rgb: var(--semantic-color-info, var(--color-blue-400-rgb));
   --color-info: rgb(var(--color-info-rgb));
@@ -363,12 +364,8 @@
   --color-success: rgb(var(--color-success-rgb));
   --color-warning-rgb: var(--semantic-color-warning, var(--color-yellow-600-rgb));
   --color-warning: rgb(var(--color-warning-rgb));
-  // Danger tracks themeable --error-text so custom themes and notices stay aligned
-  --color-danger-rgb: var(
-    --error-text-color-rgb,
-    var(--semantic-color-danger, var(--color-red-500-rgb))
-  );
-  --color-danger: var(--error-text, rgb(var(--color-danger-rgb)));
+  --color-danger-rgb: var(--semantic-color-danger, var(--color-red-500-rgb));
+  --color-danger: rgb(var(--color-danger-rgb));
 
   // ============================================================
   // Attachment Card file-type accent colors

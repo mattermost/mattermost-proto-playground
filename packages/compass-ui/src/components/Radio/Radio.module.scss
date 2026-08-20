@@ -108,44 +108,44 @@
   // Invalid (error) state
   // ---------------------------------------------------------------------------
   &--invalid &__circle {
-    border-color: var(--color-danger);
+    border-color: var(--error-text, var(--color-danger));
   }
 
   &:has(&__input:not(:disabled)):hover#{&}--invalid
     &__input:not(:checked)
     ~ &__circle {
-    border-color: var(--color-danger);
+    border-color: var(--error-text, var(--color-danger));
   }
 
   &--invalid &__input:checked ~ &__circle {
     background-color: var(--center-channel-bg);
     border-width: 1px;
-    border-color: var(--color-danger);
+    border-color: var(--error-text, var(--color-danger));
   }
 
   &--invalid &__input:checked ~ &__circle &__dot {
-    background-color: var(--color-danger);
+    background-color: var(--error-text, var(--color-danger));
   }
 
   &:has(&__input:not(:disabled)):hover#{&}--invalid
     &__input:checked
     ~ &__circle {
-    border-color: var(--color-danger);
+    border-color: var(--error-text, var(--color-danger));
   }
 
   &:has(&__input:not(:disabled)):hover#{&}--invalid
     &__input:checked
     ~ &__circle
     &__dot {
-    background-color: var(--color-danger);
+    background-color: var(--error-text, var(--color-danger));
   }
 
   &--invalid &__input:focus-visible ~ &__circle {
-    box-shadow: 0 0 0 2px rgba(var(--color-danger-rgb), 0.56);
+    box-shadow: 0 0 0 2px rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.56);
   }
 
   &--invalid &__input:focus-visible:checked ~ &__circle {
-    box-shadow: 0 0 0 2px rgba(var(--color-danger-rgb), 0.56);
+    box-shadow: 0 0 0 2px rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.56);
   }
 
   // ---------------------------------------------------------------------------

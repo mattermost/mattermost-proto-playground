@@ -123,9 +123,9 @@ The primary call-to-action pair.
 
 ### Interactions
 
-Inline UI states that need to read clearly across themes. Error text also
-feeds `--color-danger` so notices, destructive controls, and validation
-stay aligned with the active theme.
+Inline UI states that need to read clearly across themes. Error / destructive
+components reference error text directly (with semantic danger as fallback)
+so they stay aligned with custom themes.
 
 <SwatchGrid size="medium">
   <Swatch token="link-color" label="Link" size="medium" />

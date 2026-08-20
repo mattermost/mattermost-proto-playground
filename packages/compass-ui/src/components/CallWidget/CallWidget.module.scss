@@ -131,7 +131,7 @@
     min-width: 40px;
     padding: 0 var(--spacing-xs);
     border-radius: var(--radius-s);
-    background: var(--color-danger);
+    background: var(--error-text, var(--color-danger));
     color: var(--color-neutral-0);
     display: inline-flex;
     align-items: center;

@@ -239,21 +239,21 @@
   // ---------------------------------------------------------------------------
   &--invalid {
     .select__wrapper {
-      box-shadow: inset 0 0 0 1px var(--color-danger);
+      box-shadow: inset 0 0 0 1px var(--error-text, var(--color-danger));
     }
 
     &:has(.select__control:focus-visible) .select__wrapper {
       box-shadow:
-        inset 0 0 0 1px var(--color-danger),
-        0 0 0 1px var(--color-danger);
+        inset 0 0 0 1px var(--error-text, var(--color-danger)),
+        0 0 0 1px var(--error-text, var(--color-danger));
     }
 
     .select__label {
-      color: var(--color-danger);
+      color: var(--error-text, var(--color-danger));
     }
 
     &:has(.select__control:focus-visible) .select__label {
-      color: var(--color-danger);
+      color: var(--error-text, var(--color-danger));
     }
   }
 

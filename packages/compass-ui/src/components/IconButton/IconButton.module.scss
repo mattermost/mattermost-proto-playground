@@ -286,18 +286,18 @@
 
     // Inverted + destructive
     &.icon-button--destructive {
-      --icon-button-focus-ring-color: var(--color-danger);
+      --icon-button-focus-ring-color: var(--error-text, var(--color-danger));
 
       background-color: transparent;
-      color: var(--color-danger);
+      color: var(--error-text, var(--color-danger));
 
       &:hover:not(:disabled):not(:active) {
-        background-color: rgba(var(--color-danger-rgb), 0.08);
-        color: var(--color-danger);
+        background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
+        color: var(--error-text, var(--color-danger));
       }
       &:active:not(:disabled):not(.icon-button--toggled) {
-        background-color: rgba(var(--color-danger-rgb), 0.16);
-        color: var(--color-danger);
+        background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.16);
+        color: var(--error-text, var(--color-danger));
       }
     }
   }
@@ -307,18 +307,18 @@
   // Transparent background with danger-color icon; tinted bg on hover/active.
   // ---------------------------------------------------------------------------
   &--destructive {
-    --icon-button-focus-ring-color: var(--color-danger);
+    --icon-button-focus-ring-color: var(--error-text, var(--color-danger));
 
     background-color: transparent;
-    color: var(--color-danger);
+    color: var(--error-text, var(--color-danger));
 
     &:hover:not(:disabled):not(:active) {
-      background-color: rgba(var(--color-danger-rgb), 0.08);
-      color: var(--color-danger);
+      background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
+      color: var(--error-text, var(--color-danger));
     }
     &:active:not(:disabled):not(.icon-button--toggled) {
-      background-color: rgba(var(--color-danger-rgb), 0.16);
-      color: var(--color-danger);
+      background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.16);
+      color: var(--error-text, var(--color-danger));
     }
   }
 }

@@ -238,7 +238,7 @@
   }
 
   &__controls-right button {
-    background-color: var(--error-text);
+    background-color: var(--error-text, var(--color-danger));
     color: var(--neutral-0);
 
     &:hover:not(:disabled) {
