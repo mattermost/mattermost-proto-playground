@@ -340,10 +340,7 @@ export function ceilingSummaryLabel(mode: CeilingMode): string | null {
 //
 // Scene-local side table; replaces the removed value-linking flow.
 
-const RESOURCE_NAME: Record<string, string> = {
-  // Demo: Classification is surfaced as "Clearance" on user-facing Teams.
-  'classification:Teams': 'Clearance',
-};
+const RESOURCE_NAME: Record<string, string> = {};
 
 export function resourceName(
   attributeId: string,

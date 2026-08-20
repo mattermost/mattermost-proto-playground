@@ -15,6 +15,7 @@ import Icon from '@/components/ui/Icon/Icon';
 import ClassificationPill from '@/pages/attribute-system/ClassificationPill';
 import {
   postDisplayIncludes,
+  resolvePostDisplayMode,
   type DisplayWhere,
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
@@ -146,6 +147,12 @@ export default function PostAttributeSummary({
       const attribute = postAttributesById.get(instance.attributeId);
       if (!attribute) return false;
       const binding = postBinding(attribute);
+      if (
+        resolvePostDisplayMode(binding) === 'when-overridden' &&
+        !instance.overridden
+      ) {
+        return false;
+      }
       const showWhere = resolvePostShowWhere(
         attribute.id,
         showWhereById,

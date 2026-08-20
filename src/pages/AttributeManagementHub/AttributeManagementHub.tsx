@@ -19,6 +19,7 @@ import GuardrailDialog, {
 import { HUB_ACTIVE_ITEM, HUB_SIDEBAR_CATEGORIES } from './hubSidebar';
 import {
   HUB_ATTRIBUTES,
+  appliedChannelCount,
   defaultAccessModel,
   defaultResourceConfig,
   isPolicyLocked,
@@ -199,7 +200,10 @@ export default function AttributeManagementHub() {
       context: {
         attributeName: selected.name,
         resource,
-        policies: isPolicyLocked(selected) ? selected.policyNames : [],
+        bindingCount:
+          resource === 'Channels' ? appliedChannelCount(selected.id) : undefined,
+        policyCount: selected.usedByPolicies,
+        policies: selected.policyNames,
       },
     });
   };
@@ -445,7 +449,7 @@ export default function AttributeManagementHub() {
           subtitle={
             selected
               ? attributeSubtitle(selected)
-              : 'Create attributes once and configure where they apply across users, channels, posts, and teams.'
+              : 'Create attributes once and configure where they apply across users, channels, and posts.'
           }
           backButton={!!selected}
           onBack={() => setSelectedId(null)}
@@ -595,6 +599,17 @@ function initialGuardrail(
       return {
         kind: guard,
         context: { attributeName: name, policies: a?.policyNames ?? [] },
+      };
+    case 'delete-confirm':
+      return {
+        kind: guard,
+        context: {
+          attributeId: a?.id,
+          attributeName: name || 'Classification',
+          bindingCount: a ? appliedChannelCount(a.id) : 128,
+          policyCount: a?.usedByPolicies ?? 3,
+          policies: a?.policyNames ?? [],
+        },
       };
     case 'unlink-gated': {
       const linked = a?.valuesLink

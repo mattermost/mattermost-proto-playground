@@ -1,7 +1,9 @@
 .markings {
+  // Match System Console content width so settings don't stretch across 1680px.
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
+  max-width: 960px;
 
   &__body {
     display: flex;
@@ -20,18 +22,39 @@
     }
   }
 
+  &__settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+  }
+
   &__radio-row {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-xxl);
+    align-items: center;
+    // Match setting-label padding so radios top-align with the left label.
+    padding-top: var(--spacing-xxs);
+  }
+
+  // Beat Radio's default width: 100% so True/False stay on one row.
+  &__radio-row &__radio {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  &__check-row {
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     gap: var(--spacing-xxl);
     align-items: center;
   }
 
-  &__check-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xxl);
-    align-items: center;
+  &__check-row &__check {
+    width: auto;
+    flex: 0 0 auto;
   }
 
   &__inline {
@@ -42,6 +65,7 @@
   }
 
   &__control {
+    width: 100%;
     max-width: 320px;
   }
 
@@ -117,48 +141,21 @@
     color: var(--center-channel-color);
   }
 
+  &__level-control {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--spacing-s);
+    max-width: 360px;
+  }
+
   &__level-swatch {
     display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-top: var(--spacing-xs);
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
     border-radius: var(--radius-full);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-  }
-
-  &__resources {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-m);
-    margin-bottom: var(--spacing-m);
-  }
-
-  &__resource {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-m);
-    padding: var(--spacing-m);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-    border-radius: var(--radius-s);
-    background: rgba(var(--center-channel-color-rgb), 0.02);
-  }
-
-  &__resource-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--spacing-s);
-  }
-
-  &__resource-name {
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__resource-note {
-    font-size: var(--font-size-75);
-    color: rgba(var(--center-channel-color-rgb), 0.56);
   }
 
   &__footer {

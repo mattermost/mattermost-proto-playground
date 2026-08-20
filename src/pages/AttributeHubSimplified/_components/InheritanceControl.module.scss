@@ -5,7 +5,7 @@
 
   &__row {
     display: grid;
-    grid-template-columns: 176px 1fr;
+    grid-template-columns: 220px 1fr;
     column-gap: var(--spacing-m);
     align-items: start;
   }
@@ -32,7 +32,7 @@
     flex-direction: column;
     gap: var(--spacing-s);
     padding-top: var(--spacing-s);
-    margin-left: calc(176px + var(--spacing-m));
+    margin-left: calc(220px + var(--spacing-m));
   }
 
   &__ceiling-label {

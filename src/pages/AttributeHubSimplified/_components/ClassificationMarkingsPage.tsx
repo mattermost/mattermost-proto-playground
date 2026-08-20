@@ -29,12 +29,6 @@ type Level = {
   clearance: string;
 };
 
-type ResourceApply = {
-  resource: 'Channels' | 'Posts' | 'Teams';
-  required: boolean;
-  display: { Header: boolean; Sidebar: boolean; Banner: boolean };
-};
-
 const US_LEVELS: Level[] = [
   {
     id: 'unclassified',
@@ -101,10 +95,20 @@ function RadioPair({
 }) {
   return (
     <div className={styles['markings__radio-row']}>
-      <Radio name={name} checked={value} onChange={() => onChange(true)}>
+      <Radio
+        className={styles['markings__radio']}
+        name={name}
+        checked={value}
+        onChange={() => onChange(true)}
+      >
         {trueLabel}
       </Radio>
-      <Radio name={name} checked={!value} onChange={() => onChange(false)}>
+      <Radio
+        className={styles['markings__radio']}
+        name={name}
+        checked={!value}
+        onChange={() => onChange(false)}
+      >
         {falseLabel}
       </Radio>
     </div>
@@ -131,7 +135,6 @@ export default function ClassificationMarkingsPage({
   const [enforceResources, setEnforceResources] = useState({
     Channels: true,
     Posts: false,
-    Teams: false,
   });
   const [levels, setLevels] = useState<Level[]>(US_LEVELS);
   const [globalBanner, setGlobalBanner] = useState(true);
@@ -139,13 +142,6 @@ export default function ClassificationMarkingsPage({
     'top',
   );
   const [globalLevelId, setGlobalLevelId] = useState('unclassified');
-  const [applyTo, setApplyTo] = useState<ResourceApply[]>([
-    {
-      resource: 'Channels',
-      required: true,
-      display: { Header: true, Sidebar: false, Banner: true },
-    },
-  ]);
   const [dirty, setDirty] = useState(false);
 
   const markDirty = () => setDirty(true);
@@ -263,72 +259,75 @@ export default function ClassificationMarkingsPage({
             title="Classification Enforcement"
             subtitle="Restrict access to classified resources based on a user's clearance. When enforced, users must hold a ranked clearance attribute that meets each resource's classification level."
           >
-            <ConsoleSetting
-              label="Enforce classification markings"
-              helpText="When enabled, access can be gated by a users' clearance attribute. This will be managed by a corresponding Membership policy."
-            >
-              <RadioPair
-                name={`${uid}-enforce`}
-                value={enforce}
-                onChange={(v) => {
-                  setEnforce(v);
-                  markDirty();
-                }}
-              />
-            </ConsoleSetting>
-            <ConsoleSetting
-              label="Clearance attribute"
-              helpText="Must be a ranked type applied to users. After you select an attribute, map it to each level in the Classification levels section below."
-            >
-              <div className={styles['markings__inline']}>
-                <Select
-                  size="Medium"
-                  className={styles['markings__control']}
-                  value={clearanceAttrId}
-                  disabled={!enforce}
-                  aria-label="Clearance attribute"
-                  onChange={(e) => {
-                    setClearanceAttrId(e.target.value);
+            <div className={styles['markings__settings']}>
+              <ConsoleSetting
+                label="Enforce classification markings"
+                helpText="When enabled, access can be gated by a users' clearance attribute. This will be managed by a corresponding Membership policy."
+              >
+                <RadioPair
+                  name={`${uid}-enforce`}
+                  value={enforce}
+                  onChange={(v) => {
+                    setEnforce(v);
                     markDirty();
                   }}
-                >
-                  {clearanceAttributes.length === 0 && (
-                    <option value="">No ranked user attributes</option>
-                  )}
-                  {clearanceAttributes.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.name} ({a.type})
-                    </option>
-                  ))}
-                </Select>
-                <Button
-                  emphasis="Tertiary"
-                  size="Medium"
-                  leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
-                  disabled={!enforce}
-                  onClick={() => undefined}
-                >
-                  Create new
-                </Button>
-              </div>
-            </ConsoleSetting>
-            <ConsoleSetting
-              label="Resources to enforce"
-              helpText="Choose which resource types require classification for access decisions."
-            >
-              <div className={styles['markings__check-row']}>
-                {(['Channels', 'Posts', 'Teams'] as const).map((r) => (
-                  <Checkbox
-                    key={r}
-                    checked={enforceResources[r]}
+                />
+              </ConsoleSetting>
+              <ConsoleSetting
+                label="Clearance attribute"
+                helpText="Must be a ranked type applied to users. After you select an attribute, map it to each level in the Classification levels section below."
+              >
+                <div className={styles['markings__inline']}>
+                  <Select
+                    size="Medium"
+                    className={styles['markings__control']}
+                    value={clearanceAttrId}
                     disabled={!enforce}
-                    onChange={() => toggleEnforceResource(r)}
+                    aria-label="Clearance attribute"
+                    onChange={(e) => {
+                      setClearanceAttrId(e.target.value);
+                      markDirty();
+                    }}
                   >
-                    {r}
-                  </Checkbox>
-                ))}
-              </div>
-            </ConsoleSetting>
+                    {clearanceAttributes.length === 0 && (
+                      <option value="">No ranked user attributes</option>
+                    )}
+                    {clearanceAttributes.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name} ({a.type})
+                      </option>
+                    ))}
+                  </Select>
+                  <Button
+                    emphasis="Tertiary"
+                    size="Medium"
+                    leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
+                    disabled={!enforce}
+                    onClick={() => undefined}
+                  >
+                    Create new
+                  </Button>
+                </div>
+              </ConsoleSetting>
+              <ConsoleSetting
+                label="Resources to enforce"
+                helpText="Choose which resource types require classification for access decisions."
+              >
+                <div className={styles['markings__check-row']}>
+                  {(['Channels', 'Posts'] as const).map((r) => (
+                    <Checkbox
+                      key={r}
+                      className={styles['markings__check']}
+                      checked={enforceResources[r]}
+                      disabled={!enforce}
+                      onChange={() => toggleEnforceResource(r)}
+                    >
+                      {r}
+                    </Checkbox>
+                  ))}
+                </div>
+              </ConsoleSetting>
+            </div>
           </ConsolePanel>
 
           <ConsolePanel
@@ -443,175 +442,83 @@ export default function ClassificationMarkingsPage({
             title="Global Classification Indicators"
             subtitle="Configure the global classification banner to be displayed at the very top of the Mattermost application."
           >
-            <ConsoleSetting
-              label="Global Classification Banner"
-              helpText="Displays a global banner for the system-wide classification."
-            >
-              <RadioPair
-                name={`${uid}-global-banner`}
-                value={globalBanner}
-                onChange={(v) => {
-                  setGlobalBanner(v);
-                  markDirty();
-                }}
-              />
-            </ConsoleSetting>
-            <ConsoleSetting label="Banner visibility">
-              <div className={styles['markings__radio-row']}>
-                <Radio
-                  name={`${uid}-banner-vis`}
-                  checked={bannerVisibility === 'top'}
-                  disabled={!globalBanner}
-                  onChange={() => {
-                    setBannerVisibility('top');
-                    markDirty();
-                  }}
-                >
-                  Top only
-                </Radio>
-                <Radio
-                  name={`${uid}-banner-vis`}
-                  checked={bannerVisibility === 'both'}
-                  disabled={!globalBanner}
-                  onChange={() => {
-                    setBannerVisibility('both');
-                    markDirty();
-                  }}
-                >
-                  Top and bottom
-                </Radio>
-              </div>
-            </ConsoleSetting>
-            <ConsoleSetting
-              label="Global classification level"
-              helpText="Select the level at which your entire Mattermost server is required to operate."
-            >
-              <Select
-                size="Medium"
-                className={styles['markings__control']}
-                value={globalLevelId}
-                disabled={!globalBanner}
-                aria-label="Global classification level"
-                onChange={(e) => {
-                  setGlobalLevelId(e.target.value);
-                  markDirty();
-                }}
+            <div className={styles['markings__settings']}>
+              <ConsoleSetting
+                label="Global Classification Banner"
+                helpText="Displays a global banner for the system-wide classification."
               >
-                {levels.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.text}
-                  </option>
-                ))}
-              </Select>
-              {levels.find((l) => l.id === globalLevelId) && (
-                <span
-                  className={styles['markings__level-swatch']}
-                  style={{
-                    background: levels.find((l) => l.id === globalLevelId)!
-                      .color,
+                <RadioPair
+                  name={`${uid}-global-banner`}
+                  value={globalBanner}
+                  onChange={(v) => {
+                    setGlobalBanner(v);
+                    markDirty();
                   }}
-                  aria-hidden
                 />
-              )}
-            </ConsoleSetting>
-          </ConsolePanel>
-
-          <ConsolePanel
-            title="Apply classification markings to"
-            subtitle="Choose which resources can carry classification markings, and configure required and display settings for each."
-          >
-            <div className={styles['markings__resources']}>
-              {applyTo.map((cfg) => (
-                <div key={cfg.resource} className={styles['markings__resource']}>
-                  <div className={styles['markings__resource-head']}>
-                    <span className={styles['markings__resource-name']}>
-                      {cfg.resource}
-                    </span>
-                    {enforceResources[cfg.resource] && (
-                      <span className={styles['markings__resource-note']}>
-                        Required for enforcement
-                      </span>
-                    )}
-                  </div>
-                  <ConsoleSetting
-                    label="Required"
-                    helpText="When true, a classification value must be set on this resource."
+              </ConsoleSetting>
+              <ConsoleSetting label="Banner visibility">
+                <div className={styles['markings__radio-row']}>
+                  <Radio
+                    className={styles['markings__radio']}
+                    name={`${uid}-banner-vis`}
+                    checked={bannerVisibility === 'top'}
+                    disabled={!globalBanner}
+                    onChange={() => {
+                      setBannerVisibility('top');
+                      markDirty();
+                    }}
                   >
-                    <RadioPair
-                      name={`${uid}-req-${cfg.resource}`}
-                      value={cfg.required}
-                      onChange={(v) => {
-                        setApplyTo((prev) =>
-                          prev.map((r) =>
-                            r.resource === cfg.resource
-                              ? { ...r, required: v }
-                              : r,
-                          ),
-                        );
-                        markDirty();
-                      }}
-                    />
-                  </ConsoleSetting>
-                  <ConsoleSetting
-                    label="Display"
-                    helpText={`Choose where classification markings appear for ${cfg.resource.toLowerCase()}.`}
+                    Top only
+                  </Radio>
+                  <Radio
+                    className={styles['markings__radio']}
+                    name={`${uid}-banner-vis`}
+                    checked={bannerVisibility === 'both'}
+                    disabled={!globalBanner}
+                    onChange={() => {
+                      setBannerVisibility('both');
+                      markDirty();
+                    }}
                   >
-                    <div className={styles['markings__check-row']}>
-                      {(
-                        ['Header', 'Sidebar', 'Banner'] as const
-                      ).map((loc) => (
-                        <Checkbox
-                          key={loc}
-                          checked={cfg.display[loc]}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            setApplyTo((prev) =>
-                              prev.map((r) =>
-                                r.resource === cfg.resource
-                                  ? {
-                                      ...r,
-                                      display: {
-                                        ...r.display,
-                                        [loc]: checked,
-                                      },
-                                    }
-                                  : r,
-                              ),
-                            );
-                            markDirty();
-                          }}
-                        >
-                          {loc}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  </ConsoleSetting>
+                    Top and bottom
+                  </Radio>
                 </div>
-              ))}
+              </ConsoleSetting>
+              <ConsoleSetting
+                label="Global classification level"
+                helpText="Select the level at which your entire Mattermost server is required to operate."
+              >
+                <div className={styles['markings__level-control']}>
+                  <Select
+                    size="Medium"
+                    className={styles['markings__control']}
+                    value={globalLevelId}
+                    disabled={!globalBanner}
+                    aria-label="Global classification level"
+                    onChange={(e) => {
+                      setGlobalLevelId(e.target.value);
+                      markDirty();
+                    }}
+                  >
+                    {levels.map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.text}
+                      </option>
+                    ))}
+                  </Select>
+                  {levels.find((l) => l.id === globalLevelId) && (
+                    <span
+                      className={styles['markings__level-swatch']}
+                      style={{
+                        background: levels.find((l) => l.id === globalLevelId)!
+                          .color,
+                      }}
+                      aria-hidden
+                    />
+                  )}
+                </div>
+              </ConsoleSetting>
             </div>
-            <Button
-              emphasis="Tertiary"
-              size="Medium"
-              leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
-              onClick={() => {
-                const used = new Set(applyTo.map((r) => r.resource));
-                const next = (['Posts', 'Teams', 'Channels'] as const).find(
-                  (r) => !used.has(r),
-                );
-                if (!next) return;
-                setApplyTo((prev) => [
-                  ...prev,
-                  {
-                    resource: next,
-                    required: false,
-                    display: { Header: true, Sidebar: false, Banner: false },
-                  },
-                ]);
-                markDirty();
-              }}
-            >
-              Add resource
-            </Button>
           </ConsolePanel>
         </div>
       </div>

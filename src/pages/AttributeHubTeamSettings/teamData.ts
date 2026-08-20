@@ -1,5 +1,6 @@
 import {
   HUB_ATTRIBUTES,
+  INHERIT_FROM_CHANNEL_VALUE_ID,
   defaultAccessModel,
   defaultResourceConfig,
   isPolicyLocked,
@@ -130,6 +131,8 @@ const TEAM_LOCAL: HubAttribute[] = [
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
         inheritMode: 'inherit',
+        defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        postDisplayMode: 'when-overridden',
       },
     ],
     usedByPolicies: 0,

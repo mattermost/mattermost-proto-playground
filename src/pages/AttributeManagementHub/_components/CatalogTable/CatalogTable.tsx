@@ -57,7 +57,7 @@ export default function CatalogTable({
           description={
             filteredEmpty
               ? 'Adjust the resource type, source, or search to see more.'
-              : 'Define your first attribute to make it available across users, channels, posts, and teams.'
+              : 'Define your first attribute to make it available across users, channels, and posts.'
           }
           action={
             filteredEmpty
@@ -110,7 +110,9 @@ export default function CatalogTable({
                 </td>
                 <td>
                   <div className={styles['catalog__chips']}>
-                    {a.appliesTo.map((c) => (
+                    {a.appliesTo
+                      .filter((c) => c.resource !== 'Teams')
+                      .map((c) => (
                       <Chip key={c.resource} size="Small">
                         {c.resource}
                       </Chip>

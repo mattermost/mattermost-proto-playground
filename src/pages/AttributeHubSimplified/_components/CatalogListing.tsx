@@ -106,7 +106,7 @@ export default function CatalogListing({
   onDeactivate,
   onDelete,
   allowedResources = DEFAULT_RESOURCES,
-  emptyDescription = 'Define your first attribute to make it available across users, channels, posts, and teams.',
+  emptyDescription = 'Define your first attribute to make it available across users, channels, and posts.',
   showSourceFilter = true,
   filterSize = 'Medium',
   showUsageColumn = true,
@@ -311,7 +311,9 @@ export default function CatalogListing({
         </td>
         <td>
           <div className={styles['table__chips']}>
-            {a.appliesTo.map((c) => (
+            {a.appliesTo
+              .filter((c) => c.resource !== 'Teams')
+              .map((c) => (
               <Chip key={c.resource} size="Small">
                 {c.resource}
               </Chip>

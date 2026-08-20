@@ -110,6 +110,32 @@ export const POST_DISPLAY_LOCATIONS: PostDisplayLoc[] = [
   'Header',
 ];
 
+/**
+ * When a post attribute appears on the message — always, or only when the
+ * post value differs from the channel.
+ */
+export type PostDisplayMode = 'always' | 'when-overridden';
+
+/** Sentinel default: new posts inherit this channel’s value. */
+export const INHERIT_FROM_CHANNEL_VALUE_ID = '__inherit_channel__';
+/** Sentinel for the Posts default-value select: locked to the channel. */
+export const INHERIT_LOCKED_TO_CHANNEL_VALUE_ID = '__inherit_lock__';
+
+export function isInheritFromChannelDefault(
+  defaultValueId: string | null | undefined,
+): boolean {
+  return (
+    defaultValueId === INHERIT_FROM_CHANNEL_VALUE_ID ||
+    defaultValueId === INHERIT_LOCKED_TO_CHANNEL_VALUE_ID
+  );
+}
+
+export function resolvePostDisplayMode(
+  cfg: ResourceConfig | undefined,
+): PostDisplayMode {
+  return cfg?.postDisplayMode ?? 'when-overridden';
+}
+
 export type InheritMode = 'off' | 'inherit' | 'inherit-lock';
 
 /** Whether an assigned value may change after it is set on a resource. */
@@ -190,7 +216,7 @@ export interface ResourceConfig {
   whoCanSet: WhoCanSet;
   /** Channels: header/sidebar/banner. Posts: message input / in-channel message view. */
   showWhere?: DisplayWhere[];
-  /** Child bindings only: inherit from parent (Channels←Teams, Posts←Channels). */
+  /** Child bindings only: inherit from parent (Posts←Channels). */
   inheritMode?: InheritMode;
   /** @deprecated Prefer inheritMode. */
   inheritToChild?: boolean;
@@ -198,14 +224,20 @@ export interface ResourceConfig {
   userProfileDisplay?: UserProfileDisplay;
   /** Base value ids disabled for NEW assignments on this resource. */
   disabledValueIds?: string[];
-  /** Pre-filled when a new resource instance is created without a value. */
+  /**
+   * Pre-filled when a new resource instance is created without a value.
+   * Posts may use `INHERIT_FROM_CHANNEL_VALUE_ID`.
+   */
   defaultValueId?: string | null;
   /**
    * When Required + a default are set: also write that default onto existing
    * instances that have no value (opt-in backfill). Defaults apply to new
-   * instances only unless this is true.
+   * instances only unless this is true. Unused for Channels/Posts in this
+   * prototype — existing instances are resolved manually.
    */
   applyDefaultToExisting?: boolean;
+  /** Posts — show on every post, or only when the value differs from the channel. */
+  postDisplayMode?: PostDisplayMode;
   /** Channels — `showWhere` is a default that channel admins may change per channel. */
   displayOverridable?: boolean;
   /** Whether the value may change after assignment. */
@@ -306,6 +338,48 @@ export function resolveInheritMode(cfg: ResourceConfig): InheritMode {
   return cfg.inheritToChild ? 'inherit-lock' : 'off';
 }
 
+export function isLockedToChannelDefault(cfg: ResourceConfig): boolean {
+  return (
+    cfg.defaultValueId === INHERIT_LOCKED_TO_CHANNEL_VALUE_ID ||
+    resolveInheritMode(cfg) === 'inherit-lock'
+  );
+}
+
+/** Value shown in the Posts default-value select (inherit folded in). */
+export function postDefaultSelectValue(cfg: ResourceConfig): string {
+  if (isLockedToChannelDefault(cfg)) {
+    return INHERIT_LOCKED_TO_CHANNEL_VALUE_ID;
+  }
+  if (
+    resolveInheritMode(cfg) === 'inherit' ||
+    cfg.defaultValueId === INHERIT_FROM_CHANNEL_VALUE_ID
+  ) {
+    return INHERIT_FROM_CHANNEL_VALUE_ID;
+  }
+  return cfg.defaultValueId ?? '';
+}
+
+/** Patch applied when the Posts default-value select changes. */
+export function postDefaultSelectPatch(value: string): Partial<ResourceConfig> {
+  if (value === INHERIT_LOCKED_TO_CHANNEL_VALUE_ID) {
+    return {
+      defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+      inheritMode: 'inherit-lock',
+    };
+  }
+  if (value === INHERIT_FROM_CHANNEL_VALUE_ID) {
+    return {
+      defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+      inheritMode: 'inherit',
+    };
+  }
+  return {
+    defaultValueId: value === '' ? null : value,
+    inheritMode: 'off',
+    ...(value === '' ? { applyDefaultToExisting: false } : {}),
+  };
+}
+
 export function channelBinding(
   attribute: HubAttribute,
 ): ResourceConfig | undefined {
@@ -318,11 +392,10 @@ export function teamBinding(
   return attribute.appliesTo.find((c) => c.resource === 'Teams');
 }
 
-/** Parent resource a child can inherit from, if applied. */
+/** Parent resource a child can inherit from, if applied. Teams is out of scope. */
 export function inheritanceParentKind(
   child: ResourceKind,
 ): ResourceKind | null {
-  if (child === 'Channels') return 'Teams';
   if (child === 'Posts') return 'Channels';
   return null;
 }
@@ -541,6 +614,21 @@ export function supportsDefaultBackfill(resource: ResourceKind): boolean {
 }
 
 /**
+ * Demo fixture — how many channels currently carry a value for this attribute.
+ * Used by the global delete confirmation.
+ */
+export function appliedChannelCount(attributeId: string): number {
+  const fixtures: Record<string, number> = {
+    classification: 128,
+    program: 47,
+    caveat: 31,
+    'ops-window': 18,
+    'watch-floor': 12,
+  };
+  return fixtures[attributeId] ?? 24;
+}
+
+/**
  * Demo fixture — how many existing instances lack a value for this attribute.
  * Stable per attribute so the backfill count feels realistic in the prototype.
  */
@@ -562,6 +650,65 @@ export function unmarkedInstanceCount(
   if (known != null) return known;
 
   return resource === 'Channels' ? 28 : 156;
+}
+
+const UNMARKED_CHANNEL_NAMES = [
+  'ops-planning',
+  'incident-bridge',
+  'program-alpha-staff',
+  'sustainment-window',
+  'intel-fusion',
+  'watch-floor',
+  'mission-brief',
+  'logistics-sync',
+  'partner-liaison',
+  'comms-check',
+  'after-action',
+  'readiness-standby',
+  'flight-ops',
+  'ground-support',
+  'cyber-watch',
+  'legal-review',
+  'pao-coordination',
+  'medevac-net',
+  'weather-desk',
+  'spectrum-mgmt',
+  'airspace-coord',
+  'convoy-ops',
+  'port-ops',
+  'warehouse-alpha',
+  'warehouse-bravo',
+  'training-range',
+  'sim-cell',
+  'red-cell',
+  'blue-cell',
+  'sitrep-desk',
+  'night-watch',
+  'day-watch',
+  'shift-handoff',
+  'exec-sync',
+  'staff-duty',
+  'help-desk',
+  'it-ops',
+  'identity-ops',
+  'badge-office',
+  'visitor-control',
+  'facility-ops',
+  'power-plant',
+  'water-plant',
+  'motor-pool',
+  'armory-desk',
+  'ammo-hold',
+  'fuel-point',
+];
+
+/** Demo channel names that still lack a value for this attribute. */
+export function unmarkedChannelNames(attributeId: string): string[] {
+  const count = unmarkedInstanceCount(attributeId, 'Channels');
+  return Array.from(
+    { length: count },
+    (_, index) => UNMARKED_CHANNEL_NAMES[index] ?? `channel-${index + 1}`,
+  );
 }
 
 export function applyDefaultToExistingLabel(resource: ResourceKind): string {
@@ -798,13 +945,13 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     name: 'Classification',
     type: 'Ranked-hierarchical',
     description:
-      'Sensitivity level applied to channels, posts, and teams. Ranked tiers form the spine compared against Clearance; display-only markings nest beneath each tier.',
+      'Sensitivity level applied to channels and posts. Ranked tiers form the spine compared against Clearance; display-only markings nest beneath each tier.',
     values: TIER_SCALE,
     source: { kind: 'manual' },
     appliesTo: [
       {
         resource: 'Channels',
-        required: true,
+        required: false,
         whoCanSet: whoCanSet(
           'Channel admin',
           accessCap(
@@ -829,15 +976,12 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
       },
       {
         resource: 'Posts',
-        required: false,
+        required: true,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
-        inheritMode: 'inherit-lock',
-      },
-      {
-        resource: 'Teams',
-        required: false,
-        whoCanSet: whoCanSet('Team admin'),
+        inheritMode: 'inherit',
+        defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        postDisplayMode: 'always',
       },
     ],
     usedByPolicies: 3,
@@ -959,7 +1103,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     appliesTo: [
       {
         resource: 'Channels',
-        required: true,
+        required: false,
         whoCanSet: whoCanSet('Channel admin'),
         showWhere: ['Header', 'Sidebar'],
         defaultValueId: 'cav-noforn',
@@ -971,6 +1115,8 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
         inheritMode: 'inherit',
+        defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        postDisplayMode: 'when-overridden',
       },
     ],
     usedByPolicies: 0,
@@ -1068,7 +1214,6 @@ export const ALL_RESOURCES: ResourceKind[] = [
   'Users',
   'Channels',
   'Posts',
-  'Teams',
 ];
 
 export const SOURCE_FILTERS: Array<'All sources' | 'Managed here' | SourceSystem> =
@@ -1102,6 +1247,9 @@ export function defaultResourceConfig(resource: ResourceKind): ResourceConfig {
         required: false,
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Composer'],
+        defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        inheritMode: 'inherit',
+        postDisplayMode: 'when-overridden',
       };
     case 'Teams':
       return {

@@ -1,5 +1,6 @@
 import {
   HUB_ATTRIBUTES,
+  INHERIT_FROM_CHANNEL_VALUE_ID,
   defaultAccessModel,
   defaultResourceConfig,
   isPolicyLocked,
@@ -17,7 +18,7 @@ export const CHANNEL_NAME = 'alpha-coordination';
 
 export const CHANNEL_RESOURCE_LABELS: Partial<Record<ResourceKind, string>> = {
   Channels: 'This channel',
-  Posts: 'Posts in this channel',
+  Posts: 'Posts of this channel',
 };
 
 const APPLIES_TO_COPY =
@@ -159,6 +160,8 @@ const CHANNEL_LOCAL: HubAttribute[] = [
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
         inheritMode: 'inherit',
+        defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        postDisplayMode: 'when-overridden',
       },
     ],
     usedByPolicies: 0,
@@ -192,6 +195,8 @@ const CHANNEL_LOCAL: HubAttribute[] = [
         whoCanSet: whoCanSet('Post author'),
         showWhere: ['Header', 'Composer'],
         inheritMode: 'inherit',
+        defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        postDisplayMode: 'when-overridden',
       },
     ],
     usedByPolicies: 0,

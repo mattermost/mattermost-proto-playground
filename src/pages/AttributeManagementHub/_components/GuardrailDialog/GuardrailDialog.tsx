@@ -10,6 +10,7 @@ export type GuardrailKind =
   | 'values-locked'
   | 'deactivate-blocked'
   | 'delete-blocked'
+  | 'delete-confirm'
   | 'unlink-gated'
   | 'source-stale'
   | 'remove-binding'
@@ -17,11 +18,15 @@ export type GuardrailKind =
 
 export interface GuardrailContext {
   attributeName: string;
+  /** Attribute id for confirm actions that delete or mutate by id. */
+  attributeId?: string;
   /** Linked / mirrored attribute name (unlink gate). */
   linkedName?: string;
   /** Policy names named by the guardrail. */
   policies?: string[];
-  /** Channel-binding count (deactivate gate). */
+  /** How many policies reference this attribute (delete-confirm). */
+  policyCount?: number;
+  /** Channel-binding count (deactivate / delete-confirm). */
   bindingCount?: number;
   /** Existing attribute to link to (duplicate-name gate). */
   existingName?: string;
@@ -92,6 +97,25 @@ function copyFor(kind: GuardrailKind, c: GuardrailContext): GuardrailCopy {
         confirmLabel: undefined,
         primary: undefined,
       };
+    case 'delete-confirm': {
+      const channels = c.bindingCount ?? 0;
+      const policies = c.policyCount ?? c.policies?.length ?? 0;
+      const channelLabel =
+        channels === 1 ? '1 channel' : `${channels.toLocaleString()} channels`;
+      const policyLabel =
+        policies === 1 ? '1 policy' : `${policies.toLocaleString()} policies`;
+      return {
+        title: `Delete ${c.attributeName}?`,
+        tone: 'Danger' as const,
+        noticeTitle: `Applied to ${channelLabel} · referenced by ${policyLabel}`,
+        body:
+          policies > 0
+            ? `Deleting removes this attribute from those channels. Policies that compare it may stop resolving as expected.`
+            : `Deleting removes this attribute and its values from those channels. This can’t be undone in this prototype.`,
+        confirmLabel: 'Delete attribute',
+        primary: undefined,
+      };
+    }
     case 'unlink-gated':
       return {
         title: 'Unlink from the shared scale?',
@@ -113,13 +137,34 @@ function copyFor(kind: GuardrailKind, c: GuardrailContext): GuardrailCopy {
     case 'remove-binding': {
       const resource = c.resource ?? 'this resource';
       const lower = resource.toLowerCase();
-      const hasPolicies = (c.policies?.length ?? 0) > 0;
+      const channels = c.bindingCount;
+      const policies = c.policyCount ?? c.policies?.length ?? 0;
+      const hasPolicies = policies > 0;
+      const isChannels = resource === 'Channels' && channels != null;
+
+      if (isChannels) {
+        const channelLabel =
+          channels === 1 ? '1 channel' : `${channels.toLocaleString()} channels`;
+        const policyLabelText =
+          policies === 1 ? '1 policy' : `${policies.toLocaleString()} policies`;
+        return {
+          title: 'Stop applying to Channels?',
+          tone: 'Danger' as const,
+          noticeTitle: `Applied to ${channelLabel} · referenced by ${policyLabelText}`,
+          body: hasPolicies
+            ? 'Removing Channels stops new assignments and hides the value on those channels. Policies that compare this attribute may stop resolving as expected.'
+            : 'Removing Channels stops new assignments and hides the value on those channels. You can re-add it later.',
+          confirmLabel: 'Remove Channels',
+          primary: undefined,
+        };
+      }
+
       return {
         title: `Stop applying to ${resource}?`,
         tone: hasPolicies ? ('Danger' as const) : ('Warning' as const),
         noticeTitle: hasPolicies
-          ? `${c.attributeName} is used by ${c.policies!.length} ${
-              c.policies!.length === 1 ? 'policy' : 'policies'
+          ? `${c.attributeName} is used by ${policies} ${
+              policies === 1 ? 'policy' : 'policies'
             }`
           : `${c.attributeName} will no longer apply to ${lower}`,
         body: hasPolicies

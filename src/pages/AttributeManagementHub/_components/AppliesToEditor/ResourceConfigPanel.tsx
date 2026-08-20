@@ -1,26 +1,31 @@
 import type { ReactNode } from 'react';
-import { useId } from 'react';
+import { useEffect, useId, useState } from 'react';
 import Select from '@/components/ui/Select/Select';
 import Switch from '@/components/ui/Switch/Switch';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import Radio from '@/components/ui/Radio/Radio';
+import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
 import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
 import {
   assignableValuesForResource,
-  applyDefaultToExistingLabel,
   channelDisplayIncludes,
   defaultValueHint,
   hasInheritanceParent,
+  INHERIT_FROM_CHANNEL_VALUE_ID,
+  INHERIT_LOCKED_TO_CHANNEL_VALUE_ID,
   isChannelDisplayHidden,
+  isInheritFromChannelDefault,
+  isLockedToChannelDefault,
+  postDefaultSelectPatch,
+  postDefaultSelectValue,
   readIntoActive,
   readIntoForced,
   resolveInheritMode,
+  resolvePostDisplayMode,
   supportsChannelBanner,
-  supportsDefaultBackfill,
   takesValueList,
   unmarkedInstanceCount,
-  unmarkedInstanceCountLabel,
   whoCanSetIsEditable,
   type HubAttribute,
   type InheritMode,
@@ -60,6 +65,11 @@ export interface ResourceConfigPanelProps {
    */
   channelAlignment?: boolean;
   /**
+   * Channel Settings scope — copy refers to this channel / posts of this
+   * channel. Global hub (channelAlignment alone) keeps all-channels / all-posts.
+   */
+  channelScope?: boolean;
+  /**
    * "Changing the value" rule for this binding. Rendered after who-can-set on
    * every resource except Users, whose values come from the source system.
    */
@@ -69,6 +79,8 @@ export interface ResourceConfigPanelProps {
    * field. Renders directly ABOVE "Changing the value" (Design Crit 2026-08-10).
    */
   inheritanceSlot?: ReactNode;
+  /** Hide the Who can set the value control entirely. */
+  suppressWhoCanSet?: boolean;
 }
 
 interface FieldProps {
@@ -78,9 +90,10 @@ interface FieldProps {
   layout?: 'default' | 'simplified';
   /** Walkthrough deep-link anchor — see `data-tour-focus` convention. */
   focusId?: string;
+  footer?: ReactNode;
 }
 
-function Field({ label, hint, children, layout = 'default', focusId }: FieldProps) {
+function Field({ label, hint, children, layout = 'default', focusId, footer }: FieldProps) {
   if (layout === 'simplified') {
     return (
       <div
@@ -93,6 +106,7 @@ function Field({ label, hint, children, layout = 'default', focusId }: FieldProp
         <div className={styles['field__control']}>
           {children}
           {hint != null && <div className={styles['field__hint']}>{hint}</div>}
+          {footer}
         </div>
       </div>
     );
@@ -104,7 +118,10 @@ function Field({ label, hint, children, layout = 'default', focusId }: FieldProp
         <span className={styles['field__label']}>{label}</span>
         {hint != null && <div className={styles['field__hint']}>{hint}</div>}
       </div>
-      <div className={styles['field__control']}>{children}</div>
+      <div className={styles['field__control']}>
+        {children}
+        {footer}
+      </div>
     </div>
   );
 }
@@ -344,8 +361,10 @@ export default function ResourceConfigPanel({
   requireDefaultWhenRequired = false,
   managedByPluginName: managedByPluginNameProp,
   channelAlignment = false,
+  channelScope = false,
   valueEditabilitySlot,
   inheritanceSlot,
+  suppressWhoCanSet = false,
 }: ResourceConfigPanelProps) {
   const profileDisplayOptions = userProfileDisplayOptions ?? [
     { key: 'always' as const, label: 'Always show' },
@@ -355,6 +374,14 @@ export default function ResourceConfigPanel({
     whoCanSetHint === null
       ? undefined
       : whoCanSetHint ?? (whoCanSetSlot ? 'Multiple roles can be selected.' : undefined);
+  const postDisplayGroup = useId();
+  const [requiredBlockedCount, setRequiredBlockedCount] = useState<number | null>(
+    null,
+  );
+
+  useEffect(() => {
+    setRequiredBlockedCount(null);
+  }, [attribute.id]);
   const isUsers = config.resource === 'Users';
   const isChannels = config.resource === 'Channels';
   const isPosts = config.resource === 'Posts';
@@ -364,88 +391,130 @@ export default function ResourceConfigPanel({
   const showReadIntoReflection = !isUsers && readIntoActive(attribute);
   const showInheritFromTeam =
     isChannels && hasInheritanceParent(attribute, 'Channels');
-  const showInheritFromChannel =
-    isPosts && hasInheritanceParent(attribute, 'Posts');
   const assignableValues = takesValueList(attribute)
     ? assignableValuesForResource(attribute, config)
     : [];
-  // Required Channels/Posts still need a default (and backfill) even when
-  // who-can-set is locked by inheritance — otherwise Classification hides it.
+  // Required Channels/Posts still need a default even when who-can-set is
+  // locked by inheritance — otherwise Classification hides it.
+  const inheritFromChannel =
+    isPosts &&
+    (isLockedToChannelDefault(config) ||
+      isInheritFromChannelDefault(config.defaultValueId) ||
+      resolveInheritMode(config) === 'inherit');
+  const lockedToChannel = isPosts && isLockedToChannelDefault(config);
   const showDefaultValue =
-    assignableValues.length > 0 &&
-    (whoCanSetIsEditable(attribute, config) ||
-      (config.required && supportsDefaultBackfill(config.resource)));
-  const currentDefaultId = assignableValues.some(
-    (v) => v.id === config.defaultValueId,
-  )
-    ? (config.defaultValueId ?? '')
-    : '';
+    isPosts ||
+    (assignableValues.length > 0 &&
+      (whoCanSetIsEditable(attribute, config) || config.required));
+  const currentDefaultId = isPosts
+    ? (() => {
+        const selected = postDefaultSelectValue(config);
+        if (
+          selected === INHERIT_FROM_CHANNEL_VALUE_ID ||
+          selected === INHERIT_LOCKED_TO_CHANNEL_VALUE_ID
+        ) {
+          return selected;
+        }
+        return assignableValues.some((v) => v.id === selected) ? selected : '';
+      })()
+    : assignableValues.some((v) => v.id === config.defaultValueId)
+      ? (config.defaultValueId ?? '')
+      : '';
   const defaultValueRequired =
     (requireDefaultWhenRequired || channelAlignment) &&
     config.required &&
     showDefaultValue;
   const defaultValueMissing = defaultValueRequired && !currentDefaultId;
-  // Keep Required → Default → backfill together on Channels/Posts.
+  // Keep Required → Default together on Channels/Posts.
   const groupRequiredWithDefault = isChannels || isPosts;
 
-  const requiredHint = channelAlignment
+  const requiredHint = channelScope
     ? isChannels
       ? config.required
         ? 'A value must be set on this channel.'
         : 'Optional — this attribute can still be added to this channel later.'
       : config.required
-        ? `A value must be chosen when a ${config.resource.slice(0, -1).toLowerCase()} is created in this channel. Any that exist without one stay locked, and an admin is notified.`
-        : `Optional — this attribute can still be added to a ${config.resource.slice(0, -1).toLowerCase()} after it is created.`
-    : 'The resource must have a value before it can be created or saved.';
+        ? 'A value must be chosen when a new post is created in this channel. Existing posts are not changed.'
+        : 'Optional — this attribute can still be added to a post after it is created.'
+    : isChannels
+      ? config.required
+        ? 'A value must be chosen when a channel is created.'
+        : 'Optional — this attribute can still be added to a channel after it is created.'
+      : isPosts
+        ? config.required
+          ? 'A value must be chosen when a new post is created. Existing posts are not changed.'
+          : 'Optional — this attribute can still be added to a post after it is created.'
+        : 'The resource must have a value before it can be created or saved.';
+
+  const attributeLabel = attribute.displayName?.trim() || attribute.name;
+  const requiredBlockedNotice =
+    isChannels &&
+    !channelScope &&
+    requiredBlockedCount != null &&
+    requiredBlockedCount > 0 ? (
+      <div className={styles['field__notice']}>
+        <SectionNotice
+          type="Warning"
+          title="Set channel values first"
+          description={`${requiredBlockedCount.toLocaleString()} ${
+            requiredBlockedCount === 1 ? 'channel doesn’t' : 'channels don’t'
+          } have a ${attributeLabel} value yet. Set a value on every existing channel before turning Required on.`}
+        />
+      </div>
+    ) : null;
 
   const requiredField = !isUsers ? (
     <Field
       layout={layout}
-      label="Required"
+      label={isPosts ? 'Required for new posts' : 'Required'}
       hint={requiredHint}
       focusId={`${config.resource.toLowerCase()}-required`}
+      footer={requiredBlockedNotice}
     >
       <Switch
         size="Small"
         checked={config.required}
-        onChange={(e) =>
+        onChange={(e) => {
+          const next = e.target.checked;
+          if (isChannels && !channelScope && next) {
+            const count = unmarkedInstanceCount(attribute.id, 'Channels');
+            if (count > 0) {
+              setRequiredBlockedCount(count);
+              return;
+            }
+          }
+          setRequiredBlockedCount(null);
           onChange({
-            required: e.target.checked,
-            ...(e.target.checked ? {} : { applyDefaultToExisting: false }),
-          })
-        }
+            required: next,
+            ...(next ? {} : { applyDefaultToExisting: false }),
+          });
+        }}
       >
         {config.required ? 'On' : 'Off'}
       </Switch>
     </Field>
   ) : null;
 
-  // Channel settings configure a single channel — backfilling "existing
-  // channels" does not apply. Posts-in-this-channel can still backfill.
-  const showDefaultBackfill =
-    supportsDefaultBackfill(config.resource) &&
-    config.required &&
-    assignableValues.length > 0 &&
-    !(channelAlignment && isChannels);
-  const unmarkedCount = showDefaultBackfill
-    ? unmarkedInstanceCount(attribute.id, config.resource)
-    : 0;
-  const backfillEnabled = Boolean(currentDefaultId);
-  const resourceNoun = config.resource.toLowerCase();
+  const defaultValueHintText = lockedToChannel
+    ? 'Posts always use this channel’s value. Authors cannot set a different one.'
+    : inheritFromChannel
+      ? 'New posts use this channel’s value unless the author sets one. Existing posts are not changed.'
+      : channelScope && isChannels
+        ? 'Used when this channel has no value set.'
+        : isPosts
+          ? 'Applies to newly created posts only. Existing posts are not changed.'
+          : isChannels
+            ? 'Applies to newly created channels only. Existing channels must be set manually.'
+            : defaultValueHint(config.resource);
+
+  const showPostInheritOptions =
+    isPosts && hasInheritanceParent(attribute, 'Posts');
 
   const defaultValueField = showDefaultValue ? (
     <Field
       layout={layout}
       label="Default value"
-      hint={
-        channelAlignment && isChannels
-          ? 'Used when this channel has no value set.'
-          : showDefaultBackfill
-            ? channelAlignment && isPosts
-              ? 'Applies to newly created posts in this channel only.'
-              : `Applies to newly created ${resourceNoun} only.`
-            : defaultValueHint(config.resource)
-      }
+      hint={defaultValueHintText}
       focusId={`${config.resource.toLowerCase()}-default-value`}
     >
       <div className={styles['control-slot']}>
@@ -458,12 +527,17 @@ export default function ResourceConfigPanel({
           aria-label="Default value"
           aria-required={defaultValueRequired || undefined}
           onChange={(e) =>
-            onChange({
-              defaultValueId: e.target.value === '' ? null : e.target.value,
-              ...(e.target.value === ''
-                ? { applyDefaultToExisting: false }
-                : {}),
-            })
+            onChange(
+              isPosts
+                ? postDefaultSelectPatch(e.target.value)
+                : {
+                    defaultValueId:
+                      e.target.value === '' ? null : e.target.value,
+                    ...(e.target.value === ''
+                      ? { applyDefaultToExisting: false }
+                      : {}),
+                  },
+            )
           }
         >
           {!defaultValueRequired && <option value="">None</option>}
@@ -472,13 +546,37 @@ export default function ResourceConfigPanel({
               Select a value…
             </option>
           )}
-          {assignableValues.map((value) => (
-            <option key={value.id} value={value.id}>
-              {value.tier != null
-                ? `${value.label} (Tier ${value.tier})`
-                : value.label}
-            </option>
-          ))}
+          {showPostInheritOptions && (
+            <optgroup label="From the channel">
+              <option value={INHERIT_FROM_CHANNEL_VALUE_ID}>
+                Inherit from channel
+              </option>
+              <option value={INHERIT_LOCKED_TO_CHANNEL_VALUE_ID}>
+                Locked to channel
+              </option>
+            </optgroup>
+          )}
+          {assignableValues.length > 0 ? (
+            showPostInheritOptions ? (
+              <optgroup label="Fixed value">
+                {assignableValues.map((value) => (
+                  <option key={value.id} value={value.id}>
+                    {value.tier != null
+                      ? `${value.label} (Tier ${value.tier})`
+                      : value.label}
+                  </option>
+                ))}
+              </optgroup>
+            ) : (
+              assignableValues.map((value) => (
+                <option key={value.id} value={value.id}>
+                  {value.tier != null
+                    ? `${value.label} (Tier ${value.tier})`
+                    : value.label}
+                </option>
+              ))
+            )
+          ) : null}
         </Select>
         {defaultValueMissing && (
           <p className={styles['field__error']}>
@@ -489,42 +587,45 @@ export default function ResourceConfigPanel({
     </Field>
   ) : null;
 
-  const backfillField = showDefaultBackfill ? (
+  const postDisplayMode = resolvePostDisplayMode(config);
+  const postDisplayField = isPosts ? (
     <Field
       layout={layout}
-      label={
-        isChannels
-          ? 'Existing channels'
-          : channelAlignment
-            ? 'Existing posts in this channel'
-            : 'Existing posts'
-      }
-      hint={unmarkedInstanceCountLabel(
-        unmarkedCount,
-        config.resource,
-        attribute.displayName?.trim() || attribute.name,
-      )}
-      focusId={`${config.resource.toLowerCase()}-apply-existing`}
+      label="Display"
+      hint="Always show surfaces this attribute on every post, even when it matches the channel. Show when overridden only appears when the post sets a different value."
+      focusId="posts-display-mode"
     >
-      <div className={styles['control-slot']}>
-        <Checkbox
+      <div
+        className={styles['value-visibility']}
+        role="radiogroup"
+        aria-label="Post display"
+      >
+        <Radio
+          className={styles['value-visibility__radio']}
+          name={postDisplayGroup}
+          value="always"
           size="Medium"
-          checked={Boolean(config.applyDefaultToExisting)}
-          disabled={!backfillEnabled}
-          onChange={(e) =>
-            onChange({ applyDefaultToExisting: e.target.checked })
-          }
+          checked={postDisplayMode === 'always'}
+          onChange={() => onChange({ postDisplayMode: 'always' })}
         >
-          {channelAlignment && isPosts
-            ? 'Apply to previously created posts in this channel'
-            : applyDefaultToExistingLabel(config.resource)}
-        </Checkbox>
+          Always show
+        </Radio>
+        <Radio
+          className={styles['value-visibility__radio']}
+          name={postDisplayGroup}
+          value="when-overridden"
+          size="Medium"
+          checked={postDisplayMode === 'when-overridden'}
+          onChange={() => onChange({ postDisplayMode: 'when-overridden' })}
+        >
+          Show when overridden
+        </Radio>
       </div>
     </Field>
   ) : null;
 
   const whoCanSetField =
-    whoCanSetSlot != null ? (
+    suppressWhoCanSet ? null : whoCanSetSlot != null ? (
       <Field
         layout={layout}
         label="Who can set the value"
@@ -556,7 +657,7 @@ export default function ResourceConfigPanel({
         <>
           {requiredField}
           {defaultValueField}
-          {backfillField}
+          {postDisplayField}
         </>
       )}
 
@@ -668,19 +769,7 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {showInheritFromChannel && !suppressInheritance && !inheritanceSlot && (
-        <InheritFromParentField
-          parentLabel="channel"
-          parentKind="channel"
-          mode={resolveInheritMode(config)}
-          layout={layout}
-          onChange={(next) =>
-            onChange({ inheritMode: next, inheritToChild: undefined })
-          }
-        />
-      )}
-
-      {inheritanceSlot && !isUsers && (
+      {inheritanceSlot && !isUsers && !isPosts && (
         <Field
           layout={layout}
           label={`Inherit from ${
@@ -705,7 +794,6 @@ export default function ResourceConfigPanel({
       )}
 
       {!groupRequiredWithDefault && defaultValueField}
-      {!groupRequiredWithDefault && backfillField}
     </div>
   );
 }

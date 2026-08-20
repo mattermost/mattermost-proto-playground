@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import ResourceConfigPanel from '@/pages/AttributeManagementHub/_components/AppliesToEditor/ResourceConfigPanel';
 import Select from '@/components/ui/Select/Select';
-import SimplifiedWhoCanSetEditor from './SimplifiedWhoCanSetEditor';
 import SimplifiedResourceAdvanced from './SimplifiedResourceAdvanced';
 import {
   hasInheritanceParent,
+  resolveInheritMode,
   type HubAttribute,
   type ResourceConfig,
 } from '@/pages/AttributeManagementHub/hubData';
@@ -36,6 +36,11 @@ export interface ResourceEditorBodyProps {
   onReadIntoFilteringChange: (value: boolean) => void;
   /** Channel-attributes alignment (walkthrough 2026-08-06). */
   channelAlignment?: boolean;
+  /**
+   * Channel Settings scope — Applies-to labels/copy refer to this channel.
+   * Global hub keeps Channels / Posts (all channels / all posts).
+   */
+  channelScope?: boolean;
   /** Show the "Changing the value" rule on this binding instead of on the attribute. */
   perResourceEditability?: boolean;
 }
@@ -55,6 +60,7 @@ export default function ResourceEditorBody({
   onAddResourceValue,
   onReadIntoFilteringChange,
   channelAlignment = false,
+  channelScope = false,
   perResourceEditability = false,
 }: ResourceEditorBodyProps) {
   const type = displayType(attribute);
@@ -69,11 +75,15 @@ export default function ResourceEditorBody({
     getResourceEditability(attribute, config.resource),
   );
 
-  // A value pinned to its parent has nothing left to decide about changing it.
-  const lockedToParent = hasParent && inheritance === 'locked';
+  const isPosts = config.resource === 'Posts';
+  const lockedToParent =
+    hasParent &&
+    (isPosts
+      ? resolveInheritMode(config) === 'inherit-lock'
+      : inheritance === 'locked');
 
   const inheritanceSlot =
-    channelAlignment && hasParent ? (
+    channelAlignment && hasParent && !isPosts ? (
       <Select
         size="Medium"
         width="fit"
@@ -141,18 +151,13 @@ export default function ResourceEditorBody({
         onReadIntoFilteringChange={onReadIntoFilteringChange}
         layout="simplified"
         channelAlignment={channelAlignment}
+        channelScope={channelScope}
         adjacentRequiredAndDefault
         requireDefaultWhenRequired
         inheritanceSlot={inheritanceSlot}
         valueEditabilitySlot={editabilitySlot}
         suppressInheritance
-        whoCanSetSlot={
-          <SimplifiedWhoCanSetEditor
-            attribute={attribute}
-            config={config}
-            onChange={onChange}
-          />
-        }
+        suppressWhoCanSet
       />
 
       {!channelAlignment && (

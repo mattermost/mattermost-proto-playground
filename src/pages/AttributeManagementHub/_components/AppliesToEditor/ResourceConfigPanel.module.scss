@@ -20,9 +20,40 @@
     border-bottom: 0;
   }
 
+  &__error {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: var(--error-text);
+    line-height: 1.4;
+  }
+
+  &__link {
+    appearance: none;
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: inherit;
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &__notice {
+    width: 100%;
+    max-width: 600px;
+    margin-top: var(--spacing-s);
+  }
+
   // Explicit two-column row — avoid display:contents (misaligns controls).
   &--simplified {
-    grid-template-columns: 176px minmax(0, 1fr);
+    grid-template-columns: 220px minmax(0, 1fr);
     gap: 0;
     column-gap: var(--spacing-m);
     align-items: start;
@@ -77,11 +108,35 @@
       line-height: 1.4;
     }
 
+    .field__notice {
+      width: 100%;
+      max-width: 600px;
+      margin-top: var(--spacing-xs);
+    }
+
     .field__error {
       margin: 0;
       font-size: var(--font-size-75);
       color: var(--error-text);
       line-height: 1.4;
+    }
+
+    .field__link {
+      appearance: none;
+      display: inline;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: inherit;
+      color: var(--link-color);
+      cursor: pointer;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
     }
 
     .default-value-select,

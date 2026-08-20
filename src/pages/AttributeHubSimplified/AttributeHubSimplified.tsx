@@ -16,6 +16,7 @@ import {
 } from '@/pages/AttributeManagementHub/hubSidebar';
 import {
   HUB_ATTRIBUTES,
+  appliedChannelCount,
   defaultAccessModel,
   defaultResourceConfig,
   eligibility,
@@ -521,24 +522,35 @@ export default function AttributeHubSimplified({
   };
 
   const removeResource = (resource: ResourceKind) => {
-    if (draft) {
-      mutate((a) => ({
-        ...a,
-        appliesTo: a.appliesTo.filter((c) => c.resource !== resource),
-      }));
-      return;
-    }
+    const attr = draft ?? active;
+    if (!attr) return;
     setGuardrail({
       kind: 'remove-binding',
       context: {
-        attributeName: active?.name ?? '',
+        attributeName: attr.name || 'This attribute',
         resource,
-        policies: active && isPolicyLocked(active) ? active.policyNames : [],
+        bindingCount:
+          resource === 'Channels'
+            ? selectedId
+              ? appliedChannelCount(attr.id)
+              : 0
+            : undefined,
+        policyCount: attr.usedByPolicies,
+        policies: attr.policyNames,
       },
     });
   };
 
   const activeValueLink = active ? resolveValueLink(active) : null;
+
+  const performDelete = (id: string) => {
+    setAttributes((prev) => prev.filter((x) => x.id !== id));
+    if (selectedId === id) {
+      setSelectedId(null);
+      setDraft(null);
+      setSavedSnapshot('');
+    }
+  };
 
   const confirmGuardrail = () => {
     if (guardrail?.kind === 'remove-binding') {
@@ -553,9 +565,6 @@ export default function AttributeHubSimplified({
     if (guardrail?.kind === 'unlink-gated' && active) {
       mutate((a) => ({ ...a, valuesLink: undefined }));
       setValueLinkConfig(active.id, null);
-    }
-    if (guardrail?.kind === 'delete-blocked') {
-      // no-op — informational block
     }
     setGuardrail(null);
   };
@@ -710,12 +719,7 @@ export default function AttributeHubSimplified({
       });
       return;
     }
-    setAttributes((prev) => prev.filter((x) => x.id !== id));
-    if (selectedId === id) {
-      setSelectedId(null);
-      setDraft(null);
-      setSavedSnapshot('');
-    }
+    performDelete(id);
   };
 
   const reorderAttributes = (activeId: string, overId: string) => {
@@ -771,7 +775,7 @@ export default function AttributeHubSimplified({
                   : 'Not yet usable in policies — add values and a resource.'
                 : draft
                   ? subtitle(draft)
-                  : 'Create attributes once and configure where they apply across users, channels, posts, and teams.'
+                  : 'Create attributes once and configure where they apply across users, channels, and posts.'
           }
           backButton={!!draft || !!markingsAttr}
           onBack={() => {

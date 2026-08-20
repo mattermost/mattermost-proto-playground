@@ -38,6 +38,7 @@ function BindingPanel({
         config={config}
         onChange={(next) => onChange(config.resource, next)}
         onReadIntoFilteringChange={onReadIntoFilteringChange}
+        suppressWhoCanSet
       />
       <ResourceValuesPanel
         attribute={attribute}

@@ -512,6 +512,8 @@ export default function ChannelAttributesWorkspace({
             valueLink={resolveValueLink(active)}
             creating={creating}
             channelAlignment
+            channelScope
+            perResourceEditability
             onDefinitionChange={(next) => mutate((a) => ({ ...a, ...next }))}
             onAddValue={addValue}
             onAddChild={addChild}

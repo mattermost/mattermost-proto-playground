@@ -9,7 +9,7 @@ import { resourceIcon } from '@/pages/AttributeManagementHub/resourceIcons';
 import type { HubAttribute, ResourceConfig, ResourceKind } from '@/pages/AttributeManagementHub/hubData';
 import AddResourceMenu from '@/pages/AttributeManagementHub/_components/AppliesToEditor/AddResourceMenu';
 import ResourceEditorBody from './ResourceEditorBody';
-import { summaryChips, summaryLine, resourceDisplayName, channelAlignedResourceLabels } from './appliesToModel';
+import { summaryChips, summaryLine, resourceDisplayName, channelScopedResourceLabels } from './appliesToModel';
 import styles from './AppliesToSection.module.scss';
 
 export type AppliesToRowSummaryVariant = 'chips' | 'inline';
@@ -25,6 +25,11 @@ export interface AppliesToSectionProps {
   rowSummaryVariant?: AppliesToRowSummaryVariant;
   /** Channel-attributes alignment (walkthrough 2026-08-06). */
   channelAlignment?: boolean;
+  /**
+   * Channel Settings scope — labels/copy refer to this channel and its posts.
+   * Global hub keeps Channels / Posts (all channels / all posts).
+   */
+  channelScope?: boolean;
   /** Show the "Changing the value" rule on each binding instead of on the attribute. */
   perResourceEditability?: boolean;
 }
@@ -42,15 +47,18 @@ export default function AppliesToSection({
   onRemoveResource,
   rowSummaryVariant = 'chips',
   channelAlignment = false,
+  channelScope = false,
   perResourceEditability = false,
 }: AppliesToSectionProps) {
-  const applied = attribute.appliesTo;
+  const applied = attribute.appliesTo.filter(
+    (binding) => binding.resource !== 'Teams',
+  );
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [highlighted, setHighlighted] = useState<ResourceKind | null>(null);
   const rowRefs = useRef<Partial<Record<ResourceKind, HTMLDivElement>>>({});
 
-  // Required channel/post bindings open by default so Required + default +
-  // backfill are visible without an extra click (e.g. Classification → Channels).
+  // Required channel/post bindings open by default so Required + default
+  // are visible without an extra click (e.g. Classification → Channels).
   useEffect(() => {
     const next: Record<string, boolean> = {};
     for (const cfg of attribute.appliesTo) {
@@ -88,12 +96,13 @@ export default function AppliesToSection({
   }, [highlighted]);
 
   const appliedResources = applied.map((c) => c.resource);
-  const addMenuLabels = channelAlignment
-    ? channelAlignedResourceLabels()
+  const addMenuLabels = channelScope
+    ? channelScopedResourceLabels()
     : undefined;
-  const addMenuAllowed = channelAlignment
-    ? (['Channels', 'Posts'] as ResourceKind[])
-    : undefined;
+  const addMenuAllowed =
+    channelAlignment || channelScope
+      ? (['Channels', 'Posts'] as ResourceKind[])
+      : undefined;
 
   return (
     <div className={styles['applies']}>
@@ -102,9 +111,9 @@ export default function AppliesToSection({
           <EmptyState
             title="No resources yet"
             description={
-              channelAlignment
+              channelScope
                 ? 'Add a resource to apply this attribute to this channel or posts within it.'
-                : 'Add a resource to apply this attribute to users, channels, posts, or teams.'
+                : 'Add a resource to apply this attribute to users, channels, or posts.'
             }
           />
           <div className={[styles['applies__footer'], styles['applies__footer--center']].join(' ')}>
@@ -172,7 +181,7 @@ export default function AppliesToSection({
                     >
                       <span className={styles['row__name']}>
                         {resourceIcon(cfg.resource)}
-                        {resourceDisplayName(cfg.resource, channelAlignment)}
+                        {resourceDisplayName(cfg.resource, channelScope)}
                       </span>
                       {rowSummaryVariant === 'chips' ? (
                         <span className={styles['row__chips']}>
@@ -228,6 +237,7 @@ export default function AppliesToSection({
                         }
                         onReadIntoFilteringChange={onReadIntoFilteringChange}
                         channelAlignment={channelAlignment}
+                        channelScope={channelScope}
                         perResourceEditability={perResourceEditability}
                       />
                     )}

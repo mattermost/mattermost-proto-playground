@@ -4,9 +4,12 @@ import {
   defaultResourceConfig,
   hasInheritanceParent,
   inheritanceParentKind,
+  isInheritFromChannelDefault,
+  isLockedToChannelDefault,
   postDisplayLabel,
   readIntoActive,
   resolveInheritMode,
+  resolvePostDisplayMode,
   takesValueList,
   whoCanSetIsEditable,
   type HubAttribute,
@@ -29,23 +32,24 @@ export const RELATIONAL_DEFAULTS: Record<ResourceKind, WhoSets[]> = {
   Posts: ['Post author', 'Channel admin', 'System admin'],
 };
 
-/** Channel-settings scope — this channel and posts within it. */
+/** Channel Settings scope — this channel and posts within it. */
 export function resourceDisplayName(
   resource: ResourceKind,
-  channelAlignment = false,
+  channelScope = false,
 ): string {
-  if (!channelAlignment) return resource;
+  if (!channelScope) return resource;
   if (resource === 'Channels') return 'This channel';
-  if (resource === 'Posts') return 'Posts in this channel';
+  if (resource === 'Posts') return 'Posts of this channel';
   return resource;
 }
 
-export function channelAlignedResourceLabels(): Partial<
+/** Labels for Channel Settings Applies-to (not the global attribute hub). */
+export function channelScopedResourceLabels(): Partial<
   Record<ResourceKind, string>
 > {
   return {
     Channels: 'This channel',
-    Posts: 'Posts in this channel',
+    Posts: 'Posts of this channel',
   };
 }
 
@@ -76,6 +80,41 @@ function postDisplaySummary(cfg: ResourceConfig): string {
 function inheritanceChipLabel(cfg: ResourceConfig): string | null {
   const summary = ceilingSummaryLabel(resolveCeiling(cfg));
   return summary ? `Inheritance: ${summary}` : null;
+}
+
+function defaultValueChip(
+  attribute: HubAttribute,
+  cfg: ResourceConfig,
+): string | null {
+  if (cfg.resource === 'Posts') {
+    if (isLockedToChannelDefault(cfg)) {
+      return 'Default: Locked to channel';
+    }
+    if (
+      resolveInheritMode(cfg) === 'inherit' ||
+      isInheritFromChannelDefault(cfg.defaultValueId)
+    ) {
+      return 'Default: Inherit from channel';
+    }
+  }
+  if (
+    cfg.defaultValueId &&
+    whoCanSetIsEditable(attribute, cfg) &&
+    assignableValuesForResource(attribute, cfg).some(
+      (v) => v.id === cfg.defaultValueId,
+    )
+  ) {
+    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
+    return value ? `Default: ${value.label}` : null;
+  }
+  return null;
+}
+
+function postDisplayModeChip(cfg: ResourceConfig): string | null {
+  if (cfg.resource !== 'Posts') return null;
+  return resolvePostDisplayMode(cfg) === 'always'
+    ? 'Display: Always show'
+    : 'Display: Show when overridden';
 }
 
 /** All roles currently allowed to set the value on this resource. */
@@ -147,7 +186,11 @@ export function summaryChips(
   aligned = false,
 ): string[] {
   const chips: string[] = [
-    cfg.required ? 'Requirement: Required' : 'Requirement: Optional',
+    cfg.required
+      ? cfg.resource === 'Posts'
+        ? 'Requirement: Required for new posts'
+        : 'Requirement: Required'
+      : 'Requirement: Optional',
   ];
 
   if (cfg.resource === 'Users') {
@@ -175,20 +218,9 @@ export function summaryChips(
   }
 
   if (cfg.resource === 'Posts') {
+    const modeChip = postDisplayModeChip(cfg);
+    if (modeChip) chips.push(modeChip);
     if (!aligned) chips.push(postDisplaySummary(cfg));
-    if (hasInheritanceParent(attribute, 'Posts')) {
-      const label = inheritanceChipLabel(cfg);
-      if (label) chips.push(label);
-    }
-  }
-
-  const setters = selectedSetters(cfg);
-  if (setters.length === 1) {
-    chips.push(`Who sets: ${setters[0]}`);
-  } else if (setters.length > 1) {
-    chips.push(`Who sets: ${setters.length} roles`);
-  } else if (cfg.required) {
-    chips.push('Who sets: None selected');
   }
 
   if (
@@ -204,28 +236,8 @@ export function summaryChips(
     );
   }
 
-  if (
-    cfg.defaultValueId &&
-    whoCanSetIsEditable(attribute, cfg) &&
-    assignableValuesForResource(attribute, cfg).some(
-      (v) => v.id === cfg.defaultValueId,
-    )
-  ) {
-    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
-    if (value) {
-      chips.push(`Default: ${value.label}`);
-    }
-  }
-  if (
-    cfg.applyDefaultToExisting &&
-    (cfg.resource === 'Channels' || cfg.resource === 'Posts')
-  ) {
-    chips.push(
-      cfg.resource === 'Channels'
-        ? 'Apply to existing channels'
-        : 'Apply to existing posts',
-    );
-  }
+  const defaultChip = defaultValueChip(attribute, cfg);
+  if (defaultChip) chips.push(defaultChip);
 
   return chips;
 }
@@ -240,7 +252,11 @@ export function summaryLine(
   aligned = false,
 ): string {
   const segments: string[] = [
-    cfg.required ? 'Required' : 'Optional',
+    cfg.required
+      ? cfg.resource === 'Posts'
+        ? 'Required for new posts'
+        : 'Required'
+      : 'Optional',
   ];
 
   if (cfg.resource === 'Users') {
@@ -270,6 +286,8 @@ export function summaryLine(
   }
 
   if (cfg.resource === 'Posts') {
+    const modeChip = postDisplayModeChip(cfg);
+    if (modeChip) segments.push(modeChip);
     if (!aligned) {
       const shown = (cfg.showWhere ?? [])
         .filter((loc) => loc !== 'Hidden')
@@ -280,19 +298,6 @@ export function summaryLine(
           : `Display: ${shown.join(' + ')}`,
       );
     }
-    if (hasInheritanceParent(attribute, 'Posts')) {
-      const label = ceilingSummaryLabel(resolveCeiling(cfg));
-      if (label) segments.push(label);
-    }
-  }
-
-  const setters = selectedSetters(cfg);
-  if (setters.length === 1) {
-    segments.push(`Set by ${setters[0]}`);
-  } else if (setters.length > 1) {
-    segments.push(`Set by ${setters.length} roles`);
-  } else if (cfg.required) {
-    segments.push('Set by: none');
   }
 
   if (
@@ -308,28 +313,8 @@ export function summaryLine(
     );
   }
 
-  if (
-    cfg.defaultValueId &&
-    whoCanSetIsEditable(attribute, cfg) &&
-    assignableValuesForResource(attribute, cfg).some(
-      (v) => v.id === cfg.defaultValueId,
-    )
-  ) {
-    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
-    if (value) {
-      segments.push(`Default: ${value.label}`);
-    }
-  }
-  if (
-    cfg.applyDefaultToExisting &&
-    (cfg.resource === 'Channels' || cfg.resource === 'Posts')
-  ) {
-    segments.push(
-      cfg.resource === 'Channels'
-        ? 'Apply to existing channels'
-        : 'Apply to existing posts',
-    );
-  }
+  const defaultChip = defaultValueChip(attribute, cfg);
+  if (defaultChip) segments.push(defaultChip);
 
   return segments.join(' · ');
 }
@@ -351,7 +336,10 @@ export function deviationsFor(
   const out: Deviation[] = [];
 
   if (cfg.required && !base.required) {
-    out.push({ field: 'required', label: 'Required' });
+    out.push({
+      field: 'required',
+      label: cfg.resource === 'Posts' ? 'Required for new posts' : 'Required',
+    });
   }
 
   // Display — Channels / Posts.
@@ -371,6 +359,15 @@ export function deviationsFor(
   }
 
   if (cfg.resource === 'Posts') {
+    const mode = resolvePostDisplayMode(cfg);
+    const defMode = resolvePostDisplayMode(base);
+    if (mode !== defMode) {
+      out.push({
+        field: 'post-display',
+        label:
+          mode === 'always' ? 'Always show' : 'Show when overridden',
+      });
+    }
     const cur = (cfg.showWhere ?? [])
       .filter((l) => l !== 'Hidden')
       .sort()
@@ -396,31 +393,6 @@ export function deviationsFor(
   ) {
     out.push({ field: 'inheritance', label: ceiling });
   }
-  if (
-    cfg.resource === 'Posts' &&
-    hasInheritanceParent(attribute, 'Posts') &&
-    ceiling
-  ) {
-    out.push({ field: 'inheritance', label: ceiling });
-  }
-
-  // Who can set — deviates from the default single setter.
-  const selected = selectedSetters(cfg);
-  const baseSelected = selectedSetters(base);
-  if (
-    selected.length !== baseSelected.length ||
-    [...selected].sort().join('|') !== [...baseSelected].sort().join('|')
-  ) {
-    out.push({
-      field: 'setter',
-      label:
-        selected.length === 0
-          ? 'No setters'
-          : selected.length === 1
-            ? `Set by ${selected[0]}`
-            : `Set by ${selected.length} roles`,
-    });
-  }
 
   // Allowed values — a subset was disabled.
   const disabled = cfg.disabledValueIds ?? [];
@@ -432,17 +404,9 @@ export function deviationsFor(
     });
   }
 
-  if (
-    cfg.defaultValueId &&
-    whoCanSetIsEditable(attribute, cfg) &&
-    assignableValuesForResource(attribute, cfg).some(
-      (v) => v.id === cfg.defaultValueId,
-    )
-  ) {
-    const value = attribute.values.find((v) => v.id === cfg.defaultValueId);
-    if (value) {
-      out.push({ field: 'default', label: `Default: ${value.label}` });
-    }
+  const defaultChip = defaultValueChip(attribute, cfg);
+  if (defaultChip && cfg.defaultValueId !== base.defaultValueId) {
+    out.push({ field: 'default', label: defaultChip });
   }
 
   return out;

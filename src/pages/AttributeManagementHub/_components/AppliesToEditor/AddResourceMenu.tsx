@@ -16,7 +16,7 @@ export interface AddResourceMenuProps {
   emphasis?: 'Primary' | 'Secondary' | 'Tertiary';
   size?: 'Small' | 'Medium';
   align?: FixedPopoverAlign;
-  /** Optional display labels (e.g. channel-scoped "Posts in this channel"). */
+  /** Optional display labels (e.g. channel-scoped "Posts of this channel"). */
   resourceLabels?: Partial<Record<ResourceKind, string>>;
   /** Limit which resources can be added. Defaults to all. */
   allowedResources?: ResourceKind[];
