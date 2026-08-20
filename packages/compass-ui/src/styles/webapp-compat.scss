@@ -1,6 +1,5 @@
 // Standalone bridge: expose Compass tokens under Mattermost webapp unthemed
 // neutral names so always-dark components can use --neutral-* everywhere.
-//
 // Defined in a cascade layer so host apps (webapp) that set the same names
 // unlayered always win regardless of stylesheet order. Storybook/playground
 // have no host --neutral-*, so this layer supplies them from tokens.
