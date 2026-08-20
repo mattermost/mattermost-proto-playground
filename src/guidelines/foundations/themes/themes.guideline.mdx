@@ -123,7 +123,9 @@ The primary call-to-action pair.
 
 ### Interactions
 
-Inline UI states that need to read clearly across themes.
+Inline UI states that need to read clearly across themes. Error text also
+feeds `--color-danger` so notices, destructive controls, and validation
+stay aligned with the active theme.
 
 <SwatchGrid size="medium">
   <Swatch token="link-color" label="Link" size="medium" />
@@ -137,6 +139,8 @@ Inline UI states that need to read clearly across themes.
 ### Status
 
 Presence indicators. Kept consistent across themes for recognizability.
+`StatusBadge` and other presence chrome use these tokens (not semantic
+success/warning/danger).
 
 <SwatchGrid size="medium">
   <Swatch token="online-indicator" label="Online" size="medium" />
