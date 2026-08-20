@@ -208,24 +208,12 @@
     color: var(--button-color);
 
     &:hover:not(:disabled):not(:active) {
-      background:
-        linear-gradient(
-          0deg,
-          rgba(var(--color-neutral-1100-rgb), 0.08) 0%,
-          rgba(var(--color-neutral-1100-rgb), 0.08) 100%
-        ),
-        var(--button-bg);
+      background-color: color-mix(in srgb, black 8%, var(--button-bg));
       color: var(--button-color);
     }
 
     &:active:not(:disabled) {
-      background:
-        linear-gradient(
-          0deg,
-          rgba(var(--color-neutral-1100-rgb), 0.16) 0%,
-          rgba(var(--color-neutral-1100-rgb), 0.16) 100%
-        ),
-        var(--button-bg);
+      background-color: color-mix(in srgb, black 16%, var(--button-bg));
       color: var(--button-color);
     }
 

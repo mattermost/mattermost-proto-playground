@@ -5,7 +5,7 @@
   width: fit-content;
   max-width: 440px;
   padding: var(--spacing-xxxs);
-  background-color: var(--color-neutral-900);
+  background-color: var(--neutral-900);
   border-radius: var(--radius-s);
   box-shadow: var(--elevation-2);
 
@@ -22,7 +22,7 @@
     display: inline-flex;
     align-items: center;
     flex-shrink: 0;
-    color: var(--color-neutral-0);
+    color: var(--neutral-0);
   }
 
   &__message {
@@ -31,7 +31,7 @@
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-100);
-    color: var(--color-neutral-0);
+    color: var(--neutral-0);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -39,47 +39,47 @@
 
   &__action-btn--on-dark {
     flex-shrink: 0;
-    background-color: rgba(var(--color-neutral-0-rgb), 0.08) !important;
-    color: var(--color-neutral-0) !important;
+    background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent) !important;
+    color: var(--neutral-0) !important;
     border-color: transparent !important;
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.12) !important;
-      color: var(--color-neutral-0) !important;
+      background-color: color-mix(in srgb, var(--neutral-0) 12%, transparent) !important;
+      color: var(--neutral-0) !important;
     }
 
     &:active:not(:disabled) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.16) !important;
-      color: var(--color-neutral-0) !important;
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent) !important;
+      color: var(--neutral-0) !important;
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 2px rgba(var(--color-neutral-0-rgb), 0.56) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--neutral-0) 56%, transparent) !important;
     }
 
     &:disabled {
-      color: rgba(var(--color-neutral-0-rgb), 0.4) !important;
-      background-color: rgba(var(--color-neutral-0-rgb), 0.06) !important;
+      color: color-mix(in srgb, var(--neutral-0) 40%, transparent) !important;
+      background-color: color-mix(in srgb, var(--neutral-0) 6%, transparent) !important;
     }
   }
 
   &__dismiss {
     flex-shrink: 0;
-    color: rgba(var(--color-neutral-0-rgb), 0.92) !important;
+    color: color-mix(in srgb, var(--neutral-0) 92%, transparent) !important;
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.12) !important;
-      color: var(--color-neutral-0) !important;
+      background-color: color-mix(in srgb, var(--neutral-0) 12%, transparent) !important;
+      color: var(--neutral-0) !important;
     }
 
     &:active:not(:disabled) {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.2) !important;
-      color: var(--color-neutral-0) !important;
+      background-color: color-mix(in srgb, var(--neutral-0) 20%, transparent) !important;
+      color: var(--neutral-0) !important;
     }
 
     &:focus-visible {
       outline: none !important;
-      box-shadow: 0 0 0 2px rgba(var(--color-neutral-0-rgb), 0.56) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--neutral-0) 56%, transparent) !important;
     }
   }
 

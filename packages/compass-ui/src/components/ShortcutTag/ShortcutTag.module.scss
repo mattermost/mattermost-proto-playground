@@ -34,8 +34,8 @@
     }
 
     &--location-tooltips {
-      background-color: rgba(var(--color-neutral-0-rgb), 0.08);
-      color: rgba(var(--color-neutral-0-rgb), 0.72);
+      background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
+      color: color-mix(in srgb, var(--neutral-0) 72%, transparent);
     }
   }
 }

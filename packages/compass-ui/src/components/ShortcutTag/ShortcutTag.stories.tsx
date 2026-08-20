@@ -19,7 +19,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function Row({ children, label }: { children: ReactNode; label: string }) {
+function Row({
+  children,
+  label,
+  onDark,
+}: {
+  children: ReactNode;
+  label: string;
+  onDark?: boolean;
+}) {
   return (
     <div
       style={{
@@ -33,7 +41,9 @@ function Row({ children, label }: { children: ReactNode; label: string }) {
         style={{
           width: 112,
           fontSize: 12,
-          color: 'var(--center-channel-color)',
+          color: onDark
+            ? 'color-mix(in srgb, var(--neutral-0) 75%, transparent)'
+            : 'var(--center-channel-color)',
         }}
       >
         {label}
@@ -68,12 +78,16 @@ export const AllVariants: Story = {
             borderRadius: location === 'Tooltips' ? 8 : undefined,
             backgroundColor:
               location === 'Tooltips'
-                ? 'var(--color-neutral-1100, #1b1d22)'
+                ? 'var(--neutral-1200)'
                 : undefined,
           }}
         >
           {SIZES.map((size) => (
-            <Row key={size} label={`${location} / ${size}`}>
+            <Row
+              key={size}
+              label={`${location} / ${size}`}
+              onDark={location === 'Tooltips'}
+            >
               <ShortcutTag label="⌘" location={location} size={size} />
               <ShortcutTag label="Shift" location={location} size={size} />
               <ShortcutTag label="K" location={location} size={size} />
