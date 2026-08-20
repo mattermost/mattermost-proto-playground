@@ -113,6 +113,8 @@ background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
 | `--color-info\|success\|warning\|danger` (+ `-rgb`) | Convenience wrappers → `rgb(var(--semantic-color-*))` |
 | `--error-text` / `--error-text-color-rgb` | Themeable error role (prefer in error/destructive components) |
 
+Toasts / global banners: use `rgb(var(--semantic-color-*))` directly for type fills.
+
 ## Figma opacity suffixes
 
 Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. Backgrounds/borders/fills may use the mapped alpha as written.
