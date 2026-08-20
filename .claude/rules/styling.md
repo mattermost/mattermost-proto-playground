@@ -76,7 +76,7 @@ color: var(--color-info);
 
 - Prefer nearest token or `calc()` of tokens over raw `px`.
 - Do not put tokenizable spacing/font in inline `style={{}}` — use a CSS module.
-- **Exceptions:** `1px` hairlines; visually-hidden `1px`/`-1px`; one-off layout widths with no token; container/media breakpoints.
+- **Exceptions:** `1px` hairlines; visually-hidden `1px`/`-1px`; one-off layout widths with no token; container/media breakpoints; `webapp-compat.scss` `@layer` maps shared Mattermost names (`--neutral-*`, `--semantic-color-*`) to Compass palette / token defaults so host unlayered values win when embedded.
 - Before finishing, scan new/edited styles for leftover raw `px`, hex, numeric `font-weight`, or hardcoded `ms`/`ease`.
 
 ## Animation: easing and duration
@@ -96,7 +96,7 @@ Never hard-code durations or easing keywords — use tokens:
 
 Fixed intent colors: `--color-info|success|warning|danger` (and `-rgb` for `rgba()`). Never raw palette (e.g. `--color-blue-400`).
 
-These wrap shared Mattermost `--semantic-color-*` RGB tokens (same names as webapp). Compass sets defaults in `webapp-compat.scss` `@layer`; host unlayered values win when Compass is embedded in webapp.
+These wrap shared Mattermost `--semantic-color-*` RGB tokens (same names as webapp). Compass maps standalone defaults to palette RGB in `webapp-compat.scss` `@layer`; host unlayered values win when Compass is embedded in webapp.
 
 **Themeable error / destructive UI** (validation, destructive buttons, danger notices): reference the webapp theme role first:
 

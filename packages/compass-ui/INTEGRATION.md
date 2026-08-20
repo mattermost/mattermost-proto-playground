@@ -187,7 +187,7 @@ Mattermost webapp already sets theme CSS variables (`--center-channel-bg`, `--bu
 
 Compass uses the **same semantic names** as webapp:
 
-- **`webapp-compat.scss` `@layer`**: standalone defaults for `--semantic-color-*` (and `--neutral-*`). Host unlayered values always win when embedded.
+- **`webapp-compat.scss` `@layer`**: standalone defaults for `--semantic-color-*` (mapped to Compass palette RGB) and `--neutral-*`. Host unlayered values always win when embedded.
 - **`tokens.scss`**: `--color-info|success|warning|danger` wrap `rgb(var(--semantic-color-*))` for authoring.
 - **Components**: error / destructive UI uses `var(--error-text, var(--color-danger))`. Presence uses `--online-indicator` / `--away-indicator` / `--dnd-indicator`. Toasts / global banners use `--color-*` (fixed semantics).
 
