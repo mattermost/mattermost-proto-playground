@@ -354,17 +354,17 @@
 
   // ============================================================
   // Semantic colors
-  // Prefer webapp --semantic-color-* RGB when hosted, else Compass palette.
-  // Themeable error/destructive UI should use --error-text in components
-  // (with --color-danger as fallback), not an alias here.
+  // Shared RGB names with Mattermost webapp (`--semantic-color-*`).
+  // Defaults: webapp-compat @layer. Host unlayered values win when present.
+  // Author with --color-* / -rgb; themeable error UI still uses --error-text.
   // ============================================================
-  --color-info-rgb: var(--semantic-color-info, var(--color-blue-400-rgb));
+  --color-info-rgb: var(--semantic-color-info);
   --color-info: rgb(var(--color-info-rgb));
-  --color-success-rgb: var(--semantic-color-success, var(--color-green-600-rgb));
+  --color-success-rgb: var(--semantic-color-success);
   --color-success: rgb(var(--color-success-rgb));
-  --color-warning-rgb: var(--semantic-color-warning, var(--color-yellow-600-rgb));
+  --color-warning-rgb: var(--semantic-color-warning);
   --color-warning: rgb(var(--color-warning-rgb));
-  --color-danger-rgb: var(--semantic-color-danger, var(--color-red-500-rgb));
+  --color-danger-rgb: var(--semantic-color-danger);
   --color-danger: rgb(var(--color-danger-rgb));
 
   // ============================================================

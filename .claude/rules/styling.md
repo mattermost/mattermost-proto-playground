@@ -96,7 +96,7 @@ Never hard-code durations or easing keywords — use tokens:
 
 Fixed intent colors: `--color-info|success|warning|danger` (and `-rgb` for `rgba()`). Never raw palette (e.g. `--color-blue-400`).
 
-In `tokens.scss` these prefer webapp `--semantic-color-*` when hosted, else the Compass palette.
+These wrap shared Mattermost `--semantic-color-*` RGB tokens (same names as webapp). Compass sets defaults in `webapp-compat.scss` `@layer`; host unlayered values win when Compass is embedded in webapp.
 
 **Themeable error / destructive UI** (validation, destructive buttons, danger notices): reference the webapp theme role first:
 
@@ -109,10 +109,8 @@ background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
 
 | Token | Role |
 | --- | --- |
-| `--color-info` / `-rgb` | Fixed semantic → `--semantic-color-info` → blue-400 |
-| `--color-success` / `-rgb` | Fixed semantic → `--semantic-color-success` → green-600 (package) |
-| `--color-warning` / `-rgb` | Fixed semantic → `--semantic-color-warning` → yellow-600 |
-| `--color-danger` / `-rgb` | Fixed semantic → `--semantic-color-danger` → red-500 (fallback only for themed error UI) |
+| `--semantic-color-info\|success\|warning\|danger` | Shared RGB with webapp (source of truth for fixed semantics) |
+| `--color-info\|success\|warning\|danger` (+ `-rgb`) | Convenience wrappers → `rgb(var(--semantic-color-*))` |
 | `--error-text` / `--error-text-color-rgb` | Themeable error role (prefer in error/destructive components) |
 
 ## Figma opacity suffixes
