@@ -1,7 +1,7 @@
 // Standalone defaults for Mattermost webapp CSS variable names.
 // Defined in a cascade layer so host apps (webapp) that set the same names
 // unlayered always win regardless of stylesheet order. Storybook/playground
-// have no host values, so this layer supplies them from Compass tokens.
+// have no host values, so this layer supplies matching defaults.
 
 @layer compass-ui.webapp-compat {
   :root {
@@ -9,10 +9,10 @@
     --neutral-900: var(--color-neutral-900, #3f4350);
     --neutral-1200: var(--color-neutral-1200, #090a0b);
 
-    // Same names as webapp `sass/base/_css_variables.scss` (RGB triplets).
-    --semantic-color-info: var(--color-blue-400-rgb);
-    --semantic-color-success: var(--color-green-600-rgb);
-    --semantic-color-warning: var(--color-yellow-600-rgb);
-    --semantic-color-danger: var(--color-red-500-rgb);
+    // Match webapp `sass/base/_css_variables.scss` (RGB triplets).
+    --semantic-color-info: 93, 137, 234;
+    --semantic-color-success: 61, 184, 135;
+    --semantic-color-warning: 204, 143, 0;
+    --semantic-color-danger: 210, 75, 78;
   }
 }
