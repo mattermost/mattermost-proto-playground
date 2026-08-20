@@ -174,10 +174,18 @@
       color: var(--button-color);
 
       &:hover:not(:disabled) {
-        background-color: var(--error-text, var(--color-danger));
+        background-color: color-mix(
+          in srgb,
+          black 8%,
+          var(--error-text, var(--color-danger))
+        );
       }
       &:active:not(:disabled) {
-        background-color: var(--error-text, var(--color-danger));
+        background-color: color-mix(
+          in srgb,
+          black 16%,
+          var(--error-text, var(--color-danger))
+        );
       }
       &:disabled {
         background-color: rgba(var(--center-channel-color-rgb), 0.08);
