@@ -1,10 +1,14 @@
-// Bridge Compass foundation tokens to Mattermost webapp unthemed neutral names.
-// Always-dark components use --neutral-* (webapp canonical). Load after tokens.scss so
-// Storybook/playground expose token values under webapp names; webapp embed may already
-// define --neutral-* on :root.
+// Standalone bridge: expose Compass tokens under Mattermost webapp unthemed
+// neutral names so always-dark components can use --neutral-* everywhere.
+//
+// Defined in a cascade layer so host apps (webapp) that set the same names
+// unlayered always win regardless of stylesheet order. Storybook/playground
+// have no host --neutral-*, so this layer supplies them from tokens.
 
-:root {
-  --neutral-0: var(--color-neutral-0, #ffffff);
-  --neutral-900: var(--color-neutral-900, #3f4350);
-  --neutral-1200: var(--color-neutral-1200, #090a0b);
+@layer compass-ui.webapp-compat {
+  :root {
+    --neutral-0: var(--color-neutral-0, #ffffff);
+    --neutral-900: var(--color-neutral-900, #3f4350);
+    --neutral-1200: var(--color-neutral-1200, #090a0b);
+  }
 }
