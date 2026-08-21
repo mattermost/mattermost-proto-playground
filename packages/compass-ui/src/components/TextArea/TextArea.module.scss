@@ -186,21 +186,21 @@
   // ---------------------------------------------------------------------------
   &--invalid {
     .textArea__wrapper {
-      box-shadow: inset 0 0 0 1px var(--error-text);
+      box-shadow: inset 0 0 0 1px var(--error-text, var(--color-danger));
     }
 
     &:has(.textArea__input:focus-visible) .textArea__wrapper {
       box-shadow:
-        inset 0 0 0 1px var(--error-text),
-        0 0 0 1px var(--error-text);
+        inset 0 0 0 1px var(--error-text, var(--color-danger)),
+        0 0 0 1px var(--error-text, var(--color-danger));
     }
 
     .textArea__label {
-      color: var(--error-text);
+      color: var(--error-text, var(--color-danger));
     }
 
     &:has(.textArea__input:focus-visible) .textArea__label {
-      color: var(--error-text);
+      color: var(--error-text, var(--color-danger));
     }
   }
 }

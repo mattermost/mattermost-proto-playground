@@ -51,6 +51,6 @@
 
   &--status-error &__status,
   &--status-error &__status-icon {
-    color: var(--color-danger);
+    color: var(--error-text, var(--color-danger));
   }
 }

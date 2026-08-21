@@ -84,18 +84,18 @@
   }
 
   &--type-info {
-    background-color: var(--color-info);
+    background-color: rgb(var(--semantic-color-info));
   }
 
   &--type-success {
-    background-color: var(--color-success);
+    background-color: rgb(var(--semantic-color-success));
   }
 
   &--type-danger {
-    background-color: var(--color-danger);
+    background-color: rgb(var(--semantic-color-danger));
   }
 
   &--type-warning {
-    background-color: var(--color-warning);
+    background-color: rgb(var(--semantic-color-warning));
   }
 }

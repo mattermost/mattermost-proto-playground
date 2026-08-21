@@ -354,15 +354,18 @@
 
   // ============================================================
   // Semantic colors
+  // Shared RGB names with Mattermost webapp (`--semantic-color-*`).
+  // Defaults: webapp-compat @layer. Host unlayered values win when present.
+  // Author with --color-* / -rgb; themeable error UI still uses --error-text.
   // ============================================================
-  --color-info: var(--color-blue-400);
-  --color-info-rgb: var(--color-blue-400-rgb);
-  --color-success: var(--color-green-600);
-  --color-success-rgb: var(--color-green-600-rgb);
-  --color-warning: var(--color-yellow-600);
-  --color-warning-rgb: var(--color-yellow-600-rgb);
-  --color-danger: var(--color-red-500);
-  --color-danger-rgb: var(--color-red-500-rgb);
+  --color-info-rgb: var(--semantic-color-info);
+  --color-info: rgb(var(--color-info-rgb));
+  --color-success-rgb: var(--semantic-color-success);
+  --color-success: rgb(var(--color-success-rgb));
+  --color-warning-rgb: var(--semantic-color-warning);
+  --color-warning: rgb(var(--color-warning-rgb));
+  --color-danger-rgb: var(--semantic-color-danger);
+  --color-danger: rgb(var(--color-danger-rgb));
 
   // ============================================================
   // Attachment Card file-type accent colors

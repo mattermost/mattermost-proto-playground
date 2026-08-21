@@ -46,7 +46,7 @@
       color: var(--color-warning);
     }
     &--danger {
-      color: var(--color-danger);
+      color: var(--error-text, var(--color-danger));
     }
   }
 

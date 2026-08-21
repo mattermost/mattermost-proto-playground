@@ -78,17 +78,17 @@
   // Status modifiers (Figma: Online, Away, Do Not Disturb, Offline)
   // ---------------------------------------------------------------------------
   &--status-online {
-    color: var(--color-success);
+    color: var(--online-indicator, var(--color-success));
     background-color: var(--status-badge-bg, var(--center-channel-bg));
   }
 
   &--status-away {
-    color: var(--color-warning);
+    color: var(--away-indicator, var(--color-warning));
     background-color: var(--status-badge-bg, var(--center-channel-bg));
   }
 
   &--status-do-not-disturb {
-    color: var(--color-danger);
+    color: var(--dnd-indicator, var(--color-danger));
     background-color: var(--status-badge-bg, var(--center-channel-bg));
   }
 

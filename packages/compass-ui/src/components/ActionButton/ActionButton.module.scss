@@ -58,23 +58,23 @@
   }
 
   &--destructive {
-    background-color: rgba(var(--error-text-color-rgb), 0.04);
-    color: var(--error-text);
+    background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.04);
+    color: var(--error-text, var(--color-danger));
 
     &:hover:not(:disabled) {
-      background-color: rgba(var(--error-text-color-rgb), 0.08);
-      color: var(--error-text);
+      background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
+      color: var(--error-text, var(--color-danger));
     }
 
     &:active:not(:disabled) {
-      background-color: rgba(var(--error-text-color-rgb), 0.16);
-      color: var(--error-text);
+      background-color: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.16);
+      color: var(--error-text, var(--color-danger));
     }
 
     &:focus-visible:not(:disabled) {
       box-shadow:
         0 0 0 3px var(--center-channel-bg),
-        0 0 0 5px var(--color-danger);
+        0 0 0 5px var(--error-text, var(--color-danger));
     }
   }
 

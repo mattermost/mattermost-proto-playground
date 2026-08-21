@@ -75,7 +75,7 @@
   }
 
   &--error {
-    border-color: var(--color-danger);
+    border-color: var(--error-text, var(--color-danger));
   }
 
   // ---------------------------------------------------------------------------
