@@ -20,6 +20,10 @@
       "import": "./dist/compass-ui.css",
       "default": "./dist/compass-ui.css"
     },
+    "./styles/standalone": {
+      "import": "./dist/compass-ui-standalone.css",
+      "default": "./dist/compass-ui-standalone.css"
+    },
     "./component-styles": {
       "import": "./dist/index.css",
       "default": "./dist/index.css"
@@ -29,7 +33,7 @@
     "dist"
   ],
   "scripts": {
-    "build:sass": "sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map",
+    "build:sass": "sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map && sass src/styles/standalone-entry.scss dist/compass-ui-standalone.css --load-path=src/styles --no-source-map",
     "build": "vite build",
     "dev": "vite build --watch",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",

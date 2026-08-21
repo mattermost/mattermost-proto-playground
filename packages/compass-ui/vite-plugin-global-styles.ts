@@ -6,10 +6,10 @@ import type { Plugin } from 'vite';
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
 
 function buildGlobalStyles() {
-  execSync(
-    'sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map',
-    { cwd: packageRoot, stdio: 'inherit' },
-  );
+  execSync('npm run build:sass', {
+    cwd: packageRoot,
+    stdio: 'inherit',
+  });
 }
 
 export function compassUiGlobalStyles(): Plugin {

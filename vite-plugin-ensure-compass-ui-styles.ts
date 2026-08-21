@@ -7,7 +7,12 @@ import type { Plugin } from 'vite';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
 const packageRoot = path.join(root, 'packages/compass-ui');
 const cssPath = path.join(packageRoot, 'dist/compass-ui.css');
+const standaloneCssPath = path.join(
+  packageRoot,
+  'dist/compass-ui-standalone.css',
+);
 const stylesImport = '@mattermost/compass-ui/styles';
+const standaloneStylesImport = '@mattermost/compass-ui/styles/standalone';
 
 function buildGlobalStyles() {
   execSync('npm run build:sass --workspace=@mattermost/compass-ui', {
@@ -18,7 +23,7 @@ function buildGlobalStyles() {
 
 export function ensureCompassUiStyles(): Plugin {
   const ensureCss = () => {
-    if (!fs.existsSync(cssPath)) {
+    if (!fs.existsSync(cssPath) || !fs.existsSync(standaloneCssPath)) {
       buildGlobalStyles();
     }
   };
@@ -37,11 +42,15 @@ export function ensureCompassUiStyles(): Plugin {
         ensureCss();
         return cssPath;
       }
+      if (source === standaloneStylesImport) {
+        ensureCss();
+        return standaloneCssPath;
+      }
     },
     load(id) {
-      if (id === cssPath) {
+      if (id === cssPath || id === standaloneCssPath) {
         ensureCss();
-        return fs.readFileSync(cssPath, 'utf-8');
+        return fs.readFileSync(id, 'utf-8');
       }
     },
   };

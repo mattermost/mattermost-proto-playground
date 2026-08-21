@@ -11,8 +11,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versioning follo
 - Storybook coverage for Tier 1 components (in progress).
 - `scripts/smoke-test-compass-ui-pack.mjs` — tarball install + Vite consumer build gate.
 - `INTEGRATION.md` — consumer setup guide for Vite and Mattermost webapp.
+- `@mattermost/compass-ui/styles/standalone` — CSS reset + document `body` / heading chrome for Storybook and other standalone hosts.
 
-## [0.1.0-alpha.0] - 2026-06-25
+### Changed
+
+- `@mattermost/compass-ui/styles` is tokens/themes/webapp-compat only (no reset or document chrome), so webapp can import it safely. Standalone hosts also import `/styles/standalone`.
 
 First alpha extracted from `mattermost-proto-playground`.
 

@@ -64,10 +64,15 @@ import '@mattermost/compass-ui/component-styles';
 
 | Export | Contents |
 |--------|----------|
-| `@mattermost/compass-ui/styles` | CSS variables (tokens), themes, reset |
+| `@mattermost/compass-ui/styles` | CSS variables (tokens), themes, webapp-compat defaults |
+| `@mattermost/compass-ui/styles/standalone` | CSS reset + document `body` / heading chrome for Storybook and other **standalone** hosts only |
 | `@mattermost/compass-ui/component-styles` | Component CSS modules, SimpleBar base CSS |
 
 Components assume CSS variables are present — they do not import tokens directly.
+
+**Mattermost webapp:** import `/styles` and `/component-styles` only. Do **not** import `/styles/standalone` — webapp already owns reset and document styles.
+
+**Standalone hosts** (playground, Storybook, local demos): also import `/styles/standalone` after `/styles`.
 
 ### 2. Set a theme
 
@@ -126,6 +131,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Button } from '@mattermost/compass-ui';
 import '@mattermost/compass-ui/styles';
+import '@mattermost/compass-ui/styles/standalone';
 import '@mattermost/compass-ui/component-styles';
 import './app.scss';
 
@@ -174,6 +180,7 @@ npm run dev-server
 ```tsx
 import '@mattermost/compass-ui/styles';
 import '@mattermost/compass-ui/component-styles';
+// Do not import @mattermost/compass-ui/styles/standalone in webapp
 ```
 
 Use components as usual:
@@ -265,9 +272,10 @@ npm install @mattermost/compass-ui@alpha
 import { Button } from '@mattermost/compass-ui';
 import '@mattermost/compass-ui/styles';
 import '@mattermost/compass-ui/component-styles';
+// Do not import /styles/standalone — webapp owns reset and document styles
 ```
 
-Load styles once at the app bootstrap (same entry that loads global webapp SCSS).
+Load `/styles` once at the app bootstrap (same entry that loads global webapp SCSS).
 
 ### Webpack checklist
 
@@ -335,7 +343,8 @@ dist/index.js          # ESM bundle
 dist/index.cjs         # CJS bundle
 dist/index.d.ts        # Type declarations
 dist/index.css         # component-styles
-dist/compass-ui.css    # styles (tokens/themes)
+dist/compass-ui.css    # styles (tokens/themes/webapp-compat)
+dist/compass-ui-standalone.css  # reset + body/heading chrome (standalone hosts only)
 dist/components/       # per-component .d.ts
 ```
 

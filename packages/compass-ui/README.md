@@ -19,6 +19,14 @@ import '@mattermost/compass-ui/styles';
 import '@mattermost/compass-ui/component-styles';
 ```
 
+Standalone hosts (Storybook, playground) also need document chrome:
+
+```tsx
+import '@mattermost/compass-ui/styles/standalone';
+```
+
+Do not load `/styles/standalone` into Mattermost webapp.
+
 Set a theme on `<html>`:
 
 ```html
@@ -43,7 +51,8 @@ npm run storybook     # component catalog on :6006
 ## Package layout
 
 - `dist/index.js` / `dist/index.cjs` — component bundle (ESM + CJS)
-- `dist/compass-ui.css` — tokens, themes, reset, and base typography styles
+- `dist/compass-ui.css` — tokens, themes, and webapp-compat defaults (`./styles`)
+- `dist/compass-ui-standalone.css` — CSS reset + `body` / heading chrome for standalone hosts (`./styles/standalone`)
 - `dist/index.css` — component CSS modules (injected at build; also available as `./component-styles`)
 
 ## Storybook
@@ -62,7 +71,7 @@ npm run storybook --workspace=@mattermost/compass-ui
 - Use `var(--sidebar-header-bg)` for inverted story surfaces, and `var(--sidebar-text)` for labels inside those surfaces.
 - Use `rgba(var(--center-channel-color-rgb), <alpha>)` only when a secondary text or border treatment intentionally needs opacity.
 - Avoid neutral-only text tokens such as `--color-neutral-*` or `--color-text-secondary` in stories unless the component API specifically demonstrates a neutral palette token.
-- Native `h1`-`h6` elements use the Compass heading font through `@mattermost/compass-ui/styles`; story body text inherits the Compass body font.
+- Native `h1`-`h6` elements and story body text inherit Compass fonts via `@mattermost/compass-ui/styles/standalone` (loaded in `.storybook/preview.tsx`). Do not hardcode font families in stories.
 - Storybook Docs tab chrome and Docs controls are themed in `.storybook/docs-theme.css`; keep Docs-specific overrides there so they follow the selected Compass theme.
 
 ## Integration and releases

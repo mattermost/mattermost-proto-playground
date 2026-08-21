@@ -6,6 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const distFiles = [
   path.join(root, 'packages/compass-ui/dist/index.js'),
   path.join(root, 'packages/compass-ui/dist/compass-ui.css'),
+  path.join(root, 'packages/compass-ui/dist/compass-ui-standalone.css'),
   path.join(root, 'packages/compass-ui/dist/index.css'),
   path.join(root, 'packages/compass-proto/dist/index.js'),
   path.join(root, 'packages/compass-proto/dist/index.css'),
