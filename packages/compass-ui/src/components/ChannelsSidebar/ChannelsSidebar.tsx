@@ -26,7 +26,7 @@ function applyChannelSidebarInteractivity(
       activeChannelName === undefined
         ? row.active
         : row.name === activeChannelName,
-    onClick: onItemClick ? () => onItemClick(row.name) : undefined,
+    onClick: onItemClick ? () => onItemClick(row.name) : row.onClick,
   });
   return {
     topGroupItems: model.topGroupItems.map(mapRow),

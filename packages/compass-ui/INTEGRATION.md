@@ -114,6 +114,7 @@ import { ChannelShell } from '@mattermost/compass-proto';
 ```
 
 Webapp product code should use `@mattermost/compass-ui` only.
+
 ---
 
 ## Peer dependencies
