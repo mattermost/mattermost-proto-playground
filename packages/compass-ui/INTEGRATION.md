@@ -2,7 +2,7 @@
 
 Guide for consuming the Compass UI library in Vite apps (docs, prototypes catalog) and the Mattermost webapp (`webapp/channels`).
 
-Mobile shells, `ChannelShell`, and Call* composites live in unpublished **`@mattermost/compass-proto`** (workspace package). Import those from `compass-proto`, not from `compass-ui`. Webapp product code should depend on `compass-ui` only.
+Mobile shells, `ChannelShell`, and Call* composites live in unpublished **`@mattermost/compass-proto`** (workspace package). Import those from `@mattermost/compass-proto`, not from `@mattermost/compass-ui`. Webapp product code should depend on `compass-ui` only.
 
 ## Install
 
