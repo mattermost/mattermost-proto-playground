@@ -311,9 +311,9 @@ Confirm host vars match Compass theme role names before wide rollout. Spike with
 
 ---
 
-## Pattern components and fixtures
+## Patterns, layouts, and fixtures
 
-Tier 3 patterns (`ChannelShell` from compass-proto; `ThreadListItem`, `RightSidebarThread`, etc. from compass-ui) do **not** ship demo avatar images. Pass fixtures from your app:
+Compass layers are Foundations → Components → Patterns → Layouts. Layouts such as `ChannelShell` (from compass-proto) and patterns such as `ThreadListItem` and `RightSidebarThread` (from compass-ui) do **not** ship demo avatar images. Pass fixtures from your app:
 
 ```tsx
 import {
