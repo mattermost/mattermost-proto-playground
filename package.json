@@ -18,6 +18,8 @@
     "build:ui": "npm run build --workspace=@mattermost/compass-ui",
     "build:proto": "npm run build --workspace=@mattermost/compass-proto",
     "smoke-test:ui": "node scripts/smoke-test-compass-ui-pack.mjs",
+    "smoke-test:proto": "node scripts/smoke-test-compass-proto-pack.mjs",
+    "smoke-test:packages": "npm run smoke-test:ui && npm run smoke-test:proto",
     "dev": "npm-run-all --parallel dev:ui dev:proto dev:app",
     "dev:app": "node scripts/wait-compass-ui-dist.mjs && vite",
     "dev:ui": "npm run dev --workspace=@mattermost/compass-ui",
