@@ -2,7 +2,7 @@
 
 Guide for consuming the Compass UI library in Vite apps (docs, prototypes catalog) and the Mattermost webapp (`webapp/channels`).
 
-Mobile shells, `ChannelShell`, and Call* composites live in unpublished **`@mattermost/compass-proto`** (workspace package). Import those from `@mattermost/compass-proto`, not from `@mattermost/compass-ui`. Webapp product code should depend on `compass-ui` only.
+Mobile shells, `ChannelShell`, Call* composites, `ParticipantsPanel`, and `RecordingPill` live in unpublished **`@mattermost/compass-proto`** (workspace package). Import those from `@mattermost/compass-proto`, not from `@mattermost/compass-ui`. Webapp product code should depend on `compass-ui` only.
 
 ## Install
 
@@ -104,7 +104,8 @@ Fonts are not bundled in the library — consumers load them (same pattern as th
 ### 4. Import components
 
 ```tsx
-import { Button, Icon, ChannelShell } from '@mattermost/compass-ui';
+import { Button, Icon } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-proto';
 ```
 
 ---
@@ -312,14 +313,14 @@ Confirm host vars match Compass theme role names before wide rollout. Spike with
 
 ## Pattern components and fixtures
 
-Tier 3 patterns (`ChannelShell`, `ThreadListItem`, `RightSidebarThread`, etc.) do **not** ship demo avatar images. Pass fixtures from your app:
+Tier 3 patterns (`ChannelShell` from compass-proto; `ThreadListItem`, `RightSidebarThread`, etc. from compass-ui) do **not** ship demo avatar images. Pass fixtures from your app:
 
 ```tsx
 import {
-  ChannelShell,
   buildDefaultChannelsSidebarModel,
   RightSidebarThread,
 } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-proto';
 
 const model = buildDefaultChannelsSidebarModel({
   avatarAikoTan: aikoSrc,
