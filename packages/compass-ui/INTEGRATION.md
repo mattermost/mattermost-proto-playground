@@ -142,14 +142,119 @@ createRoot(document.getElementById('root')!).render(
 
 ## Mattermost webapp (`webapp/channels`)
 
-Target integration path (Phase 6 — after npm alpha publish).
+### Local fast iteration (before npm publish)
 
-### Install in workspace
+Use a **testing branch** only — `file:` must not land in a mergeable PR. Switch to `@mattermost/compass-ui@alpha` after publish.
 
-Add to `webapp/channels/package.json` (alongside legacy `@mattermost/compass-components` during migration):
+**Terminal 1 — package watch** (rebuilds `packages/compass-ui/dist/` on save):
+
+```bash
+cd mattermost-proto-playground
+npm install
+npm run dev --workspace=@mattermost/compass-ui
+```
+
+**Terminal 2 — wire into webapp** in `webapp/channels/package.json` (adjust relative path to your checkout layout):
+
+```json
+"@mattermost/compass-ui": "file:../../../mattermost-proto-playground/packages/compass-ui"
+```
+
+From the webapp monorepo root (`mattermost/webapp`):
+
+```bash
+npm install
+npm run dev-server
+```
+
+**App entry** (`channels/src/entry.tsx`) — import styles once next to other global CSS:
+
+```tsx
+import '@mattermost/compass-ui/styles';
+import '@mattermost/compass-ui/component-styles';
+```
+
+Use components as usual:
+
+```tsx
+import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
+import { Select, Icon, Button } from '@mattermost/compass-ui';
+
+<Select label="Team" leadingIcon={<Icon glyph={<AccountMultipleOutlineIcon />} />} onChange={…}>
+  <option value="a">Alpha</option>
+  <option value="b">Bravo</option>
+</Select>
+```
+
+Webapp already applies theme CSS variables; Compass tokens reuse the same names. If colors look flat/gray outside the webapp shell, set `data-theme="denim"` on `<html>`.
+
+#### Duplicate React (required for `file:` links)
+
+`file:` symlinks the package directory. Webpack can resolve `react` from the linked tree and create a second React copy → Invalid Hook Call or hooks that silently no-op.
+
+1. In the playground, confirm React is not nested under the package:
+
+```bash
+ls packages/compass-ui/node_modules/react 2>/dev/null
+# should be empty (workspace hoisting)
+```
+
+2. In `webapp/channels/webpack.config.js`, alias to the webapp’s React (same pattern as `styled-components`):
+
+```js
+resolve: {
+  alias: {
+    react: path.resolve(__dirname, '..', 'node_modules', 'react'),
+    'react-dom': path.resolve(__dirname, '..', 'node_modules', 'react-dom'),
+  },
+}
+```
+
+3. Exclude the linked package from babel (the `file:` realpath sits outside `node_modules`):
+
+```js
+const STANDARD_EXCLUDE = [
+  /node_modules/,
+  /mattermost-proto-playground[\\/]packages[\\/]compass-ui/,
+];
+```
+
+`compass-ui`’s dist ESM appends `.js` on icon imports and unwraps CJS `default` exports (`mod?.default ?? mod`) so webpack 5 does not treat icon components as `{ default: fn }` objects.
+
+#### HMR
+
+Vite rebuilds `dist/` on save; webpack ignores most of `node_modules` for watching, so expect a **manual browser refresh**. If that becomes painful, exclude the linked package from webpack `snapshot.managedPaths`.
+
+#### Smoke panel (optional)
+
+On the local testing branch, a floating smoke panel is **shown by default** (ported to `document.body`).
+
+Hide:
+
+```js
+localStorage.setItem('compass_ui_smoke', '0');
+location.reload();
+```
+
+Show again:
+
+```js
+localStorage.removeItem('compass_ui_smoke');
+location.reload();
+```
+
+Remove the smoke component before any mergeable PR.
+
+### Published install (mergeable PRs)
+
+After `@mattermost` npm org publish, use the `alpha` tag until stable:
 
 ```json
 "@mattermost/compass-ui": "0.1.0-alpha.0"
+```
+
+```bash
+npm install @mattermost/compass-ui@alpha
 ```
 
 ### Import pattern
@@ -167,8 +272,8 @@ Load styles once at the app bootstrap (same entry that loads global webapp SCSS)
 - [ ] ESM + CJS: package ships both (`module` / `main` fields).
 - [ ] CSS: `@mattermost/compass-ui/styles` and `/component-styles` resolve without extra loaders beyond existing CSS pipeline.
 - [ ] CSS modules: hashed class names from `component-styles` match rendered components.
-- [ ] No duplicate React — one version across workspaces.
-- [ ] `@mattermost/compass-icons` already external in webapp; keep as peer, do not bundle twice.
+- [ ] No duplicate React — webpack aliases when using `file:`; one version across workspaces.
+- [ ] `@mattermost/compass-icons` already external in webapp; keep as peer, do not bundle twice. Dist ESM imports use `.js` extensions for webpack fullySpecified.
 - [ ] `simplebar-react` installed if using `Scrollbars` or layout specimens that include scroll regions.
 - [ ] Source maps enabled for debugging (`dist/*.map` shipped).
 

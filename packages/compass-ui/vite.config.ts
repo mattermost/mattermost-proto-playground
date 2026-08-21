@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { libInjectCss } from 'vite-plugin-lib-inject-css';
 import path from 'path';
+import { compassIconsJsExtensions } from './vite-plugin-compass-icons-ext';
 import { compassUiGlobalStyles } from './vite-plugin-global-styles';
 
 const isWatchBuild = process.argv.includes('--watch');
@@ -12,6 +13,7 @@ export default defineConfig({
     react(),
     libInjectCss(),
     compassUiGlobalStyles(),
+    compassIconsJsExtensions(),
     dts({
       tsconfigPath: path.resolve(__dirname, 'tsconfig.build.json'),
       include: ['src'],
