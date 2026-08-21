@@ -18,7 +18,7 @@ export default function MobileChannelsSidebarLibrary() {
           showUnreadsCategory
           avatarAikoTan={avatarAikoTan}
           avatarArjunPatel={avatarArjunPatel}
-          avatarDanielOkoro={avatarDanielle}
+          avatarDanielleOkoro={avatarDanielle}
           avatarDariusCole={avatarDariusCole}
           avatarDavidLiang={avatarDavidLiang}
           avatarEmmaNovak={avatarEmmaNovak}

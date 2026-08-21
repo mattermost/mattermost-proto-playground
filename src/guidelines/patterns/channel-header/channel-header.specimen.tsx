@@ -43,7 +43,7 @@ export default function ChannelHeaderLibrary() {
       <p className={styles['patterns__variant-label']}>GM</p>
       <ChannelHeader
         type="GM"
-        name="Aiko Tan, Arjun Patel, Daniel Okoro"
+        name="Aiko Tan, Arjun Patel, Danielle Okoro"
         memberCount={4}
         pinnedCount={1}
       />

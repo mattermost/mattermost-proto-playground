@@ -2,7 +2,7 @@
 
 Guide for consuming the Compass UI library in Vite apps (docs, prototypes catalog) and the Mattermost webapp (`webapp/channels`).
 
-Mobile shells, `ChannelShell`, Call* composites, `ParticipantsPanel`, and `RecordingPill` live in unpublished **`@mattermost/compass-proto`** (workspace package). Import those from `@mattermost/compass-proto`, not from `@mattermost/compass-ui`. Webapp product code should depend on `compass-ui` only.
+Mobile shells, `ChannelShell`, Call* composites, `ParticipantsPanel`, `RecordingPill`, demo RHS panels (`RightSidebarThread`, `RightSidebarChannelInfo`), and sidebar fixture helpers (`buildDefaultChannelsSidebarModel`, `defaultAdminConsoleSidebarGroups`) live in unpublished **`@mattermost/compass-proto`** (workspace package). Import those from `@mattermost/compass-proto`, not from `@mattermost/compass-ui`. Webapp product code should depend on `compass-ui` only.
 
 ## Install
 
@@ -105,8 +105,15 @@ Fonts are not bundled in the library — consumers load them (same pattern as th
 
 ```tsx
 import { Button, Icon } from '@mattermost/compass-ui';
+```
+
+For playground, prototypes, and docs that install the unpublished workspace package, also:
+
+```tsx
 import { ChannelShell } from '@mattermost/compass-proto';
 ```
+
+Webapp product code should use `@mattermost/compass-ui` only.
 
 ---
 
@@ -313,16 +320,21 @@ Confirm host vars match Compass theme role names before wide rollout. Spike with
 
 ## Patterns, layouts, and fixtures
 
-Compass layers are Foundations → Components → Patterns → Layouts. Layouts such as `ChannelShell` (from compass-proto) and patterns such as `ThreadListItem` and `RightSidebarThread` (from compass-ui) do **not** ship demo avatar images. Pass fixtures from your app:
+Compass layers are Foundations → Components → Patterns → Layouts. Patterns such as `ThreadListItem` (from **`@mattermost/compass-ui`**) do **not** ship demo avatar images — pass fixtures from your app.
+
+**Playground / prototypes / docs only:** layouts such as `ChannelShell`, demo sidebar trees, and RHS specimen panels live in unpublished **`@mattermost/compass-proto`**. Use that package only where you can install the workspace dependency. Mattermost webapp product code should import from **`@mattermost/compass-ui` only** (compose patterns and sidebars yourself; do not depend on `compass-proto`).
 
 ```tsx
+// Workspace consumers (playground, prototypes, docs) — not webapp product code
+import type { ChannelsSidebarModel } from '@mattermost/compass-ui';
 import {
+  ChannelShell,
   buildDefaultChannelsSidebarModel,
   RightSidebarThread,
-} from '@mattermost/compass-ui';
-import { ChannelShell } from '@mattermost/compass-proto';
+} from '@mattermost/compass-proto';
 
 const model = buildDefaultChannelsSidebarModel({
+  showUnreadsCategory: false,
   avatarAikoTan: aikoSrc,
   avatarArjunPatel: arjunSrc,
   // ...

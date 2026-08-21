@@ -1,13 +1,15 @@
 import { ChannelHeader } from '@mattermost/compass-ui';
 import { ChannelShell } from '@mattermost/compass-proto';
+import { defaultChannelsSidebarDemoModel } from '@/fixtures/channelsSidebarDemo';
 import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
 import { Message } from '@mattermost/compass-ui';
+import { RightSidebarThread } from '@mattermost/compass-proto';
 import {
   RightSidebarHeader,
-  RightSidebarThread,
-  RightSidebar} from '@mattermost/compass-ui';
+  RightSidebar
+} from '@mattermost/compass-ui';
 import { Scrollbar } from '@mattermost/compass-ui';
 import { RIGHT_SIDEBAR_THREAD_DEMO_MESSAGES } from '@/fixtures/rightSidebarThreadDemo';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
@@ -21,6 +23,7 @@ import { shellStyles } from '@mattermost/compass-proto';
 export default function ChannelThreadLayout() {
   return (
     <ChannelShell
+      channelsSidebarModel={defaultChannelsSidebarDemoModel}
       channelHeader={
         <ChannelHeader
           type="Channel"

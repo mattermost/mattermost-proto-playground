@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Button } from '@mattermost/compass-ui';
 import { ChannelHeader } from '@mattermost/compass-ui';
 import { ChannelShell } from '@mattermost/compass-proto';
+import { defaultChannelsSidebarDemoModel } from '@/fixtures/channelsSidebarDemo';
 import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
 import { Message } from '@mattermost/compass-ui';
 import { Modal } from '@mattermost/compass-ui';
+import { RightSidebarChannelInfo } from '@mattermost/compass-proto';
 import {
-  RightSidebarChannelInfo,
-  RightSidebarHeader,
+  RightSidebarHeader
 } from '@mattermost/compass-ui';
 import { Scrollbar } from '@mattermost/compass-ui';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
@@ -35,6 +36,7 @@ export default function ModalLayout() {
 
   return (
     <ChannelShell
+      channelsSidebarModel={defaultChannelsSidebarDemoModel}
       channelHeader={
         <ChannelHeader
           type="Channel"

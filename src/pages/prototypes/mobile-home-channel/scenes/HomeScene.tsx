@@ -105,7 +105,7 @@ export default function HomeScene({
                 onItemClick={onChannelClick}
                 avatarAikoTan={avatars.aikoTan}
                 avatarArjunPatel={avatars.arjunPatel}
-                avatarDanielOkoro={avatars.danielle}
+                avatarDanielleOkoro={avatars.danielle}
                 avatarDariusCole={avatars.dariusCole}
                 avatarDavidLiang={avatars.davidLiang}
                 avatarEmmaNovak={avatars.emmaNovak}

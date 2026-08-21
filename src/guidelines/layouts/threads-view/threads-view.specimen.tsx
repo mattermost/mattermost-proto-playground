@@ -4,17 +4,16 @@ import { ChannelShell } from '@mattermost/compass-proto';
 import { Icon } from '@mattermost/compass-ui';
 import { IconButton } from '@mattermost/compass-ui';
 import { MessageInput } from '@mattermost/compass-ui';
+import { RightSidebarThread } from '@mattermost/compass-proto';
 import {
   RightSidebarHeader,
-  RightSidebarThread,
-  RightSidebar} from '@mattermost/compass-ui';
+  RightSidebar
+} from '@mattermost/compass-ui';
 import { Scrollbar } from '@mattermost/compass-ui';
 import { Tabs } from '@mattermost/compass-ui';
 import { ThreadListItem } from '@mattermost/compass-ui';
-import {
-  buildDefaultChannelsSidebarModel,
-  type ChannelsSidebarModel,
-} from '@mattermost/compass-ui';
+import type { ChannelsSidebarModel } from '@mattermost/compass-ui';
+import { buildDefaultChannelsSidebarModel } from '@mattermost/compass-proto';
 import { RIGHT_SIDEBAR_THREAD_DEMO_MESSAGES } from '@/fixtures/rightSidebarThreadDemo';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
@@ -70,7 +69,7 @@ export default function ThreadsViewLayout() {
         showUnreadsCategory: false,
         avatarAikoTan,
         avatarArjunPatel,
-        avatarDanielOkoro: avatarDanielle,
+        avatarDanielleOkoro: avatarDanielle,
         avatarDariusCole,
         avatarDavidLiang,
         avatarEmmaNovak,

@@ -28,7 +28,7 @@ export const avatars = {
 const DM_NAMES = new Set([
   'Aiko Tan',
   'Arjun Patel',
-  'Daniel Okoro',
+  'Danielle Okoro',
   'Darius Cole',
   'David Liang',
   'Emma Novak',

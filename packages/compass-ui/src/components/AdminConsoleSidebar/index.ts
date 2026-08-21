@@ -3,8 +3,5 @@ export type { AdminConsoleSidebarProps } from './AdminConsoleSidebar';
 export type {
   AdminConsoleSidebarGroupModel,
   AdminConsoleSidebarItemModel,
-} from './adminConsoleSidebarModel';
-export {
-  defaultAdminConsoleSidebarGroups,
-  type AdminConsoleSidebarCategoryIconKey,
+  AdminConsoleSidebarCategoryIconKey,
 } from './adminConsoleSidebarModel';

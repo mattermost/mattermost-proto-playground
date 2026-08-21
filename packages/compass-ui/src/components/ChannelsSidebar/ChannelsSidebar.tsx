@@ -10,7 +10,6 @@ import Icon from '@/components/Icon/Icon';
 import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import {
   applyChannelNameOverrides,
-  buildDefaultChannelsSidebarModel,
   type ChannelsSidebarItemModel,
   type ChannelsSidebarModel,
 } from './channelsSidebarModel';
@@ -18,13 +17,16 @@ import styles from './ChannelsSidebar.module.scss';
 
 function applyChannelSidebarInteractivity(
   model: ChannelsSidebarModel,
-  activeChannelName: string,
+  activeChannelName: string | undefined,
   onItemClick?: (name: string) => void,
 ): ChannelsSidebarModel {
   const mapRow = (row: ChannelsSidebarItemModel) => ({
     ...row,
-    active: row.name === activeChannelName,
-    onClick: onItemClick ? () => onItemClick(row.name) : undefined,
+    active:
+      activeChannelName === undefined
+        ? row.active
+        : row.name === activeChannelName,
+    onClick: onItemClick ? () => onItemClick(row.name) : row.onClick,
   });
   return {
     topGroupItems: model.topGroupItems.map(mapRow),
@@ -174,13 +176,16 @@ export interface ChannelsSidebarProps {
    * Applies to `name` and `avatarAlt` on each item (same as the legacy hardcoded list).
    */
   channelNameOverrides?: Record<string, string>;
-  /** Match against **resolved** item names (after `channelNameOverrides`). Use '' for none. */
+  /**
+   * Match against **resolved** item names (after `channelNameOverrides`).
+   * Omit to keep each row’s fixture `active` value; pass `''` to clear selection.
+   */
   activeChannelName?: string;
   /** Receives the row's visible `name` (after overrides). */
   onItemClick?: (name: string) => void;
   avatarAikoTan?: string;
   avatarArjunPatel?: string;
-  avatarDanielOkoro?: string;
+  avatarDanielleOkoro?: string;
   avatarDariusCole?: string;
   avatarDavidLiang?: string;
   avatarEmmaNovak?: string;
@@ -191,37 +196,16 @@ export interface ChannelsSidebarProps {
 
 export default function ChannelsSidebar({
   teamName = 'Contributors',
-  showUnreadsCategory = false,
   showFilter = false,
-  showDialPad = false,
   moreUnreadsAbove = false,
   moreUnreadsBelow = false,
   channelNameOverrides,
-  activeChannelName = '',
+  activeChannelName,
   onItemClick,
-  avatarAikoTan = '',
-  avatarArjunPatel = '',
-  avatarDanielOkoro = '',
-  avatarDariusCole = '',
-  avatarDavidLiang = '',
-  avatarEmmaNovak = '',
-  avatarEthanBrooks = '',
   model: modelProp,
 }: ChannelsSidebarProps) {
   const model = useMemo(() => {
-    const baseModel =
-      modelProp ??
-      buildDefaultChannelsSidebarModel({
-        showUnreadsCategory,
-        showDialPad,
-        avatarAikoTan,
-        avatarArjunPatel,
-        avatarDanielOkoro,
-        avatarDariusCole,
-        avatarDavidLiang,
-        avatarEmmaNovak,
-        avatarEthanBrooks,
-      });
+    const baseModel = modelProp ?? { topGroupItems: [], groups: [] };
     const withOverrides = applyChannelNameOverrides(baseModel, channelNameOverrides);
     return applyChannelSidebarInteractivity(
       withOverrides,
@@ -230,18 +214,9 @@ export default function ChannelsSidebar({
     );
   }, [
     modelProp,
-    showUnreadsCategory,
-    showDialPad,
     channelNameOverrides,
     activeChannelName,
     onItemClick,
-    avatarAikoTan,
-    avatarArjunPatel,
-    avatarDanielOkoro,
-    avatarDariusCole,
-    avatarDavidLiang,
-    avatarEmmaNovak,
-    avatarEthanBrooks,
   ]);
 
   return (

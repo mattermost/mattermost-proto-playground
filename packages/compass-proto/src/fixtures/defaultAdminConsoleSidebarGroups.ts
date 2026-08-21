@@ -1,0 +1,126 @@
+import type { AdminConsoleSidebarGroupModel } from '@mattermost/compass-ui';
+
+export const defaultAdminConsoleSidebarGroups: AdminConsoleSidebarGroupModel[] =
+  [
+    {
+      key: 'billing',
+      categoryLabel: 'Billing & account',
+      categoryIconKey: 'billing',
+      stickyCategory: true,
+      items: [
+        { name: 'Subscription' },
+        { name: 'Billing History' },
+        { name: 'Company Information' },
+        { name: 'Payment Information' },
+      ],
+    },
+    {
+      key: 'reporting',
+      categoryLabel: 'Reporting',
+      categoryIconKey: 'reporting',
+      items: [
+        { name: 'Site Statistics' },
+        { name: 'Team Statistics' },
+        { name: 'Logs' },
+      ],
+    },
+    {
+      key: 'users',
+      categoryLabel: 'User management',
+      categoryIconKey: 'users',
+      items: [
+        { name: 'Users' },
+        { name: 'Groups' },
+        { name: 'Teams', active: true },
+        { name: 'Channels' },
+        { name: 'Permissions' },
+      ],
+    },
+    {
+      key: 'environment',
+      categoryLabel: 'Environment',
+      categoryIconKey: 'environment',
+      items: [
+        { name: 'Web Server' },
+        { name: 'Database' },
+        { name: 'Elasticsearch' },
+        { name: 'File Storage' },
+        { name: 'Image Proxy' },
+        { name: 'SMTP' },
+        { name: 'Push Notification Server' },
+        { name: 'High Availability' },
+        { name: 'Rate Limiting' },
+        { name: 'Logging' },
+        { name: 'Session Lengths' },
+        { name: 'Performance Monitoring' },
+        { name: 'Developer' },
+      ],
+    },
+    {
+      key: 'site',
+      categoryLabel: 'Site configuration',
+      categoryIconKey: 'site',
+      items: [
+        { name: 'Customization' },
+        { name: 'Localization' },
+        { name: 'Users and Teams' },
+        { name: 'Notifications' },
+        { name: 'Announcement Banner' },
+        { name: 'Emoji' },
+        { name: 'Posts' },
+        { name: 'File Sharing and Downloads' },
+        { name: 'Public Links' },
+      ],
+    },
+    {
+      key: 'authentication',
+      categoryLabel: 'Authentication',
+      categoryIconKey: 'authentication',
+      items: [
+        { name: 'Sign up' },
+        { name: 'Email' },
+        { name: 'Password' },
+        { name: 'MFA' },
+        { name: 'AD/LDAP' },
+        { name: 'SAML 2.0' },
+        { name: 'OAuth 2.0' },
+      ],
+    },
+    {
+      key: 'plugins',
+      categoryLabel: 'Plugins',
+      categoryIconKey: 'plugins',
+      items: [
+        { name: 'Plugin Management' },
+        { name: 'Jira' },
+        { name: 'Zoom' },
+      ],
+    },
+    {
+      key: 'integrations',
+      categoryLabel: 'Integrations',
+      categoryIconKey: 'integrations',
+      items: [
+        { name: 'Features' },
+        { name: 'GIF' },
+        { name: 'CORS' },
+      ],
+    },
+    {
+      key: 'compliance',
+      categoryLabel: 'Compliance',
+      categoryIconKey: 'compliance',
+      items: [
+        { name: 'Data Retention Policy' },
+        { name: 'Compliance Export (Beta)' },
+        { name: 'Compliance Monitoring' },
+        { name: 'Custom Terms of Service' },
+      ],
+    },
+    {
+      key: 'experimental',
+      categoryLabel: 'Experimental features',
+      categoryIconKey: 'experimental',
+      items: [{ name: 'Features' }, { name: 'Feature Flags' }],
+    },
+  ];

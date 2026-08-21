@@ -8,7 +8,7 @@ import { Radio } from '@mattermost/compass-ui';
 import { Scrollbar } from '@mattermost/compass-ui';
 import { Select } from '@mattermost/compass-ui';
 import { TextInput } from '@mattermost/compass-ui';
-import { defaultAdminConsoleSidebarGroups } from '@mattermost/compass-ui';
+import { defaultAdminConsoleSidebarGroups } from '@mattermost/compass-proto';
 import styles from './admin-console.specimen.module.scss';
 
 const DOC_PRIORITY =
