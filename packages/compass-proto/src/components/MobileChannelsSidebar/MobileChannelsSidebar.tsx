@@ -8,10 +8,10 @@ import { Icon } from '@mattermost/compass-ui';
 import { Scrollbar } from '@mattermost/compass-ui';
 import {
   applyChannelNameOverrides,
-  buildDefaultChannelsSidebarModel,
   type ChannelsSidebarItemModel,
   type ChannelsSidebarModel,
 } from '@mattermost/compass-ui';
+import { buildDefaultChannelsSidebarModel } from '@/fixtures/buildDefaultChannelsSidebarModel';
 import styles from './MobileChannelsSidebar.module.scss';
 
 function applyInteractivity(

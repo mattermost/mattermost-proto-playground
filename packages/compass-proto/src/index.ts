@@ -24,6 +24,9 @@ export * from './components/MobileTabScreen/index';
 export * from './components/MobileTeamSidebar/index';
 export * from './components/ParticipantsPanel/index';
 export * from './components/RecordingPill/index';
+export * from './components/RightSidebarChannelInfo/index';
+export * from './components/RightSidebarThread/index';
+export * from './fixtures/index';
 
 export type * from './types/callParticipant';
 export { default as shellStyles } from './components/ChannelShell/ChannelShell.module.scss';

@@ -1,8 +1,8 @@
+import { RightSidebarThread, RightSidebarChannelInfo } from '@mattermost/compass-proto';
 import {
-  RightSidebarChannelInfo,
   RightSidebarHeader,
-  RightSidebarThread,
-  RightSidebar} from '@mattermost/compass-ui';
+  RightSidebar
+} from '@mattermost/compass-ui';
 import { UserAvatar } from '@mattermost/compass-ui';
 import { RIGHT_SIDEBAR_THREAD_DEMO_MESSAGES } from '@/fixtures/rightSidebarThreadDemo';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';

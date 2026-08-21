@@ -10,7 +10,6 @@ import Icon from '@/components/Icon/Icon';
 import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import {
   applyChannelNameOverrides,
-  buildDefaultChannelsSidebarModel,
   type ChannelsSidebarItemModel,
   type ChannelsSidebarModel,
 } from './channelsSidebarModel';
@@ -191,37 +190,16 @@ export interface ChannelsSidebarProps {
 
 export default function ChannelsSidebar({
   teamName = 'Contributors',
-  showUnreadsCategory = false,
   showFilter = false,
-  showDialPad = false,
   moreUnreadsAbove = false,
   moreUnreadsBelow = false,
   channelNameOverrides,
   activeChannelName = '',
   onItemClick,
-  avatarAikoTan = '',
-  avatarArjunPatel = '',
-  avatarDanielOkoro = '',
-  avatarDariusCole = '',
-  avatarDavidLiang = '',
-  avatarEmmaNovak = '',
-  avatarEthanBrooks = '',
   model: modelProp,
 }: ChannelsSidebarProps) {
   const model = useMemo(() => {
-    const baseModel =
-      modelProp ??
-      buildDefaultChannelsSidebarModel({
-        showUnreadsCategory,
-        showDialPad,
-        avatarAikoTan,
-        avatarArjunPatel,
-        avatarDanielOkoro,
-        avatarDariusCole,
-        avatarDavidLiang,
-        avatarEmmaNovak,
-        avatarEthanBrooks,
-      });
+    const baseModel = modelProp ?? { topGroupItems: [], groups: [] };
     const withOverrides = applyChannelNameOverrides(baseModel, channelNameOverrides);
     return applyChannelSidebarInteractivity(
       withOverrides,
@@ -230,18 +208,9 @@ export default function ChannelsSidebar({
     );
   }, [
     modelProp,
-    showUnreadsCategory,
-    showDialPad,
     channelNameOverrides,
     activeChannelName,
     onItemClick,
-    avatarAikoTan,
-    avatarArjunPatel,
-    avatarDanielOkoro,
-    avatarDariusCole,
-    avatarDavidLiang,
-    avatarEmmaNovak,
-    avatarEthanBrooks,
   ]);
 
   return (

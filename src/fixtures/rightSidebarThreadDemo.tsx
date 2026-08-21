@@ -1,4 +1,4 @@
-import type { RightSidebarThreadMessage } from '@mattermost/compass-ui';
+import type { RightSidebarThreadMessage } from '@mattermost/compass-proto';
 import { messageStyles } from '@mattermost/compass-ui';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';

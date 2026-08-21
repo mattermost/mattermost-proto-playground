@@ -74,7 +74,11 @@ export default function ChannelShell({
         model={channelsSidebarModel}
       />
     ) : (
-      <ChannelsSidebar teamName={teamName} showFilter={showFilter} />
+      <ChannelsSidebar
+        teamName={teamName}
+        showFilter={showFilter}
+        model={{ topGroupItems: [], groups: [] }}
+      />
     ));
 
   return (

@@ -1,4 +1,5 @@
 import { AdminConsoleSidebar } from '@mattermost/compass-ui';
+import { defaultAdminConsoleSidebarGroups } from '@mattermost/compass-proto';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import styles from '@/styles/library-demo/patterns.module.scss';
 
@@ -10,6 +11,7 @@ export default function AdminConsoleSidebarLibrary() {
         <AdminConsoleSidebar
           avatarSrc={avatarLeonard}
           avatarAlt="Leonard Riley"
+          groups={defaultAdminConsoleSidebarGroups}
         />
       </div>
     </div>

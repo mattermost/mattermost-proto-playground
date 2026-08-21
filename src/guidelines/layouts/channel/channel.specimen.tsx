@@ -5,9 +5,9 @@ import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
 import { Message } from '@mattermost/compass-ui';
+import { RightSidebarChannelInfo } from '@mattermost/compass-proto';
 import {
-  RightSidebarChannelInfo,
-  RightSidebarHeader,
+  RightSidebarHeader
 } from '@mattermost/compass-ui';
 import { Scrollbar } from '@mattermost/compass-ui';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';

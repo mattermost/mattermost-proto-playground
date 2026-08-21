@@ -1,4 +1,5 @@
 import { ChannelsSidebar } from '@mattermost/compass-ui';
+import { buildDefaultChannelsSidebarModel } from '@mattermost/compass-proto';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
@@ -7,6 +8,16 @@ import avatarDavidLiang from '@/assets/avatars/David Liang.png';
 import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
 import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
 import styles from '@/styles/library-demo/patterns.module.scss';
+
+const avatarProps = {
+  avatarAikoTan,
+  avatarArjunPatel,
+  avatarDanielOkoro: avatarDanielle,
+  avatarDariusCole,
+  avatarDavidLiang,
+  avatarEmmaNovak,
+  avatarEthanBrooks,
+};
 
 export default function ChannelsSidebarLibrary() {
   return (
@@ -17,26 +28,19 @@ export default function ChannelsSidebarLibrary() {
         </p>
         <ChannelsSidebar
           showFilter
-          avatarAikoTan={avatarAikoTan}
-          avatarArjunPatel={avatarArjunPatel}
-          avatarDanielOkoro={avatarDanielle}
-          avatarDariusCole={avatarDariusCole}
-          avatarDavidLiang={avatarDavidLiang}
-          avatarEmmaNovak={avatarEmmaNovak}
-          avatarEthanBrooks={avatarEthanBrooks}
+          model={buildDefaultChannelsSidebarModel({
+            showUnreadsCategory: false,
+            ...avatarProps,
+          })}
         />
       </div>
       <div>
         <p className={styles['patterns__variant-label']}>Unreads category On</p>
         <ChannelsSidebar
-          showUnreadsCategory
-          avatarAikoTan={avatarAikoTan}
-          avatarArjunPatel={avatarArjunPatel}
-          avatarDanielOkoro={avatarDanielle}
-          avatarDariusCole={avatarDariusCole}
-          avatarDavidLiang={avatarDavidLiang}
-          avatarEmmaNovak={avatarEmmaNovak}
-          avatarEthanBrooks={avatarEthanBrooks}
+          model={buildDefaultChannelsSidebarModel({
+            showUnreadsCategory: true,
+            ...avatarProps,
+          })}
         />
       </div>
     </div>

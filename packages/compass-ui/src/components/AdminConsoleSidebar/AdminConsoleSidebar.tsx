@@ -16,7 +16,6 @@ import { ChannelsSidebarCategory } from '@/components/ChannelsSidebar/ChannelsSi
 import Scrollbar from '@/components/Scrollbar/Scrollbar';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import {
-  defaultAdminConsoleSidebarGroups,
   type AdminConsoleSidebarCategoryIconKey,
   type AdminConsoleSidebarGroupModel,
 } from './adminConsoleSidebarModel';
@@ -60,7 +59,7 @@ export default function AdminConsoleSidebar({
   userDisplayName = 'Leonard Riley',
   avatarSrc = '',
   avatarAlt = 'Account avatar',
-  groups = defaultAdminConsoleSidebarGroups,
+  groups = [],
 }: AdminConsoleSidebarProps) {
   const findSettingsId = useId();
   return (
