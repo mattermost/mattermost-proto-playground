@@ -156,20 +156,28 @@ for (const file of requiredProtoDist) {
 }
 
 const packDir = mkdtempSync(path.join(tmpdir(), 'compass-proto-pack-'));
-const uiTarballName = 'mattermost-compass-ui-0.1.0-alpha.0.tgz';
-const protoTarballName = 'mattermost-compass-proto-0.1.0-alpha.0.tgz';
-const uiTarballPath = path.join(packDir, uiTarballName);
-const protoTarballPath = path.join(packDir, protoTarballName);
+
+function packWorkspace(workspace) {
+  const out = execSync(
+    `npm pack --workspace=${workspace} --pack-destination "${packDir}"`,
+    { cwd: root, encoding: 'utf8', stdio: ['inherit', 'pipe', 'inherit'] },
+  );
+  const tarballName = out
+    .trim()
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .at(-1);
+  if (!tarballName?.endsWith('.tgz')) {
+    throw new Error(
+      `npm pack (${workspace}) did not print a tarball name; got: ${JSON.stringify(out)}`,
+    );
+  }
+  return path.join(packDir, tarballName);
+}
 
 console.log('[smoke-proto] Packing tarballs…');
-execSync(`npm pack --workspace=@mattermost/compass-ui --pack-destination "${packDir}"`, {
-  cwd: root,
-  stdio: 'inherit',
-});
-execSync(`npm pack --workspace=@mattermost/compass-proto --pack-destination "${packDir}"`, {
-  cwd: root,
-  stdio: 'inherit',
-});
+const uiTarballPath = packWorkspace('@mattermost/compass-ui');
+const protoTarballPath = packWorkspace('@mattermost/compass-proto');
 
 assertTarballContents(
   uiTarballPath,
