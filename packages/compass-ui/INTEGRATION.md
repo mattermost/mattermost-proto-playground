@@ -105,9 +105,15 @@ Fonts are not bundled in the library — consumers load them (same pattern as th
 
 ```tsx
 import { Button, Icon } from '@mattermost/compass-ui';
+```
+
+For playground, prototypes, and docs that install the unpublished workspace package, also:
+
+```tsx
 import { ChannelShell } from '@mattermost/compass-proto';
 ```
 
+Webapp product code should use `@mattermost/compass-ui` only.
 ---
 
 ## Peer dependencies
@@ -313,9 +319,12 @@ Confirm host vars match Compass theme role names before wide rollout. Spike with
 
 ## Patterns, layouts, and fixtures
 
-Compass layers are Foundations → Components → Patterns → Layouts. Layouts such as `ChannelShell` (from compass-proto) and patterns such as `ThreadListItem` (from compass-ui) do **not** ship demo avatar images. Pass fixtures from your app. Demo sidebar trees and RHS specimen panels live in **`@mattermost/compass-proto`**:
+Compass layers are Foundations → Components → Patterns → Layouts. Patterns such as `ThreadListItem` (from **`@mattermost/compass-ui`**) do **not** ship demo avatar images — pass fixtures from your app.
+
+**Playground / prototypes / docs only:** layouts such as `ChannelShell`, demo sidebar trees, and RHS specimen panels live in unpublished **`@mattermost/compass-proto`**. Use that package only where you can install the workspace dependency. Mattermost webapp product code should import from **`@mattermost/compass-ui` only** (compose patterns and sidebars yourself; do not depend on `compass-proto`).
 
 ```tsx
+// Workspace consumers (playground, prototypes, docs) — not webapp product code
 import type { ChannelsSidebarModel } from '@mattermost/compass-ui';
 import {
   ChannelShell,

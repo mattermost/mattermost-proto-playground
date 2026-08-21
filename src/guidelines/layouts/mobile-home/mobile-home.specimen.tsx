@@ -50,7 +50,7 @@ export default function MobileHomeLibrary() {
               showUnreadsCategory
               avatarAikoTan={avatarAikoTan}
               avatarArjunPatel={avatarArjunPatel}
-              avatarDanielOkoro={avatarDanielle}
+              avatarDanielleOkoro={avatarDanielle}
               avatarDariusCole={avatarDariusCole}
               avatarDavidLiang={avatarDavidLiang}
               avatarEmmaNovak={avatarEmmaNovak}

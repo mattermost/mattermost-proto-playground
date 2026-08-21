@@ -17,12 +17,15 @@ import styles from './ChannelsSidebar.module.scss';
 
 function applyChannelSidebarInteractivity(
   model: ChannelsSidebarModel,
-  activeChannelName: string,
+  activeChannelName: string | undefined,
   onItemClick?: (name: string) => void,
 ): ChannelsSidebarModel {
   const mapRow = (row: ChannelsSidebarItemModel) => ({
     ...row,
-    active: row.name === activeChannelName,
+    active:
+      activeChannelName === undefined
+        ? row.active
+        : row.name === activeChannelName,
     onClick: onItemClick ? () => onItemClick(row.name) : undefined,
   });
   return {
@@ -173,13 +176,16 @@ export interface ChannelsSidebarProps {
    * Applies to `name` and `avatarAlt` on each item (same as the legacy hardcoded list).
    */
   channelNameOverrides?: Record<string, string>;
-  /** Match against **resolved** item names (after `channelNameOverrides`). Use '' for none. */
+  /**
+   * Match against **resolved** item names (after `channelNameOverrides`).
+   * Omit to keep each row’s fixture `active` value; pass `''` to clear selection.
+   */
   activeChannelName?: string;
   /** Receives the row's visible `name` (after overrides). */
   onItemClick?: (name: string) => void;
   avatarAikoTan?: string;
   avatarArjunPatel?: string;
-  avatarDanielOkoro?: string;
+  avatarDanielleOkoro?: string;
   avatarDariusCole?: string;
   avatarDavidLiang?: string;
   avatarEmmaNovak?: string;
@@ -194,7 +200,7 @@ export default function ChannelsSidebar({
   moreUnreadsAbove = false,
   moreUnreadsBelow = false,
   channelNameOverrides,
-  activeChannelName = '',
+  activeChannelName,
   onItemClick,
   model: modelProp,
 }: ChannelsSidebarProps) {

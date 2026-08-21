@@ -13,7 +13,7 @@ export const externalCallParticipantsChannelsSidebarModel =
     showUnreadsCategory: false,
     avatarAikoTan,
     avatarArjunPatel,
-    avatarDanielOkoro: avatarDanielle,
+    avatarDanielleOkoro: avatarDanielle,
     avatarDariusCole,
     avatarDavidLiang,
     avatarEmmaNovak,

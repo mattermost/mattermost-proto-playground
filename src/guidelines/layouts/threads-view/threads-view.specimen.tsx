@@ -69,7 +69,7 @@ export default function ThreadsViewLayout() {
         showUnreadsCategory: false,
         avatarAikoTan,
         avatarArjunPatel,
-        avatarDanielOkoro: avatarDanielle,
+        avatarDanielleOkoro: avatarDanielle,
         avatarDariusCole,
         avatarDavidLiang,
         avatarEmmaNovak,

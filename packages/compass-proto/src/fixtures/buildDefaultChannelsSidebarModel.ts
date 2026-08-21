@@ -10,7 +10,7 @@ export interface BuildDefaultChannelsSidebarModelInput {
   showDialPad?: boolean;
   avatarAikoTan: string;
   avatarArjunPatel: string;
-  avatarDanielOkoro: string;
+  avatarDanielleOkoro: string;
   avatarDariusCole: string;
   avatarDavidLiang: string;
   avatarEmmaNovak: string;
@@ -26,7 +26,7 @@ export function buildDefaultChannelsSidebarModel(
     showDialPad = false,
     avatarAikoTan,
     avatarArjunPatel,
-    avatarDanielOkoro,
+    avatarDanielleOkoro,
     avatarDariusCole,
     avatarDavidLiang,
     avatarEmmaNovak,
@@ -76,12 +76,12 @@ export function buildDefaultChannelsSidebarModel(
           showAvatarStatus: true,
         },
         {
-          name: 'Daniel Okoro',
+          name: 'Danielle Okoro',
           leadingVisual: 'Direct Message',
           status: 'Mention',
           mentionCount: 1,
-          avatarSrc: avatarDanielOkoro,
-          avatarAlt: 'Daniel Okoro',
+          avatarSrc: avatarDanielleOkoro,
+          avatarAlt: 'Danielle Okoro',
           showAvatarStatus: true,
         },
       ],
@@ -179,12 +179,12 @@ export function buildDefaultChannelsSidebarModel(
         showAvatarStatus: true,
       },
       {
-        name: 'Daniel Okoro',
+        name: 'Danielle Okoro',
         leadingVisual: 'Direct Message',
         status: 'Mention',
         mentionCount: 1,
-        avatarSrc: avatarDanielOkoro,
-        avatarAlt: 'Daniel Okoro',
+        avatarSrc: avatarDanielleOkoro,
+        avatarAlt: 'Danielle Okoro',
         showAvatarStatus: true,
       },
     );

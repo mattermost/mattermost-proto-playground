@@ -49,7 +49,7 @@ export interface MobileChannelsSidebarProps {
   findChannelsPlaceholder?: string;
   avatarAikoTan?: string;
   avatarArjunPatel?: string;
-  avatarDanielOkoro?: string;
+  avatarDanielleOkoro?: string;
   avatarDariusCole?: string;
   avatarDavidLiang?: string;
   avatarEmmaNovak?: string;
@@ -75,7 +75,7 @@ export default function MobileChannelsSidebar({
   findChannelsPlaceholder = 'Find channels…',
   avatarAikoTan = '',
   avatarArjunPatel = '',
-  avatarDanielOkoro = '',
+  avatarDanielleOkoro = '',
   avatarDariusCole = '',
   avatarDavidLiang = '',
   avatarEmmaNovak = '',
@@ -91,7 +91,7 @@ export default function MobileChannelsSidebar({
         showUnreadsCategory,
         avatarAikoTan,
         avatarArjunPatel,
-        avatarDanielOkoro,
+        avatarDanielleOkoro,
         avatarDariusCole,
         avatarDavidLiang,
         avatarEmmaNovak,
@@ -109,7 +109,7 @@ export default function MobileChannelsSidebar({
     onItemClick,
     avatarAikoTan,
     avatarArjunPatel,
-    avatarDanielOkoro,
+    avatarDanielleOkoro,
     avatarDariusCole,
     avatarDavidLiang,
     avatarEmmaNovak,
