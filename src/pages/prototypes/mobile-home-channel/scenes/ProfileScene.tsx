@@ -3,7 +3,8 @@ import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
-import {Icon, MobileMenuItem, MobileProfile, Scrollbar} from '@mattermost/compass-ui';
+import { Icon, Scrollbar } from '@mattermost/compass-ui';
+import { MobileMenuItem, MobileProfile } from '@mattermost/compass-proto';
 import {avatars} from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';
 

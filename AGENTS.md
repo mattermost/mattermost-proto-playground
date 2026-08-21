@@ -6,6 +6,11 @@ Shared instructions for Cursor, Claude Code, and other agents. `CLAUDE.md` impor
 
 Vocabulary used everywhere: **Foundations** (tokens, type, color, motion) → **Components** (reusable UI) → **Patterns** (composed blocks like Channel Sidebar) → **Layouts** (full screens). Docs URLs and topic categories follow this model.
 
+Package split (in-repo):
+
+- **`@mattermost/compass-ui`** — published core (tokens, primitives, desktop chrome pieces)
+- **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call* composites (prototyping / docs only)
+
 ## Building new components
 
 Before writing new UI, audit `src/components/` (and Compass UI). Reuse an existing component when it already covers the need — especially when the name matches Figma. Only build a new sub-component when nothing suitable exists.

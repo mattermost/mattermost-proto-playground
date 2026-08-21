@@ -1,10 +1,5 @@
-import {
-  MessageSeparator,
-  MobileMentions,
-  MobileMessage,
-  Scrollbar,
-  mobileMessageStyles,
-} from '@mattermost/compass-ui';
+import { MessageSeparator, Scrollbar } from '@mattermost/compass-ui';
+import { MobileMentions, MobileMessage, mobileMessageStyles } from '@mattermost/compass-proto';
 import {avatars} from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';
 

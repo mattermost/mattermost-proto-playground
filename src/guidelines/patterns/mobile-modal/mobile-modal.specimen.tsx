@@ -1,4 +1,4 @@
-import type {ReactNode} from 'react';
+import type { ReactNode} from 'react';
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
@@ -6,11 +6,8 @@ import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
 import LayersOutlineIcon from '@mattermost/compass-icons/components/layers-outline';
 import {
-  Icon,
-  MobileMenuItem,
-  MobileModal,
-  MobileNavigationBar,
-} from '@mattermost/compass-ui';
+  Icon } from '@mattermost/compass-ui';
+import { MobileMenuItem, MobileModal, MobileNavigationBar } from '@mattermost/compass-proto';
 import DeviceFrame from '@/components/layout/DeviceFrame';
 import MobileModalStage from '@/components/layout/MobileModalStage';
 import styles from './mobile-modal.specimen.module.scss';

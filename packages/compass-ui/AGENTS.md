@@ -3,6 +3,7 @@
 When adding or editing `packages/compass-ui/**/*.stories.tsx`:
 
 - Story `title`s mirror the guidelines sidebar: `Components/{section}/{name}` and `Foundations/Style/{name}`. Keep `packages/compass-ui/src/storybook/titles.ts` aligned with `src/manifests/sections.ts`; use the same string literal in `meta.title`.
+- **Proto stories** (`packages/compass-proto/**/*.stories.tsx`) use `Proto/...` titles — unpublished Mobile/Call/layout composites, not core.
 - Foundation stories import named `*Content` exports from guideline specimens (visual reference only). Use `tags: ['autodocs']`, inline string-literal titles, meaningful story names. Do not port guideline MDX prose into Storybook.
 - Labels/demo text: `var(--center-channel-color)` — not `--color-neutral-*` / `--color-text-secondary`.
 - Preview surfaces: `var(--center-channel-bg)`. Inverted surfaces: `var(--sidebar-header-bg)` with `var(--sidebar-text)` labels.

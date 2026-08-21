@@ -24,7 +24,7 @@ First alpha extracted from `mattermost-proto-playground`.
   - `@mattermost/compass-ui/styles` — tokens, themes, reset (`dist/compass-ui.css`)
   - `@mattermost/compass-ui/component-styles` — component CSS modules + SimpleBar base styles (`dist/index.css`)
 - **Root barrel** export from `src/index.ts` (components, hooks, utilities, sub-exports for layout shells).
-- **Call icons:** `DialpadIcon`, `OutboundCallIcon`, `PhoneLockIcon`.
+- **Call icons:** `OutboundCallIcon`, `PhoneLockIcon` (in `compass-proto`). Dialpad uses `@mattermost/compass-icons` `dialpad`.
 - **ChannelsSidebar helpers:** `buildDefaultChannelsSidebarModel`, header/navigator subcomponents.
 - **Storybook** with theme toolbar (`denim`, `sapphire`, `quartz`, `indigo`, `onyx`).
 - **CI workflow** (typecheck, build, `npm pack` artifact).

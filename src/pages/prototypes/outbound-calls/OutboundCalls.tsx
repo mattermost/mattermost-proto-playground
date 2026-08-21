@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { DialpadIcon } from '@mattermost/compass-ui';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { Icon } from '@mattermost/compass-ui';
 import { ChannelsSidebar } from '@mattermost/compass-ui';
 import { GlobalHeader } from '@mattermost/compass-ui';

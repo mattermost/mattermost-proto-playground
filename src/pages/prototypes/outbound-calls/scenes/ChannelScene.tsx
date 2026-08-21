@@ -7,7 +7,7 @@ import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/O
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-ui';
+import { layoutStyles } from '@mattermost/compass-proto';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({

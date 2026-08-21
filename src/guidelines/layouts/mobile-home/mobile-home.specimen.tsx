@@ -1,11 +1,7 @@
-import {useState} from 'react';
-import {
-  MobileChannelsSidebar,
-  MobileHome,
-  MobileTabBar,
-  MobileTeamSidebar,
-  type MobileTabBarTab,
-} from '@mattermost/compass-ui';
+import { useState} from 'react';
+import { MobileChannelsSidebar } from '@mattermost/compass-proto';
+import { type MobileTabBarTab } from '@mattermost/compass-proto';
+import { MobileHome, MobileTabBar, MobileTeamSidebar } from '@mattermost/compass-proto';
 import DeviceFrame from '@/components/layout/DeviceFrame';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';

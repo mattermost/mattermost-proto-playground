@@ -1,5 +1,6 @@
 import SendIcon from '@mattermost/compass-icons/components/send';
-import {Icon, MobileModalNavigationBar} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui';
+import { MobileModalNavigationBar } from '@mattermost/compass-proto';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import styles from './MobileModalNavigationBarGuidelineAnatomy.module.scss';
 

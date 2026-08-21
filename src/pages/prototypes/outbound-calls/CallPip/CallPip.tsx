@@ -9,7 +9,7 @@ import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
-import { DialpadIcon } from '@mattermost/compass-ui';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { SVG_SIZE_MAP , Icon} from '@mattermost/compass-ui';
 import { IconButton } from '@mattermost/compass-ui';
 import { MenuItem } from '@mattermost/compass-ui';

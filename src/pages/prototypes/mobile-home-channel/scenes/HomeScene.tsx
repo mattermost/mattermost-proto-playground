@@ -1,15 +1,7 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import {
-  MobileChannelsSidebar,
-  MobileHome,
-  MobileTabBar,
-  MobileTeamSidebar,
-  type MobileTabBarTab,
-} from '@mattermost/compass-ui';
+import { useEffect, useRef, useState, } from 'react';
+import { MobileChannelsSidebar } from '@mattermost/compass-proto';
+import { type MobileTabBarTab } from '@mattermost/compass-proto';
+import { MobileHome, MobileTabBar, MobileTeamSidebar } from '@mattermost/compass-proto';
 import {avatars} from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';
 import MentionsScene from './MentionsScene';

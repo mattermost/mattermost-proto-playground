@@ -9,6 +9,7 @@ import path from 'path';
 import { ensureCompassUiStyles } from './vite-plugin-ensure-compass-ui-styles';
 
 const compassUiDist = path.resolve(__dirname, 'packages/compass-ui/dist');
+const compassProtoDist = path.resolve(__dirname, 'packages/compass-proto/dist');
 
 function compassUiDistReload(): Plugin {
   let reloadTimer: ReturnType<typeof setTimeout> | undefined;
@@ -24,10 +25,13 @@ function compassUiDistReload(): Plugin {
     name: 'compass-ui-dist-reload',
     configureServer(server) {
       server.watcher.add(compassUiDist);
+      server.watcher.add(compassProtoDist);
       server.watcher.on('change', (file) => {
         if (
-          file.startsWith(compassUiDist) &&
-          /\/(index\.(js|css)|compass-ui\.css)$/.test(file)
+          (file.startsWith(compassUiDist) &&
+            /\/(index\.(js|css)|compass-ui\.css)$/.test(file)) ||
+          (file.startsWith(compassProtoDist) &&
+            /\/index\.(js|css)$/.test(file))
         ) {
           scheduleReload(server);
         }
@@ -69,12 +73,15 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['@mattermost/compass-ui'],
+    exclude: ['@mattermost/compass-ui', '@mattermost/compass-proto'],
   },
   server: {
     watch: {
       // Rebuilds land in dist/; ignore source saves so the app reloads after the library build finishes.
-      ignored: ['**/packages/compass-ui/src/**'],
+      ignored: [
+        '**/packages/compass-ui/src/**',
+        '**/packages/compass-proto/src/**',
+      ],
     },
   },
 });

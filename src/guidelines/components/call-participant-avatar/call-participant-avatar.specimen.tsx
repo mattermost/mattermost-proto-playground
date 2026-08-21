@@ -2,7 +2,7 @@ import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
-import { CallParticipantAvatar } from '@mattermost/compass-ui';
+import { CallParticipantAvatar } from '@mattermost/compass-proto';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function CallParticipantAvatarLibrary() {

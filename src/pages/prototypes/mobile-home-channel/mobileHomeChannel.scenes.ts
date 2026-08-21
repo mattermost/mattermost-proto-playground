@@ -1,4 +1,4 @@
-import type {MobileTabBarTab} from '@mattermost/compass-ui';
+import type { MobileTabBarTab } from '@mattermost/compass-proto';
 
 export type TabSceneId = MobileTabBarTab;
 

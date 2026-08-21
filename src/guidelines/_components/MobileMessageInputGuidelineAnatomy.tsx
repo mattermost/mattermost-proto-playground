@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {MobileMessageInput} from '@mattermost/compass-ui';
+import { MobileMessageInput } from '@mattermost/compass-proto';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import sampleImage from '@/assets/images/sample-image.jpg';
 import styles from './MobileMessageInputGuidelineAnatomy.module.scss';

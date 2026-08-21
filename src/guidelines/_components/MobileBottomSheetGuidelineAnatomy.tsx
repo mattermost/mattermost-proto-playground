@@ -1,10 +1,5 @@
-import {
-  Button,
-  Icon,
-  MobileBottomSheet,
-  MobileMenuItem,
-  TeamAvatar,
-} from '@mattermost/compass-ui';
+import { Button, Icon, TeamAvatar } from '@mattermost/compass-ui';
+import { MobileBottomSheet, MobileMenuItem } from '@mattermost/compass-proto';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';

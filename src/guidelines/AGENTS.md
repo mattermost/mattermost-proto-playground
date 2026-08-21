@@ -2,6 +2,8 @@
 
 Follow this when working under `src/guidelines/`, docs manifests, or the docs shell.
 
+Mobile*, Call*, and `ChannelShell` live in **`@mattermost/compass-proto`** (unpublished). Prefer importing those from `compass-proto`, not `compass-ui`. Soft-label them as non-core / prototyping when writing docs voice.
+
 ## Adding a topic
 
 Every docs entry is a **topic** in `src/manifests/topics.ts` (prose + optional specimen) at `/<category>/<slug>`.

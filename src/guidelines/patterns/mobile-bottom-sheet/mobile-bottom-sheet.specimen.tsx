@@ -1,11 +1,7 @@
-import {useState, type ReactNode} from 'react';
+import { useState, type ReactNode} from 'react';
 import {
-  Button,
-  Icon,
-  MobileBottomSheet,
-  MobileMenuItem,
-  TeamAvatar,
-} from '@mattermost/compass-ui';
+  Button, Icon, TeamAvatar } from '@mattermost/compass-ui';
+import { MobileBottomSheet, MobileMenuItem } from '@mattermost/compass-proto';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import CameraOutlineIcon from '@mattermost/compass-icons/components/camera-outline';

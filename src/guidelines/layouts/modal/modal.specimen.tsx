@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@mattermost/compass-ui';
 import { ChannelHeader } from '@mattermost/compass-ui';
-import { ChannelShell } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-proto';
 import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
@@ -18,7 +18,7 @@ import avatarArjunPatel from '@/assets/avatars/Arjun Patel.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import { shellStyles } from '@mattermost/compass-ui';
+import { shellStyles } from '@mattermost/compass-proto';
 import styles from './modal.specimen.module.scss';
 
 export default function ModalLayout() {

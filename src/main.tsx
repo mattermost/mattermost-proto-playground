@@ -16,6 +16,7 @@ import '@fontsource/open-sans/700.css';
 
 import '@mattermost/compass-ui/styles';
 import '@mattermost/compass-ui/component-styles';
+import '@mattermost/compass-proto/component-styles';
 
 import './styles/global.scss';
 
