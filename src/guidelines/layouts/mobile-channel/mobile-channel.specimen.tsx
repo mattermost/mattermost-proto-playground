@@ -1,12 +1,7 @@
-import {useState} from 'react';
+import { useState} from 'react';
 import {
-  MessageSeparator,
-  MobileMessage,
-  MobileMessageInput,
-  MobileNavigationBar,
-  Scrollbar,
-  mobileMessageStyles,
-} from '@mattermost/compass-ui';
+  MessageSeparator, Scrollbar } from '@mattermost/compass-ui';
+import { MobileMessage, MobileMessageInput, MobileNavigationBar, mobileMessageStyles } from '@mattermost/compass-proto';
 import DeviceFrame from '@/components/layout/DeviceFrame';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';

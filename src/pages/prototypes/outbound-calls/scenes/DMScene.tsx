@@ -7,7 +7,7 @@ import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundC
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-ui';
+import { layoutStyles } from '@mattermost/compass-proto';
 
 export function DMScene({
   onOpenProfile,

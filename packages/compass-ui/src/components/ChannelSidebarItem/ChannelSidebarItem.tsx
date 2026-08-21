@@ -6,7 +6,7 @@ import ChartLineIcon from '@mattermost/compass-icons/components/chart-line';
 import CircleMultipleOutlineIcon from '@mattermost/compass-icons/components/circle-multiple-outline';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical';
-import DialpadIcon from '@/icons/DialpadIcon';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import UserAvatar from '@/components/UserAvatar/UserAvatar';
 import MentionBadge from '@/components/MentionBadge/MentionBadge';
 import IconButton from '@/components/IconButton/IconButton';

@@ -1,12 +1,7 @@
-import {useState} from 'react';
+import { useState} from 'react';
 import {
-  MessageSeparator,
-  MobileMessage,
-  MobileMessageInput,
-  MobileNavigationBar,
-  Scrollbar,
-  mobileMessageStyles,
-} from '@mattermost/compass-ui';
+  MessageSeparator, Scrollbar } from '@mattermost/compass-ui';
+import { MobileMessage, MobileMessageInput, MobileNavigationBar, mobileMessageStyles } from '@mattermost/compass-proto';
 import MobileKeyboard from '../components/MobileKeyboard';
 import {avatars, type ChannelMeta} from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';

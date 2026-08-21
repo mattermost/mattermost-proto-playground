@@ -20,6 +20,10 @@
       "import": "./dist/compass-ui.css",
       "default": "./dist/compass-ui.css"
     },
+    "./styles/standalone": {
+      "import": "./dist/compass-ui-standalone.css",
+      "default": "./dist/compass-ui-standalone.css"
+    },
     "./component-styles": {
       "import": "./dist/index.css",
       "default": "./dist/index.css"
@@ -29,7 +33,7 @@
     "dist"
   ],
   "scripts": {
-    "build:sass": "sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map",
+    "build:sass": "sass src/styles/entry.scss dist/compass-ui.css --load-path=src/styles --no-source-map && sass src/styles/standalone-entry.scss dist/compass-ui-standalone.css --load-path=src/styles --no-source-map",
     "build": "vite build",
     "dev": "vite build --watch",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
@@ -37,7 +41,7 @@
     "build-storybook": "storybook build"
   },
   "peerDependencies": {
-    "@mattermost/compass-icons": "^0.1.53",
+    "@mattermost/compass-icons": "^0.1.63",
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0",
     "simplebar-react": "^3.3.2"
@@ -50,7 +54,7 @@
   "devDependencies": {
     "@fontsource/metropolis": "^5.2.5",
     "@fontsource/open-sans": "^5.2.7",
-    "@mattermost/compass-icons": "^0.1.53",
+    "@mattermost/compass-icons": "^0.1.63",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^8.6.14",
     "@storybook/react": "^8.6.14",

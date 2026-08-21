@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CallWidget } from '@mattermost/compass-ui';
+import { CallWidget } from '@mattermost/compass-proto';
 import type { Participant } from '@/types/callParticipant';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarAikoTan from '@/assets/avatars/Aiko Tan.png';

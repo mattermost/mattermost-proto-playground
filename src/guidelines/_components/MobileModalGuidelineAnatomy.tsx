@@ -1,4 +1,4 @@
-import {MobileModal} from '@mattermost/compass-ui';
+import { MobileModal } from '@mattermost/compass-proto';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import styles from './MobileModalGuidelineAnatomy.module.scss';
 

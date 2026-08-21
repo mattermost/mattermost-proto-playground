@@ -1,5 +1,5 @@
 import {useState, type ChangeEvent} from 'react';
-import {MobileSearchField} from '@mattermost/compass-ui';
+import { MobileSearchField } from '@mattermost/compass-proto';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function MobileSearchFieldLibrary() {

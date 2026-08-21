@@ -8,6 +8,7 @@ import '@fontsource/open-sans/400.css';
 import '@fontsource/open-sans/600.css';
 import '@fontsource/open-sans/700.css';
 import '../src/styles/entry.scss';
+import '../src/styles/standalone.scss';
 import './docs-theme.css';
 
 const THEMES = ['denim', 'sapphire', 'quartz', 'indigo', 'onyx'] as const;

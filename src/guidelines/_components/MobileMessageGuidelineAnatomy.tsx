@@ -1,13 +1,7 @@
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import sampleImage from '@/assets/images/sample-image.jpg';
-import {
-  AttachmentCard,
-  ImagePreview,
-  LinkPreview,
-  MessageReactions,
-  MobileMessage,
-  mobileMessageStyles,
-} from '@mattermost/compass-ui';
+import { AttachmentCard, ImagePreview, LinkPreview, MessageReactions } from '@mattermost/compass-ui';
+import { MobileMessage, mobileMessageStyles } from '@mattermost/compass-proto';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import styles from './MobileMessageGuidelineAnatomy.module.scss';
 

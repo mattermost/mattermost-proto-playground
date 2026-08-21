@@ -1,5 +1,5 @@
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import DialpadIcon from '@/icons/DialpadIcon';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
 import TeamAvatar from '@/components/TeamAvatar/TeamAvatar';

@@ -5,7 +5,10 @@ import svgr from 'vite-plugin-svgr';
 const repoSrc = path.resolve(__dirname, '../../../src');
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.stories.@(ts|tsx)'],
+  stories: [
+    '../src/**/*.stories.@(ts|tsx)',
+    '../../compass-proto/src/**/*.stories.@(ts|tsx)',
+  ],
   addons: ['@storybook/addon-essentials', '@storybook/addon-interactions'],
   framework: {
     name: '@storybook/react-vite',
@@ -16,11 +19,13 @@ const config: StorybookConfig = {
 
     viteConfig.resolve ??= {};
     const compassSrc = path.resolve(__dirname, '../src');
+    const protoSrc = path.resolve(__dirname, '../../compass-proto/src');
     viteConfig.resolve.alias = [
       { find: '@/guidelines', replacement: path.join(repoSrc, 'guidelines') },
       { find: '@/styles', replacement: path.join(repoSrc, 'styles') },
       { find: '@/assets', replacement: path.join(repoSrc, 'assets') },
       { find: '@/contexts', replacement: path.join(repoSrc, 'contexts') },
+      { find: '@mattermost/compass-proto', replacement: protoSrc },
       { find: '@', replacement: compassSrc },
       ...(Array.isArray(viteConfig.resolve.alias)
         ? viteConfig.resolve.alias

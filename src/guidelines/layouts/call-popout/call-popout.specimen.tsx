@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CallPopout } from '@mattermost/compass-ui';
+import { CallPopout } from '@mattermost/compass-proto';
 import {
   DIAL_IN_NUMBER,
   DIAL_IN_PIN,

@@ -1,5 +1,5 @@
 import { ChannelHeader } from '@mattermost/compass-ui';
-import { ChannelShell } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-proto';
 import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
@@ -16,7 +16,7 @@ import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import { shellStyles } from '@mattermost/compass-ui';
+import { shellStyles } from '@mattermost/compass-proto';
 
 export default function ChannelThreadLayout() {
   return (

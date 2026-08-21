@@ -3,7 +3,7 @@ import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
-import { DialpadIcon } from '@mattermost/compass-ui';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { Icon } from '@mattermost/compass-ui';
 import { IconButton } from '@mattermost/compass-ui';
 import { TextInput } from '@mattermost/compass-ui';

@@ -17,6 +17,7 @@ const requiredDistFiles = [
   'dist/index.d.ts',
   'dist/index.css',
   'dist/compass-ui.css',
+  'dist/compass-ui-standalone.css',
 ];
 
 function run(cmd, cwd = root) {
@@ -31,6 +32,7 @@ function assertTarballContents(tarballPath) {
     'package/dist/index.cjs',
     'package/dist/index.css',
     'package/dist/compass-ui.css',
+    'package/dist/compass-ui-standalone.css',
     'package/dist/index.d.ts',
   ];
   for (const entry of required) {

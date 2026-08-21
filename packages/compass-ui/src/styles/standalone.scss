@@ -1,0 +1,22 @@
+// Host-only chrome for Storybook, playground, and other standalone apps.
+// Do not load into Mattermost webapp — it already owns reset and document styles.
+@use 'reset';
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+  color: var(--center-channel-color);
+  background-color: var(--center-channel-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+}

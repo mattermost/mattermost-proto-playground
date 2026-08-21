@@ -1,0 +1,61 @@
+{
+  "name": "@mattermost/compass-proto",
+  "version": "0.1.0-alpha.0",
+  "private": true,
+  "description": "Unpublished Compass prototyping UI (mobile, layouts, calls) — not part of core @mattermost/compass-ui",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./component-styles": {
+      "import": "./dist/index.css",
+      "default": "./dist/index.css"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit"
+  },
+  "peerDependencies": {
+    "@mattermost/compass-icons": "^0.1.63",
+    "@mattermost/compass-ui": "0.1.0-alpha.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0",
+    "simplebar-react": "^3.3.2"
+  },
+  "peerDependenciesMeta": {
+    "simplebar-react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@mattermost/compass-icons": "^0.1.63",
+    "@mattermost/compass-ui": "*",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sass": "^1.83.4",
+    "simplebar-react": "^3.3.2",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.5",
+    "vite-plugin-dts": "^4.5.3",
+    "vite-plugin-lib-inject-css": "^2.2.1",
+    "vite-plugin-svgr": "^4.5.0"
+  }
+}

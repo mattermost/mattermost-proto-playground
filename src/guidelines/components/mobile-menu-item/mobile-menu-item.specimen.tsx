@@ -1,5 +1,6 @@
-import type {ReactNode} from 'react';
-import {Icon, MobileMenuItem} from '@mattermost/compass-ui';
+import type { ReactNode} from 'react';
+import {Icon } from '@mattermost/compass-ui';
+import { MobileMenuItem } from '@mattermost/compass-proto';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import LogoutVariantIcon from '@mattermost/compass-icons/components/logout-variant';

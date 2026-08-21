@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react';
-import {MobileNavigationBar} from '@mattermost/compass-ui';
+import { MobileNavigationBar } from '@mattermost/compass-proto';
 import styles from './mobile-navigation-bar.specimen.module.scss';
 
 function Stage({label, children}: {label: string; children: ReactNode}) {

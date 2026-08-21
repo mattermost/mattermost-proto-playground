@@ -1,8 +1,5 @@
-import {
-  MessageReactions,
-  MobileMessage,
-  mobileMessageStyles,
-} from '@mattermost/compass-ui';
+import { MessageReactions } from '@mattermost/compass-ui';
+import { MobileMessage, mobileMessageStyles } from '@mattermost/compass-proto';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import styles from './mobile-message.specimen.module.scss';

@@ -1,4 +1,4 @@
-import {MobileNavigationBar} from '@mattermost/compass-ui';
+import { MobileNavigationBar } from '@mattermost/compass-proto';
 import AnatomyStage from '@/guidelines/_components/AnatomyStage';
 import styles from './MobileNavigationBarGuidelineAnatomy.module.scss';
 

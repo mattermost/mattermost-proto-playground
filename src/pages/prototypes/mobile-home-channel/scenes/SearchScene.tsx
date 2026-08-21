@@ -1,9 +1,7 @@
-import {useState} from 'react';
-import {
-  MobileSearch,
-  MobileSearchSuggestions,
-  Scrollbar,
-} from '@mattermost/compass-ui';
+import { useState} from 'react';
+import { Scrollbar } from '@mattermost/compass-ui';
+import { MobileSearch } from '@mattermost/compass-proto';
+import { MobileSearchSuggestions } from '@mattermost/compass-proto';
 
 export default function SearchScene() {
   const [query, setQuery] = useState('');

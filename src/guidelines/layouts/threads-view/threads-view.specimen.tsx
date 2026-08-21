@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import PlaylistCheckIcon from '@mattermost/compass-icons/components/playlist-check';
-import { ChannelShell } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-proto';
 import { Icon } from '@mattermost/compass-ui';
 import { IconButton } from '@mattermost/compass-ui';
 import { MessageInput } from '@mattermost/compass-ui';
@@ -26,7 +26,7 @@ import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import { shellStyles } from '@mattermost/compass-ui';
+import { shellStyles } from '@mattermost/compass-proto';
 import inboxStyles from './threads-view.specimen.module.scss';
 
 type ThreadsTab = 'all' | 'unreads';

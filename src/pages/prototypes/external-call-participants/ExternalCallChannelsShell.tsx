@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { ChannelHeader } from '@mattermost/compass-ui';
-import { ChannelShell } from '@mattermost/compass-ui';
+import { ChannelShell } from '@mattermost/compass-proto';
 import { externalCallParticipantsChannelsSidebarModel } from './channelsSidebar.model';
 
 export interface ExternalCallChannelsShellProps {

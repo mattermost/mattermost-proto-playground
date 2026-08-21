@@ -1,17 +1,13 @@
-import {useState} from 'react';
+import { useState} from 'react';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
 import {
-  Icon,
-  MobileMenuItem,
-  MobileProfile,
-  MobileTabBar,
-  Scrollbar,
-  type MobileTabBarTab,
-} from '@mattermost/compass-ui';
+  Icon, Scrollbar } from '@mattermost/compass-ui';
+import { type MobileTabBarTab } from '@mattermost/compass-proto';
+import { MobileMenuItem, MobileProfile, MobileTabBar } from '@mattermost/compass-proto';
 import DeviceFrame from '@/components/layout/DeviceFrame';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import styles from './mobile-profile.specimen.module.scss';

@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
-import { OutboundCallIcon } from '@mattermost/compass-ui';
-import { PhoneLockIcon } from '@mattermost/compass-ui';
+import { OutboundCallIcon } from '@mattermost/compass-proto';
+import { PhoneLockIcon } from '@mattermost/compass-proto';
 import type { PhoneKind } from '@/types/outboundCall';
 
 export function phoneLabelText(phone: { label: string; sipTrunk?: string }): string {

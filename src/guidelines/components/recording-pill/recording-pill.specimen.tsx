@@ -1,4 +1,4 @@
-import { RecordingPill } from '@mattermost/compass-ui';
+import { RecordingPill } from '@mattermost/compass-proto';
 import styles from '@/styles/library-demo/components.module.scss';
 
 export default function RecordingPillLibrary() {
