@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@mattermost/compass-ui';
 import { ChannelHeader } from '@mattermost/compass-ui';
 import { ChannelShell } from '@mattermost/compass-proto';
+import { defaultChannelsSidebarDemoModel } from '@/fixtures/channelsSidebarDemo';
 import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
@@ -35,6 +36,7 @@ export default function ModalLayout() {
 
   return (
     <ChannelShell
+      channelsSidebarModel={defaultChannelsSidebarDemoModel}
       channelHeader={
         <ChannelHeader
           type="Channel"

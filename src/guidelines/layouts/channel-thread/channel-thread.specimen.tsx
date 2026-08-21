@@ -1,5 +1,6 @@
 import { ChannelHeader } from '@mattermost/compass-ui';
 import { ChannelShell } from '@mattermost/compass-proto';
+import { defaultChannelsSidebarDemoModel } from '@/fixtures/channelsSidebarDemo';
 import { MessageInput } from '@mattermost/compass-ui';
 import { MessageReactions } from '@mattermost/compass-ui';
 import { MessageSeparator } from '@mattermost/compass-ui';
@@ -22,6 +23,7 @@ import { shellStyles } from '@mattermost/compass-proto';
 export default function ChannelThreadLayout() {
   return (
     <ChannelShell
+      channelsSidebarModel={defaultChannelsSidebarDemoModel}
       channelHeader={
         <ChannelHeader
           type="Channel"
