@@ -53,9 +53,26 @@ function newestSourceMtimeMs(dir) {
   return newest;
 }
 
+/** Package-root Vite config / plugins that affect the build but live outside src/. */
+function newestPackageRootBuildInputMtimeMs(packageRoot) {
+  let newest = 0;
+  for (const entry of fs.readdirSync(packageRoot, { withFileTypes: true })) {
+    if (entry.isFile() && /^vite.*\.ts$/.test(entry.name)) {
+      newest = Math.max(
+        newest,
+        fs.statSync(path.join(packageRoot, entry.name)).mtimeMs,
+      );
+    }
+  }
+  return newest;
+}
+
 function distIsStale(pkg) {
-  const srcRoot = path.join(pkg.packageRoot, 'src');
-  return newestSourceMtimeMs(srcRoot) > distMtimeMs(pkg.distFiles);
+  const newestInput = Math.max(
+    newestSourceMtimeMs(path.join(pkg.packageRoot, 'src')),
+    newestPackageRootBuildInputMtimeMs(pkg.packageRoot),
+  );
+  return newestInput > distMtimeMs(pkg.distFiles);
 }
 
 for (const pkg of packages) {
