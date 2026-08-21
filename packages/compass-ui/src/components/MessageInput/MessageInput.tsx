@@ -34,6 +34,8 @@ export interface MessageInputProps {
   showAttachments?: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  /** Called when the user sends via the send button or Enter (without Shift). */
+  onSend?: () => void;
   onSelectionChange?: () => void;
   inputRef?: React.RefObject<HTMLTextAreaElement | null>;
   /** `narrow` matches the Figma Message Input “Narrow” / right-sidebar layout. */
@@ -47,6 +49,7 @@ export default function MessageInput({
   showAttachments = false,
   value,
   onChange,
+  onSend,
   onSelectionChange,
   inputRef,
   width = 'wide',
@@ -80,6 +83,11 @@ export default function MessageInput({
   }, [text, handleInput]);
 
   const hasSendValue = text.trim().length > 0;
+
+  const handleSend = () => {
+    if (!hasSendValue) return;
+    onSend?.();
+  };
 
   const cls = (base: string, mod?: string) =>
     [styles[base], mod ? styles[mod] : ''].filter(Boolean).join(' ');
@@ -147,6 +155,7 @@ export default function MessageInput({
           className={styles['message-input__send-main']}
           aria-label="Send message"
           disabled={!hasSendValue}
+          onClick={handleSend}
         >
           <Icon glyph={<SendIcon />} size="16" />
         </button>
@@ -221,6 +230,12 @@ export default function MessageInput({
             onSelect={onSelectionChange}
             onKeyUp={onSelectionChange}
             onClick={onSelectionChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
             rows={1}
           />
         </div>

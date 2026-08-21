@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import Automations from '@/pages/prototypes/automations/Automations';
 import ExampleFlow from '@/pages/prototypes/example-flow/ExampleFlow';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
@@ -9,9 +10,18 @@ export type PrototypeEntry = {
   label: string;
   path: string;
   component: ComponentType;
+  /** When true, also match nested paths under `path` (e.g. `/prototypes/foo/*`). */
+  nested?: boolean;
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
+  {
+    id: 'automations',
+    label: 'Automations',
+    path: '/prototypes/automations',
+    component: Automations,
+    nested: true,
+  },
   {
     id: 'example-flow',
     label: 'Example Flow',
@@ -41,5 +51,11 @@ export const PROTOTYPES: PrototypeEntry[] = [
 export function getPrototypeByPath(pathname: string): PrototypeEntry | undefined {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-  return PROTOTYPES.find((p) => p.path === normalized);
+  return PROTOTYPES.find((p) => {
+    if (p.path === normalized) return true;
+    if (p.nested && (normalized === p.path || normalized.startsWith(`${p.path}/`))) {
+      return true;
+    }
+    return false;
+  });
 }

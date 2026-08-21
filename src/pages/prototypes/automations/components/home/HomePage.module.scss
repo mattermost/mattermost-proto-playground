@@ -1,0 +1,540 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: var(--spacing-xxxl);
+  gap: var(--spacing-xxl);
+}
+
+.home__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-l);
+}
+
+.home__title {
+  margin: 0;
+  font-size: var(--font-size-700);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.2;
+}
+
+.home__subtitle {
+  margin: var(--spacing-xxs) 0 0;
+  max-width: 42em;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.home__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  justify-content: flex-end;
+}
+
+.home__split {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.home__split-main {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.home__split-toggle {
+  min-width: var(--icon-size-32);
+  padding-inline: var(--spacing-xs);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.28);
+
+  // Icon-only toggle: drop the empty label so the chevron centers in the slot.
+  :global([class*='button__label']) {
+    display: none;
+  }
+}
+
+.home__split-menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xxs));
+  right: 0;
+  z-index: 24;
+  min-width: 220px;
+}
+
+.home__import-input {
+  display: none;
+}
+
+.home__filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.home__filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.home__search {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.home__filter-trigger {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.home__filter-panel {
+  position: absolute;
+  top: calc(100% + var(--spacing-xxs));
+  left: 0;
+  z-index: 24;
+  min-width: 220px;
+
+  // PopoverMenu defaults to vertical padding; filter content supplies its own.
+  :global([class*='popover-menu']) {
+    padding-block: 0;
+  }
+}
+
+.home__filter-panel--tags {
+  min-width: 260px;
+}
+
+.home__tag-search {
+  padding: var(--spacing-s) var(--spacing-m) var(--spacing-xxs);
+}
+
+.home__tag-empty {
+  margin: 0;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.home__filter-scroll {
+  max-height: 280px;
+  overflow: auto;
+}
+
+.home__filter-group {
+  padding: 0;
+}
+
+.home__filter-section-title {
+  margin: 0;
+  padding: var(--spacing-xs) var(--spacing-l) var(--spacing-xxxs);
+  font-size: var(--font-size-50);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.home__filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: 0 var(--spacing-l) var(--spacing-xs);
+}
+
+.home__filter-footer {
+  padding: var(--spacing-xxxs) var(--spacing-m) var(--spacing-xs);
+}
+
+.home__active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  min-height: 0;
+}
+
+.home__clear-filters {
+  border: 0;
+  background: transparent;
+  color: var(--button-bg);
+  font: inherit;
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  padding: var(--spacing-xxxxs) var(--spacing-xxxs);
+}
+
+.home__folders-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.home__folders {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: var(--spacing-m);
+}
+
+.home__folder {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.home__folder-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding-right: var(--spacing-m);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: transparent;
+
+  &:hover .home__folder-menu-btn,
+  &:focus-within .home__folder-menu-btn,
+  &--menu-open .home__folder-menu-btn {
+    opacity: 1;
+  }
+
+  &:hover .home__folder-icon,
+  &:focus-within .home__folder-icon {
+    opacity: 0;
+  }
+
+  &:hover .home__folder-chevron,
+  &:focus-within .home__folder-chevron {
+    opacity: 1;
+  }
+}
+
+.home__folder-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: var(--spacing-s) 0 var(--spacing-s) var(--spacing-m);
+  border: 0;
+  background: transparent;
+  color: var(--center-channel-color);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.home__folder-toggle {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: var(--icon-size-16);
+  height: var(--icon-size-16);
+}
+
+.home__folder-icon {
+  display: inline-flex;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+  transition: opacity var(--duration-quick) var(--ease-transition);
+}
+
+.home__folder-chevron {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  opacity: 0;
+  transform: rotate(-90deg);
+  transition:
+    opacity var(--duration-quick) var(--ease-transition),
+    transform var(--duration-moderate) var(--ease-transition);
+  pointer-events: none;
+}
+
+.home__folder-chevron--open {
+  transform: rotate(0deg);
+}
+
+.home__folder-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-100);
+}
+
+.home__folder-actions {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.home__folder-menu-btn {
+  opacity: 0;
+  transition: opacity var(--duration-quick) var(--ease-transition);
+
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+.home__folder-menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xxxs));
+  right: 0;
+  z-index: 20;
+  min-width: 180px;
+}
+
+.home__folder-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.4;
+}
+
+.home__folder-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+}
+
+.home__folder-collapse--expanded {
+  grid-template-rows: 1fr;
+}
+
+.home__folder-collapse-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.home__table-wrap {
+  overflow: hidden;
+  background: var(--center-channel-bg);
+}
+
+.home__table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--font-size-100);
+}
+
+.home__table th,
+.home__table td {
+  box-sizing: border-box;
+}
+
+// Shared widths so columns line up across every folder table.
+.home__table th:nth-child(1),
+.home__table td:nth-child(1) {
+  width: 28%;
+}
+
+.home__table th:nth-child(2),
+.home__table td:nth-child(2) {
+  width: 14%;
+}
+
+.home__table th:nth-child(3),
+.home__table td:nth-child(3) {
+  width: 18%;
+}
+
+.home__table th:nth-child(4),
+.home__table td:nth-child(4) {
+  width: 10%;
+}
+
+.home__table th:nth-child(5),
+.home__table td:nth-child(5) {
+  width: 10%;
+}
+
+.home__table th:nth-child(6),
+.home__table td:nth-child(6) {
+  width: 12%;
+}
+
+.home__table th:nth-child(7),
+.home__table td:nth-child(7) {
+  width: var(--spacing-xxxxxl);
+}
+
+.home__table th {
+  text-align: left;
+  padding: var(--spacing-xxs) var(--spacing-m);
+  font-size: var(--font-size-25);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: transparent;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  line-height: 1.2;
+}
+
+.home__table td {
+  padding: var(--spacing-m);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Match folder header: pad + drag icon + gap → title/NAME share one left edge.
+.home__table th.home__name-cell {
+  padding-left: calc(var(--spacing-m) + var(--icon-size-16) + var(--spacing-xs));
+}
+
+.home__table td.home__name-cell {
+  padding-left: var(--spacing-m);
+  padding-right: var(--spacing-m);
+  white-space: normal;
+}
+
+.home__name-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.home__drag {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-xxxxs);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  opacity: 0;
+  cursor: grab;
+  transition: opacity var(--duration-quick) var(--ease-transition);
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.home__name-block {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.home__row {
+  cursor: pointer;
+
+  &:hover .home__drag,
+  &:focus-within .home__drag {
+    opacity: 1;
+  }
+}
+
+.home__row:hover td {
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+}
+
+.home__status-draft {
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.home__row .home__status-switch {
+  width: max-content;
+  max-width: 100%;
+  align-items: center;
+  gap: var(--spacing-xxs);
+
+  :global([class*='switch__labels']) {
+    flex: none;
+  }
+
+  // Keep the control aligned when the label swaps Enabled ↔ Disabled.
+  :global([class*='switch__label']) {
+    display: inline-block;
+    min-width: 8ch;
+    line-height: 1;
+  }
+}
+
+.home__name {
+  font-weight: var(--font-weight-regular);
+}
+
+.home__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xxxs);
+  margin-top: var(--spacing-xxxs);
+
+  .home__tag {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+.home__run {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+}
+
+.home__edited {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.home__edited-tip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--spacing-xs));
+  transform: translateX(-50%);
+  z-index: 12;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.home__edited:hover .home__edited-tip,
+.home__edited:focus-visible .home__edited-tip {
+  display: block;
+}
+
+.home__dot {
+  width: var(--spacing-xs);
+  height: var(--spacing-xs);
+  border-radius: var(--radius-full);
+  background: rgba(var(--center-channel-color-rgb), 0.32);
+}
+
+.home__dot--success {
+  background: var(--color-success);
+}
+
+.home__dot--failed {
+  background: var(--color-danger);
+}
+
+.home__empty {
+  flex: 1;
+  min-height: 0;
+}
+
+.home__menu-cell {
+  width: var(--spacing-xxxxxl);
+  text-align: right;
+}
