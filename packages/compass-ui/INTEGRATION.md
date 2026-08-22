@@ -316,6 +316,12 @@ Compass uses the **same semantic names** as webapp:
 
 Confirm host vars match Compass theme role names before wide rollout. Spike with `Button` destructive / `SectionNotice` danger / `Toast` first.
 
+### Overlays
+
+`Modal`, `Tooltip`, `PopoverMenu`, `ProfilePopover`, and similar surfaces are **visual chrome only**. The webapp owns open/close, portals, positioning, focus trap, escape/outside-click, and stacking. Compose Compass panels with existing product overlay infrastructure; panel-level ARIA on the surface is fine. Follow each component's lifecycle (`Modal` mount-controlled; `Dropdown` and similar triggers use controlled `isOpen`; pass `onClose` where provided).
+
+Form widgets with menu/popover surfaces (`Combobox`, `Select` on `Menu`, `DateRangePicker`, etc.) are exempt — they manage widget-level dropdown/picker open state and keyboard behavior; do not duplicate that handling in the host. Proto/mobile presentation shells with backdrop or sheet animation live in `@mattermost/compass-proto`, not in published `compass-ui`.
+
 ---
 
 ## Patterns, layouts, and fixtures

@@ -19,7 +19,11 @@ Before writing new UI, audit `src/components/` (and Compass UI). Reuse an existi
 
 Check `src/hooks/` before duplicating logic. Key hooks: `useExitAnimation` (exit animations), `useOutsideClose` (click-outside behavior).
 
-`ProfilePopover` is content only — do not fork it for positioning; compose a page-local wrapper or a shared layout hook (e.g. `useAnchoredToRect`).
+## Overlays
+
+Tooltips, modals, and popovers (`Modal`, `Tooltip`, `PopoverMenu`, `ProfilePopover`, etc.) are **visual chrome only** — surface markup and styles. The product owns open/close state, portals, positioning, focus trap, escape/outside-click, and stacking. Panel-level ARIA on the surface (e.g. `role="dialog"`) is fine; do not add orchestration-layer focus management, portals, or triggers inside overlay primitives. Follow each component's existing lifecycle pattern (`Modal` is mount-controlled; `Dropdown` takes controlled `isOpen`) and wire lifecycle props and callbacks from the host (e.g. `isOpen`, `onClose`) — compose with host hooks (e.g. `useOutsideClose`, `usePopoverTransition`, `useExitAnimation`).
+
+**Exceptions:** form widgets with menu/popover surfaces (`Combobox`, `Select` on `Menu`, `DateRangePicker`, etc.) own widget-level open/close and keyboard behavior; proto/mobile presentation components (`MobileBottomSheet`, `MobileModalStage`, etc.) may bundle backdrop and animation for prototyping — keep those in `compass-proto` or playground presenters, not published overlay primitives.
 
 ## Component usage (short)
 
