@@ -1,5 +1,14 @@
 # Compass UI (Storybook)
 
+## Overlay components
+
+Published overlay primitives (`Modal`, `Tooltip`, `PopoverMenu`, `ProfilePopover`, …) ship **chrome only**. Do not add portals, focus traps, hover triggers, or backdrop/scrim logic to these components — the host product wires open/close and accessibility orchestration. Panel-level ARIA on the surface is fine.
+
+- Follow existing lifecycle props: `Modal` is mount-controlled; `Dropdown` and similar triggers take controlled `isOpen`; expose `onClose` where the surface has dismiss affordances.
+- **Form widgets** with menu/popover surfaces (`Combobox`, `Select` on `Menu`, `DateRangePicker`, …) are exempt — they own widget-level open/close and keyboard nav.
+- **Proto/mobile** shells with backdrop or sheet animation belong in `compass-proto` or playground presenters, not `compass-ui`.
+- Storybook stories may fake backdrops, anchors, or open state in canvas decorators for preview; that behavior must not leak into the component.
+
 When adding or editing `packages/compass-ui/**/*.stories.tsx`:
 
 - Story `title`s mirror the guidelines sidebar: `Components/{section}/{name}` and `Foundations/Style/{name}`. Keep `packages/compass-ui/src/storybook/titles.ts` aligned with `src/manifests/sections.ts`; use the same string literal in `meta.title`.
