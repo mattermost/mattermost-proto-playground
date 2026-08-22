@@ -125,7 +125,7 @@
     }
 
     &--placeholder {
-      color: rgba(var(--center-channel-color-rgb), 0.64);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
     }
   }
 
@@ -183,6 +183,15 @@
   &__option {
     display: block;
     width: 100%;
+    list-style: none;
+
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+    }
+  }
+
+  &__option-content--disabled {
+    opacity: 0.4;
   }
 
   // ---------------------------------------------------------------------------
@@ -316,7 +325,10 @@
   // ---------------------------------------------------------------------------
   &--has-leading-icon {
     .select__label {
-      left: 32px;
+      left: calc(
+        var(--spacing-m) + var(--icon-size-16) + var(--spacing-xs) -
+          var(--spacing-xxxs)
+      );
     }
 
     &.select--label-floated .select__label {
@@ -326,7 +338,9 @@
     &.select--size-medium,
     &.select--size-large {
       .select__label {
-        left: 38px;
+        left: calc(
+          var(--spacing-m) + var(--icon-size-16) + var(--spacing-s)
+        );
       }
 
       &.select--label-floated .select__label {

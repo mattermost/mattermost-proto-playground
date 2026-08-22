@@ -1,14 +1,12 @@
 import { Select } from '@mattermost/compass-ui';
 
 export const CHANNEL_OPTIONS = [
-  { value: '', label: 'Select a channel' },
   { value: 'town-square', label: 'Town Square' },
   { value: 'off-topic', label: 'Off-Topic' },
   { value: 'design', label: 'Design' },
 ];
 
 export const SIMPLE_OPTIONS = [
-  { value: '', label: 'Select…' },
   { value: 'a', label: 'Option A' },
   { value: 'b', label: 'Option B' },
 ];
@@ -55,11 +53,13 @@ single-select. For action menus that don't capture a value, use a
 
 Three sizes — pick the one that matches the surrounding form rhythm.
 
-<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
-  <Select size="Small" label="Small" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
-  <Select size="Medium" label="Medium" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
-  <Select size="Large" label="Large" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
-</div>
+<DocUiEmbed>
+  <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
+    <Select size="Small" label="Small" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+    <Select size="Medium" label="Medium" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+    <Select size="Large" label="Large" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+  </div>
+</DocUiEmbed>
 
 <Divider />
 
@@ -77,12 +77,14 @@ Selects share their state model with the rest of the input family.
 | Invalid  | Red border; pair with an inline error message below.                   |
 | Open     | The popover menu is visible; the chevron flips.                        |
 
-<div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
-  <Select label="Default" defaultValue="" options={SIMPLE_OPTIONS} placeholder="Select…" />
-  <Select label="Filled" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
-  <Select label="Invalid" defaultValue="a" invalid options={SIMPLE_OPTIONS} placeholder="Select…" />
-  <Select label="Disabled" disabled defaultValue="" options={SIMPLE_OPTIONS} placeholder="Select…" />
-</div>
+<DocUiEmbed>
+  <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
+    <Select label="Default" defaultValue="" options={SIMPLE_OPTIONS} placeholder="Select…" />
+    <Select label="Filled" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+    <Select label="Invalid" defaultValue="a" invalid options={SIMPLE_OPTIONS} placeholder="Select…" />
+    <Select label="Disabled" disabled defaultValue="" options={SIMPLE_OPTIONS} placeholder="Select…" />
+  </div>
+</DocUiEmbed>
 
 <Divider />
 

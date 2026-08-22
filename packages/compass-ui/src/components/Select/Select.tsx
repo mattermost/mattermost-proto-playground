@@ -9,11 +9,12 @@ import {
   useState,
 } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import CheckIcon from '@mattermost/compass-icons/components/check';
 import Icon from '@/components/Icon/Icon';
-import MenuItem from '@/components/MenuItem/MenuItem';
 import PopoverMenu, {
   PopoverMenuScroll,
 } from '@/components/PopoverMenu/PopoverMenu';
+import menuItemStyles from '@/components/MenuItem/MenuItem.module.scss';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import { toKebab } from '@/utils/string';
@@ -47,6 +48,87 @@ export interface SelectProps {
 }
 
 const POPUP_MAX_HEIGHT = 280;
+
+function SelectOptionRow({
+  option,
+  listboxId,
+  selected,
+  active,
+  onSelect,
+  onHover,
+}: {
+  option: SelectOption;
+  listboxId: string;
+  selected: boolean;
+  active: boolean;
+  onSelect: (option: SelectOption) => void;
+  onHover: () => void;
+}) {
+  const rowClass = [
+    menuItemStyles['menu-item'],
+    active ? menuItemStyles['menu-item--active'] : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <li
+      id={`${listboxId}-option-${option.value}`}
+      role="option"
+      className={[styles.select__option, rowClass].filter(Boolean).join(' ')}
+      aria-selected={selected}
+      aria-disabled={option.disabled || undefined}
+      onMouseDown={(ev) => ev.preventDefault()}
+      onMouseEnter={onHover}
+      onClick={() => {
+        if (!option.disabled) onSelect(option);
+      }}
+    >
+      <div
+        className={[
+          menuItemStyles['menu-item__content'],
+          option.disabled ? styles['select__option-content--disabled'] : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {option.leadingVisual != null && (
+          <div className={menuItemStyles['menu-item__left']}>
+            <span className={menuItemStyles['menu-item__leading-visual']}>
+              {option.leadingVisual}
+            </span>
+          </div>
+        )}
+        <div className={menuItemStyles['menu-item__middle']}>
+          <div className={menuItemStyles['menu-item__top-row']}>
+            <span className={menuItemStyles['menu-item__label']}>
+              {option.label}
+            </span>
+          </div>
+          {option.secondaryLabel != null && (
+            <div className={menuItemStyles['menu-item__bottom-row']}>
+              <span className={menuItemStyles['menu-item__secondary-label-below']}>
+                {option.secondaryLabel}
+              </span>
+            </div>
+          )}
+        </div>
+        {selected && (
+          <div className={menuItemStyles['menu-item__right']}>
+            <span
+              className={[
+                menuItemStyles['menu-item__trailing-visual'],
+                menuItemStyles['menu-item__trailing-visual--check'],
+              ].join(' ')}
+            >
+              <Icon glyph={<CheckIcon />} size="16" />
+            </span>
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
 
 /**
  * Select with floating label and PopoverMenu list.
@@ -332,33 +414,17 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
                   typeof label === 'string' ? label : (ariaLabel ?? 'Options')
                 }
               >
-                {options.map((option, index) => {
-                  const selected = option.value === value;
-                  const active = index === activeIndex;
-                  return (
-                    <li
-                      key={option.value}
-                      className={styles.select__option}
-                      role="presentation"
-                    >
-                      <MenuItem
-                        id={`${listboxId}-option-${option.value}`}
-                        role="option"
-                        label={option.label}
-                        secondaryLabel={option.secondaryLabel}
-                        leadingElement={option.leadingVisual != null}
-                        leadingVisual={option.leadingVisual}
-                        trailingElement={selected}
-                        active={active}
-                        disabled={option.disabled}
-                        aria-selected={selected}
-                        onMouseDown={(ev) => ev.preventDefault()}
-                        onMouseEnter={() => setActiveIndex(index)}
-                        onClick={() => selectOption(option)}
-                      />
-                    </li>
-                  );
-                })}
+                {options.map((option, index) => (
+                  <SelectOptionRow
+                    key={option.value}
+                    option={option}
+                    listboxId={listboxId}
+                    selected={option.value === value}
+                    active={index === activeIndex}
+                    onSelect={selectOption}
+                    onHover={() => setActiveIndex(index)}
+                  />
+                ))}
               </ul>
             </PopoverMenuScroll>
           </PopoverMenu>

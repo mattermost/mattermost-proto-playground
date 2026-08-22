@@ -8,7 +8,6 @@ import Icon from '../Icon/Icon';
 const SIZES: SelectSize[] = ['Small', 'Medium', 'Large'];
 
 const DEFAULT_OPTIONS: SelectOption[] = [
-  { value: '', label: 'Select...' },
   { value: 'a', label: 'Option A' },
   { value: 'b', label: 'Option B' },
   { value: 'c', label: 'Option C' },
@@ -60,6 +59,7 @@ export const Default: Story = {
     label: 'Select option',
     size: 'Medium',
     options: DEFAULT_OPTIONS,
+    defaultValue: '',
     placeholder: 'Select...',
   },
 };
