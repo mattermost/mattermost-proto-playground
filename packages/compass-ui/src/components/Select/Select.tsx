@@ -35,6 +35,7 @@ export interface SelectProps {
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
+  /** Shown on the trigger when no value is selected. Empty-value options are not listed in the menu. */
   placeholder?: string;
   label?: ReactNode;
   leadingIcon?: ReactNode;
@@ -184,6 +185,11 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
     [options, value],
   );
 
+  const listOptions = useMemo(
+    () => options.filter((o) => o.value !== ''),
+    [options],
+  );
+
   const hasValue = value !== '';
 
   const { mounted: popupMounted, visible: popupVisible } =
@@ -204,14 +210,14 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
   useEffect(() => {
     if (!isOpen) return;
     setActiveIndex((prev) => {
-      if (options.length === 0) return -1;
-      if (prev >= 0 && prev < options.length) return prev;
-      const selectedIdx = options.findIndex((o) => o.value === value);
+      if (listOptions.length === 0) return -1;
+      if (prev >= 0 && prev < listOptions.length) return prev;
+      const selectedIdx = listOptions.findIndex((o) => o.value === value);
       if (selectedIdx >= 0) return selectedIdx;
-      const firstEnabled = options.findIndex((o) => !o.disabled);
+      const firstEnabled = listOptions.findIndex((o) => !o.disabled);
       return firstEnabled >= 0 ? firstEnabled : 0;
     });
-  }, [isOpen, options, value]);
+  }, [isOpen, listOptions, value]);
 
   const commitValue = useCallback(
     (next: string) => {
@@ -233,7 +239,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
 
   const moveActive = useCallback(
     (delta: number) => {
-      const enabled = options
+      const enabled = listOptions
         .map((o, i) => ({ o, i }))
         .filter(({ o }) => !o.disabled);
       if (enabled.length === 0) {
@@ -251,16 +257,16 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
         return enabled[nextPos].i;
       });
     },
-    [options],
+    [listOptions],
   );
 
   useEffect(() => {
     if (!isOpen || activeIndex < 0) return;
-    const option = options[activeIndex];
+    const option = listOptions[activeIndex];
     if (!option) return;
     const el = document.getElementById(`${listboxId}-option-${option.value}`);
     el?.scrollIntoView({ block: 'nearest' });
-  }, [isOpen, activeIndex, options, listboxId]);
+  }, [isOpen, activeIndex, listOptions, listboxId]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (disabled) return;
@@ -277,17 +283,17 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
         else moveActive(-1);
         break;
       case 'Home':
-        if (isOpen && options.length > 0) {
+        if (isOpen && listOptions.length > 0) {
           e.preventDefault();
-          const idx = options.findIndex((o) => !o.disabled);
+          const idx = listOptions.findIndex((o) => !o.disabled);
           setActiveIndex(idx >= 0 ? idx : 0);
         }
         break;
       case 'End':
-        if (isOpen && options.length > 0) {
+        if (isOpen && listOptions.length > 0) {
           e.preventDefault();
-          for (let i = options.length - 1; i >= 0; i--) {
-            if (!options[i]?.disabled) {
+          for (let i = listOptions.length - 1; i >= 0; i--) {
+            if (!listOptions[i]?.disabled) {
               setActiveIndex(i);
               break;
             }
@@ -297,8 +303,8 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
       case 'Enter':
       case ' ':
         e.preventDefault();
-        if (isOpen && activeIndex >= 0 && options[activeIndex]) {
-          selectOption(options[activeIndex]);
+        if (isOpen && activeIndex >= 0 && listOptions[activeIndex]) {
+          selectOption(listOptions[activeIndex]);
         } else if (!isOpen) {
           open();
         }
@@ -322,7 +328,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
   const showPlaceholderStyle = !hasValue && displayLabel !== '';
 
   const activeOption =
-    activeIndex >= 0 ? options[activeIndex] : undefined;
+    activeIndex >= 0 ? listOptions[activeIndex] : undefined;
   const activeDescendant =
     isOpen && activeOption != null
       ? `${listboxId}-option-${activeOption.value}`
@@ -414,7 +420,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
                   typeof label === 'string' ? label : (ariaLabel ?? 'Options')
                 }
               >
-                {options.map((option, index) => (
+                {listOptions.map((option, index) => (
                   <SelectOptionRow
                     key={option.value}
                     option={option}
