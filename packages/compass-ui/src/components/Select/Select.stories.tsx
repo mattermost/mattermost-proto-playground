@@ -2,10 +2,21 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Select from './Select';
-import type { SelectSize } from './Select';
+import type { SelectOption, SelectSize } from './Select';
 import Icon from '../Icon/Icon';
 
 const SIZES: SelectSize[] = ['Small', 'Medium', 'Large'];
+
+const DEFAULT_OPTIONS: SelectOption[] = [
+  { value: 'a', label: 'Option A' },
+  { value: 'b', label: 'Option B' },
+  { value: 'c', label: 'Option C' },
+];
+
+const LONG_LABEL_OPTIONS: SelectOption[] = [
+  { value: 'a', label: 'A very long option label that should truncate within the menu width' },
+  { value: 'b', label: 'Option B' },
+];
 
 const meta = {
   title: 'Components/Forms and Input/Select',
@@ -18,26 +29,6 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-function renderOptions() {
-  return (
-    <>
-      <option value="">Select...</option>
-      <option value="a">Option A</option>
-      <option value="b">Option B</option>
-      <option value="c">Option C</option>
-    </>
-  );
-}
-
-const defaultOptions = (
-  <>
-    <option value="">Select...</option>
-    <option value="a">Option A</option>
-    <option value="b">Option B</option>
-    <option value="c">Option C</option>
-  </>
-);
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -67,7 +58,9 @@ export const Default: Story = {
   args: {
     label: 'Select option',
     size: 'Medium',
-    children: defaultOptions,
+    options: DEFAULT_OPTIONS,
+    defaultValue: '',
+    placeholder: 'Select...',
   },
 };
 
@@ -75,7 +68,8 @@ export const WithValue: Story = {
   args: {
     label: 'Selected option',
     defaultValue: 'b',
-    children: defaultOptions,
+    options: DEFAULT_OPTIONS,
+    placeholder: 'Select...',
   },
 };
 
@@ -83,8 +77,22 @@ export const WithLeadingIcon: Story = {
   args: {
     label: 'Workspace',
     leadingIcon: <Icon glyph={<GlobeIcon />} size="16" />,
-    children: defaultOptions,
+    options: DEFAULT_OPTIONS,
+    placeholder: 'Select...',
   },
+};
+
+export const NarrowField: Story = {
+  render: () => (
+    <div style={{ width: 200 }}>
+      <Select
+        label="Team"
+        options={LONG_LABEL_OPTIONS}
+        defaultValue="a"
+        placeholder="Select…"
+      />
+    </div>
+  ),
 };
 
 export const AllVariants: Story = {
@@ -92,36 +100,51 @@ export const AllVariants: Story = {
     <div style={{ display: 'grid', gap: 20 }}>
       <Row label="Sizes">
         {SIZES.map((size) => (
-          <Select key={size} size={size} label={size}>
-            {renderOptions()}
-          </Select>
+          <Select
+            key={size}
+            size={size}
+            label={size}
+            options={DEFAULT_OPTIONS}
+            placeholder="Select..."
+          />
         ))}
       </Row>
       <Row label="States">
-        <Select label="With value" defaultValue="b">
-          {renderOptions()}
-        </Select>
-        <Select label="Invalid" invalid defaultValue="">
-          {renderOptions()}
-        </Select>
-        <Select label="Disabled" disabled defaultValue="">
-          {renderOptions()}
-        </Select>
+        <Select
+          label="With value"
+          defaultValue="b"
+          options={DEFAULT_OPTIONS}
+          placeholder="Select..."
+        />
+        <Select
+          label="Invalid"
+          invalid
+          defaultValue=""
+          options={DEFAULT_OPTIONS}
+          placeholder="Select..."
+        />
+        <Select
+          label="Disabled"
+          disabled
+          defaultValue=""
+          options={DEFAULT_OPTIONS}
+          placeholder="Select..."
+        />
       </Row>
       <Row label="Leading icon">
         <Select
           label="Workspace"
           leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}
-        >
-          {renderOptions()}
-        </Select>
+          options={DEFAULT_OPTIONS}
+          placeholder="Select..."
+        />
         <Select
           label="Selected workspace"
           defaultValue="a"
           leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}
-        >
-          {renderOptions()}
-        </Select>
+          options={DEFAULT_OPTIONS}
+          placeholder="Select..."
+        />
       </Row>
     </div>
   ),
