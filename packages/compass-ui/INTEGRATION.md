@@ -197,10 +197,15 @@ Use components as usual:
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import { Select, Icon, Button } from '@mattermost/compass-ui';
 
-<Select label="Team" leadingIcon={<Icon glyph={<AccountMultipleOutlineIcon />} />} onChange={…}>
-  <option value="a">Alpha</option>
-  <option value="b">Bravo</option>
-</Select>
+<Select
+  label="Team"
+  leadingIcon={<Icon glyph={<AccountMultipleOutlineIcon />} size="16" />}
+  options={[
+    { value: 'a', label: 'Alpha' },
+    { value: 'b', label: 'Bravo' },
+  ]}
+  onChange={(value) => { /* … */ }}
+/>
 ```
 
 Webapp already applies theme CSS variables; Compass tokens reuse the same names. If colors look flat/gray outside the webapp shell, set `data-theme="denim"` on `<html>`.

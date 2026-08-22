@@ -1,8 +1,21 @@
 import { Select } from '@mattermost/compass-ui';
 
+export const CHANNEL_OPTIONS = [
+  { value: '', label: 'Select a channel' },
+  { value: 'town-square', label: 'Town Square' },
+  { value: 'off-topic', label: 'Off-Topic' },
+  { value: 'design', label: 'Design' },
+];
+
+export const SIMPLE_OPTIONS = [
+  { value: '', label: 'Select…' },
+  { value: 'a', label: 'Option A' },
+  { value: 'b', label: 'Option B' },
+];
+
 A Select lets people pick one value from a longer list — a country, a team,
-a default channel — inside a form or modal. It looks like an input, behaves
-like a native `<select>`, and opens a popover menu of options.
+a default channel — inside a form or modal. It looks like an input and opens
+a popover menu of options styled like other Compass menus.
 
 Reach for a Select when the list of options is too long for a
 [Radio](/components/radio) group but the choice is still
@@ -15,12 +28,12 @@ single-select. For action menus that don't capture a value, use a
 
 <AnatomyStage style={{flexDirection:'column',gap:'0.75rem'}}>
   <div style={{width:'100%',maxWidth:'320px'}}>
-    <Select label="Default channel" defaultValue="town-square">
-      <option value="">Select a channel</option>
-      <option value="town-square">Town Square</option>
-      <option value="off-topic">Off-Topic</option>
-      <option value="design">Design</option>
-    </Select>
+    <Select
+      label="Default channel"
+      defaultValue="town-square"
+      options={CHANNEL_OPTIONS}
+      placeholder="Select a channel"
+    />
   </div>
 </AnatomyStage>
 
@@ -43,18 +56,9 @@ single-select. For action menus that don't capture a value, use a
 Three sizes — pick the one that matches the surrounding form rhythm.
 
 <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
-  <Select size="Small" label="Small" defaultValue="a">
-    <option value="a">Option A</option>
-    <option value="b">Option B</option>
-  </Select>
-  <Select size="Medium" label="Medium" defaultValue="a">
-    <option value="a">Option A</option>
-    <option value="b">Option B</option>
-  </Select>
-  <Select size="Large" label="Large" defaultValue="a">
-    <option value="a">Option A</option>
-    <option value="b">Option B</option>
-  </Select>
+  <Select size="Small" label="Small" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+  <Select size="Medium" label="Medium" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+  <Select size="Large" label="Large" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
 </div>
 
 <Divider />
@@ -70,24 +74,14 @@ Selects share their state model with the rest of the input family.
 | Focus    | Blue ring around the border; keyboard interactions work.               |
 | Filled   | A value is chosen; the floating label settles above the field.        |
 | Disabled | Greyed out; non-interactive; not announced as form control.            |
-| Invalid  | Red border + invalid icon; pair with an inline error message below.    |
+| Invalid  | Red border; pair with an inline error message below.                   |
 | Open     | The popover menu is visible; the chevron flips.                        |
 
 <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',padding:'1rem 0',maxWidth:'320px'}}>
-  <Select label="Default" defaultValue="">
-    <option value="">Select…</option>
-    <option value="a">Option A</option>
-  </Select>
-  <Select label="Filled" defaultValue="a">
-    <option value="a">Option A</option>
-    <option value="b">Option B</option>
-  </Select>
-  <Select label="Invalid" defaultValue="a" invalid>
-    <option value="a">Option A</option>
-  </Select>
-  <Select label="Disabled" disabled>
-    <option value="">Select…</option>
-  </Select>
+  <Select label="Default" defaultValue="" options={SIMPLE_OPTIONS} placeholder="Select…" />
+  <Select label="Filled" defaultValue="a" options={SIMPLE_OPTIONS} placeholder="Select…" />
+  <Select label="Invalid" defaultValue="a" invalid options={SIMPLE_OPTIONS} placeholder="Select…" />
+  <Select label="Disabled" disabled defaultValue="" options={SIMPLE_OPTIONS} placeholder="Select…" />
 </div>
 
 <Divider />
