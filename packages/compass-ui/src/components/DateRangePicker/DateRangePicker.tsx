@@ -364,19 +364,41 @@ export default function DateRangePicker({
                   }
                   const iso = toIso(displayYear, displayMonth, day);
                   const isToday = iso === todayIso;
+                  const isRangeStart =
+                    mode === 'range' && isSameDay(iso, selectedStart);
+                  const isRangeEnd =
+                    mode === 'range' &&
+                    Boolean(selectedEnd) &&
+                    isSameDay(iso, selectedEnd);
                   const isSelected =
                     mode === 'date'
                       ? isSameDay(iso, selectedDate)
-                      : isSameDay(iso, selectedStart) ||
-                        isSameDay(iso, selectedEnd);
+                      : isRangeStart || isRangeEnd;
                   const isInRange =
                     mode === 'range' &&
                     isBetween(iso, selectedStart, selectedEnd);
+                  const hasRangeSpan =
+                    mode === 'range' &&
+                    Boolean(selectedStart) &&
+                    Boolean(selectedEnd) &&
+                    selectedStart !== selectedEnd;
+
+                  const cellClass = [
+                    styles.dateRangePicker__dayCell,
+                    isInRange ? styles['dateRangePicker__dayCell--in-range'] : '',
+                    hasRangeSpan && isRangeStart
+                      ? styles['dateRangePicker__dayCell--range-start']
+                      : '',
+                    hasRangeSpan && isRangeEnd
+                      ? styles['dateRangePicker__dayCell--range-end']
+                      : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
 
                   const dayClass = [
                     styles.dateRangePicker__day,
                     isSelected ? styles['dateRangePicker__day--selected'] : '',
-                    isInRange ? styles['dateRangePicker__day--in-range'] : '',
                     isToday && !isSelected
                       ? styles['dateRangePicker__day--today']
                       : '',
@@ -385,16 +407,17 @@ export default function DateRangePicker({
                     .join(' ');
 
                   return (
-                    <button
-                      key={di}
-                      type="button"
-                      className={dayClass}
-                      onClick={() => handleDayClick(iso)}
-                      aria-label={iso}
-                      aria-pressed={isSelected}
-                    >
-                      {day}
-                    </button>
+                    <div key={di} className={cellClass}>
+                      <button
+                        type="button"
+                        className={dayClass}
+                        onClick={() => handleDayClick(iso)}
+                        aria-label={iso}
+                        aria-pressed={isSelected}
+                      >
+                        {day}
+                      </button>
+                    </div>
                   );
                 })}
               </div>

@@ -170,9 +170,9 @@
   // Weekday header row
   // ---------------------------------------------------------------------------
   &__weekdays {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: center;
-    justify-content: space-between;
     padding: var(--spacing-s) 0;
   }
 
@@ -180,7 +180,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
+    width: 100%;
     font-family: var(--font-family-body);
     font-size: var(--font-size-75);
     line-height: var(--line-height-75);
@@ -201,16 +201,44 @@
   }
 
   &__week {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: stretch;
   }
 
   &__dayEmpty {
     display: block;
-    width: 36px;
     height: 36px;
-    flex-shrink: 0;
+  }
+
+  // Full-width slot so range fill is continuous across the week.
+  &__dayCell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    min-width: 0;
+
+    &--in-range {
+      background-color: rgba(var(--button-bg-rgb), 0.12);
+    }
+
+    // Soft fill only on the inner half so it meets the in-range bar.
+    &--range-start {
+      background: linear-gradient(
+        to right,
+        transparent 50%,
+        rgba(var(--button-bg-rgb), 0.12) 50%
+      );
+    }
+
+    &--range-end {
+      background: linear-gradient(
+        to left,
+        transparent 50%,
+        rgba(var(--button-bg-rgb), 0.12) 50%
+      );
+    }
   }
 
   &__day {
@@ -250,12 +278,6 @@
         background-color: var(--button-bg);
         opacity: 0.92;
       }
-    }
-
-    &--in-range {
-      background-color: rgba(var(--button-bg-rgb), 0.12);
-      border-radius: 0;
-      color: var(--center-channel-color);
     }
   }
 
