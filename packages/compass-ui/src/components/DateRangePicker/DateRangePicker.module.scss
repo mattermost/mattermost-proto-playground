@@ -28,21 +28,27 @@
     user-select: none;
     transition: box-shadow var(--duration-quick) var(--ease-transition);
 
-    .dateRangePicker:not(.dateRangePicker--disabled):not(.dateRangePicker--open) &:hover:not(:focus-visible) {
+    .dateRangePicker:not(.dateRangePicker--disabled):not(.dateRangePicker--open):not(
+        :focus-within
+      )
+      &:hover {
       box-shadow: inset 0 0 0 1px rgba(var(--center-channel-color-rgb), 0.24);
+    }
+
+    .dateRangePicker:focus-within &,
+    .dateRangePicker--open & {
+      outline: none;
+      box-shadow:
+        inset 0 0 0 1px var(--button-bg),
+        0 0 0 1px var(--button-bg);
+    }
+
+    &:focus {
+      outline: none;
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow:
-        inset 0 0 0 1px var(--button-bg),
-        0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
-    }
-
-    .dateRangePicker--open & {
-      box-shadow:
-        inset 0 0 0 1px var(--button-bg),
-        0 0 0 2px rgba(var(--button-bg-rgb), 0.32);
     }
 
     .dateRangePicker--disabled & {
@@ -303,6 +309,19 @@
 
     &:hover:not(&--selected) {
       background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible:not(&--selected) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
+    }
+
+    &--selected:focus-visible {
+      box-shadow: 0 0 0 2px rgba(var(--button-bg-rgb), 0.56);
     }
 
     &--today {
