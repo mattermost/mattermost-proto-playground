@@ -1,5 +1,5 @@
-import type { InputHTMLAttributes } from 'react';
-import { useState, useCallback, useId, useRef } from 'react';
+import type { InputHTMLAttributes, KeyboardEvent } from 'react';
+import { useState, useCallback, useEffect, useId, useRef } from 'react';
 import Button from '@/components/Button/Button';
 import IconButton, {
   ICON_BUTTON_ICON_SIZES,
@@ -10,6 +10,7 @@ import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import styles from './DateRangePicker.module.scss';
 
 export type DateRangePickerMode = 'date' | 'range';
@@ -120,7 +121,27 @@ export default function DateRangePicker({
   const selectedStart = startDate ?? internalStart;
   const selectedEnd = endDate ?? internalEnd;
 
-  useOutsideClose(rootRef, isOpen, () => setIsOpen(false));
+  const hasValue =
+    mode === 'date' ? Boolean(selectedDate) : Boolean(selectedStart);
+
+  const { mounted: popoverMounted, visible: popoverVisible } =
+    usePopoverTransition(isOpen);
+
+  const close = useCallback(() => setIsOpen(false), []);
+
+  useOutsideClose(rootRef, isOpen, close);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: globalThis.KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, close]);
 
   const handleToggle = useCallback(() => {
     if (!disabled) setIsOpen((o) => !o);
@@ -147,9 +168,10 @@ export default function DateRangePicker({
   }, []);
 
   const handleToday = useCallback(() => {
-    setDisplayYear(today.getFullYear());
-    setDisplayMonth(today.getMonth());
-  }, [today]);
+    const now = new Date();
+    setDisplayYear(now.getFullYear());
+    setDisplayMonth(now.getMonth());
+  }, []);
 
   const handleDayClick = useCallback(
     (iso: string) => {
@@ -159,7 +181,7 @@ export default function DateRangePicker({
         } else {
           setInternalDate(iso);
         }
-        setIsOpen(false);
+        close();
       } else {
         // range mode: first click = start, second = end
         if (!selectedStart || (selectedStart && selectedEnd)) {
@@ -174,11 +196,36 @@ export default function DateRangePicker({
             setInternalStart(s);
             setInternalEnd(e);
           }
-          setIsOpen(false);
+          close();
         }
       }
     },
-    [mode, selectedStart, selectedEnd, onChange, onRangeChange],
+    [mode, selectedStart, selectedEnd, onChange, onRangeChange, close],
+  );
+
+  const handleTriggerKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (disabled) return;
+      switch (e.key) {
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          handleToggle();
+          break;
+        case 'Escape':
+          if (isOpen) {
+            e.preventDefault();
+            close();
+          }
+          break;
+        case 'Tab':
+          if (isOpen) close();
+          break;
+        default:
+          break;
+      }
+    },
+    [disabled, handleToggle, isOpen, close],
   );
 
   // Build calendar grid
@@ -202,30 +249,29 @@ export default function DateRangePicker({
         ? `${formatDateDisplay(selectedStart)}${selectedEnd ? ` – ${formatDateDisplay(selectedEnd)}` : ''}`
         : '';
 
+  const rootClass = [
+    styles.dateRangePicker,
+    isOpen ? styles['dateRangePicker--open'] : '',
+    disabled ? styles['dateRangePicker--disabled'] : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div
-      ref={rootRef}
-      className={[styles.dateRangePicker, className].filter(Boolean).join(' ')}
-    >
+    <div ref={rootRef} className={rootClass}>
       {/* Trigger input */}
       <div
-        className={[
-          styles.dateRangePicker__trigger,
-          disabled ? styles['dateRangePicker--disabled'] : '',
-          isOpen ? styles['dateRangePicker--open'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
+        className={styles.dateRangePicker__trigger}
         role="button"
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        aria-disabled={disabled}
+        aria-disabled={disabled || undefined}
         tabIndex={disabled ? -1 : 0}
         id={id}
+        data-has-value={hasValue ? '' : undefined}
         onClick={handleToggle}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') handleToggle();
-        }}
+        onKeyDown={handleTriggerKeyDown}
       >
         <span className={styles.dateRangePicker__calendarIcon} aria-hidden>
           <Icon size="16" glyph={<CalendarOutlineIcon />} />
@@ -239,9 +285,14 @@ export default function DateRangePicker({
       </div>
 
       {/* Calendar popover */}
-      {isOpen && (
+      {popoverMounted && (
         <div
-          className={styles.dateRangePicker__popover}
+          className={[
+            styles.dateRangePicker__popover,
+            popoverVisible ? styles['dateRangePicker__popover--visible'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           role="dialog"
           aria-modal="false"
           aria-label="Date picker"

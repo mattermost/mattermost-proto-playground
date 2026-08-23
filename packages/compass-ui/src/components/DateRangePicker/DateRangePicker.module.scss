@@ -114,6 +114,22 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-l);
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: top left;
+    transition:
+      opacity var(--duration-quick) var(--ease-exit),
+      transform var(--duration-quick) var(--ease-exit);
+    pointer-events: none;
+
+    &--visible {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      transition:
+        opacity var(--duration-quick) var(--ease-entrance),
+        transform var(--duration-quick) var(--ease-entrance);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -169,7 +185,7 @@
     font-size: var(--font-size-75);
     line-height: var(--line-height-75);
     font-weight: var(--font-weight-semibold);
-    color: rgba(var(--center-channel-color-rgb), 0.64);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
     text-transform: uppercase;
     letter-spacing: 0.24px;
     text-align: center;
