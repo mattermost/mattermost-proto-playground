@@ -81,7 +81,7 @@ function SelectOptionRow({
       aria-disabled={option.disabled || undefined}
       onMouseDown={(ev) => ev.preventDefault()}
       onMouseEnter={onHover}
-      onClick={() => {
+      onPointerUp={() => {
         if (!option.disabled) onSelect(option);
       }}
     >
