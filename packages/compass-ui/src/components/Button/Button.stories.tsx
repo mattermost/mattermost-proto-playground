@@ -1,8 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Button from './Button';
-import type { ButtonAppearance, ButtonEmphasis, ButtonSize } from './Button';
-import Icon from '../Icon/Icon';
+import type { ButtonAppearance, ButtonEmphasis, ButtonProps, ButtonSize } from './Button';
+import type { IconSize } from '../Icon/Icon';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const EMPHASES: ButtonEmphasis[] = [
   'Primary',
@@ -13,6 +17,18 @@ const EMPHASES: ButtonEmphasis[] = [
 
 const SIZES: ButtonSize[] = ['X-Small', 'Small', 'Medium', 'Large'];
 
+const BUTTON_SIZE_ICON_MAP: Record<ButtonSize, IconSize> = {
+  'X-Small': '12',
+  Small: '16',
+  Medium: '16',
+  Large: '20',
+};
+
+type ButtonStoryArgs = Omit<ButtonProps, 'leadingIcon' | 'trailingIcon'> & {
+  leadingIcon?: string;
+  trailingIcon?: string;
+};
+
 const meta = {
   title: 'Components/Actions/Button',
   component: Button,
@@ -21,8 +37,45 @@ const meta = {
     appearance: { control: 'select', options: ['Default', 'Inverted'] },
     emphasis: { control: 'select', options: EMPHASES },
     size: { control: 'select', options: SIZES },
+    leadingIcon: iconSelectArgType({
+      optional: true,
+      includeDefault: true,
+      description:
+        'Leading icon. None hides it; Default uses the built-in Icon glyph.',
+    }),
+    trailingIcon: iconSelectArgType({
+      optional: true,
+      includeDefault: true,
+      description:
+        'Trailing icon. None hides it; Default uses the built-in Icon glyph.',
+    }),
   },
-} satisfies Meta<typeof Button>;
+  args: {
+    leadingIcon: ICON_NONE,
+    trailingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, trailingIcon, size = 'Medium', ...rest }) => {
+    const iconSize = BUTTON_SIZE_ICON_MAP[size];
+    return (
+      <Button
+        {...rest}
+        size={size}
+        leadingIcon={
+          resolveStoryIcon(leadingIcon, {
+            wrapSize: iconSize,
+            defaultMode: 'boolean',
+          }) as ButtonProps['leadingIcon']
+        }
+        trailingIcon={
+          resolveStoryIcon(trailingIcon, {
+            wrapSize: iconSize,
+            defaultMode: 'boolean',
+          }) as ButtonProps['trailingIcon']
+        }
+      />
+    );
+  },
+} satisfies Meta<ButtonStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -38,7 +91,7 @@ export const Primary: Story = {
 export const WithLeadingIcon: Story = {
   args: {
     children: 'Label',
-    leadingIcon: <Icon glyph={<GlobeIcon />} size="16" />,
+    leadingIcon: 'globe',
   },
 };
 

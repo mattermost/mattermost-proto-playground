@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 import { fn } from '@storybook/test';
 import GlobalBanner from './GlobalBanner';
-import type { GlobalBannerType } from './GlobalBanner';
+import type { GlobalBannerProps, GlobalBannerType } from './GlobalBanner';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const TYPES: GlobalBannerType[] = [
   'General',
@@ -11,14 +17,30 @@ const TYPES: GlobalBannerType[] = [
   'Success',
 ];
 
+type GlobalBannerStoryArgs = Omit<GlobalBannerProps, 'leadingIcon'> & {
+  leadingIcon?: string;
+};
+
 const meta = {
   title: 'Components/Banners/Global Banner',
   component: GlobalBanner,
   tags: ['autodocs'],
   argTypes: {
     type: { control: 'select', options: TYPES },
+    leadingIcon: iconSelectArgType({ optional: true }),
   },
-} satisfies Meta<typeof GlobalBanner>;
+  args: {
+    leadingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, ...rest }) => (
+    <GlobalBanner
+      {...rest}
+      leadingIcon={
+        resolveStoryIcon(leadingIcon, { wrapSize: '16' }) as ReactNode
+      }
+    />
+  ),
+} satisfies Meta<GlobalBannerStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

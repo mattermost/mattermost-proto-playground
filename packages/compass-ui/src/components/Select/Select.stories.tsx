@@ -2,8 +2,13 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Select from './Select';
-import type { SelectOption, SelectSize } from './Select';
+import type { SelectOption, SelectProps, SelectSize } from './Select';
 import Icon from '../Icon/Icon';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const SIZES: SelectSize[] = ['Small', 'Medium', 'Large'];
 
@@ -14,9 +19,16 @@ const DEFAULT_OPTIONS: SelectOption[] = [
 ];
 
 const LONG_LABEL_OPTIONS: SelectOption[] = [
-  { value: 'a', label: 'A very long option label that should truncate within the menu width' },
+  {
+    value: 'a',
+    label: 'A very long option label that should truncate within the menu width',
+  },
   { value: 'b', label: 'Option B' },
 ];
+
+type SelectStoryArgs = Omit<SelectProps, 'leadingIcon'> & {
+  leadingIcon?: string;
+};
 
 const meta = {
   title: 'Components/Forms and Input/Select',
@@ -24,8 +36,20 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
+    leadingIcon: iconSelectArgType({ optional: true }),
   },
-} satisfies Meta<typeof Select>;
+  args: {
+    leadingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, ...rest }) => (
+    <Select
+      {...rest}
+      leadingIcon={
+        resolveStoryIcon(leadingIcon, { wrapSize: '16' }) as ReactNode
+      }
+    />
+  ),
+} satisfies Meta<SelectStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -76,7 +100,7 @@ export const WithValue: Story = {
 export const WithLeadingIcon: Story = {
   args: {
     label: 'Workspace',
-    leadingIcon: <Icon glyph={<GlobeIcon />} size="16" />,
+    leadingIcon: 'globe',
     options: DEFAULT_OPTIONS,
     placeholder: 'Select...',
   },
