@@ -118,7 +118,7 @@
     box-shadow: var(--elevation-4);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-s);
+    gap: 0;
     opacity: 0;
     transform: scale(0.9);
     transform-origin: top left;
@@ -178,7 +178,7 @@
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     align-items: center;
-    padding: var(--spacing-s) 0;
+    padding: 0;
   }
 
   &__weekday {
