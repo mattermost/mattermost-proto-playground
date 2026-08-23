@@ -80,6 +80,15 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 
 export const Default: Story = {
   args: {
+    size: 'Medium',
+    options: DEFAULT_OPTIONS,
+    defaultValue: '',
+    placeholder: 'Select...',
+  },
+};
+
+export const WithLabel: Story = {
+  args: {
     label: 'Select option',
     size: 'Medium',
     options: DEFAULT_OPTIONS,
@@ -127,11 +136,24 @@ export const AllVariants: Story = {
           <Select
             key={size}
             size={size}
-            label={size}
             options={DEFAULT_OPTIONS}
-            placeholder="Select..."
+            placeholder={size}
           />
         ))}
+      </Row>
+      <Row label="Label">
+        <Select
+          label="Label"
+          options={DEFAULT_OPTIONS}
+          placeholder="Placeholder"
+        />
+        <Select options={DEFAULT_OPTIONS} placeholder="No label" />
+        <Select
+          label="With value"
+          defaultValue="b"
+          options={DEFAULT_OPTIONS}
+          placeholder="Select..."
+        />
       </Row>
       <Row label="States">
         <Select
