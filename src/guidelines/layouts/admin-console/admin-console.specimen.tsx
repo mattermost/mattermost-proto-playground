@@ -24,6 +24,12 @@ const postsSampleSidebarGroups = defaultAdminConsoleSidebarGroups.map(
   }),
 );
 
+const THREAD_MODE_OPTIONS = [
+  { value: 'default-off', label: 'Default off' },
+  { value: 'default-on', label: 'Default on' },
+  { value: 'always-on', label: 'Always On' },
+];
+
 export default function AdminConsoleLayout() {
   const radioNs = useId().replace(/\W/g, '');
 
@@ -101,12 +107,9 @@ export default function AdminConsoleLayout() {
                           label="Mode"
                           size="Medium"
                           defaultValue="always-on"
+                          options={THREAD_MODE_OPTIONS}
                           aria-label="Threaded discussions mode"
-                        >
-                          <option value="default-off">Default off</option>
-                          <option value="default-on">Default on</option>
-                          <option value="always-on">Always On</option>
-                        </Select>
+                        />
                       </div>
                       <p className={styles['admin-console-layout__help']}>
                         When enabled (default off), users have the option to enable
