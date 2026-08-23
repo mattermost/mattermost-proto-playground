@@ -3,6 +3,11 @@
 // Calendar popover for single date or date range selection.
 // ---------------------------------------------------------------------------
 .dateRangePicker {
+  // Day button / calendar slot: 36px via nearest icon box + spacing step.
+  --date-range-picker-day-size: calc(
+    var(--icon-size-32) + var(--spacing-xxxs)
+  );
+
   display: flex;
   flex-direction: column;
   position: relative;
@@ -208,7 +213,7 @@
 
   &__dayEmpty {
     display: block;
-    height: 36px;
+    height: var(--date-range-picker-day-size);
   }
 
   // Full-width slot so range fill is continuous across the week.
@@ -216,7 +221,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 36px;
+    height: var(--date-range-picker-day-size);
     min-width: 0;
     position: relative;
     z-index: 0;
@@ -280,8 +285,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: var(--date-range-picker-day-size);
+    height: var(--date-range-picker-day-size);
     flex-shrink: 0;
     background: transparent;
     border: 0;
