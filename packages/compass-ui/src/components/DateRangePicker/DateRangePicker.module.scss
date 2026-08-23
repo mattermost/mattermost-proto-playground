@@ -218,9 +218,28 @@
     justify-content: center;
     height: 36px;
     min-width: 0;
+    position: relative;
+    z-index: 0;
+
+    &--in-range,
+    &--range-start,
+    &--range-end {
+      // Bleed 1px so adjacent cells and week rows share one continuous fill.
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        z-index: -1;
+        pointer-events: none;
+      }
+    }
 
     &--in-range {
       background-color: rgba(var(--button-bg-rgb), 0.12);
+
+      &::before {
+        background-color: rgba(var(--button-bg-rgb), 0.12);
+      }
     }
 
     // Soft fill only on the inner half so it meets the in-range bar.
@@ -230,6 +249,14 @@
         transparent 50%,
         rgba(var(--button-bg-rgb), 0.12) 50%
       );
+
+      &::before {
+        background: linear-gradient(
+          to right,
+          transparent 50%,
+          rgba(var(--button-bg-rgb), 0.12) 50%
+        );
+      }
     }
 
     &--range-end {
@@ -238,6 +265,14 @@
         transparent 50%,
         rgba(var(--button-bg-rgb), 0.12) 50%
       );
+
+      &::before {
+        background: linear-gradient(
+          to left,
+          transparent 50%,
+          rgba(var(--button-bg-rgb), 0.12) 50%
+        );
+      }
     }
   }
 
