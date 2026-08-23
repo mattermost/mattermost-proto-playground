@@ -286,7 +286,7 @@ export default function DateRangePicker({
   }, [focusDayButton]);
 
   const handleDayClick = useCallback(
-    (iso: string) => {
+    (iso: string, day: number) => {
       if (mode === 'date') {
         if (onChange) {
           onChange(iso);
@@ -299,6 +299,7 @@ export default function DateRangePicker({
         if (!selectedStart || (selectedStart && selectedEnd)) {
           setInternalStart(iso);
           setInternalEnd('');
+          setFocusedDay(day);
         } else {
           const [s, e] =
             iso >= selectedStart ? [selectedStart, iso] : [iso, selectedStart];
@@ -379,7 +380,8 @@ export default function DateRangePicker({
         case 'Enter':
         case ' ':
           e.preventDefault();
-          handleDayClick(toIso(displayYear, displayMonth, day));
+          setFocusedDay(day);
+          handleDayClick(toIso(displayYear, displayMonth, day), day);
           break;
         default:
           break;
@@ -629,7 +631,8 @@ export default function DateRangePicker({
                         className={dayClass}
                         data-day={day}
                         tabIndex={focusedDay === day ? 0 : -1}
-                        onClick={() => handleDayClick(iso)}
+                        onClick={() => handleDayClick(iso, day)}
+                        onFocus={() => setFocusedDay(day)}
                         onKeyDown={(e) => handleDayKeyDown(e, day)}
                         aria-label={iso}
                         aria-pressed={isSelected}
