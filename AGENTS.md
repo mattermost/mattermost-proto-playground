@@ -45,3 +45,14 @@ Prefer design tokens from `src/styles/tokens.scss` over hardcoded px/hex/ms. Ful
 - [.cursor/skills/add-docs-topic/SKILL.md](.cursor/skills/add-docs-topic/SKILL.md) — Adding a docs topic (procedure)
 - [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype (procedure)
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
+
+## Cursor Cloud specific instructions
+
+Frontend-only Vite + React SPA (a design-system docs/prototype playground). No backend, database, or external services.
+
+- Node 24 / npm 11 are required (`.nvmrc` → `24.11`). The VM has Node 24 baked into the snapshot and ahead of the sandbox default in `PATH`; commands run in a login shell pick it up automatically. `npm install` is the only dependency step (handled by the startup update script).
+- Run everything from the repo root. Standard scripts live in `package.json` (`dev`, `lint`, `build`, `format`, `storybook`).
+- `npm run dev` runs three watchers in parallel (`dev:ui`, `dev:proto`, `dev:app`). The app (`vite`) waits for `packages/compass-ui/dist` and `packages/compass-proto/dist` to be built before serving. On a cold start the first page load can take ~20s while those library builds complete — this is expected, not a hang.
+- The dev server serves under a base path: open `http://localhost:5173/mattermost-proto-playground/` (not `/`).
+- The in-repo libraries `@mattermost/compass-ui` and `@mattermost/compass-proto` are consumed from their built `dist/` (excluded from Vite dep optimization). Editing files under `packages/*/src` triggers a `vite build --watch` rebuild into `dist/`, and the app full-reloads only after `dist/` updates — direct source edits won't hot-reload instantly.
+- `npm run lint` currently reports pre-existing errors/warnings in committed code; that reflects repo state, not a setup problem.
