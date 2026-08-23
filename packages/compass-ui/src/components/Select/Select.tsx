@@ -373,6 +373,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
             ref={setButtonRef}
             id={id}
             type="button"
+            role="combobox"
             className={controlClass}
             disabled={disabled}
             aria-haspopup="listbox"
