@@ -203,9 +203,10 @@ export default function DateRangePicker({
     todayIso,
   ]);
 
-  // On open: set roving focus day and move DOM focus into the grid.
+  // On open: after the enter transition enables pointer-events, move focus
+  // into the day grid (selected day, today, or the 1st).
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !popoverVisible) return;
     const day = initialFocusDay();
     setFocusedDay(day);
     const frame = requestAnimationFrame(() => {
@@ -214,9 +215,8 @@ export default function DateRangePicker({
         ?.focus();
     });
     return () => cancelAnimationFrame(frame);
-    // Only when the popover opens — not on every selection/month change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- open transition only
-  }, [isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open/visible transition only
+  }, [isOpen, popoverVisible]);
 
   const focusDayButton = useCallback((day: number) => {
     setFocusedDay(day);
