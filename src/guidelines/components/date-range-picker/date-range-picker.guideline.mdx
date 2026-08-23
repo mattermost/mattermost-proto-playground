@@ -67,7 +67,9 @@ range from scratch.
 ## Behavior
 
 - The popover opens 4px below the trigger and dismisses on outside click,
-  Escape, selection, or Tabbing away from the picker.
+  Escape, or Tabbing away from the picker. Selecting a single date closes it;
+  in range mode the first click sets the start and keeps it open, and the
+  second click completes the range and closes it.
 - Opening moves focus into the day grid (selected day, today, or the 1st).
 - **Tab** moves through Today, previous/next month, then the day grid (one
   stop). **Arrow keys** move within the grid; **Home** / **End** jump to the
