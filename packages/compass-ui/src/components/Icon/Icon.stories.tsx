@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Icon from './Icon';
-import type { IconSize } from './Icon';
+import type { IconProps, IconSize } from './Icon';
+import {
+  ICON_DEFAULT,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const SIZES: IconSize[] = [
   '10',
@@ -17,24 +23,42 @@ const SIZES: IconSize[] = [
   '104',
 ];
 
+type IconStoryArgs = Omit<IconProps, 'glyph'> & {
+  glyph?: string;
+};
+
 const meta = {
   title: 'Components/Images and Icons/Icon',
   component: Icon,
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
+    glyph: iconSelectArgType({
+      includeDefault: true,
+      description:
+        'Glyph from @mattermost/compass-icons. Default uses emoticon-happy-outline.',
+    }),
   },
-} satisfies Meta<typeof Icon>;
+  args: {
+    glyph: 'globe',
+    size: '24',
+  },
+  render: ({ glyph, ...rest }) => (
+    <Icon
+      {...rest}
+      glyph={
+        glyph === ICON_DEFAULT
+          ? undefined
+          : (resolveStoryIcon(glyph) as ReactNode)
+      }
+    />
+  ),
+} satisfies Meta<IconStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  args: {
-    glyph: <GlobeIcon />,
-    size: '24',
-  },
-};
+export const Default: Story = {};
 
 export const AllSizes: Story = {
   render: () => (

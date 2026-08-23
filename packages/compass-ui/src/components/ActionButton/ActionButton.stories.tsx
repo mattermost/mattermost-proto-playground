@@ -8,12 +8,32 @@ import StarIcon from '@mattermost/compass-icons/components/star';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import ActionButton from './ActionButton';
+import type { ActionButtonProps } from './ActionButton';
+import { iconSelectArgType, resolveStoryIcon } from '../../storybook/icons';
+
+type ActionButtonStoryArgs = Omit<ActionButtonProps, 'icon'> & {
+  icon: string;
+};
 
 const meta = {
   title: 'Components/Actions/Action Button',
   component: ActionButton,
   tags: ['autodocs'],
-} satisfies Meta<typeof ActionButton>;
+  argTypes: {
+    icon: iconSelectArgType({
+      description: 'Action icon glyph from @mattermost/compass-icons.',
+    }),
+  },
+  args: {
+    icon: 'emoticon-happy-outline',
+  },
+  render: ({ icon, ...rest }) => (
+    <ActionButton
+      {...rest}
+      icon={resolveStoryIcon(icon, { glyphSize: 20 }) as ReactNode}
+    />
+  ),
+} satisfies Meta<ActionButtonStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -44,7 +64,6 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 
 export const Default: Story = {
   args: {
-    icon: <EmoticonHappyOutlineIcon size={20} />,
     label: 'Action',
     'aria-label': 'Action',
   },

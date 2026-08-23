@@ -2,10 +2,23 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import TextInput from './TextInput';
-import type { TextInputSize } from './TextInput';
+import type { TextInputProps, TextInputSize } from './TextInput';
 import Icon from '../Icon/Icon';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const SIZES: TextInputSize[] = ['Small', 'Medium', 'Large'];
+
+type TextInputStoryArgs = Omit<
+  TextInputProps,
+  'leadingIcon' | 'trailingIcon'
+> & {
+  leadingIcon?: string;
+  trailingIcon?: string;
+};
 
 const meta = {
   title: 'Components/Forms and Input/Text Input',
@@ -13,8 +26,25 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
+    leadingIcon: iconSelectArgType({ optional: true }),
+    trailingIcon: iconSelectArgType({ optional: true }),
   },
-} satisfies Meta<typeof TextInput>;
+  args: {
+    leadingIcon: ICON_NONE,
+    trailingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, trailingIcon, ...rest }) => (
+    <TextInput
+      {...rest}
+      leadingIcon={
+        resolveStoryIcon(leadingIcon, { wrapSize: '16' }) as ReactNode
+      }
+      trailingIcon={
+        resolveStoryIcon(trailingIcon, { wrapSize: '16' }) as ReactNode
+      }
+    />
+  ),
+} satisfies Meta<TextInputStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -62,8 +92,8 @@ export const WithIcons: Story = {
   args: {
     label: 'Workspace',
     placeholder: 'Enter workspace...',
-    leadingIcon: <Icon glyph={<GlobeIcon />} size="16" />,
-    trailingIcon: <Icon glyph={<GlobeIcon />} size="16" />,
+    leadingIcon: 'globe',
+    trailingIcon: 'globe',
   },
 };
 

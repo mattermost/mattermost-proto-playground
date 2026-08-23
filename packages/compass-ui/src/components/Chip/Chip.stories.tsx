@@ -1,11 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 import { fn } from '@storybook/test';
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import Chip from './Chip';
-import type { ChipSize } from './Chip';
+import type { ChipProps, ChipSize } from './Chip';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const SIZES: ChipSize[] = ['Small', 'Medium', 'Medium Compact', 'Large'];
+
+type ChipStoryArgs = Omit<ChipProps, 'leadingIcon'> & {
+  leadingIcon?: string;
+};
 
 const meta = {
   title: 'Components/Forms and Input/Chip',
@@ -13,8 +23,22 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
+    leadingIcon: iconSelectArgType({
+      optional: true,
+      description:
+        'Leading icon glyph. Chip wraps it in Icon at the size for the chip.',
+    }),
   },
-} satisfies Meta<typeof Chip>;
+  args: {
+    leadingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, ...rest }) => (
+    <Chip
+      {...rest}
+      leadingIcon={resolveStoryIcon(leadingIcon) as ReactNode}
+    />
+  ),
+} satisfies Meta<ChipStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -43,7 +67,7 @@ export const WithLeadingIcon: Story = {
   args: {
     children: 'With icon',
     size: 'Medium',
-    leadingIcon: <EmoticonHappyOutlineIcon size={12} />,
+    leadingIcon: 'emoticon-happy-outline',
     onRemove: fn(),
   },
 };
