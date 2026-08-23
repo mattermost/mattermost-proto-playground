@@ -117,7 +117,7 @@ Toasts / global banners: use `rgb(var(--semantic-color-*))` directly for type fi
 
 ## Figma opacity suffixes
 
-Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. **Exceptions:** field placeholder text may use **0.64**; disabled components may use lower opacities (typically **0.56** on the control). Backgrounds/borders/fills may use the mapped alpha as written.
+Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. **Exceptions:** field placeholder text may use **0.64**; disabled components may go as low as **0.4**. Backgrounds/borders/fills may use the mapped alpha as written.
 
 ## Opacity floors
 
@@ -125,7 +125,7 @@ Never style **text** below **72%** opacity or **icons** below **56%** (including
 
 **Exception — placeholders:** Input / Select / Combobox placeholder text (hint copy in the empty field) may use **64%** opacity (`rgba(var(--center-channel-color-rgb), 0.64)`). Do not apply this floor exemption to labels, values, body copy, or other resting text.
 
-**Exception — disabled:** Disabled controls and disabled menu/list rows may drop below the text/icon floors so they read as inactive. Form fields typically apply **`opacity: 0.56`** on the control surface; menu items often dim content at **0.4**. Do not use these values on enabled resting UI.
+**Exception — disabled:** Disabled controls and disabled menu/list rows may drop below the text/icon floors so they read as inactive, but not below **40%** opacity (`0.4`). Form fields often use **0.56** on the control surface; menu items often dim content at **0.4**. Do not use these values on enabled resting UI.
 
 ## Iconography: phone
 
