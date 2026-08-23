@@ -16,7 +16,7 @@ When adding or editing `packages/compass-ui/**/*.stories.tsx`:
 - Foundation stories import named `*Content` exports from guideline specimens (visual reference only). Use `tags: ['autodocs']`, inline string-literal titles, meaningful story names. Do not port guideline MDX prose into Storybook.
 - Labels/demo text: `var(--center-channel-color)` — not `--color-neutral-*` / `--color-text-secondary`.
 - Preview surfaces: `var(--center-channel-bg)`. Inverted surfaces: `var(--sidebar-header-bg)` with `var(--sidebar-text)` labels.
-- Secondary text/borders/fills: `rgba(var(--center-channel-color-rgb), <alpha>)`. Text alpha ≥ **0.72**; icon alpha ≥ **0.56**.
+- Secondary text/borders/fills: `rgba(var(--center-channel-color-rgb), <alpha>)`. Text alpha ≥ **0.72** (placeholder text may use **0.64**); icon alpha ≥ **0.56**.
 - Base fonts from `@mattermost/compass-ui/styles` + `/styles/standalone` (Storybook preview) — do not hardcode font families in stories.
 - Docs tab chrome: `packages/compass-ui/.storybook/docs-theme.css`.
 

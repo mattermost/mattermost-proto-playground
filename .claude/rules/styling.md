@@ -117,11 +117,13 @@ Toasts / global banners: use `rgb(var(--semantic-color-*))` directly for type fi
 
 ## Figma opacity suffixes
 
-Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. Backgrounds/borders/fills may use the mapped alpha as written.
+Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. **Exception:** field placeholder text may use **0.64**. Backgrounds/borders/fills may use the mapped alpha as written.
 
 ## Opacity floors
 
 Never style **text** below **72%** opacity or **icons** below **56%** (including `rgba`/`hsla` as `color`/`fill`, and `opacity` on text/icon elements). Lower alpha is fine for backgrounds, borders, fills, overlays. Entrance/exit may fade temporarily; resting UI must meet the floors.
+
+**Exception — placeholders:** Input / Select / Combobox placeholder text (hint copy in the empty field) may use **64%** opacity (`rgba(var(--center-channel-color-rgb), 0.64)`). Do not apply this floor exemption to labels, values, body copy, or other resting text.
 
 ## Iconography: phone
 
