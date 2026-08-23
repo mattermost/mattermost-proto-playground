@@ -1,13 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarArjun from '@/assets/avatars/Arjun Patel.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import Combobox from './Combobox';
-import type { ComboboxOption, ComboboxSize } from './Combobox';
+import type { ComboboxOption, ComboboxProps, ComboboxSize } from './Combobox';
 import Icon from '../Icon/Icon';
 import UserAvatar from '../UserAvatar/UserAvatar';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const SIZES: ComboboxSize[] = ['Small', 'Medium', 'Large'];
 
@@ -43,14 +48,30 @@ const PEOPLE_OPTIONS: ComboboxOption[] = [
   },
 ];
 
+type ComboboxStoryArgs = Omit<ComboboxProps, 'leadingIcon'> & {
+  leadingIcon?: string;
+};
+
 const meta = {
   title: 'Components/Forms and Input/Combobox',
   component: Combobox,
   tags: ['autodocs'],
   argTypes: {
     size: { control: 'select', options: SIZES },
+    leadingIcon: iconSelectArgType({ optional: true }),
   },
-} satisfies Meta<typeof Combobox>;
+  args: {
+    leadingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, ...rest }) => (
+    <Combobox
+      {...rest}
+      leadingIcon={
+        resolveStoryIcon(leadingIcon, { wrapSize: '16' }) as ReactNode
+      }
+    />
+  ),
+} satisfies Meta<ComboboxStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -75,7 +96,7 @@ export const WithValue: Story = {
 export const WithLeadingIcon: Story = {
   args: {
     label: 'Channel',
-    leadingIcon: <Icon glyph={<GlobeIcon />} size="16" />,
+    leadingIcon: 'globe',
     options: CHANNEL_OPTIONS,
   },
 };
@@ -137,6 +158,11 @@ export const AllVariants: Story = {
         label="Disabled"
         disabled
         defaultValue="design"
+        options={CHANNEL_OPTIONS}
+      />
+      <Combobox
+        label="With icon"
+        leadingIcon={<Icon glyph={<GlobeIcon />} size="16" />}
         options={CHANNEL_OPTIONS}
       />
     </div>

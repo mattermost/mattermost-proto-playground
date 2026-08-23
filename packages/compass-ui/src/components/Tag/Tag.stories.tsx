@@ -2,7 +2,12 @@ import type { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import Tag from './Tag';
-import type { TagCasing, TagSize, TagType } from './Tag';
+import type { TagCasing, TagProps, TagSize, TagType } from './Tag';
+import {
+  ICON_NONE,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const TYPES: TagType[] = [
   'Default',
@@ -15,6 +20,10 @@ const TYPES: TagType[] = [
 const SIZES: TagSize[] = ['X-Small', 'Small'];
 const CASINGS: TagCasing[] = ['Title Case', 'All Caps'];
 
+type TagStoryArgs = Omit<TagProps, 'leadingIcon'> & {
+  leadingIcon?: string;
+};
+
 const meta = {
   title: 'Components/Status Indicators/Tag',
   component: Tag,
@@ -23,8 +32,23 @@ const meta = {
     casing: { control: 'select', options: CASINGS },
     size: { control: 'select', options: SIZES },
     type: { control: 'select', options: TYPES },
+    leadingIcon: iconSelectArgType({ optional: true }),
   },
-} satisfies Meta<typeof Tag>;
+  args: {
+    leadingIcon: ICON_NONE,
+  },
+  render: ({ leadingIcon, size = 'X-Small', ...rest }) => (
+    <Tag
+      {...rest}
+      size={size}
+      leadingIcon={
+        resolveStoryIcon(leadingIcon, {
+          glyphSize: size === 'Small' ? 12 : 10,
+        }) as ReactNode
+      }
+    />
+  ),
+} satisfies Meta<TagStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -64,7 +88,7 @@ export const WithIcon: Story = {
   args: {
     label: 'Professional',
     casing: 'All Caps',
-    leadingIcon: <GlobeIcon size={10} />,
+    leadingIcon: 'globe',
     type: 'Default',
   },
 };

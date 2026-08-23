@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+import type { ReactNode } from 'react';
 import MenuItem from './MenuItem';
+import type { MenuItemProps } from './MenuItem';
+import {
+  ICON_DEFAULT,
+  iconSelectArgType,
+  resolveStoryIcon,
+} from '../../storybook/icons';
 
 const menuDemoStyle = {
   display: 'grid',
@@ -12,11 +18,35 @@ const menuDemoStyle = {
   border: '1px solid rgba(var(--center-channel-color-rgb), 0.08)',
 } as const;
 
+type MenuItemStoryArgs = Omit<MenuItemProps, 'leadingVisual'> & {
+  leadingVisual?: string;
+};
+
 const meta = {
   title: 'Components/Navigation/Menu Item',
   component: MenuItem,
   tags: ['autodocs'],
-} satisfies Meta<typeof MenuItem>;
+  argTypes: {
+    leadingVisual: iconSelectArgType({
+      includeDefault: true,
+      description:
+        'Leading icon glyph. Default uses the built-in emoticon placeholder. Turn off leadingElement to hide the slot.',
+    }),
+  },
+  args: {
+    leadingVisual: ICON_DEFAULT,
+  },
+  render: ({ leadingVisual, ...rest }) => (
+    <MenuItem
+      {...rest}
+      leadingVisual={
+        leadingVisual === ICON_DEFAULT
+          ? undefined
+          : (resolveStoryIcon(leadingVisual, { wrapSize: '16' }) as ReactNode)
+      }
+    />
+  ),
+} satisfies Meta<MenuItemStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

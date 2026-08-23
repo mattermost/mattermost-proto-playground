@@ -4,10 +4,12 @@ import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import IconButton, {
   ICON_BUTTON_ICON_SIZES,
   type IconButtonPadding,
+  type IconButtonProps,
   type IconButtonSize,
   type IconButtonStyle,
 } from './IconButton';
 import Icon from '../Icon/Icon';
+import { iconSelectArgType, resolveStoryIcon } from '../../storybook/icons';
 
 const SIZES: IconButtonSize[] = ['X-Small', 'Small', 'Medium', 'Large'];
 
@@ -21,6 +23,10 @@ const MATRIX_ROWS: {
   { label: 'Rounded', padding: 'Default', rounded: true },
 ];
 
+type IconButtonStoryArgs = Omit<IconButtonProps, 'icon'> & {
+  icon: string;
+};
+
 const meta = {
   title: 'Components/Actions/Icon Button',
   component: IconButton,
@@ -29,8 +35,25 @@ const meta = {
     style: { control: 'select', options: ['Default', 'Inverted'] },
     size: { control: 'select', options: SIZES },
     padding: { control: 'select', options: ['Default', 'Compact'] },
+    icon: iconSelectArgType({
+      description: 'Icon glyph shown inside the button.',
+    }),
   },
-} satisfies Meta<typeof IconButton>;
+  args: {
+    icon: 'globe',
+  },
+  render: ({ icon, size = 'Medium', ...rest }) => (
+    <IconButton
+      {...rest}
+      size={size}
+      icon={
+        resolveStoryIcon(icon, {
+          wrapSize: ICON_BUTTON_ICON_SIZES[size],
+        }) as ReactNode
+      }
+    />
+  ),
+} satisfies Meta<IconButtonStoryArgs>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -38,7 +61,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     'aria-label': 'Open menu',
-    icon: <Icon size="16" glyph={<GlobeIcon />} />,
     size: 'Medium',
     style: 'Default',
   },
@@ -47,7 +69,6 @@ export const Default: Story = {
 export const Inverted: Story = {
   args: {
     'aria-label': 'Open menu',
-    icon: <Icon size="16" glyph={<GlobeIcon />} />,
     size: 'Medium',
     style: 'Inverted',
   },
