@@ -67,11 +67,16 @@ range from scratch.
 ## Behavior
 
 - The popover opens 4px below the trigger and dismisses on outside click,
-  Escape, or selection.
+  Escape, or Tabbing away from the picker. Selecting a single date closes it;
+  in range mode the first click sets the start and keeps it open, and the
+  second click completes the range and closes it.
+- Opening moves focus into the day grid (selected day, today, or the 1st).
+- **Tab** moves through Today, previous/next month, then the day grid (one
+  stop). **Arrow keys** move within the grid; **Home** / **End** jump to the
+  first or last day; **Page Up** / **Page Down** change month.
+- Enter or Space on the trigger toggles the popover; on a day, selects it.
 - The Today shortcut returns the calendar view to the current month and
   year — it doesn't select today.
-- Keep the picker keyboard-operable: Enter or Space toggles the popover from
-  the trigger; arrow keys move focus through the day grid.
 
 <Divider />
 
