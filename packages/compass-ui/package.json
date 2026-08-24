@@ -37,6 +37,7 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "test": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -69,6 +70,8 @@
     "simplebar-react": "^3.3.2",
     "storybook": "^8.6.14",
     "typescript": "~5.7.2",
+    "happy-dom": "^17.4.4",
+    "vitest": "^3.0.5",
     "vite": "^6.0.5",
     "vite-plugin-dts": "^4.5.3",
     "vite-plugin-svgr": "^4.5.0",

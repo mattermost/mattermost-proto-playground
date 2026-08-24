@@ -94,8 +94,10 @@ export interface AnchoredPopupContainerFrame {
     bottom: number;
     width: number;
   };
-  /** Full scrollable content height of the mount. */
-  contentHeight: number;
+  /** Visible padding-box height used for above `bottom` anchoring. */
+  clientHeight: number;
+  /** Current vertical scroll offset of the mount. */
+  scrollTop: number;
 }
 
 export function getAnchoredPopupContainerFrame(
@@ -125,7 +127,8 @@ export function getAnchoredPopupContainerFrame(
         mount.scrollTop,
       width: anchorRect.width,
     }),
-    contentHeight: mount.scrollHeight,
+    clientHeight: mount.clientHeight,
+    scrollTop: mount.scrollTop,
   };
 }
 
@@ -167,9 +170,10 @@ export function computeAnchoredPopupFixedStyle(
         zIndex,
       };
     }
+    const visibleTop = anchor.top - containerFrame.scrollTop;
     return {
       position: 'absolute',
-      bottom: containerFrame.contentHeight - anchor.top + gap,
+      bottom: containerFrame.clientHeight - visibleTop + gap,
       left: anchor.left,
       width,
       zIndex,
