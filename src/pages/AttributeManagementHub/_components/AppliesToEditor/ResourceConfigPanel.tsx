@@ -7,6 +7,7 @@ import Radio from '@/components/ui/Radio/Radio';
 import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
 import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
+import UnmarkedChannelsModal from './UnmarkedChannelsModal';
 import {
   assignableValuesForResource,
   channelDisplayIncludes,
@@ -25,6 +26,7 @@ import {
   resolvePostDisplayMode,
   supportsChannelBanner,
   takesValueList,
+  unmarkedChannels,
   unmarkedInstanceCount,
   whoCanSetIsEditable,
   type HubAttribute,
@@ -378,9 +380,13 @@ export default function ResourceConfigPanel({
   const [requiredBlockedCount, setRequiredBlockedCount] = useState<number | null>(
     null,
   );
+  const [channelListOpen, setChannelListOpen] = useState(false);
+  const [adminsPrompted, setAdminsPrompted] = useState(false);
 
   useEffect(() => {
     setRequiredBlockedCount(null);
+    setChannelListOpen(false);
+    setAdminsPrompted(false);
   }, [attribute.id]);
   const isUsers = config.resource === 'Users';
   const isChannels = config.resource === 'Channels';
@@ -447,6 +453,10 @@ export default function ResourceConfigPanel({
         : 'The resource must have a value before it can be created or saved.';
 
   const attributeLabel = attribute.displayName?.trim() || attribute.name;
+  const blockedChannels =
+    requiredBlockedCount != null && requiredBlockedCount > 0
+      ? unmarkedChannels(attribute.id)
+      : [];
   const requiredBlockedNotice =
     isChannels &&
     !channelScope &&
@@ -454,12 +464,37 @@ export default function ResourceConfigPanel({
     requiredBlockedCount > 0 ? (
       <div className={styles['field__notice']}>
         <SectionNotice
-          type="Warning"
-          title="Set channel values first"
-          description={`${requiredBlockedCount.toLocaleString()} ${
-            requiredBlockedCount === 1 ? 'channel doesn’t' : 'channels don’t'
-          } have a ${attributeLabel} value yet. Set a value on every existing channel before turning Required on.`}
+          type={adminsPrompted ? 'Success' : 'Warning'}
+          title={
+            adminsPrompted
+              ? 'Channel admins prompted'
+              : 'Set channel values first'
+          }
+          description={
+            adminsPrompted
+              ? `A request was sent to admins of ${requiredBlockedCount.toLocaleString()} ${
+                  requiredBlockedCount === 1 ? 'channel' : 'channels'
+                } that still need a ${attributeLabel} value.`
+              : `${requiredBlockedCount.toLocaleString()} ${
+                  requiredBlockedCount === 1 ? 'channel doesn’t' : 'channels don’t'
+                } have a ${attributeLabel} value yet. Set a value on every existing channel before turning Required on.`
+          }
+          primaryButtonLabel={
+            adminsPrompted ? undefined : 'Prompt all channel admins'
+          }
+          onPrimaryAction={
+            adminsPrompted ? undefined : () => setAdminsPrompted(true)
+          }
+          secondaryButtonLabel="View channel list"
+          onSecondaryAction={() => setChannelListOpen(true)}
         />
+        {channelListOpen && (
+          <UnmarkedChannelsModal
+            attributeName={attributeLabel}
+            channels={blockedChannels}
+            onClose={() => setChannelListOpen(false)}
+          />
+        )}
       </div>
     ) : null;
 
@@ -480,6 +515,8 @@ export default function ResourceConfigPanel({
             const count = unmarkedInstanceCount(attribute.id, 'Channels');
             if (count > 0) {
               setRequiredBlockedCount(count);
+              setAdminsPrompted(false);
+              setChannelListOpen(false);
               return;
             }
           }

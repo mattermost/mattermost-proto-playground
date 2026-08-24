@@ -137,24 +137,61 @@ function copyFor(kind: GuardrailKind, c: GuardrailContext): GuardrailCopy {
     case 'remove-binding': {
       const resource = c.resource ?? 'this resource';
       const lower = resource.toLowerCase();
-      const channels = c.bindingCount;
+      const count = c.bindingCount;
       const policies = c.policyCount ?? c.policies?.length ?? 0;
       const hasPolicies = policies > 0;
-      const isChannels = resource === 'Channels' && channels != null;
+      const isChannels = resource === 'Channels' && count != null;
+      const isPosts = resource === 'Posts' && count != null;
+      const inUse = (count ?? 0) > 0;
 
       if (isChannels) {
         const channelLabel =
-          channels === 1 ? '1 channel' : `${channels.toLocaleString()} channels`;
+          count === 1 ? '1 channel' : `${count.toLocaleString()} channels`;
         const policyLabelText =
           policies === 1 ? '1 policy' : `${policies.toLocaleString()} policies`;
+        if (inUse) {
+          return {
+            title: 'Cannot remove Channels yet',
+            tone: 'Danger' as const,
+            noticeTitle: `Applied to ${channelLabel} · referenced by ${policyLabelText}`,
+            body: `Clear the value from ${
+              count === 1 ? 'that channel' : 'every channel that still has it set'
+            } before removing Channels. Policies that compare this attribute will not stop resolving as expected.`,
+            confirmLabel: undefined,
+            primary: undefined,
+          };
+        }
         return {
           title: 'Stop applying to Channels?',
-          tone: 'Danger' as const,
-          noticeTitle: `Applied to ${channelLabel} · referenced by ${policyLabelText}`,
-          body: hasPolicies
-            ? 'Removing Channels stops new assignments and hides the value on those channels. Policies that compare this attribute may stop resolving as expected.'
-            : 'Removing Channels stops new assignments and hides the value on those channels. You can re-add it later.',
+          tone: 'Warning' as const,
+          noticeTitle: `Not applied to any channels · referenced by ${policyLabelText}`,
+          body: 'Removing this attribute from channels stops new assignments. Policies that compare this attribute will not stop resolving as expected.',
           confirmLabel: 'Remove Channels',
+          primary: undefined,
+        };
+      }
+
+      if (isPosts) {
+        const postLabel =
+          count === 1 ? '1 post' : `${count.toLocaleString()} posts`;
+        if (inUse) {
+          return {
+            title: 'Cannot remove Posts yet',
+            tone: 'Danger' as const,
+            noticeTitle: `Applied to ${postLabel}`,
+            body: `Clear the value from ${
+              count === 1 ? 'that post' : 'every post that still has it set'
+            } before removing Posts.`,
+            confirmLabel: undefined,
+            primary: undefined,
+          };
+        }
+        return {
+          title: 'Stop applying to Posts?',
+          tone: 'Warning' as const,
+          noticeTitle: 'Not applied to any posts',
+          body: 'Removing this attribute from posts stops new assignments.',
+          confirmLabel: 'Remove Posts',
           primary: undefined,
         };
       }

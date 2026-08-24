@@ -413,15 +413,6 @@ export default function ChannelAttributesWorkspace({
     });
   };
 
-  const openDeactivate = (id: string) => {
-    const a = attributes.find((x) => x.id === id);
-    if (!a) return;
-    setGuardrail({
-      kind: 'deactivate-blocked',
-      context: { attributeName: a.name, bindingCount: 6, policies: a.policyNames },
-    });
-  };
-
   const openDuplicate = (id: string) => setDuplicateForId(id);
 
   const commitDuplicate = (name: string) => {
@@ -573,7 +564,6 @@ export default function ChannelAttributesWorkspace({
             onNewAttribute={startCreate}
             onOpenDetail={openDetail}
             onReorderAttributes={reorderAttributes}
-            onDeactivate={openDeactivate}
             onDelete={requestDelete}
             allowedResources={CHANNEL_SCOPE_RESOURCES}
             emptyDescription={CHANNEL_CATALOG_EMPTY}

@@ -1,0 +1,119 @@
+.channel-config {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__center {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    width: 100%;
+    max-width: 1120px;
+    box-sizing: border-box;
+    padding: var(--spacing-xl) var(--spacing-xxl) var(--spacing-xxxl);
+  }
+}
+
+.card {
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-l);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-1);
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-xl);
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-start;
+    padding: var(--spacing-l) var(--spacing-xl);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--spacing-s) var(--spacing-l);
+  margin: 0;
+
+  &__row {
+    display: contents;
+  }
+
+  dt {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--center-channel-color);
+  }
+}
+
+.attributes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  padding-top: var(--spacing-l);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-l) var(--spacing-xl);
+  }
+
+  &__field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+}

@@ -20,6 +20,7 @@ import { HUB_ACTIVE_ITEM, HUB_SIDEBAR_CATEGORIES } from './hubSidebar';
 import {
   HUB_ATTRIBUTES,
   appliedChannelCount,
+  appliedPostCount,
   defaultAccessModel,
   defaultResourceConfig,
   isPolicyLocked,
@@ -195,15 +196,23 @@ export default function AttributeManagementHub() {
 
   const openRemoveResource = (resource: ResourceKind) => {
     if (!selected) return;
+    const instanceCount =
+      resource === 'Channels'
+        ? appliedChannelCount(selected.id)
+        : resource === 'Posts'
+          ? appliedPostCount(selected.id)
+          : undefined;
     setGuardrail({
       kind: 'remove-binding',
       context: {
         attributeName: selected.name,
         resource,
-        bindingCount:
-          resource === 'Channels' ? appliedChannelCount(selected.id) : undefined,
-        policyCount: selected.usedByPolicies,
-        policies: selected.policyNames,
+        bindingCount: instanceCount,
+        policyCount: resource === 'Channels' ? selected.usedByPolicies : undefined,
+        policies:
+          resource === 'Channels' || resource === 'Posts'
+            ? []
+            : selected.policyNames,
       },
     });
   };
@@ -214,7 +223,10 @@ export default function AttributeManagementHub() {
     }
     if (guardrail?.kind === 'remove-binding' && selected) {
       const resource = guardrail.context.resource as ResourceKind | undefined;
-      if (resource) {
+      const inUse =
+        (resource === 'Channels' || resource === 'Posts') &&
+        (guardrail.context.bindingCount ?? 0) > 0;
+      if (resource && !inUse) {
         patch(selected.id, (a) => ({
           ...a,
           appliesTo: a.appliesTo.filter((c) => c.resource !== resource),

@@ -615,7 +615,7 @@ export function supportsDefaultBackfill(resource: ResourceKind): boolean {
 
 /**
  * Demo fixture — how many channels currently carry a value for this attribute.
- * Used by the global delete confirmation.
+ * Used by the global remove-binding confirmation.
  */
 export function appliedChannelCount(attributeId: string): number {
   const fixtures: Record<string, number> = {
@@ -626,6 +626,21 @@ export function appliedChannelCount(attributeId: string): number {
     'watch-floor': 12,
   };
   return fixtures[attributeId] ?? 24;
+}
+
+/**
+ * Demo fixture — how many posts currently carry a value for this attribute.
+ * Used by the global remove-binding confirmation.
+ */
+export function appliedPostCount(attributeId: string): number {
+  const fixtures: Record<string, number> = {
+    classification: 1842,
+    program: 312,
+    caveat: 890,
+    'ops-window': 156,
+    'watch-floor': 94,
+  };
+  return fixtures[attributeId] ?? 240;
 }
 
 /**
@@ -709,6 +724,45 @@ export function unmarkedChannelNames(attributeId: string): string[] {
     { length: count },
     (_, index) => UNMARKED_CHANNEL_NAMES[index] ?? `channel-${index + 1}`,
   );
+}
+
+const UNMARKED_CHANNEL_ADMINS = [
+  'Maya Chen',
+  'Leonard Riley',
+  'Priya Natarajan',
+  'Jonah Blake',
+  'Sofia Alvarez',
+  'Marcus Webb',
+  'Amina Okonkwo',
+  'Evan Park',
+  'Nadia Rostova',
+  'Chris Delgado',
+];
+
+export interface UnmarkedChannelRow {
+  id: string;
+  name: string;
+  adminName: string;
+  /** Deep-link into the channel configuration page for this channel. */
+  settingsHref: string;
+}
+
+/** Demo rows for channels that still lack a value for this attribute. */
+export function unmarkedChannels(attributeId: string): UnmarkedChannelRow[] {
+  return unmarkedChannelNames(attributeId).map((name, index) => ({
+    id: `unmarked-${attributeId}-${index}`,
+    name,
+    adminName:
+      UNMARKED_CHANNEL_ADMINS[index % UNMARKED_CHANNEL_ADMINS.length] ??
+      'Channel admin',
+    settingsHref:
+      `/mattermost-proto-playground/prototypes/attribute-hub-channel-aligned-per-resource` +
+      `?screen=channel-settings&attr=${encodeURIComponent(attributeId)}` +
+      `&channel=${encodeURIComponent(name)}&admin=${encodeURIComponent(
+        UNMARKED_CHANNEL_ADMINS[index % UNMARKED_CHANNEL_ADMINS.length] ??
+          'Channel admin',
+      )}`,
+  }));
 }
 
 export function applyDefaultToExistingLabel(resource: ResourceKind): string {

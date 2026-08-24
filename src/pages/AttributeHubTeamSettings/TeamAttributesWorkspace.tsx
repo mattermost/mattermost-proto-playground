@@ -407,16 +407,6 @@ export default function TeamAttributesWorkspace({
     });
   };
 
-  const openDeactivate = (id: string) => {
-    const a = attributes.find((x) => x.id === id);
-    if (!a) return;
-    setGuardrail({
-      kind: 'deactivate-blocked',
-      context: { attributeName: a.name, bindingCount: 6, policies: a.policyNames },
-    });
-  };
-
-
   const commitDuplicate = (name: string) => {
     if (!duplicateForId) return;
     const source = attributes.find((a) => a.id === duplicateForId);
@@ -563,7 +553,6 @@ export default function TeamAttributesWorkspace({
             onNewAttribute={startCreate}
             onOpenDetail={openDetail}
             onReorderAttributes={reorderAttributes}
-            onDeactivate={openDeactivate}
             onDelete={requestDelete}
           />
         </>

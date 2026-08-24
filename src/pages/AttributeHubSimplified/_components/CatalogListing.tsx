@@ -5,7 +5,6 @@ import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
-import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
@@ -51,7 +50,6 @@ export interface CatalogListingProps {
   onNewAttribute: () => void;
   onOpenDetail: (id: string) => void;
   onReorderAttributes: (activeId: string, overId: string) => void;
-  onDeactivate: (id: string) => void;
   onDelete: (id: string) => void;
   /** Resource kinds shown in the filter menu. Defaults to all four. */
   allowedResources?: ResourceKind[];
@@ -103,7 +101,6 @@ export default function CatalogListing({
   onNewAttribute,
   onOpenDetail,
   onReorderAttributes,
-  onDeactivate,
   onDelete,
   allowedResources = DEFAULT_RESOURCES,
   emptyDescription = 'Define your first attribute to make it available across users, channels, and posts.',
@@ -575,17 +572,6 @@ export default function CatalogListing({
                     }}
                   />
                   <PopoverMenuDivider />
-                  <MenuItem
-                    label="Deactivate attribute"
-                    destructive
-                    leadingVisual={
-                      <Icon size="16" glyph={<PowerPlugOutlineIcon />} />
-                    }
-                    onClick={() => {
-                      closeRowMenu();
-                      onDeactivate(menuId);
-                    }}
-                  />
                   <MenuItem
                     label="Delete attribute"
                     destructive

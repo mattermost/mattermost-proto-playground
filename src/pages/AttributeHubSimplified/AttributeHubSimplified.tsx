@@ -17,6 +17,7 @@ import {
 import {
   HUB_ATTRIBUTES,
   appliedChannelCount,
+  appliedPostCount,
   defaultAccessModel,
   defaultResourceConfig,
   eligibility,
@@ -524,19 +525,28 @@ export default function AttributeHubSimplified({
   const removeResource = (resource: ResourceKind) => {
     const attr = draft ?? active;
     if (!attr) return;
+    const instanceCount =
+      resource === 'Channels'
+        ? selectedId
+          ? appliedChannelCount(attr.id)
+          : 0
+        : resource === 'Posts'
+          ? selectedId
+            ? appliedPostCount(attr.id)
+            : 0
+          : undefined;
     setGuardrail({
       kind: 'remove-binding',
       context: {
         attributeName: attr.name || 'This attribute',
         resource,
-        bindingCount:
-          resource === 'Channels'
-            ? selectedId
-              ? appliedChannelCount(attr.id)
-              : 0
-            : undefined,
-        policyCount: attr.usedByPolicies,
-        policies: attr.policyNames,
+        bindingCount: instanceCount,
+        policyCount: resource === 'Channels' ? attr.usedByPolicies : undefined,
+        // Channels/Posts: skip the policy name list (Posts have no policy usage).
+        policies:
+          resource === 'Channels' || resource === 'Posts'
+            ? []
+            : attr.policyNames,
       },
     });
   };
@@ -555,7 +565,10 @@ export default function AttributeHubSimplified({
   const confirmGuardrail = () => {
     if (guardrail?.kind === 'remove-binding') {
       const resource = guardrail.context.resource as ResourceKind | undefined;
-      if (resource) {
+      const inUse =
+        (resource === 'Channels' || resource === 'Posts') &&
+        (guardrail.context.bindingCount ?? 0) > 0;
+      if (resource && !inUse) {
         mutate((a) => ({
           ...a,
           appliesTo: a.appliesTo.filter((c) => c.resource !== resource),
@@ -736,15 +749,6 @@ export default function AttributeHubSimplified({
     });
   };
 
-  const openDeactivate = (id: string) => {
-    const a = attributes.find((x) => x.id === id);
-    if (!a) return;
-    setGuardrail({
-      kind: 'deactivate-blocked',
-      context: { attributeName: a.name, bindingCount: 6, policies: a.policyNames },
-    });
-  };
-
   return (
     <div className={styles['console']}>
       <ConsoleSidebar
@@ -857,7 +861,6 @@ export default function AttributeHubSimplified({
                   onNewAttribute={startCreate}
                   onOpenDetail={openDetail}
                   onReorderAttributes={reorderAttributes}
-                  onDeactivate={openDeactivate}
                   onDelete={openDelete}
                 />
               )}
