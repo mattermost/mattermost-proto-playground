@@ -151,6 +151,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
   const listboxId = `${id}-listbox`;
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const setInputRef = useCallback(
@@ -239,7 +240,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
     style: popupStyle,
     portalRef,
     renderPortal,
-  } = useAnchoredPopupPortal(rootRef, popupMounted, {
+  } = useAnchoredPopupPortal(anchorRef, popupMounted, {
     preferredHeight: POPUP_MAX_HEIGHT,
     maxHeightCap: POPUP_MAX_HEIGHT,
     portalContainer,
@@ -496,6 +497,7 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
     <div className={rootClass} ref={rootRef}>
       <div
         className={styles.combobox__wrapper}
+        ref={anchorRef}
         onMouseDown={handleWrapperMouseDown}
       >
         {label != null && (

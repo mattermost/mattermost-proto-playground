@@ -60,7 +60,8 @@ export function computeAnchoredPopupPlacement(
 
 export interface AnchoredPopupFixedStyle {
   position: 'fixed';
-  top: number;
+  top?: number;
+  bottom?: number;
   left: number;
   width: number;
   zIndex: number;
@@ -68,30 +69,38 @@ export interface AnchoredPopupFixedStyle {
 
 /**
  * Fixed box coords for a portaled popup anchored to a trigger rect.
- * When `placement` is `above`, `panelHeight` positions the bottom of the panel
- * `gap` px above the trigger top.
+ * Below: top edge sits `gap` px under the trigger bottom.
+ * Above: bottom edge sits `gap` px above the trigger top (uses `bottom` so
+ * height does not affect the gap).
  */
 export function computeAnchoredPopupFixedStyle(
   anchorRect: Pick<DOMRect, 'top' | 'bottom' | 'left' | 'width'>,
   placement: PopupPlacement,
   options: {
     gap?: number;
-    panelHeight: number;
     zIndex?: number;
     /** Override width (defaults to trigger width). */
     width?: number;
+    viewportHeight?: number;
   },
 ): AnchoredPopupFixedStyle {
   const gap = options.gap ?? ANCHORED_POPUP_GAP;
   const width = options.width ?? anchorRect.width;
-  const top =
-    placement === 'below'
-      ? anchorRect.bottom + gap
-      : anchorRect.top - gap - options.panelHeight;
+  const viewportHeight = options.viewportHeight ?? window.innerHeight;
+
+  if (placement === 'below') {
+    return {
+      position: 'fixed',
+      top: anchorRect.bottom + gap,
+      left: anchorRect.left,
+      width,
+      zIndex: options.zIndex ?? ANCHORED_POPUP_Z_INDEX,
+    };
+  }
 
   return {
     position: 'fixed',
-    top,
+    bottom: viewportHeight - anchorRect.top + gap,
     left: anchorRect.left,
     width,
     zIndex: options.zIndex ?? ANCHORED_POPUP_Z_INDEX,

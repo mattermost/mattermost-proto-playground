@@ -98,26 +98,23 @@ export function useAnchoredPopupPortal(
         maxHeightCap,
       });
 
-    // Prefer measured panel height so above-placement sits flush to the trigger
-    // when the list is shorter than maxHeight.
-    const panelHeight =
-      measured > 0 ? Math.min(measured, nextMaxHeight) : nextMaxHeight;
-
     const fixed = computeAnchoredPopupFixedStyle(rect, nextPlacement, {
       gap,
-      panelHeight,
       zIndex,
       width: matchWidth ? rect.width : undefined,
+      viewportHeight,
     });
 
     setPlacement(nextPlacement);
     setMaxHeight(nextMaxHeight);
     setStyle({
       position: fixed.position,
-      top: fixed.top,
       left: fixed.left,
       zIndex: fixed.zIndex,
       ...(matchWidth ? { width: fixed.width } : null),
+      ...(nextPlacement === 'below'
+        ? { top: fixed.top, bottom: 'auto' }
+        : { bottom: fixed.bottom, top: 'auto' }),
     });
   }, [
     anchorRef,

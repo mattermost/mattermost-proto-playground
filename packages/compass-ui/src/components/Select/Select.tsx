@@ -168,6 +168,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
   const listboxId = `${id}-listbox`;
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const setButtonRef = useCallback(
@@ -208,7 +209,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
     style: popupStyle,
     portalRef,
     renderPortal,
-  } = useAnchoredPopupPortal(rootRef, popupMounted, {
+  } = useAnchoredPopupPortal(anchorRef, popupMounted, {
     preferredHeight: POPUP_MAX_HEIGHT,
     maxHeightCap: POPUP_MAX_HEIGHT,
     portalContainer,
@@ -377,7 +378,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
 
   return (
     <div className={rootClass} ref={rootRef}>
-      <div className={styles.select__wrapper}>
+      <div className={styles.select__wrapper} ref={anchorRef}>
         {label != null && (
           <label className={styles.select__label} htmlFor={id}>
             {label}
