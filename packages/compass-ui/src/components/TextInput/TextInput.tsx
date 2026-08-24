@@ -1,5 +1,10 @@
-import type { InputHTMLAttributes, ReactNode, ChangeEvent } from 'react';
-import { forwardRef, useId, useState, useCallback } from 'react';
+import type {
+  InputHTMLAttributes,
+  ReactNode,
+  ChangeEvent,
+  RefCallback,
+} from 'react';
+import { forwardRef, useId, useState, useCallback, useRef } from 'react';
 import { toKebab } from '@/utils/string';
 import styles from './TextInput.module.scss';
 
@@ -60,6 +65,22 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   ) {
     const generatedId = useId();
     const id = idProp ?? generatedId;
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const setInputRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        inputRef.current = node;
+        if (typeof ref === 'function') {
+          const cleanup = (ref as RefCallback<HTMLInputElement>)(node);
+          return () => {
+            inputRef.current = null;
+            if (typeof cleanup === 'function') cleanup();
+          };
+        }
+        if (ref) ref.current = node;
+      },
+      [ref],
+    );
 
     const isControlled = valueProp !== undefined;
     const [uncontrolledValue, setUncontrolledValue] = useState(
@@ -121,19 +142,17 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     return (
       <div className={rootClass}>
         <div className={styles.textInput__wrapper}>
-          {label != null && (
-            <label className={styles.textInput__label} htmlFor={id}>
-              {label}
-            </label>
-          )}
-          <div className={styles.textInput__inner}>
+          <label className={styles.textInput__inner}>
+            {label != null && (
+              <span className={styles.textInput__label}>{label}</span>
+            )}
             {leadingIcon != null && (
               <span className={styles.textInput__leadingIcon}>
                 {leadingIcon}
               </span>
             )}
             <input
-              ref={ref}
+              ref={setInputRef}
               id={id}
               className={styles.textInput__input}
               value={isControlled ? valueProp : undefined}
@@ -154,7 +173,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                 {trailingIcon}
               </span>
             )}
-          </div>
+          </label>
         </div>
         {showCharacterCount && maxLength != null && (
           <div

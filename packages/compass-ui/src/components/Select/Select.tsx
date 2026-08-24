@@ -15,6 +15,7 @@ import PopoverMenu, {
   PopoverMenuScroll,
 } from '@/components/PopoverMenu/PopoverMenu';
 import menuItemStyles from '@/components/MenuItem/MenuItem.module.scss';
+import { useAnchoredPopupPortal } from '@/hooks/useAnchoredPopupPortal';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import { toKebab } from '@/utils/string';
@@ -46,6 +47,10 @@ export interface SelectProps {
   name?: string;
   className?: string;
   'aria-label'?: string;
+  /** Portal mount node for the menu; defaults to `document.body`. */
+  portalContainer?: HTMLElement | null;
+  /** Stacking order for the portaled menu. */
+  zIndex?: number;
 }
 
 const POPUP_MAX_HEIGHT = 280;
@@ -153,6 +158,8 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
     name,
     className = '',
     'aria-label': ariaLabel,
+    portalContainer = null,
+    zIndex,
   },
   ref,
 ) {
@@ -161,6 +168,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
   const listboxId = `${id}-listbox`;
 
   const rootRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const setButtonRef = useCallback(
@@ -195,6 +203,19 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
   const { mounted: popupMounted, visible: popupVisible } =
     usePopoverTransition(isOpen);
 
+  const {
+    placement,
+    maxHeight,
+    style: popupStyle,
+    portalRef,
+    renderPortal,
+  } = useAnchoredPopupPortal(anchorRef, popupMounted, {
+    preferredHeight: POPUP_MAX_HEIGHT,
+    maxHeightCap: POPUP_MAX_HEIGHT,
+    portalContainer,
+    zIndex,
+  });
+
   const close = useCallback(() => {
     setIsOpen(false);
     setActiveIndex(-1);
@@ -205,7 +226,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
     setIsOpen(true);
   }, [disabled]);
 
-  useOutsideClose(rootRef, isOpen, close);
+  useOutsideClose(rootRef, isOpen, close, portalRef);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -357,86 +378,88 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
 
   return (
     <div className={rootClass} ref={rootRef}>
-      <div className={styles.select__wrapper}>
+      <div className={styles.select__wrapper} ref={anchorRef}>
         {label != null && (
           <label className={styles.select__label} htmlFor={id}>
             {label}
           </label>
         )}
-        <div className={styles.select__inner}>
+        <button
+          ref={setButtonRef}
+          id={id}
+          type="button"
+          role="combobox"
+          className={controlClass}
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={listboxId}
+          aria-activedescendant={activeDescendant}
+          aria-invalid={invalid ? true : undefined}
+          aria-label={
+            ariaLabel ??
+            (typeof label === 'string' ? label : undefined)
+          }
+          onClick={() => (isOpen ? close() : open())}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onKeyDown={handleKeyDown}
+        >
           {leadingIcon != null && (
             <span className={styles.select__leadingIcon} aria-hidden>
               {leadingIcon}
             </span>
           )}
-          <button
-            ref={setButtonRef}
-            id={id}
-            type="button"
-            role="combobox"
-            className={controlClass}
-            disabled={disabled}
-            aria-haspopup="listbox"
-            aria-expanded={isOpen}
-            aria-controls={listboxId}
-            aria-activedescendant={activeDescendant}
-            aria-invalid={invalid ? true : undefined}
-            aria-label={
-              ariaLabel ??
-              (typeof label === 'string' ? label : undefined)
-            }
-            onClick={() => (isOpen ? close() : open())}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            onKeyDown={handleKeyDown}
-          >
-            {displayLabel}
-          </button>
+          <span className={styles.select__value}>{displayLabel}</span>
           <span className={styles.select__trailingIcon} aria-hidden>
             <Icon size="12" glyph={<ChevronDownIcon />} />
           </span>
-        </div>
+        </button>
       </div>
 
       {name != null && !disabled && (
         <input type="hidden" name={name} value={value} />
       )}
 
-      {popupMounted && (
-        <div
-          className={[
-            styles.select__popup,
-            popupVisible ? styles['select__popup--visible'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          <PopoverMenu className={styles.select__menu}>
-            <PopoverMenuScroll maxHeight={POPUP_MAX_HEIGHT}>
-              <ul
-                id={listboxId}
-                className={styles.select__list}
-                role="listbox"
-                aria-label={
-                  typeof label === 'string' ? label : (ariaLabel ?? 'Options')
-                }
-              >
-                {listOptions.map((option, index) => (
-                  <SelectOptionRow
-                    key={option.value}
-                    option={option}
-                    listboxId={listboxId}
-                    selected={option.value === value}
-                    active={index === activeIndex}
-                    onSelect={selectOption}
-                    onHover={() => setActiveIndex(index)}
-                  />
-                ))}
-              </ul>
-            </PopoverMenuScroll>
-          </PopoverMenu>
-        </div>
-      )}
+      {popupMounted &&
+        renderPortal(
+          <div
+            ref={portalRef}
+            className={[
+              styles.select__popup,
+              placement === 'above' ? styles['select__popup--above'] : '',
+              popupVisible ? styles['select__popup--visible'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            style={popupStyle}
+          >
+            <PopoverMenu className={styles.select__menu}>
+              <PopoverMenuScroll maxHeight={maxHeight}>
+                <ul
+                  id={listboxId}
+                  className={styles.select__list}
+                  role="listbox"
+                  aria-label={
+                    typeof label === 'string' ? label : (ariaLabel ?? 'Options')
+                  }
+                >
+                  {listOptions.map((option, index) => (
+                    <SelectOptionRow
+                      key={option.value}
+                      option={option}
+                      listboxId={listboxId}
+                      selected={option.value === value}
+                      active={index === activeIndex}
+                      onSelect={selectOption}
+                      onHover={() => setActiveIndex(index)}
+                    />
+                  ))}
+                </ul>
+              </PopoverMenuScroll>
+            </PopoverMenu>
+          </div>,
+        )}
     </div>
   );
 });

@@ -74,6 +74,9 @@
   &__value {
     flex: 1 1 0;
     min-width: 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
     font-family: var(--font-family-body);
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
@@ -109,13 +112,14 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Popover panel
+  // Popover panel — coords from portal hook inline style
   // ---------------------------------------------------------------------------
   &__popover {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    z-index: 200;
+    // Redeclared here so portaled popovers inherit day sizing outside `.dateRangePicker`.
+    --date-range-picker-day-size: calc(
+      var(--icon-size-32) + var(--spacing-xxxs)
+    );
+
     width: 340px;
     padding: var(--spacing-l);
     background-color: var(--center-channel-bg);
@@ -132,6 +136,10 @@
       opacity var(--duration-quick) var(--ease-exit),
       transform var(--duration-quick) var(--ease-exit);
     pointer-events: none;
+
+    &--above {
+      transform-origin: bottom left;
+    }
 
     &--visible {
       opacity: 1;

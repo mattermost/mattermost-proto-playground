@@ -9,6 +9,7 @@ import CalendarOutlineIcon from '@mattermost/compass-icons/components/calendar-o
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import { useAnchoredPopupPortal } from '@/hooks/useAnchoredPopupPortal';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import styles from './DateRangePicker.module.scss';
@@ -33,7 +34,14 @@ export interface DateRangePickerProps extends Omit<
   onChange?: (date: string) => void;
   /** Called when range changes (range mode). */
   onRangeChange?: (start: string, end: string) => void;
+  /** Portal mount node for the calendar; defaults to `document.body`. */
+  portalContainer?: HTMLElement | null;
+  /** Stacking order for the portaled calendar. */
+  zIndex?: number;
 }
+
+/** Approximate calendar panel height for the initial flip decision. */
+const CALENDAR_PREFERRED_HEIGHT = 360;
 
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
@@ -102,6 +110,8 @@ export default function DateRangePicker({
   onRangeChange,
   disabled,
   id: idProp,
+  portalContainer = null,
+  zIndex,
 }: DateRangePickerProps) {
   const generatedId = useId();
   const id = idProp ?? generatedId;
@@ -139,6 +149,18 @@ export default function DateRangePicker({
   const { mounted: popoverMounted, visible: popoverVisible } =
     usePopoverTransition(isOpen);
 
+  const {
+    placement,
+    style: popoverStyle,
+    portalRef,
+    renderPortal,
+  } = useAnchoredPopupPortal(triggerRef, popoverMounted, {
+    preferredHeight: CALENDAR_PREFERRED_HEIGHT,
+    portalContainer,
+    zIndex,
+    matchWidth: false,
+  });
+
   const close = useCallback((restoreFocus = true) => {
     setIsOpen(false);
     if (restoreFocus) {
@@ -146,7 +168,7 @@ export default function DateRangePicker({
     }
   }, []);
 
-  useOutsideClose(rootRef, isOpen, () => close(true));
+  useOutsideClose(rootRef, isOpen, () => close(true), portalRef);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -160,23 +182,21 @@ export default function DateRangePicker({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, close]);
 
-  // Close when focus leaves the component (e.g. Tab past the last control).
+  // Close when focus leaves the field and the portaled calendar.
   useEffect(() => {
     if (!isOpen) return;
-    const root = rootRef.current;
-    if (!root) return;
 
-    function handleFocusOut() {
-      requestAnimationFrame(() => {
-        if (!rootRef.current?.contains(document.activeElement)) {
-          close(false);
-        }
-      });
+    function handleFocusIn(e: FocusEvent) {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (rootRef.current?.contains(target)) return;
+      if (portalRef.current?.contains(target)) return;
+      close(false);
     }
 
-    root.addEventListener('focusout', handleFocusOut);
-    return () => root.removeEventListener('focusout', handleFocusOut);
-  }, [isOpen, close]);
+    document.addEventListener('focusin', handleFocusIn);
+    return () => document.removeEventListener('focusin', handleFocusIn);
+  }, [isOpen, close, portalRef]);
 
   const daysInMonth = getDaysInMonth(displayYear, displayMonth);
 
@@ -490,19 +510,27 @@ export default function DateRangePicker({
       </div>
 
       {/* Calendar popover */}
-      {popoverMounted && (
-        <div
-          id={popoverId}
-          className={[
-            styles.dateRangePicker__popover,
-            popoverVisible ? styles['dateRangePicker__popover--visible'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          role="dialog"
-          aria-modal="false"
-          aria-label="Date picker"
-        >
+      {popoverMounted &&
+        renderPortal(
+          <div
+            ref={portalRef}
+            id={popoverId}
+            className={[
+              styles.dateRangePicker__popover,
+              placement === 'above'
+                ? styles['dateRangePicker__popover--above']
+                : '',
+              popoverVisible
+                ? styles['dateRangePicker__popover--visible']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            style={popoverStyle}
+            role="dialog"
+            aria-modal="false"
+            aria-label="Date picker"
+          >
           {/* Header */}
           <div className={styles.dateRangePicker__header}>
             <span className={styles.dateRangePicker__monthLabel} aria-live="polite">
@@ -646,8 +674,8 @@ export default function DateRangePicker({
               </div>
             ))}
           </div>
-        </div>
-      )}
+        </div>,
+        )}
     </div>
   );
 }

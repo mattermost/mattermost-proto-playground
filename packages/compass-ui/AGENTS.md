@@ -5,7 +5,7 @@
 Published overlay primitives (`Modal`, `Tooltip`, `PopoverMenu`, `ProfilePopover`, …) ship **chrome only**. Do not add portals, focus traps, hover triggers, or backdrop/scrim logic to these components — the host product wires open/close and accessibility orchestration. Panel-level ARIA on the surface is fine.
 
 - Follow existing lifecycle props: `Modal` is mount-controlled; `Dropdown` and similar triggers take controlled `isOpen`; expose `onClose` where the surface has dismiss affordances.
-- **Form widgets** with menu/popover surfaces (`Combobox`, `Select` on `Menu`, `DateRangePicker`, …) are exempt — they own widget-level open/close and keyboard nav.
+- **Form widgets** with menu/popover surfaces (`Combobox`, `Select`, `DateRangePicker`, …) are exempt — they own widget-level open/close, keyboard nav, and may portal + position their own menus (viewport flip). Do not export that portal/placement logic as a general overlay API.
 - **Proto/mobile** shells with backdrop or sheet animation belong in `compass-proto` or playground presenters, not `compass-ui`.
 - Storybook stories may fake backdrops, anchors, or open state in canvas decorators for preview; that behavior must not leak into the component.
 

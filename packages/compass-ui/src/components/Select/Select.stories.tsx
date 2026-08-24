@@ -195,3 +195,61 @@ export const AllVariants: Story = {
     </div>
   ),
 };
+
+const MANY_OPTIONS: SelectOption[] = Array.from({ length: 20 }, (_, i) => ({
+  value: `opt-${i}`,
+  label: `Option ${i + 1}`,
+}));
+
+export const PlacementNearBottom: Story = {
+  render: () => (
+    <div
+      style={{
+        minHeight: '120vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        padding: 24,
+        boxSizing: 'border-box',
+      }}
+    >
+      <div style={{ maxWidth: 320 }}>
+        <Select
+          label="Near bottom of viewport"
+          options={MANY_OPTIONS}
+          placeholder="Opens above…"
+        />
+      </div>
+    </div>
+  ),
+};
+
+export const InsideOverflowClip: Story = {
+  render: () => (
+    <div
+      style={{
+        height: 180,
+        overflow: 'hidden',
+        border: '1px solid rgba(var(--center-channel-color-rgb), 0.16)',
+        borderRadius: 8,
+        padding: 16,
+        maxWidth: 360,
+      }}
+    >
+      <p
+        style={{
+          margin: '0 0 12px',
+          fontSize: 12,
+          color: 'var(--center-channel-color)',
+        }}
+      >
+        Overflow hidden — menu portals out and stays visible.
+      </p>
+      <Select
+        label="Clipped container"
+        options={MANY_OPTIONS}
+        placeholder="Select…"
+      />
+    </div>
+  ),
+};
