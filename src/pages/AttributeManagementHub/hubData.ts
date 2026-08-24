@@ -773,7 +773,7 @@ export function unmarkedChannels(attributeId: string): UnmarkedChannelRow[] {
       adminNames,
       archived: index === 4 || index === 9,
       settingsHref:
-        `/mattermost-proto-playground/prototypes/attribute-hub-channel-aligned-per-resource` +
+        `${import.meta.env.BASE_URL}prototypes/attribute-hub-channel-aligned-per-resource` +
         `?screen=channel-settings&attr=${encodeURIComponent(attributeId)}` +
         `&channel=${encodeURIComponent(name)}&admin=${encodeURIComponent(
           adminNames[0] ?? 'Channel admin',
