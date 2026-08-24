@@ -115,6 +115,11 @@
   // Popover panel — coords from portal hook inline style
   // ---------------------------------------------------------------------------
   &__popover {
+    // Redeclared here so portaled popovers inherit day sizing outside `.dateRangePicker`.
+    --date-range-picker-day-size: calc(
+      var(--icon-size-32) + var(--spacing-xxxs)
+    );
+
     width: 340px;
     padding: var(--spacing-l);
     background-color: var(--center-channel-bg);
