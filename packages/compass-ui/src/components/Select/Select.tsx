@@ -15,6 +15,7 @@ import PopoverMenu, {
   PopoverMenuScroll,
 } from '@/components/PopoverMenu/PopoverMenu';
 import menuItemStyles from '@/components/MenuItem/MenuItem.module.scss';
+import { useAnchoredPopupPortal } from '@/hooks/useAnchoredPopupPortal';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { usePopoverTransition } from '@/hooks/usePopoverTransition';
 import { toKebab } from '@/utils/string';
@@ -46,6 +47,10 @@ export interface SelectProps {
   name?: string;
   className?: string;
   'aria-label'?: string;
+  /** Portal mount node for the menu; defaults to `document.body`. */
+  portalContainer?: HTMLElement | null;
+  /** Stacking order for the portaled menu. */
+  zIndex?: number;
 }
 
 const POPUP_MAX_HEIGHT = 280;
@@ -153,6 +158,8 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
     name,
     className = '',
     'aria-label': ariaLabel,
+    portalContainer = null,
+    zIndex,
   },
   ref,
 ) {
@@ -195,6 +202,19 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
   const { mounted: popupMounted, visible: popupVisible } =
     usePopoverTransition(isOpen);
 
+  const {
+    placement,
+    maxHeight,
+    style: popupStyle,
+    portalRef,
+    renderPortal,
+  } = useAnchoredPopupPortal(rootRef, popupMounted, {
+    preferredHeight: POPUP_MAX_HEIGHT,
+    maxHeightCap: POPUP_MAX_HEIGHT,
+    portalContainer,
+    zIndex,
+  });
+
   const close = useCallback(() => {
     setIsOpen(false);
     setActiveIndex(-1);
@@ -205,7 +225,7 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
     setIsOpen(true);
   }, [disabled]);
 
-  useOutsideClose(rootRef, isOpen, close);
+  useOutsideClose(rootRef, isOpen, close, portalRef);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -402,41 +422,45 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
         <input type="hidden" name={name} value={value} />
       )}
 
-      {popupMounted && (
-        <div
-          className={[
-            styles.select__popup,
-            popupVisible ? styles['select__popup--visible'] : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
-          <PopoverMenu className={styles.select__menu}>
-            <PopoverMenuScroll maxHeight={POPUP_MAX_HEIGHT}>
-              <ul
-                id={listboxId}
-                className={styles.select__list}
-                role="listbox"
-                aria-label={
-                  typeof label === 'string' ? label : (ariaLabel ?? 'Options')
-                }
-              >
-                {listOptions.map((option, index) => (
-                  <SelectOptionRow
-                    key={option.value}
-                    option={option}
-                    listboxId={listboxId}
-                    selected={option.value === value}
-                    active={index === activeIndex}
-                    onSelect={selectOption}
-                    onHover={() => setActiveIndex(index)}
-                  />
-                ))}
-              </ul>
-            </PopoverMenuScroll>
-          </PopoverMenu>
-        </div>
-      )}
+      {popupMounted &&
+        renderPortal(
+          <div
+            ref={portalRef}
+            className={[
+              styles.select__popup,
+              placement === 'above' ? styles['select__popup--above'] : '',
+              popupVisible ? styles['select__popup--visible'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            style={popupStyle}
+          >
+            <PopoverMenu className={styles.select__menu}>
+              <PopoverMenuScroll maxHeight={maxHeight}>
+                <ul
+                  id={listboxId}
+                  className={styles.select__list}
+                  role="listbox"
+                  aria-label={
+                    typeof label === 'string' ? label : (ariaLabel ?? 'Options')
+                  }
+                >
+                  {listOptions.map((option, index) => (
+                    <SelectOptionRow
+                      key={option.value}
+                      option={option}
+                      listboxId={listboxId}
+                      selected={option.value === value}
+                      active={index === activeIndex}
+                      onSelect={selectOption}
+                      onHover={() => setActiveIndex(index)}
+                    />
+                  ))}
+                </ul>
+              </PopoverMenuScroll>
+            </PopoverMenu>
+          </div>,
+        )}
     </div>
   );
 });

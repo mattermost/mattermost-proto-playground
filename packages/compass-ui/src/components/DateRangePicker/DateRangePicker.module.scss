@@ -109,13 +109,9 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Popover panel
+  // Popover panel — coords from portal hook inline style
   // ---------------------------------------------------------------------------
   &__popover {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    z-index: 200;
     width: 340px;
     padding: var(--spacing-l);
     background-color: var(--center-channel-bg);
@@ -132,6 +128,10 @@
       opacity var(--duration-quick) var(--ease-exit),
       transform var(--duration-quick) var(--ease-exit);
     pointer-events: none;
+
+    &--above {
+      transform-origin: bottom left;
+    }
 
     &--visible {
       opacity: 1;

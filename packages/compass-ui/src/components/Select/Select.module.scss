@@ -144,12 +144,8 @@
     }
   }
 
+  // Coords (top/left/width/z-index) come from the portal hook inline style.
   &__popup {
-    position: absolute;
-    top: calc(100% + var(--spacing-xxs));
-    left: 0;
-    right: 0;
-    z-index: 10;
     opacity: 0;
     transform: scale(0.9);
     transform-origin: top center;
@@ -157,6 +153,10 @@
       opacity var(--duration-quick) var(--ease-exit),
       transform var(--duration-quick) var(--ease-exit);
     pointer-events: none;
+
+    &--above {
+      transform-origin: bottom center;
+    }
 
     &--visible {
       opacity: 1;
