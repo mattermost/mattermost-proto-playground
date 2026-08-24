@@ -23,7 +23,11 @@ export interface UseAnchoredPopupPortalOptions {
   maxHeightCap?: number;
   /** Ref to the portaled panel for measuring intrinsic height (DateRangePicker). */
   contentRef?: RefObject<HTMLElement | null>;
-  /** Portal mount node; defaults to `document.body`. */
+  /**
+   * Portal mount node; defaults to `document.body` with viewport-fixed coords.
+   * Custom containers must establish a positioning context (`position` other
+   * than `static`); coords are converted to that container’s space.
+   */
   portalContainer?: HTMLElement | null;
   zIndex?: number;
   /**
@@ -45,6 +49,17 @@ export interface UseAnchoredPopupPortalResult {
 }
 
 const DEFAULT_PLACEMENT: PopupPlacement = 'below';
+
+function resolvePortalMount(
+  portalContainer: HTMLElement | null | undefined,
+): HTMLElement | null {
+  if (typeof document === 'undefined') return null;
+  return portalContainer ?? document.body;
+}
+
+function usesViewportFixedCoords(mount: HTMLElement): boolean {
+  return mount === document.body;
+}
 
 /**
  * Positions a form-widget popup in a portal with viewport-aware above/below flip.
@@ -82,8 +97,13 @@ export function useAnchoredPopupPortal(
     const anchor = anchorRef.current;
     if (!anchor) return;
 
+    const mount = resolvePortalMount(portalContainer);
+    if (!mount) return;
+
     const rect = anchor.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
+    const viewportFixed = usesViewportFixedCoords(mount);
+    const containerRect = viewportFixed ? undefined : mount.getBoundingClientRect();
 
     const measured =
       contentRef?.current?.offsetHeight ??
@@ -96,6 +116,7 @@ export function useAnchoredPopupPortal(
         gap,
         preferredHeight: heightForFlip,
         maxHeightCap,
+        bounds: containerRect,
       });
 
     const fixed = computeAnchoredPopupFixedStyle(rect, nextPlacement, {
@@ -103,6 +124,7 @@ export function useAnchoredPopupPortal(
       zIndex,
       width: matchWidth ? rect.width : undefined,
       viewportHeight,
+      containerRect,
     });
 
     setPlacement(nextPlacement);
@@ -122,6 +144,7 @@ export function useAnchoredPopupPortal(
     gap,
     matchWidth,
     maxHeightCap,
+    portalContainer,
     preferredHeight,
     zIndex,
   ]);
@@ -157,8 +180,8 @@ export function useAnchoredPopupPortal(
 
   const renderPortal = useCallback(
     (children: ReactNode) => {
-      if (typeof document === 'undefined') return null;
-      const mount = portalContainer ?? document.body;
+      const mount = resolvePortalMount(portalContainer);
+      if (!mount) return null;
       return createPortal(children, mount);
     },
     [portalContainer],
