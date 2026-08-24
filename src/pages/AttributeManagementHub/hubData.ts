@@ -657,7 +657,7 @@ export function unmarkedInstanceCount(
     {
       classification: { Channels: 12, Posts: 84 },
       program: { Channels: 47 },
-      caveat: { Channels: 31, Posts: 112 },
+      caveat: { Channels: 0, Posts: 112 },
     };
 
   if (resource !== 'Channels' && resource !== 'Posts') return 0;
@@ -742,27 +742,56 @@ const UNMARKED_CHANNEL_ADMINS = [
 export interface UnmarkedChannelRow {
   id: string;
   name: string;
-  adminName: string;
+  /** Empty when the channel has no channel admin. */
+  adminNames: string[];
+  archived?: boolean;
   /** Deep-link into the channel configuration page for this channel. */
   settingsHref: string;
 }
 
 /** Demo rows for channels that still lack a value for this attribute. */
 export function unmarkedChannels(attributeId: string): UnmarkedChannelRow[] {
-  return unmarkedChannelNames(attributeId).map((name, index) => ({
-    id: `unmarked-${attributeId}-${index}`,
-    name,
-    adminName:
-      UNMARKED_CHANNEL_ADMINS[index % UNMARKED_CHANNEL_ADMINS.length] ??
-      'Channel admin',
-    settingsHref:
-      `/mattermost-proto-playground/prototypes/attribute-hub-channel-aligned-per-resource` +
-      `?screen=channel-settings&attr=${encodeURIComponent(attributeId)}` +
-      `&channel=${encodeURIComponent(name)}&admin=${encodeURIComponent(
-        UNMARKED_CHANNEL_ADMINS[index % UNMARKED_CHANNEL_ADMINS.length] ??
-          'Channel admin',
-      )}`,
-  }));
+  return unmarkedChannelNames(attributeId).map((name, index) => {
+    // Sprinkle multi-admin, no-admin, and archived rows for critique scenarios.
+    let adminNames: string[];
+    if (index === 2 || index === 7) {
+      adminNames = [];
+    } else if (index % 5 === 0) {
+      adminNames = [
+        UNMARKED_CHANNEL_ADMINS[index % UNMARKED_CHANNEL_ADMINS.length]!,
+        UNMARKED_CHANNEL_ADMINS[(index + 3) % UNMARKED_CHANNEL_ADMINS.length]!,
+      ];
+    } else {
+      adminNames = [
+        UNMARKED_CHANNEL_ADMINS[index % UNMARKED_CHANNEL_ADMINS.length]!,
+      ];
+    }
+
+    return {
+      id: `unmarked-${attributeId}-${index}`,
+      name,
+      adminNames,
+      archived: index === 4 || index === 9,
+      settingsHref:
+        `/mattermost-proto-playground/prototypes/attribute-hub-channel-aligned-per-resource` +
+        `?screen=channel-settings&attr=${encodeURIComponent(attributeId)}` +
+        `&channel=${encodeURIComponent(name)}&admin=${encodeURIComponent(
+          adminNames[0] ?? 'Channel admin',
+        )}`,
+    };
+  });
+}
+
+/** Unique admin count across unmarked channels (for notify confirmation). */
+export function unmarkedChannelAdminCount(channels: UnmarkedChannelRow[]): number {
+  return new Set(channels.flatMap((channel) => channel.adminNames)).size;
+}
+
+/** Channels that would receive no notify because they have no admin. */
+export function unmarkedChannelsWithoutAdmin(
+  channels: UnmarkedChannelRow[],
+): UnmarkedChannelRow[] {
+  return channels.filter((channel) => channel.adminNames.length === 0);
 }
 
 export function applyDefaultToExistingLabel(resource: ResourceKind): string {
@@ -1157,7 +1186,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     appliesTo: [
       {
         resource: 'Channels',
-        required: false,
+        required: true,
         whoCanSet: whoCanSet('Channel admin'),
         showWhere: ['Header', 'Sidebar'],
         defaultValueId: 'cav-noforn',

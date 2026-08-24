@@ -58,14 +58,29 @@ export default function UnmarkedChannelsModal({
                   <tr key={channel.id}>
                     <td>
                       <span className={styles['unmarked__channel']}>
-                        #{channel.name}
+                        {channel.name}
+                        {channel.archived && (
+                          <span className={styles['unmarked__badge']}>
+                            Archived
+                          </span>
+                        )}
                       </span>
                     </td>
-                    <td>{channel.adminName}</td>
+                    <td>
+                      {channel.adminNames.length > 0 ? (
+                        channel.adminNames.join(', ')
+                      ) : (
+                        <span className={styles['unmarked__empty']}>
+                          No channel admin
+                        </span>
+                      )}
+                    </td>
                     <td>
                       <a
                         className={styles['unmarked__link']}
                         href={channel.settingsHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         Go to Channel Settings
                       </a>

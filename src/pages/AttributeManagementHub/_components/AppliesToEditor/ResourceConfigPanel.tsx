@@ -8,6 +8,7 @@ import SectionNotice from '@/components/ui/SectionNotice/SectionNotice';
 import InfoHint from '../InfoHint/InfoHint';
 import WhoCanSetEditor from './WhoCanSetEditor';
 import UnmarkedChannelsModal from './UnmarkedChannelsModal';
+import NotifyChannelAdminsModal from './NotifyChannelAdminsModal';
 import {
   assignableValuesForResource,
   channelDisplayIncludes,
@@ -381,11 +382,13 @@ export default function ResourceConfigPanel({
     null,
   );
   const [channelListOpen, setChannelListOpen] = useState(false);
+  const [notifyOpen, setNotifyOpen] = useState(false);
   const [adminsPrompted, setAdminsPrompted] = useState(false);
 
   useEffect(() => {
     setRequiredBlockedCount(null);
     setChannelListOpen(false);
+    setNotifyOpen(false);
     setAdminsPrompted(false);
   }, [attribute.id]);
   const isUsers = config.resource === 'Users';
@@ -467,23 +470,21 @@ export default function ResourceConfigPanel({
           type={adminsPrompted ? 'Success' : 'Warning'}
           title={
             adminsPrompted
-              ? 'Channel admins prompted'
+              ? 'Channel admins notified'
               : 'Set channel values first'
           }
           description={
             adminsPrompted
-              ? `A request was sent to admins of ${requiredBlockedCount.toLocaleString()} ${
-                  requiredBlockedCount === 1 ? 'channel' : 'channels'
-                } that still need a ${attributeLabel} value.`
+              ? `A notification was sent to admins of channels that still need a ${attributeLabel} value, including archived channels.`
               : `${requiredBlockedCount.toLocaleString()} ${
                   requiredBlockedCount === 1 ? 'channel doesn’t' : 'channels don’t'
-                } have a ${attributeLabel} value yet. Set a value on every existing channel before turning Required on.`
+                } have a ${attributeLabel} value yet (including archived). Set a value on every existing channel before turning Required on.`
           }
           primaryButtonLabel={
-            adminsPrompted ? undefined : 'Prompt all channel admins'
+            adminsPrompted ? undefined : 'Notify all channel admins'
           }
           onPrimaryAction={
-            adminsPrompted ? undefined : () => setAdminsPrompted(true)
+            adminsPrompted ? undefined : () => setNotifyOpen(true)
           }
           secondaryButtonLabel="View channel list"
           onSecondaryAction={() => setChannelListOpen(true)}
@@ -493,6 +494,17 @@ export default function ResourceConfigPanel({
             attributeName={attributeLabel}
             channels={blockedChannels}
             onClose={() => setChannelListOpen(false)}
+          />
+        )}
+        {notifyOpen && (
+          <NotifyChannelAdminsModal
+            attributeName={attributeLabel}
+            channels={blockedChannels}
+            onClose={() => setNotifyOpen(false)}
+            onConfirm={() => {
+              setNotifyOpen(false);
+              setAdminsPrompted(true);
+            }}
           />
         )}
       </div>
@@ -517,6 +529,7 @@ export default function ResourceConfigPanel({
               setRequiredBlockedCount(count);
               setAdminsPrompted(false);
               setChannelListOpen(false);
+              setNotifyOpen(false);
               return;
             }
           }

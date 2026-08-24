@@ -64,7 +64,25 @@
   }
 
   &__channel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
     font-weight: var(--font-weight-semibold);
+  }
+
+  &__badge {
+    display: inline-flex;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__empty {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-style: italic;
   }
 
   &__link {
