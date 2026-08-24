@@ -413,4 +413,4 @@ npm publish --access=public --tag alpha --workspace=@mattermost/compass-ui
 - [README.md](./README.md) — quick start
 - [CHANGELOG.md](./CHANGELOG.md) — release history
 - [Storybook](./README.md#storybook) — component variant catalog (`npm run storybook`)
-- [UI Library Extraction Plan](../../docs/UI-LIBRARY-EXTRACTION-PLAN.md) — full repo split architecture
+- [Compass repo split](../../docs/COMPASS-REPO-SPLIT.md) — two-repo architecture and phase plan
