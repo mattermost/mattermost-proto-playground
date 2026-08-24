@@ -43,6 +43,13 @@
     }
   }
 
+  &__radio {
+    width: auto;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    padding-top: var(--spacing-xxs);
+  }
+
   &__option-body {
     display: flex;
     flex-direction: column;

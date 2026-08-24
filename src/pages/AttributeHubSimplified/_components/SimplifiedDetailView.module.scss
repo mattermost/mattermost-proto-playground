@@ -63,4 +63,10 @@
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
+
+  &__markings-footer {
+    margin-top: var(--spacing-s);
+    padding-top: var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
 }

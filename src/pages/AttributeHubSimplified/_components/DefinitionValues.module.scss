@@ -58,6 +58,15 @@
     gap: 2px;
   }
 
+  &__option-chip--active {
+    box-shadow: 0 0 0 2px var(--button-bg);
+  }
+
+  &__option-chip--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   &__mapping-hint {
     font-size: var(--font-size-50);
     color: rgba(var(--center-channel-color-rgb), 0.56);

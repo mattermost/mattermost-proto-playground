@@ -32,24 +32,6 @@ export const SOURCE_PROVIDER_OPTIONS: SourceProviderOption[] = [
       'Map a SAML assertion attribute to these options when users sign in.',
     system: 'SAML',
   },
-  {
-    id: 'scim',
-    label: 'SCIM provisioning',
-    description:
-      'Provision and keep values in sync through your identity provider’s SCIM API.',
-    system: 'SCIM',
-  },
-  {
-    id: 'uas',
-    label: 'UAS provider (plugin)',
-    description: 'Connect a User Attribute Service plugin installed on this server.',
-    system: 'UAS',
-  },
-  {
-    id: 'custom',
-    label: 'Custom integration',
-    description: 'Use a server-side integration, webhook, or other connector.',
-  },
 ];
 
 export interface ConnectSourceModalProps {
@@ -181,12 +163,26 @@ export default function ConnectSourceModal({
               description={`The ${provider?.label ?? 'external source'} setup flow — field mapping, cadence, credentials, and test sync — opens in a dedicated modal wizard in production. This prototype stops here.`}
             />
           ) : (
-            <div className={styles['connect__list']}>
+            <div className={styles['connect__list']} role="radiogroup">
               {SOURCE_PROVIDER_OPTIONS.map((option) => (
-                <label key={option.id} className={styles['connect__option']}>
+                <div
+                  key={option.id}
+                  className={styles['connect__option']}
+                  onClick={() => setSelected(option.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      setSelected(option.id);
+                    }
+                  }}
+                  role="radio"
+                  aria-checked={selected === option.id}
+                  tabIndex={0}
+                >
                   <Radio
                     checked={selected === option.id}
                     onChange={() => setSelected(option.id)}
+                    className={styles['connect__radio']}
                   />
                   <div className={styles['connect__option-body']}>
                     <span className={styles['connect__option-name']}>
@@ -196,7 +192,7 @@ export default function ConnectSourceModal({
                       {option.description}
                     </span>
                   </div>
-                </label>
+                </div>
               ))}
             </div>
           )}

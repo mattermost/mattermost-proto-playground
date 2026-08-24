@@ -213,24 +213,6 @@ export default function SimplifiedDetailView({
             <div className={styles['detail__row']}>
               <span className={styles['detail__key']}>Options</span>
               <div className={styles['detail__field']}>
-                {classificationLocked && (
-                  <>
-                    <p className={styles['detail__external']}>
-                      Presets and marking colors are configured on Classification
-                      Markings.
-                      <Button
-                        emphasis="Tertiary"
-                        size="Small"
-                        trailingIcon={
-                          <Icon size="12" glyph={<OpenInNewIcon />} />
-                        }
-                        onClick={() => onOpenMarkings?.(attribute.id)}
-                      >
-                        Open
-                      </Button>
-                    </p>
-                  </>
-                )}
                 <DefinitionValues
                   attribute={attribute}
                   attributes={attributes}
@@ -250,14 +232,25 @@ export default function SimplifiedDetailView({
                   onUnlinkValues={onUnlinkValues}
                   forceReadOnly={classificationLocked}
                   hideSourceActions={classificationLocked}
-                  linkedNoticeDescription={
-                    classificationLocked
-                      ? `Options mirror ${
-                          valueLink?.attributeName ?? 'Clearance'
-                        }. Labels and ranks stay in sync; edit nested markings and colors on Classification Markings.`
-                      : undefined
-                  }
                 />
+                {classificationLocked && (
+                  <div className={styles['detail__markings-footer']}>
+                    <p className={styles['detail__external']}>
+                      Presets and marking colors are configured on Classification
+                      Markings.
+                      <Button
+                        emphasis="Tertiary"
+                        size="Small"
+                        trailingIcon={
+                          <Icon size="12" glyph={<OpenInNewIcon />} />
+                        }
+                        onClick={() => onOpenMarkings?.(attribute.id)}
+                      >
+                        Open
+                      </Button>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

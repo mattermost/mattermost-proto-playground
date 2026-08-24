@@ -902,29 +902,14 @@ export function syncTone(state: SyncState): 'success' | 'warning' | 'danger' {
 
 // ─── Seed data ────────────────────────────────────────────────────────────────
 
-/** Shared ranked tier scale — Classification mirrors Clearance's scale. */
-const TIER_SCALE: AttrValue[] = [
-  {
-    id: 'unclassified',
-    label: 'Unclassified',
-    tier: 1,
-    children: [
-      { id: 'ouo', label: 'Official use only' },
-      {
-        id: 'tlp',
-        label: 'TLP',
-        children: [
-          { id: 'tlp-clear', label: 'TLP-CLEAR' },
-          { id: 'tlp-green', label: 'TLP-GREEN' },
-          { id: 'tlp-amber', label: 'TLP-AMBER' },
-          { id: 'tlp-amber-strict', label: 'TLP-AMBER_STRICT' },
-          { id: 'tlp-red', label: 'TLP-RED' },
-        ],
-      },
-    ],
-  },
-  { id: 'protected-a', label: 'Protected A', tier: 2, inUseCount: 24 },
-  { id: 'protected-b', label: 'Protected B', tier: 3, inUseCount: 11 },
+/** US classification levels — Ranked attribute (configured on Classification Markings). */
+const CLASSIFICATION_SCALE: AttrValue[] = [
+  { id: 'unclassified', label: 'UNCLASSIFIED', tier: 1 },
+  { id: 'cui', label: 'CUI', tier: 2 },
+  { id: 'confidential', label: 'CONFIDENTIAL', tier: 3 },
+  { id: 'secret', label: 'SECRET', tier: 4 },
+  { id: 'top-secret', label: 'TOP SECRET', tier: 5 },
+  { id: 'top-secret-sci', label: 'TOP SECRET//SCI', tier: 6 },
 ];
 
 /** Clearance owns the tier scale (read-only, synced from UAS). */
@@ -1026,10 +1011,10 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
   {
     id: 'classification',
     name: 'Classification',
-    type: 'Ranked-hierarchical',
+    type: 'Ranked',
     description:
-      'Sensitivity level applied to channels and posts. Ranked tiers form the spine compared against Clearance; display-only markings nest beneath each tier.',
-    values: TIER_SCALE,
+      'Sensitivity level applied to channels and posts. Ranked levels are configured on Classification Markings.',
+    values: CLASSIFICATION_SCALE,
     source: { kind: 'manual' },
     appliesTo: [
       {
@@ -1081,7 +1066,6 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
       ),
     },
     readIntoFiltering: false,
-    valuesLink: { attributeId: 'clearance', attributeName: 'Clearance' },
   },
   {
     id: 'clearance',
