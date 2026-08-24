@@ -1,5 +1,5 @@
-import type { InputHTMLAttributes, ReactNode, ChangeEvent } from 'react';
-import { forwardRef, useId, useState, useCallback } from 'react';
+import type { InputHTMLAttributes, ReactNode, ChangeEvent, MouseEvent } from 'react';
+import { forwardRef, useId, useState, useCallback, useRef } from 'react';
 import { toKebab } from '@/utils/string';
 import styles from './TextInput.module.scss';
 
@@ -60,6 +60,16 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   ) {
     const generatedId = useId();
     const id = idProp ?? generatedId;
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const setInputRef = useCallback(
+      (node: HTMLInputElement | null) => {
+        inputRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref],
+    );
 
     const isControlled = valueProp !== undefined;
     const [uncontrolledValue, setUncontrolledValue] = useState(
@@ -92,6 +102,14 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       },
       [isControlled, onChange],
     );
+
+    const handleInnerMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+      if (disabled || readOnly) return;
+      if (e.target === inputRef.current) return;
+      if ((e.target as HTMLElement).closest('button')) return;
+      e.preventDefault();
+      inputRef.current?.focus();
+    };
 
     const sizeClass = styles[`textInput--size-${toKebab(size)}`];
     const invalidClass = invalid ? styles['textInput--invalid'] : '';
@@ -126,14 +144,17 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {label}
             </label>
           )}
-          <div className={styles.textInput__inner}>
+          <div
+            className={styles.textInput__inner}
+            onMouseDown={handleInnerMouseDown}
+          >
             {leadingIcon != null && (
               <span className={styles.textInput__leadingIcon}>
                 {leadingIcon}
               </span>
             )}
             <input
-              ref={ref}
+              ref={setInputRef}
               id={id}
               className={styles.textInput__input}
               value={isControlled ? valueProp : undefined}
