@@ -498,14 +498,16 @@ const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(function Combobox(
       <div
         className={styles.combobox__wrapper}
         ref={anchorRef}
-        onMouseDown={handleWrapperMouseDown}
       >
         {label != null && (
           <label className={styles.combobox__label} htmlFor={id}>
             {label}
           </label>
         )}
-        <div className={styles.combobox__inner}>
+        <div
+          className={styles.combobox__inner}
+          onMouseDown={handleWrapperMouseDown}
+        >
           {leadingIcon != null && (
             <span className={styles.combobox__leadingIcon} aria-hidden>
               {leadingIcon}

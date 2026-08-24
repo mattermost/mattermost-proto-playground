@@ -76,28 +76,13 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Inner row (icon + trigger + trailing chevron)
+  // Trigger button (full field: icons + value + chevron)
   // ---------------------------------------------------------------------------
-  &__inner {
+  &__control {
     display: flex;
     align-items: center;
-    position: relative;
-  }
-
-  &__leadingIcon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: rgba(var(--center-channel-color-rgb), 0.64);
-    pointer-events: none;
-  }
-
-  &__control {
-    flex: 1 1 0;
-    min-width: 0;
+    width: 100%;
     margin: 0;
-    padding: 0;
     border: 0;
     background: transparent;
     font-family: var(--font-family-body);
@@ -107,9 +92,7 @@
     color: var(--center-channel-color);
     text-align: left;
     cursor: pointer;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    gap: var(--spacing-xs);
 
     &:focus {
       outline: none;
@@ -124,9 +107,25 @@
       color: rgba(var(--center-channel-color-rgb), 0.64);
     }
 
-    &--placeholder {
+    &--placeholder .select__value {
       color: rgba(var(--center-channel-color-rgb), 0.64);
     }
+  }
+
+  &__value {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__leadingIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
   }
 
   &__trailingIcon {
@@ -135,7 +134,6 @@
     justify-content: center;
     flex-shrink: 0;
     color: rgba(var(--center-channel-color-rgb), 0.64);
-    pointer-events: none;
     margin-right: var(--spacing-xxxs);
     transition: transform var(--duration-quick) var(--ease-transition);
 
@@ -202,12 +200,9 @@
       min-height: 32px;
     }
 
-    .select__inner {
+    .select__control {
       padding: var(--spacing-xs) var(--spacing-m);
       gap: var(--spacing-xs);
-    }
-
-    .select__control {
       font-size: var(--font-size-75);
       line-height: var(--line-height-75);
     }
@@ -230,12 +225,9 @@
       min-height: 40px;
     }
 
-    .select__inner {
+    .select__control {
       padding: var(--spacing-s) var(--spacing-l);
       gap: var(--spacing-s);
-    }
-
-    .select__control {
       font-size: var(--font-size-100);
       line-height: var(--line-height-100);
     }
@@ -263,12 +255,9 @@
       min-height: 48px;
     }
 
-    .select__inner {
+    .select__control {
       padding: var(--spacing-m) var(--spacing-l);
       gap: var(--spacing-s);
-    }
-
-    .select__control {
       font-size: var(--font-size-200);
       line-height: var(--line-height-200);
     }
@@ -293,7 +282,7 @@
   }
 
   // Hide trigger text while the floating label is in the resting position to prevent overlap.
-  &:has(.select__label):not(&--label-floated) .select__control {
+  &:has(.select__label):not(&--label-floated) .select__value {
     color: transparent;
   }
 

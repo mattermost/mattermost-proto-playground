@@ -74,6 +74,9 @@
   &__value {
     flex: 1 1 0;
     min-width: 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
     font-family: var(--font-family-body);
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);

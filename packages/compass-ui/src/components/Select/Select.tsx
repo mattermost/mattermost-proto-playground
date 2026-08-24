@@ -384,39 +384,37 @@ const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select(
             {label}
           </label>
         )}
-        <div className={styles.select__inner}>
+        <button
+          ref={setButtonRef}
+          id={id}
+          type="button"
+          role="combobox"
+          className={controlClass}
+          disabled={disabled}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={listboxId}
+          aria-activedescendant={activeDescendant}
+          aria-invalid={invalid ? true : undefined}
+          aria-label={
+            ariaLabel ??
+            (typeof label === 'string' ? label : undefined)
+          }
+          onClick={() => (isOpen ? close() : open())}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          onKeyDown={handleKeyDown}
+        >
           {leadingIcon != null && (
             <span className={styles.select__leadingIcon} aria-hidden>
               {leadingIcon}
             </span>
           )}
-          <button
-            ref={setButtonRef}
-            id={id}
-            type="button"
-            role="combobox"
-            className={controlClass}
-            disabled={disabled}
-            aria-haspopup="listbox"
-            aria-expanded={isOpen}
-            aria-controls={listboxId}
-            aria-activedescendant={activeDescendant}
-            aria-invalid={invalid ? true : undefined}
-            aria-label={
-              ariaLabel ??
-              (typeof label === 'string' ? label : undefined)
-            }
-            onClick={() => (isOpen ? close() : open())}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            onKeyDown={handleKeyDown}
-          >
-            {displayLabel}
-          </button>
+          <span className={styles.select__value}>{displayLabel}</span>
           <span className={styles.select__trailingIcon} aria-hidden>
             <Icon size="12" glyph={<ChevronDownIcon />} />
           </span>
-        </div>
+        </button>
       </div>
 
       {name != null && !disabled && (
