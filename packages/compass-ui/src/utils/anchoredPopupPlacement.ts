@@ -81,14 +81,62 @@ export type AnchoredPopupBounds = Pick<
   'top' | 'bottom' | 'left' | 'width' | 'height'
 >;
 
+/** Mount element metrics for portaled absolute positioning. */
+export interface AnchoredPopupContainerFrame {
+  /** Visible viewport bounds used for flip/max-height. */
+  bounds: Pick<DOMRect, 'top' | 'bottom'>;
+  /** Maps a viewport anchor rect into mount padding-box coordinates. */
+  anchorInContainer: (
+    anchorRect: Pick<DOMRect, 'top' | 'bottom' | 'left' | 'width'>,
+  ) => {
+    left: number;
+    top: number;
+    bottom: number;
+    width: number;
+  };
+  /** Full scrollable content height of the mount. */
+  contentHeight: number;
+}
+
+export function getAnchoredPopupContainerFrame(
+  mount: HTMLElement,
+): AnchoredPopupContainerFrame {
+  const borderRect = mount.getBoundingClientRect();
+  const boundsTop = borderRect.top + mount.clientTop;
+  const boundsBottom = boundsTop + mount.clientHeight;
+
+  return {
+    bounds: { top: boundsTop, bottom: boundsBottom },
+    anchorInContainer: (anchorRect: Pick<DOMRect, 'top' | 'bottom' | 'left' | 'width'>) => ({
+      left:
+        anchorRect.left -
+        borderRect.left -
+        mount.clientLeft +
+        mount.scrollLeft,
+      top:
+        anchorRect.top -
+        borderRect.top -
+        mount.clientTop +
+        mount.scrollTop,
+      bottom:
+        anchorRect.bottom -
+        borderRect.top -
+        mount.clientTop +
+        mount.scrollTop,
+      width: anchorRect.width,
+    }),
+    contentHeight: mount.scrollHeight,
+  };
+}
+
 /**
  * Fixed box coords for a portaled popup anchored to a trigger rect.
  * Below: top edge sits `gap` px under the trigger bottom.
  * Above: bottom edge sits `gap` px above the trigger top (uses `bottom` so
  * height does not affect the gap).
  *
- * When `containerRect` is provided, returns `absolute` coords relative to that
- * container (for custom portal roots with transform/contain). Otherwise uses
+ * When `containerFrame` is provided, returns `absolute` coords in the mount
+ * padding box (accounts for scroll and client border offsets). Otherwise uses
  * viewport `fixed` coords (document.body default).
  */
 export function computeAnchoredPopupFixedStyle(
@@ -100,29 +148,29 @@ export function computeAnchoredPopupFixedStyle(
     /** Override width (defaults to trigger width). */
     width?: number;
     viewportHeight?: number;
-    containerRect?: AnchoredPopupBounds;
+    containerFrame?: AnchoredPopupContainerFrame;
   },
 ): AnchoredPopupFixedStyle {
   const gap = options.gap ?? ANCHORED_POPUP_GAP;
   const width = options.width ?? anchorRect.width;
   const zIndex = options.zIndex ?? ANCHORED_POPUP_Z_INDEX;
-  const containerRect = options.containerRect;
+  const containerFrame = options.containerFrame;
 
-  if (containerRect) {
-    const left = anchorRect.left - containerRect.left;
+  if (containerFrame) {
+    const anchor = containerFrame.anchorInContainer(anchorRect);
     if (placement === 'below') {
       return {
         position: 'absolute',
-        top: anchorRect.bottom - containerRect.top + gap,
-        left,
+        top: anchor.bottom + gap,
+        left: anchor.left,
         width,
         zIndex,
       };
     }
     return {
       position: 'absolute',
-      bottom: containerRect.bottom - anchorRect.top + gap,
-      left,
+      bottom: containerFrame.contentHeight - anchor.top + gap,
+      left: anchor.left,
       width,
       zIndex,
     };

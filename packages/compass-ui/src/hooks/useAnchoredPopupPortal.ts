@@ -13,6 +13,7 @@ import {
   ANCHORED_POPUP_Z_INDEX,
   computeAnchoredPopupFixedStyle,
   computeAnchoredPopupPlacement,
+  getAnchoredPopupContainerFrame,
   type PopupPlacement,
 } from '@/utils/anchoredPopupPlacement';
 
@@ -103,7 +104,9 @@ export function useAnchoredPopupPortal(
     const rect = anchor.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const viewportFixed = usesViewportFixedCoords(mount);
-    const containerRect = viewportFixed ? undefined : mount.getBoundingClientRect();
+    const containerFrame = viewportFixed
+      ? undefined
+      : getAnchoredPopupContainerFrame(mount);
 
     const measured =
       contentRef?.current?.offsetHeight ??
@@ -116,7 +119,7 @@ export function useAnchoredPopupPortal(
         gap,
         preferredHeight: heightForFlip,
         maxHeightCap,
-        bounds: containerRect,
+        bounds: containerFrame?.bounds,
       });
 
     const fixed = computeAnchoredPopupFixedStyle(rect, nextPlacement, {
@@ -124,7 +127,7 @@ export function useAnchoredPopupPortal(
       zIndex,
       width: matchWidth ? rect.width : undefined,
       viewportHeight,
-      containerRect,
+      containerFrame,
     });
 
     setPlacement(nextPlacement);

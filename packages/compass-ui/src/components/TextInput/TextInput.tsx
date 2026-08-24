@@ -1,4 +1,9 @@
-import type { InputHTMLAttributes, ReactNode, ChangeEvent, MouseEvent } from 'react';
+import type {
+  InputHTMLAttributes,
+  ReactNode,
+  ChangeEvent,
+  RefCallback,
+} from 'react';
 import { forwardRef, useId, useState, useCallback, useRef } from 'react';
 import { toKebab } from '@/utils/string';
 import styles from './TextInput.module.scss';
@@ -65,8 +70,14 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const setInputRef = useCallback(
       (node: HTMLInputElement | null) => {
         inputRef.current = node;
-        if (typeof ref === 'function') ref(node);
-        else if (ref) ref.current = node;
+        if (typeof ref === 'function') {
+          const cleanup = (ref as RefCallback<HTMLInputElement>)(node);
+          return () => {
+            inputRef.current = null;
+            if (typeof cleanup === 'function') cleanup();
+          };
+        }
+        if (ref) ref.current = node;
       },
       [ref],
     );
@@ -103,14 +114,6 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       [isControlled, onChange],
     );
 
-    const handleInnerMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-      if (disabled || readOnly) return;
-      if (e.target === inputRef.current) return;
-      if ((e.target as HTMLElement).closest('button')) return;
-      e.preventDefault();
-      inputRef.current?.focus();
-    };
-
     const sizeClass = styles[`textInput--size-${toKebab(size)}`];
     const invalidClass = invalid ? styles['textInput--invalid'] : '';
     const labelFloatedClass =
@@ -139,15 +142,10 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     return (
       <div className={rootClass}>
         <div className={styles.textInput__wrapper}>
-          {label != null && (
-            <label className={styles.textInput__label} htmlFor={id}>
-              {label}
-            </label>
-          )}
-          <div
-            className={styles.textInput__inner}
-            onMouseDown={handleInnerMouseDown}
-          >
+          <label className={styles.textInput__inner}>
+            {label != null && (
+              <span className={styles.textInput__label}>{label}</span>
+            )}
             {leadingIcon != null && (
               <span className={styles.textInput__leadingIcon}>
                 {leadingIcon}
@@ -175,7 +173,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                 {trailingIcon}
               </span>
             )}
-          </div>
+          </label>
         </div>
         {showCharacterCount && maxLength != null && (
           <div
