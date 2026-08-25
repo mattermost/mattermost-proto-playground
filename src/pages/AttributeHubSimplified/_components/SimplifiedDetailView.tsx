@@ -417,9 +417,11 @@ export default function SimplifiedDetailView({
               channelScope ? channelScopedResourceLabels() : undefined
             }
             allowedResources={
-              channelAlignment || channelScope
+              channelScope
                 ? (['Channels', 'Posts'] as ResourceKind[])
-                : undefined
+                : channelAlignment
+                  ? (['Users', 'Channels', 'Posts'] as ResourceKind[])
+                  : undefined
             }
           />
         }

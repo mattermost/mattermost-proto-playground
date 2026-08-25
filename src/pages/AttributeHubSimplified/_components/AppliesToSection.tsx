@@ -107,9 +107,10 @@ export default function AppliesToSection({
   const addMenuLabels = channelScope
     ? channelScopedResourceLabels()
     : undefined;
-  const addMenuAllowed =
-    channelAlignment || channelScope
-      ? (['Channels', 'Posts'] as ResourceKind[])
+  const addMenuAllowed = channelScope
+    ? (['Channels', 'Posts'] as ResourceKind[])
+    : channelAlignment
+      ? (['Users', 'Channels', 'Posts'] as ResourceKind[])
       : undefined;
 
   return (
