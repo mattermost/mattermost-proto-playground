@@ -73,6 +73,7 @@ import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubS
 import AttributeHubSimplifiedInlineSummary from '@/pages/AttributeHubSimplifiedInlineSummary/AttributeHubSimplifiedInlineSummary';
 import AttributeHubChannelAligned from '@/pages/AttributeHubChannelAligned/AttributeHubChannelAligned';
 import AttributeHubChannelAlignedPerResource from '@/pages/AttributeHubChannelAlignedPerResource/AttributeHubChannelAlignedPerResource';
+import AttributeDeletionRenameDecisions from '@/pages/AttributeDeletionRenameDecisions/AttributeDeletionRenameDecisions';
 import AttributeHubMVP from '@/pages/AttributeHubMVP/AttributeHubMVP';
 import AttributeHubMVPNext from '@/pages/AttributeHubMVPNext/AttributeHubMVPNext';
 import AttributeManagementWalkthrough from '@/pages/AttributeHubMVPNext/Walkthrough/AttributeManagementWalkthrough';
@@ -258,6 +259,7 @@ const INITIATIVE_OF: Record<string, Initiative> = {
   'post-attributes-channel-settings': 'attribute-management',
   'attribute-hub-channel-aligned': 'attribute-management',
   'attribute-hub-channel-aligned-per-resource': 'attribute-management',
+  'attribute-deletion-rename-decisions': 'attribute-management',
   'attribute-hub-basics-advanced': 'attribute-management',
   'attribute-hub-streamlined': 'attribute-management',
   'attribute-management-classification-setup': 'attribute-management',
@@ -386,6 +388,7 @@ export type PrototypeEntry = {
 export const BRANCH_FOCUS_PROTOTYPE_IDS = new Set<string>([
   'attribute-hub-channel-aligned-per-resource',
   'post-attributes-channel-settings',
+  'attribute-deletion-rename-decisions',
 ]);
 
 export const PROTOTYPES: PrototypeEntry[] = [
@@ -659,6 +662,17 @@ export const PROTOTYPES: PrototypeEntry[] = [
     description:
       'Same channel-attributes alignment, with the "Changing the value" rule moved out of Definition and onto each resource inside Applies to \u2014 it sits directly under "Who can set the value", so who sets it and whether they can change it later read as one thought. Because the rule is scoped to the binding, the attribute-level version\u0027s "Applies to Channels, Posts, Teams" explainer and its Users reflection line both disappear; Users simply has no such control, since its values come from the source system. Copy is shortened to a self-describing option list \u2014 Can be changed / Can only be raised / Can only be narrowed / Values can be added, not removed / Values can be removed, not added / Cannot be changed \u2014 with a supporting line only where the label needs one (raise-only shows the concrete allowed direction, locked says to create a new channel instead). Options still derive from attribute type, and each resource can now carry a different rule. Deep-links: ?attr=<id>, ?flow=new.',
     addedAt: '2026-08-10',
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'attribute-deletion-rename-decisions',
+    label: 'Attribute Management \u00b7 Deletion & rename decisions',
+    path: '/prototypes/attribute-deletion-rename-decisions',
+    component: AttributeDeletionRenameDecisions,
+    group: 'zero-trust-abac',
+    description:
+      'Decision table for deleting and renaming global attributes, changing type when unused, managing individual Select/Multiselect values, and deleting resource-level attributes \u2014 Classification values are controlled separately.',
+    addedAt: '2026-08-25',
     collections: ['attribute-management'],
   },
   // Drill-in re-ideation after "kitchen sink" feedback — A/B comparison (2026-07-06)
