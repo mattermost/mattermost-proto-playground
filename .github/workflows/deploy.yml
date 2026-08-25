@@ -19,10 +19,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/checkout@v4
+        with:
+          repository: mattermost/compass-design
+          path: compass-design
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
+
+      - run: npm ci
+        working-directory: compass-design
+
+      - run: npm run build:ui && npm run build:proto
+        working-directory: compass-design
 
       - run: npm ci
 

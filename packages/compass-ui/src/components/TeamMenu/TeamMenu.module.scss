@@ -1,9 +1,0 @@
-.team-menu {
-  &__learn-item {
-    color: var(--link-color);
-
-    :global([class*='menu-item__leading-visual']) {
-      color: var(--link-color);
-    }
-  }
-}

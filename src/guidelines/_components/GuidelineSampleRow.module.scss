@@ -1,6 +1,0 @@
-@use '@/styles/mixins' as *;
-
-.guideline-sample-row {
-  @include guideline-sample-row;
-  margin-top: var(--spacing-xl);
-}
