@@ -46,7 +46,7 @@
   &__chips {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-xs);
     min-width: 0;
   }
@@ -56,6 +56,15 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
+  }
+
+  &__option-chip--active {
+    box-shadow: 0 0 0 2px var(--button-bg);
+  }
+
+  &__option-chip--disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   &__mapping-hint {

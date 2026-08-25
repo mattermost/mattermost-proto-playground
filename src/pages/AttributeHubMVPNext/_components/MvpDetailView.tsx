@@ -184,7 +184,7 @@ export default function MvpDetailView({
               )}
 
               <p className={styles['detail__hint']}>
-                Name is the internal identifier for policies and integrations.
+                Unique name is the internal identifier for policies and integrations.
                 Display name is what admins and users see.
               </p>
             </div>

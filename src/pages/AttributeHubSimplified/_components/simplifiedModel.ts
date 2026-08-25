@@ -96,6 +96,29 @@ export function optionCountLabel(attribute: HubAttribute): string {
   return `${n} ${n === 1 ? 'option' : 'options'}`;
 }
 
+/** Catalog listing column: always "N options" except Text → "Free text". */
+export function catalogOptionCountLabel(attribute: HubAttribute): string {
+  const type = displayType(attribute);
+  if (type === 'Text') return 'Free text';
+
+  let n = 0;
+  if (isTreeType(type)) {
+    const walk = (values: AttrValue[]) => {
+      for (const value of values) {
+        n += 1;
+        if (value.children?.length) walk(value.children);
+      }
+    };
+    walk(attribute.values);
+  } else if (comparesRank(type)) {
+    n = attribute.values.filter((v) => v.tier != null).length;
+  } else {
+    n = attribute.values.length;
+  }
+
+  return `${n} ${n === 1 ? 'option' : 'options'}`;
+}
+
 // ── Rich option editor: color + external color + translations ──────────────
 //
 // Held in a scene-local side table keyed by value id so the baseline
@@ -111,18 +134,12 @@ export interface OptionMeta {
 }
 
 const OPTION_META: Record<string, OptionMeta> = {
-  // Seeded so the demo popover opens on a realistic option (Classification tiers).
-  'protected-b': {
-    color: 'var(--color-red-500)',
-    translations: { fr: 'Protégé B', de: 'Geschützt B' },
-  },
-  'protected-a': {
-    color: 'var(--color-orange-500)',
-    translations: { fr: 'Protégé A' },
-  },
-  unclassified: {
-    color: 'var(--color-green-500)',
-  },
+  unclassified: { color: '#007A33' },
+  cui: { color: '#502B85' },
+  confidential: { color: '#0033A0' },
+  secret: { color: '#C8102E' },
+  'top-secret': { color: '#FF8C00' },
+  'top-secret-sci': { color: '#FCE83A' },
   // Clearance tiers carry a source-provided color (synced from UAS).
   'cl-3': { color: 'var(--color-red-500)', colorFromSource: true },
   'cl-2': { color: 'var(--color-orange-500)', colorFromSource: true },
@@ -147,8 +164,19 @@ export type OptionColorScheme =
   | 'neutral'
   | 'plain';
 
+const VALUE_COLOR_SCHEME: Record<string, OptionColorScheme> = {
+  unclassified: 'green',
+  cui: 'purple',
+  confidential: 'blue',
+  secret: 'red',
+  'top-secret': 'orange',
+  'top-secret-sci': 'orange',
+};
+
 /** Map a stored swatch token to the banner scheme used by ColoredRankedInputChip. */
 export function optionColorScheme(valueId: string): OptionColorScheme {
+  const byId = VALUE_COLOR_SCHEME[valueId];
+  if (byId) return byId;
   const color = optionMeta(valueId).color;
   if (!color) return 'plain';
   if (color.includes('green')) return 'green';
@@ -434,13 +462,7 @@ export interface ValueLinkConfig {
   mappings?: Record<string, string>;
 }
 
-const VALUE_LINK_CONFIG: Record<string, ValueLinkConfig> = {
-  classification: {
-    attributeId: 'clearance',
-    attributeName: 'Clearance',
-    mode: 'exact',
-  },
-};
+const VALUE_LINK_CONFIG: Record<string, ValueLinkConfig> = {};
 
 export function resolveValueLink(attribute: HubAttribute): ValueLinkConfig | null {
   const stored = VALUE_LINK_CONFIG[attribute.id];

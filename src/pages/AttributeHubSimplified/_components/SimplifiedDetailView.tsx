@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import OpenInNewIcon from '@mattermost/compass-icons/components/open-in-new';
 import Select from '@/components/ui/Select/Select';
 import TextInput from '@/components/ui/TextInput/TextInput';
@@ -26,6 +27,7 @@ import {
   assignSequentialTiers,
   comparesRank,
   displayType,
+  isTreeType,
   markHierarchical,
   stripTiers,
   type SimplifiedAttrType,
@@ -34,13 +36,23 @@ import {
 import { channelScopedResourceLabels } from './appliesToModel';
 import styles from './SimplifiedDetailView.module.scss';
 
+function displayNameToUniqueName(displayName: string): string {
+  return displayName.trim().replace(/\s+/g, '_');
+}
+
+function effectiveDisplayName(attribute: HubAttribute): string {
+  return attribute.displayName?.trim() || attribute.name.trim();
+}
+
 export interface SimplifiedDetailViewProps {
   attribute: HubAttribute;
   attributes: HubAttribute[];
   valueLink: ValueLinkConfig | null;
   /** Blank/guided create mode. */
   creating?: boolean;
-  onDefinitionChange: (next: Partial<Pick<HubAttribute, 'name' | 'type' | 'values'>>) => void;
+  onDefinitionChange: (
+    next: Partial<Pick<HubAttribute, 'name' | 'displayName' | 'type' | 'values'>>,
+  ) => void;
   onAddValue: (label: string, asTier?: boolean) => void;
   onAddChild: (parentId: string, label: string) => void;
   onToggleValueDisabled: (valueId: string) => void;
@@ -61,8 +73,8 @@ export interface SimplifiedDetailViewProps {
   onLinkValues: () => void;
   onEditLink: () => void;
   onUnlinkValues: () => void;
-  /** Refs the Name field for create-mode auto-focus. */
-  nameRef?: (el: HTMLInputElement | null) => void;
+  /** Refs the display name field for create-mode auto-focus. */
+  displayNameRef?: (el: HTMLInputElement | null) => void;
   /** Collapsed applies-to row summary display. */
   appliesToRowSummary?: AppliesToRowSummaryVariant;
   /** Channel-attributes alignment (walkthrough 2026-08-06). */
@@ -115,13 +127,16 @@ export default function SimplifiedDetailView({
   onLinkValues,
   onEditLink,
   onUnlinkValues,
-  nameRef,
+  displayNameRef,
   appliesToRowSummary = 'chips',
   channelAlignment = false,
   channelScope = false,
   perResourceEditability = false,
   onOpenMarkings,
 }: SimplifiedDetailViewProps) {
+  const [nameEditing, setNameEditing] = useState(false);
+  const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
+  const uniqueNameInputRef = useRef<HTMLInputElement | null>(null);
   const sourceOwned = isSourceOwned(attribute);
   const policyLocked = isPolicyLocked(attribute);
   const classificationLocked =
@@ -133,6 +148,43 @@ export default function SimplifiedDetailView({
     valueLink?.mode === 'exact' ||
     classificationLocked;
   const currentType = displayType(attribute);
+
+  useEffect(() => {
+    setNameEditing(false);
+    setNameManuallyEdited(false);
+  }, [attribute.id, creating]);
+
+  useEffect(() => {
+    if (nameEditing) {
+      uniqueNameInputRef.current?.focus();
+    }
+  }, [nameEditing]);
+
+  const uniqueNamePreview =
+    attribute.name.trim() ||
+    (creating ? displayNameToUniqueName(attribute.displayName ?? '') : '');
+
+  const handleDisplayNameChange = (value: string) => {
+    if (creating && !nameManuallyEdited) {
+      const hasEstablishedName =
+        attribute.name.trim() !== '' &&
+        (attribute.displayName ?? '').trim() !== '' &&
+        value !== (attribute.displayName ?? '');
+      if (!hasEstablishedName) {
+        onDefinitionChange({
+          displayName: value,
+          name: displayNameToUniqueName(value),
+        });
+        return;
+      }
+    }
+    onDefinitionChange({ displayName: value });
+  };
+
+  const handleUniqueNameChange = (value: string) => {
+    setNameManuallyEdited(true);
+    onDefinitionChange({ name: value });
+  };
 
   const handleTypeChange = (next: SimplifiedAttrType) => {
     const wasRanked = comparesRank(currentType);
@@ -161,22 +213,77 @@ export default function SimplifiedDetailView({
       {/* Merged Definition = Name · Type · adaptive Values (+ synced status). */}
       <ConsolePanel
         title="Definition"
-        subtitle={channelAlignment ? 'Name, type, and options.' : 'Name, type, options, and editors.'}
+        subtitle={
+          channelAlignment
+            ? 'Display name, type, and options.'
+            : 'Display name, type, options, and editors.'
+        }
       >
         <div className={styles['detail__def']}>
-          <div className={styles['detail__row']}>
-            <span className={styles['detail__key']}>Name</span>
-            <div className={styles['detail__field']}>
+          <div className={[styles['detail__row'], styles['detail__row--name']].join(' ')}>
+            <span className={styles['detail__key']}>Display name</span>
+            <div className={[styles['detail__field'], styles['detail__field--name']].join(' ')}>
               <TextInput
-                ref={nameRef}
-                className={styles['detail__input']}
+                ref={displayNameRef}
+                className={styles['detail__display-input']}
                 size="Medium"
-                value={attribute.name}
+                value={effectiveDisplayName(attribute)}
                 readOnly={nameReadOnly}
-                placeholder={creating ? 'Name this attribute' : undefined}
-                aria-label="Attribute name"
-                onChange={(e) => onDefinitionChange({ name: e.target.value })}
+                placeholder={creating ? 'Label shown in the product' : undefined}
+                aria-label="Display name"
+                onChange={(e) => handleDisplayNameChange(e.target.value)}
               />
+
+              {nameEditing ? (
+                <div
+                  className={[
+                    styles['detail__unique-row'],
+                    styles['detail__unique-row--editing'],
+                  ].join(' ')}
+                >
+                  <span className={styles['detail__unique-label']}>Unique name:</span>
+                  <TextInput
+                    ref={uniqueNameInputRef}
+                    className={styles['detail__unique-input']}
+                    size="Small"
+                    value={attribute.name}
+                    readOnly={nameReadOnly}
+                    placeholder="Internal identifier"
+                    aria-label="Unique name"
+                    onChange={(e) => handleUniqueNameChange(e.target.value)}
+                  />
+                  {!nameReadOnly && (
+                    <button
+                      type="button"
+                      className={styles['detail__unique-action']}
+                      onClick={() => setNameEditing(false)}
+                    >
+                      Done
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className={styles['detail__unique-row']}>
+                  <span className={styles['detail__unique-label']}>Unique name:</span>
+                  <span className={styles['detail__unique-value']}>
+                    {uniqueNamePreview || '—'}
+                  </span>
+                  {!nameReadOnly && (
+                    <button
+                      type="button"
+                      className={styles['detail__unique-action']}
+                      onClick={() => setNameEditing(true)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <p className={styles['detail__hint']}>
+                Unique name is the internal identifier for policies and integrations.
+                Display name is what admins and users see.
+              </p>
             </div>
           </div>
 
@@ -210,27 +317,18 @@ export default function SimplifiedDetailView({
           </div>
 
           {currentType !== 'Text' && (
-            <div className={styles['detail__row']}>
+            <div
+              className={[
+                styles['detail__row'],
+                isTreeType(currentType)
+                  ? styles['detail__row--tree-align']
+                  : styles['detail__row--chip-align'],
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
               <span className={styles['detail__key']}>Options</span>
               <div className={styles['detail__field']}>
-                {classificationLocked && (
-                  <>
-                    <p className={styles['detail__external']}>
-                      Presets and marking colors are configured on Classification
-                      Markings.
-                      <Button
-                        emphasis="Tertiary"
-                        size="Small"
-                        trailingIcon={
-                          <Icon size="12" glyph={<OpenInNewIcon />} />
-                        }
-                        onClick={() => onOpenMarkings?.(attribute.id)}
-                      >
-                        Open
-                      </Button>
-                    </p>
-                  </>
-                )}
                 <DefinitionValues
                   attribute={attribute}
                   attributes={attributes}
@@ -250,14 +348,25 @@ export default function SimplifiedDetailView({
                   onUnlinkValues={onUnlinkValues}
                   forceReadOnly={classificationLocked}
                   hideSourceActions={classificationLocked}
-                  linkedNoticeDescription={
-                    classificationLocked
-                      ? `Options mirror ${
-                          valueLink?.attributeName ?? 'Clearance'
-                        }. Labels and ranks stay in sync; edit nested markings and colors on Classification Markings.`
-                      : undefined
-                  }
                 />
+                {classificationLocked && (
+                  <div className={styles['detail__markings-footer']}>
+                    <p className={styles['detail__external']}>
+                      Presets and marking colors are configured on Classification
+                      Markings.
+                      <Button
+                        emphasis="Tertiary"
+                        size="Small"
+                        trailingIcon={
+                          <Icon size="12" glyph={<OpenInNewIcon />} />
+                        }
+                        onClick={() => onOpenMarkings?.(attribute.id)}
+                      >
+                        Open
+                      </Button>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

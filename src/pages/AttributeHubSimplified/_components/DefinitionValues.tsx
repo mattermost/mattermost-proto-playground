@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type MouseEvent } from 'react';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -20,9 +20,11 @@ import {
   type AttrValue,
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
-import MvpManagedSourceBar from '@/pages/AttributeHubMVP/_components/MvpManagedSourceBar';
+import MvpManagedSourceBar from '@/pages/AttributeHubMVPNext/_components/MvpManagedSourceBar';
 import ValueEditorPopover from './ValueEditorPopover';
+import Chip from '@/components/ui/Chip/Chip';
 import ColoredRankedInputChip from '@/components/ui/ColoredRankedInputChip/ColoredRankedInputChip';
+import RankedValueChip from '@/components/ui/RankedValueChip/RankedValueChip';
 import {
   canLinkValues,
   comparesRank,
@@ -34,6 +36,8 @@ import {
   type ValueLinkConfig,
 } from './simplifiedModel';
 import styles from './DefinitionValues.module.scss';
+
+const MVP_LINK_VALUES_ENABLED = false;
 
 export interface DefinitionValuesProps {
   attribute: HubAttribute;
@@ -64,7 +68,7 @@ export interface DefinitionValuesProps {
 function tierInPolicy(attribute: HubAttribute, value: AttrValue): boolean {
   if (attribute.usedByPolicies === 0) return false;
   // In this demo the two lowest-labelled protected tiers gate policies.
-  return value.id === 'protected-b' || value.id === 'cl-3' || value.tier === 3;
+  return value.id === 'confidential' || value.id === 'cl-3' || value.tier === 3;
 }
 
 function renderOptionChip(
@@ -83,18 +87,54 @@ function renderOptionChip(
 ) {
   const scheme = optionColorScheme(value.id);
   const rank = ranked && value.tier != null ? value.tier : undefined;
+  const interactive = editable && !value.disabled;
+  const openEditor = interactive
+    ? (e: MouseEvent<HTMLElement>) => onOpen(value, ranked, e.currentTarget)
+    : undefined;
+
+  if (ranked && scheme !== 'plain') {
+    return (
+      <ColoredRankedInputChip
+        label={value.label}
+        rank={rank}
+        scheme={scheme}
+        disabled={value.disabled}
+        active={active}
+        onClick={openEditor}
+      />
+    );
+  }
+
+  if (ranked) {
+    return (
+      <RankedValueChip
+        label={value.label}
+        rank={rank}
+        size="Medium"
+        active={active}
+        onClick={openEditor}
+      />
+    );
+  }
 
   return (
-    <ColoredRankedInputChip
-      label={value.label}
-      rank={rank}
-      scheme={scheme}
-      disabled={value.disabled}
-      active={active}
-      onClick={
-        editable ? (e) => onOpen(value, ranked, e.currentTarget) : undefined
+    <Chip
+      as={interactive ? 'button' : 'div'}
+      size="Medium"
+      tone="neutral"
+      onClick={openEditor}
+      disabled={interactive ? value.disabled : undefined}
+      className={
+        [
+          active && styles['values__option-chip--active'],
+          value.disabled && styles['values__option-chip--disabled'],
+        ]
+          .filter(Boolean)
+          .join(' ') || undefined
       }
-    />
+    >
+      {value.label}
+    </Chip>
   );
 }
 
@@ -331,7 +371,10 @@ export default function DefinitionValues({
   const showConnect =
     !hideSourceActions && !sourceOwned && type !== 'Text' && !linked;
   const showLink =
-    !hideSourceActions && canLinkValues(attribute) && !linked;
+    MVP_LINK_VALUES_ENABLED &&
+    !hideSourceActions &&
+    canLinkValues(attribute) &&
+    !linked;
   const sourceAttribute = valueLink
     ? attributes.find((item) => item.id === valueLink.attributeId)
     : undefined;
@@ -466,7 +509,7 @@ export default function DefinitionValues({
 
   return (
     <div className={styles['values']}>
-      {locked && !sourceOwned && !linked && (
+      {locked && !sourceOwned && !linked && !forceReadOnly && (
         <SectionNotice
           type="Info"
           icon={<Icon size="20" glyph={<LockOutlineIcon />} />}
