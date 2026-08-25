@@ -20,7 +20,7 @@ import {
   type AttrValue,
   type HubAttribute,
 } from '@/pages/AttributeManagementHub/hubData';
-import MvpManagedSourceBar from '@/pages/AttributeHubMVP/_components/MvpManagedSourceBar';
+import MvpManagedSourceBar from '@/pages/AttributeHubMVPNext/_components/MvpManagedSourceBar';
 import ValueEditorPopover from './ValueEditorPopover';
 import Chip from '@/components/ui/Chip/Chip';
 import ColoredRankedInputChip from '@/components/ui/ColoredRankedInputChip/ColoredRankedInputChip';

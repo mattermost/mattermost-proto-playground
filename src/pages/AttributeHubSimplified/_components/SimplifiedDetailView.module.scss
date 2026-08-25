@@ -28,10 +28,27 @@
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
-  /** Label aligns with Small Chip row (20px), not Medium inputs. */
+  /** Label aligns with the Display name input (40px). */
+  &__row--name > &__key {
+    padding-top: 0;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+  }
+
+  /** Label aligns with Medium Chip row (24px), not Medium inputs. */
   &__row--chip-align > &__key {
     padding-top: 0;
-    min-height: 20px;
+    min-height: calc(var(--spacing-xxxs) * 2 + var(--line-height-75));
+    display: flex;
+    align-items: center;
+  }
+
+  /** Tree types: align with the first tier/option row beneath the explainer. */
+  &__row--tree-align > &__key {
+    padding-top: 0;
+    margin-top: calc(var(--line-height-75) + var(--spacing-s) + var(--spacing-xs));
+    min-height: calc(var(--spacing-xxxs) * 2 + var(--line-height-75));
     display: flex;
     align-items: center;
   }
@@ -41,10 +58,74 @@
     flex-direction: column;
     gap: var(--spacing-xs);
     min-width: 0;
+
+    &--name {
+      gap: 0;
+    }
   }
 
   &__input {
     max-width: 360px;
+  }
+
+  &__display-input {
+    max-width: 360px;
+  }
+
+  &__unique-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: fit-content;
+    max-width: 360px;
+    min-height: 32px;
+    margin-top: var(--spacing-xxxxs);
+
+    &--editing {
+      width: fit-content;
+    }
+  }
+
+  &__unique-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    white-space: nowrap;
+  }
+
+  &__unique-value {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    white-space: nowrap;
+  }
+
+  &__unique-input {
+    width: auto;
+    min-width: 10rem;
+    max-width: 240px;
+  }
+
+  &__unique-action {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--link-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__hint {
+    margin: var(--spacing-xxxxs) 0 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    line-height: 1.4;
   }
 
   &__lock {

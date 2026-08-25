@@ -96,6 +96,29 @@ export function optionCountLabel(attribute: HubAttribute): string {
   return `${n} ${n === 1 ? 'option' : 'options'}`;
 }
 
+/** Catalog listing column: always "N options" except Text → "Free text". */
+export function catalogOptionCountLabel(attribute: HubAttribute): string {
+  const type = displayType(attribute);
+  if (type === 'Text') return 'Free text';
+
+  let n = 0;
+  if (isTreeType(type)) {
+    const walk = (values: AttrValue[]) => {
+      for (const value of values) {
+        n += 1;
+        if (value.children?.length) walk(value.children);
+      }
+    };
+    walk(attribute.values);
+  } else if (comparesRank(type)) {
+    n = attribute.values.filter((v) => v.tier != null).length;
+  } else {
+    n = attribute.values.length;
+  }
+
+  return `${n} ${n === 1 ? 'option' : 'options'}`;
+}
+
 // ── Rich option editor: color + external color + translations ──────────────
 //
 // Held in a scene-local side table keyed by value id so the baseline

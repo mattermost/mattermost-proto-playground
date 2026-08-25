@@ -176,8 +176,7 @@
   flex-direction: column;
   gap: var(--spacing-l);
 
-  // Percentage columns share leftover width evenly; handle/actions stay fixed
-  // for icon gutters (actions fits lock + menu when both show).
+  // Percentage columns share leftover width evenly; handle/actions stay fixed.
   --catalog-col-handle: 40px;
   --catalog-col-name: 18%;
   --catalog-col-type: 13%;
@@ -185,7 +184,16 @@
   --catalog-col-source: 14%;
   --catalog-col-values: 9%;
   --catalog-col-usage: 14%;
-  --catalog-col-actions: 88px;
+  --catalog-col-actions: 48px;
+
+  /** Usage hidden — redistribute its 14% share; source gets extra room for status pills. */
+  &--no-usage {
+    --catalog-col-name: 22%;
+    --catalog-col-type: 14%;
+    --catalog-col-applies: 18%;
+    --catalog-col-source: 24%;
+    --catalog-col-values: 10%;
+  }
 
   &__section {
     width: 100%;
@@ -327,6 +335,11 @@
 
   &__col-source {
     width: var(--catalog-col-source, auto);
+    min-width: 200px;
+  }
+
+  &__source-cell {
+    overflow: hidden;
   }
 
   &__col-count {
@@ -340,6 +353,7 @@
 
   &__col-actions {
     width: var(--catalog-col-actions, 88px);
+    max-width: var(--catalog-col-actions, 88px);
     padding-left: var(--spacing-xs) !important;
     padding-right: var(--spacing-s) !important;
   }
@@ -372,6 +386,48 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
+  &__source {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &__source-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-weight: var(--font-weight-regular);
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+
+  &__source-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__source--with-status &__source-label {
+    flex: 0 0 auto;
+  }
+
+  &__source--with-status &__source-text {
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  &__source-status {
+    flex-shrink: 0;
+  }
+
   &__chips {
     display: flex;
     flex-wrap: wrap;
@@ -391,43 +447,19 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  &__lock-hint {
-    position: relative;
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-  }
-
-  &__lock {
-    // Match IconButton Small outer box so lock and ⋮ share the same edge.
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-sizing: border-box;
-    width: 32px;
-    height: 32px;
-    padding: var(--spacing-xs);
-    border: 1px solid transparent;
-    border-radius: var(--radius-s);
-    color: rgba(var(--center-channel-color-rgb), 0.48);
-  }
-
   &__actions {
     width: var(--catalog-col-actions, 88px);
+    max-width: var(--catalog-col-actions, 88px);
     padding-left: var(--spacing-xs) !important;
     padding-right: var(--spacing-s) !important;
+    text-align: right;
+    white-space: nowrap;
     vertical-align: middle;
   }
 
   &__actions-row {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-end;
-    width: 100%;
     gap: var(--spacing-xs);
   }
 

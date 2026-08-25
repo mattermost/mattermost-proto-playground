@@ -85,10 +85,15 @@ function subtitle(a: HubAttribute): string {
   return parts.join(' · ');
 }
 
+function attributeLabel(a: HubAttribute): string {
+  return a.displayName?.trim() || a.name.trim() || 'Untitled attribute';
+}
+
 function blankAttribute(): HubAttribute {
   return {
     id: newAttributeId(),
     name: '',
+    displayName: '',
     type: 'Select',
     description: '',
     values: [],
@@ -102,9 +107,11 @@ function blankAttribute(): HubAttribute {
 }
 
 function normalizeAttribute(a: HubAttribute): HubAttribute {
+  const displayName = a.displayName?.trim();
   return {
     ...a,
     name: a.name.trim(),
+    displayName: displayName === '' ? undefined : displayName,
   };
 }
 
@@ -195,13 +202,14 @@ export default function AttributeHubSimplified({
   const [markingsId, setMarkingsId] = useState<string | null>(() =>
     params.get('markings'),
   );
+  const [markingsDirty, setMarkingsDirty] = useState(false);
 
-  const nameRef = useRef<HTMLInputElement | null>(null);
+  const displayNameRef = useRef<HTMLInputElement | null>(null);
   const creating = draft !== null && selectedId === null;
 
-  // Auto-focus Name on create-mode open.
+  // Auto-focus display name on create-mode open.
   useEffect(() => {
-    if (creating) nameRef.current?.focus();
+    if (creating) displayNameRef.current?.focus();
   }, [creating]);
 
   // Keep shareable deep links in sync: ?attr=<id>, ?markings=<id>, ?flow=new.
@@ -236,7 +244,9 @@ export default function AttributeHubSimplified({
   const dirty =
     draft != null && snapshotAttribute(draft) !== savedSnapshot;
   const saveEnabled =
-    draft != null && draft.name.trim().length > 0 && !!draft.type;
+    draft != null &&
+    (draft.displayName?.trim().length ?? 0) + draft.name.trim().length > 0 &&
+    !!draft.type;
 
   const editors: Editors = active
     ? editorsById[active.id] ?? editorsFor(active)
@@ -271,6 +281,12 @@ export default function AttributeHubSimplified({
 
   // ── Mutation on the working draft only (Save commits to the catalog) ──────
   const mutate = (fn: (a: HubAttribute) => HubAttribute) => {
+    if (markingsId) {
+      setAttributes((attrs) =>
+        attrs.map((a) => (a.id === markingsId ? fn(structuredClone(a)) : a)),
+      );
+      return;
+    }
     setDraft((current) => (current ? fn(current) : current));
   };
 
@@ -643,7 +659,13 @@ export default function AttributeHubSimplified({
   };
 
   const openMarkings = (id: string) => {
+    if (draft?.id === id) {
+      setAttributes((attrs) =>
+        attrs.map((a) => (a.id === id ? structuredClone(draft) : a)),
+      );
+    }
     setMarkingsId(id);
+    setMarkingsDirty(false);
     setDraft(null);
     setSavedSnapshot('');
     // Keep selectedId so Back returns to the Classification detail.
@@ -653,6 +675,7 @@ export default function AttributeHubSimplified({
   const closeMarkings = () => {
     const returnId = markingsId ?? selectedId;
     setMarkingsId(null);
+    setMarkingsDirty(false);
     if (!returnId) return;
     const attr = attributes.find((a) => a.id === returnId);
     if (!attr) {
@@ -722,6 +745,12 @@ export default function AttributeHubSimplified({
     setSavedSnapshot('');
   };
 
+  const handleMarkingsSave = () => {
+    if (!markingsDirty) return;
+    setMarkingsDirty(false);
+    closeMarkings();
+  };
+
   const openDelete = (id: string) => {
     const a = attributes.find((x) => x.id === id);
     if (!a) return;
@@ -767,7 +796,7 @@ export default function AttributeHubSimplified({
               : creating
                 ? 'New attribute'
                 : draft
-                  ? draft.name || 'Untitled attribute'
+                  ? attributeLabel(draft)
                   : 'Manage Attributes'
           }
           subtitle={
@@ -806,9 +835,17 @@ export default function AttributeHubSimplified({
             <div className={styles['console__content']}>
               {markingsAttr ? (
                 <ClassificationMarkingsPage
+                  attribute={markingsAttr}
                   clearanceAttributes={clearanceAttributes}
-                  onCancel={closeMarkings}
-                  onSave={closeMarkings}
+                  onBindingChange={bindingChange}
+                  onAddResourceValue={addResourceValue}
+                  onReadIntoFilteringChange={readIntoFilteringChange}
+                  onAddResource={addResource}
+                  onRemoveResource={removeResource}
+                  appliesToRowSummary={appliesToRowSummary}
+                  channelAlignment={channelAlignment}
+                  perResourceEditability={perResourceEditability}
+                  onDirtyChange={setMarkingsDirty}
                 />
               ) : draft ? (
                 <SimplifiedDetailView
@@ -839,8 +876,8 @@ export default function AttributeHubSimplified({
                   onLinkValues={() => setLinkValuesOpen(true)}
                   onEditLink={() => setLinkValuesOpen(true)}
                   onUnlinkValues={openUnlinkGate}
-                  nameRef={(el) => {
-                    nameRef.current = el;
+                  displayNameRef={(el) => {
+                    displayNameRef.current = el;
                   }}
                   appliesToRowSummary={appliesToRowSummary}
                   channelAlignment={channelAlignment}
@@ -862,17 +899,18 @@ export default function AttributeHubSimplified({
                   onOpenDetail={openDetail}
                   onReorderAttributes={reorderAttributes}
                   onDelete={openDelete}
+                  showUsageColumn={false}
                 />
               )}
             </div>
           </Scrollbars>
         </div>
-        {draft && !markingsAttr && (
+        {(draft || markingsAttr) && (
           <AdminPanelFooter
-            saveLabel={creating ? 'Create attribute' : 'Save'}
-            saveDisabled={!dirty || !saveEnabled}
-            onSave={handleSave}
-            onCancel={handleCancel}
+            saveLabel={creating && !markingsAttr ? 'Create attribute' : 'Save'}
+            saveDisabled={markingsAttr ? !markingsDirty : !dirty || !saveEnabled}
+            onSave={markingsAttr ? handleMarkingsSave : handleSave}
+            onCancel={markingsAttr ? closeMarkings : handleCancel}
           />
         )}
       </div>

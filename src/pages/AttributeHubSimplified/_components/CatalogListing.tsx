@@ -2,10 +2,11 @@ import { useCallback, useMemo, useRef, useState, type DragEvent } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import DragVerticalIcon from '@mattermost/compass-icons/components/drag-vertical';
-import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
+import SyncIcon from '@mattermost/compass-icons/components/sync';
+import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import Button from '@/components/ui/Button/Button';
 import IconButton from '@/components/ui/IconButton/IconButton';
@@ -20,18 +21,24 @@ import PopoverMenu, {
   PopoverMenuDivider,
 } from '@/components/ui/PopoverMenu/PopoverMenu';
 import MenuItem from '@/components/ui/MenuItem/MenuItem';
-import InfoHint from '@/pages/AttributeManagementHub/_components/InfoHint/InfoHint';
-import SyncPill from '@/pages/AttributeManagementHub/_components/SyncPill/SyncPill';
+import MvpAttrTypeLabel from '@/pages/AttributeHubMVPNext/_components/MvpAttrTypeLabel';
+import MvpPluginStatusPill from '@/pages/AttributeHubMVPNext/_components/MvpPluginStatusPill';
+import {
+  isCoreSyncSource,
+  managedSourceListingLabel,
+  mvpManualSourceOwnershipLabel,
+  pluginStatus,
+} from '@/pages/AttributeHubMVPNext/_components/mvpTerms';
 import {
   ALL_RESOURCES,
   SOURCE_FILTERS,
   isPolicyLocked,
   isSourceOwned,
   policyLabel,
-  valueCountLabel,
   type HubAttribute,
   type ResourceKind,
 } from '@/pages/AttributeManagementHub/hubData';
+import { catalogOptionCountLabel, displayType } from './simplifiedModel';
 import ResourceSettingsMenuContent from './ResourceSettingsMenuContent';
 import styles from './CatalogListing.module.scss';
 
@@ -223,7 +230,6 @@ export default function CatalogListing({
     const scopeLocked = isScopeLocked?.(a) ?? false;
     const systemBadge = showSystemBadge?.(a) ?? false;
     const hideDragHandle = scopeLocked || systemBadge;
-    const showLock = policyLocked || scopeLocked;
     const rowLocked =
       scopeLocked || (policyLockedNoNavigate && policyLocked);
     const isDragging = dragId === a.id;
@@ -304,7 +310,11 @@ export default function CatalogListing({
           </div>
         </td>
         <td>
-          <span className={styles['table__type']}>{a.type}</span>
+          <MvpAttrTypeLabel
+            type={a.type}
+            label={displayType(a) !== a.type ? displayType(a) : undefined}
+            className={styles['table__type']}
+          />
         </td>
         <td>
           <div className={styles['table__chips']}>
@@ -318,17 +328,51 @@ export default function CatalogListing({
           </div>
         </td>
         {showSourceColumn && (
-          <td>
+          <td className={styles['table__source-cell']}>
             {synced && a.source.state ? (
-              <SyncPill state={a.source.state} system={a.source.system} />
+              <div
+                className={[
+                  styles['table__source'],
+                  pluginStatus(a) === 'disconnected'
+                    ? styles['table__source--with-status']
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                <span className={styles['table__source-label']}>
+                  <Icon
+                    size="16"
+                    glyph={
+                      isCoreSyncSource(a) ? (
+                        <SyncIcon />
+                      ) : (
+                        <PowerPlugOutlineIcon />
+                      )
+                    }
+                  />
+                  <span className={styles['table__source-text']}>
+                    {managedSourceListingLabel(a)}
+                  </span>
+                </span>
+                {pluginStatus(a) === 'disconnected' && (
+                  <span className={styles['table__source-status']}>
+                    <MvpPluginStatusPill status="disconnected" />
+                  </span>
+                )}
+              </div>
             ) : (
-              <span className={styles['table__muted']}>Managed here</span>
+              <span className={styles['table__source-label']}>
+                <span className={styles['table__source-text']}>
+                  {mvpManualSourceOwnershipLabel(a)}
+                </span>
+              </span>
             )}
           </td>
         )}
         <td className={styles['table__col-count']}>
           <span className={styles['table__count']}>
-            {valueCountLabel(a)}
+            {catalogOptionCountLabel(a)}
           </span>
         </td>
         {showUsageColumn && (
@@ -347,21 +391,6 @@ export default function CatalogListing({
           onClick={(e) => e.stopPropagation()}
         >
           <div className={styles['table__actions-row']}>
-            {showLock && (
-              <InfoHint
-                className={styles['table__lock-hint']}
-                label={
-                  scopeLocked
-                    ? 'Locked — system attribute'
-                    : `Locked — ${policyLabel(a.usedByPolicies).toLowerCase()}`
-                }
-                arrow="Right"
-              >
-                <span className={styles['table__lock']}>
-                  <Icon size="16" glyph={<LockOutlineIcon />} />
-                </span>
-              </InfoHint>
-            )}
             {!rowLocked && (
               <div
                 className={styles['table__menu-wrap']}
@@ -495,7 +524,12 @@ export default function CatalogListing({
         </div>
       ) : (
         <div
-          className={styles['table']}
+          className={[
+            styles['table'],
+            !showUsageColumn ? styles['table--no-usage'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
         >
           {sectionRows.map((section) => (
             <div key={section.label ?? 'all'} className={styles['table__section']}>
@@ -513,7 +547,7 @@ export default function CatalogListing({
                     {showSourceColumn && (
                       <th className={styles['table__col-source']}>Source</th>
                     )}
-                    <th className={styles['table__col-count']}>Values</th>
+                    <th className={styles['table__col-count']}>Options</th>
                     {showUsageColumn && (
                       <th className={styles['table__col-usage']}>Usage</th>
                     )}
