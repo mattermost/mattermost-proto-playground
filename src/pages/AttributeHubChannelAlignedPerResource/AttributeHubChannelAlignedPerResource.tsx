@@ -1,3 +1,4 @@
+import { useSearchParams } from 'react-router-dom';
 import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubSimplified';
 import ChannelConfigurationPage from './ChannelConfigurationPage';
 
@@ -8,10 +9,7 @@ import ChannelConfigurationPage from './ChannelConfigurationPage';
  * version needed, so the copy shortens to a self-describing option list.
  */
 export default function AttributeHubChannelAlignedPerResource() {
-  const params =
-    typeof window === 'undefined'
-      ? new URLSearchParams()
-      : new URLSearchParams(window.location.search);
+  const [params] = useSearchParams();
   const screen = params.get('screen');
 
   if (screen === 'channel-settings') {
@@ -20,7 +18,7 @@ export default function AttributeHubChannelAlignedPerResource() {
         channelName={params.get('channel') ?? 'off-topic'}
         adminName={params.get('admin') ?? 'Channel admin'}
         onBack={() => {
-          const next = new URLSearchParams(window.location.search);
+          const next = new URLSearchParams(params);
           next.delete('screen');
           next.delete('channel');
           next.delete('admin');

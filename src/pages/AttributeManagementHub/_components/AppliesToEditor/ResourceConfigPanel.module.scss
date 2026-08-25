@@ -51,6 +51,27 @@
     margin-top: var(--spacing-s);
   }
 
+  &__hint {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: 1.4;
+  }
+
+  &__hint-option {
+    display: block;
+
+    &--active {
+      color: var(--center-channel-color);
+    }
+
+    &--inactive {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+
   // Explicit two-column row — avoid display:contents (misaligns controls).
   &--simplified {
     grid-template-columns: 220px minmax(0, 1fr);
@@ -106,6 +127,18 @@
       font-size: var(--font-size-75);
       color: rgba(var(--center-channel-color-rgb), 0.72);
       line-height: 1.4;
+    }
+
+    .field__hint-option {
+      display: block;
+
+      &--active {
+        color: var(--center-channel-color);
+      }
+
+      &--inactive {
+        color: rgba(var(--center-channel-color-rgb), 0.56);
+      }
     }
 
     .field__notice {

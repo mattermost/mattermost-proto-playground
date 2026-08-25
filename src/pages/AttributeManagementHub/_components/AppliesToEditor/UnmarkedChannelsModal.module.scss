@@ -67,7 +67,36 @@
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
+  }
+
+  &__channel-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    color: var(--link-color);
     font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__channel-link-icon {
+    flex-shrink: 0;
+    opacity: 0.72;
+    transition: opacity var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__channel-link:hover &__channel-link-icon,
+  &__channel-link:focus-visible &__channel-link-icon {
+    opacity: 1;
+  }
+
+  &__channel-link-tooltip {
+    position: fixed;
+    transform: translateX(-50%);
+    pointer-events: none;
   }
 
   &__badge {
@@ -85,14 +114,6 @@
     font-style: italic;
   }
 
-  &__link {
-    color: var(--link-color);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 @keyframes unmarked-fade {

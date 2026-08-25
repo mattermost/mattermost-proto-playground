@@ -50,8 +50,9 @@ export default function NotifyChannelAdminsModal({
         <Modal
           size="Medium"
           title="Notify all channel admins?"
-          subtitle={`Sends a message to ${adminLabel} across ${channelLabel}`}
           onClose={onClose}
+          headerDivider={false}
+          footerDivider={false}
           footer={
             <div className={styles['notify__footer']}>
               <Button emphasis="Tertiary" onClick={onClose}>
@@ -68,30 +69,32 @@ export default function NotifyChannelAdminsModal({
           }
         >
           <div className={styles['notify__body']}>
-            <div className={styles['notify__summary']}>
-              <p>
-                {channelCount.toLocaleString()}{' '}
-                {channelCount === 1 ? 'channel needs' : 'channels need'} a{' '}
-                {attributeName} value. Notifications go to each unique channel
-                admin — not one message per channel — so {adminLabel} will be
-                contacted for {channelLabel}.
-              </p>
+            <p className={styles['notify__lead']}>
+              {channelCount.toLocaleString()}{' '}
+              {channelCount === 1 ? 'channel needs' : 'channels need'} a{' '}
+              {attributeName} value.
+            </p>
+            <ul className={styles['notify__summary']}>
+              <li>
+                Notifications go to each unique channel admin — not one message
+                per channel — so {adminLabel} will be contacted for{' '}
+                {channelLabel}.
+              </li>
               {archivedCount > 0 && (
-                <p>
+                <li>
                   Includes {archivedCount.toLocaleString()} archived{' '}
                   {archivedCount === 1 ? 'channel' : 'channels'}. Required also
                   applies to archived channels.
-                </p>
+                </li>
               )}
               {withoutAdmin.length > 0 && (
-                <p>
+                <li>
                   {withoutAdmin.length.toLocaleString()}{' '}
-                  {withoutAdmin.length === 1 ? 'channel has' : 'channels have'} no
-                  channel admin and won’t be notified:{' '}
-                  {withoutAdmin.map((channel) => channel.name).join(', ')}.
-                </p>
+                  {withoutAdmin.length === 1 ? 'channel has' : 'channels have'}{' '}
+                  no channel admin and won’t be notified.
+                </li>
               )}
-            </div>
+            </ul>
 
             <div className={styles['notify__message']}>
               <span className={styles['notify__message-label']}>

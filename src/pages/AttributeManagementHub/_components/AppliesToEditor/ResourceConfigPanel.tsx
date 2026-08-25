@@ -96,6 +96,45 @@ interface FieldProps {
   footer?: ReactNode;
 }
 
+function RequiredStateHint({
+  required,
+  enabledText,
+  disabledText,
+}: {
+  required: boolean;
+  enabledText: string;
+  disabledText: string;
+}) {
+  return (
+    <>
+      <span
+        className={[
+          styles['field__hint-option'],
+          required
+            ? styles['field__hint-option--active']
+            : styles['field__hint-option--inactive'],
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        If enabled, {enabledText}
+      </span>
+      <span
+        className={[
+          styles['field__hint-option'],
+          !required
+            ? styles['field__hint-option--active']
+            : styles['field__hint-option--inactive'],
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        If disabled, {disabledText}
+      </span>
+    </>
+  );
+}
+
 function Field({ label, hint, children, layout = 'default', focusId, footer }: FieldProps) {
   if (layout === 'simplified') {
     return (
@@ -437,23 +476,39 @@ export default function ResourceConfigPanel({
   // Keep Required → Default together on Channels/Posts.
   const groupRequiredWithDefault = isChannels || isPosts;
 
-  const requiredHint = channelScope
-    ? isChannels
-      ? config.required
-        ? 'A value must be set on this channel.'
-        : 'Optional — this attribute can still be added to this channel later.'
-      : config.required
-        ? 'A value must be chosen when a new post is created in this channel. Existing posts are not changed.'
-        : 'Optional — this attribute can still be added to a post after it is created.'
-    : isChannels
-      ? config.required
-        ? 'A value must be chosen when a channel is created.'
-        : 'Optional — this attribute can still be added to a channel after it is created.'
-      : isPosts
-        ? config.required
-          ? 'A value must be chosen when a new post is created. Existing posts are not changed.'
-          : 'Optional — this attribute can still be added to a post after it is created.'
-        : 'The resource must have a value before it can be created or saved.';
+  const requiredHint = channelScope ? (
+    isChannels ? (
+      <RequiredStateHint
+        required={config.required}
+        enabledText="this attribute will be required on this channel."
+        disabledText="it can be added to this channel optionally later."
+      />
+    ) : (
+      <RequiredStateHint
+        required={config.required}
+        enabledText="this attribute will be required when a new post is created in this channel. Existing posts are not changed."
+        disabledText="it can be added to a post in this channel optionally after it is created."
+      />
+    )
+  ) : isChannels ? (
+    <RequiredStateHint
+      required={config.required}
+      enabledText="this attribute will be required on all channels and at the time of channel creation."
+      disabledText="it can be added to a channel optionally after it is created."
+    />
+  ) : isPosts ? (
+    <RequiredStateHint
+      required={config.required}
+      enabledText="this attribute will be required on all new posts. Existing posts are not changed."
+      disabledText="it can be added to a post optionally after it is created."
+    />
+  ) : (
+    <RequiredStateHint
+      required={config.required}
+      enabledText="this attribute will be required before the resource can be created or saved."
+      disabledText="it can be added to the resource optionally later."
+    />
+  );
 
   const attributeLabel = attribute.displayName?.trim() || attribute.name;
   const blockedChannels =
@@ -471,7 +526,7 @@ export default function ResourceConfigPanel({
           title={
             adminsPrompted
               ? 'Channel admins notified'
-              : 'Set channel values first'
+              : 'Set channel attribute values'
           }
           description={
             adminsPrompted

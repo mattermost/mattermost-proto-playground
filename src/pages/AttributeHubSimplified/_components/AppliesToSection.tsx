@@ -59,18 +59,26 @@ export default function AppliesToSection({
 
   // Required channel/post bindings open by default so Required + default
   // are visible without an extra click (e.g. Classification → Channels).
+  // Channel-aligned hub always opens Channels first — Posts may be Required
+  // but Channels is the primary surface in that prototype.
   useEffect(() => {
     const next: Record<string, boolean> = {};
     for (const cfg of attribute.appliesTo) {
-      if (
-        cfg.required &&
-        (cfg.resource === 'Channels' || cfg.resource === 'Posts')
-      ) {
+      if (cfg.resource !== 'Channels' && cfg.resource !== 'Posts') {
+        continue;
+      }
+      if (channelAlignment) {
+        if (cfg.resource === 'Channels') {
+          next[cfg.resource] = true;
+        }
+        continue;
+      }
+      if (cfg.required) {
         next[cfg.resource] = true;
       }
     }
     setExpanded(next);
-  }, [attribute.id]);
+  }, [attribute.id, channelAlignment]);
 
   const toggle = (resource: ResourceKind) =>
     setExpanded((current) => ({ ...current, [resource]: !current[resource] }));
