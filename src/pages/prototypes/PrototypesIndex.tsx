@@ -11,16 +11,7 @@ export default function PrototypesIndex() {
       <PageHero
         breadcrumb="Internal catalog"
         title="Prototypes"
-        description={
-          <>
-            Multi-scene Compass flow prototypes for design exploration and review. Component
-            guidelines and Storybook live in the{' '}
-            <a href={COMPASS_DESIGN_URL} target="_blank" rel="noreferrer">
-              Compass design system
-            </a>
-            .
-          </>
-        }
+        description="Multi-scene Compass flow prototypes for design exploration and review."
       />
 
       <div className={styles['prototypes-index__body']}>
