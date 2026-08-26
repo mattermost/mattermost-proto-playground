@@ -29,7 +29,7 @@ export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
     <div className={styles['top-nav']}>
       <NavLink to="/prototypes" className={styles['top-nav__logo']} aria-label="Prototype catalog home">
         <MattermostIcon size={28} />
-        <span className={styles['top-nav__wordmark']}>Compass Prototypes</span>
+        <span className={styles['top-nav__wordmark']}>Proto Playground</span>
       </NavLink>
 
       <nav className={styles['top-nav__items']} aria-label="Primary">
