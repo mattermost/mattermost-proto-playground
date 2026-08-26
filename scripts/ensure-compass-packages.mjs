@@ -112,10 +112,39 @@ for (const pkg of packages) {
   }
 
   const workspaceLink = path.join(root, `node_modules/@mattermost/${pkg.name}`);
-  if (!fs.existsSync(workspaceLink)) {
+  let linkExists = false;
+  try {
+    fs.statSync(workspaceLink);
+    linkExists = true;
+  } catch {
+    linkExists = false;
+  }
+
+  if (!linkExists) {
+    const expectedFileDep = path.resolve(
+      root,
+      `../compass-design/packages/${pkg.name}`,
+    );
+    const broken =
+      fs.existsSync(workspaceLink) ||
+      (() => {
+        try {
+          fs.lstatSync(workspaceLink);
+          return true;
+        } catch {
+          return false;
+        }
+      })();
+
     console.error(
-      `[${pkg.name}] node_modules link missing.\n` +
-        '  Run npm install from the playground repo root.',
+      `[${pkg.name}] ${broken ? 'node_modules link is broken' : 'node_modules link missing'}.\n` +
+        '  Expected sibling layout:\n' +
+        '    parent/\n' +
+        '      compass-design/\n' +
+        '      mattermost-proto-playground/   ← run npm install here\n' +
+        `  Package path: ${expectedFileDep}\n` +
+        (fs.existsSync(expectedFileDep) ? '' : '  (that path does not exist yet)\n') +
+        '  Then: rm -rf node_modules && npm install && npm run dev',
     );
     process.exit(1);
   }

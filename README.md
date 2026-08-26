@@ -11,21 +11,30 @@ Internal catalog of multi-scene Compass UI prototypes. Component source, guideli
 ## Prerequisites
 
 - Node.js 24.x and npm 11.x (see `.nvmrc`)
-- A local clone of [`mattermost/compass-design`](https://github.com/mattermost/compass-design)
+- A local clone of [`mattermost/compass-design`](https://github.com/mattermost/compass-design) as a **sibling** of this repo
 
 ## Setup
 
-Clone both repositories. The playground expects `compass-design` at `./compass-design` (CI uses the same layout). For a side-by-side layout, clone into `./compass-design` or symlink:
+Clone both repositories side by side (required by the `file:../compass-design` dependencies):
 
 ```bash
+# parent folder, e.g. ~/Documents/GitHub/mattermost/
 git clone https://github.com/mattermost/mattermost-proto-playground.git
+git clone https://github.com/mattermost/compass-design.git
 cd mattermost-proto-playground
-git clone https://github.com/mattermost/compass-design.git compass-design
 npm install
 npm run dev
 ```
 
-Override the design repo location with `COMPASS_DESIGN_PATH` if needed.
+Layout:
+
+```text
+mattermost/
+  compass-design/
+  mattermost-proto-playground/
+```
+
+If compass-design lives elsewhere, symlink it to `../compass-design` from this repo, or set `COMPASS_DESIGN_PATH` for the ensure script (npm still needs a `file:` path that resolves — prefer a sibling symlink).
 
 Open the URL shown in the terminal. The catalog index is at `/prototypes`.
 
@@ -39,7 +48,7 @@ Use [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototy
 
 ## Dependencies
 
-This repo consumes Compass packages from `compass-design` via `file:` paths:
+This repo consumes Compass packages from the sibling `compass-design` repo via `file:` paths:
 
 - `@mattermost/compass-ui` — published core (tokens, primitives, web chrome)
 - `@mattermost/compass-proto` — unpublished prototyping composites (Mobile*, Call*, `ChannelShell`, fixtures)
