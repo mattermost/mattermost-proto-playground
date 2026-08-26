@@ -3,8 +3,6 @@ import { PROTOTYPES } from '@/manifests/prototypes';
 import PageHero from '@/components/layout/PageHero/PageHero';
 import styles from './PrototypesIndex.module.scss';
 
-const COMPASS_DESIGN_URL = 'https://mattermost.github.io/compass-design/';
-
 export default function PrototypesIndex() {
   return (
     <div className={styles['prototypes-index']}>
