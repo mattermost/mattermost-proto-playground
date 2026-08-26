@@ -1,17 +1,21 @@
 import { defineConfig, type Plugin, type ViteDevServer } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
-import mdx from '@mdx-js/rollup';
-import remarkGfm from 'remark-gfm';
-import rehypeSlug from 'rehype-slug';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import path from 'path';
+import { createRequire } from 'node:module';
 import { ensureCompassUiStyles } from './vite-plugin-ensure-compass-ui-styles';
 
-const compassUiDist = path.resolve(__dirname, 'packages/compass-ui/dist');
-const compassProtoDist = path.resolve(__dirname, 'packages/compass-proto/dist');
+const require = createRequire(import.meta.url);
 
-function compassUiDistReload(): Plugin {
+function resolvePackageDist(packageName: string): string {
+  const entryPath = require.resolve(packageName);
+  return path.dirname(entryPath);
+}
+
+const compassUiDist = resolvePackageDist('@mattermost/compass-ui');
+const compassProtoDist = resolvePackageDist('@mattermost/compass-proto');
+
+function compassPackageDistReload(): Plugin {
   let reloadTimer: ReturnType<typeof setTimeout> | undefined;
 
   const scheduleReload = (server: ViteDevServer) => {
@@ -22,7 +26,7 @@ function compassUiDistReload(): Plugin {
   };
 
   return {
-    name: 'compass-ui-dist-reload',
+    name: 'compass-package-dist-reload',
     configureServer(server) {
       server.watcher.add(compassUiDist);
       server.watcher.add(compassProtoDist);
@@ -41,25 +45,8 @@ function compassUiDistReload(): Plugin {
 }
 
 export default defineConfig({
-  // Vercel serves at the domain root; GitHub Pages serves under the repo path.
-  base: process.env.VERCEL ? '/' : '/mattermost-proto-playground/',
-  plugins: [
-    {
-      enforce: 'pre',
-      ...mdx({
-        providerImportSource: '@mdx-js/react',
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [
-          rehypeSlug,
-          [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-        ],
-      }),
-    },
-    react({ include: /\.(jsx|js|mdx|md|tsx|ts)$/ }),
-    svgr(),
-    ensureCompassUiStyles(),
-    compassUiDistReload(),
-  ],
+  base: '/',
+  plugins: [react(), svgr(), ensureCompassUiStyles(), compassPackageDistReload()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -74,14 +61,5 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['@mattermost/compass-ui', '@mattermost/compass-proto'],
-  },
-  server: {
-    watch: {
-      // Rebuilds land in dist/; ignore source saves so the app reloads after the library build finishes.
-      ignored: [
-        '**/packages/compass-ui/src/**',
-        '**/packages/compass-proto/src/**',
-      ],
-    },
   },
 });

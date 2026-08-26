@@ -1,3 +1,13 @@
+.prototypes-index {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-l) var(--spacing-xxxxxl);
+}
+
+.prototypes-index__body {
+  margin-top: var(--spacing-xl);
+}
+
 .prototypes-index__list {
   list-style: none;
   padding: 0;
