@@ -4,6 +4,7 @@ import ExternalCallParticipants from '@/pages/prototypes/external-call-participa
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 import PostAttributesChannelSettings from '@/pages/PostAttributesChannelSettings/PostAttributesChannelSettings';
+import ChannelAttributesChannelView from '@/pages/ChannelAttributesChannelView/ChannelAttributesChannelView';
 import SimulateAccess from '@/pages/SimulateAccess/SimulateAccess';
 import PBEFinalDesignV2 from '@/pages/PBEFinalDesignV2/PBEFinalDesignV2';
 import MaskingNoticeOptions from '@/pages/MaskingNoticeOptions/MaskingNoticeOptions';
@@ -257,6 +258,7 @@ const INITIATIVE_OF: Record<string, Initiative> = {
   'attribute-hub-simplified': 'attribute-management',
   'attribute-hub-simplified-inline-summary': 'attribute-management',
   'post-attributes-channel-settings': 'attribute-management',
+  'channel-attributes-channel-view': 'attribute-management',
   'attribute-hub-channel-aligned': 'attribute-management',
   'attribute-hub-channel-aligned-per-resource': 'attribute-management',
   'attribute-deletion-rename-decisions': 'attribute-management',
@@ -389,6 +391,7 @@ export const BRANCH_FOCUS_PROTOTYPE_IDS = new Set<string>([
   'attribute-hub-channel-aligned-per-resource',
   'post-attributes-channel-settings',
   'attribute-deletion-rename-decisions',
+  'channel-attributes-channel-view',
 ]);
 
 export const PROTOTYPES: PrototypeEntry[] = [
@@ -626,6 +629,17 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Focused post-attributes MVP: Channel settings catalog to create attributes for this channel and posts; Channel · thread with RHS post attributes (inherited, overridden, locked) and + Add attribute / composer Create new opening Channel settings on the new-attribute flow with Posts pre-selected. Deep-links: ?view=channel|channel-thread|attrs-modal, ?tab=attributes, ?attr=<id>, ?flow=new, ?applies=Posts|Channels|Posts,Channels.',
     addedAt: '2026-08-04',
     isPrimary: true,
+    collections: ['attribute-management'],
+  },
+  {
+    id: 'channel-attributes-channel-view',
+    label: 'Channel Attributes · Channel view',
+    path: '/prototypes/channel-attributes-channel-view',
+    component: ChannelAttributesChannelView,
+    group: 'zero-trust-abac',
+    description:
+      'Channel view with system attribute chips in the header (Classification, Program, Caveat, Engagement tempo) and configurable banners — global (workspace), channel, and reply (thread RHS). Prototype controls at the top toggle each banner and switch between Info and Thread RHS. Matches Figma Channel Attributes — System Attributes (4863:33132).',
+    addedAt: '2026-08-26',
     collections: ['attribute-management'],
   },
   {

@@ -15,7 +15,9 @@ import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import shellStyles from '@/components/ui/ChannelShell/ChannelShell.module.scss';
 import ChannelInfoSidebar from './ChannelInfoSidebar';
 import ChannelHeaderAttributeChips from './ChannelHeaderAttributeChips';
+import PostHeaderAttributeChips from './PostHeaderAttributeChips';
 import ChannelClassificationBanner from './ChannelClassificationBanner';
+import ChannelAttributeHeaderStack from './ChannelAttributeHeaderStack';
 import PostAttributesThreadSidebar from './PostAttributesThreadSidebar';
 import CreateChannelSidebar, {
   type SidebarChannelItem,
@@ -29,7 +31,7 @@ import {
   addCustomAttributeToChannel,
   addCustomAttributeValueOnChannel,
   channelClassificationBanner,
-  channelScopedAttributes,
+  channelClassificationBannerForced,
   channelValueLabel,
   removeAttributeFromChannel,
   removeCustomAttributeFromChannel,
@@ -48,18 +50,39 @@ import {
   classificationLabel,
   removeAttributeFromPost,
   removeCustomAttributeFromPost,
+  postClassificationBanner,
+  postScopedAttributes,
   updateCustomAttributeOnPost,
   type ThreadDemoPost,
 } from './postViewData';
 import threadStyles from './ChannelThreadView.module.scss';
 
+export interface BannerVisibility {
+  channel: boolean;
+  reply: boolean;
+}
+
 export interface ChannelAttributesViewProps {
   readOnly?: boolean;
+  /** Open the channel Info RHS on first render (channel attributes panel). */
+  initialInfoSidebarOpen?: boolean;
+  /** Open the thread RHS on first render (reply attributes). */
+  initialThreadOpen?: boolean;
+  initialSelectedPostId?: string;
+  initialChannelSeed?: ChannelDemoState;
+  initialLeonardPost?: ThreadDemoPost;
+  bannerVisibility?: BannerVisibility;
+  /** Show channel header description text inline in the title row. */
+  showChannelHeaderText?: boolean;
+  /** Workspace classification band at the top of the shell frame. */
+  globalBanner?: ReactNode;
   onCreateAttribute?: () => void;
   onEditAttribute?: (attributeId: string) => void;
 }
 
 const ALPHA_CHANNEL_ID = 'alpha-coordination';
+
+const CHANNEL_HEADER_DESCRIPTION = 'This is a channel header';
 
 const EMPTY_CHANNEL_STATE: ChannelDemoState = {
   attributes: [],
@@ -204,12 +227,24 @@ function ClickableThreadPost({
 
 export default function ChannelAttributesView({
   readOnly = false,
+  initialInfoSidebarOpen = false,
+  initialThreadOpen = false,
+  initialSelectedPostId = LEONARD_POST_ID,
+  initialChannelSeed,
+  initialLeonardPost,
+  bannerVisibility = { channel: true, reply: true },
+  showChannelHeaderText = false,
+  globalBanner,
   onCreateAttribute: _onCreateAttribute,
   onEditAttribute,
 }: ChannelAttributesViewProps) {
-  const [infoSidebarOpen, setInfoSidebarOpen] = useState(false);
-  const [threadSidebarOpen, setThreadSidebarOpen] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [infoSidebarOpen, setInfoSidebarOpen] = useState(
+    initialInfoSidebarOpen && !initialThreadOpen,
+  );
+  const [threadSidebarOpen, setThreadSidebarOpen] = useState(initialThreadOpen);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(
+    initialThreadOpen ? initialSelectedPostId : null,
+  );
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [createChannelOpen, setCreateChannelOpen] = useState(false);
   const [sidebarChannels, setSidebarChannels] = useState<SidebarChannelItem[]>(
@@ -217,13 +252,17 @@ export default function ChannelAttributesView({
   );
   const [activeChannelId, setActiveChannelId] = useState(ALPHA_CHANNEL_ID);
   const [channelStates, setChannelStates] = useState<Record<string, ChannelDemoState>>(
-    () => ({ [ALPHA_CHANNEL_ID]: CHANNEL_INFO_SEED }),
+    () => ({
+      [ALPHA_CHANNEL_ID]: initialChannelSeed ?? CHANNEL_INFO_SEED,
+    }),
   );
   const [createdSummaries, setCreatedSummaries] = useState<Record<string, string>>({});
-  const [leonardPost, setLeonardPost] = useState<ThreadDemoPost>(() => ({
-    ...THREAD_ROOT,
-    avatarSrc: avatarLeonard,
-  }));
+  const [leonardPost, setLeonardPost] = useState<ThreadDemoPost>(() =>
+    initialLeonardPost ?? {
+      ...THREAD_ROOT,
+      avatarSrc: avatarLeonard,
+    },
+  );
 
   const activeChannelMeta =
     sidebarChannels.find((channel) => channel.id === activeChannelId) ??
@@ -232,7 +271,21 @@ export default function ChannelAttributesView({
   const channel = channelStates[activeChannelId] ?? EMPTY_CHANNEL_STATE;
   const isAlphaChannel = activeChannelId === ALPHA_CHANNEL_ID;
   const isCreatedChannel = Boolean(createdSummaries[activeChannelId]);
-  const classificationBanner = channelClassificationBanner(channel);
+  const classificationBanner = useMemo(() => {
+    if (!bannerVisibility.channel) return null;
+    return (
+      channelClassificationBanner(channel) ??
+      channelClassificationBannerForced(channel)
+    );
+  }, [bannerVisibility.channel, channel]);
+
+  const postAttributesById = useMemo(
+    () =>
+      new Map(
+        postScopedAttributes().map((attribute) => [attribute.id, attribute]),
+      ),
+    [],
+  );
 
   const postsById = useMemo(
     () =>
@@ -247,6 +300,11 @@ export default function ChannelAttributesView({
   const selectedPost = selectedPostId
     ? (postsById.get(selectedPostId) ?? null)
     : null;
+
+  const replyClassificationBanner = useMemo(() => {
+    if (!bannerVisibility.reply || !selectedPost) return null;
+    return postClassificationBanner(selectedPost, postAttributesById);
+  }, [bannerVisibility.reply, postAttributesById, selectedPost]);
 
   const updateActiveChannel = useCallback(
     (updater: (current: ChannelDemoState) => ChannelDemoState) => {
@@ -457,6 +515,7 @@ export default function ChannelAttributesView({
   return (
     <div className={createChannelStyles['create-channel-modal__host']}>
     <ChannelShell
+      topBanner={globalBanner}
       teamName="Program ALPHA"
       userAvatarSrc={avatarLeonard}
       userAvatarAlt="Leonard Riley"
@@ -474,30 +533,39 @@ export default function ChannelAttributesView({
         ) : undefined
       }
       channelHeader={
-        <>
-          <ChannelHeader
-            type="Channel"
-            name={channelName}
-            memberCount={isCreatedChannel ? 1 : 28}
-            pinnedCount={isCreatedChannel ? 0 : 2}
-            favorited={!isCreatedChannel}
-            onInfoClick={toggleInfoSidebar}
-            infoToggled={infoSidebarOpen}
-            metaSlot={
+        <ChannelAttributeHeaderStack
+          titleBar={
+            <ChannelHeader
+              type="Channel"
+              name={channelName}
+              memberCount={isCreatedChannel ? 1 : 28}
+              pinnedCount={isCreatedChannel ? 0 : 2}
+              favorited={!isCreatedChannel}
+              description={
+                showChannelHeaderText ? CHANNEL_HEADER_DESCRIPTION : undefined
+              }
+              onInfoClick={toggleInfoSidebar}
+              infoToggled={infoSidebarOpen}
+            />
+          }
+          chips={
+            isAlphaChannel || isCreatedChannel ? (
               <ChannelHeaderAttributeChips
                 channel={channel}
                 onChipClick={openInfoSidebar}
                 onViewAllAttributes={openInfoSidebar}
               />
-            }
-          />
-          {classificationBanner && (
-            <ChannelClassificationBanner
-              valueId={classificationBanner.valueId}
-              label={classificationBanner.label}
-            />
-          )}
-        </>
+            ) : undefined
+          }
+          banner={
+            classificationBanner ? (
+              <ChannelClassificationBanner
+                valueId={classificationBanner.valueId}
+                label={classificationBanner.label}
+              />
+            ) : undefined
+          }
+        />
       }
       trailing={
         infoSidebarOpen ? (
@@ -531,27 +599,42 @@ export default function ChannelAttributesView({
             alignBody="start"
             className={shellStyles['channel-shell__right-sidebar']}
             header={
-              <div className={threadStyles['channel-thread-view__rhs-header']}>
-                <RightSidebarHeader
-                  title="Thread"
-                  secondaryTitle={channelName}
-                  onExpand={() => {}}
-                  onClose={() => setThreadSidebarOpen(false)}
-                  className={threadStyles['channel-thread-view__rhs-header-bar']}
-                />
-                <ChannelHeaderAttributeChips
-                  channel={channel}
-                  className={threadStyles['channel-thread-view__rhs-header-attrs']}
-                  onChipClick={openInfoSidebar}
-                  onViewAllAttributes={openInfoSidebar}
-                />
-                {classificationBanner && (
-                  <ChannelClassificationBanner
-                    valueId={classificationBanner.valueId}
-                    label={classificationBanner.label}
+              <ChannelAttributeHeaderStack
+                titleBar={
+                  <RightSidebarHeader
+                    title="Thread"
+                    secondaryTitle={channelName}
+                    onExpand={() => {}}
+                    onClose={() => setThreadSidebarOpen(false)}
                   />
-                )}
-              </div>
+                }
+                chips={
+                  selectedPost ? (
+                    <PostHeaderAttributeChips
+                      post={selectedPost}
+                      postAttributesById={postAttributesById}
+                      omitClassification={
+                        bannerVisibility.reply &&
+                        Boolean(replyClassificationBanner)
+                      }
+                    />
+                  ) : (
+                    <ChannelHeaderAttributeChips
+                      channel={channel}
+                      onChipClick={openInfoSidebar}
+                      onViewAllAttributes={openInfoSidebar}
+                    />
+                  )
+                }
+                banner={
+                  bannerVisibility.reply && replyClassificationBanner ? (
+                    <ChannelClassificationBanner
+                      valueId={replyClassificationBanner.valueId}
+                      label={replyClassificationBanner.label}
+                    />
+                  ) : undefined
+                }
+              />
             }
             footer={
               <div className={shellStyles['channel-shell__message-input']}>

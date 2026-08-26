@@ -216,6 +216,7 @@ function ValueActiveRow({
 function ChannelAttributeLabel({
   name,
   locked,
+  showLabelLock = true,
   readOnly = false,
   isClassification,
   attribute,
@@ -226,6 +227,7 @@ function ChannelAttributeLabel({
 }: {
   name: string;
   locked: boolean;
+  showLabelLock?: boolean;
   readOnly?: boolean;
   isClassification: boolean;
   attribute?: HubAttribute;
@@ -244,7 +246,7 @@ function ChannelAttributeLabel({
       <div className={styles['panel__label-cell']}>
         <span className={styles['panel__label-row']}>
           <span className={styles['panel__label']}>{name}</span>
-          {locked && (
+          {locked && showLabelLock && (
             <span className={styles['panel__label-lock']} aria-hidden>
               <Icon size="12" glyph={<LockOutlineIcon />} />
             </span>
@@ -267,7 +269,7 @@ function ChannelAttributeLabel({
       >
         <span className={styles['panel__label-row']}>
           <span className={styles['panel__label']}>{name}</span>
-          {locked && (
+          {locked && showLabelLock && (
             <span className={styles['panel__label-lock']} aria-hidden>
               <Icon size="12" glyph={<LockOutlineIcon />} />
             </span>
@@ -720,6 +722,9 @@ export default function ChannelAttributesPanel({
                 <ChannelAttributeLabel
                   name={overrides.name ?? attribute.name}
                   locked={labelLocked}
+                  showLabelLock={
+                    attribute.id !== 'classification' && attribute.id !== 'program'
+                  }
                   readOnly={readOnly}
                   isClassification={attribute.id === 'classification'}
                   attribute={attribute}

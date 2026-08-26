@@ -347,6 +347,7 @@ export default function PostAttributeSummary({
                   key={instance.attributeId}
                   valueId={instance.valueId}
                   label={valueLabel(attribute, instance.valueId)}
+                  size="Small"
                 />
               );
             }
@@ -358,7 +359,9 @@ export default function PostAttributeSummary({
             );
           })}
           {overflow > 0 && (
-            <span className={styles['summary__overflow']}>+{overflow}</span>
+            <Chip as="div" size="Small" className={styles['summary__overflow']}>
+              +{overflow}
+            </Chip>
           )}
         </div>
 

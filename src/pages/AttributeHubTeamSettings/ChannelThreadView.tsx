@@ -25,6 +25,7 @@ import PostAttributesThreadSidebar, {
 import { PostAttributeAddMenu } from './postAttributeAddMenu';
 import ThreadReplyMessageInput from './ThreadReplyMessageInput';
 import ChannelHeaderAttributeChips from './ChannelHeaderAttributeChips';
+import ChannelAttributeHeaderStack from './ChannelAttributeHeaderStack';
 import ChannelClassificationBanner from './ChannelClassificationBanner';
 import {
   CHANNEL_INFO_SEED,
@@ -322,22 +323,26 @@ export default function ChannelThreadView({
         userAvatarSrc={avatarLeonard}
         userAvatarAlt="Leonard Riley"
         channelHeader={
-          <>
-            <ChannelHeader
-              type="Channel"
-              name="alpha-coordination"
-              memberCount={28}
-              pinnedCount={2}
-              favorited
-              metaSlot={<ChannelHeaderAttributeChips channel={channel} />}
-            />
-            {classificationBanner && (
-              <ChannelClassificationBanner
-                valueId={classificationBanner.valueId}
-                label={classificationBanner.label}
+          <ChannelAttributeHeaderStack
+            titleBar={
+              <ChannelHeader
+                type="Channel"
+                name="alpha-coordination"
+                memberCount={28}
+                pinnedCount={2}
+                favorited
               />
-            )}
-          </>
+            }
+            chips={<ChannelHeaderAttributeChips channel={channel} />}
+            banner={
+              classificationBanner ? (
+                <ChannelClassificationBanner
+                  valueId={classificationBanner.valueId}
+                  label={classificationBanner.label}
+                />
+              ) : undefined
+            }
+          />
         }
         trailing={
           threadSidebarOpen ? (
@@ -345,25 +350,25 @@ export default function ChannelThreadView({
               alignBody="start"
               className={shellStyles['channel-shell__right-sidebar']}
               header={
-                <div className={styles['channel-thread-view__rhs-header']}>
-                  <RightSidebarHeader
-                    title="Thread"
-                    secondaryTitle="alpha-coordination"
-                    onExpand={() => {}}
-                    onClose={() => setThreadSidebarOpen(false)}
-                    className={styles['channel-thread-view__rhs-header-bar']}
-                  />
-                  <ChannelHeaderAttributeChips
-                    channel={channel}
-                    className={styles['channel-thread-view__rhs-header-attrs']}
-                  />
-                  {classificationBanner && (
-                    <ChannelClassificationBanner
-                      valueId={classificationBanner.valueId}
-                      label={classificationBanner.label}
+                <ChannelAttributeHeaderStack
+                  titleBar={
+                    <RightSidebarHeader
+                      title="Thread"
+                      secondaryTitle="alpha-coordination"
+                      onExpand={() => {}}
+                      onClose={() => setThreadSidebarOpen(false)}
                     />
-                  )}
-                </div>
+                  }
+                  chips={<ChannelHeaderAttributeChips channel={channel} />}
+                  banner={
+                    classificationBanner ? (
+                      <ChannelClassificationBanner
+                        valueId={classificationBanner.valueId}
+                        label={classificationBanner.label}
+                      />
+                    ) : undefined
+                  }
+                />
               }
               footer={
                 <div className={shellStyles['channel-shell__message-input']}>

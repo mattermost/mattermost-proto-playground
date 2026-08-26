@@ -16,6 +16,11 @@ const DEFAULT_TEAMS: TeamSidebarItem[] = [
 
 export interface ChannelShellProps {
   /**
+   * Full-width band at the top of the shell frame (e.g. workspace classification).
+   * Renders above the product global header, inside the shell border.
+   */
+  topBanner?: ReactNode;
+  /**
    * When set, replaces the default main region (center column + optional `trailing`)
    * inside the inner panel — use for split views such as Threads inbox + thread.
    */
@@ -49,6 +54,7 @@ export interface ChannelShellProps {
 }
 
 export default function ChannelShell({
+  topBanner,
   innerContent,
   channelHeader,
   children,
@@ -84,6 +90,9 @@ export default function ChannelShell({
 
   return (
     <div className={rootClass}>
+      {topBanner != null && (
+        <div className={styles['channel-shell__top-banner']}>{topBanner}</div>
+      )}
       <div className={styles['channel-shell__global-header']}>
         <GlobalHeader
           product={product}

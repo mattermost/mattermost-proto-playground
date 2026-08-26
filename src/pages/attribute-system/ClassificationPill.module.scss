@@ -6,15 +6,15 @@
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-xxxs);
   max-width: 100%;
-  padding: 2px 8px;
+  padding: var(--spacing-xxxs) var(--spacing-xs);
   border-radius: var(--radius-s);
   font-family: var(--font-family-body);
-  font-size: var(--font-size-75);
+  font-size: var(--font-size-25);
   font-weight: var(--font-weight-semibold);
-  line-height: 16px;
-  letter-spacing: 0.02em;
+  line-height: 12px;
+  letter-spacing: 0.2px;
   text-transform: uppercase;
   color: #ffffff;
   white-space: nowrap;
@@ -23,6 +23,7 @@
     padding: 3px 10px;
     font-size: var(--font-size-100, 14px);
     line-height: 18px;
+    letter-spacing: 0.02em;
   }
 
   &__lock {

@@ -247,6 +247,49 @@ export function channelClassificationBanner(
   };
 }
 
+/** Classification banner state regardless of Banner display location (prototype forcing). */
+export function channelClassificationBannerForced(
+  channel: ChannelDemoState,
+): ChannelClassificationBannerState | null {
+  const attribute = channelScopedAttributes().find(
+    (row) => row.id === 'classification',
+  );
+  if (!attribute) return null;
+
+  const instance = channel.attributes.find(
+    (row) => row.attributeId === 'classification',
+  );
+  if (!instance) return null;
+
+  const binding = channelBinding(attribute);
+  if (!binding) return null;
+
+  return {
+    valueId: instance.valueId,
+    label: channelValueLabel(attribute, instance.valueId),
+    locked: isChannelAttributeLocked(attribute, binding),
+  };
+}
+
+/** Demo seed: classification chip in header (not banner), six header attrs → "+3 more". */
+export const CHANNEL_VIEW_FIGMA_SEED: ChannelDemoState = {
+  attributes: [
+    { attributeId: 'classification', valueId: 'u' },
+    { attributeId: 'program', valueId: 'pg-aurora' },
+    { attributeId: 'caveat', valueId: 'cav-noforn' },
+    { attributeId: 'engagement-tempo', valueId: 'et-elevated' },
+    { attributeId: 'mission-phase', valueId: 'mp-exec' },
+    { attributeId: 'channel-attr-ops-window', valueId: 'ow-day' },
+    { attributeId: 'channel-attr-watch-floor', valueId: 'wf-alpha' },
+  ],
+  customAttributes: [],
+  bindingOverrides: {
+    classification: { showWhere: ['Header', 'Sidebar'] },
+    'channel-attr-ops-window': { showWhere: ['Header', 'Sidebar'] },
+    'channel-attr-watch-floor': { showWhere: ['Header', 'Sidebar'] },
+  },
+};
+
 /** Channel attributes configured for Header display with resolved values. */
 export function headerChannelAttributes(
   channel: ChannelDemoState,

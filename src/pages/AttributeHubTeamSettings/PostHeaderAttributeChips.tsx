@@ -16,22 +16,22 @@ import PopoverMenu, {
 } from '@/components/ui/PopoverMenu/PopoverMenu';
 import Tooltip from '@/components/ui/Tooltip/Tooltip';
 import AttributeHeaderChipValue from './AttributeHeaderChipValue';
+import type { DisplayWhere, HubAttribute } from '@/pages/AttributeManagementHub/hubData';
 import {
-  headerChannelAttributes,
-  type ChannelDemoState,
-  type HeaderChannelAttribute,
-} from './channelViewData';
+  postHeaderAttributes,
+  type PostHeaderAttribute,
+  type ThreadDemoPost,
+} from './postViewData';
 import styles from './ChannelHeaderAttributeChips.module.scss';
 
-export interface ChannelHeaderAttributeChipsProps {
-  channel: ChannelDemoState;
+export interface PostHeaderAttributeChipsProps {
+  post: ThreadDemoPost;
+  postAttributesById: Map<string, HubAttribute>;
+  showWhereById?: Record<string, DisplayWhere[]>;
   className?: string;
-  /** Max chips shown inline; the rest appear under "+N more". */
   maxVisible?: number;
-  /** Opens channel info in the RHS when a header attribute chip is clicked. */
-  onChipClick?: () => void;
-  /** Opens channel info from the overflow popover "View all attributes" action. */
-  onViewAllAttributes?: () => void;
+  /** Hide classification pill when it is also shown as a reply banner. */
+  omitClassification?: boolean;
 }
 
 const CHIP_HINT_TOOLTIP_GAP = 8;
@@ -44,14 +44,13 @@ type ChipHintPlacement = 'above' | 'below';
 function HeaderAttributeValue({
   attribute,
 }: {
-  attribute: HeaderChannelAttribute;
+  attribute: PostHeaderAttribute;
 }) {
   return (
     <AttributeHeaderChipValue
       label={attribute.label}
       valueId={attribute.valueId}
       isClassification={attribute.isClassification}
-      locked={attribute.locked}
     />
   );
 }
@@ -59,11 +58,9 @@ function HeaderAttributeValue({
 function HeaderAttributeChipHint({
   name,
   children,
-  onClick,
 }: {
   name: string;
   children: ReactNode;
-  onClick?: () => void;
 }) {
   const hintRef = useRef<HTMLElement>(null);
   const bubbleRef = useRef<HTMLSpanElement>(null);
@@ -152,90 +149,33 @@ function HeaderAttributeChipHint({
       document.body,
     );
 
-  const hintClass = [
-    styles['header-attrs__hint'],
-    onClick ? styles['header-attrs__hint--clickable'] : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const hintHandlers = {
-    onMouseEnter: () => setHovered(true),
-    onMouseLeave: () => {
-      setHovered(false);
-      setCoords(null);
-    },
-  };
-
-  if (onClick) {
-    return (
-      <button
-        ref={hintRef as React.RefObject<HTMLButtonElement>}
-        type="button"
-        className={hintClass}
-        aria-label={`View ${name} in channel info`}
-        onClick={onClick}
-        {...hintHandlers}
-      >
-        {children}
-        {tooltipBubble}
-      </button>
-    );
-  }
-
   return (
-    <span ref={hintRef as React.RefObject<HTMLSpanElement>} className={hintClass} {...hintHandlers}>
+    <span
+      ref={hintRef as React.RefObject<HTMLSpanElement>}
+      className={styles['header-attrs__hint']}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => {
+        setHovered(false);
+        setCoords(null);
+      }}
+    >
       {children}
       {tooltipBubble}
     </span>
   );
 }
 
-function renderVisibleChip(
-  attribute: HeaderChannelAttribute,
-  onChipClick?: () => void,
-) {
-  if (attribute.isClassification || attribute.useChip) {
-    return (
-      <HeaderAttributeChipHint
-        key={attribute.id}
-        name={attribute.name}
-        onClick={onChipClick}
-      >
-        <HeaderAttributeValue attribute={attribute} />
-      </HeaderAttributeChipHint>
-    );
-  }
-
-  if (onChipClick) {
-    return (
-      <button
-        key={attribute.id}
-        type="button"
-        className={styles['header-attrs__chip-trigger']}
-        aria-label={`View ${attribute.name} in channel info`}
-        onClick={onChipClick}
-      >
-        <HeaderAttributeValue attribute={attribute} />
-      </button>
-    );
-  }
-
-  return (
-    <span key={attribute.id} className={styles['header-attrs__chip-static']}>
-      <HeaderAttributeValue attribute={attribute} />
-    </span>
-  );
-}
-
-export default function ChannelHeaderAttributeChips({
-  channel,
+export default function PostHeaderAttributeChips({
+  post,
+  postAttributesById,
+  showWhereById = {},
   className = '',
   maxVisible = DEFAULT_MAX_VISIBLE,
-  onChipClick,
-  onViewAllAttributes,
-}: ChannelHeaderAttributeChipsProps) {
-  const attributes = headerChannelAttributes(channel);
+  omitClassification = false,
+}: PostHeaderAttributeChipsProps) {
+  const attributes = postHeaderAttributes(post, postAttributesById, showWhereById).filter(
+    (attribute) => !(omitClassification && attribute.isClassification),
+  );
   const moreRef = useRef<HTMLButtonElement>(null);
   const [overflowOpen, setOverflowOpen] = useState(false);
 
@@ -248,16 +188,15 @@ export default function ChannelHeaderAttributeChips({
 
   const closeOverflow = () => setOverflowOpen(false);
 
-  const handleViewAll = () => {
-    closeOverflow();
-    (onViewAllAttributes ?? onChipClick)?.();
-  };
-
   const rootClass = [styles['header-attrs'], className].filter(Boolean).join(' ');
 
   return (
-    <div className={rootClass} aria-label="Channel attributes">
-      {visible.map((attribute) => renderVisibleChip(attribute, onChipClick))}
+    <div className={rootClass} aria-label="Reply attributes">
+      {visible.map((attribute) => (
+        <HeaderAttributeChipHint key={attribute.id} name={attribute.name}>
+          <HeaderAttributeValue attribute={attribute} />
+        </HeaderAttributeChipHint>
+      ))}
 
       {overflowCount > 0 && (
         <>
@@ -282,7 +221,7 @@ export default function ChannelHeaderAttributeChips({
             minWidthFloor={280}
             gap={4}
           >
-            <PopoverMenu aria-label="More channel attributes">
+            <PopoverMenu aria-label="More reply attributes">
               {overflow.map((attribute) => (
                 <div
                   key={attribute.id}
@@ -297,16 +236,12 @@ export default function ChannelHeaderAttributeChips({
                   </span>
                 </div>
               ))}
-              {(onViewAllAttributes || onChipClick) && (
-                <>
-                  <PopoverMenuDivider />
-                  <MenuItem
-                    label="View all attributes"
-                    leadingElement={false}
-                    onClick={handleViewAll}
-                  />
-                </>
-              )}
+              <PopoverMenuDivider />
+              <MenuItem
+                label="View all attributes"
+                leadingElement={false}
+                onClick={closeOverflow}
+              />
             </PopoverMenu>
           </FixedPopoverMenu>
         </>

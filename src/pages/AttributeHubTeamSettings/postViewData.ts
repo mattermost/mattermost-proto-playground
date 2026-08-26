@@ -1,7 +1,9 @@
 import {
   ATTR_TYPE_OPTIONS,
   isChannelDisplayHidden,
+  postDisplayIncludes,
   resolveInheritMode,
+  resolvePostDisplayMode,
   type AttrType,
   type DisplayWhere,
   type HubAttribute,
@@ -204,6 +206,109 @@ export function valueLabel(attribute: HubAttribute, valueId: string): string {
     return classificationLabel(valueId);
   }
   return attribute.values.find((value) => value.id === valueId)?.label ?? '—';
+}
+
+export interface PostHeaderAttribute {
+  id: string;
+  name: string;
+  valueId: string;
+  label: string;
+  isClassification: boolean;
+  useChip: boolean;
+}
+
+function postHeaderUsesChip(attribute: HubAttribute, attributeId: string): boolean {
+  if (attributeId === 'classification') return false;
+  return attribute.type === 'Ranked' || attribute.type === 'Single select';
+}
+
+/** Post attributes configured for Header display with resolved values. */
+export function postHeaderAttributes(
+  post: ThreadDemoPost,
+  postAttributesById: Map<string, HubAttribute>,
+  showWhereById: Record<string, DisplayWhere[]> = {},
+): PostHeaderAttribute[] {
+  const results: PostHeaderAttribute[] = [];
+
+  for (const instance of post.attributes) {
+    const attribute = postAttributesById.get(instance.attributeId);
+    if (!attribute) continue;
+
+    const binding = postBinding(attribute);
+    if (!binding) continue;
+
+    if (
+      resolvePostDisplayMode(binding) === 'when-overridden' &&
+      !instance.overridden
+    ) {
+      continue;
+    }
+
+    const showWhere = resolvePostShowWhere(
+      attribute.id,
+      showWhereById,
+      binding.showWhere,
+    );
+    if (!postDisplayIncludes(showWhere, 'Header')) continue;
+
+    results.push({
+      id: attribute.id,
+      name: attribute.name,
+      valueId: instance.valueId,
+      label: valueLabel(attribute, instance.valueId),
+      isClassification: attribute.id === 'classification',
+      useChip: postHeaderUsesChip(attribute, attribute.id),
+    });
+  }
+
+  for (const custom of post.customAttributes ?? []) {
+    const showWhere = resolvePostShowWhere(
+      custom.id,
+      showWhereById,
+      custom.showWhere,
+    );
+    if (!postDisplayIncludes(showWhere, 'Header')) continue;
+
+    const selected =
+      custom.values.find((row) => row.id === custom.selectedValueId)?.label ??
+      custom.values[0]?.label ??
+      '—';
+
+    results.push({
+      id: custom.id,
+      name: custom.name,
+      valueId: custom.selectedValueId,
+      label: selected,
+      isClassification: false,
+      useChip: true,
+    });
+  }
+
+  return results;
+}
+
+export interface PostClassificationBannerState {
+  valueId: string;
+  label: string;
+}
+
+/** Classification value for a reply/thread banner from post attributes. */
+export function postClassificationBanner(
+  post: ThreadDemoPost,
+  postAttributesById: Map<string, HubAttribute>,
+): PostClassificationBannerState | null {
+  const instance = post.attributes.find(
+    (row) => row.attributeId === 'classification',
+  );
+  if (!instance) return null;
+
+  const attribute = postAttributesById.get('classification');
+  if (!attribute) return null;
+
+  return {
+    valueId: instance.valueId,
+    label: valueLabel(attribute, instance.valueId),
+  };
 }
 
 export function isPostAttributeLocked(

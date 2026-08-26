@@ -1,0 +1,94 @@
+.header-stack {
+  --header-stack-main-height: 72px;
+  --header-stack-title-row-height: 32px;
+  --header-stack-attrs-row-height: 20px;
+  --header-stack-main-padding-top: var(--spacing-m);
+  --header-stack-main-padding-x: var(--spacing-m);
+  --header-stack-main-padding-bottom: var(--spacing-xxxxs);
+  --header-stack-title-chips-gap: var(--spacing-xxxxs);
+
+  display: flex;
+  flex-direction: column;
+  background-color: var(--center-channel-bg);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--header-stack-title-chips-gap);
+    box-sizing: border-box;
+    height: var(--header-stack-main-height);
+    min-height: var(--header-stack-main-height);
+    max-height: var(--header-stack-main-height);
+    padding: var(--header-stack-main-padding-top) var(--header-stack-main-padding-x)
+      var(--header-stack-main-padding-bottom);
+  }
+
+  &__title-bar {
+    flex: 0 0 var(--header-stack-title-row-height);
+    width: 100%;
+    min-width: 0;
+    height: var(--header-stack-title-row-height);
+    max-height: var(--header-stack-title-row-height);
+
+    > * {
+      width: 100%;
+      min-width: 0;
+      height: 100% !important;
+      min-height: 0 !important;
+      max-height: 100%;
+      padding: 0 !important;
+      align-items: flex-start !important;
+      border-bottom: none !important;
+      box-sizing: border-box;
+    }
+
+    :global([class*='channel-header__left']) {
+      justify-content: flex-start !important;
+    }
+
+    :global([class*='channel-header__primary-row']) {
+      flex-wrap: nowrap !important;
+      min-width: 0;
+    }
+
+    :global([class*='channel-header__description']) {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    :global([class*='channel-header__right']) {
+      align-self: flex-start;
+      flex-shrink: 0;
+    }
+
+    :global([class*='right-sidebar-header__primary']) {
+      padding-left: var(--spacing-xxxs);
+    }
+  }
+
+  &__attrs {
+    position: relative;
+    top: -6px;
+    flex: 0 0 var(--header-stack-attrs-row-height);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    height: var(--header-stack-attrs-row-height);
+    max-height: var(--header-stack-attrs-row-height);
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  &__banner {
+    width: 100%;
+    min-width: 0;
+
+    :global([class*='channel-classification-banner']) {
+      min-height: 18px;
+      padding: var(--spacing-xxxxs) var(--spacing-m);
+      line-height: 14px;
+    }
+  }
+}

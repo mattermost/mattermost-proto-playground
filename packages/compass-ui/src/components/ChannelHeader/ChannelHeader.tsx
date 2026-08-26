@@ -219,16 +219,16 @@ export default function ChannelHeader({
             </div>
           </div>
 
+          {description && (
+            <div className={styles['channel-header__description']}>
+              {description}
+            </div>
+          )}
+
           {metaSlot && (
             <div className={styles['channel-header__meta']}>{metaSlot}</div>
           )}
         </div>
-
-        {description && (
-          <div className={styles['channel-header__description']}>
-            {description}
-          </div>
-        )}
       </div>
 
       <div className={styles['channel-header__right']}>
