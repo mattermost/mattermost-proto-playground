@@ -16,7 +16,9 @@ Vocabulary used everywhere: **Foundations** → **Components** → **Patterns** 
 Package split (in **compass-design**):
 
 - **`@mattermost/compass-ui`** — published core (tokens, primitives, desktop chrome pieces)
-- **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call*, demo fixtures
+- **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call*, demo fixtures (**never npm**; docs + playground link via `file:`)
+
+**Layouts** (docs category) are composed specimens in compass-design — they import **both** packages. Product webapp uses **ui only**. Details: [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what).
 
 **Playground-only (this repo):** `PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileModalStage`, per-prototype scene code.
 

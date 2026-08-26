@@ -20,6 +20,26 @@ Icons stay in [`mattermost/compass-icons`](https://github.com/mattermost/compass
 
 **Chrome vs fixtures:** Core keeps presentational shells (`ChannelsSidebar`, `AdminConsoleSidebar`, `RightSidebar` header). Demo trees and specimen RHS screens live in proto or docs fixtures — not in the published core API.
 
+## Layouts and shells (who uses what)
+
+**Layouts** in the docs (Foundations → Components → Patterns → **Layouts**) are **composed screens**, not a single npm export. They live as MDX specimens in [`compass-design`](https://github.com/mattermost/compass-design) (`src/guidelines/layouts/`), not in `@mattermost/compass-ui`.
+
+| Building block | Package | Examples |
+| -------------- | ------- | -------- |
+| Published chrome / primitives | `@mattermost/compass-ui` | `ChannelsSidebar`, `AdminConsoleSidebar`, `GlobalHeader`, `ChannelHeader`, `Message*`, `RightSidebar` header |
+| Composite shells, mobile, demo fixtures | `@mattermost/compass-proto` (never on npm) | `ChannelShell`, `MobileHome`, `MobileTabBar`, `CallWidget`, `RightSidebarChannelInfo`, `buildDefaultChannelsSidebarModel` |
+| Docs specimen framing only | `compass-design` app | `DeviceFrame`, `MobileModalStage` (guidelines; playground has its own copies for flows) |
+
+Layout specimens **stitch ui + proto together** — e.g. desktop Channel uses `ChannelShell` (proto) with headers and messages (ui); mobile Home uses `MobileHome` (proto) inside `DeviceFrame` (docs chrome).
+
+| Consumer | `compass-ui` | `compass-proto` |
+| -------- | ------------ | --------------- |
+| **compass-design** (guidelines, Storybook) | yes (workspace) | yes (workspace) |
+| **Proto playground** (this repo) | yes (`file:`) | yes (`file:`) — required for most multi-scene flows |
+| **Mattermost webapp** (product) | yes (npm `@alpha`, Phase 3) | **no** — leaf-first adoption of published chrome only |
+
+`@mattermost/compass-proto` is intentionally **not published to npm**. Playground and docs consumers link it from a sibling `compass-design` clone (`file:` or workspace); that is enough for prototyping. Product code must not depend on proto layouts or shells.
+
 **Compass vs product:** Compass owns look (props/slots). Webapp owns behavior (permissions, markdown, optimistic UI). Adopt leaf-first; do not grow Compass into a second Post/sidebar controller.
 
 **Playground-only (this repo):** `PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileModalStage`, per-prototype scene code.

@@ -51,7 +51,7 @@ Use [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototy
 This repo consumes Compass packages from the sibling `compass-design` repo via `file:` paths:
 
 - `@mattermost/compass-ui` — published core (tokens, primitives, web chrome)
-- `@mattermost/compass-proto` — unpublished prototyping composites (Mobile*, Call*, `ChannelShell`, fixtures)
+- `@mattermost/compass-proto` — unpublished composites and fixtures (`ChannelShell`, Mobile*, Call*, demo sidebar models). **Not on npm** — linked from `compass-design` like the docs site. See [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what) for how layouts split across ui vs proto.
 
 `npm run predev` / `prebuild` runs `scripts/ensure-compass-packages.mjs`, which builds package `dist/` in `compass-design` when stale.
 
