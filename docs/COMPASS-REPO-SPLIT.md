@@ -6,7 +6,7 @@ How we are splitting Compass UI work across two repositories. Replaces the earli
 
 | Layer | Repository | Role |
 | ----- | ---------- | ---- |
-| Design-system monorepo | [`mattermost/compass-design`](https://github.com/mattermost/compass-design) | `@mattermost/compass-ui` (published), `@mattermost/compass-proto` (unpublished), docs + Storybook, GitHub Pages |
+| Design system repo | [`mattermost/compass-design`](https://github.com/mattermost/compass-design) | `@mattermost/compass-ui` (published), `@mattermost/compass-proto` (unpublished), docs + Storybook, GitHub Pages |
 | Prototypes catalog | **`mattermost/mattermost-proto-playground` (this repo)** | Multi-scene prototype flows, device chrome (`PrototypeTopNav`, `DeviceFrame`), registry |
 
 Icons stay in [`mattermost/compass-icons`](https://github.com/mattermost/compass-icons) for now (peer dependency; may move into `compass-design` later).
