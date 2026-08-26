@@ -7,7 +7,14 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist', 'compass-design'] },
+  {
+    ignores: [
+      'dist/**',
+      'packages/**',
+      'compass-design/**',
+      '**/node_modules/**',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
