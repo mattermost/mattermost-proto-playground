@@ -57,7 +57,7 @@ Stop after each phase; verify before starting the next.
 
 ## Consumption
 
-- **Docs / Storybook:** [`mattermost/compass-design`](https://github.com/mattermost/compass-design) workspace packages
+- **Docs / Storybook:** guidelines in compass-design use workspace `compass-ui` + `compass-proto`; **Storybook** catalogs published `@mattermost/compass-ui` only
 - **Playground (this repo):** `file:../compass-design/packages/*` for `@mattermost/compass-ui` and `@mattermost/compass-proto`
 - **Webapp (testing branch):** `file:` → compass-ui + watch; webpack React aliases — see compass-design INTEGRATION.md
 - **Webapp (after alpha):** `@mattermost/compass-ui@alpha` only — no Mobile*, `ChannelShell`, or Call* from proto in product code
