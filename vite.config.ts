@@ -45,8 +45,7 @@ function compassPackageDistReload(): Plugin {
 }
 
 export default defineConfig({
-  // Vercel serves at the domain root; GitHub Pages serves under the repo path.
-  base: process.env.VERCEL ? '/' : '/mattermost-proto-playground/',
+  base: '/',
   plugins: [react(), svgr(), ensureCompassUiStyles(), compassPackageDistReload()],
   resolve: {
     alias: {

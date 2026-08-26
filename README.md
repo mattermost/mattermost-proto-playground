@@ -36,7 +36,7 @@ mattermost/
 
 If compass-design lives elsewhere, symlink it to `../compass-design` from this repo, or set `COMPASS_DESIGN_PATH` for the ensure script (npm still needs a `file:` path that resolves — prefer a sibling symlink).
 
-Open the URL shown in the terminal. The catalog index is at `/prototypes`.
+Open the URL shown in the terminal. The catalog index is at `/`.
 
 ## Adding a prototype
 

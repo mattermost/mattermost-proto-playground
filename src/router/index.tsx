@@ -9,8 +9,9 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Navigate to="/prototypes" replace />} />
-        <Route path="/prototypes" element={<PrototypesIndex />} />
+        <Route index element={<PrototypesIndex />} />
+        {/* Old catalog path — keep working bookmarks */}
+        <Route path="/prototypes" element={<Navigate to="/" replace />} />
 
         {PROTOTYPES.map(({ id, path, component: Component }) => (
           <Route key={id} path={path} element={<Component />} />

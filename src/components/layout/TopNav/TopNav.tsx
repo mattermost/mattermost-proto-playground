@@ -15,7 +15,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/prototypes', label: 'Catalog', end: true },
+  { to: '/', label: 'Catalog', end: true },
   { to: COMPASS_DESIGN_URL, label: 'Design system', external: true },
 ];
 
@@ -27,7 +27,7 @@ interface TopNavProps {
 export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
   return (
     <div className={styles['top-nav']}>
-      <NavLink to="/prototypes" className={styles['top-nav__logo']} aria-label="Prototype catalog home">
+      <NavLink to="/" className={styles['top-nav__logo']} aria-label="Prototype catalog home">
         <MattermostIcon size={28} />
         <span className={styles['top-nav__wordmark']}>Proto Playground</span>
       </NavLink>

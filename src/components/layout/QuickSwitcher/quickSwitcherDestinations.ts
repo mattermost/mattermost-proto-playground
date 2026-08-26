@@ -15,7 +15,7 @@ export interface QuickSwitcherDestination {
 export function buildQuickSwitcherDestinations(): QuickSwitcherDestination[] {
   const catalog: QuickSwitcherDestination = {
     id: 'catalog',
-    path: '/prototypes',
+    path: '/',
     title: 'Prototype catalog',
     breadcrumb: ['Catalog'],
     searchText: 'prototype catalog prototypes index',
