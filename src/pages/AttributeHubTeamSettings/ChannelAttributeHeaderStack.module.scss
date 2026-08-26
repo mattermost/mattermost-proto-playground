@@ -58,8 +58,15 @@
     }
 
     :global([class*='channel-header__right']) {
+      position: relative;
+      top: -4px;
       align-self: flex-start;
       flex-shrink: 0;
+    }
+
+    :global([class*='right-sidebar-header__actions']) {
+      position: relative;
+      top: -4px;
     }
 
     :global([class*='right-sidebar-header__primary']) {
