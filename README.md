@@ -34,7 +34,7 @@ mattermost/
   mattermost-proto-playground/
 ```
 
-If compass-design lives elsewhere, symlink it to `../compass-design` from this repo, or set `COMPASS_DESIGN_PATH` for the ensure script (npm still needs a `file:` path that resolves for proto — prefer a sibling symlink).
+If compass-design lives elsewhere, symlink it to `../compass-design` from this repo so npm can resolve the `file:` dependency. `COMPASS_DESIGN_PATH` only changes which tree the ensure script builds from; npm still resolves `file:../compass-design/packages/compass-proto` from that sibling path.
 
 Open the URL shown in the terminal. The catalog index is at `/`.
 

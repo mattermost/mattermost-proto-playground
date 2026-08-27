@@ -39,7 +39,7 @@ function assertNpmCompassUi() {
   } catch {
     console.error(
       '[@mattermost/compass-ui] not installed.\n' +
-        '  Run: npm install @mattermost/compass-ui@alpha',
+        '  Run: npm install @mattermost/compass-ui',
     );
     process.exit(1);
   }
@@ -163,6 +163,20 @@ if (!linkExists) {
       `  Package path: ${expectedFileDep}\n` +
       (fs.existsSync(expectedFileDep) ? '' : '  (that path does not exist yet)\n') +
       '  Then: rm -rf node_modules && npm install && npm run dev',
+  );
+  process.exit(1);
+}
+
+const linkedProtoRoot = fs.realpathSync(workspaceLink);
+const expectedProtoRoot = fs.realpathSync(protoRoot);
+if (linkedProtoRoot !== expectedProtoRoot) {
+  console.error(
+    '[compass-proto] node_modules link does not match the ensure-script source.\n' +
+      `  Linked:  ${linkedProtoRoot}\n` +
+      `  Expected: ${expectedProtoRoot}\n` +
+      '  COMPASS_DESIGN_PATH only affects which tree this script builds.\n' +
+      '  npm still resolves the package.json `file:` dependency from ../compass-design.\n' +
+      '  Symlink that sibling path (or align COMPASS_DESIGN_PATH), then reinstall.',
   );
   process.exit(1);
 }
