@@ -15,7 +15,7 @@ Vocabulary used everywhere: **Foundations** → **Components** → **Patterns** 
 
 Package split (in **compass-design**):
 
-- **`@mattermost/compass-ui`** — published core (tokens, primitives, desktop chrome pieces)
+- **`@mattermost/compass-ui`** — published core from npm (`@alpha`; tokens, primitives, desktop chrome pieces)
 - **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call*, demo fixtures (**never npm**; docs + playground link via `file:`)
 
 **Layouts** (docs category) are composed specimens in compass-design — they import **both** packages. Product webapp uses **ui only**. Details: [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what).
@@ -27,6 +27,10 @@ Package split (in **compass-design**):
 Before writing new UI in a prototype, use components from `@mattermost/compass-ui` / `@mattermost/compass-proto`. Do not add design-system components under `src/components/` — extend compass-design instead.
 
 Playground `src/components/` is for catalog chrome and layout only.
+
+### Variant prop string values
+
+Compass UI variant props (`size`, `emphasis`, `appearance`, `type`, `padding`, etc.) use **lowercase kebab-case** literals — e.g. `'primary'`, `'x-small'`, `'new-messages'`, `'center-channel'`. Do not pass Title Case values.
 
 ## Shared React hooks
 
@@ -40,7 +44,7 @@ Tooltips, modals, and popovers from Compass are **visual chrome only** — the h
 
 ## Component usage (short)
 
-- **Primary button:** `emphasis="Primary"` at most once per view.
+- **Primary button:** `emphasis="primary"` at most once per view.
 - **EmptyState actions:** omit `size` on action `Button` unless Figma requires otherwise.
 - **Avatars:** pass a real image from `src/assets/avatars/` when supported.
 

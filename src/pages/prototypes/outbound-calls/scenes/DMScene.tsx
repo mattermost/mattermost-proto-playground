@@ -49,7 +49,7 @@ export function DMScene({
   return (
     <>
       <ChannelHeader
-        type="DM"
+        type="dm"
         name={contact.name}
         description={contact.title}
         avatarSrc={contact.avatar}
@@ -65,7 +65,7 @@ export function DMScene({
       />
 
       <div className={layoutStyles['channel-shell__messages']}>
-        <MessageSeparator type="Date" label="Today" />
+        <MessageSeparator type="date" label="Today" />
 
         <Message
           avatarSrc={contact.avatar}

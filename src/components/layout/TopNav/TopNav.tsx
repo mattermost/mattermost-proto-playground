@@ -67,8 +67,8 @@ export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
           <IconButton
             aria-label="Open quick switcher"
             aria-keyshortcuts="Control+K Meta+K"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<MagnifyIcon />} />}
             onClick={onOpenQuickSwitcher}
           />

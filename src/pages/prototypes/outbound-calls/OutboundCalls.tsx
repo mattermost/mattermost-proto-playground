@@ -377,7 +377,7 @@ export default function OutboundCalls() {
       <div className={styles['calls__shell']}>
         <div className={styles['calls__global-header']}>
           <GlobalHeader
-            product="Channels"
+            product="channels"
             userAvatarSrc={avatarLeonard}
             userAvatarAlt="Leonard Riley"
           />

@@ -48,7 +48,7 @@ export function DialerScene({
         <div className={styles['dialer__keypad']}>
           <TextInput
             className={styles['dialer__phone-field']}
-            size="Large"
+            size="large"
             value={typed}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setTyped(sanitizeDigits(e.target.value))}
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
@@ -65,8 +65,8 @@ export function DialerScene({
               <span style={{ visibility: typed ? 'visible' : 'hidden' }}>
                 <IconButton
                   aria-label="Clear number"
-                  size="Small"
-                  padding="Compact"
+                  size="small"
+                  padding="compact"
                   icon={<Icon glyph={<CloseCircleIcon />} size="16" />}
                   onClick={clearTyped}
                 />

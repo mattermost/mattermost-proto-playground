@@ -42,8 +42,8 @@ export function CallPipParticipantRow({
   const trailingVisual = onRemove ? (
     <IconButton
       aria-label="Remove participant"
-      size="Small"
-      padding="Compact"
+      size="small"
+      padding="compact"
       className={styles['pip__participant-remove']}
       disabled={removeDisabled}
       icon={<Icon glyph={<PhoneHangupIcon />} size="16" />}

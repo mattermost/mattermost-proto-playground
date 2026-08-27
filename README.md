@@ -11,11 +11,11 @@ Internal catalog of multi-scene Compass UI prototypes. Component source, guideli
 ## Prerequisites
 
 - Node.js 24.x and npm 11.x (see `.nvmrc`)
-- A local clone of [`mattermost/compass-design`](https://github.com/mattermost/compass-design) as a **sibling** of this repo
+- A local clone of [`mattermost/compass-design`](https://github.com/mattermost/compass-design) as a **sibling** of this repo (needed for unpublished `@mattermost/compass-proto`)
 
 ## Setup
 
-Clone both repositories side by side (required by the `file:../compass-design` dependencies):
+Clone both repositories side by side (proto still uses a `file:../compass-design` dependency):
 
 ```bash
 # parent folder, e.g. ~/Documents/GitHub/mattermost/
@@ -34,7 +34,7 @@ mattermost/
   mattermost-proto-playground/
 ```
 
-If compass-design lives elsewhere, symlink it to `../compass-design` from this repo, or set `COMPASS_DESIGN_PATH` for the ensure script (npm still needs a `file:` path that resolves — prefer a sibling symlink).
+If compass-design lives elsewhere, symlink it to `../compass-design` from this repo, or set `COMPASS_DESIGN_PATH` for the ensure script (npm still needs a `file:` path that resolves for proto — prefer a sibling symlink).
 
 Open the URL shown in the terminal. The catalog index is at `/`.
 
@@ -48,14 +48,12 @@ Use [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototy
 
 ## Dependencies
 
-This repo consumes Compass packages from the sibling `compass-design` repo via `file:` paths:
+- `@mattermost/compass-ui` — published core from npm (`@alpha` / `0.1.0-alpha.1+`; tokens, primitives, web chrome)
+- `@mattermost/compass-proto` — unpublished composites and fixtures (`ChannelShell`, Mobile*, Call*, demo sidebar models). **Not on npm** — linked from `compass-design` via `file:`. See [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what) for how layouts split across ui vs proto.
 
-- `@mattermost/compass-ui` — published core (tokens, primitives, web chrome)
-- `@mattermost/compass-proto` — unpublished composites and fixtures (`ChannelShell`, Mobile*, Call*, demo sidebar models). **Not on npm** — linked from `compass-design` like the docs site. See [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what) for how layouts split across ui vs proto.
+`npm run predev` / `prebuild` runs `scripts/ensure-compass-packages.mjs`, which verifies the installed npm `compass-ui` package and builds `compass-proto` `dist/` in `compass-design` when stale.
 
-`npm run predev` / `prebuild` runs `scripts/ensure-compass-packages.mjs`, which builds package `dist/` in `compass-design` when stale.
-
-When `@mattermost/compass-ui@alpha` is on npm (Phase 3), switch the UI dependency to the registry; proto stays `file:` / `npm pack`.
+**Variant props:** Compass UI uses lowercase kebab-case string values (e.g. `emphasis="primary"`, `size="x-small"`, `type="new-messages"`).
 
 ## Related docs
 

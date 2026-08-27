@@ -215,7 +215,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
               <SearchInput
                 ref={inputRef}
                 className={styles['quick-switcher__search-input']}
-                size="Large"
+                size="large"
                 placeholder="Go to page…"
                 aria-autocomplete="list"
                 aria-controls="quick-switcher-listbox"
@@ -241,7 +241,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
               <ShortcutTagGroup
                 className={styles['quick-switcher__shortcut']}
                 labels={shortcutLabels}
-                size="Small"
+                size="small"
               />
             </div>
           </div>

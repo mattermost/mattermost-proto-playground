@@ -37,7 +37,7 @@ export function KeypadInput({
   return (
     <TextInput
       className={inputClassName ?? styles['keypad__input']}
-      size="Small"
+      size="small"
       value={value}
       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(sanitizeDigits(e.target.value))}
       onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {

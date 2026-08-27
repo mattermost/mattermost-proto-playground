@@ -153,7 +153,7 @@ export default function ExternalCallParticipants() {
       <div className={shellStyles['channel-shell__messages']}>
         <Scrollbar>
           <div className={shellStyles['channel-shell__messages-list']}>
-            <MessageSeparator type="Date" label="Today" />
+            <MessageSeparator type="date" label="Today" />
 
             <Message
               avatarSrc={avatarSofia}
