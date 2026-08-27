@@ -47,7 +47,7 @@ export default function ChannelScene({
       <div className={styles['mobile-home-channel__channel-body']}>
         <Scrollbar>
           <div className={styles['mobile-home-channel__messages']}>
-            <MessageSeparator type='Date' label='Today' />
+            <MessageSeparator type='date' label='Today' />
 
             <MobileMessage
               avatarSrc={avatars.sofia}
@@ -84,7 +84,7 @@ export default function ChannelScene({
               </p>
             </MobileMessage>
 
-            <MessageSeparator type='New Messages' />
+            <MessageSeparator type='new-messages' />
 
             <MobileMessage
               avatarSrc={avatars.leonard}

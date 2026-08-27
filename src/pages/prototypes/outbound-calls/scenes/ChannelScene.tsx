@@ -62,7 +62,7 @@ export function ChannelScene({
   return (
     <>
       <ChannelHeader
-        type="Channel"
+        type="channel"
         name="op-nightingale"
         description="Tasking + coordination channel for the Nightingale working group."
         memberCount={8}
@@ -70,7 +70,7 @@ export function ChannelScene({
         callButton={<SegmentedCallButton actions={actions} onSelect={handleSelect} />}
       />
       <div className={layoutStyles['channel-shell__messages']}>
-        <MessageSeparator type="Date" label="Today" />
+        <MessageSeparator type="date" label="Today" />
 
         {CHANNEL_POSTS.map((p) => {
           const c = CONTACT_MAP[p.contactId];

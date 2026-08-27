@@ -35,7 +35,7 @@ Layout specimens **stitch ui + proto together** — e.g. desktop Channel uses `C
 | Consumer | `compass-ui` | `compass-proto` |
 | -------- | ------------ | --------------- |
 | **compass-design** (guidelines, Storybook) | yes (workspace) | yes (workspace) |
-| **Proto playground** (this repo) | yes (`file:`) | yes (`file:`) — required for most multi-scene flows |
+| **Proto playground** (this repo) | yes (`@mattermost/compass-ui@alpha` from npm) | yes (`file:`) — required for most multi-scene flows |
 | **Mattermost webapp** (product) | yes (npm `@alpha`, Phase 3) | **no** — leaf-first adoption of published chrome only |
 
 `@mattermost/compass-proto` is intentionally **not published to npm**. Playground and docs consumers link it from a sibling `compass-design` clone (`file:` or workspace); that is enough for prototyping. Product code must not depend on proto layouts or shells.
@@ -51,14 +51,14 @@ Layout specimens **stitch ui + proto together** — e.g. desktop Channel uses `C
 | **0 — Boundary + webapp spike** | Done | `compass-proto` package; core barrel pruned; chrome vs fixtures; pack/smoke tests; local webapp `file:` + watch validation |
 | **1 — Create `compass-design`** | Done | Move packages + docs app; CI publishes core only; GitHub Pages on design repo |
 | **2 — Slim playground** | Done | Flows + chrome only; depend on compass-design packages via `file:`; README for catalog role |
-| **3 — Alpha release** | Later | `@mattermost/compass-ui@alpha`; webapp switches from `file:` to npm for mergeable PRs |
+| **3 — Alpha release** | Done (playground) | Playground uses `@mattermost/compass-ui@alpha` from npm; proto stays `file:`. Webapp mergeable PR still pending. |
 
 Stop after each phase; verify before starting the next.
 
 ## Consumption
 
 - **Docs / Storybook:** guidelines in compass-design use workspace `compass-ui` + `compass-proto`; **Storybook** catalogs published `@mattermost/compass-ui` only
-- **Playground (this repo):** `file:../compass-design/packages/*` for `@mattermost/compass-ui` and `@mattermost/compass-proto`
+- **Playground (this repo):** `@mattermost/compass-ui@alpha` from npm + `file:../compass-design/packages/compass-proto`
 - **Webapp (testing branch):** `file:` → compass-ui + watch; webpack React aliases — see compass-design INTEGRATION.md
 - **Webapp (after alpha):** `@mattermost/compass-ui@alpha` only — no Mobile*, `ChannelShell`, or Call* from proto in product code
 

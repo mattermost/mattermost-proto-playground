@@ -10,7 +10,7 @@ export default function MentionsScene() {
     <MobileMentions>
       <Scrollbar>
         <div className={styles['mobile-home-channel__tab-list']}>
-          <MessageSeparator type='Date' label='Today' />
+          <MessageSeparator type='date' label='Today' />
 
           <MobileMessage
             avatarSrc={avatars.sofia}
@@ -39,7 +39,7 @@ export default function MentionsScene() {
             </p>
           </MobileMessage>
 
-          <MessageSeparator type='Date' label='Yesterday' />
+          <MessageSeparator type='date' label='Yesterday' />
 
           <MobileMessage
             avatarSrc={avatars.aikoTan}

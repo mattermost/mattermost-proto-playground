@@ -53,8 +53,8 @@ export default function WelcomeScene({ channelName, onJoin }: WelcomeSceneProps)
           />
           <Button
             type="submit"
-            emphasis="Primary"
-            size="Medium"
+            emphasis="primary"
+            size="medium"
             trailingIcon={<Icon size="16" glyph={<ArrowRightIcon />} />}
           >
             Join

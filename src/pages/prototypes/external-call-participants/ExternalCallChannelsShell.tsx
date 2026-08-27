@@ -19,7 +19,7 @@ export default function ExternalCallChannelsShell({
       channelsSidebarModel={externalCallParticipantsChannelsSidebarModel}
       channelHeader={
         <ChannelHeader
-          type="Channel"
+          type="channel"
           name="UX Design"
           description="Design reviews and ongoing work."
           memberCount={24}

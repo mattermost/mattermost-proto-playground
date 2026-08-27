@@ -48,8 +48,8 @@ export function RhsDialer({
         <span className={styles['rhs__header-title']}>Dial Pad</span>
         <IconButton
           aria-label="Close dial pad"
-          size="Small"
-          padding="Compact"
+          size="small"
+          padding="compact"
           icon={<Icon glyph={<CloseIcon />} size="16" />}
           onClick={onClose}
         />
@@ -59,7 +59,7 @@ export function RhsDialer({
         <div className={styles['rhs__dialpad']}>
           <TextInput
             className={styles['rhs__phone-field']}
-            size="Large"
+            size="large"
             value={typed}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setTyped(sanitizeDigits(e.target.value))}
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
@@ -76,8 +76,8 @@ export function RhsDialer({
               <span style={{ visibility: typed ? 'visible' : 'hidden' }}>
                 <IconButton
                   aria-label="Clear number"
-                  size="Small"
-                  padding="Compact"
+                  size="small"
+                  padding="compact"
                   icon={<Icon glyph={<CloseCircleIcon />} size="16" />}
                   onClick={clearTyped}
                 />
