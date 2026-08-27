@@ -91,4 +91,9 @@
     justify-self: start;
     min-width: 0;
   }
+
+  &__view-all :global([class*='menu-item__label']) {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+  }
 }

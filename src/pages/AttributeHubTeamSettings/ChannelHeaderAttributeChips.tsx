@@ -301,6 +301,7 @@ export default function ChannelHeaderAttributeChips({
                 <>
                   <PopoverMenuDivider />
                   <MenuItem
+                    className={styles['header-attrs__view-all']}
                     label="View all attributes"
                     leadingElement={false}
                     onClick={handleViewAll}

@@ -238,6 +238,7 @@ export default function PostHeaderAttributeChips({
               ))}
               <PopoverMenuDivider />
               <MenuItem
+                className={styles['header-attrs__view-all']}
                 label="View all attributes"
                 leadingElement={false}
                 onClick={closeOverflow}
