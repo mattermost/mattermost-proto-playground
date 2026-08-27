@@ -215,9 +215,17 @@ export default function PostAttributesThreadSidebar({
           open={replyPickerOpen}
           onClose={closeReplyPicker}
           anchorRef={replyPickerAnchorRef}
+          align="end"
           attachedIds={replyPickerPost.attributes.map(
             (row) => row.attributeId,
           )}
+          attributes={Array.from(postAttributesById.values())}
+          post={replyPickerPost}
+          onEditAttributes={
+            onOpenAttributesModal
+              ? () => onOpenAttributesModal(replyPickerPostId)
+              : undefined
+          }
           onPickAttribute={(attributeId) => {
             applyReplyUpdate(replyPickerPostId, (current) =>
               addAttributeToPost(current, attributeId),

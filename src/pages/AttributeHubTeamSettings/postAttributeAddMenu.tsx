@@ -14,16 +14,22 @@ import PopoverMenu, {
   PopoverMenuScroll,
 } from '@/components/ui/PopoverMenu/PopoverMenu';
 import SearchInput from '@/components/ui/SearchInput/SearchInput';
-import FixedPopoverMenu from '@/components/ui/FixedPopoverMenu/FixedPopoverMenu';
+import FixedPopoverMenu, {
+  type FixedPopoverAlign,
+} from '@/components/ui/FixedPopoverMenu/FixedPopoverMenu';
 import type { HubAttribute } from '@/pages/AttributeManagementHub/hubData';
 import { attributeTypeIcon } from '@/pages/AttributeManagementHub/attrTypeIcon';
+import ClassificationPill from '@/pages/attribute-system/ClassificationPill';
 import {
   channelDefaultValueId,
+  effectivePostAttributeValueId,
+  effectivePostAttributeValueLabel,
   isInheritedPostBinding,
   isPostAttributeLocked,
   postBinding,
   postScopedAttributes,
   valueLabel,
+  type ThreadDemoPost,
 } from './postViewData';
 import menuStyles from './ThreadReplyMessageInput.module.scss';
 
@@ -111,6 +117,44 @@ export function defaultValueForPostAttribute(attribute: HubAttribute): string {
   return attribute.values[0]?.id ?? '';
 }
 
+export interface PostAttributeAddMenuRow {
+  id: string;
+  label: string;
+  icon: ReactNode;
+  valueId: string | null;
+  valueLabel: string | null;
+  attached: boolean;
+  locked: boolean;
+}
+
+export function buildPostAttributeAddMenuRows(
+  post: ThreadDemoPost,
+  attributes: HubAttribute[] = postScopedAttributes(),
+): PostAttributeAddMenuRow[] {
+  const rows: PostAttributeAddMenuRow[] = [];
+
+  for (const attribute of attributes) {
+    const binding = postBinding(attribute);
+    if (!binding) continue;
+
+    const attached = post.attributes.some(
+      (row) => row.attributeId === attribute.id,
+    );
+
+    rows.push({
+      id: attribute.id,
+      label: attribute.name,
+      icon: postAttributeIcon(attribute),
+      valueId: effectivePostAttributeValueId(post, attribute),
+      valueLabel: effectivePostAttributeValueLabel(post, attribute),
+      attached,
+      locked: isPostAttributeLocked(attribute, binding),
+    });
+  }
+
+  return rows;
+}
+
 export interface PostAttributeAddMenuProps {
   open: boolean;
   onClose: () => void;
@@ -119,6 +163,12 @@ export interface PostAttributeAddMenuProps {
   onPickAttribute: (attributeId: string) => void;
   onCreateNew?: () => void;
   attributes?: HubAttribute[];
+  /** When set, shows current attribute values and an Attributes header. */
+  post?: ThreadDemoPost;
+  /** Opens the full attributes editor (modal). */
+  onEditAttributes?: () => void;
+  /** Horizontal anchor — use `end` in narrow RHS so the menu extends leftward. */
+  align?: FixedPopoverAlign;
 }
 
 export function PostAttributeAddMenu({
@@ -129,8 +179,16 @@ export function PostAttributeAddMenu({
   onPickAttribute,
   onCreateNew,
   attributes,
+  post,
+  onEditAttributes,
+  align = 'start',
 }: PostAttributeAddMenuProps) {
   const [query, setQuery] = useState('');
+
+  const postRows = useMemo(() => {
+    if (!post) return null;
+    return buildPostAttributeAddMenuRows(post, attributes);
+  }, [attributes, post]);
 
   const available = useMemo(
     () =>
@@ -139,10 +197,16 @@ export function PostAttributeAddMenu({
       ),
     [attributes, attachedIds],
   );
-  const filtered = useMemo(
+
+  const filteredAvailable = useMemo(
     () => filterPostAttributeMenuItems(available, query),
     [available, query],
   );
+
+  const filteredPostRows = useMemo(() => {
+    if (!postRows) return [];
+    return filterPostAttributeMenuItems(postRows, query);
+  }, [postRows, query]);
 
   const closeMenu = () => {
     setQuery('');
@@ -160,19 +224,51 @@ export function PostAttributeAddMenu({
     onCreateNew?.();
   };
 
+  const handleEdit = () => {
+    closeMenu();
+    onEditAttributes?.();
+  };
+
+  const showPostSummary = postRows != null;
+
   return (
     <FixedPopoverMenu
       open={open}
       onClose={closeMenu}
       anchorRef={anchorRef}
-      align="start"
+      align={align}
       minWidthFloor={300}
       className={menuStyles['thread-reply-input__menu']}
     >
       <PopoverMenu
-        aria-label="Add attribute"
+        aria-label={showPostSummary ? 'Attributes' : 'Add attribute'}
         className={menuStyles['thread-reply-input__attr-menu']}
       >
+        {showPostSummary && (
+          <>
+            <div className={menuStyles['thread-reply-input__attr-menu-header']}>
+              <span
+                className={menuStyles['thread-reply-input__attr-menu-title']}
+              >
+                Attributes
+              </span>
+              {onEditAttributes && (
+                <button
+                  type="button"
+                  className={menuStyles['thread-reply-input__attr-menu-edit']}
+                  onClick={handleEdit}
+                >
+                  Edit
+                </button>
+              )}
+            </div>
+            <div
+              className={menuStyles['thread-reply-input__attr-menu-divider']}
+              aria-hidden
+            />
+          </>
+        )}
+
         <div className={menuStyles['thread-reply-input__search']}>
           <SearchInput
             size="Small"
@@ -187,9 +283,58 @@ export function PostAttributeAddMenu({
         </div>
 
         <PopoverMenuScroll maxHeight="min(280px, var(--fixed-popover-max-height, 280px))">
-          {filtered.length > 0 ? (
+          {showPostSummary ? (
+            filteredPostRows.length > 0 ? (
+              <PopoverMenuGroup aria-label="Post attributes">
+                {filteredPostRows.map((item) => {
+                  const isClassification =
+                    item.id === 'classification' && item.valueLabel != null;
+                  const classificationValueId =
+                    item.valueId ??
+                    (item.valueLabel ? 'u' : null);
+
+                  return (
+                    <MenuItem
+                      key={item.id}
+                      className={menuStyles['thread-reply-input__menu-item']}
+                      label={item.label}
+                      leadingVisual={item.icon}
+                      secondaryLabel={
+                        !isClassification && item.valueLabel ? (
+                          <span
+                            className={
+                              menuStyles['thread-reply-input__menu-item-value']
+                            }
+                          >
+                            {item.valueLabel}
+                          </span>
+                        ) : undefined
+                      }
+                      secondaryLabelPosition="Inline"
+                      trailingElement={isClassification}
+                      trailingVisual={
+                        isClassification && classificationValueId ? (
+                          <ClassificationPill
+                            valueId={classificationValueId}
+                            label={item.valueLabel!}
+                            locked
+                          />
+                        ) : undefined
+                      }
+                      disabled={item.attached || item.locked}
+                      onClick={() => pickAttribute(item.id)}
+                    />
+                  );
+                })}
+              </PopoverMenuGroup>
+            ) : (
+              <p className={menuStyles['thread-reply-input__empty']}>
+                No matching attributes.
+              </p>
+            )
+          ) : filteredAvailable.length > 0 ? (
             <PopoverMenuGroup aria-label="Available attributes">
-              {filtered.map((item) => (
+              {filteredAvailable.map((item) => (
                 <MenuItem
                   key={item.id}
                   className={menuStyles['thread-reply-input__menu-item']}

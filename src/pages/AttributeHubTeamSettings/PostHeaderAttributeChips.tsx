@@ -22,6 +22,7 @@ import {
   type PostHeaderAttribute,
   type ThreadDemoPost,
 } from './postViewData';
+import { useResponsiveHeaderChipCount } from './useResponsiveHeaderChipCount';
 import styles from './ChannelHeaderAttributeChips.module.scss';
 
 export interface PostHeaderAttributeChipsProps {
@@ -30,8 +31,12 @@ export interface PostHeaderAttributeChipsProps {
   showWhereById?: Record<string, DisplayWhere[]>;
   className?: string;
   maxVisible?: number;
+  /** Fit as many chips as the container width allows; overflow uses "+N". */
+  responsiveOverflow?: boolean;
   /** Hide classification pill when it is also shown as a reply banner. */
   omitClassification?: boolean;
+  /** Pre-resolved header attributes; skips postHeaderAttributes when set. */
+  attributes?: PostHeaderAttribute[];
 }
 
 const CHIP_HINT_TOOLTIP_GAP = 8;
@@ -51,6 +56,7 @@ function HeaderAttributeValue({
       label={attribute.label}
       valueId={attribute.valueId}
       isClassification={attribute.isClassification}
+      locked={attribute.isClassification ? false : undefined}
     />
   );
 }
@@ -171,81 +177,134 @@ export default function PostHeaderAttributeChips({
   showWhereById = {},
   className = '',
   maxVisible = DEFAULT_MAX_VISIBLE,
+  responsiveOverflow = false,
   omitClassification = false,
+  attributes: attributesProp,
 }: PostHeaderAttributeChipsProps) {
-  const attributes = postHeaderAttributes(post, postAttributesById, showWhereById).filter(
-    (attribute) => !(omitClassification && attribute.isClassification),
-  );
+  const attributes = (
+    attributesProp ??
+    postHeaderAttributes(post, postAttributesById, showWhereById)
+  ).filter((attribute) => !(omitClassification && attribute.isClassification));
   const moreRef = useRef<HTMLButtonElement>(null);
   const [overflowOpen, setOverflowOpen] = useState(false);
+  const { hostRef, measureRef, visibleCount } = useResponsiveHeaderChipCount(
+    attributes.length,
+    responsiveOverflow,
+    responsiveOverflow ? 1 : 0,
+  );
 
   if (attributes.length === 0) return null;
 
-  const visibleLimit = Math.max(0, maxVisible);
+  const visibleLimit = responsiveOverflow
+    ? visibleCount
+    : Math.max(0, maxVisible);
   const visible = attributes.slice(0, visibleLimit);
   const overflow = attributes.slice(visibleLimit);
   const overflowCount = overflow.length;
+  const overflowLabel = responsiveOverflow
+    ? `+${overflowCount}`
+    : `+${overflowCount} more`;
 
   const closeOverflow = () => setOverflowOpen(false);
 
-  const rootClass = [styles['header-attrs'], className].filter(Boolean).join(' ');
+  const rootClass = [
+    styles['header-attrs'],
+    responsiveOverflow ? styles['header-attrs--responsive'] : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={rootClass} aria-label="Reply attributes">
-      {visible.map((attribute) => (
-        <HeaderAttributeChipHint key={attribute.id} name={attribute.name}>
-          <HeaderAttributeValue attribute={attribute} />
-        </HeaderAttributeChipHint>
-      ))}
+    <div
+      ref={hostRef}
+      className={
+        responsiveOverflow ? styles['header-attrs__host'] : undefined
+      }
+    >
+      <div className={rootClass} aria-label="Reply attributes">
+        {visible.map((attribute) => (
+          <HeaderAttributeChipHint key={attribute.id} name={attribute.name}>
+            <HeaderAttributeValue attribute={attribute} />
+          </HeaderAttributeChipHint>
+        ))}
 
-      {overflowCount > 0 && (
-        <>
-          <button
-            ref={moreRef}
-            type="button"
-            className={styles['header-attrs__more']}
-            aria-haspopup="menu"
-            aria-expanded={overflowOpen}
-            aria-label={`${overflowCount} more attributes`}
-            onClick={() => setOverflowOpen((open) => !open)}
-          >
-            <Chip as="div" size="Small">
-              +{overflowCount} more
-            </Chip>
-          </button>
-          <FixedPopoverMenu
-            open={overflowOpen}
-            onClose={closeOverflow}
-            anchorRef={moreRef}
-            align="start"
-            minWidthFloor={280}
-            gap={4}
-          >
-            <PopoverMenu aria-label="More reply attributes">
-              {overflow.map((attribute) => (
-                <div
-                  key={attribute.id}
-                  className={styles['header-attrs__overflow-row']}
-                  role="presentation"
-                >
-                  <span className={styles['header-attrs__overflow-label']}>
-                    {attribute.name}
-                  </span>
-                  <span className={styles['header-attrs__overflow-value']}>
-                    <HeaderAttributeValue attribute={attribute} />
-                  </span>
-                </div>
-              ))}
-              <PopoverMenuDivider />
-              <MenuItem
-                className={styles['header-attrs__view-all']}
-                label="View all attributes"
-                leadingElement={false}
-                onClick={closeOverflow}
-              />
-            </PopoverMenu>
-          </FixedPopoverMenu>
-        </>
+        {overflowCount > 0 && (
+          <>
+            <button
+              ref={moreRef}
+              type="button"
+              className={styles['header-attrs__more']}
+              aria-haspopup="menu"
+              aria-expanded={overflowOpen}
+              aria-label={`${overflowCount} more attributes`}
+              onClick={() => setOverflowOpen((open) => !open)}
+            >
+              <Chip as="div" size="Small">
+                {overflowLabel}
+              </Chip>
+            </button>
+            <FixedPopoverMenu
+              open={overflowOpen}
+              onClose={closeOverflow}
+              anchorRef={moreRef}
+              align="start"
+              minWidthFloor={280}
+              gap={4}
+            >
+              <PopoverMenu aria-label="More reply attributes">
+                {overflow.map((attribute) => (
+                  <div
+                    key={attribute.id}
+                    className={styles['header-attrs__overflow-row']}
+                    role="presentation"
+                  >
+                    <span className={styles['header-attrs__overflow-label']}>
+                      {attribute.name}
+                    </span>
+                    <span className={styles['header-attrs__overflow-value']}>
+                      <HeaderAttributeValue attribute={attribute} />
+                    </span>
+                  </div>
+                ))}
+                <PopoverMenuDivider />
+                <MenuItem
+                  className={styles['header-attrs__view-all']}
+                  label="View all attributes"
+                  leadingElement={false}
+                  onClick={closeOverflow}
+                />
+              </PopoverMenu>
+            </FixedPopoverMenu>
+          </>
+        )}
+      </div>
+
+      {responsiveOverflow && (
+        <div
+          ref={measureRef}
+          className={styles['header-attrs__measure']}
+          aria-hidden
+        >
+          {attributes.map((attribute) => (
+            <span key={attribute.id} data-header-chip-measure>
+              <HeaderAttributeValue attribute={attribute} />
+            </span>
+          ))}
+          {Array.from(
+            { length: Math.max(0, attributes.length - 1) },
+            (_, index) => {
+              const count = index + 1;
+              return (
+                <span key={count} data-header-chip-overflow-measure={count}>
+                  <Chip as="div" size="Small">
+                    +{count}
+                  </Chip>
+                </span>
+              );
+            },
+          )}
+        </div>
       )}
     </div>
   );

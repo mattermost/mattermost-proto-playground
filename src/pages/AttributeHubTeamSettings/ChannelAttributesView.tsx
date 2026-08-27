@@ -18,6 +18,8 @@ import ChannelHeaderAttributeChips from './ChannelHeaderAttributeChips';
 import PostHeaderAttributeChips from './PostHeaderAttributeChips';
 import ChannelClassificationBanner from './ChannelClassificationBanner';
 import ChannelAttributeHeaderStack from './ChannelAttributeHeaderStack';
+import headerStackStyles from './ChannelAttributeHeaderStack.module.scss';
+import BookmarksBar from './BookmarksBar';
 import PostAttributesThreadSidebar from './PostAttributesThreadSidebar';
 import CreateChannelSidebar, {
   type SidebarChannelItem,
@@ -47,12 +49,15 @@ import {
   addAttributeToPost,
   addCustomAttributeToPost,
   addCustomAttributeValueOnPost,
+  CLASSIFICATION_RANK,
   classificationLabel,
   removeAttributeFromPost,
   removeCustomAttributeFromPost,
   postClassificationBanner,
   postScopedAttributes,
+  threadHeaderChipAttributes,
   updateCustomAttributeOnPost,
+  type PostClassificationBannerState,
   type ThreadDemoPost,
 } from './postViewData';
 import threadStyles from './ChannelThreadView.module.scss';
@@ -61,6 +66,8 @@ export interface BannerVisibility {
   channel: boolean;
   reply: boolean;
 }
+
+export type HeaderAttributeLayout = 'stacked' | 'inline';
 
 export interface ChannelAttributesViewProps {
   readOnly?: boolean;
@@ -74,8 +81,14 @@ export interface ChannelAttributesViewProps {
   bannerVisibility?: BannerVisibility;
   /** Show channel header description text inline in the title row. */
   showChannelHeaderText?: boolean;
+  /** Show the bookmarks bar below the channel classification banner. */
+  showBookmarksBar?: boolean;
+  /** Stacked chips row vs inline chips on the title row. */
+  headerAttributeLayout?: HeaderAttributeLayout;
   /** Workspace classification band at the top of the shell frame. */
   globalBanner?: ReactNode;
+  /** Max classification for thread reply banner when post level is lower. */
+  replyClassificationCeiling?: PostClassificationBannerState | null;
   onCreateAttribute?: () => void;
   onEditAttribute?: (attributeId: string) => void;
 }
@@ -91,7 +104,7 @@ const EMPTY_CHANNEL_STATE: ChannelDemoState = {
 };
 
 const DEFAULT_SIDEBAR_CHANNELS: SidebarChannelItem[] = [
-  { id: ALPHA_CHANNEL_ID, name: 'alpha-coordination', privacy: 'public' },
+  { id: ALPHA_CHANNEL_ID, name: 'field-coordination', privacy: 'public' },
   {
     id: 'program-planning',
     name: 'program-planning',
@@ -234,7 +247,10 @@ export default function ChannelAttributesView({
   initialLeonardPost,
   bannerVisibility = { channel: true, reply: true },
   showChannelHeaderText = false,
+  showBookmarksBar = true,
+  headerAttributeLayout = 'inline',
   globalBanner,
+  replyClassificationCeiling = null,
   onCreateAttribute: _onCreateAttribute,
   onEditAttribute,
 }: ChannelAttributesViewProps) {
@@ -267,7 +283,7 @@ export default function ChannelAttributesView({
   const activeChannelMeta =
     sidebarChannels.find((channel) => channel.id === activeChannelId) ??
     sidebarChannels[0];
-  const channelName = activeChannelMeta?.name ?? 'alpha-coordination';
+  const channelName = activeChannelMeta?.name ?? 'field-coordination';
   const channel = channelStates[activeChannelId] ?? EMPTY_CHANNEL_STATE;
   const isAlphaChannel = activeChannelId === ALPHA_CHANNEL_ID;
   const isCreatedChannel = Boolean(createdSummaries[activeChannelId]);
@@ -301,10 +317,49 @@ export default function ChannelAttributesView({
     ? (postsById.get(selectedPostId) ?? null)
     : null;
 
+  const inlineHeaderAttributes = headerAttributeLayout === 'inline';
+
+  const threadClassificationLevel = useMemo(() => {
+    if (!selectedPost) return null;
+
+    const candidates = [
+      postClassificationBanner(selectedPost, postAttributesById),
+      channelClassificationBannerForced(channel),
+      replyClassificationCeiling,
+    ].filter((row): row is PostClassificationBannerState => row != null);
+
+    if (candidates.length === 0) return null;
+
+    return candidates.reduce((highest, current) =>
+      (CLASSIFICATION_RANK[current.valueId] ?? 0) >
+      (CLASSIFICATION_RANK[highest.valueId] ?? 0)
+        ? current
+        : highest,
+    );
+  }, [channel, postAttributesById, replyClassificationCeiling, selectedPost]);
+
   const replyClassificationBanner = useMemo(() => {
-    if (!bannerVisibility.reply || !selectedPost) return null;
-    return postClassificationBanner(selectedPost, postAttributesById);
-  }, [bannerVisibility.reply, postAttributesById, selectedPost]);
+    if (!bannerVisibility.reply || !threadClassificationLevel) return null;
+    return threadClassificationLevel;
+  }, [bannerVisibility.reply, threadClassificationLevel]);
+
+  const threadHeaderChipAttrs = useMemo(() => {
+    if (!selectedPost) return undefined;
+
+    const showReplyBanner =
+      bannerVisibility.reply && Boolean(threadClassificationLevel);
+
+    return threadHeaderChipAttributes(selectedPost, postAttributesById, {
+      omitClassification: !inlineHeaderAttributes && showReplyBanner,
+      classificationOverride: threadClassificationLevel ?? undefined,
+    });
+  }, [
+    bannerVisibility.reply,
+    inlineHeaderAttributes,
+    postAttributesById,
+    selectedPost,
+    threadClassificationLevel,
+  ]);
 
   const updateActiveChannel = useCallback(
     (updater: (current: ChannelDemoState) => ChannelDemoState) => {
@@ -512,6 +567,47 @@ export default function ChannelAttributesView({
     [applyLeonardPostUpdate, selectedPostId],
   );
 
+  const channelHeaderChips =
+    isAlphaChannel || isCreatedChannel ? (
+      <ChannelHeaderAttributeChips
+        channel={channel}
+        responsiveOverflow={inlineHeaderAttributes}
+        onChipClick={openInfoSidebar}
+        onViewAllAttributes={openInfoSidebar}
+      />
+    ) : undefined;
+
+  const threadHeaderChips = selectedPost ? (
+    <PostHeaderAttributeChips
+      post={selectedPost}
+      postAttributesById={postAttributesById}
+      attributes={threadHeaderChipAttrs}
+      responsiveOverflow={inlineHeaderAttributes}
+    />
+  ) : (
+    <ChannelHeaderAttributeChips
+      channel={channel}
+      responsiveOverflow={inlineHeaderAttributes}
+      onChipClick={openInfoSidebar}
+      onViewAllAttributes={openInfoSidebar}
+    />
+  );
+
+  const inlineChannelMeta =
+    inlineHeaderAttributes &&
+    (channelHeaderChips != null || showChannelHeaderText) ? (
+      <div className={headerStackStyles['header-inline-meta']}>
+        {channelHeaderChips}
+        {showChannelHeaderText && (
+          <span className={headerStackStyles['header-inline-meta__description']}>
+            {CHANNEL_HEADER_DESCRIPTION}
+          </span>
+        )}
+      </div>
+    ) : (
+      channelHeaderChips
+    );
+
   return (
     <div className={createChannelStyles['create-channel-modal__host']}>
     <ChannelShell
@@ -534,6 +630,7 @@ export default function ChannelAttributesView({
       }
       channelHeader={
         <ChannelAttributeHeaderStack
+          layout={headerAttributeLayout}
           titleBar={
             <ChannelHeader
               type="Channel"
@@ -542,21 +639,16 @@ export default function ChannelAttributesView({
               pinnedCount={isCreatedChannel ? 0 : 2}
               favorited={!isCreatedChannel}
               description={
-                showChannelHeaderText ? CHANNEL_HEADER_DESCRIPTION : undefined
+                !inlineHeaderAttributes && showChannelHeaderText
+                  ? CHANNEL_HEADER_DESCRIPTION
+                  : undefined
               }
+              metaSlot={inlineChannelMeta}
               onInfoClick={toggleInfoSidebar}
               infoToggled={infoSidebarOpen}
             />
           }
-          chips={
-            isAlphaChannel || isCreatedChannel ? (
-              <ChannelHeaderAttributeChips
-                channel={channel}
-                onChipClick={openInfoSidebar}
-                onViewAllAttributes={openInfoSidebar}
-              />
-            ) : undefined
-          }
+          chips={inlineHeaderAttributes ? undefined : channelHeaderChips}
           banner={
             classificationBanner ? (
               <ChannelClassificationBanner
@@ -565,6 +657,7 @@ export default function ChannelAttributesView({
               />
             ) : undefined
           }
+          bookmarksBar={showBookmarksBar ? <BookmarksBar /> : undefined}
         />
       }
       trailing={
@@ -600,32 +693,17 @@ export default function ChannelAttributesView({
             className={shellStyles['channel-shell__right-sidebar']}
             header={
               <ChannelAttributeHeaderStack
+                layout={headerAttributeLayout}
                 titleBar={
                   <RightSidebarHeader
                     title="Thread"
                     secondaryTitle={channelName}
+                    metaSlot={inlineHeaderAttributes ? threadHeaderChips : undefined}
                     onExpand={() => {}}
                     onClose={() => setThreadSidebarOpen(false)}
                   />
                 }
-                chips={
-                  selectedPost ? (
-                    <PostHeaderAttributeChips
-                      post={selectedPost}
-                      postAttributesById={postAttributesById}
-                      omitClassification={
-                        bannerVisibility.reply &&
-                        Boolean(replyClassificationBanner)
-                      }
-                    />
-                  ) : (
-                    <ChannelHeaderAttributeChips
-                      channel={channel}
-                      onChipClick={openInfoSidebar}
-                      onViewAllAttributes={openInfoSidebar}
-                    />
-                  )
-                }
+                chips={inlineHeaderAttributes ? undefined : threadHeaderChips}
                 banner={
                   bannerVisibility.reply && replyClassificationBanner ? (
                     <ChannelClassificationBanner

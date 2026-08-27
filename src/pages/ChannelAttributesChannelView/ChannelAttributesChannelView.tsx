@@ -23,6 +23,13 @@ import {
 import { THREAD_ROOT, type ThreadDemoPost } from '@/pages/AttributeHubTeamSettings/postViewData';
 import styles from './ChannelAttributesChannelView.module.scss';
 
+const HEADER_LAYOUT_SCENES = [
+  { id: 'stacked', label: 'Stacked' },
+  { id: 'inline', label: 'Inline' },
+] as const;
+
+type HeaderLayout = (typeof HEADER_LAYOUT_SCENES)[number]['id'];
+
 const RHS_SCENES = [
   { id: 'info', label: 'Info RHS' },
   { id: 'thread', label: 'Thread RHS' },
@@ -39,9 +46,9 @@ const FIGMA_LEONARD_POST: ThreadDemoPost = {
   ...THREAD_ROOT,
   avatarSrc: avatarLeonard,
   attributes: [
-    { attributeId: 'classification', valueId: 's', overridden: true },
-    { attributeId: 'caveat', valueId: 'cav-noforn', overridden: false },
-    { attributeId: 'mission-phase', valueId: 'mp-exec', overridden: false },
+    { attributeId: 'classification', valueId: 'u', overridden: true },
+    { attributeId: 'caveat', valueId: 'cav-noforn', overridden: true },
+    { attributeId: 'mission-phase', valueId: 'mp-exec', overridden: true },
     { attributeId: 'engagement-tempo', valueId: 'et-surge', overridden: true },
   ],
 };
@@ -58,7 +65,10 @@ export default function ChannelAttributesChannelView() {
   const [showChannelBanner, setShowChannelBanner] = useState(true);
   const [showReplyBanner, setShowReplyBanner] = useState(true);
   const [showChannelHeaderText, setShowChannelHeaderText] = useState(false);
-  const [rhsPanel, setRhsPanel] = useState<RhsPanel>('info');
+  const [showBookmarksBar, setShowBookmarksBar] = useState(true);
+  const [headerAttributeLayout, setHeaderAttributeLayout] =
+    useState<HeaderLayout>('inline');
+  const [rhsPanel, setRhsPanel] = useState<RhsPanel>('thread');
   const [channelSettingsOpen, setChannelSettingsOpen] = useState(false);
   const [channelSettingsSession, setChannelSettingsSession] = useState(0);
 
@@ -135,7 +145,23 @@ export default function ChannelAttributesChannelView() {
                 >
                   Channel header text
                 </Checkbox>
+                <Checkbox
+                  checked={showBookmarksBar}
+                  onChange={(event) => setShowBookmarksBar(event.target.checked)}
+                >
+                  Bookmarks bar
+                </Checkbox>
               </div>
+
+              <SceneSwitcher
+                label="Header layout"
+                scenes={[...HEADER_LAYOUT_SCENES]}
+                activeId={headerAttributeLayout}
+                onChange={(id) =>
+                  setHeaderAttributeLayout(id === 'inline' ? 'inline' : 'stacked')
+                }
+                ariaLabel="Header attribute layout"
+              />
 
               <PopoverMenuDivider />
 
@@ -153,7 +179,7 @@ export default function ChannelAttributesChannelView() {
 
       <div className={styles['scene__viewport']}>
         <ChannelAttributesView
-          key={rhsPanel}
+          key={`${rhsPanel}-${headerAttributeLayout}`}
           initialChannelSeed={CHANNEL_VIEW_FIGMA_SEED}
           initialLeonardPost={FIGMA_LEONARD_POST}
           initialInfoSidebarOpen={rhsPanel === 'info'}
@@ -163,6 +189,9 @@ export default function ChannelAttributesChannelView() {
             reply: showReplyBanner,
           }}
           showChannelHeaderText={showChannelHeaderText}
+          showBookmarksBar={showBookmarksBar}
+          headerAttributeLayout={headerAttributeLayout}
+          replyClassificationCeiling={GLOBAL_BANNER}
           globalBanner={
             showGlobalBanner ? (
               <ChannelClassificationBanner
@@ -187,7 +216,7 @@ export default function ChannelAttributesChannelView() {
           <div className={styles['scene__dialog']}>
             <ChannelSettingsModal
               key={channelSettingsSession}
-              channelName="alpha-coordination"
+              channelName="field-coordination"
               onClose={closeChannelSettings}
             />
           </div>

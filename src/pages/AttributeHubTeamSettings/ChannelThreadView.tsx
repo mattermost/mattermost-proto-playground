@@ -327,7 +327,7 @@ export default function ChannelThreadView({
             titleBar={
               <ChannelHeader
                 type="Channel"
-                name="alpha-coordination"
+                name="field-coordination"
                 memberCount={28}
                 pinnedCount={2}
                 favorited
@@ -354,7 +354,7 @@ export default function ChannelThreadView({
                   titleBar={
                     <RightSidebarHeader
                       title="Thread"
-                      secondaryTitle="alpha-coordination"
+                      secondaryTitle="field-coordination"
                       onExpand={() => {}}
                       onClose={() => setThreadSidebarOpen(false)}
                     />
@@ -550,7 +550,7 @@ export default function ChannelThreadView({
 
           <div className={shellStyles['channel-shell__message-input']}>
             <ThreadReplyMessageInput
-              placeholder="Write to alpha-coordination"
+              placeholder="Write to field-coordination"
               postAttributes={allPostAttributes}
               showWhereById={postShowWhereById}
               channelClassificationValueId={channelClassificationValueId}
@@ -566,8 +566,11 @@ export default function ChannelThreadView({
           open={addPickerOpen}
           onClose={closeAddAttributePicker}
           anchorRef={addPickerAnchorRef}
+          align={threadSidebarOpen ? 'end' : 'start'}
           attachedIds={addPickerPost.attributes.map((row) => row.attributeId)}
           attributes={allPostAttributes}
+          post={addPickerPost}
+          onEditAttributes={() => openAttributesModal(addPickerPostId)}
           onPickAttribute={(attributeId) =>
             handleAddAttribute(addPickerPostId, attributeId)
           }
@@ -589,7 +592,7 @@ export default function ChannelThreadView({
           <div className={styles['channel-thread-view__attr-dialog']}>
             <Modal
               title="Post attributes"
-              subtitle={`${attributesModalPost.author} · alpha-coordination`}
+              subtitle={`${attributesModalPost.author} · field-coordination`}
               size="Medium"
               onClose={closeAttributesModal}
               noBodyPadding

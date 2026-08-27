@@ -84,8 +84,8 @@ export const THREAD_ROOT: ThreadDemoPost = {
   body: 'Ops brief for the week: sustainment window opens Thursday. Confirm tempo and classification on outbound posts before the sync with Program ALPHA leadership.',
   attributes: [
     { attributeId: 'classification', valueId: 'u', overridden: true },
-    { attributeId: 'caveat', valueId: 'cav-noforn', overridden: false },
-    { attributeId: 'mission-phase', valueId: 'mp-exec', overridden: false },
+    { attributeId: 'caveat', valueId: 'cav-noforn', overridden: true },
+    { attributeId: 'mission-phase', valueId: 'mp-exec', overridden: true },
     { attributeId: 'engagement-tempo', valueId: 'et-surge', overridden: true },
   ],
 };
@@ -311,6 +311,39 @@ export function postClassificationBanner(
   };
 }
 
+/** Thread RHS header chips — optionally swap classification for banner level. */
+export function threadHeaderChipAttributes(
+  post: ThreadDemoPost,
+  postAttributesById: Map<string, HubAttribute>,
+  options: {
+    showWhereById?: Record<string, DisplayWhere[]>;
+    omitClassification?: boolean;
+    classificationOverride?: PostClassificationBannerState | null;
+  } = {},
+): PostHeaderAttribute[] {
+  let attributes = postHeaderAttributes(
+    post,
+    postAttributesById,
+    options.showWhereById,
+  );
+
+  if (options.omitClassification) {
+    attributes = attributes.filter((attribute) => !attribute.isClassification);
+  } else if (options.classificationOverride) {
+    attributes = attributes.filter((attribute) => !attribute.isClassification);
+    attributes.unshift({
+      id: 'classification',
+      name: 'Classification',
+      valueId: options.classificationOverride.valueId,
+      label: options.classificationOverride.label,
+      isClassification: true,
+      useChip: false,
+    });
+  }
+
+  return attributes;
+}
+
 export function isPostAttributeLocked(
   _attribute: HubAttribute,
   binding: ResourceConfig,
@@ -332,6 +365,43 @@ export function isPostAttributeInherited(
 
 export function channelDefaultValueId(attributeId: string): string | undefined {
   return CHANNEL_ATTRIBUTE_DEFAULTS[attributeId];
+}
+
+/**
+ * Display label for a post-scoped attribute — explicit post value, or channel
+ * classification when the post has not set one yet.
+ */
+export function effectivePostAttributeValueId(
+  post: ThreadDemoPost,
+  attribute: HubAttribute,
+): string | null {
+  const instance = post.attributes.find(
+    (row) => row.attributeId === attribute.id,
+  );
+  if (instance) {
+    return instance.valueId;
+  }
+
+  const binding = postBinding(attribute);
+  if (
+    attribute.id === 'classification' &&
+    binding &&
+    isInheritedPostBinding(binding)
+  ) {
+    const channelVal = channelDefaultValueId(attribute.id);
+    if (channelVal) return channelVal;
+  }
+
+  return null;
+}
+
+export function effectivePostAttributeValueLabel(
+  post: ThreadDemoPost,
+  attribute: HubAttribute,
+): string | null {
+  const valueId = effectivePostAttributeValueId(post, attribute);
+  if (!valueId) return null;
+  return valueLabel(attribute, valueId);
 }
 
 export function buildPostAttributesFromComposer(

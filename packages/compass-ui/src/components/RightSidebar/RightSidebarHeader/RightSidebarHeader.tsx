@@ -31,6 +31,10 @@ export interface RightSidebarHeaderProps {
   onActionClick?: () => void;
   /** When true, the action button shows in its active state. */
   actionActive?: boolean;
+  /** Optional metadata after the title row (e.g. attribute chips). */
+  metaSlot?: ReactNode;
+  /** When true with metaSlot, renders chips before secondaryTitle. */
+  metaBeforeSecondary?: boolean;
   className?: string;
 }
 
@@ -46,9 +50,15 @@ export default function RightSidebarHeader({
   actionLabel,
   onActionClick,
   actionActive = false,
+  metaSlot,
+  metaBeforeSecondary = false,
   className = '',
 }: RightSidebarHeaderProps) {
-  const rootClass = [styles['right-sidebar-header'], className]
+  const rootClass = [
+    styles['right-sidebar-header'],
+    metaBeforeSecondary ? styles['right-sidebar-header--meta-first'] : '',
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -82,12 +92,18 @@ export default function RightSidebarHeader({
             </span>
           )}
         </div>
+        {metaBeforeSecondary && metaSlot && (
+          <div className={styles['right-sidebar-header__meta']}>{metaSlot}</div>
+        )}
         {secondaryTitle && (
           <div className={styles['right-sidebar-header__secondary']}>
             <span className={styles['right-sidebar-header__secondary-text']}>
               {secondaryTitle}
             </span>
           </div>
+        )}
+        {!metaBeforeSecondary && metaSlot && (
+          <div className={styles['right-sidebar-header__meta']}>{metaSlot}</div>
         )}
       </div>
 

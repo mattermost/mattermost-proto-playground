@@ -8,7 +8,7 @@ import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-o
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import AppsIcon from '@mattermost/compass-icons/components/apps';
 import ReplyOutlineIcon from '@mattermost/compass-icons/components/reply-outline';
-import PlusIcon from '@mattermost/compass-icons/components/plus';
+import TagOutlineIcon from '@/icons/TagOutlineIcon';
 import styles from './MessageActions.module.scss';
 
 export type MessageActionsType = 'Center Channel' | 'RHS' | 'Search Results';
@@ -53,10 +53,10 @@ export default function MessageActions({
 
   const addAttributeButton = onAddAttribute ? (
     <IconButton
-      aria-label="Add attribute"
+      aria-label="Attributes"
       size="Small"
       padding="Compact"
-      icon={<Icon size="16" glyph={<PlusIcon />} />}
+      icon={<Icon size="16" glyph={<TagOutlineIcon />} />}
       onClick={(event) => onAddAttribute(event.currentTarget)}
     />
   ) : null;

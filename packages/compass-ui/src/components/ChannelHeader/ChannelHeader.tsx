@@ -5,10 +5,8 @@ import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import BellOffOutlineIcon from '@mattermost/compass-icons/components/bell-off-outline';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import PinOutlineIcon from '@mattermost/compass-icons/components/pin-outline';
-import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-outline';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import Button from '@/components/Button/Button';
 import Icon from '@/components/Icon/Icon';
 import IconButton from '@/components/IconButton/IconButton';
 import Tag from '@/components/Tag/Tag';
@@ -82,7 +80,6 @@ export default function ChannelHeader({
   const showCallButton = type === 'Channel' || type === 'DM' || type === 'GM';
   const showMembers =
     (type === 'Channel' || type === 'GM') && memberCount != null;
-  const showFiles = type === 'Channel' || type === 'DM' || type === 'GM';
   const showChevron = type === 'Channel' || type === 'DM' || type === 'GM';
   const hasDmAvatar = (type === 'DM' || type === 'Bot') && Boolean(avatarSrc);
 
@@ -209,24 +206,17 @@ export default function ChannelHeader({
                   icon={<Icon size="12" glyph={<PinOutlineIcon />} />}
                 />
               )}
-              {showFiles && (
-                <IconButton
-                  size="X-Small"
-                  aria-label="Files"
-                  icon={<Icon size="12" glyph={<FileTextOutlineIcon />} />}
-                />
-              )}
             </div>
           </div>
+
+          {metaSlot && (
+            <div className={styles['channel-header__meta']}>{metaSlot}</div>
+          )}
 
           {description && (
             <div className={styles['channel-header__description']}>
               {description}
             </div>
-          )}
-
-          {metaSlot && (
-            <div className={styles['channel-header__meta']}>{metaSlot}</div>
           )}
         </div>
       </div>
@@ -234,15 +224,12 @@ export default function ChannelHeader({
       <div className={styles['channel-header__right']}>
         {showCallButton &&
           (callButton ?? (
-            <Button
-              className={styles['channel-header__call-btn']}
-              emphasis="Quaternary"
+            <IconButton
               size="Small"
-              leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+              aria-label="Start a call"
+              icon={<Icon size="16" glyph={<PhoneIcon />} />}
               onClick={onCallClick}
-            >
-              Start a Call
-            </Button>
+            />
           ))}
         <IconButton
           size="Small"
