@@ -6,7 +6,14 @@ For scaffolding a new multi-scene prototype end-to-end, use [.cursor/skills/scaf
 
 ## Imports
 
-Use `@mattermost/compass-ui` **subpath** imports only (see [AGENTS.md](../../../AGENTS.md#import-convention)) — e.g. `@mattermost/compass-ui/components/button`. Do not import from the root barrel.
+Use `@mattermost/compass-ui` **subpath** imports only — never the root barrel:
+
+```tsx
+import { Button } from '@mattermost/compass-ui/components/button';
+import { useExitAnimation } from '@mattermost/compass-ui/hooks/use-exit-animation';
+```
+
+PascalCase folders map to kebab-case segments (`AdminConsoleSidebar` → `components/admin-console-sidebar`). Style sub-exports (`btnStyles`, `messageStyles`) come from the owning component subpath. Split multi-component imports into separate subpath lines.
 
 ## Scene navigation (default)
 

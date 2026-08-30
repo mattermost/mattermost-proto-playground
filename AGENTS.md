@@ -30,14 +30,7 @@ Playground `src/components/` is for catalog chrome and layout only.
 
 ### Import convention
 
-Always import from **subpaths** — never the root barrel `@mattermost/compass-ui`:
-
-```tsx
-import { Button } from '@mattermost/compass-ui/components/button';
-import { useExitAnimation } from '@mattermost/compass-ui/hooks/use-exit-animation';
-```
-
-PascalCase folders map to kebab-case segments (`AdminConsoleSidebar` → `components/admin-console-sidebar`). Style sub-exports (`btnStyles`, `messageStyles`) come from the owning component subpath. Split multi-component imports into separate subpath lines.
+Always import from **subpaths** — never the root barrel `@mattermost/compass-ui`. Examples and PascalCase → kebab-case path mapping: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#imports).
 
 ### Variant prop string values
 
