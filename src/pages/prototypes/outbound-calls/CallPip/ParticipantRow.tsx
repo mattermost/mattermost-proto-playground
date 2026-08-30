@@ -1,10 +1,10 @@
 import type { MouseEvent } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
-import { Icon } from '@mattermost/compass-ui';
-import { IconButton } from '@mattermost/compass-ui';
-import { MenuItem } from '@mattermost/compass-ui';
-import { UserAvatar } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import type { BridgedStatus } from '@/types/outboundCall';
 import styles from '../OutboundCalls.module.scss';
 

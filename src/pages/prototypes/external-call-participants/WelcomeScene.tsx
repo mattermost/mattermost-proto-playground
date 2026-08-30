@@ -1,9 +1,9 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import ArrowRightIcon from '@mattermost/compass-icons/components/arrow-right';
-import { Icon } from '@mattermost/compass-ui';
-import { Button } from '@mattermost/compass-ui';
-import { TextInput } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import welcomeBg from '@/assets/illustrations/call-welcome-bg.svg';
 import styles from './WelcomeScene.module.scss';
 

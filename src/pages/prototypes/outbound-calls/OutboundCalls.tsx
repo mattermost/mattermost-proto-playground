@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
-import { Icon } from '@mattermost/compass-ui';
-import { ChannelsSidebar } from '@mattermost/compass-ui';
-import { GlobalHeader } from '@mattermost/compass-ui';
-import { TeamSidebar } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { ChannelsSidebar } from '@mattermost/compass-ui/components/channels-sidebar';
+import { GlobalHeader } from '@mattermost/compass-ui/components/global-header';
+import { TeamSidebar } from '@mattermost/compass-ui/components/team-sidebar';
 import { buildDefaultChannelsSidebarModel } from '@mattermost/compass-proto';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';

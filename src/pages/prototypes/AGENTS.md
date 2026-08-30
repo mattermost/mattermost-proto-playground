@@ -4,6 +4,10 @@ Follow this when working under `src/pages/prototypes/`.
 
 For scaffolding a new multi-scene prototype end-to-end, use [.cursor/skills/scaffold-prototype/SKILL.md](../../../.cursor/skills/scaffold-prototype/SKILL.md).
 
+## Imports
+
+Use `@mattermost/compass-ui` **subpath** imports only (see [AGENTS.md](../../../AGENTS.md#import-convention)) — e.g. `@mattermost/compass-ui/components/button`. Do not import from the root barrel.
+
 ## Scene navigation (default)
 
 URLs in `src/manifests/prototypes.ts` use **`PrototypeTopNav`** (back, title, center slot, theme) — not full Compass `TopNav`.

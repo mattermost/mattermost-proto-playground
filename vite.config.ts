@@ -14,6 +14,28 @@ function resolvePackageDist(packageName: string): string {
 
 const compassUiDist = resolvePackageDist('@mattermost/compass-ui');
 const compassProtoDist = resolvePackageDist('@mattermost/compass-proto');
+const compassUiPackageRoot = path.resolve(
+  __dirname,
+  'node_modules/@mattermost/compass-ui',
+);
+
+/** Prefer npm compass-ui over sibling workspace when resolving from file:-linked proto. */
+function resolveCompassUiFromNpm(): Plugin {
+  return {
+    name: 'resolve-compass-ui-from-npm',
+    enforce: 'pre',
+    resolveId(source) {
+      if (
+        source === '@mattermost/compass-ui' ||
+        source.startsWith('@mattermost/compass-ui/')
+      ) {
+        return this.resolve(source, path.join(compassUiPackageRoot, 'package.json'), {
+          skipSelf: true,
+        });
+      }
+    },
+  };
+}
 
 function compassPackageDistReload(): Plugin {
   let reloadTimer: ReturnType<typeof setTimeout> | undefined;
@@ -46,7 +68,13 @@ function compassPackageDistReload(): Plugin {
 
 export default defineConfig({
   base: '/',
-  plugins: [react(), svgr(), ensureCompassUiStyles(), compassPackageDistReload()],
+  plugins: [
+    react(),
+    svgr(),
+    ensureCompassUiStyles(),
+    resolveCompassUiFromNpm(),
+    compassPackageDistReload(),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
