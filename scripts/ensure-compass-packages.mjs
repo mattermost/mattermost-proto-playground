@@ -50,12 +50,15 @@ function assertNpmCompassUi() {
     path.join(distDir, 'compass-ui.css'),
     path.join(distDir, 'compass-ui-standalone.css'),
     path.join(distDir, 'index.css'),
+    // Subpath layout (0.1.0-alpha.3+) — consumers import components/* not the root barrel
+    path.join(distDir, 'components/button/index.js'),
   ];
   const missing = required.filter((file) => !fs.existsSync(file));
   if (missing.length > 0) {
     console.error(
       '[@mattermost/compass-ui] package is incomplete (missing dist files):\n' +
-        missing.map((file) => `  - ${file}`).join('\n'),
+        missing.map((file) => `  - ${file}`).join('\n') +
+        '\n  Need 0.1.0-alpha.3+ with subpath exports. Run: npm install @mattermost/compass-ui@0.1.0-alpha.3',
     );
     process.exit(1);
   }

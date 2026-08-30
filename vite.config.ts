@@ -14,6 +14,47 @@ function resolvePackageDist(packageName: string): string {
 
 const compassUiDist = resolvePackageDist('@mattermost/compass-ui');
 const compassProtoDist = resolvePackageDist('@mattermost/compass-proto');
+const compassUiPackageRoot = path.resolve(
+  __dirname,
+  'node_modules/@mattermost/compass-ui',
+);
+
+/** Prefer npm compass-ui over sibling workspace when resolving from file:-linked proto. */
+function resolveCompassUiFromNpm(): Plugin {
+  return {
+    name: 'resolve-compass-ui-from-npm',
+    enforce: 'pre',
+    resolveId(source) {
+      if (
+        source === '@mattermost/compass-ui' ||
+        source.startsWith('@mattermost/compass-ui/')
+      ) {
+        return this.resolve(source, path.join(compassUiPackageRoot, 'package.json'), {
+          skipSelf: true,
+        });
+      }
+    },
+  };
+}
+
+/**
+ * compass-ui ESM appends `.js` for webpack fullySpecified. Vite must resolve the bare
+ * CJS specifier so it can synthesize a default export (native ESM cannot import CJS).
+ */
+function rewriteCompassIconsJsExtension(): Plugin {
+  return {
+    name: 'rewrite-compass-icons-js-extension',
+    enforce: 'pre',
+    resolveId(source, importer) {
+      if (
+        source.startsWith('@mattermost/compass-icons/') &&
+        source.endsWith('.js')
+      ) {
+        return this.resolve(source.slice(0, -3), importer, { skipSelf: true });
+      }
+    },
+  };
+}
 
 function compassPackageDistReload(): Plugin {
   let reloadTimer: ReturnType<typeof setTimeout> | undefined;
@@ -46,7 +87,14 @@ function compassPackageDistReload(): Plugin {
 
 export default defineConfig({
   base: '/',
-  plugins: [react(), svgr(), ensureCompassUiStyles(), compassPackageDistReload()],
+  plugins: [
+    react(),
+    svgr(),
+    ensureCompassUiStyles(),
+    resolveCompassUiFromNpm(),
+    rewriteCompassIconsJsExtension(),
+    compassPackageDistReload(),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -59,7 +107,9 @@ export default defineConfig({
       },
     },
   },
+  // Prebundle npm compass-ui so nested CJS compass-icons get interop. Proto stays
+  // excluded — it is a file: link rebuilt by the ensure script.
   optimizeDeps: {
-    exclude: ['@mattermost/compass-ui', '@mattermost/compass-proto'],
+    exclude: ['@mattermost/compass-proto'],
   },
 });

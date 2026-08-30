@@ -1,4 +1,4 @@
-import { TextInput } from '@mattermost/compass-ui';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import type { ChangeEvent, KeyboardEvent, ReactNode } from 'react';
 import styles from './OutboundCalls.module.scss';

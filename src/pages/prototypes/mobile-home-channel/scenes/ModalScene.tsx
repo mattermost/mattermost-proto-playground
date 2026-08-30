@@ -2,7 +2,7 @@ import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import { Icon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MobileMenuItem, MobileModal } from '@mattermost/compass-proto';
 import styles from '../MobileHomeChannel.module.scss';
 

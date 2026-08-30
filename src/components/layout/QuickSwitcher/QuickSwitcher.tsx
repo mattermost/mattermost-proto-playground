@@ -13,13 +13,11 @@ import {
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
-import {
-  Icon,
-  MenuItem,
-  Scrollbar,
-  SearchInput,
-  ShortcutTagGroup,
-} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { SearchInput } from '@mattermost/compass-ui/components/search-input';
+import { ShortcutTagGroup } from '@mattermost/compass-ui/components/shortcut-tag';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import {
   buildQuickSwitcherDestinations,

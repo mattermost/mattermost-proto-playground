@@ -2,7 +2,8 @@ import { NavLink } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import ThemeSwitcherControl from '@/components/layout/ThemeSwitcherControl/ThemeSwitcherControl';
-import { Icon, IconButton } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import styles from './TopNav.module.scss';
 
 const COMPASS_DESIGN_URL = 'https://mattermost.github.io/compass-design/';

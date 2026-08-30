@@ -10,11 +10,11 @@ import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizo
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
-import { SVG_SIZE_MAP , Icon} from '@mattermost/compass-ui';
-import { IconButton } from '@mattermost/compass-ui';
-import { MenuItem } from '@mattermost/compass-ui';
-import { UserAvatar } from '@mattermost/compass-ui';
-import { UserAvatarGroup } from '@mattermost/compass-ui';
+import { SVG_SIZE_MAP, Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { AUDIO_DEVICES, AUDIO_ICON } from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
 import { KeypadGrid, KeypadInput } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';

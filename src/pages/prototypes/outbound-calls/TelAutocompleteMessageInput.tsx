@@ -3,10 +3,10 @@
  * that lists all contacts × phones and inserts `tel:<number>` on click.
  */
 import { useCallback, useRef, useState } from 'react';
-import { Icon } from '@mattermost/compass-ui';
-import { MenuItem } from '@mattermost/compass-ui';
-import { MessageInput } from '@mattermost/compass-ui';
-import { UserAvatar } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { MessageInput } from '@mattermost/compass-ui/components/message-input';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { CONTACTS } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import { phoneGlyphFor } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';

@@ -1,8 +1,8 @@
 import type { MouseEvent, ReactNode } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui';
-import { MessageInput } from '@mattermost/compass-ui';
-import { MessageSeparator } from '@mattermost/compass-ui';
-import { Message } from '@mattermost/compass-ui';
+import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
+import { MessageInput } from '@mattermost/compass-ui/components/message-input';
+import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
+import { Message } from '@mattermost/compass-ui/components/message';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';

@@ -28,6 +28,10 @@ Before writing new UI in a prototype, use components from `@mattermost/compass-u
 
 Playground `src/components/` is for catalog chrome and layout only.
 
+### Import convention
+
+Always import from **subpaths** — never the root barrel `@mattermost/compass-ui`. Examples and PascalCase → kebab-case path mapping: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#imports).
+
 ### Variant prop string values
 
 Compass UI variant props (`size`, `emphasis`, `appearance`, `type`, `padding`, etc.) use **lowercase kebab-case** literals — e.g. `'primary'`, `'x-small'`, `'new-messages'`, `'center-channel'`. Do not pass Title Case values.
