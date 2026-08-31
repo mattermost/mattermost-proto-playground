@@ -143,6 +143,8 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Scroll region | `Scrollbar` | raw `overflow` |
 | Date or unread rule in a message list | `MessageSeparator` | `Divider` |
 | Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
+| Tab strip (mutually exclusive view switcher) | `Tabs` | custom `button[role="tab"]` / `div[role="tablist"]` |
+| Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
 
