@@ -144,6 +144,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Date or unread rule in a message list | `MessageSeparator` | `Divider` |
 | Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
+| Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
 
 ### Overlay wiring
 
