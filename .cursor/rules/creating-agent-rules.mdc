@@ -20,7 +20,7 @@ Playbooks (multi-step how-tos) → [.cursor/skills/](../skills/) (e.g. `scaffold
 
 Claude path nudges (thin): `.claude/rules/prototypes.md` — point at nested AGENTS; do not duplicate full handbooks.
 
-Guidelines, Storybook, and the `add-docs-topic` skill live in **compass-design** — do not recreate them here.
+Guidelines, Storybook, and the `add-docs-topic` skill live in **compass-design** — do not recreate them here. Sibling path: `../compass-design/.cursor/skills/add-docs-topic/SKILL.md`.
 
 ## Efficiency
 

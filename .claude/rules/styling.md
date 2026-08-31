@@ -161,3 +161,5 @@ In-place expand/collapse must animate — never snap. Prefer CSS grid `0fr`↔`1
 ## Scrollbars
 
 Scrolling regions: use `Scrollbar` from `@mattermost/compass-ui/components/scrollbar` (not raw overflow). Parent needs `flex: 1; min-height: 0` in a flex column; pad a child inside `Scrollbar`, not the root. Dark surfaces: `color="--sidebar-text-rgb"`.
+
+**Exception:** playground catalog chrome (`AppShell`) keeps native `overflow: auto` + `@include minimal-scrollbar` (sticky + flex chain). Do not replace with `<Scrollbar>`.
