@@ -1,6 +1,6 @@
 ---
 description: Mobile Compass patterns use Body 200 and sibling Mobile* components
-globs: "**/mobile*/**/*.{tsx,scss},**/Mobile*/**/*.{tsx,scss},**/layouts/mobile*/**/*.{tsx,scss}"
+globs: "**/mobile*/**/*.{tsx,scss},**/Mobile*/**/*.{tsx,scss},src/components/layout/DeviceFrame/**,src/components/layout/MobileModalStage/**"
 alwaysApply: false
 ---
 
@@ -21,6 +21,4 @@ Prefer a sibling `Mobile*` component when mobile differs in type, spacing, or in
 
 Assume touch: no hover-revealed actions or hover row backgrounds as the primary interaction.
 
-## Docs
-
-Group under Patterns → Mobile. Specimen/anatomy preview frames should not use rounded corners for channel chrome.
+Desktop vs mobile choose-this-not-that, `MobileModalStage`, and home → channel motion: [src/pages/prototypes/AGENTS.md](../../src/pages/prototypes/AGENTS.md).

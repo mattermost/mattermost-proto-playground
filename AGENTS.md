@@ -24,13 +24,15 @@ Package split (in **compass-design**):
 
 ## Building new UI
 
-Before writing new UI in a prototype, use components from `@mattermost/compass-ui` / `@mattermost/compass-proto`. Do not add design-system components under `src/components/` — extend compass-design instead.
+Look up the component first (cheat sheet → installed `.d.ts` → sibling guideline in `../compass-design`). Use `@mattermost/compass-ui` / `@mattermost/compass-proto`. Do not add design-system components under `src/components/` — extend compass-design instead.
 
 Playground `src/components/` is for catalog chrome and layout only.
 
+Lookup protocol, choose-this-not-that, overlays, and when to invent UI: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#imports).
+
 ### Import convention
 
-Always import from **subpaths** — never the root barrel `@mattermost/compass-ui`. Examples and PascalCase → kebab-case path mapping: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#imports).
+Always import from **subpaths** — never the root barrel `@mattermost/compass-ui`. `@mattermost/compass-proto` has no subpaths — import from the package root.
 
 ### Variant prop string values
 
@@ -42,7 +44,7 @@ Check `src/hooks/` before duplicating logic. Key hooks: `useExitAnimation`, `use
 
 ## Overlays
 
-Tooltips, modals, and popovers from Compass are **visual chrome only** — the host owns open/close, portals, positioning, and focus. See compass-design overlay guidance for primitives.
+Tooltips, modals, and popovers from Compass are **visual chrome only** — the host owns open/close, portals, positioning, and focus. Wiring recipe: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#overlay-wiring).
 
 **Exceptions:** form widgets with menus (`Combobox`, `Select`, …) and proto/mobile presenters (`MobileBottomSheet`, playground `MobileModalStage`) follow their component-specific patterns.
 
@@ -54,7 +56,7 @@ Tooltips, modals, and popovers from Compass are **visual chrome only** — the h
 
 ## Styling
 
-Prefer design tokens from `src/styles/tokens.scss`. Full BEM, tokens, motion, opacity rules load when editing styles — see [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc).
+Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--spacing-*`, `--center-channel-color`, …). Full BEM, tokens, motion, opacity rules load when editing styles — see [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc).
 
 ## Area-specific guidance
 

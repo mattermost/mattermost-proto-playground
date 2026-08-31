@@ -13,12 +13,14 @@ Use when adding or changing project agent instructions. Prefer **conditional** c
 | Tier | Where | What |
 | --- | --- | --- |
 | Universal (always on via `@AGENTS.md`) | Root [AGENTS.md](../../AGENTS.md) | Short must-dos, hooks, blurbs, **index** — no long examples/tables |
-| Area-nested | `src/guidelines/AGENTS.md`, `src/pages/prototypes/AGENTS.md`, `packages/compass-ui/AGENTS.md` (+ tiny `CLAUDE.md` with `@AGENTS.md`) | Docs / prototypes / Storybook handbooks |
-| Path-scoped styling | [.claude/rules/styling.md](../../.claude/rules/styling.md) **and** [.cursor/rules/styling.mdc](styling.mdc) | BEM, tokens, motion, opacity, Scrollbars — **keep both bodies in sync** |
+| Area-nested | [src/pages/prototypes/AGENTS.md](../../src/pages/prototypes/AGENTS.md) (+ tiny `CLAUDE.md` with `@AGENTS.md`) | Prototype handbook |
+| Path-scoped styling | [.claude/rules/styling.md](../../.claude/rules/styling.md) **and** [.cursor/rules/styling.mdc](styling.mdc) | BEM, tokens, motion, opacity, Scrollbar — **keep both bodies in sync** |
 
-Playbooks (multi-step how-tos) → [.cursor/skills/](../skills/) (e.g. `add-docs-topic`, `scaffold-prototype`), not always-on AGENTS.
+Playbooks (multi-step how-tos) → [.cursor/skills/](../skills/) (e.g. `scaffold-prototype`), not always-on AGENTS.
 
-Claude path nudges (thin): `.claude/rules/guidelines.md`, `.claude/rules/prototypes.md` — point at nested AGENTS; do not duplicate full handbooks.
+Claude path nudges (thin): `.claude/rules/prototypes.md` — point at nested AGENTS; do not duplicate full handbooks.
+
+Guidelines, Storybook, and the `add-docs-topic` skill live in **compass-design** — do not recreate them here.
 
 ## Efficiency
 
