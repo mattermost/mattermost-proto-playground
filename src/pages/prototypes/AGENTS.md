@@ -43,6 +43,17 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Divider | `Divider` | `@mattermost/compass-ui/components/divider` |
 | Scroll container | `Scrollbar` | `@mattermost/compass-ui/components/scrollbar` |
 | Chip | `Chip` | `@mattermost/compass-ui/components/chip` |
+| Metadata label (BOT, Guest) | `Tag` | `@mattermost/compass-ui/components/tag` |
+| Typeahead / multi-select | `Combobox` | `@mattermost/compass-ui/components/combobox` |
+| Closed single-select | `Select` | `@mattermost/compass-ui/components/select` |
+| Heading / filter trigger | `Dropdown` | `@mattermost/compass-ui/components/dropdown` |
+| Multi-line text | `TextArea` | `@mattermost/compass-ui/components/text-area` |
+| Check / radio / switch | `Checkbox`, `Radio`, `Switch` | `@mattermost/compass-ui/components/checkbox` (also `radio`, `switch`) |
+| Tabs | `Tabs` | `@mattermost/compass-ui/components/tabs` |
+| Transient confirmation | `Toast` | `@mattermost/compass-ui/components/toast` |
+| Menu surface | `PopoverMenu` | `@mattermost/compass-ui/components/popover-menu` |
+| Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-ui/components/channels-sidebar` |
+| Date / unread rule in a message list | `MessageSeparator` | `@mattermost/compass-ui/components/message-separator` |
 
 There is no `Dialog` — use `Modal`. Overlay open/close, portal, and focus stay with the host.
 
@@ -69,6 +80,7 @@ Sidebar rows use `ChannelSidebarItem` with `leadingVisual` (`'public'` \| `'priv
 | Mobile modal | `MobileModal` | `@mattermost/compass-proto` |
 | Mobile message | `MobileMessage` | `@mattermost/compass-proto` |
 | Mobile search | `MobileSearch` | `@mattermost/compass-proto` |
+| Mobile composer / nav / menu row | `MobileMessageInput`, `MobileNavigationBar`, `MobileMenuItem` | `@mattermost/compass-proto` |
 | Call widget / popout | `CallWidget`, `CallPopout` | `@mattermost/compass-proto` |
 
 ```tsx
@@ -110,8 +122,14 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 
 | Need | Use | Not |
 | --- | --- | --- |
-| Find / filter | `SearchInput` | `TextInput` |
+| Find / filter | `SearchInput` | `TextInput` or `Combobox` |
 | Type a value | `TextInput` | `SearchInput` |
+| Multi-line text | `TextArea` | `TextInput` |
+| On / off | `Switch` | `Checkbox` |
+| Few exclusive options | `Radio` | `Select` or stacked `Checkbox` |
+| Typeahead, long list, or multi-select (chips) | `Combobox` | `Select`, `SearchInput`, or a custom picker |
+| One value from a short closed list | `Select` | `Combobox` or `Dropdown` |
+| Heading / filter trigger (not a form value) | `Dropdown` | `Select` / `Combobox` |
 | Selectable / removable token | `Chip` | `Tag` |
 | Metadata label (BOT, Guest) | `Tag` | `Chip` |
 | Mention count / unread / presence | `MentionBadge` / `UnreadBadge` / `StatusBadge` | a custom pill |
@@ -123,6 +141,8 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
 | Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
 | Scroll region | `Scrollbar` | raw `overflow` |
+| Date or unread rule in a message list | `MessageSeparator` | `Divider` |
+| Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 
 ### Overlay wiring
