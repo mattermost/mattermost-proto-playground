@@ -42,7 +42,7 @@ Open the URL shown in the terminal. The catalog index is at `/`.
 
 1. Add an entry to `src/manifests/prototypes.ts`
 2. Create the flow under `src/pages/prototypes/<slug>/`
-3. Follow [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) for scene chrome and folder structure
+3. Follow [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) for scene chrome, component lookup, and overlay wiring
 
 Use [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) to scaffold a multi-scene prototype.
 

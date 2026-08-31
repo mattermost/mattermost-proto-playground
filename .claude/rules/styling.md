@@ -7,7 +7,7 @@ paths:
 
 # Styling
 
-Apply when editing styles (especially `*.module.scss`). Prefer tokens from `src/styles/tokens.scss` and theme vars (`--center-channel-color`, `--center-channel-bg`, `--button-bg`, etc.).
+Apply when editing styles (especially `*.module.scss`). Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--center-channel-color`, `--center-channel-bg`, `--button-bg`, `--spacing-*`, etc.). `src/styles/tokens.scss` lists the same names for reference.
 
 **Cursor twin:** keep [.cursor/rules/styling.mdc](../../.cursor/rules/styling.mdc) in sync with this file.
 
@@ -160,6 +160,6 @@ In-place expand/collapse must animate — never snap. Prefer CSS grid `0fr`↔`1
 
 ## Scrollbars
 
-Scrolling regions in Compass UI components / guideline specimens: use `Scrollbars` from `src/components/ui/Scrollbars/` (not raw overflow). Parent needs `flex: 1; min-height: 0` in a flex column; pad a child inside `Scrollbars`, not the root. Dark surfaces: `color="--sidebar-text-rgb"`.
+Scrolling regions: use `Scrollbar` from `@mattermost/compass-ui/components/scrollbar` (not raw overflow). Parent needs `flex: 1; min-height: 0` in a flex column; pad a child inside `Scrollbar`, not the root. Dark surfaces: `color="--sidebar-text-rgb"`.
 
-**Exception:** docs shell layout scrollers (`AppShell`, `DocsLayout`, `DocSidebar`, `OnThisPage`) keep native `overflow: auto` + `@include minimal-scrollbar` (sticky + flex chain).
+**Exception:** playground catalog chrome (`AppShell`) keeps native `overflow: auto` + `@include minimal-scrollbar` (sticky + flex chain). Do not replace with `<Scrollbar>`.
