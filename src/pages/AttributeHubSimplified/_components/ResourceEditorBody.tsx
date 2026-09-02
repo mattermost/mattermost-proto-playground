@@ -4,6 +4,8 @@ import Select from '@/components/ui/Select/Select';
 import SimplifiedResourceAdvanced from './SimplifiedResourceAdvanced';
 import {
   hasInheritanceParent,
+  INHERIT_FROM_CHANNEL_VALUE_ID,
+  isLockedToChannelDefault,
   resolveInheritMode,
   type HubAttribute,
   type ResourceConfig,
@@ -76,11 +78,20 @@ export default function ResourceEditorBody({
   );
 
   const isPosts = config.resource === 'Posts';
-  const lockedToParent =
-    hasParent &&
-    (isPosts
-      ? resolveInheritMode(config) === 'inherit-lock'
-      : inheritance === 'locked');
+  const lockedToChannel =
+    isPosts && hasParent && isLockedToChannelDefault(config);
+  const lockedToParent = hasParent && !isPosts && inheritance === 'locked';
+
+  const editabilityOptions = editabilityOptionsFor(type, {
+    includeLockedToChannel: isPosts && hasParent,
+  });
+  const selectedEditability: ValueEditability = lockedToChannel
+    ? 'locked-to-channel'
+    : lockedToParent
+      ? 'locked'
+      : editability === 'locked-to-channel'
+        ? 'editable'
+        : editability;
 
   const inheritanceSlot =
     channelAlignment && hasParent && !isPosts ? (
@@ -104,28 +115,47 @@ export default function ResourceEditorBody({
       </Select>
     ) : undefined;
 
-  const caveat = lockedToParent ? null : plainPolicyCaveat(attribute, editability);
+  const caveat =
+    lockedToChannel || lockedToParent
+      ? null
+      : plainPolicyCaveat(attribute, editability);
+
+  const handleEditabilityChange = (next: ValueEditability) => {
+    setResourceEditability(attribute.id, config.resource, next);
+    setEditabilityState(next);
+
+    if (isPosts && hasParent) {
+      if (next === 'locked-to-channel') {
+        onChange({
+          inheritMode: 'inherit-lock',
+          defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
+        });
+        return;
+      }
+      if (resolveInheritMode(config) === 'inherit-lock') {
+        onChange({ inheritMode: 'inherit' });
+      }
+    }
+  };
 
   const editabilitySlot = perResourceEditability ? (
     <div className={styles['editability']}>
       <Select
         size="Medium"
         width="fit"
-        value={lockedToParent ? 'locked' : editability}
+        value={selectedEditability}
         readOnly={lockedToParent}
         aria-label="Changing the value"
-        onChange={(e) => {
-          const next = e.target.value as ValueEditability;
-          setResourceEditability(attribute.id, config.resource, next);
-          setEditabilityState(next);
-        }}
+        onChange={(e) =>
+          handleEditabilityChange(e.target.value as ValueEditability)
+        }
       >
         {lockedToParent ? (
           <option value="locked">
             Follows the {parentLabel?.toLowerCase()}&apos;s value
           </option>
         ) : (
-          editabilityOptionsFor(type).map((option) => (
+          editabilityOptions.map((option) => (
             <option key={option} value={option}>
               {plainEditabilityLabel(option, type)}
             </option>

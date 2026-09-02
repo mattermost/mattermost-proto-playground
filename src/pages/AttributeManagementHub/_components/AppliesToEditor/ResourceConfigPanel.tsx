@@ -15,7 +15,6 @@ import {
   defaultValueHint,
   hasInheritanceParent,
   INHERIT_FROM_CHANNEL_VALUE_ID,
-  INHERIT_LOCKED_TO_CHANNEL_VALUE_ID,
   isChannelDisplayHidden,
   isInheritFromChannelDefault,
   isLockedToChannelDefault,
@@ -449,7 +448,6 @@ export default function ResourceConfigPanel({
     (isLockedToChannelDefault(config) ||
       isInheritFromChannelDefault(config.defaultValueId) ||
       resolveInheritMode(config) === 'inherit');
-  const lockedToChannel = isPosts && isLockedToChannelDefault(config);
   const showDefaultValue =
     isPosts ||
     (assignableValues.length > 0 &&
@@ -457,10 +455,7 @@ export default function ResourceConfigPanel({
   const currentDefaultId = isPosts
     ? (() => {
         const selected = postDefaultSelectValue(config);
-        if (
-          selected === INHERIT_FROM_CHANNEL_VALUE_ID ||
-          selected === INHERIT_LOCKED_TO_CHANNEL_VALUE_ID
-        ) {
+        if (selected === INHERIT_FROM_CHANNEL_VALUE_ID) {
           return selected;
         }
         return assignableValues.some((v) => v.id === selected) ? selected : '';
@@ -600,17 +595,15 @@ export default function ResourceConfigPanel({
     </Field>
   ) : null;
 
-  const defaultValueHintText = lockedToChannel
-    ? 'Posts always use this channel’s value. Authors cannot set a different one.'
-    : inheritFromChannel
-      ? 'New posts use this channel’s value unless the author sets one. Existing posts are not changed.'
-      : channelScope && isChannels
-        ? 'Used when this channel has no value set.'
-        : isPosts
-          ? 'Applies to newly created posts only. Existing posts are not changed.'
-          : isChannels
-            ? 'Applies to newly created channels only. Existing channels must be set manually.'
-            : defaultValueHint(config.resource);
+  const defaultValueHintText = inheritFromChannel
+    ? 'New posts use this channel’s value unless the author sets one. Existing posts are not changed.'
+    : channelScope && isChannels
+      ? 'Used when this channel has no value set.'
+      : isPosts
+        ? 'Applies to newly created posts only. Existing posts are not changed.'
+        : isChannels
+          ? 'Applies to newly created channels only. Existing channels must be set manually.'
+          : defaultValueHint(config.resource);
 
   const showPostInheritOptions =
     isPosts && hasInheritanceParent(attribute, 'Posts');
@@ -634,7 +627,7 @@ export default function ResourceConfigPanel({
           onChange={(e) =>
             onChange(
               isPosts
-                ? postDefaultSelectPatch(e.target.value)
+                ? postDefaultSelectPatch(e.target.value, config)
                 : {
                     defaultValueId:
                       e.target.value === '' ? null : e.target.value,
@@ -652,36 +645,17 @@ export default function ResourceConfigPanel({
             </option>
           )}
           {showPostInheritOptions && (
-            <optgroup label="From the channel">
-              <option value={INHERIT_FROM_CHANNEL_VALUE_ID}>
-                Inherit from channel
-              </option>
-              <option value={INHERIT_LOCKED_TO_CHANNEL_VALUE_ID}>
-                Locked to channel
-              </option>
-            </optgroup>
+            <option value={INHERIT_FROM_CHANNEL_VALUE_ID}>
+              Inherit from channel
+            </option>
           )}
-          {assignableValues.length > 0 ? (
-            showPostInheritOptions ? (
-              <optgroup label="Fixed value">
-                {assignableValues.map((value) => (
-                  <option key={value.id} value={value.id}>
-                    {value.tier != null
-                      ? `${value.label} (Tier ${value.tier})`
-                      : value.label}
-                  </option>
-                ))}
-              </optgroup>
-            ) : (
-              assignableValues.map((value) => (
-                <option key={value.id} value={value.id}>
-                  {value.tier != null
-                    ? `${value.label} (Tier ${value.tier})`
-                    : value.label}
-                </option>
-              ))
-            )
-          ) : null}
+          {assignableValues.map((value) => (
+            <option key={value.id} value={value.id}>
+              {value.tier != null
+                ? `${value.label} (Tier ${value.tier})`
+                : value.label}
+            </option>
+          ))}
         </Select>
         {defaultValueMissing && (
           <p className={styles['field__error']}>

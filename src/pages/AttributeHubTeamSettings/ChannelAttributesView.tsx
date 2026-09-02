@@ -729,6 +729,7 @@ export default function ChannelAttributesView({
               onRemoveAttribute={handleRemoveAttributeFromPost}
               onRemoveCustomAttribute={handleRemoveCustomAttributeFromPost}
               onRenameCustomAttribute={handleRenameCustomAttributeOnPost}
+              readOnly={readOnly}
               showReplies={selectedPostId === LEONARD_POST_ID}
             />
           </RightSidebar>

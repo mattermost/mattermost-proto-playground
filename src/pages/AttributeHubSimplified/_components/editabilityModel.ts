@@ -25,24 +25,28 @@ export type ValueEditability =
   | 'broaden-only'
   | 'add-only'
   | 'remove-only'
-  | 'locked';
+  | 'locked'
+  /** Posts only — value is pinned to the channel and cannot be overridden. */
+  | 'locked-to-channel';
 
 /** Scene-local store so baseline seed data stays untouched. */
 const STORE = new Map<string, ValueEditability>();
 
 export function editabilityOptionsFor(
   type: SimplifiedAttrType,
+  options?: { includeLockedToChannel?: boolean },
 ): ValueEditability[] {
-  if (comparesRank(type)) {
-    return ['editable', 'raise-only', 'lower-only', 'locked'];
+  const base: ValueEditability[] = comparesRank(type)
+    ? ['editable', 'raise-only', 'lower-only', 'locked']
+    : type === 'Hierarchical'
+      ? ['editable', 'narrow-only', 'broaden-only', 'locked']
+      : type === 'Multiselect'
+        ? ['editable', 'add-only', 'remove-only', 'locked']
+        : ['editable', 'locked'];
+  if (options?.includeLockedToChannel) {
+    return [...base, 'locked-to-channel'];
   }
-  if (type === 'Hierarchical') {
-    return ['editable', 'narrow-only', 'broaden-only', 'locked'];
-  }
-  if (type === 'Multiselect') {
-    return ['editable', 'add-only', 'remove-only', 'locked'];
-  }
-  return ['editable', 'locked'];
+  return base;
 }
 
 /**
@@ -146,6 +150,8 @@ export function plainEditabilityLabel(
       return type === 'Multiselect'
         ? 'Values cannot be changed once set'
         : 'Cannot be changed once set';
+    case 'locked-to-channel':
+      return 'Locked to the channel value';
   }
 }
 
@@ -184,6 +190,8 @@ export function editabilityDescription(
       return resource
         ? `Fixed once set. Create a new ${resourceNoun(resource)} to use a different value.`
         : 'Fixed once set. A new resource is needed to use a different value.';
+    case 'locked-to-channel':
+      return 'Posts always use this channel’s value. Authors cannot set a different one.';
   }
 }
 
@@ -240,6 +248,7 @@ export function showsOperatorCaveat(
   return (
     displayType(attribute) === 'Multiselect' &&
     value !== 'locked' &&
+    value !== 'locked-to-channel' &&
     attribute.usedByPolicies > 0
   );
 }

@@ -67,6 +67,8 @@ export interface PostAttributesThreadSidebarProps {
   onOpenAddAttributePicker?: (postId: string, anchor: HTMLElement) => void;
   /** Opens the shared attributes editor modal (from hover card Edit). */
   onOpenAttributesModal?: (postId: string) => void;
+  /** View-only attributes menu (valued attrs only). */
+  readOnly?: boolean;
   showReplies?: boolean;
 }
 
@@ -86,6 +88,7 @@ export default function PostAttributesThreadSidebar({
   onEditAttribute,
   onOpenAddAttributePicker,
   onOpenAttributesModal,
+  readOnly = false,
   showReplies = true,
 }: PostAttributesThreadSidebarProps) {
   const [replies, setReplies] = useState<ThreadDemoPost[]>(REPLY_SEEDS);
@@ -216,6 +219,7 @@ export default function PostAttributesThreadSidebar({
           onClose={closeReplyPicker}
           anchorRef={replyPickerAnchorRef}
           align="end"
+          readOnly={readOnly}
           attachedIds={replyPickerPost.attributes.map(
             (row) => row.attributeId,
           )}

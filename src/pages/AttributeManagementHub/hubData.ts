@@ -345,14 +345,16 @@ export function isLockedToChannelDefault(cfg: ResourceConfig): boolean {
   );
 }
 
-/** Value shown in the Posts default-value select (inherit folded in). */
+/**
+ * Value shown in the Posts default-value select.
+ * Inherit-lock is chosen under Changing the value, not here — still shows as
+ * Inherit from channel for the default source.
+ */
 export function postDefaultSelectValue(cfg: ResourceConfig): string {
-  if (isLockedToChannelDefault(cfg)) {
-    return INHERIT_LOCKED_TO_CHANNEL_VALUE_ID;
-  }
   if (
     resolveInheritMode(cfg) === 'inherit' ||
-    cfg.defaultValueId === INHERIT_FROM_CHANNEL_VALUE_ID
+    resolveInheritMode(cfg) === 'inherit-lock' ||
+    isInheritFromChannelDefault(cfg.defaultValueId)
   ) {
     return INHERIT_FROM_CHANNEL_VALUE_ID;
   }
@@ -360,17 +362,16 @@ export function postDefaultSelectValue(cfg: ResourceConfig): string {
 }
 
 /** Patch applied when the Posts default-value select changes. */
-export function postDefaultSelectPatch(value: string): Partial<ResourceConfig> {
-  if (value === INHERIT_LOCKED_TO_CHANNEL_VALUE_ID) {
-    return {
-      defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
-      inheritMode: 'inherit-lock',
-    };
-  }
+export function postDefaultSelectPatch(
+  value: string,
+  current?: ResourceConfig,
+): Partial<ResourceConfig> {
   if (value === INHERIT_FROM_CHANNEL_VALUE_ID) {
+    const keepLock =
+      current != null && resolveInheritMode(current) === 'inherit-lock';
     return {
       defaultValueId: INHERIT_FROM_CHANNEL_VALUE_ID,
-      inheritMode: 'inherit',
+      inheritMode: keepLock ? 'inherit-lock' : 'inherit',
     };
   }
   return {

@@ -155,6 +155,8 @@ export function buildPostAttributeAddMenuRows(
   return rows;
 }
 
+const SEARCH_MIN_ITEMS = 5;
+
 export interface PostAttributeAddMenuProps {
   open: boolean;
   onClose: () => void;
@@ -167,6 +169,11 @@ export interface PostAttributeAddMenuProps {
   post?: ThreadDemoPost;
   /** Opens the full attributes editor (modal). */
   onEditAttributes?: () => void;
+  /**
+   * View-only: list attributes that already have a value. Inferred when a post
+   * summary is shown without an Edit action.
+   */
+  readOnly?: boolean;
   /** Horizontal anchor — use `end` in narrow RHS so the menu extends leftward. */
   align?: FixedPopoverAlign;
 }
@@ -181,14 +188,20 @@ export function PostAttributeAddMenu({
   attributes,
   post,
   onEditAttributes,
+  readOnly = false,
   align = 'start',
 }: PostAttributeAddMenuProps) {
   const [query, setQuery] = useState('');
 
+  const showPostSummary = post != null;
+  const isReadOnly = readOnly || (showPostSummary && !onEditAttributes);
+
   const postRows = useMemo(() => {
     if (!post) return null;
-    return buildPostAttributeAddMenuRows(post, attributes);
-  }, [attributes, post]);
+    const rows = buildPostAttributeAddMenuRows(post, attributes);
+    if (!isReadOnly) return rows;
+    return rows.filter((row) => row.valueId != null);
+  }, [attributes, isReadOnly, post]);
 
   const available = useMemo(
     () =>
@@ -197,6 +210,9 @@ export function PostAttributeAddMenu({
       ),
     [attributes, attachedIds],
   );
+
+  const listForSearch = showPostSummary ? (postRows ?? []) : available;
+  const showSearch = listForSearch.length >= SEARCH_MIN_ITEMS;
 
   const filteredAvailable = useMemo(
     () => filterPostAttributeMenuItems(available, query),
@@ -214,7 +230,7 @@ export function PostAttributeAddMenu({
   };
 
   const pickAttribute = (attributeId: string) => {
-    if (attachedIds.includes(attributeId)) return;
+    if (isReadOnly || attachedIds.includes(attributeId)) return;
     onPickAttribute(attributeId);
     closeMenu();
   };
@@ -228,8 +244,6 @@ export function PostAttributeAddMenu({
     closeMenu();
     onEditAttributes?.();
   };
-
-  const showPostSummary = postRows != null;
 
   return (
     <FixedPopoverMenu
@@ -269,18 +283,20 @@ export function PostAttributeAddMenu({
           </>
         )}
 
-        <div className={menuStyles['thread-reply-input__search']}>
-          <SearchInput
-            size="Small"
-            placeholder="Search attributes…"
-            aria-label="Search attributes"
-            value={query}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              setQuery(event.target.value)
-            }
-            onClear={() => setQuery('')}
-          />
-        </div>
+        {showSearch && (
+          <div className={menuStyles['thread-reply-input__search']}>
+            <SearchInput
+              size="Small"
+              placeholder="Search attributes…"
+              aria-label="Search attributes"
+              value={query}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setQuery(event.target.value)
+              }
+              onClear={() => setQuery('')}
+            />
+          </div>
+        )}
 
         <PopoverMenuScroll maxHeight="min(280px, var(--fixed-popover-max-height, 280px))">
           {showPostSummary ? (
@@ -321,7 +337,9 @@ export function PostAttributeAddMenu({
                           />
                         ) : undefined
                       }
-                      disabled={item.attached || item.locked}
+                      disabled={
+                        isReadOnly || item.attached || item.locked
+                      }
                       onClick={() => pickAttribute(item.id)}
                     />
                   );
@@ -329,7 +347,11 @@ export function PostAttributeAddMenu({
               </PopoverMenuGroup>
             ) : (
               <p className={menuStyles['thread-reply-input__empty']}>
-                No matching attributes.
+                {query.trim()
+                  ? 'No matching attributes.'
+                  : isReadOnly
+                    ? 'No attributes set.'
+                    : 'No matching attributes.'}
               </p>
             )
           ) : filteredAvailable.length > 0 ? (
@@ -351,7 +373,7 @@ export function PostAttributeAddMenu({
           )}
         </PopoverMenuScroll>
 
-        {onCreateNew && (
+        {onCreateNew && !isReadOnly && (
           <>
             <PopoverMenuDivider />
             <button

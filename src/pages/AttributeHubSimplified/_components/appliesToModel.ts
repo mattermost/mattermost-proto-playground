@@ -5,7 +5,6 @@ import {
   hasInheritanceParent,
   inheritanceParentKind,
   isInheritFromChannelDefault,
-  isLockedToChannelDefault,
   postDisplayLabel,
   readIntoActive,
   resolveInheritMode,
@@ -87,11 +86,9 @@ function defaultValueChip(
   cfg: ResourceConfig,
 ): string | null {
   if (cfg.resource === 'Posts') {
-    if (isLockedToChannelDefault(cfg)) {
-      return 'Default: Locked to channel';
-    }
     if (
       resolveInheritMode(cfg) === 'inherit' ||
+      resolveInheritMode(cfg) === 'inherit-lock' ||
       isInheritFromChannelDefault(cfg.defaultValueId)
     ) {
       return 'Default: Inherit from channel';
