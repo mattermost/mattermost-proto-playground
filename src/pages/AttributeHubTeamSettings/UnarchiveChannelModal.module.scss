@@ -1,0 +1,146 @@
+.unarchive-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh var(--spacing-xl) var(--spacing-xl);
+  box-sizing: border-box;
+
+  &__scrim {
+    position: absolute;
+    inset: 0;
+    appearance: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: default;
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(600px, 100%);
+    flex: 0 0 auto;
+    align-self: flex-start;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+
+  &__notice {
+    padding: var(--spacing-m);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-danger-rgb), 0.08);
+    border: 1px solid rgba(var(--color-danger-rgb), 0.16);
+  }
+
+  &__notice-text {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--color-danger);
+
+    strong {
+      font-weight: var(--font-weight-semibold);
+    }
+  }
+
+  &__required {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__required-lead {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__attrs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__attr-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: var(--spacing-s);
+    align-items: center;
+  }
+
+  &__attr-label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__attr-value {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  &__value-trigger {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-s);
+    border: none;
+    border-radius: var(--radius-s);
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    text-align: left;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    // ClassificationPill Medium is 14px; keep Medium padding, use 12px type.
+    // Chip Medium already uses --font-size-75 (12px). Skip placeholder <span>.
+    &:not(#{&}--placeholder) > span {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+
+    &:hover,
+    &--open {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.48);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+    width: 100%;
+  }
+}

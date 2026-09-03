@@ -1,0 +1,44 @@
+.admin-notify-dm {
+  &__channels {
+    margin: var(--spacing-s) 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__mention,
+  &__channel-link {
+    appearance: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    color: var(--button-bg);
+    font: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: left;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+      border-radius: var(--radius-xs);
+    }
+  }
+
+  &__mention {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__emphasis {
+    font-weight: var(--font-weight-semibold);
+  }
+}

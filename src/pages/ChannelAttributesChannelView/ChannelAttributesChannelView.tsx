@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import FixedPopoverMenu from '@/components/ui/FixedPopoverMenu/FixedPopoverMenu';
@@ -9,10 +9,13 @@ import PopoverMenu, {
   PopoverMenuTitle,
 } from '@/components/ui/PopoverMenu/PopoverMenu';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
+import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import AdminNotifyDmView from '@/pages/AttributeHubTeamSettings/AdminNotifyDmView';
 import ChannelAttributesView from '@/pages/AttributeHubTeamSettings/ChannelAttributesView';
 import ChannelClassificationBanner from '@/pages/AttributeHubTeamSettings/ChannelClassificationBanner';
 import ChannelSettingsModal from '@/pages/AttributeHubTeamSettings/ChannelSettingsModal';
+import UnarchiveChannelView from '@/pages/AttributeHubTeamSettings/UnarchiveChannelView';
 import { CHANNEL_VIEW_FIGMA_SEED } from '@/pages/AttributeHubTeamSettings/channelViewData';
 import {
   clearChannelAttributeDetailParams,
@@ -22,6 +25,14 @@ import {
 } from '@/pages/AttributeHubTeamSettings/channelData';
 import { THREAD_ROOT, type ThreadDemoPost } from '@/pages/AttributeHubTeamSettings/postViewData';
 import styles from './ChannelAttributesChannelView.module.scss';
+
+type ChannelViewScene = 'channel-view' | 'bot-message' | 'unarchive-modal';
+
+const VIEW_SCENES = [
+  { id: 'channel-view', label: 'Channel view' },
+  { id: 'bot-message', label: 'Bot message' },
+  { id: 'unarchive-modal', label: 'Unarchive modal' },
+] as const;
 
 const HEADER_LAYOUT_SCENES = [
   { id: 'stacked', label: 'Stacked' },
@@ -53,13 +64,36 @@ const FIGMA_LEONARD_POST: ThreadDemoPost = {
   ],
 };
 
+function readScene(): ChannelViewScene {
+  if (typeof window === 'undefined') return 'channel-view';
+  const view = new URLSearchParams(window.location.search).get('view');
+  if (view === 'bot-message') return 'bot-message';
+  if (view === 'unarchive-modal') return 'unarchive-modal';
+  return 'channel-view';
+}
+
+function syncSceneParam(scene: ChannelViewScene) {
+  if (typeof window === 'undefined') return;
+  const url = new URL(window.location.href);
+  url.searchParams.set('view', scene);
+  window.history.replaceState(null, '', url);
+}
+
+function parseSceneId(id: string): ChannelViewScene {
+  if (id === 'bot-message') return 'bot-message';
+  if (id === 'unarchive-modal') return 'unarchive-modal';
+  return 'channel-view';
+}
+
 /**
  * Channel view with attribute chips in the header and configurable classification
  * banners — global, channel, and reply (thread RHS). Matches Channel Attributes
- * Figma (4863:33132).
+ * Figma (4863:33132). Also demos admin bot notify DM and unarchive-with-required.
  */
 export default function ChannelAttributesChannelView() {
+  const { setCenterSlot } = usePrototypeChrome();
   const settingsTriggerRef = useRef<HTMLDivElement>(null);
+  const [scene, setScene] = useState<ChannelViewScene>(readScene);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showGlobalBanner, setShowGlobalBanner] = useState(true);
   const [showChannelBanner, setShowChannelBanner] = useState(true);
@@ -71,6 +105,24 @@ export default function ChannelAttributesChannelView() {
   const [rhsPanel, setRhsPanel] = useState<RhsPanel>('thread');
   const [channelSettingsOpen, setChannelSettingsOpen] = useState(false);
   const [channelSettingsSession, setChannelSettingsSession] = useState(0);
+
+  const handleSceneChange = useCallback((id: string) => {
+    const next = parseSceneId(id);
+    setScene(next);
+    syncSceneParam(next);
+  }, []);
+
+  useLayoutEffect(() => {
+    setCenterSlot(
+      <SceneSwitcher
+        scenes={[...VIEW_SCENES]}
+        activeId={scene}
+        onChange={handleSceneChange}
+        ariaLabel="Channel attributes views"
+      />,
+    );
+    return () => setCenterSlot(null);
+  }, [scene, handleSceneChange, setCenterSlot]);
 
   const openChannelNewAttribute = useCallback(() => {
     syncChannelNewAttributeParams();
@@ -89,6 +141,18 @@ export default function ChannelAttributesChannelView() {
     clearChannelAttributeDetailParams();
     setChannelSettingsOpen(false);
   }, []);
+
+  if (scene === 'bot-message') {
+    return (
+      <div className={styles['scene']}>
+        <AdminNotifyDmView />
+      </div>
+    );
+  }
+
+  if (scene === 'unarchive-modal') {
+    return <UnarchiveChannelView />;
+  }
 
   return (
     <div className={styles['scene']}>

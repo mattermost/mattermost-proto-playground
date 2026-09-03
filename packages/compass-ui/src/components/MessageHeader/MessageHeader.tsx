@@ -17,7 +17,7 @@ export default function MessageHeader({
   return (
     <div className={styles['message-header']}>
       <span className={styles['message-header__username']}>{username}</span>
-      {isBot && <Tag label={botLabel} />}
+      {isBot && <Tag label={botLabel} casing="All Caps" />}
       <span className={styles['message-header__timestamp']}>{timestamp}</span>
     </div>
   );

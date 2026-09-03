@@ -638,7 +638,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: ChannelAttributesChannelView,
     group: 'zero-trust-abac',
     description:
-      'Channel view with system attribute chips in the header (Classification, Program, Caveat, Engagement tempo) and configurable banners — global (workspace), channel, and reply (thread RHS). Prototype controls at the top toggle each banner and switch between Info and Thread RHS. Matches Figma Channel Attributes — System Attributes (4863:33132).',
+      'Channel view with system attribute chips in the header (Classification, Program, Caveat, Engagement tempo) and configurable banners — global (workspace), channel, and reply (thread RHS). Prototype tabs: Channel view, Bot message (admin notify DM listing channels missing Classification), and Unarchive modal (required attributes before restore). Display settings toggle banners and Info/Thread RHS. Matches Figma Channel Attributes — System Attributes (4863:33132). Deep-links: ?view=channel-view|bot-message|unarchive-modal.',
     addedAt: '2026-08-26',
     collections: ['attribute-management'],
   },
