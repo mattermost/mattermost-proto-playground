@@ -86,7 +86,9 @@ function compassPackageDistReload(): Plugin {
 }
 
 export default defineConfig({
-  base: '/',
+  // Project Pages live at /mattermost-proto-playground/, not the org root.
+  // Keep `/` for local `npm run dev` / `vite preview`.
+  base: process.env.GITHUB_ACTIONS ? '/mattermost-proto-playground/' : '/',
   plugins: [
     react(),
     svgr(),
