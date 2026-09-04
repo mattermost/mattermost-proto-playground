@@ -4,7 +4,6 @@ import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { AGENTS_BASE } from './agentsScenes';
 import AgentsSceneSwitcher from './components/AgentsSceneSwitcher';
 import NewAgentModal from './components/NewAgentModal';
-import ProductHeader from './components/ProductHeader';
 import ProductSidebar from './components/ProductSidebar';
 import { useAgents, type AgentsProduct } from './context/AgentsContext';
 import styles from './AgentsShell.module.scss';
@@ -19,7 +18,7 @@ function resolveProduct(pathname: string): AgentsProduct {
 }
 
 /**
- * Shared chrome: Product Sidebar + slim header + product outlet.
+ * Shared chrome: Product Sidebar + product outlet.
  * Modal is shell-mounted so Channels and Agents can both open it.
  */
 export default function AgentsShell() {
@@ -48,7 +47,6 @@ export default function AgentsShell() {
   return (
     <div className={styles['agents-shell']}>
       <div className={styles['agents-shell__frame']}>
-        <ProductHeader product={activeProduct} />
         <div className={styles['agents-shell__body']}>
           <ProductSidebar
             activeProduct={activeProduct}
