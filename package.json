@@ -24,6 +24,7 @@
     "@mattermost/compass-icons": "^0.1.63",
     "@mattermost/compass-proto": "file:../compass-design/packages/compass-proto",
     "@mattermost/compass-ui": "0.1.0-alpha.5",
+    "@xyflow/react": "^12.11.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.28.0",
