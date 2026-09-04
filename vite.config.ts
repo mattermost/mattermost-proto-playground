@@ -112,6 +112,7 @@ export default defineConfig({
   // Prebundle npm compass-ui so nested CJS compass-icons get interop. Proto stays
   // excluded — it is a file: link rebuilt by the ensure script.
   optimizeDeps: {
+    include: ['@mattermost/compass-ui/**'],
     exclude: ['@mattermost/compass-proto'],
   },
 });

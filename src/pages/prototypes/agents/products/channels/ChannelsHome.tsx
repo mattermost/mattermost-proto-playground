@@ -31,6 +31,7 @@ export default function ChannelsHome() {
                   avatarAlt={message.avatarAlt}
                   username={message.username}
                   timestamp={message.timestamp}
+                  showMessageActions={false}
                 >
                   <p className={styles['channels-home__post']}>{message.body}</p>
                 </Message>
