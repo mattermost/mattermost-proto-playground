@@ -39,3 +39,43 @@
   line-height: var(--line-height-100);
   color: rgba(var(--sidebar-text-rgb), 0.72);
 }
+
+.product-nav__item {
+  position: relative;
+}
+
+.product-nav__item-icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding-left: calc(18px + var(--spacing-xxxs));
+  color: var(--sidebar-text);
+  opacity: 0.64;
+  pointer-events: none;
+}
+
+.product-nav__item :global([class*='icon-container'] > svg) {
+  visibility: hidden;
+}
+
+.product-nav__item-icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding-left: calc(18px + var(--spacing-xxxs));
+  color: var(--sidebar-text);
+  opacity: 0.64;
+  pointer-events: none;
+}
+
+.product-nav__item :global([class*='icon-container'] > svg) {
+  visibility: hidden;
+}

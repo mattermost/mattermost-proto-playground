@@ -1,12 +1,45 @@
+import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
+import HomeVariantOutlineIcon from '@mattermost/compass-icons/components/home-variant-outline';
+import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAutomations } from '../context/AutomationsContext';
+import CodeBracesIcon from './icons/CodeBracesIcon';
 import styles from './ProductNav.module.scss';
 
 const BASE = '/prototypes/automations';
+
+function ProductNavItem({
+  name,
+  glyph,
+  active,
+  onClick,
+}: {
+  name: string;
+  glyph: ReactNode;
+  active?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div className={styles['product-nav__item']}>
+      <span className={styles['product-nav__item-icon']} aria-hidden>
+        <Icon size="16" glyph={glyph} />
+      </span>
+      <ChannelSidebarItem
+        name={name}
+        leadingVisual="insights"
+        active={active}
+        onClick={onClick}
+      />
+    </div>
+  );
+}
 
 /**
  * Automations left nav using Channels sidebar categories and items.
@@ -51,33 +84,33 @@ export default function ProductNav() {
     <div className={styles['product-nav']}>
       <Scrollbar className={styles['product-nav__scroll']}>
         <div className={styles['product-nav__top']}>
-          <ChannelSidebarItem
+          <ProductNavItem
             name="Home"
-            hideLeadingVisual
+            glyph={<HomeVariantOutlineIcon />}
             active={homeActive}
             onClick={() => navigate(BASE)}
           />
-          <ChannelSidebarItem
+          <ProductNavItem
             name="Folders"
-            hideLeadingVisual
+            glyph={<FolderOutlineIcon />}
             active={foldersActive}
             onClick={() => navigate(`${BASE}/folders`)}
           />
-          <ChannelSidebarItem
+          <ProductNavItem
             name="Templates"
-            hideLeadingVisual
+            glyph={<IframeListOutlineIcon />}
             active={templatesActive}
             onClick={() => navigate(`${BASE}/templates`)}
           />
-          <ChannelSidebarItem
+          <ProductNavItem
             name="Variables & secrets"
-            hideLeadingVisual
+            glyph={<CodeBracesIcon />}
             active={secretsActive}
             onClick={() => navigate(`${BASE}/secrets`)}
           />
-          <ChannelSidebarItem
+          <ProductNavItem
             name="Run history"
-            hideLeadingVisual
+            glyph={<PlayOutlineIcon />}
             active={runsActive}
             onClick={() => navigate(`${BASE}/runs`)}
           />
@@ -89,10 +122,10 @@ export default function ProductNav() {
             <p className={styles['product-nav__empty']}>No favorites yet</p>
           ) : (
             favorites.map((a) => (
-              <ChannelSidebarItem
+              <ProductNavItem
                 key={a.id}
                 name={a.name}
-                hideLeadingVisual
+                glyph={<LightningBoltOutlineIcon />}
                 onClick={() => navigate(`${BASE}/${a.id}/editor`)}
               />
             ))
@@ -105,10 +138,10 @@ export default function ProductNav() {
             <p className={styles['product-nav__empty']}>No recent automations</p>
           ) : (
             recents.map((a) => (
-              <ChannelSidebarItem
+              <ProductNavItem
                 key={a.id}
                 name={a.name}
-                hideLeadingVisual
+                glyph={<LightningBoltOutlineIcon />}
                 onClick={() => navigate(`${BASE}/${a.id}/editor`)}
               />
             ))
