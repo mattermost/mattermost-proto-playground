@@ -1,0 +1,107 @@
+.agent-avatar {
+  --agent-avatar-color: #eb5757;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+
+  &--sm {
+    width: var(--icon-size-32, 32px);
+    height: var(--icon-size-32, 32px);
+  }
+
+  &--md {
+    width: var(--icon-size-40, 40px);
+    height: var(--icon-size-40, 40px);
+  }
+
+  &--lg {
+    width: 74px;
+    height: 74px;
+  }
+
+  &--xl {
+    width: 96px;
+    height: 96px;
+  }
+
+  &__shape {
+    width: 100%;
+    height: 100%;
+    background: var(--agent-avatar-color);
+    box-shadow: inset 0 -6px 12px rgba(0, 0, 0, 0.18),
+      inset 0 4px 8px rgba(255, 255, 255, 0.28);
+  }
+
+  &--sphere .agent-avatar__shape {
+    border-radius: var(--radius-full);
+  }
+
+  &--pyramid .agent-avatar__shape {
+    clip-path: polygon(50% 4%, 96% 96%, 4% 96%);
+  }
+
+  &--cube .agent-avatar__shape {
+    border-radius: var(--radius-s);
+  }
+
+  &--pentagon .agent-avatar__shape {
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  }
+
+  &--hexagon .agent-avatar__shape {
+    clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0% 50%);
+  }
+
+  &--diamond .agent-avatar__shape {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  &--octagon .agent-avatar__shape {
+    clip-path: polygon(
+      30% 0%,
+      70% 0%,
+      100% 30%,
+      100% 70%,
+      70% 100%,
+      30% 100%,
+      0% 70%,
+      0% 30%
+    );
+  }
+
+  &--decagon .agent-avatar__shape {
+    clip-path: polygon(
+      50% 0%,
+      80% 10%,
+      100% 35%,
+      100% 65%,
+      80% 90%,
+      50% 100%,
+      20% 90%,
+      0% 65%,
+      0% 35%,
+      20% 10%
+    );
+  }
+
+  &__eyes {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18%;
+    pointer-events: none;
+
+    span {
+      width: 12%;
+      height: 12%;
+      min-width: 4px;
+      min-height: 4px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.92);
+    }
+  }
+}
