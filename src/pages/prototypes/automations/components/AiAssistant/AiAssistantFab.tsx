@@ -1,6 +1,6 @@
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import CloseIcon from '@mattermost/compass-icons/components/close';
-import { Icon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import styles from './AiAssistant.module.scss';
 
 type AiAssistantFabProps = {

@@ -1,5 +1,7 @@
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import { Icon, Scrollbar, SearchInput } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { SearchInput } from '@mattermost/compass-ui/components/search-input';
 import { useMemo, useState, type ChangeEvent } from 'react';
 import { ACTION_STEPS, FLOW_STEPS } from '../../data/actions';
 import { ALL_TRIGGERS, TRIGGER_COUNT } from '../../data/triggers';
@@ -67,7 +69,7 @@ export default function StepsPalette({ onAdd }: StepsPaletteProps) {
         value={query}
         onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
         onClear={() => setQuery('')}
-        size="Small"
+        size="small"
       />
       <Scrollbar style={{ flex: 1, minHeight: 0 }}>
         <div className={styles.palette__section}>

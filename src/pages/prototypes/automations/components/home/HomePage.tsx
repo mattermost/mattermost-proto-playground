@@ -9,24 +9,21 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import {
-  Button,
-  Checkbox,
-  Chip,
-  Dropdown,
-  EmptyState,
-  Icon,
-  IconButton,
-  MenuItem,
-  PopoverMenu,
-  PopoverMenuDivider,
-  Scrollbar,
-  SearchInput,
-  Switch,
-  Tag,
-  Tooltip,
-  useOutsideClose,
-} from '@mattermost/compass-ui';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
+import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Dropdown } from '@mattermost/compass-ui/components/dropdown';
+import { EmptyState } from '@mattermost/compass-ui/components/empty-state';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { PopoverMenu, PopoverMenuDivider } from '@mattermost/compass-ui/components/popover-menu';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { SearchInput } from '@mattermost/compass-ui/components/search-input';
+import { Switch } from '@mattermost/compass-ui/components/switch';
+import { Tag } from '@mattermost/compass-ui/components/tag';
+import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
 import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import PlaybooksEmptyIllustration from '@/assets/illustrations/playbooks-empty.svg?react';
@@ -226,7 +223,7 @@ export default function HomePage() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    showToast(`Import of “${file.name}” isn’t available in this prototype`, 'Info');
+    showToast(`Import of “${file.name}” isn’t available in this prototype`, 'info');
   };
 
   const toggleFolder = (folderId: string) => {
@@ -263,7 +260,7 @@ export default function HomePage() {
                 <Tag
                   key={tag}
                   label={tag}
-                  size="X-Small"
+                  size="x-small"
                   className={styles.home__tag}
                 />
               ))}
@@ -280,7 +277,7 @@ export default function HomePage() {
         ) : (
           <Switch
             className={styles['home__status-switch']}
-            size="Small"
+            size="small"
             checked={a.status === 'enabled'}
             aria-label={`Enable ${a.name}`}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -308,8 +305,8 @@ export default function HomePage() {
       <td>
         <Tag
           label={scopeLabel(a.scope)}
-          size="X-Small"
-          casing="All Caps"
+          size="x-small"
+          casing="all-caps"
         />
       </td>
       <td>{a.creator}</td>
@@ -323,7 +320,7 @@ export default function HomePage() {
             <Tooltip
               label={formatShortWhen(a.lastEditedAt)}
               hint={a.lastEditedBy}
-              arrow="Top"
+              arrow="top"
             />
           </span>
         </span>
@@ -335,8 +332,8 @@ export default function HomePage() {
         <div style={{ position: 'relative', display: 'inline-block' }}>
           <IconButton
             aria-label={`Actions for ${a.name}`}
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<DotsVerticalIcon />} />}
             onClick={() => setMenuFor((id) => (id === a.id ? null : a.id))}
           />
@@ -412,8 +409,8 @@ export default function HomePage() {
           <div className={styles.home__split} ref={newRef}>
             <Button
               className={styles['home__split-main']}
-              emphasis="Primary"
-              size="Small"
+              emphasis="primary"
+              size="small"
               leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
               onClick={onNewBlank}
             >
@@ -421,8 +418,8 @@ export default function HomePage() {
             </Button>
             <Button
               className={styles['home__split-toggle']}
-              emphasis="Primary"
-              size="Small"
+              emphasis="primary"
+              size="small"
               aria-label="More create options"
               aria-haspopup="menu"
               aria-expanded={newOpen}
@@ -496,13 +493,13 @@ export default function HomePage() {
               value={query}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               onClear={() => setQuery('')}
-              size="Small"
+              size="small"
             />
           </div>
 
           <div className={styles['home__filter-trigger']} ref={filterRef}>
             <Dropdown
-              size="Small"
+              size="small"
               isOpen={filtersOpen}
               leadingIcon={<FilterVariantIcon size={16} />}
               onClick={() => {
@@ -525,7 +522,7 @@ export default function HomePage() {
                         {STATUS_OPTIONS.map((opt) => (
                           <Checkbox
                             key={opt.value}
-                            size="Small"
+                            size="small"
                             checked={statusFilters.includes(opt.value)}
                             onChange={() =>
                               setStatusFilters((prev) => toggleValue(prev, opt.value))
@@ -543,7 +540,7 @@ export default function HomePage() {
                         {SCOPE_OPTIONS.map((opt) => (
                           <Checkbox
                             key={opt.value}
-                            size="Small"
+                            size="small"
                             checked={scopeFilters.includes(opt.value)}
                             onChange={() =>
                               setScopeFilters((prev) => toggleValue(prev, opt.value))
@@ -576,7 +573,7 @@ export default function HomePage() {
 
           <div className={styles['home__filter-trigger']} ref={tagsRef}>
             <Dropdown
-              size="Small"
+              size="small"
               isOpen={tagsOpen}
               leadingIcon={<TagOutlineIcon size={16} />}
               onClick={() => {
@@ -602,7 +599,7 @@ export default function HomePage() {
                         setTagQuery(e.target.value)
                       }
                       onClear={() => setTagQuery('')}
-                      size="Small"
+                      size="small"
                     />
                   </div>
                   <div className={styles['home__filter-scroll']}>
@@ -613,7 +610,7 @@ export default function HomePage() {
                         matchedTags.map((tag) => (
                           <Checkbox
                             key={tag}
-                            size="Small"
+                            size="small"
                             checked={tagFilters.includes(tag)}
                             onChange={() =>
                               setTagFilters((prev) => toggleValue(prev, tag))
@@ -650,9 +647,8 @@ export default function HomePage() {
             {folderFilter && folderFilterName ? (
               <Chip
                 key={`folder-${folderFilter}`}
-                size="Small"
+                size="small"
                 onRemove={clearFolderFilter}
-                removeLabel={`Remove ${folderFilterName} folder filter`}
               >
                 Folder: {folderFilterName}
               </Chip>
@@ -660,11 +656,10 @@ export default function HomePage() {
             {statusFilters.map((status) => (
               <Chip
                 key={`status-${status}`}
-                size="Small"
+                size="small"
                 onRemove={() =>
                   setStatusFilters((prev) => prev.filter((s) => s !== status))
                 }
-                removeLabel={`Remove ${status} status filter`}
               >
                 Status: {status}
               </Chip>
@@ -672,11 +667,10 @@ export default function HomePage() {
             {scopeFilters.map((scope) => (
               <Chip
                 key={`scope-${scope}`}
-                size="Small"
+                size="small"
                 onRemove={() =>
                   setScopeFilters((prev) => prev.filter((s) => s !== scope))
                 }
-                removeLabel={`Remove ${scope} scope filter`}
               >
                 Scope: {scope}
               </Chip>
@@ -684,9 +678,8 @@ export default function HomePage() {
             {tagFilters.map((tag) => (
               <Chip
                 key={`tag-${tag}`}
-                size="Small"
+                size="small"
                 onRemove={() => setTagFilters((prev) => prev.filter((t) => t !== tag))}
-                removeLabel={`Remove ${tag} tag filter`}
               >
                 Tag: {tag}
               </Chip>
@@ -732,12 +725,12 @@ export default function HomePage() {
             automations.length === 0
               ? {
                   children: 'New automation',
-                  emphasis: 'Primary',
+                  emphasis: 'primary',
                   onClick: onNewBlank,
                 }
               : {
                   children: 'Clear filters',
-                  emphasis: 'Tertiary',
+                  emphasis: 'tertiary',
                   onClick: clearFilters,
                 }
           }
@@ -816,8 +809,8 @@ export default function HomePage() {
                           aria-label={`Actions for ${section.name}`}
                           aria-expanded={folderMenuFor === section.id}
                           aria-haspopup="menu"
-                          size="Small"
-                          padding="Compact"
+                          size="small"
+                          padding="compact"
                           icon={
                             <Icon size="16" glyph={<DotsVerticalIcon />} />
                           }

@@ -1,19 +1,16 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import RefreshIcon from '@mattermost/compass-icons/components/refresh';
-import {
-  Button,
-  Checkbox,
-  Chip,
-  Dropdown,
-  Icon,
-  IconButton,
-  PopoverMenu,
-  PopoverMenuDivider,
-  Scrollbar,
-  Tag,
-  useOutsideClose,
-} from '@mattermost/compass-ui';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
+import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Dropdown } from '@mattermost/compass-ui/components/dropdown';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { PopoverMenu, PopoverMenuDivider } from '@mattermost/compass-ui/components/popover-menu';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { RunStatus } from '../../data/types';
@@ -56,7 +53,7 @@ export default function RunsPage() {
     return (
       <div className={styles.history}>
         <p>Automation not found</p>
-        <Button emphasis="Tertiary" size="Small" onClick={() => navigate(BASE)}>
+        <Button emphasis="tertiary" size="small" onClick={() => navigate(BASE)}>
           Back
         </Button>
       </div>
@@ -69,8 +66,8 @@ export default function RunsPage() {
         <div className={styles['history__title-row']}>
           <IconButton
             aria-label="Back to editor"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(`${BASE}/${id}/editor`)}
           />
@@ -78,8 +75,8 @@ export default function RunsPage() {
         </div>
           <IconButton
             aria-label="Refresh"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<RefreshIcon />} />}
             onClick={() => undefined}
           />
@@ -88,7 +85,7 @@ export default function RunsPage() {
       <div className={styles.history__filters}>
         <div className={styles['history__filter-trigger']} ref={filterRef}>
           <Dropdown
-            size="Small"
+            size="small"
             isOpen={filtersOpen}
             leadingIcon={<FilterVariantIcon size={16} />}
             onClick={() => setFiltersOpen((v) => !v)}
@@ -112,7 +109,7 @@ export default function RunsPage() {
                       {STATUS_OPTIONS.map((opt) => (
                         <Checkbox
                           key={opt.value}
-                          size="Small"
+                          size="small"
                           checked={statusFilters.includes(opt.value)}
                           onChange={() =>
                             setStatusFilters((prev) => toggleValue(prev, opt.value))
@@ -148,12 +145,13 @@ export default function RunsPage() {
             {statusFilters.map((status) => (
               <Chip
                 key={status}
-                label={`Status: ${status}`}
-                size="Small"
+                size="small"
                 onRemove={() =>
                   setStatusFilters((prev) => prev.filter((s) => s !== status))
                 }
-              />
+              >
+                Status: {status}
+              </Chip>
             ))}
             <button
               type="button"
@@ -188,8 +186,8 @@ export default function RunsPage() {
                   <td>
                     <Tag
                       label={run.status}
-                      size="X-Small"
-                      type={run.status === 'success' ? 'Success' : 'Danger'}
+                      size="x-small"
+                      type={run.status === 'success' ? 'success' : 'danger'}
                     />
                   </td>
                   <td>{run.durationMs} ms</td>

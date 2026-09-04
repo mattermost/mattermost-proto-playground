@@ -9,12 +9,12 @@ import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
-import { DialpadIcon } from '@mattermost/compass-ui';
-import { SVG_SIZE_MAP , Icon} from '@mattermost/compass-ui';
-import { IconButton } from '@mattermost/compass-ui';
-import { MenuItem } from '@mattermost/compass-ui';
-import { UserAvatar } from '@mattermost/compass-ui';
-import { UserAvatarGroup } from '@mattermost/compass-ui';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
+import { SVG_SIZE_MAP, Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { AUDIO_DEVICES, AUDIO_ICON } from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
 import { KeypadGrid, KeypadInput } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
@@ -237,8 +237,8 @@ export function CallPip({
           <div className={styles['pip__controls-left']}>
             <IconButton
               aria-label={keypadOpen ? 'Hide keypad' : 'Show keypad'}
-              size="Small"
-              padding="Compact"
+              size="small"
+              padding="compact"
               active={keypadOpen || isComposing}
               disabled={call.status !== 'connected' && !isComposing}
               icon={<Icon glyph={<DialpadIcon />} size="16" />}
@@ -265,8 +265,8 @@ export function CallPip({
                 <div className={styles['pip__more-wrap']} ref={deviceRef}>
                   <IconButton
                     aria-label="More options"
-                    size="Small"
-                    padding="Compact"
+                    size="small"
+                    padding="compact"
                     toggled={devicePickerOpen}
                     disabled={controlsDisabled}
                     icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
@@ -313,8 +313,8 @@ export function CallPip({
               const micButton = (
                 <IconButton
                   aria-label={call.muted ? 'Unmute microphone' : 'Mute microphone'}
-                  size="Small"
-                  padding="Compact"
+                  size="small"
+                  padding="compact"
                   toggled={call.muted}
                   destructive={call.muted}
                   disabled={controlsDisabled}
@@ -335,8 +335,8 @@ export function CallPip({
                     {devicePicker}
                     <IconButton
                       aria-label="Cancel"
-                      size="Small"
-                      padding="Compact"
+                      size="small"
+                      padding="compact"
                       icon={<Icon glyph={<CloseIcon />} size="16" />}
                       onClick={onDismiss}
                     />
@@ -349,8 +349,8 @@ export function CallPip({
                   {canAddParticipant && (
                     <IconButton
                       aria-label={addingParticipant ? 'Close add participant' : 'Add participant'}
-                      size="Small"
-                      padding="Compact"
+                      size="small"
+                      padding="compact"
                       active={addingParticipant}
                       icon={<Icon glyph={<AccountPlusOutlineIcon />} size="16" />}
                       onClick={
@@ -372,8 +372,8 @@ export function CallPip({
                   ) : (
                     <IconButton
                       aria-label="Dismiss"
-                      size="Small"
-                      padding="Compact"
+                      size="small"
+                      padding="compact"
                       icon={<Icon glyph={<CloseIcon />} size="16" />}
                       onClick={onDismiss}
                     />
@@ -395,8 +395,8 @@ export function CallPip({
             <span className={styles['pip__participants-title']}>Participants</span>
             <IconButton
               aria-label="Close participants"
-              size="Small"
-              padding="Compact"
+              size="small"
+              padding="compact"
               icon={<Icon glyph={<CloseIcon />} size="16" />}
               onClick={onToggleParticipantList}
             />
@@ -474,8 +474,8 @@ export function CallPip({
             </div>
             <IconButton
               aria-label="Close add participant"
-              size="Small"
-              padding="Compact"
+              size="small"
+              padding="compact"
               icon={<Icon glyph={<CloseIcon />} size="16" />}
               onClick={onCloseAddParticipant}
             />
@@ -537,8 +537,8 @@ export function CallPip({
                   <span style={{ visibility: addDtmf ? 'visible' : 'hidden' }}>
                     <IconButton
                       aria-label="Clear number"
-                      size="X-Small"
-                      padding="Compact"
+                      size="x-small"
+                      padding="compact"
                       icon={<Icon glyph={<CloseCircleIcon />} size="16" />}
                       onClick={() => setAddDtmf('')}
                     />
@@ -609,8 +609,8 @@ export function CallPip({
               </div>
               <IconButton
                 aria-label="Cancel"
-                size="Small"
-                padding="Compact"
+                size="small"
+                padding="compact"
                 icon={<Icon glyph={<CloseIcon />} size="16" />}
                 onClick={onDismiss}
               />
@@ -620,8 +620,8 @@ export function CallPip({
               <span className={styles['pip__dtmf-title']}>Dial pad</span>
               <IconButton
                 aria-label="Close dial pad"
-                size="Small"
-                padding="Compact"
+                size="small"
+                padding="compact"
                 icon={<Icon glyph={<CloseIcon />} size="16" />}
                 onClick={onToggleKeypad}
               />
@@ -713,8 +713,8 @@ export function CallPip({
                     <span style={{ visibility: call.dtmf ? 'visible' : 'hidden' }}>
                       <IconButton
                         aria-label="Clear number"
-                        size="X-Small"
-                        padding="Compact"
+                        size="x-small"
+                        padding="compact"
                         icon={<Icon glyph={<CloseCircleIcon />} size="16" />}
                         onClick={onDtmfClear}
                       />

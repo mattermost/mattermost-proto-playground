@@ -7,7 +7,14 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  {
+    ignores: [
+      'dist/**',
+      'packages/**',
+      'compass-design/**',
+      '**/node_modules/**',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -23,7 +30,16 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true },
+        {
+          allowConstantExport: true,
+          allowExportNames: [
+            'THEME_IDS',
+            'useTheme',
+            'usePrototypeChrome',
+            'KEYPAD_KEYS',
+            'OUTBOUND_SCENES',
+          ],
+        },
       ],
     },
   },

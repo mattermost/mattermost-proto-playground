@@ -16,7 +16,7 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 2. Register the prototype in `src/manifests/prototypes.ts` and wire the route.
 3. In the orchestrator, use `usePrototypeChrome()` and a `useEffect` to `setCenterSlot(<SceneSwitcher …/>)`; cleanup with `setCenterSlot(null)`; sync when `activeScene` changes.
 4. Prefer `SceneSwitcher` with a clear `ariaLabel`. Do not `position: fixed` the control to the viewport.
-5. Import design-system pieces from `src/components/` / Compass UI — do not reimplement them under `components/`.
+5. Import Compass pieces from `@mattermost/compass-ui` **subpaths** and `@mattermost/compass-proto` (root). Do not reimplement them under prototype `components/`. Before using a component: cheat sheet → installed `.d.ts` → sibling guideline. Desktop vs mobile and overlay wiring: [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md).
 
 ## Invariants
 

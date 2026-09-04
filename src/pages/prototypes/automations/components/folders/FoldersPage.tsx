@@ -3,21 +3,19 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import {
-  Button,
-  EmptyState,
-  Icon,
-  IconButton,
-  MenuItem,
-  Modal,
-  PopoverMenu,
-  SearchInput,
-  Select,
-  Tag,
-  TextInput,
-  UserAvatar,
-  useOutsideClose,
-} from '@mattermost/compass-ui';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { EmptyState } from '@mattermost/compass-ui/components/empty-state';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { Modal } from '@mattermost/compass-ui/components/modal';
+import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
+import { SearchInput } from '@mattermost/compass-ui/components/search-input';
+import { Select } from '@mattermost/compass-ui/components/select';
+import { Tag } from '@mattermost/compass-ui/components/tag';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import {
   useCallback,
   useEffect,
@@ -26,6 +24,7 @@ import {
   useState,
   type ChangeEvent,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import type {
   Automation,
@@ -102,20 +101,19 @@ function CreateFolderForm({
       <Select
         label="Scope"
         value={scope}
-        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-          setScope(e.target.value as FolderScope)
-        }
-      >
-        <option value="team">Team</option>
-        <option value="global">Global (all teams)</option>
-      </Select>
+        options={[
+          { value: 'team', label: 'Team' },
+          { value: 'global', label: 'Global (all teams)' },
+        ]}
+        onChange={(next) => setScope(next as FolderScope)}
+      />
       <div className={styles.folders__createActions}>
-        <Button emphasis="Tertiary" size="Small" onClick={onCancel}>
+        <Button emphasis="tertiary" size="small" onClick={onCancel}>
           Cancel
         </Button>
         <Button
-          emphasis="Primary"
-          size="Small"
+          emphasis="primary"
+          size="small"
           disabled={!name.trim()}
           onClick={submit}
         >
@@ -281,7 +279,7 @@ function FolderDetail({
     }
     renameFolder(folder.id, next);
     setRenaming(false);
-    showToast('Folder renamed', 'Success');
+    showToast('Folder renamed', 'success');
   };
 
   const onDelete = () => {
@@ -294,7 +292,7 @@ function FolderDetail({
       return;
     }
     deleteFolder(folder.id);
-    showToast('Folder deleted', 'Info');
+    showToast('Folder deleted', 'info');
     onDeleted();
   };
 
@@ -306,10 +304,10 @@ function FolderDetail({
   const onAddAdminUser = (user: FolderAdmin) => {
     const ok = addFolderAdmin(folder.id, user.username);
     if (!ok) {
-      showToast('Could not add admin', 'Danger');
+      showToast('Could not add admin', 'danger');
       return;
     }
-    showToast(`Added @${user.username}`, 'Success');
+    showToast(`Added @${user.username}`, 'success');
   };
   return (
     <div className={styles.folders__detail}>
@@ -357,15 +355,15 @@ function FolderDetail({
             {renaming ? (
               <div className={styles.folders__renameActions}>
                 <Button
-                  emphasis="Tertiary"
-                  size="X-Small"
+                  emphasis="tertiary"
+                  size="x-small"
                   onClick={saveRename}
                 >
                   Save
                 </Button>
                 <Button
-                  emphasis="Quaternary"
-                  size="X-Small"
+                  emphasis="quaternary"
+                  size="x-small"
                   onClick={() => {
                     setRenaming(false);
                     setRenameValue(folder.name);
@@ -378,8 +376,8 @@ function FolderDetail({
               <IconButton
                 className={styles.folders__renameBtn}
                 aria-label="Rename folder"
-                size="X-Small"
-                padding="Compact"
+                size="x-small"
+                padding="compact"
                 icon={<Icon size="12" glyph={<PencilOutlineIcon />} />}
                 onClick={() => {
                   setRenameValue(folder.name);
@@ -391,8 +389,8 @@ function FolderDetail({
           <div className={styles.folders__detailMeta}>
             <Tag
               label={scopeLabel(folder.scope)}
-              size="X-Small"
-              type="Default"
+              size="x-small"
+              type="default"
             />
             <p className={styles.folders__detailSub}>
               Created {formatWhen(folder.createdAt) ?? '—'}
@@ -404,7 +402,7 @@ function FolderDetail({
             aria-label={`Actions for ${folder.name}`}
             aria-expanded={actionsOpen}
             aria-haspopup="menu"
-            size="Small"
+            size="small"
             icon={<Icon size="16" glyph={<DotsVerticalIcon />} />}
             onClick={() => setActionsOpen((open) => !open)}
           />
@@ -505,8 +503,8 @@ function FolderDetail({
           </div>
           <Button
             className={styles.folders__sectionAction}
-            emphasis="Tertiary"
-            size="Small"
+            emphasis="tertiary"
+            size="small"
             leadingIcon={<Icon size="16" glyph={<PlusIcon />} />}
             onClick={() => setAdminModalOpen(true)}
           >
@@ -529,12 +527,12 @@ function FolderDetail({
                 <IconButton
                   className={styles.folders__adminRemove}
                   aria-label={`Remove @${admin.username}`}
-                  size="Small"
+                  size="small"
                   destructive
                   icon={<Icon size="16" glyph={<TrashCanOutlineIcon />} />}
                   onClick={() => {
                     removeFolderAdmin(folder.id, admin.userId);
-                    showToast('Admin removed', 'Info');
+                    showToast('Admin removed', 'info');
                   }}
                 />
               </li>
@@ -548,80 +546,83 @@ function FolderDetail({
         )}
       </section>
 
-      {adminModalOpen ? (
-        <div
-          className={styles.folders__overlay}
-          role="presentation"
-          onClick={closeAdminModal}
-        >
-          <div
-            className={styles.folders__dialog}
-            role="presentation"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Modal
-              size="Small"
-              title="Add delegated admin"
-              subtitle="Find people on your team to manage this folder."
-              onClose={closeAdminModal}
-              footer={
-                <Button emphasis="Tertiary" onClick={closeAdminModal}>
-                  Done
-                </Button>
-              }
+      {adminModalOpen
+        ? createPortal(
+            <div
+              className={styles.folders__overlay}
+              role="presentation"
+              onClick={closeAdminModal}
             >
-              <div className={styles.folders__adminPicker}>
-                <SearchInput
-                  size="Small"
-                  placeholder="Search by name or username…"
-                  value={adminQuery}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setAdminQuery(e.target.value)
+              <div
+                className={styles.folders__dialog}
+                role="presentation"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Modal
+                  size="small"
+                  title="Add delegated admin"
+                  subtitle="Find people on your team to manage this folder."
+                  onClose={closeAdminModal}
+                  footer={
+                    <Button emphasis="tertiary" onClick={closeAdminModal}>
+                      Done
+                    </Button>
                   }
-                  onClear={() => setAdminQuery('')}
-                />
-                {adminCandidates.length > 0 ? (
-                  <ul className={styles.folders__adminResults}>
-                    {adminCandidates.map((user) => (
-                      <li key={user.userId}>
-                        <button
-                          type="button"
-                          className={styles.folders__adminResult}
-                          onClick={() => onAddAdminUser(user)}
-                        >
-                          <UserAvatar
-                            size="32"
-                            alt={user.displayName}
-                            name={user.displayName}
-                            src={user.avatarSrc}
-                          />
-                          <span className={styles.folders__adminResultText}>
-                            <span className={styles.folders__adminResultName}>
-                              {user.displayName}
-                            </span>
-                            <span className={styles.folders__adminResultHandle}>
-                              @{user.username}
-                            </span>
-                          </span>
-                          <span className={styles.folders__adminResultAdd}>
-                            Add
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className={styles.folders__muted}>
-                    {adminQuery.trim()
-                      ? 'No matching people found.'
-                      : 'Everyone in the directory is already an admin.'}
-                  </p>
-                )}
+                >
+                  <div className={styles.folders__adminPicker}>
+                    <SearchInput
+                      size="small"
+                      placeholder="Search by name or username…"
+                      value={adminQuery}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setAdminQuery(e.target.value)
+                      }
+                      onClear={() => setAdminQuery('')}
+                    />
+                    {adminCandidates.length > 0 ? (
+                      <ul className={styles.folders__adminResults}>
+                        {adminCandidates.map((user) => (
+                          <li key={user.userId}>
+                            <button
+                              type="button"
+                              className={styles.folders__adminResult}
+                              onClick={() => onAddAdminUser(user)}
+                            >
+                              <UserAvatar
+                                size="32"
+                                alt={user.displayName}
+                                name={user.displayName}
+                                src={user.avatarSrc}
+                              />
+                              <span className={styles.folders__adminResultText}>
+                                <span className={styles.folders__adminResultName}>
+                                  {user.displayName}
+                                </span>
+                                <span className={styles.folders__adminResultHandle}>
+                                  @{user.username}
+                                </span>
+                              </span>
+                              <span className={styles.folders__adminResultAdd}>
+                                Add
+                              </span>
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className={styles.folders__muted}>
+                        {adminQuery.trim()
+                          ? 'No matching people found.'
+                          : 'Everyone in the directory is already an admin.'}
+                      </p>
+                    )}
+                  </div>
+                </Modal>
               </div>
-            </Modal>
-          </div>
-        </div>
-      ) : null}
+            </div>,
+            document.body,
+          )
+        : null}
 
       <section className={styles.folders__section}>
         <VariableSecretsManager
@@ -721,8 +722,8 @@ export default function FoldersPage() {
               <IconButton
                 className={styles.folders__railAdd}
                 aria-label="New folder"
-                size="X-Small"
-                padding="Compact"
+                size="x-small"
+                padding="compact"
                 icon={<Icon size="12" glyph={<PlusIcon />} />}
                 onClick={() => setCreating(true)}
               />

@@ -2,37 +2,67 @@
 
 Shared instructions for Cursor, Claude Code, and other agents. `CLAUDE.md` imports this file via `@AGENTS.md`.
 
+## Repositories
+
+| Repo | Role |
+| ---- | ---- |
+| [`mattermost/compass-design`](https://github.com/mattermost/compass-design) | `@mattermost/compass-ui`, `@mattermost/compass-proto`, guidelines, Storybook |
+| **`mattermost/mattermost-proto-playground` (this repo)** | Multi-scene prototype flows + playground chrome only |
+
 ## Design system layers
 
-Vocabulary used everywhere: **Foundations** (tokens, type, color, motion) → **Components** (reusable UI) → **Patterns** (composed blocks like Channel Sidebar) → **Layouts** (full screens). Docs URLs and topic categories follow this model.
+Vocabulary used everywhere: **Foundations** → **Components** → **Patterns** → **Layouts**. Guidelines and specimens live in **compass-design**, not here.
 
-## Building new components
+Package split (in **compass-design**):
 
-Before writing new UI, audit `src/components/` (and Compass UI). Reuse an existing component when it already covers the need — especially when the name matches Figma. Only build a new sub-component when nothing suitable exists.
+- **`@mattermost/compass-ui`** — published core from npm (`@alpha`; tokens, primitives, desktop chrome pieces)
+- **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call*, demo fixtures (**never npm**; docs + playground link via `file:`)
+
+**Layouts** (docs category) are composed specimens in compass-design — they import **both** packages. Product webapp uses **ui only**. Details: [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what).
+
+**Playground-only (this repo):** `PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileModalStage`, per-prototype scene code.
+
+## Building new UI
+
+Look up the component first (cheat sheet → installed `.d.ts` → sibling guideline in `../compass-design`). Use `@mattermost/compass-ui` / `@mattermost/compass-proto`. Do not add design-system components under `src/components/` — extend compass-design instead.
+
+Playground `src/components/` is for catalog chrome and layout only.
+
+Lookup protocol, choose-this-not-that, overlays, and when to invent UI: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#imports).
+
+### Import convention
+
+Always import from **subpaths** — never the root barrel `@mattermost/compass-ui`. `@mattermost/compass-proto` has no subpaths — import from the package root.
+
+### Variant prop string values
+
+Compass UI variant props (`size`, `emphasis`, `appearance`, `type`, `padding`, etc.) use **lowercase kebab-case** literals — e.g. `'primary'`, `'x-small'`, `'new-messages'`, `'center-channel'`. Do not pass Title Case values.
 
 ## Shared React hooks
 
-Check `src/hooks/` before duplicating logic. Key hooks: `useExitAnimation` (exit animations), `useOutsideClose` (click-outside behavior).
+Check `src/hooks/` before duplicating logic. Key hooks: `useExitAnimation`, `useOutsideClose`.
 
-`ProfilePopover` is content only — do not fork it for positioning; compose a page-local wrapper or a shared layout hook (e.g. `useAnchoredToRect`).
+## Overlays
+
+Tooltips, modals, and popovers from Compass are **visual chrome only** — the host owns open/close, portals, positioning, and focus. Wiring recipe: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#overlay-wiring).
+
+**Exceptions:** form widgets with menus (`Combobox`, `Select`, …) and proto/mobile presenters (`MobileBottomSheet`, playground `MobileModalStage`) follow their component-specific patterns.
 
 ## Component usage (short)
 
-- **Primary button:** `emphasis="Primary"` at most once per view. Prefer Secondary / Tertiary / Quaternary otherwise.
-- **EmptyState actions:** omit `size` on the action `Button` unless Figma requires otherwise (default Medium).
-- **Admin True/False radios:** lay out horizontally in a flex row (e.g. `admin-console-layout__radio-row`); override Radio `width: 100%` so both stay on one row; match label `padding-top: var(--spacing-xxs)`.
-- **Avatars:** pass a real image from `src/assets/avatars/` when the component supports `src` / equivalent. Initials-only only when documenting fallback or unnamed users.
+- **Primary button:** `emphasis="primary"` at most once per view.
+- **EmptyState actions:** omit `size` on action `Button` unless Figma requires otherwise.
+- **Avatars:** pass a real image from `src/assets/avatars/` when supported.
 
 ## Styling
 
-Prefer design tokens from `src/styles/tokens.scss` over hardcoded px/hex/ms. Full BEM, tokens, motion, opacity, and Scrollbars rules load when editing styles — see the styling rule pair below.
+Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--spacing-*`, `--center-channel-color`, …). Full BEM, tokens, motion, opacity rules load when editing styles — see [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc).
 
 ## Area-specific guidance
 
-- [src/guidelines/AGENTS.md](src/guidelines/AGENTS.md) — Docs guidelines, specimens, MDX
 - [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) — Prototypes
-- [packages/compass-ui/AGENTS.md](packages/compass-ui/AGENTS.md) — Compass UI Storybook
-- [.claude/rules/styling.md](.claude/rules/styling.md) / [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc) — Styling (keep both files in sync)
-- [.cursor/skills/add-docs-topic/SKILL.md](.cursor/skills/add-docs-topic/SKILL.md) — Adding a docs topic (procedure)
-- [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype (procedure)
+- [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md) — Split plan
+- [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
+
+For guidelines, Storybook, and package work, use the **compass-design** repo.

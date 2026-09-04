@@ -1,4 +1,5 @@
-import { GlobalHeader, Toast } from '@mattermost/compass-ui';
+import { GlobalHeader } from '@mattermost/compass-ui/components/global-header';
+import { Toast } from '@mattermost/compass-ui/components/toast';
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import avatar from '@/assets/avatars/Danielle Okoro.png';
@@ -55,7 +56,6 @@ export default function AutomationsShell() {
     <div className={styles['automations-shell']}>
       <div className={styles['automations-shell__global-header']}>
         <GlobalHeader
-          product="Automations"
           userAvatarSrc={avatar}
           userAvatarAlt="Danielle Okoro"
         />

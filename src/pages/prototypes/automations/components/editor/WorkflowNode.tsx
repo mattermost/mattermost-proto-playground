@@ -1,4 +1,4 @@
-import { Icon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { helpTextForStep } from '../../data/stepCatalog';
 import type { WorkflowNodeData } from '../../data/types';

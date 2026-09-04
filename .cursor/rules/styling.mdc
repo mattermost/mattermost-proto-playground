@@ -1,5 +1,5 @@
 ---
-description: Styling — BEM, tokens, motion, opacity, Scrollbars
+description: Styling — BEM, tokens, motion, opacity, Scrollbar
 globs:
   - "**/*.module.scss"
   - "**/tokens.scss"
@@ -9,7 +9,7 @@ alwaysApply: false
 
 # Styling
 
-Apply when editing styles (especially `*.module.scss`). Prefer tokens from `src/styles/tokens.scss` and theme vars (`--center-channel-color`, `--center-channel-bg`, `--button-bg`, etc.).
+Apply when editing styles (especially `*.module.scss`). Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--center-channel-color`, `--center-channel-bg`, `--button-bg`, `--spacing-*`, etc.). `src/styles/tokens.scss` lists the same names for reference.
 
 **Claude twin:** keep [.claude/rules/styling.md](../../.claude/rules/styling.md) in sync with this file.
 
@@ -78,7 +78,7 @@ color: var(--color-info);
 
 - Prefer nearest token or `calc()` of tokens over raw `px`.
 - Do not put tokenizable spacing/font in inline `style={{}}` — use a CSS module.
-- **Exceptions:** `1px` hairlines; visually-hidden `1px`/`-1px`; one-off layout widths with no token; container/media breakpoints.
+- **Exceptions:** `1px` hairlines; visually-hidden `1px`/`-1px`; one-off layout widths with no token; container/media breakpoints; `webapp-compat.scss` `@layer` maps shared Mattermost names (`--neutral-*`, `--semantic-color-*`) to Compass palette / token defaults so host unlayered values win when embedded.
 - Before finishing, scan new/edited styles for leftover raw `px`, hex, numeric `font-weight`, or hardcoded `ms`/`ease`.
 
 ## Animation: easing and duration
@@ -96,22 +96,38 @@ Never hard-code durations or easing keywords — use tokens:
 
 ## Semantic colors
 
-Info/success/warning/danger → `--color-info|success|warning|danger` (and `-rgb` for `rgba()`). Never raw palette (e.g. `--color-blue-400`) or legacy theme vars (`--error-text`, `--online-indicator`, `--away-indicator`) when a semantic token covers it.
+Fixed intent colors: `--color-info|success|warning|danger` (and `-rgb` for `rgba()`). Never raw palette (e.g. `--color-blue-400`).
 
-| Token | RGB | Resolves to |
-| --- | --- | --- |
-| `--color-info` | `--color-info-rgb` | `--color-blue-400` |
-| `--color-success` | `--color-success-rgb` | `--color-green-500` |
-| `--color-warning` | `--color-warning-rgb` | `--color-yellow-600` |
-| `--color-danger` | `--color-danger-rgb` | `--color-red-500` |
+These wrap shared Mattermost `--semantic-color-*` RGB tokens (same names as webapp). Compass maps standalone defaults to palette RGB in `webapp-compat.scss` `@layer`; host unlayered values win when Compass is embedded in webapp.
+
+**Themeable error / destructive UI** (validation, destructive buttons, danger notices): reference the webapp theme role first:
+
+```scss
+color: var(--error-text, var(--color-danger));
+background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
+```
+
+**Presence** is not semantic: use `--online-indicator`, `--away-indicator`, `--dnd-indicator` (optional `--color-*` fallback). Do not use `--color-success|warning|danger` alone for StatusBadge / presence.
+
+| Token | Role |
+| --- | --- |
+| `--semantic-color-info\|success\|warning\|danger` | Shared RGB with webapp (source of truth for fixed semantics) |
+| `--color-info\|success\|warning\|danger` (+ `-rgb`) | Convenience wrappers → `rgb(var(--semantic-color-*))` |
+| `--error-text` / `--error-text-color-rgb` | Themeable error role (prefer in error/destructive components) |
+
+Toasts / global banners: use `rgb(var(--semantic-color-*))` directly for type fills.
 
 ## Figma opacity suffixes
 
-Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. Backgrounds/borders/fills may use the mapped alpha as written.
+Figma `token/8` → `rgba(var(--token-rgb), 0.08)` (no suffixed CSS variable). Text color alpha clamp ≥ **0.72**; icon color clamp ≥ **0.56**. **Exceptions:** field placeholder text may use **0.64**; disabled components may go as low as **0.4**. Backgrounds/borders/fills may use the mapped alpha as written.
 
 ## Opacity floors
 
 Never style **text** below **72%** opacity or **icons** below **56%** (including `rgba`/`hsla` as `color`/`fill`, and `opacity` on text/icon elements). Lower alpha is fine for backgrounds, borders, fills, overlays. Entrance/exit may fade temporarily; resting UI must meet the floors.
+
+**Exception — placeholders:** Input / Select / Combobox placeholder text (hint copy in the empty field) may use **64%** opacity (`rgba(var(--center-channel-color-rgb), 0.64)`). Do not apply this floor exemption to labels, values, body copy, or other resting text.
+
+**Exception — disabled:** Disabled controls and disabled menu/list rows may drop below the text/icon floors so they read as inactive, but not below **40%** opacity (`0.4`). Form fields often use **0.56** on the control surface; menu items often dim content at **0.4**. Do not use these values on enabled resting UI.
 
 ## Iconography: phone
 
@@ -146,6 +162,6 @@ In-place expand/collapse must animate — never snap. Prefer CSS grid `0fr`↔`1
 
 ## Scrollbars
 
-Scrolling regions in Compass UI components / guideline specimens: use `Scrollbars` from `src/components/ui/Scrollbars/` (not raw overflow). Parent needs `flex: 1; min-height: 0` in a flex column; pad a child inside `Scrollbars`, not the root. Dark surfaces: `color="--sidebar-text-rgb"`.
+Scrolling regions: use `Scrollbar` from `@mattermost/compass-ui/components/scrollbar` (not raw overflow). Parent needs `flex: 1; min-height: 0` in a flex column; pad a child inside `Scrollbar`, not the root. Dark surfaces: `color="--sidebar-text-rgb"`.
 
-**Exception:** docs shell layout scrollers (`AppShell`, `DocsLayout`, `DocSidebar`, `OnThisPage`) keep native `overflow: auto` + `@include minimal-scrollbar` (sticky + flex chain).
+**Exception:** playground catalog chrome (`AppShell`) keeps native `overflow: auto` + `@include minimal-scrollbar` (sticky + flex chain). Do not replace with `<Scrollbar>`.

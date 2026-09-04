@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { DialpadIcon } from '@mattermost/compass-ui';
-import { Icon } from '@mattermost/compass-ui';
-import { ChannelsSidebar } from '@mattermost/compass-ui';
-import { GlobalHeader } from '@mattermost/compass-ui';
-import { TeamSidebar } from '@mattermost/compass-ui';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { ChannelsSidebar } from '@mattermost/compass-ui/components/channels-sidebar';
+import { GlobalHeader } from '@mattermost/compass-ui/components/global-header';
+import { TeamSidebar } from '@mattermost/compass-ui/components/team-sidebar';
+import { buildDefaultChannelsSidebarModel } from '@mattermost/compass-proto';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
 import { CallPip } from '@/pages/prototypes/outbound-calls/CallPip/CallPip';
@@ -355,12 +356,28 @@ export default function OutboundCalls() {
     [call?.deviceId],
   );
 
+  const channelsSidebarModel = useMemo(
+    () =>
+      buildDefaultChannelsSidebarModel({
+        showUnreadsCategory: false,
+        showDialPad: scene === 'dialer',
+        avatarAikoTan,
+        avatarArjunPatel,
+        avatarDanielleOkoro: avatarDanielle,
+        avatarDariusCole,
+        avatarDavidLiang,
+        avatarEmmaNovak,
+        avatarEthanBrooks,
+      }),
+    [scene],
+  );
+
   return (
     <div className={styles['calls']}>
       <div className={styles['calls__shell']}>
         <div className={styles['calls__global-header']}>
           <GlobalHeader
-            product="Channels"
+            product="channels"
             userAvatarSrc={avatarLeonard}
             userAvatarAlt="Leonard Riley"
           />
@@ -399,7 +416,7 @@ export default function OutboundCalls() {
               <ChannelsSidebar
                 teamName="Task Force Aurora"
                 showFilter
-                showDialPad={scene === 'dialer'}
+                model={channelsSidebarModel}
                 channelNameOverrides={{
                   'softphone-ux': 'op-nightingale',
                   'calling-eng': 'comms-ops',
@@ -423,13 +440,6 @@ export default function OutboundCalls() {
                             ? 'op-nightingale'
                             : ''
                 }
-                avatarAikoTan={avatarAikoTan}
-                avatarArjunPatel={avatarArjunPatel}
-                avatarDanielOkoro={avatarDanielle}
-                avatarDariusCole={avatarDariusCole}
-                avatarDavidLiang={avatarDavidLiang}
-                avatarEmmaNovak={avatarEmmaNovak}
-                avatarEthanBrooks={avatarEthanBrooks}
                 onItemClick={(name: string) => {
                   if (name === 'op-nightingale') setScene('channel');
                   else if (name === 'Aiko Tan') setScene('dm');

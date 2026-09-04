@@ -1,95 +1,24 @@
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import MattermostIcon from '@mattermost/compass-icons/components/mattermost';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
-import { categoryFirstTopicPath } from '@/manifests/categoryFirstTopicPath';
 import ThemeSwitcherControl from '@/components/layout/ThemeSwitcherControl/ThemeSwitcherControl';
-import { Icon, IconButton } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import styles from './TopNav.module.scss';
+
+const COMPASS_DESIGN_URL = 'https://mattermost.github.io/compass-design/';
 
 interface NavItem {
   to: string;
   label: string;
   end?: boolean;
-  /**
-   * URL prefix used for active-state matching. Defaults to `to`. Set this
-   * when an item links to a deep child but should highlight on any path
-   * under a category (e.g. /foundations/* keeps "Foundations" active even
-   * though `to` is `/foundations/why-compass`).
-   */
-  activePrefix?: string;
+  external?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  {
-    to: categoryFirstTopicPath('foundations'),
-    label: 'Foundations',
-    activePrefix: '/foundations',
-  },
-  {
-    to: categoryFirstTopicPath('components'),
-    label: 'Components',
-    activePrefix: '/components',
-  },
-  {
-    to: categoryFirstTopicPath('patterns'),
-    label: 'Patterns',
-    activePrefix: '/patterns',
-  },
-  {
-    to: categoryFirstTopicPath('layouts'),
-    label: 'Layouts',
-    activePrefix: '/layouts',
-  },
-  { to: '/prototypes', label: 'Prototypes' },
+  { to: '/', label: 'Catalog', end: true },
+  { to: COMPASS_DESIGN_URL, label: 'Design system', external: true },
 ];
-
-function pathStartsWith(pathname: string, prefix: string): boolean {
-  return pathname === prefix || pathname.startsWith(prefix + '/');
-}
-
-interface TopNavLinkProps {
-  item: NavItem;
-}
-
-function TopNavLink({ item }: TopNavLinkProps) {
-  const { pathname } = useLocation();
-
-  // Items with an activePrefix need custom matching since NavLink only
-  // matches against `to`, which here points to a deep child.
-  if (item.activePrefix) {
-    const isActive = pathStartsWith(pathname, item.activePrefix);
-    return (
-      <Link
-        to={item.to}
-        className={[
-          styles['top-nav__item'],
-          isActive ? styles['top-nav__item--active'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-      >
-        {item.label}
-      </Link>
-    );
-  }
-
-  return (
-    <NavLink
-      to={item.to}
-      end={item.end}
-      className={({ isActive }) =>
-        [
-          styles['top-nav__item'],
-          isActive ? styles['top-nav__item--active'] : '',
-        ]
-          .filter(Boolean)
-          .join(' ')
-      }
-    >
-      {item.label}
-    </NavLink>
-  );
-}
 
 interface TopNavProps {
   /** Opens the ⌘K / Ctrl+K quick switcher (navigate to any page). */
@@ -99,22 +28,48 @@ interface TopNavProps {
 export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
   return (
     <div className={styles['top-nav']}>
-      <NavLink to="/" className={styles['top-nav__logo']} aria-label="Compass home">
+      <NavLink to="/" className={styles['top-nav__logo']} aria-label="Prototype catalog home">
         <MattermostIcon size={28} />
-        <span className={styles['top-nav__wordmark']}>Compass</span>
+        <span className={styles['top-nav__wordmark']}>Proto Playground</span>
       </NavLink>
 
       <nav className={styles['top-nav__items']} aria-label="Primary">
-        {NAV_ITEMS.map((item) => (
-          <TopNavLink key={item.label} item={item} />
-        ))}
+        {NAV_ITEMS.map((item) =>
+          item.external ? (
+            <a
+              key={item.label}
+              href={item.to}
+              className={styles['top-nav__item']}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {item.label}
+            </a>
+          ) : (
+            <NavLink
+              key={item.label}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                [
+                  styles['top-nav__item'],
+                  isActive ? styles['top-nav__item--active'] : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+              }
+            >
+              {item.label}
+            </NavLink>
+          ),
+        )}
 
         {onOpenQuickSwitcher != null && (
           <IconButton
             aria-label="Open quick switcher"
             aria-keyshortcuts="Control+K Meta+K"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<MagnifyIcon />} />}
             onClick={onOpenQuickSwitcher}
           />

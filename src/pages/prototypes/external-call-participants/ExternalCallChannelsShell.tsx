@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui';
-import { ChannelShell } from '@mattermost/compass-ui';
+import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
+import { ChannelShell } from '@mattermost/compass-proto';
 import { externalCallParticipantsChannelsSidebarModel } from './channelsSidebar.model';
 
 export interface ExternalCallChannelsShellProps {
@@ -19,7 +19,7 @@ export default function ExternalCallChannelsShell({
       channelsSidebarModel={externalCallParticipantsChannelsSidebarModel}
       channelHeader={
         <ChannelHeader
-          type="Channel"
+          type="channel"
           name="UX Design"
           description="Design reviews and ongoing work."
           memberCount={24}

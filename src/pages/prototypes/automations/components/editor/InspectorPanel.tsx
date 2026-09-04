@@ -1,14 +1,12 @@
 import CloseIcon from '@mattermost/compass-icons/components/close';
-import {
-  Button,
-  Checkbox,
-  Combobox,
-  Icon,
-  IconButton,
-  Scrollbar,
-  Select,
-  TextInput,
-} from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
+import { Combobox } from '@mattermost/compass-ui/components/combobox';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { Select } from '@mattermost/compass-ui/components/select';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { useMemo, type ChangeEvent } from 'react';
 import {
   AUTOMATION_BOTS,
@@ -65,8 +63,8 @@ export default function InspectorPanel({
           <h2 className={styles.panel__title}>{KIND_TITLES[selectedNode.data.kind]}</h2>
           <IconButton
             aria-label="Close"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<CloseIcon />} />}
             onClick={onCloseNode}
           />
@@ -96,17 +94,18 @@ export default function InspectorPanel({
                 <Select
                   label="Operator"
                   value={fields.operator ?? 'contains'}
-                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  options={[
+                    { value: 'contains', label: 'contains' },
+                    { value: 'equals', label: 'equals' },
+                    { value: 'contains_any', label: 'contains any' },
+                  ]}
+                  onChange={(operator) =>
                     onUpdateNode(selectedNode.id, {
                       ...fields,
-                      operator: e.target.value,
+                      operator,
                     })
                   }
-                >
-                  <option value="contains">contains</option>
-                  <option value="equals">equals</option>
-                  <option value="contains_any">contains any</option>
-                </Select>
+                />
                 <TextInput
                   label="Right value"
                   value={fields.right ?? ''}
@@ -153,15 +152,15 @@ export default function InspectorPanel({
         </Scrollbar>
         <div className={styles.panel__footer}>
           <Button
-            emphasis="Tertiary"
-            size="Small"
+            emphasis="tertiary"
+            size="small"
             onClick={() => onDuplicateNode(selectedNode.id)}
           >
             Duplicate step
           </Button>
           <Button
-            emphasis="Tertiary"
-            size="Small"
+            emphasis="tertiary"
+            size="small"
             destructive
             onClick={() => onDeleteNode(selectedNode.id)}
           >
@@ -199,16 +198,17 @@ export default function InspectorPanel({
           <Select
             label="Scope"
             value={automation.scope}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+            options={[
+              { value: 'global', label: 'Global' },
+              { value: 'team', label: 'Team' },
+              { value: 'channel', label: 'Channel' },
+            ]}
+            onChange={(scope) =>
               onUpdateAutomation({
-                scope: e.target.value as Automation['scope'],
+                scope: scope as Automation['scope'],
               })
             }
-          >
-            <option value="global">Global</option>
-            <option value="team">Team</option>
-            <option value="channel">Channel</option>
-          </Select>
+          />
           <Combobox
             label="Tags"
             placeholder="Add tags…"
@@ -224,29 +224,21 @@ export default function InspectorPanel({
           <Select
             label="Bot"
             value={automation.botId || DEFAULT_AUTOMATION_BOT_ID}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              onUpdateAutomation({ botId: e.target.value })
-            }
-          >
-            {AUTOMATION_BOTS.map((bot) => (
-              <option key={bot.id} value={bot.id}>
-                {bot.label}
-              </option>
-            ))}
-          </Select>
+            options={AUTOMATION_BOTS.map((bot) => ({
+              value: bot.id,
+              label: bot.label,
+            }))}
+            onChange={(botId) => onUpdateAutomation({ botId })}
+          />
           <Select
             label="Team"
             value={automation.folderId || DEFAULT_AUTOMATION_FOLDER_ID}
-            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-              onUpdateAutomation({ folderId: e.target.value })
-            }
-          >
-            {folders.map((folder) => (
-              <option key={folder.id} value={folder.id}>
-                {folder.name}
-              </option>
-            ))}
-          </Select>
+            options={folders.map((folder) => ({
+              value: folder.id,
+              label: folder.name,
+            }))}
+            onChange={(folderId) => onUpdateAutomation({ folderId })}
+          />
         </div>
       </Scrollbar>
     </div>

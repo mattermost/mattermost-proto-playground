@@ -44,7 +44,7 @@ import type {
   WorkflowNode,
 } from '../data/types';
 
-type ToastState = { message: string; type: 'Success' | 'Info' | 'Danger' } | null;
+type ToastState = { message: string; type: 'success' | 'info' | 'danger' } | null;
 
 type AutomationsContextValue = {
   automations: Automation[];
@@ -187,7 +187,7 @@ export function AutomationsProvider({ children }: { children: ReactNode }) {
   const [aiCanvasEpoch, setAiCanvasEpoch] = useState(0);
 
   const showToast = useCallback(
-    (message: string, type: NonNullable<ToastState>['type'] = 'Info') => {
+    (message: string, type: NonNullable<ToastState>['type'] = 'info') => {
       setToast({ message, type });
       window.setTimeout(() => setToast(null), 3200);
     },

@@ -2,11 +2,11 @@ import { useState, type ChangeEvent, type KeyboardEvent } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import CloseCircleIcon from '@mattermost/compass-icons/components/close-circle';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
-import { DialpadIcon } from '@mattermost/compass-ui';
-import { Icon } from '@mattermost/compass-ui';
-import { IconButton } from '@mattermost/compass-ui';
-import { TextInput } from '@mattermost/compass-ui';
-import { UserAvatar } from '@mattermost/compass-ui';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { KeypadGrid } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
 import { CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import { formatRecentDuration, sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
@@ -48,7 +48,7 @@ export function DialerScene({
         <div className={styles['dialer__keypad']}>
           <TextInput
             className={styles['dialer__phone-field']}
-            size="Large"
+            size="large"
             value={typed}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setTyped(sanitizeDigits(e.target.value))}
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
@@ -65,8 +65,8 @@ export function DialerScene({
               <span style={{ visibility: typed ? 'visible' : 'hidden' }}>
                 <IconButton
                   aria-label="Clear number"
-                  size="Small"
-                  padding="Compact"
+                  size="small"
+                  padding="compact"
                   icon={<Icon glyph={<CloseCircleIcon />} size="16" />}
                   onClick={clearTyped}
                 />

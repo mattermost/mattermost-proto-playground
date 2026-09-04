@@ -2,20 +2,18 @@ import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import {
-  Button,
-  EmptyState,
-  Icon,
-  IconButton,
-  Modal,
-  Radio,
-  SearchInput,
-  Tabs,
-  Tag,
-  TextInput,
-  type ButtonEmphasis,
-} from '@mattermost/compass-ui';
+import { Button, type ButtonEmphasis } from '@mattermost/compass-ui/components/button';
+import { EmptyState } from '@mattermost/compass-ui/components/empty-state';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Modal } from '@mattermost/compass-ui/components/modal';
+import { Radio } from '@mattermost/compass-ui/components/radio';
+import { SearchInput } from '@mattermost/compass-ui/components/search-input';
+import { Tabs } from '@mattermost/compass-ui/components/tabs';
+import { Tag } from '@mattermost/compass-ui/components/tag';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { useEffect, useId, useMemo, useState, type ChangeEvent } from 'react';
+import { createPortal } from 'react-dom';
 import type { FolderVariable } from '../../data/types';
 import { useAutomations } from '../../context/AutomationsContext';
 import styles from './VariableSecretsManager.module.scss';
@@ -113,7 +111,7 @@ function ComposeModal({
         kind === 'secret'
           ? 'Name and value are required for secrets'
           : 'Name is required',
-        'Danger',
+        'danger',
       );
       return;
     }
@@ -125,12 +123,12 @@ function ComposeModal({
         : kind === 'secret'
           ? 'Secret added'
           : 'Variable added',
-      'Success',
+      'success',
     );
     onClose();
   };
 
-  return (
+  return createPortal(
     <div className={styles.manager__overlay} role="presentation" onClick={onClose}>
       <div
         className={styles.manager__dialog}
@@ -138,7 +136,7 @@ function ComposeModal({
         onClick={(e) => e.stopPropagation()}
       >
         <Modal
-          size="Small"
+          size="small"
           title={
             isEdit
               ? kind === 'secret'
@@ -154,11 +152,11 @@ function ComposeModal({
           onClose={onClose}
           footer={
             <>
-              <Button emphasis="Tertiary" onClick={onClose}>
+              <Button emphasis="tertiary" onClick={onClose}>
                 Cancel
               </Button>
               <Button
-                emphasis="Primary"
+                emphasis="primary"
                 disabled={!canSubmit}
                 onClick={submit}
               >
@@ -233,7 +231,8 @@ function ComposeModal({
           </div>
         </Modal>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -244,7 +243,7 @@ export default function VariableSecretsManager({
   heading,
   description,
   addLabel = 'Add',
-  addEmphasis = 'Tertiary',
+  addEmphasis = 'tertiary',
   defaultAddOpen = false,
 }: VariableSecretsManagerProps) {
   const { showToast } = useAutomations();
@@ -290,9 +289,9 @@ export default function VariableSecretsManager({
     const ref = templateRef(item);
     try {
       await navigator.clipboard.writeText(ref);
-      showToast('Copied reference', 'Success');
+      showToast('Copied reference', 'success');
     } catch {
-      showToast('Could not copy', 'Danger');
+      showToast('Could not copy', 'danger');
     }
   };
 
@@ -321,7 +320,7 @@ export default function VariableSecretsManager({
         <div className={styles.manager__toolbarEnd}>
           <SearchInput
             className={styles.manager__search}
-            size="Small"
+            size="small"
             placeholder="Search by name…"
             value={query}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -331,7 +330,7 @@ export default function VariableSecretsManager({
           />
           <Button
             emphasis={addEmphasis}
-            size="Small"
+            size="small"
             leadingIcon={<PlusIcon size={16} />}
             onClick={() =>
               openAdd(filter === 'var' ? 'var' : 'secret')
@@ -392,8 +391,8 @@ export default function VariableSecretsManager({
                   <td>
                     <Tag
                       label={item.kind === 'secret' ? 'Secret' : 'Variable'}
-                      size="X-Small"
-                      type={item.kind === 'secret' ? 'Danger' : 'Info'}
+                      size="x-small"
+                      type={item.kind === 'secret' ? 'danger' : 'info'}
                     />
                   </td>
                   <td>
@@ -405,8 +404,8 @@ export default function VariableSecretsManager({
                         className={styles.manager__refCopy}
                         aria-label={`Copy reference for ${item.name}`}
                         title="Copy reference"
-                        size="X-Small"
-                        padding="Compact"
+                        size="x-small"
+                        padding="compact"
                         icon={
                           <Icon size="12" glyph={<ContentCopyIcon />} />
                         }
@@ -441,7 +440,7 @@ export default function VariableSecretsManager({
                             ? 'Update value'
                             : 'Edit variable'
                         }
-                        size="Small"
+                        size="small"
                         icon={
                           <Icon size="16" glyph={<PencilOutlineIcon />} />
                         }
@@ -450,7 +449,7 @@ export default function VariableSecretsManager({
                       <IconButton
                         aria-label={`Delete ${item.name}`}
                         title="Delete"
-                        size="Small"
+                        size="small"
                         destructive
                         icon={
                           <Icon size="16" glyph={<TrashCanOutlineIcon />} />
@@ -465,7 +464,7 @@ export default function VariableSecretsManager({
                             return;
                           }
                           onRemove(item.name);
-                          showToast('Deleted', 'Info');
+                          showToast('Deleted', 'info');
                         }}
                       />
                     </div>

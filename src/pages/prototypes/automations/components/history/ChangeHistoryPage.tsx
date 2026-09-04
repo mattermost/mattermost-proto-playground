@@ -1,6 +1,9 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
 import RefreshIcon from '@mattermost/compass-icons/components/refresh';
-import { Button, Icon, IconButton, Scrollbar } from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
 import styles from './history.module.scss';
@@ -18,7 +21,7 @@ export default function ChangeHistoryPage() {
     return (
       <div className={styles.history}>
         <p>Automation not found</p>
-        <Button emphasis="Tertiary" size="Small" onClick={() => navigate(BASE)}>
+        <Button emphasis="tertiary" size="small" onClick={() => navigate(BASE)}>
           Back
         </Button>
       </div>
@@ -31,8 +34,8 @@ export default function ChangeHistoryPage() {
         <div className={styles['history__title-row']}>
           <IconButton
             aria-label="Back to editor"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(`${BASE}/${id}/editor`)}
           />
@@ -40,8 +43,8 @@ export default function ChangeHistoryPage() {
         </div>
           <IconButton
             aria-label="Refresh"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<RefreshIcon />} />}
             onClick={() => undefined}
           />
@@ -70,7 +73,7 @@ export default function ChangeHistoryPage() {
                       type="button"
                       className={styles.history__link}
                       onClick={() =>
-                        showToast('Restore is not available in this prototype', 'Info')
+                        showToast('Restore is not available in this prototype', 'info')
                       }
                     >
                       Restore

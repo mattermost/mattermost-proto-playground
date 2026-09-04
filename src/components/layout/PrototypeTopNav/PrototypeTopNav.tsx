@@ -17,7 +17,7 @@ export default function PrototypeTopNav({
     <header className={styles['prototype-top-nav']}>
       <div className={styles['prototype-top-nav__start']}>
         <Link
-          to="/prototypes"
+          to="/"
           className={styles['prototype-top-nav__back']}
           aria-label="Back to prototypes list"
         >

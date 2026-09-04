@@ -9,6 +9,7 @@ import type {
   AutomationFolder,
   AutomationRun,
   ChangeRevision,
+  FolderVariable,
   Template,
   WorkflowEdge,
   WorkflowNode,
@@ -563,6 +564,9 @@ export const TEMPLATES: Template[] = [
     name: 'Welcome new teammates',
     description: 'When a user joins a team, send them a welcome DM with onboarding links.',
     accent: 'var(--color-blue-500)',
+    tags: ['onboarding'],
+    scope: 'team',
+    nodes: welcomeNodes,
     edges: welcomeEdges,
   },
   {

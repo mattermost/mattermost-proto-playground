@@ -1,5 +1,5 @@
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import { Switch } from '@mattermost/compass-ui';
+import { Switch } from '@mattermost/compass-ui/components/switch';
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './AutomationsSceneSwitcher.module.scss';
@@ -100,7 +100,7 @@ export default function AutomationsSceneSwitcher({
       />
       <Switch
         className={styles['scene-chrome__empty']}
-        size="Small"
+        size="small"
         checked={demoEmpty}
         onChange={(e) => setDemoEmpty(e.target.checked)}
         aria-label="Preview empty state"

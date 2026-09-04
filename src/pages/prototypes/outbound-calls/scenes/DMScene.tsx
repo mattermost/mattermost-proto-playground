@@ -1,13 +1,13 @@
 import type { MouseEvent } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui';
-import { MessageSeparator } from '@mattermost/compass-ui';
-import { Message } from '@mattermost/compass-ui';
+import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
+import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
+import { Message } from '@mattermost/compass-ui/components/message';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-ui';
+import { layoutStyles } from '@mattermost/compass-proto';
 
 export function DMScene({
   onOpenProfile,
@@ -49,7 +49,7 @@ export function DMScene({
   return (
     <>
       <ChannelHeader
-        type="DM"
+        type="dm"
         name={contact.name}
         description={contact.title}
         avatarSrc={contact.avatar}
@@ -65,7 +65,7 @@ export function DMScene({
       />
 
       <div className={layoutStyles['channel-shell__messages']}>
-        <MessageSeparator type="Date" label="Today" />
+        <MessageSeparator type="date" label="Today" />
 
         <Message
           avatarSrc={contact.avatar}

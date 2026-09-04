@@ -1,4 +1,4 @@
-import { Scrollbar } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import type { ComponentType, SVGProps } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AlertIllustration from '@/assets/illustrations/alert.svg?react';

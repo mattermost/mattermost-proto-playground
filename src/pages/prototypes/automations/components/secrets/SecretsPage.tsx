@@ -1,4 +1,4 @@
-import { Scrollbar } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
@@ -39,7 +39,7 @@ export default function SecretsPage() {
               onAdd={addSystemVariable}
               onRemove={removeSystemVariable}
               addLabel="Add"
-              addEmphasis="Primary"
+              addEmphasis="primary"
               defaultAddOpen={defaultAddOpen}
             />
           </div>

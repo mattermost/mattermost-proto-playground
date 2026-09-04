@@ -17,25 +17,42 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Sibling layout so file:../compass-design resolves from the playground root.
       - uses: actions/checkout@v4
+        with:
+          path: mattermost-proto-playground
+
+      - uses: actions/checkout@v4
+        with:
+          repository: mattermost/compass-design
+          path: compass-design
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
+          cache-dependency-path: mattermost-proto-playground/package-lock.json
 
       - run: npm ci
+        working-directory: compass-design
+
+      - run: npm run build:ui && npm run build:proto
+        working-directory: compass-design
+
+      - run: npm ci
+        working-directory: mattermost-proto-playground
 
       - run: npm run build
+        working-directory: mattermost-proto-playground
 
       - name: Add SPA 404 fallback
-        run: cp dist/index.html dist/404.html
+        run: cp mattermost-proto-playground/dist/index.html mattermost-proto-playground/dist/404.html
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: mattermost-proto-playground/dist
 
   deploy:
     needs: build

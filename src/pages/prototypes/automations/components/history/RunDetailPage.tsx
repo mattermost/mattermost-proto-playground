@@ -1,5 +1,9 @@
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
-import { Button, Icon, IconButton, Scrollbar, Tag } from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
 import styles from './history.module.scss';
@@ -18,8 +22,8 @@ export default function RunDetailPage() {
       <div className={styles.history}>
         <p>Run not found</p>
         <Button
-          emphasis="Tertiary"
-          size="Small"
+          emphasis="tertiary"
+          size="small"
           onClick={() => navigate(`${BASE}/${id}/runs`)}
         >
           Back to runs
@@ -34,16 +38,16 @@ export default function RunDetailPage() {
         <div className={styles['history__title-row']}>
           <IconButton
             aria-label="Back to runs"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(`${BASE}/${id}/runs`)}
           />
           <h1 className={styles.history__title}>Run detail · {automation.name}</h1>
         </div>
         <Button
-          emphasis="Tertiary"
-          size="Small"
+          emphasis="tertiary"
+          size="small"
           onClick={() => navigate(`${BASE}/${id}/editor`)}
         >
           Open editor
@@ -51,8 +55,8 @@ export default function RunDetailPage() {
       </div>
       <Tag
         label={run.status}
-        size="X-Small"
-        type={run.status === 'success' ? 'Success' : 'Danger'}
+        size="x-small"
+        type={run.status === 'success' ? 'success' : 'danger'}
       />
       <p className={styles.detail__meta}>
         Started {new Date(run.startedAt).toLocaleString()} · {run.durationMs} ms
@@ -73,8 +77,8 @@ export default function RunDetailPage() {
               <strong>{step.label}</strong>
               <Tag
                 label={step.status}
-                size="X-Small"
-                type={step.status === 'success' ? 'Success' : 'Danger'}
+                size="x-small"
+                type={step.status === 'success' ? 'success' : 'danger'}
               />
               <span className={styles['detail__step-id']}>{step.id}</span>
             </div>

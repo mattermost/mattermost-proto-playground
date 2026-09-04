@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { MessageInput } from '@mattermost/compass-ui';
-import { MessageSeparator } from '@mattermost/compass-ui';
-import { Message } from '@mattermost/compass-ui';
-import { CallPopout } from '@mattermost/compass-ui';
-import { CallWidget } from '@mattermost/compass-ui';
+import { MessageInput } from '@mattermost/compass-ui/components/message-input';
+import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
+import { Message } from '@mattermost/compass-ui/components/message';
+import { CallPopout } from '@mattermost/compass-proto';
+import { CallWidget } from '@mattermost/compass-proto';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import { Scrollbar } from '@mattermost/compass-ui';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import type { Participant } from '@/types/callParticipant';
-import { shellStyles } from '@mattermost/compass-ui';
+import { shellStyles } from '@mattermost/compass-proto';
 import {
   DIAL_IN_NUMBER,
   DIAL_IN_PIN,
@@ -153,7 +153,7 @@ export default function ExternalCallParticipants() {
       <div className={shellStyles['channel-shell__messages']}>
         <Scrollbar>
           <div className={shellStyles['channel-shell__messages-list']}>
-            <MessageSeparator type="Date" label="Today" />
+            <MessageSeparator type="date" label="Today" />
 
             <Message
               avatarSrc={avatarSofia}

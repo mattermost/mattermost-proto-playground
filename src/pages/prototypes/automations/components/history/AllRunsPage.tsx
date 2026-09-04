@@ -1,14 +1,11 @@
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
-import {
-  Checkbox,
-  Chip,
-  Dropdown,
-  PopoverMenu,
-  PopoverMenuDivider,
-  Scrollbar,
-  Tag,
-  useOutsideClose,
-} from '@mattermost/compass-ui';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
+import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Dropdown } from '@mattermost/compass-ui/components/dropdown';
+import { PopoverMenu, PopoverMenuDivider } from '@mattermost/compass-ui/components/popover-menu';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { RunStatus } from '../../data/types';
@@ -75,7 +72,7 @@ export default function AllRunsPage() {
       <div className={styles.history__filters}>
         <div className={styles['history__filter-trigger']} ref={filterRef}>
           <Dropdown
-            size="Small"
+            size="small"
             isOpen={filtersOpen}
             leadingIcon={<FilterVariantIcon size={16} />}
             onClick={() => setFiltersOpen((v) => !v)}
@@ -99,7 +96,7 @@ export default function AllRunsPage() {
                       {STATUS_OPTIONS.map((opt) => (
                         <Checkbox
                           key={opt.value}
-                          size="Small"
+                          size="small"
                           checked={statusFilters.includes(opt.value)}
                           onChange={() =>
                             setStatusFilters((prev) => toggleValue(prev, opt.value))
@@ -135,12 +132,13 @@ export default function AllRunsPage() {
             {statusFilters.map((status) => (
               <Chip
                 key={status}
-                label={`Status: ${status}`}
-                size="Small"
+                size="small"
                 onRemove={() =>
                   setStatusFilters((prev) => prev.filter((s) => s !== status))
                 }
-              />
+              >
+                Status: {status}
+              </Chip>
             ))}
             <button
               type="button"
@@ -182,8 +180,8 @@ export default function AllRunsPage() {
                     <td>
                       <Tag
                         label={run.status}
-                        size="X-Small"
-                        type={run.status === 'success' ? 'Success' : 'Danger'}
+                        size="x-small"
+                        type={run.status === 'success' ? 'success' : 'danger'}
                       />
                     </td>
                     <td>{run.durationMs} ms</td>

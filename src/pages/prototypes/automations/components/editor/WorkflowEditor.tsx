@@ -3,14 +3,12 @@ import DotsVerticalIcon from '@mattermost/compass-icons/components/dots-vertical
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import StarOutlineIcon from '@mattermost/compass-icons/components/star-outline';
 import StarIcon from '@mattermost/compass-icons/components/star';
-import {
-  Button,
-  Icon,
-  IconButton,
-  MenuItem,
-  PopoverMenu,
-  Tag,
-} from '@mattermost/compass-ui';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import {
   Background,
   Controls,
@@ -183,11 +181,11 @@ function EditorInner() {
     if (!automation) return;
     setAutomationGraph(automation.id, nodes, edges);
     appendHistory(automation.id, 'Saved');
-    showToast('Automation saved', 'Success');
+    showToast('Automation saved', 'success');
   };
 
   const testRun = () => {
-    showToast('Test run completed successfully', 'Success');
+    showToast('Test run completed successfully', 'success');
   };
 
   if (!automation) {
@@ -196,8 +194,8 @@ function EditorInner() {
         <div className={styles.editor__toolbar}>
           <IconButton
             aria-label="Back"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(BASE)}
           />
@@ -220,16 +218,16 @@ function EditorInner() {
         <div className={styles['editor__toolbar-left']}>
           <IconButton
             aria-label="Back"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             icon={<Icon size="16" glyph={<ArrowLeftIcon />} />}
             onClick={() => navigate(BASE)}
           />
           <h1 className={styles.editor__title}>{automation.name}</h1>
           <IconButton
             aria-label={automation.favorite ? 'Remove favorite' : 'Add favorite'}
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             className={automation.favorite ? styles['editor__fav--on'] : undefined}
             icon={
               <Icon
@@ -241,23 +239,23 @@ function EditorInner() {
           />
           <Tag
             label={statusLabel}
-            size="X-Small"
-            type={automation.status === 'enabled' ? 'Success' : 'Default'}
+            size="x-small"
+            type={automation.status === 'enabled' ? 'success' : 'default'}
           />
         </div>
         <div className={styles['editor__toolbar-right']}>
           <IconButton
             aria-label="Undo"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             disabled={past.length === 0}
             icon={<Icon size="16" glyph={<UndoGlyph />} />}
             onClick={undo}
           />
           <IconButton
             aria-label="Redo"
-            size="Small"
-            padding="Compact"
+            size="small"
+            padding="compact"
             disabled={future.length === 0}
             icon={<Icon size="16" glyph={<RedoGlyph />} />}
             onClick={redo}
@@ -267,8 +265,8 @@ function EditorInner() {
               aria-label="Actions"
               aria-expanded={actionsOpen}
               aria-haspopup="menu"
-              size="Small"
-              padding="Compact"
+              size="small"
+              padding="compact"
               icon={<Icon size="16" glyph={<DotsVerticalIcon />} />}
               onClick={() => setActionsOpen((v) => !v)}
             />
@@ -296,14 +294,14 @@ function EditorInner() {
             ) : null}
           </div>
           <Button
-            emphasis="Tertiary"
-            size="Small"
+            emphasis="tertiary"
+            size="small"
             leadingIcon={<Icon size="16" glyph={<PlayOutlineIcon />} />}
             onClick={testRun}
           >
             Test run
           </Button>
-          <Button emphasis="Primary" size="Small" onClick={save}>
+          <Button emphasis="primary" size="small" onClick={save}>
             Save
           </Button>
         </div>

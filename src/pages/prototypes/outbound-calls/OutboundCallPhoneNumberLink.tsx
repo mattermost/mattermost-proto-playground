@@ -1,5 +1,5 @@
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
-import { Icon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import styles from './OutboundCalls.module.scss';
 
 export function OutboundCallPhoneNumberLink({

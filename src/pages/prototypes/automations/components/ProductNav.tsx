@@ -1,17 +1,9 @@
-import FolderOutlineIcon from '@mattermost/compass-icons/components/folder-outline';
-import HomeVariantOutlineIcon from '@mattermost/compass-icons/components/home-variant-outline';
-import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
-import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
-import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
-import {
-  ChannelSidebarItem,
-  ChannelsSidebarCategory,
-  Scrollbar,
-} from '@mattermost/compass-ui';
+import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
+import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAutomations } from '../context/AutomationsContext';
-import CodeBracesIcon from './icons/CodeBracesIcon';
 import styles from './ProductNav.module.scss';
 
 const BASE = '/prototypes/automations';
@@ -61,31 +53,31 @@ export default function ProductNav() {
         <div className={styles['product-nav__top']}>
           <ChannelSidebarItem
             name="Home"
-            leadingIcon={<HomeVariantOutlineIcon size={16} />}
+            hideLeadingVisual
             active={homeActive}
             onClick={() => navigate(BASE)}
           />
           <ChannelSidebarItem
             name="Folders"
-            leadingIcon={<FolderOutlineIcon size={16} />}
+            hideLeadingVisual
             active={foldersActive}
             onClick={() => navigate(`${BASE}/folders`)}
           />
           <ChannelSidebarItem
             name="Templates"
-            leadingIcon={<IframeListOutlineIcon size={16} />}
+            hideLeadingVisual
             active={templatesActive}
             onClick={() => navigate(`${BASE}/templates`)}
           />
           <ChannelSidebarItem
             name="Variables & secrets"
-            leadingIcon={<CodeBracesIcon size={16} />}
+            hideLeadingVisual
             active={secretsActive}
             onClick={() => navigate(`${BASE}/secrets`)}
           />
           <ChannelSidebarItem
             name="Run history"
-            leadingIcon={<PlayOutlineIcon size={16} />}
+            hideLeadingVisual
             active={runsActive}
             onClick={() => navigate(`${BASE}/runs`)}
           />
@@ -100,7 +92,7 @@ export default function ProductNav() {
               <ChannelSidebarItem
                 key={a.id}
                 name={a.name}
-                leadingIcon={<LightningBoltOutlineIcon size={16} />}
+                hideLeadingVisual
                 onClick={() => navigate(`${BASE}/${a.id}/editor`)}
               />
             ))
@@ -116,7 +108,7 @@ export default function ProductNav() {
               <ChannelSidebarItem
                 key={a.id}
                 name={a.name}
-                leadingIcon={<LightningBoltOutlineIcon size={16} />}
+                hideLeadingVisual
                 onClick={() => navigate(`${BASE}/${a.id}/editor`)}
               />
             ))

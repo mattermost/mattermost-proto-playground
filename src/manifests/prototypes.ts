@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import Automations from '@/pages/prototypes/automations/Automations';
-import ExampleFlow from '@/pages/prototypes/example-flow/ExampleFlow';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
+import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 
 export type PrototypeEntry = {
@@ -22,16 +22,16 @@ export const PROTOTYPES: PrototypeEntry[] = [
     nested: true,
   },
   {
-    id: 'example-flow',
-    label: 'Example Flow',
-    path: '/prototypes/example-flow',
-    component: ExampleFlow,
-  },
-  {
     id: 'external-call-participants',
     label: 'External Call Participants',
     path: '/prototypes/external-call-participants',
     component: ExternalCallParticipants,
+  },
+  {
+    id: 'mobile-home-channel',
+    label: 'Mobile sample',
+    path: '/prototypes/mobile-home-channel',
+    component: MobileHomeChannel,
   },
   {
     id: 'outbound-calls',

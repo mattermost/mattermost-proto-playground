@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import styles from './PageHero.module.scss';
 
 export type PageHeroStatus = 'stable' | 'beta' | 'deprecated';
@@ -14,7 +15,7 @@ interface PageHeroProps {
   /** Page title. */
   title: string;
   /** Short description shown beneath the title. */
-  description?: string;
+  description?: ReactNode;
   /** Optional status chip rendered next to the title. */
   status?: PageHeroStatus;
 }

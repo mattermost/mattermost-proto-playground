@@ -1,13 +1,13 @@
 import type { MouseEvent, ReactNode } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui';
-import { MessageInput } from '@mattermost/compass-ui';
-import { MessageSeparator } from '@mattermost/compass-ui';
-import { Message } from '@mattermost/compass-ui';
+import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
+import { MessageInput } from '@mattermost/compass-ui/components/message-input';
+import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
+import { Message } from '@mattermost/compass-ui/components/message';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-ui';
+import { layoutStyles } from '@mattermost/compass-proto';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({
@@ -62,7 +62,7 @@ export function ChannelScene({
   return (
     <>
       <ChannelHeader
-        type="Channel"
+        type="channel"
         name="op-nightingale"
         description="Tasking + coordination channel for the Nightingale working group."
         memberCount={8}
@@ -70,7 +70,7 @@ export function ChannelScene({
         callButton={<SegmentedCallButton actions={actions} onSelect={handleSelect} />}
       />
       <div className={layoutStyles['channel-shell__messages']}>
-        <MessageSeparator type="Date" label="Today" />
+        <MessageSeparator type="date" label="Today" />
 
         {CHANNEL_POSTS.map((p) => {
           const c = CONTACT_MAP[p.contactId];

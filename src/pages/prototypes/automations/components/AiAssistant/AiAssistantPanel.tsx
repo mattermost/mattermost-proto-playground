@@ -1,12 +1,9 @@
 import CloseIcon from '@mattermost/compass-icons/components/close';
-import {
-  Icon,
-  IconButton,
-  Message,
-  MessageInput,
-  Scrollbar,
-  messageStyles,
-} from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Message, messageStyles } from '@mattermost/compass-ui/components/message';
+import { MessageInput } from '@mattermost/compass-ui/components/message-input';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import avatarBot from '@/assets/avatars/Matty.png';
@@ -242,8 +239,8 @@ export default function AiAssistantPanel() {
         </div>
         <IconButton
           aria-label="Close assistant"
-          size="Small"
-          padding="Compact"
+          size="small"
+          padding="compact"
           icon={<Icon size="16" glyph={<CloseIcon />} />}
           onClick={() => setAssistantOpen(false)}
         />
@@ -294,13 +291,28 @@ export default function AiAssistantPanel() {
         </div>
       ) : null}
 
-      <div className={styles['assistant-panel__composer']}>
+      {/* MessageInput send is visual chrome only; the host owns Enter and send. */}
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+      <div
+        className={styles['assistant-panel__composer']}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            onSend();
+          }
+        }}
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          if (target.closest('[aria-label="Send message"]')) {
+            onSend();
+          }
+        }}
+      >
         <MessageInput
           width="narrow"
           placeholder="Ask Automations assistant…"
           value={draft}
           onChange={setDraft}
-          onSend={onSend}
         />
       </div>
     </aside>

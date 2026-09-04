@@ -1,5 +1,5 @@
 import ArrowRightIcon from '@mattermost/compass-icons/components/arrow-right';
-import { Icon } from '@mattermost/compass-ui';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAutomations } from '../../context/AutomationsContext';
