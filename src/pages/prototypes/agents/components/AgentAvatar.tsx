@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { AgentColor, AgentShape } from '../agentsData';
 import { AGENT_COLOR_HEX } from '../agentsData';
+import { agentAvatarShapeMask } from './agentAvatarShapes';
 import styles from './AgentAvatar.module.scss';
 
 type AgentAvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -37,6 +38,7 @@ export default function AgentAvatar({
   className = '',
 }: AgentAvatarProps) {
   const hex = AGENT_COLOR_HEX[color];
+  const shapeMask = agentAvatarShapeMask(shape);
   const rootRef = useRef<HTMLSpanElement>(null);
   const eyesRef = useRef<HTMLSpanElement>(null);
   const eyeTravel = EYE_TRAVEL[size];
@@ -106,7 +108,17 @@ export default function AgentAvatar({
       style={{ ['--agent-avatar-color' as string]: hex }}
       aria-hidden
     >
-      <span className={styles['agent-avatar__shape']} />
+      <span
+        className={styles['agent-avatar__shape']}
+        style={
+          shapeMask
+            ? {
+                WebkitMaskImage: shapeMask,
+                maskImage: shapeMask,
+              }
+            : undefined
+        }
+      />
       {eyes ? (
         <span ref={eyesRef} className={styles['agent-avatar__eyes']}>
           <span />
