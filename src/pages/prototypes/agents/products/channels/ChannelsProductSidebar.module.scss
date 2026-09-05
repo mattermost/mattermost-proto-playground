@@ -22,6 +22,10 @@
 
   &__plus {
     flex: 0 0 auto;
+
+    :global(button) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.08);
+    }
   }
 
   &__scroll {
