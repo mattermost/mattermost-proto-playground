@@ -95,7 +95,7 @@ export default function NewAgentModal({
         >
           <div className={styles['new-agent-modal__body']}>
             <div className={styles['new-agent-modal__preview']}>
-              <AgentAvatar shape={shape} color={color} size="lg" />
+              <AgentAvatar shape={shape} color={color} size="lg" eyes />
               <TextInput
                 className={styles['new-agent-modal__name']}
                 value={name}
