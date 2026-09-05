@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import {
@@ -14,8 +15,8 @@ import { useAgents } from '../../context/AgentsContext';
 import styles from './ChannelsProductSidebar.module.scss';
 
 /**
- * Channels LHS with a wired plus control (Create an Agent). Built from
- * sidebar primitives so the plus menu can be host-owned.
+ * Channels LHS matching ChannelsSidebar chrome (product title + find), with a
+ * host-owned plus menu (Create an Agent).
  */
 export default function ChannelsProductSidebar() {
   const { openNewAgent } = useAgents();
@@ -34,7 +35,35 @@ export default function ChannelsProductSidebar() {
 
   return (
     <aside className={styles['channels-nav']}>
+      {/* Matches ChannelsSidebar header: product title + add. */}
       <div className={styles['channels-nav__header']}>
+        <button
+          type="button"
+          className={styles['channels-nav__product']}
+          aria-label="Channels"
+        >
+          <span className={styles['channels-nav__product-name']}>Channels</span>
+          <span className={styles['channels-nav__product-chevron']} aria-hidden>
+            <ChevronDownIcon size={16} />
+          </span>
+        </button>
+        <div ref={plusRef} className={styles['channels-nav__plus']}>
+          <IconButton
+            size="small"
+            style="inverted"
+            padding="compact"
+            rounded
+            icon={<Icon glyph={<PlusIcon />} size="16" />}
+            aria-label="Create"
+            aria-expanded={plusOpen}
+            aria-haspopup="menu"
+            onClick={togglePlus}
+          />
+        </div>
+      </div>
+
+      {/* Matches ChannelsSidebar navigator: Find channels. */}
+      <div className={styles['channels-nav__navigator']}>
         <div
           className={styles['channels-nav__find']}
           role="search"
@@ -46,17 +75,6 @@ export default function ChannelsProductSidebar() {
           <span className={styles['channels-nav__find-label']}>
             Find channels
           </span>
-        </div>
-        <div ref={plusRef} className={styles['channels-nav__plus']}>
-          <IconButton
-            size="small"
-            style="inverted"
-            icon={<Icon glyph={<PlusIcon />} size="16" />}
-            aria-label="Create"
-            aria-expanded={plusOpen}
-            aria-haspopup="menu"
-            onClick={togglePlus}
-          />
         </div>
       </div>
 

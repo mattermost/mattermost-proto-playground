@@ -7,15 +7,72 @@
   background: var(--sidebar-bg);
   color: var(--sidebar-text);
 
+  // Match ChannelsSidebar header (compass-ui): title + add.
   &__header {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-m) var(--spacing-l);
+    justify-content: space-between;
+    padding: 14px var(--spacing-l);
     flex: 0 0 auto;
   }
 
-  // Match ChannelsSidebar find-channels control (compass-ui).
+  &__product {
+    appearance: none;
+    border: 0;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 174px;
+    padding: 2px var(--spacing-xxxxs) 2px var(--spacing-xs);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--sidebar-text);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sidebar-text-hover-bg);
+    }
+  }
+
+  &__product-name {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--sidebar-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__product-chevron {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--sidebar-text);
+  }
+
+  &__plus {
+    flex: 0 0 auto;
+
+    :global(button) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.08) !important;
+    }
+
+    :global(button:hover) {
+      background-color: rgba(var(--sidebar-text-rgb), 0.12) !important;
+    }
+  }
+
+  // Match ChannelsSidebar navigator + find-channels control.
+  &__navigator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    padding: 0 var(--spacing-l) var(--spacing-l);
+    flex: 0 0 auto;
+  }
+
   &__find {
     display: flex;
     align-items: center;
@@ -45,14 +102,6 @@
     color: var(--sidebar-text);
     opacity: 0.72;
     white-space: nowrap;
-  }
-
-  &__plus {
-    flex: 0 0 auto;
-
-    :global(button) {
-      background-color: rgba(var(--sidebar-text-rgb), 0.08);
-    }
   }
 
   &__scroll {
