@@ -122,12 +122,14 @@ export default function AgentsLanding() {
               size="lg"
               eyes
             />
-            <h2 className={styles['agents-landing__card-title']}>
-              {MATTY.name}
-            </h2>
-            <p className={styles['agents-landing__card-body']}>
-              {MATTY.description}
-            </p>
+            <div className={styles['agents-landing__card-copy']}>
+              <h2 className={styles['agents-landing__card-title']}>
+                {MATTY.name}
+              </h2>
+              <p className={styles['agents-landing__card-body']}>
+                {MATTY.description}
+              </p>
+            </div>
             <Button emphasis="tertiary">Chat with Matty</Button>
           </article>
 
@@ -140,12 +142,14 @@ export default function AgentsLanding() {
             <span className={styles['agents-landing__create-icon']} aria-hidden>
               <Icon glyph={<PlusIcon />} size="32" />
             </span>
-            <h2 className={styles['agents-landing__card-title']}>
-              Create your own
-            </h2>
-            <p className={styles['agents-landing__card-body']}>
-              Create a custom agent you can share or keep for your private use.
-            </p>
+            <div className={styles['agents-landing__card-copy']}>
+              <h2 className={styles['agents-landing__card-title']}>
+                Create your own
+              </h2>
+              <p className={styles['agents-landing__card-body']}>
+                Create a custom agent you can share or keep for your private use.
+              </p>
+            </div>
             <Button emphasis="primary" onClick={openNewAgent}>
               Get started
             </Button>
