@@ -1,0 +1,328 @@
+@keyframes agent-chat-bubble-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-xxs)) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.agent-chat {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--sidebar-bg);
+
+  &__workspace {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    background: var(--center-channel-bg);
+    border-radius: var(--radius-l);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: var(--elevation-1);
+    overflow: hidden;
+  }
+
+  &__sessions {
+    display: flex;
+    flex-direction: column;
+    width: 264px;
+    flex: 0 0 264px;
+    min-height: 0;
+    background: var(--center-channel-bg);
+  }
+
+  &__sessions-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-l);
+    padding: var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__sessions-title {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-xs);
+  }
+
+  &__sessions-name {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
+  &__sessions-list {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--spacing-xs);
+    overflow: auto;
+  }
+
+  // Truncate long chat previews — MenuItem label is nowrap by default.
+  &__session-item {
+    min-width: 0;
+
+    :global([class*='menu-item__middle']),
+    :global([class*='menu-item__top-row']),
+    :global([class*='menu-item__label']) {
+      min-width: 0;
+    }
+
+    :global([class*='menu-item__label']) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-shrink: 1;
+    }
+  }
+
+  &__canvas {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--center-channel-bg);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    box-shadow: var(--elevation-2);
+  }
+
+  &__messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    // Stretch SimpleBar content so the message list can bottom-anchor.
+    > * {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    :global(.simplebar-content) {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &__messages-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 1 1 auto;
+    gap: var(--spacing-m);
+    min-height: 100%;
+    padding: var(--spacing-xxl) var(--spacing-xxxxl);
+    box-sizing: border-box;
+  }
+
+  &__message {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    padding-inline: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__message-avatar {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // Match AgentAvatar --sm so the slot doesn't jump during reveal.
+    // Typing dots are 42×22 (Figma) and may overflow the 32px slot.
+    width: var(--icon-size-32, 32px);
+    height: var(--icon-size-32, 32px);
+    overflow: visible;
+
+    .agent-chat__message-dots,
+    .agent-chat__message-avatar-face {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transition:
+        opacity var(--duration-moderate) var(--ease-entrance),
+        transform var(--duration-moderate) var(--ease-entrance);
+    }
+  }
+
+  &__message-avatar--loading {
+    .agent-chat__message-dots {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .agent-chat__message-avatar-face {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.6);
+      pointer-events: none;
+    }
+  }
+
+  &__message-avatar--revealing {
+    .agent-chat__message-dots {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.6);
+      pointer-events: none;
+    }
+
+    .agent-chat__message-avatar-face {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  &__message-avatar--ready {
+    .agent-chat__message-avatar-face {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  &__message-bubble {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-l);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-radius: 0 var(--radius-xl) var(--radius-xl) var(--radius-xl);
+    transform-origin: top left;
+  }
+
+  &__message-bubble--enter {
+    animation: agent-chat-bubble-enter var(--duration-moderate)
+      var(--ease-entrance) both;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__message-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__message-name {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__message-time {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__message-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+
+    p {
+      margin: 0;
+      font-family: var(--font-family-body);
+      font-size: var(--font-size-100);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--line-height-100);
+      color: var(--center-channel-color);
+      white-space: pre-wrap;
+    }
+  }
+
+  &__composer {
+    flex: 0 0 auto;
+    padding: 0 var(--spacing-xxxxl) var(--spacing-xxxxl);
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: var(--spacing-xs);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-full);
+    // Figma Input Container (53:78157): drop-shadow 0 2px 8.5px / 8% black — not an elevation token.
+    box-shadow: 0 2px 8.5px rgba(0, 0, 0, 0.08);
+  }
+
+  &__input-plus,
+  &__input-send {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: calc(var(--spacing-xs) + var(--spacing-xxxxs));
+    border: none;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(:disabled) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+    }
+  }
+
+  &__input-plus {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__input-field {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--spacing-xs) var(--spacing-l);
+    border: none;
+    background: transparent;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    outline: none;
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+}

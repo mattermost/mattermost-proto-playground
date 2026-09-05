@@ -1,0 +1,284 @@
+.new-agent-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: new-agent-modal-in var(--duration-quick) var(--ease-entrance) both;
+
+  &--exiting {
+    animation: new-agent-modal-out var(--duration-quick) var(--ease-exit) both;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+  }
+
+  // Figma New Agent Modal: 600×553, size small.
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(600px, calc(100vw - var(--spacing-xxxxxl)));
+    max-height: calc(100vh - var(--spacing-xxxxxl));
+    overflow: auto;
+
+    // Hide header title visually — Figma header is close-only; keep text for a11y.
+    :global([class*='modal__title']) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :global([class*='modal__header-inner']) {
+      min-height: 0;
+      padding: 0;
+    }
+
+    // Body: Figma pt 12 / px 32; drop Compass pb 28 — footer supplies spacing.
+    :global([class*='modal__body-inner']) {
+      padding-top: var(--spacing-m);
+      padding-bottom: 0;
+    }
+
+    // footerDivider=false zeroes padding-top; restore Figma py 24.
+    :global([class*='modal__footer--no-divider']) {
+      padding-top: var(--spacing-xxl);
+    }
+  }
+
+  // Figma Content: gap 44 between appearance cluster and purpose.
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--spacing-xxxxl) + var(--spacing-xxxs));
+  }
+
+  // Figma: avatar+name, shapes, colors — gap 28.
+  &__appearance {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--spacing-l) + var(--spacing-m));
+    width: 100%;
+  }
+
+  // Figma Frame 1939 (53:76217): avatar→name gap 10.
+  &__preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-s);
+    width: 100%;
+  }
+
+  // Title-like name under avatar (Figma Frame 1946 / 53:76558;
+  // Heading 900 36/44; hug width; no underline).
+  // Beat Compass .text-input { width:100% } and --size-large padding/min-height.
+  &__name {
+    width: fit-content;
+    max-width: 100%;
+    align-self: center;
+
+    &#{&} {
+      width: fit-content;
+    }
+
+    :global([class*='text-input__wrapper']) {
+      width: fit-content;
+      max-width: 100%;
+      min-height: 0;
+      background: transparent;
+      border-radius: var(--radius-s);
+      box-shadow: none;
+      border: none;
+      cursor: text;
+      transition: background var(--duration-quick) var(--ease-transition);
+    }
+
+    &:hover :global([class*='text-input__wrapper']) {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    // Beat Compass :has(input:focus-visible) full ring.
+    &#{&}:has(:global([class*='text-input__input']:focus-visible))
+      :global([class*='text-input__wrapper']),
+    &#{&}:focus-within :global([class*='text-input__wrapper']) {
+      box-shadow: none;
+      border: none;
+    }
+
+    // Beat .text-input--size-large .text-input__inner (padding m/l, width 100%).
+    &#{&} :global([class*='text-input__inner']) {
+      width: fit-content;
+      max-width: 100%;
+      padding: 0 var(--spacing-xs);
+      justify-content: center;
+    }
+
+    // Beat Compass .text-input--size-large .text-input__input (0,2,0).
+    &#{&} :global([class*='text-input__input']) {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
+      field-sizing: content;
+      padding: 0;
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-900); // Figma Heading 900: 36px
+      font-weight: var(--font-weight-semibold);
+      line-height: var(--line-height-900); // 44px
+      letter-spacing: -0.02em;
+      text-align: center;
+
+      &::placeholder {
+        color: rgba(var(--center-channel-color-rgb), 0.64);
+      }
+    }
+  }
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-s);
+  }
+
+  // Invisible 40×40 hit target; chrome is the shape (+ contour ring when selected).
+  &__swatch {
+    appearance: none;
+    box-sizing: border-box;
+    width: var(--icon-size-40);
+    height: var(--icon-size-40);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+
+    &:hover .new-agent-modal__swatch-avatar,
+    &:focus-visible .new-agent-modal__swatch-avatar {
+      transform: scale(1.1);
+    }
+  }
+
+  &__swatch-avatar {
+    transform-origin: center center;
+    transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  &__colors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__color {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: var(--spacing-xxxs);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &--selected {
+      box-shadow: 0 0 0 2px var(--button-bg);
+    }
+  }
+
+  &__color-dot {
+    width: var(--icon-size-16);
+    height: var(--icon-size-16);
+    border-radius: var(--radius-full);
+    @include agent-avatar-fill;
+  }
+
+  // Figma: label + textarea gap 12.
+  &__purpose {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-m);
+    width: 100%;
+  }
+
+  &__purpose-label {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    text-align: left;
+  }
+
+  &__purpose-field {
+    width: 100%;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    width: 100%;
+  }
+
+  // Muted caption — Figma footer has no hint yet; secondary body style.
+  &__footer-hint {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__footer-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+}
+
+@keyframes new-agent-modal-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes new-agent-modal-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

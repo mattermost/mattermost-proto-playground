@@ -1,0 +1,92 @@
+.product-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 56px;
+  flex: 0 0 56px;
+  min-height: 0;
+  height: 100%;
+  padding: var(--spacing-xs) 0;
+  background: transparent;
+  color: var(--sidebar-text);
+
+  &__top,
+  &__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__button {
+    position: relative;
+    appearance: none;
+    border: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+      color: var(--sidebar-text);
+    }
+
+    &--active {
+      background: rgba(var(--sidebar-text-rgb), 0.16);
+      color: var(--sidebar-text);
+    }
+  }
+
+  &__active-bar {
+    position: absolute;
+    left: -8px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: var(--radius-full);
+    background: var(--sidebar-text-active-border, var(--button-bg));
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &--large {
+      :global(svg) {
+        width: calc(var(--icon-size-24) + var(--spacing-xxxxs));
+        height: calc(var(--icon-size-24) + var(--spacing-xxxxs));
+      }
+    }
+  }
+
+  &__account {
+    appearance: none;
+    border: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: var(--radius-m);
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+    }
+  }
+}

@@ -1,0 +1,141 @@
+.agents-landing {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--sidebar-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xxxl);
+    padding: var(--spacing-xxxl);
+    background: var(--center-channel-bg);
+    border-radius: var(--radius-l);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: var(--elevation-1);
+    overflow: auto;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-align: center;
+    max-width: 640px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-1000);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-1000);
+    letter-spacing: -0.02em;
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-l);
+    width: 100%;
+    max-width: 980px;
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxl);
+    width: 320px;
+    padding: var(--spacing-xxxxl) var(--spacing-xxxl);
+    text-align: center;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-4);
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      box-shadow: var(--elevation-5);
+    }
+
+    &--create {
+      border: 2px dashed rgba(var(--center-channel-color-rgb), 0.12);
+      background: rgba(var(--center-channel-color-rgb), 0.02);
+      box-shadow: none;
+
+      &:hover {
+        box-shadow: none;
+      }
+    }
+  }
+
+  &__card-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__create-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 74px;
+    // Match AgentAvatar --lg: Figma frame 88 for 74 shape (53:71406).
+    margin-bottom: 14px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    // Same oval ground shadow as AgentAvatar (Figma 53:71406).
+    @include oval-ground-shadow;
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  &__card-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-500);
+    color: var(--center-channel-color);
+  }
+
+  &__card-body {
+    margin: 0;
+    min-height: 40px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}

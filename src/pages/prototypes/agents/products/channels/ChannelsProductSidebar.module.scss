@@ -1,0 +1,21 @@
+.channels-nav {
+  display: flex;
+  flex-direction: column;
+  width: 264px;
+  height: 100%;
+  min-height: 0;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__top,
+  &__group {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--spacing-s);
+  }
+}
