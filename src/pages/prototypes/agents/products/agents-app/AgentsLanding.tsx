@@ -128,7 +128,7 @@ export default function AgentsLanding() {
             <p className={styles['agents-landing__card-body']}>
               {MATTY.description}
             </p>
-            <Button emphasis="secondary">Chat with Matty</Button>
+            <Button emphasis="tertiary">Chat with Matty</Button>
           </article>
 
           <article
