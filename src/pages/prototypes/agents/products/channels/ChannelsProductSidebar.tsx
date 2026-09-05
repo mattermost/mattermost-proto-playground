@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import {
   ChannelsSidebarCategory,
@@ -7,7 +8,6 @@ import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-si
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { SearchInput } from '@mattermost/compass-ui/components/search-input';
 import { buildAgentsChannelsSidebarModel } from '../../agentsData';
 import PlusMenu from '../../components/PlusMenu';
 import { useAgents } from '../../context/AgentsContext';
@@ -35,12 +35,18 @@ export default function ChannelsProductSidebar() {
   return (
     <aside className={styles['channels-nav']}>
       <div className={styles['channels-nav__header']}>
-        <SearchInput
+        <div
           className={styles['channels-nav__find']}
-          size="small"
-          label="Find channels"
+          role="search"
           aria-label="Find channels"
-        />
+        >
+          <span className={styles['channels-nav__find-icon']} aria-hidden>
+            <MagnifyIcon size={16} />
+          </span>
+          <span className={styles['channels-nav__find-label']}>
+            Find channels
+          </span>
+        </div>
         <div ref={plusRef} className={styles['channels-nav__plus']}>
           <IconButton
             size="small"
