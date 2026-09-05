@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
@@ -15,6 +14,8 @@ import {
 } from '@mattermost/compass-ui/components/popover-menu';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { MATTY } from '../agentsData';
+import AgentAvatar from './AgentAvatar';
 import styles from './PlusMenu.module.scss';
 
 const EXIT_MS = 150;
@@ -68,7 +69,14 @@ export default function PlusMenu({
           <MenuItem
             role="menuitem"
             label="Create an Agent"
-            leadingVisual={<Icon glyph={<CreationOutlineIcon />} size="16" />}
+            leadingVisual={
+              <AgentAvatar
+                shape={MATTY.shape}
+                color={MATTY.color}
+                size="xs"
+                eyes
+              />
+            }
             onClick={() => {
               onClose();
               onCreateAgent();
