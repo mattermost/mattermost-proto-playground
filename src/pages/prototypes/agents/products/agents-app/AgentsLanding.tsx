@@ -3,13 +3,13 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { SearchInput } from '@mattermost/compass-ui/components/search-input';
 import { MATTY } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
 import { useAgents } from '../../context/AgentsContext';
@@ -33,7 +33,6 @@ function NavRow({
         name={name}
         leadingVisual="insights"
         active={active}
-        hideLeadingVisual
       />
     </div>
   );
@@ -47,12 +46,18 @@ export default function AgentsLanding() {
     <div className={styles['agents-landing']}>
       <aside className={styles['agents-landing__nav']}>
         <div className={styles['agents-landing__nav-header']}>
-          <SearchInput
+          <div
             className={styles['agents-landing__find']}
-            size="small"
-            label="Find agents"
+            role="search"
             aria-label="Find agents"
-          />
+          >
+            <span className={styles['agents-landing__find-icon']} aria-hidden>
+              <MagnifyIcon size={16} />
+            </span>
+            <span className={styles['agents-landing__find-label']}>
+              Find agents
+            </span>
+          </div>
           <IconButton
             size="small"
             style="inverted"
@@ -79,16 +84,21 @@ export default function AgentsLanding() {
           <div className={styles['agents-landing__nav-group']}>
             <ChannelsSidebarCategory label="Your agents" showChevron />
             <div className={styles['agents-landing__agent-row']}>
-              <AgentAvatar
-                shape={MATTY.shape}
-                color={MATTY.color}
-                size="sm"
-                eyes
-              />
+              <span
+                className={styles['agents-landing__agent-leading']}
+                aria-hidden
+              >
+                <AgentAvatar
+                  shape={MATTY.shape}
+                  color={MATTY.color}
+                  size="sm"
+                  eyes
+                  className={styles['agents-landing__agent-avatar']}
+                />
+              </span>
               <ChannelSidebarItem
                 name={MATTY.name}
-                leadingVisual="insights"
-                hideLeadingVisual
+                leadingVisual="direct-message"
               />
             </div>
           </div>
