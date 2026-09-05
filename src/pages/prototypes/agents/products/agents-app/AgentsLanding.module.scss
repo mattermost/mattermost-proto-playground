@@ -93,6 +93,29 @@
     visibility: hidden;
   }
 
+  // Matty DM row: keep ChannelSidebarItem layout/hit target; overlay AgentAvatar
+  // over the built-in UserAvatar (no custom leading ReactNode on CSI).
+  &__agent-row {
+    position: relative;
+  }
+
+  &__agent-avatar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    // Match DM icon-container: left padding 18px + spacing-xxxxs.
+    padding-left: calc(18px + var(--spacing-xxxxs));
+    pointer-events: none;
+  }
+
+  &__agent-row :global([class*='icon-container'] > *) {
+    visibility: hidden;
+  }
+
   &__center {
     flex: 1 1 auto;
     min-width: 0;

@@ -3,16 +3,27 @@ import type { AgentColor, AgentShape } from '../agentsData';
 import { AGENT_COLOR_HEX } from '../agentsData';
 import styles from './AgentAvatar.module.scss';
 
+type AgentAvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
 type AgentAvatarProps = {
   shape: AgentShape;
   color: AgentColor;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: AgentAvatarSize;
   eyes?: boolean;
   className?: string;
 };
 
-/** How far eyes can wander, as a fraction of the avatar width. */
-const EYE_TRAVEL = 0.14;
+/**
+ * How far eyes can wander, as a fraction of the avatar width.
+ * Slightly higher on `xs` so pupils still read at ~20px sidebar size.
+ */
+const EYE_TRAVEL: Record<AgentAvatarSize, number> = {
+  xs: 0.18,
+  sm: 0.14,
+  md: 0.14,
+  lg: 0.14,
+  xl: 0.14,
+};
 
 /**
  * Geometric agent appearance (shape × color) used in the New Agent modal
@@ -28,6 +39,7 @@ export default function AgentAvatar({
   const hex = AGENT_COLOR_HEX[color];
   const rootRef = useRef<HTMLSpanElement>(null);
   const eyesRef = useRef<HTMLSpanElement>(null);
+  const eyeTravel = EYE_TRAVEL[size];
 
   useEffect(() => {
     if (!eyes) return;
@@ -44,7 +56,7 @@ export default function AgentAvatar({
       const cy = rect.top + rect.height / 2;
       const dx = clientX - cx;
       const dy = clientY - cy;
-      const max = rect.width * EYE_TRAVEL;
+      const max = rect.width * eyeTravel;
       const distance = Math.hypot(dx, dy) || 1;
       const scale = Math.min(1, max / distance);
 
@@ -78,7 +90,7 @@ export default function AgentAvatar({
         onPointerLeave,
       );
     };
-  }, [eyes]);
+  }, [eyes, eyeTravel]);
 
   return (
     <span
