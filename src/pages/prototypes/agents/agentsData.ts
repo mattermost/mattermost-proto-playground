@@ -187,13 +187,8 @@ export function buildAgentsChannelsSidebarModel(
       {
         key: 'reliability',
         category: { label: 'Reliability', showChevron: true, showPlusButton: true },
+        // Favorited channels (e.g. service-status) live only under Favorites.
         items: [
-          {
-            name: 'service-status',
-            leadingVisual: 'public',
-            status: 'unread',
-            active: activeName === 'service-status',
-          },
           {
             name: 'bugs',
             leadingVisual: 'public',
@@ -224,16 +219,8 @@ export function buildAgentsChannelsSidebarModel(
       {
         key: 'direct-messages',
         category: { label: 'Direct messages', showChevron: true, showPlusButton: true },
+        // Favorited DMs (e.g. Jordan) live only under Favorites.
         items: [
-          {
-            name: JORDAN.name,
-            leadingVisual: 'direct-message',
-            avatarSrc: JORDAN.avatarSrc,
-            avatarAlt: JORDAN.avatarAlt,
-            showAvatarStatus: true,
-            status: 'read',
-            active: activeName === JORDAN.name,
-          },
           {
             name: ON_CALL.name,
             leadingVisual: 'direct-message',
