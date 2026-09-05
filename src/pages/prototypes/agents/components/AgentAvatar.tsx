@@ -16,6 +16,11 @@ type AgentAvatarProps = {
   eyes?: boolean;
   /** Soft float — New Agent modal preview only (not swatches / sidebar). */
   levitate?: boolean;
+  /**
+   * Oval ground shadow — only for large hero contexts (New Agent modal
+   * preview, Agents landing Matty card). Off by default.
+   */
+  shadow?: boolean;
   /** When set, draws a 2px --button-bg contour ring outset 4px from the shape. */
   selected?: boolean;
   className?: string;
@@ -49,6 +54,7 @@ export default function AgentAvatar({
   size = 'md',
   eyes = false,
   levitate = false,
+  shadow = false,
   selected = false,
   className = '',
 }: AgentAvatarProps) {
@@ -127,6 +133,7 @@ export default function AgentAvatar({
         styles['agent-avatar'],
         styles[`agent-avatar--${size}`],
         styles[`agent-avatar--${shape}`],
+        shadow ? styles['agent-avatar--shadow'] : '',
         levitate ? styles['agent-avatar--levitate'] : '',
         className,
       ]

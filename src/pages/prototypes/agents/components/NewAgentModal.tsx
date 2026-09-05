@@ -13,6 +13,7 @@ import {
   type AgentColor,
   type AgentShape,
 } from '../agentsData';
+import type { NewAgentDraft } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import styles from './NewAgentModal.module.scss';
 
@@ -21,8 +22,7 @@ const EXIT_MS = 150;
 type NewAgentModalProps = {
   open: boolean;
   onClose: () => void;
-  /** Slice 1: closes only — does not create chats or roster entries. */
-  onSave: () => void;
+  onSave: (draft: NewAgentDraft) => void;
 };
 
 export default function NewAgentModal({
@@ -96,7 +96,7 @@ export default function NewAgentModal({
                 <Button
                   emphasis="primary"
                   onClick={() => {
-                    onSave();
+                    onSave({ name, shape, color, purpose });
                     onClose();
                   }}
                 >
@@ -114,6 +114,7 @@ export default function NewAgentModal({
                   color={color}
                   size="xl"
                   eyes
+                  shadow
                   levitate
                 />
                 <TextInput

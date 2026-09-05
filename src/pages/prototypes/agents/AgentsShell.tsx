@@ -13,7 +13,13 @@ function resolveProduct(pathname: string): AgentsProduct {
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
-  if (normalized.startsWith(`${AGENTS_BASE}/agents`)) return 'agents';
+  // /agents and /agents/matty (and future agent chats) stay in Agents product.
+  if (
+    normalized === `${AGENTS_BASE}/agents` ||
+    normalized.startsWith(`${AGENTS_BASE}/agents/`)
+  ) {
+    return 'agents';
+  }
   return 'channels';
 }
 
@@ -25,7 +31,8 @@ export default function AgentsShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { setCenterSlot } = usePrototypeChrome();
-  const { newAgentOpen, closeNewAgent, openNewAgent } = useAgents();
+  const { newAgentOpen, closeNewAgent, openNewAgent, addCreatedAgent } =
+    useAgents();
   const activeProduct = resolveProduct(pathname);
 
   useEffect(() => {
@@ -66,7 +73,12 @@ export default function AgentsShell() {
       <NewAgentModal
         open={newAgentOpen}
         onClose={closeNewAgent}
-        onSave={closeNewAgent}
+        onSave={(draft) => {
+          const agent = addCreatedAgent(draft);
+          closeNewAgent();
+          // Route under /agents/:id switches activeProduct to 'agents'.
+          navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+        }}
       />
     </div>
   );

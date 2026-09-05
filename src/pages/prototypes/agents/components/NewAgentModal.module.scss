@@ -178,15 +178,9 @@
     }
   }
 
-  // Compact swatches: shape only — no oval ground shadow (keep on xl preview).
   &__swatch-avatar {
     transform-origin: center center;
     transition: transform var(--duration-quick) var(--ease-transition);
-
-    &::after {
-      content: none;
-      display: none;
-    }
   }
 
   &__colors {

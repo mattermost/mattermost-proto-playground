@@ -11,6 +11,7 @@ function resolveScene(
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
+  if (normalized.startsWith(`${AGENTS_BASE}/agents/`)) return 'matty-chat';
   if (normalized === `${AGENTS_BASE}/agents`) return 'meet-first-agent';
   return 'channels';
 }
@@ -43,6 +44,10 @@ export default function AgentsSceneSwitcher({
       case 'meet-first-agent':
         closeNewAgent();
         navigate(`${AGENTS_BASE}/agents`);
+        return;
+      case 'matty-chat':
+        closeNewAgent();
+        navigate(`${AGENTS_BASE}/agents/matty`);
         return;
       case 'new-agent':
         openNewAgent();

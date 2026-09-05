@@ -56,9 +56,11 @@
   flex: 0 0 auto;
   overflow: visible;
 
-  // Soft elliptical contact/ground shadow under the shape (Figma Agentic UX).
-  // Lives on the root so shape masks on __shape do not clip it.
-  @include oval-ground-shadow;
+  // Soft elliptical contact/ground shadow (Figma Agentic UX). Opt-in via
+  // `shadow` — large modal preview + landing hero cards only.
+  &--shadow {
+    @include oval-ground-shadow;
+  }
 
   // Sidebar DM slot (~UserAvatar size 20).
   &--xs {

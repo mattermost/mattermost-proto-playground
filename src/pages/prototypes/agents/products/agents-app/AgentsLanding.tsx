@@ -1,92 +1,22 @@
-import type { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
-import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
-import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
-import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
-import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { AGENTS_BASE } from '../../agentsScenes';
 import { MATTY } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
-import LhsSidebarHeader from '../../components/LhsSidebarHeader';
 import { useAgents } from '../../context/AgentsContext';
+import AgentsProductSidebar from './AgentsProductSidebar';
 import styles from './AgentsLanding.module.scss';
-
-function NavRow({
-  name,
-  glyph,
-  active,
-}: {
-  name: string;
-  glyph: ReactNode;
-  active?: boolean;
-}) {
-  return (
-    <div className={styles['agents-landing__nav-row']}>
-      <span className={styles['agents-landing__nav-icon']} aria-hidden>
-        <Icon size="16" glyph={glyph} />
-      </span>
-      <ChannelSidebarItem
-        name={name}
-        leadingVisual="insights"
-        active={active}
-      />
-    </div>
-  );
-}
 
 /** Agents product first-time experience — Meet your first agent. */
 export default function AgentsLanding() {
+  const navigate = useNavigate();
   const { openNewAgent } = useAgents();
 
   return (
     <div className={styles['agents-landing']}>
-      <aside className={styles['agents-landing__nav']}>
-        <LhsSidebarHeader
-          productName="Agents"
-          findLabel="Find agents"
-          plusAriaLabel="Create agent"
-          onPlusClick={openNewAgent}
-        />
-
-        <Scrollbar
-          className={styles['agents-landing__scroll']}
-          color="--sidebar-text-rgb"
-        >
-          <div className={styles['agents-landing__nav-top']}>
-            <NavRow
-              name="All agents"
-              glyph={<CreationOutlineIcon />}
-              active
-            />
-            <NavRow name="Custom Prompts" glyph={<CodeBracketsIcon />} />
-            <NavRow name="Automations" glyph={<LightningBoltOutlineIcon />} />
-          </div>
-
-          <div className={styles['agents-landing__nav-group']}>
-            <ChannelsSidebarCategory label="Your agents" showChevron />
-            <div className={styles['agents-landing__agent-row']}>
-              <span
-                className={styles['agents-landing__agent-avatar']}
-                aria-hidden
-              >
-                <AgentAvatar
-                  shape={MATTY.shape}
-                  color={MATTY.color}
-                  size="xs"
-                  eyes
-                />
-              </span>
-              <ChannelSidebarItem
-                name={MATTY.name}
-                leadingVisual="direct-message"
-              />
-            </div>
-          </div>
-        </Scrollbar>
-      </aside>
+      <AgentsProductSidebar activeNav="all-agents" />
 
       <div className={styles['agents-landing__center']}>
         <div className={styles['agents-landing__intro']}>
@@ -105,6 +35,7 @@ export default function AgentsLanding() {
               color={MATTY.color}
               size="lg"
               eyes
+              shadow
             />
             <div className={styles['agents-landing__card-copy']}>
               <h2 className={styles['agents-landing__card-title']}>
@@ -114,7 +45,12 @@ export default function AgentsLanding() {
                 {MATTY.description}
               </p>
             </div>
-            <Button emphasis="tertiary">Chat with Matty</Button>
+            <Button
+              emphasis="tertiary"
+              onClick={() => navigate(`${AGENTS_BASE}/agents/matty`)}
+            >
+              Chat with Matty
+            </Button>
           </article>
 
           <article
