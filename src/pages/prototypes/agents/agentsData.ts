@@ -74,6 +74,17 @@ export const AGENT_COLOR_HEX: Record<AgentColor, string> = {
   green: '#27ae60',
 };
 
+/** Sidebar-sized Matty glyph for ChannelSidebarItem DM avatar slot. */
+export const MATTY_AVATAR_SRC =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">` +
+      `<circle cx="16" cy="16" r="16" fill="${AGENT_COLOR_HEX.yellow}"/>` +
+      `<circle cx="12" cy="15" r="2.4" fill="#fff" fill-opacity="0.92"/>` +
+      `<circle cx="20" cy="15" r="2.4" fill="#fff" fill-opacity="0.92"/>` +
+      `</svg>`,
+  );
+
 export const MATTY = {
   id: 'matty',
   name: 'Matty',
@@ -81,6 +92,8 @@ export const MATTY = {
     'General purpose agent that manages and connects to your other agents.',
   shape: 'sphere' as AgentShape,
   color: 'yellow' as AgentColor,
+  avatarSrc: MATTY_AVATAR_SRC,
+  avatarAlt: 'Matty',
 };
 
 export const SENTINEL_DEFAULT = {

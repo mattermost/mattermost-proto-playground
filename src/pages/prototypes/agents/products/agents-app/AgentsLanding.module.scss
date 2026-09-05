@@ -69,15 +69,13 @@
     padding-bottom: var(--spacing-s);
   }
 
-  // Custom leading visuals: keep ChannelSidebarItem layout (icon slot + label),
-  // overlay the glyph, and hide the built-in SVG — same pattern as Automations ProductNav.
-  &__nav-row,
-  &__agent-row {
+  // Custom icons: keep ChannelSidebarItem's icon slot, overlay the glyph, hide
+  // the built-in SVG — same pattern as Automations ProductNav.
+  &__nav-row {
     position: relative;
   }
 
-  &__nav-icon,
-  &__agent-leading {
+  &__nav-icon {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -86,22 +84,13 @@
     display: flex;
     align-items: center;
     padding-left: calc(18px + var(--spacing-xxxs));
+    color: var(--sidebar-text);
+    opacity: 0.64;
     pointer-events: none;
   }
 
-  &__nav-icon {
-    color: var(--sidebar-text);
-    opacity: 0.64;
-  }
-
-  &__nav-row :global([class*='icon-container'] > svg),
-  &__agent-row :global([class*='icon-container'] > *) {
+  &__nav-row :global([class*='icon-container'] > svg) {
     visibility: hidden;
-  }
-
-  &__agent-avatar {
-    width: var(--icon-size-20, 20px);
-    height: var(--icon-size-20, 20px);
   }
 
   &__center {

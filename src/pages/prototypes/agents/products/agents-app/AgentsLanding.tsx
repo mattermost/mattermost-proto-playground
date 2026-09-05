@@ -83,24 +83,12 @@ export default function AgentsLanding() {
 
           <div className={styles['agents-landing__nav-group']}>
             <ChannelsSidebarCategory label="Your agents" showChevron />
-            <div className={styles['agents-landing__agent-row']}>
-              <span
-                className={styles['agents-landing__agent-leading']}
-                aria-hidden
-              >
-                <AgentAvatar
-                  shape={MATTY.shape}
-                  color={MATTY.color}
-                  size="sm"
-                  eyes
-                  className={styles['agents-landing__agent-avatar']}
-                />
-              </span>
-              <ChannelSidebarItem
-                name={MATTY.name}
-                leadingVisual="direct-message"
-              />
-            </div>
+            <ChannelSidebarItem
+              name={MATTY.name}
+              leadingVisual="direct-message"
+              avatarSrc={MATTY.avatarSrc}
+              avatarAlt={MATTY.avatarAlt}
+            />
           </div>
         </Scrollbar>
       </aside>
