@@ -184,6 +184,7 @@
   }
 
   &__create-icon {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -192,6 +193,13 @@
     border-radius: var(--radius-full);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.56);
+    // Same oval ground shadow as AgentAvatar (Figma 53:71406).
+    @include oval-ground-shadow;
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
   }
 
   &__card-title {

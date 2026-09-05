@@ -90,3 +90,29 @@
   margin-bottom: var(--spacing-xl);
   margin-top: var(--spacing-xl);
 }
+
+/**
+ * Soft elliptical contact/ground shadow (Figma Agentic UX).
+ * Host must be `position: relative`. Keeps the oval under clip-path shapes
+ * when applied on a root that is not itself clipped.
+ */
+@mixin oval-ground-shadow {
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 0;
+    width: 72%;
+    height: 18%;
+    transform: translate(-50%, 40%);
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.28) 0%,
+      rgba(0, 0, 0, 0.12) 42%,
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+}
