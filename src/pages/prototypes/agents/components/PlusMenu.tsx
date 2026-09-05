@@ -72,7 +72,7 @@ export default function PlusMenu({
             leadingVisual={
               <AgentAvatar
                 shape={MATTY.shape}
-                color={MATTY.color}
+                color="blue"
                 size="xs"
                 eyes
               />

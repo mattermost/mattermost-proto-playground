@@ -1,10 +1,60 @@
+// ~8s cycle: single blink ~3s in, double blink ~6.2s; closed ~120ms each.
+@keyframes agent-avatar-blink {
+  0%,
+  36.5%,
+  38%,
+  77%,
+  78.5%,
+  79.5%,
+  81%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  37.25%,
+  77.75%,
+  80.25% {
+    transform: scaleY(0.12);
+  }
+}
+
+// Soft hover — 4px peak, ease-in-out (preview `levitate` only).
+@keyframes agent-avatar-levitate {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+// Counter Y so the oval stays planted; scaleX/opacity drop as the avatar rises.
+@keyframes agent-avatar-shadow-float {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) scaleX(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(4px) scaleX(0.82);
+    opacity: 0.65;
+  }
+}
+
 .agent-avatar {
-  --agent-avatar-color: #eb5757;
+  // Defaults match Figma red sphere (red/300 → red/500 → red/400).
+  --agent-avatar-highlight: var(--color-red-300);
+  --agent-avatar-mid: var(--color-red-500);
+  --agent-avatar-edge: var(--color-red-400);
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  overflow: visible;
 
   // Soft elliptical contact/ground shadow under the shape (Figma Agentic UX).
   // Lives on the root so shape masks on __shape do not clip it.
@@ -18,6 +68,8 @@
     .agent-avatar__eyes span {
       min-width: 0;
       min-height: 0;
+      // Pupils are ~2–3px — blink would be invisible noise.
+      animation: none;
     }
   }
 
@@ -34,33 +86,70 @@
   &--lg {
     width: 74px;
     height: 74px;
+    // Figma landing avatar frame is 88 tall for a 74 shape — reserve the 14px
+    // gap so the scaled oval shadow clears before card title (itemSpacing 24).
+    margin-bottom: 14px;
   }
 
   &--xl {
     width: 96px;
     height: 96px;
+    // Clear gap under shape + 7px oval (mixin). Reserve both so preview gap
+    // (--spacing-s) sits below the shadow, not through it.
+    margin-bottom: calc(14px + 7px);
   }
 
-  // Lit-sphere shading: highlight from top-right over the base color.
-  // Non-sphere shapes get rounded SVG path masks (see agentAvatarShapes.ts).
+  // Preview-only soft float (New Agent modal xl). Root motion keeps eyes /
+  // selection / blink composed; ::after counters Y and breathes for depth.
+  &--levitate {
+    animation: agent-avatar-levitate 3.2s var(--ease-transition) infinite;
+
+    &::after {
+      animation: agent-avatar-shadow-float 3.2s var(--ease-transition) infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+
+      &::after {
+        animation: none;
+      }
+    }
+  }
+
+  // Contour ring for New Agent shape swatches: double-stroke along the
+  // unit path (not box inset / scale). Matches color swatches’ 4px gap +
+  // 2px `--button-bg` ring. Stroke widths are 2× so half falls under the
+  // opaque shape; `non-scaling-stroke` keeps px sizes across avatar sizes.
+  &__selection {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  &__selection-ring {
+    stroke: var(--button-bg);
+    // 2 * (gap 4 + ring 2) = 12 → 6px outside centerline
+    stroke-width: calc(2 * (var(--spacing-xxxs) + var(--spacing-xxxxs)));
+  }
+
+  &__selection-gap {
+    stroke: var(--center-channel-bg);
+    // 2 * gap 4 = 8 → 4px outside; leaves 2px of the ring visible
+    stroke-width: calc(2 * var(--spacing-xxxs));
+  }
+
+  // Brand-palette lit fill (Figma Agentic UX). Non-sphere shapes use path masks.
   &__shape {
     position: relative;
     z-index: 1;
     width: 100%;
     height: 100%;
-    background:
-      radial-gradient(
-        circle at 70% 22%,
-        rgba(255, 255, 255, 0.45) 0%,
-        rgba(255, 255, 255, 0.14) 34%,
-        transparent 58%
-      ),
-      radial-gradient(
-        circle at 28% 82%,
-        rgba(0, 0, 0, 0.24) 0%,
-        transparent 55%
-      ),
-      var(--agent-avatar-color);
+    @include agent-avatar-fill;
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
     -webkit-mask-repeat: no-repeat;
@@ -85,6 +174,7 @@
     will-change: transform;
     transition: transform 80ms linear;
 
+    // Blink on pupils (not the tracked layer) so scaleY composes with translate.
     span {
       width: 12%;
       height: 12%;
@@ -92,6 +182,8 @@
       min-height: 4px;
       border-radius: var(--radius-full);
       background: rgba(255, 255, 255, 0.92);
+      transform-origin: center;
+      animation: agent-avatar-blink 8s var(--ease-transition) infinite;
     }
   }
 }

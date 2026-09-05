@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Modal } from '@mattermost/compass-ui/components/modal';
@@ -7,7 +7,7 @@ import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import {
   AGENT_COLORS,
-  AGENT_COLOR_HEX,
+  AGENT_COLOR_STOPS,
   AGENT_SHAPES,
   SENTINEL_DEFAULT,
   type AgentColor,
@@ -32,6 +32,7 @@ export default function NewAgentModal({
 }: NewAgentModalProps) {
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
   const purposeLabelId = useId();
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(SENTINEL_DEFAULT.name);
   const [purpose, setPurpose] = useState(SENTINEL_DEFAULT.purpose);
   const [shape, setShape] = useState<AgentShape>(SENTINEL_DEFAULT.shape);
@@ -44,6 +45,11 @@ export default function NewAgentModal({
     setShape(SENTINEL_DEFAULT.shape);
     setColor(SENTINEL_DEFAULT.color);
   }, [open]);
+
+  useEffect(() => {
+    if (!open || !rendered || exiting) return;
+    nameInputRef.current?.focus();
+  }, [open, rendered, exiting]);
 
   useEffect(() => {
     if (!open) return;
@@ -80,31 +86,45 @@ export default function NewAgentModal({
           onClose={onClose}
           footer={
             <div className={styles['new-agent-modal__footer']}>
-              <Button emphasis="tertiary" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                emphasis="primary"
-                onClick={() => {
-                  onSave();
-                  onClose();
-                }}
-              >
-                Save
-              </Button>
+              <p className={styles['new-agent-modal__footer-hint']}>
+                Agents will guide you through setup in next screen
+              </p>
+              <div className={styles['new-agent-modal__footer-actions']}>
+                <Button emphasis="tertiary" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  emphasis="primary"
+                  onClick={() => {
+                    onSave();
+                    onClose();
+                  }}
+                >
+                  Save
+                </Button>
+              </div>
             </div>
           }
         >
           <div className={styles['new-agent-modal__body']}>
             <div className={styles['new-agent-modal__appearance']}>
               <div className={styles['new-agent-modal__preview']}>
-                <AgentAvatar shape={shape} color={color} size="xl" eyes />
+                <AgentAvatar
+                  shape={shape}
+                  color={color}
+                  size="xl"
+                  eyes
+                  levitate
+                />
                 <TextInput
+                  ref={nameInputRef}
                   className={styles['new-agent-modal__name']}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  placeholder="Name your agent"
                   aria-label="Agent name"
                   size="large"
+                  autoFocus
                 />
               </div>
 
@@ -119,17 +139,16 @@ export default function NewAgentModal({
                     type="button"
                     role="option"
                     aria-selected={shape === s}
-                    className={[
-                      styles['new-agent-modal__swatch'],
-                      shape === s
-                        ? styles['new-agent-modal__swatch--selected']
-                        : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
+                    className={styles['new-agent-modal__swatch']}
                     onClick={() => setShape(s)}
                   >
-                    <AgentAvatar shape={s} color={color} size="sm" />
+                    <AgentAvatar
+                      shape={s}
+                      color={color}
+                      size="sm"
+                      selected={shape === s}
+                      className={styles['new-agent-modal__swatch-avatar']}
+                    />
                   </button>
                 ))}
               </div>
@@ -157,7 +176,14 @@ export default function NewAgentModal({
                   >
                     <span
                       className={styles['new-agent-modal__color-dot']}
-                      style={{ background: AGENT_COLOR_HEX[c] }}
+                      style={{
+                        ['--agent-avatar-highlight' as string]:
+                          AGENT_COLOR_STOPS[c].highlight,
+                        ['--agent-avatar-mid' as string]:
+                          AGENT_COLOR_STOPS[c].mid,
+                        ['--agent-avatar-edge' as string]:
+                          AGENT_COLOR_STOPS[c].edge,
+                      }}
                     />
                   </button>
                 ))}

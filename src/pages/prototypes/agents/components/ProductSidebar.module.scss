@@ -63,6 +63,13 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    &--large {
+      :global(svg) {
+        width: calc(var(--icon-size-24) + var(--spacing-xxxxs));
+        height: calc(var(--icon-size-24) + var(--spacing-xxxxs));
+      }
+    }
   }
 
   &__account {

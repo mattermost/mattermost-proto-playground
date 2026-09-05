@@ -29,7 +29,7 @@ export type AgentShape =
   | 'hexagon'
   | 'diamond'
   | 'octagon'
-  | 'decagon';
+  | 'shield';
 
 export type AgentColor =
   | 'yellow'
@@ -49,29 +49,72 @@ export const AGENT_SHAPES: AgentShape[] = [
   'hexagon',
   'diamond',
   'octagon',
-  'decagon',
+  'shield',
 ];
 
+// Figma New Agent color strip order (Frame 1937).
 export const AGENT_COLORS: AgentColor[] = [
   'yellow',
   'orange',
   'red',
   'purple',
-  'blue',
   'sky',
+  'blue',
   'cyan',
   'green',
 ];
 
-export const AGENT_COLOR_HEX: Record<AgentColor, string> = {
-  yellow: '#f2c94c',
-  orange: '#f2994a',
-  red: '#eb5757',
-  purple: '#6f42c1',
-  blue: '#2d6cdf',
-  sky: '#56ccf2',
-  cyan: '#2bbbad',
-  green: '#27ae60',
+/** Figma radial stops → Compass brand palette CSS variables. */
+export type AgentColorStops = {
+  highlight: string;
+  mid: string;
+  edge: string;
+};
+
+// From get_variable_defs on New Agent color dots + sphere fill.
+export const AGENT_COLOR_STOPS: Record<AgentColor, AgentColorStops> = {
+  yellow: {
+    highlight: 'var(--color-yellow-300)',
+    mid: 'var(--color-yellow-500)',
+    edge: 'var(--color-yellow-500)',
+  },
+  orange: {
+    highlight: 'var(--color-orange-400)',
+    mid: 'var(--color-orange-500)',
+    edge: 'var(--color-orange-400)',
+  },
+  red: {
+    highlight: 'var(--color-red-300)',
+    mid: 'var(--color-red-500)',
+    edge: 'var(--color-red-400)',
+  },
+  purple: {
+    highlight: 'var(--color-purple-400)',
+    mid: 'var(--color-purple-600)',
+    edge: 'var(--color-purple-500)',
+  },
+  // Figma light blues (strip position before primary blue).
+  sky: {
+    highlight: 'var(--color-blue-200)',
+    mid: 'var(--color-blue-300)',
+    edge: 'var(--color-blue-200)',
+  },
+  blue: {
+    highlight: 'var(--color-blue-400)',
+    mid: 'var(--color-blue-500)',
+    edge: 'var(--color-blue-400)',
+  },
+  // Figma teal (named cyan in the picker).
+  cyan: {
+    highlight: 'var(--color-teal-500)',
+    mid: 'var(--color-teal-700)',
+    edge: 'var(--color-teal-600)',
+  },
+  green: {
+    highlight: 'var(--color-green-300)',
+    mid: 'var(--color-green-600)',
+    edge: 'var(--color-green-500)',
+  },
 };
 
 export const MATTY = {
@@ -87,7 +130,7 @@ export const SENTINEL_DEFAULT = {
   name: 'Sentinel',
   purpose: 'Watch the health of our checkout and payment services.',
   shape: 'sphere' as AgentShape,
-  color: 'red' as AgentColor,
+  color: 'blue' as AgentColor,
 };
 
 export type ChannelMessage = {

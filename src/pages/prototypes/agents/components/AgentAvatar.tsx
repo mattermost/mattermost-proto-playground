@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react';
 import type { AgentColor, AgentShape } from '../agentsData';
-import { AGENT_COLOR_HEX } from '../agentsData';
-import { agentAvatarShapeMask } from './agentAvatarShapes';
+import { AGENT_COLOR_STOPS } from '../agentsData';
+import {
+  AGENT_AVATAR_SHAPE_PATHS,
+  agentAvatarShapeMask,
+} from './agentAvatarShapes';
 import styles from './AgentAvatar.module.scss';
 
 type AgentAvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -11,6 +14,10 @@ type AgentAvatarProps = {
   color: AgentColor;
   size?: AgentAvatarSize;
   eyes?: boolean;
+  /** Soft float — New Agent modal preview only (not swatches / sidebar). */
+  levitate?: boolean;
+  /** When set, draws a 2px --button-bg contour ring outset 4px from the shape. */
+  selected?: boolean;
   className?: string;
 };
 
@@ -26,6 +33,12 @@ const EYE_TRAVEL: Record<AgentAvatarSize, number> = {
   xl: 0.14,
 };
 
+/** Shared geometry attrs for the double-stroke selection ring. */
+const SELECTION_STROKE = {
+  fill: 'none' as const,
+  vectorEffect: 'non-scaling-stroke' as const,
+};
+
 /**
  * Geometric agent appearance (shape × color) used in the New Agent modal
  * and Agents landing cards. When `eyes` is set, pupils track the pointer.
@@ -35,10 +48,23 @@ export default function AgentAvatar({
   color,
   size = 'md',
   eyes = false,
+  levitate = false,
+  selected = false,
   className = '',
 }: AgentAvatarProps) {
-  const hex = AGENT_COLOR_HEX[color];
+  const stops = AGENT_COLOR_STOPS[color];
   const shapeMask = agentAvatarShapeMask(shape);
+  const maskStyle = shapeMask
+    ? {
+        WebkitMaskImage: shapeMask,
+        maskImage: shapeMask,
+      }
+    : undefined;
+  const colorStyle = {
+    ['--agent-avatar-highlight' as string]: stops.highlight,
+    ['--agent-avatar-mid' as string]: stops.mid,
+    ['--agent-avatar-edge' as string]: stops.edge,
+  };
   const rootRef = useRef<HTMLSpanElement>(null);
   const eyesRef = useRef<HTMLSpanElement>(null);
   const eyeTravel = EYE_TRAVEL[size];
@@ -101,24 +127,58 @@ export default function AgentAvatar({
         styles['agent-avatar'],
         styles[`agent-avatar--${size}`],
         styles[`agent-avatar--${shape}`],
+        levitate ? styles['agent-avatar--levitate'] : '',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
-      style={{ ['--agent-avatar-color' as string]: hex }}
+      style={colorStyle}
       aria-hidden
     >
-      <span
-        className={styles['agent-avatar__shape']}
-        style={
-          shapeMask
-            ? {
-                WebkitMaskImage: shapeMask,
-                maskImage: shapeMask,
-              }
-            : undefined
-        }
-      />
+      {selected ? (
+        <svg
+          className={styles['agent-avatar__selection']}
+          viewBox="0 0 1 1"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          {/* Double-stroke along path: 12px button-bg, 8px bg punch → 4px gap + 2px ring */}
+          {shape === 'sphere' ? (
+            <>
+              <circle
+                className={styles['agent-avatar__selection-ring']}
+                cx="0.5"
+                cy="0.5"
+                r="0.5"
+                {...SELECTION_STROKE}
+              />
+              <circle
+                className={styles['agent-avatar__selection-gap']}
+                cx="0.5"
+                cy="0.5"
+                r="0.5"
+                {...SELECTION_STROKE}
+              />
+            </>
+          ) : (
+            <>
+              <path
+                className={styles['agent-avatar__selection-ring']}
+                d={AGENT_AVATAR_SHAPE_PATHS[shape]}
+                strokeLinejoin="round"
+                {...SELECTION_STROKE}
+              />
+              <path
+                className={styles['agent-avatar__selection-gap']}
+                d={AGENT_AVATAR_SHAPE_PATHS[shape]}
+                strokeLinejoin="round"
+                {...SELECTION_STROKE}
+              />
+            </>
+          )}
+        </svg>
+      ) : null}
+      <span className={styles['agent-avatar__shape']} style={maskStyle} />
       {eyes ? (
         <span ref={eyesRef} className={styles['agent-avatar__eyes']}>
           <span />

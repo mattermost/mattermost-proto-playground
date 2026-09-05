@@ -3,15 +3,14 @@ import PlusIcon from '@mattermost/compass-icons/components/plus';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
-import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { MATTY } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
+import LhsSidebarHeader from '../../components/LhsSidebarHeader';
 import { useAgents } from '../../context/AgentsContext';
 import styles from './AgentsLanding.module.scss';
 
@@ -45,27 +44,12 @@ export default function AgentsLanding() {
   return (
     <div className={styles['agents-landing']}>
       <aside className={styles['agents-landing__nav']}>
-        <div className={styles['agents-landing__nav-header']}>
-          <div
-            className={styles['agents-landing__find']}
-            role="search"
-            aria-label="Find agents"
-          >
-            <span className={styles['agents-landing__find-icon']} aria-hidden>
-              <MagnifyIcon size={16} />
-            </span>
-            <span className={styles['agents-landing__find-label']}>
-              Find agents
-            </span>
-          </div>
-          <IconButton
-            size="small"
-            style="inverted"
-            icon={<Icon glyph={<PlusIcon />} size="16" />}
-            aria-label="Create agent"
-            onClick={openNewAgent}
-          />
-        </div>
+        <LhsSidebarHeader
+          productName="Agents"
+          findLabel="Find agents"
+          plusAriaLabel="Create agent"
+          onPlusClick={openNewAgent}
+        />
 
         <Scrollbar
           className={styles['agents-landing__scroll']}

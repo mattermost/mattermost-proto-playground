@@ -23,10 +23,17 @@ type RailButtonProps = {
   label: string;
   active?: boolean;
   onClick?: () => void;
+  iconClassName?: string;
   children: ReactNode;
 };
 
-function RailButton({ label, active, onClick, children }: RailButtonProps) {
+function RailButton({
+  label,
+  active,
+  onClick,
+  iconClassName,
+  children,
+}: RailButtonProps) {
   return (
     <button
       type="button"
@@ -44,7 +51,13 @@ function RailButton({ label, active, onClick, children }: RailButtonProps) {
       {active ? (
         <span className={styles['product-sidebar__active-bar']} aria-hidden />
       ) : null}
-      <span className={styles['product-sidebar__icon']}>{children}</span>
+      <span
+        className={[styles['product-sidebar__icon'], iconClassName]
+          .filter(Boolean)
+          .join(' ')}
+      >
+        {children}
+      </span>
     </button>
   );
 }
@@ -67,13 +80,20 @@ export default function ProductSidebar({
           label="Channels"
           active={activeProduct === 'channels'}
           onClick={() => onSelectProduct('channels')}
+          iconClassName={styles['product-sidebar__icon--large']}
         >
           <Icon glyph={<ProductChannelsIcon />} size="20" />
         </RailButton>
-        <RailButton label="Playbooks">
+        <RailButton
+          label="Playbooks"
+          iconClassName={styles['product-sidebar__icon--large']}
+        >
           <Icon glyph={<ProductPlaybooksIcon />} size="20" />
         </RailButton>
-        <RailButton label="Boards">
+        <RailButton
+          label="Boards"
+          iconClassName={styles['product-sidebar__icon--large']}
+        >
           <Icon glyph={<ProductBoardsIcon />} size="20" />
         </RailButton>
         <RailButton

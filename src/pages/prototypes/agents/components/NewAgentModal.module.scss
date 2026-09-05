@@ -47,9 +47,10 @@
       padding: 0;
     }
 
-    // Body: Figma pt 12 / pb 28 / px 32 (Modal already supplies 28/32).
+    // Body: Figma pt 12 / px 32; drop Compass pb 28 — footer supplies spacing.
     :global([class*='modal__body-inner']) {
       padding-top: var(--spacing-m);
+      padding-bottom: 0;
     }
 
     // footerDivider=false zeroes padding-top; restore Figma py 24.
@@ -75,7 +76,7 @@
     width: 100%;
   }
 
-  // Figma: avatar to name gap 10.
+  // Figma Frame 1939 (53:76217): avatar→name gap 10.
   &__preview {
     display: flex;
     flex-direction: column;
@@ -84,44 +85,67 @@
     width: 100%;
   }
 
-  // Title-like name under avatar (Heading 900), underline only.
+  // Title-like name under avatar (Figma Frame 1946 / 53:76558;
+  // Heading 900 36/44; hug width; no underline).
+  // Beat Compass .text-input { width:100% } and --size-large padding/min-height.
   &__name {
     width: fit-content;
-    min-width: 4ch;
     max-width: 100%;
+    align-self: center;
+
+    &#{&} {
+      width: fit-content;
+    }
 
     :global([class*='text-input__wrapper']) {
+      width: fit-content;
+      max-width: 100%;
       min-height: 0;
       background: transparent;
-      border-radius: 0;
+      border-radius: var(--radius-s);
       box-shadow: none;
-      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+      border: none;
+      cursor: text;
+      transition: background var(--duration-quick) var(--ease-transition);
     }
 
-    &:hover:not(:focus-within) :global([class*='text-input__wrapper']) {
-      box-shadow: none;
-      border-bottom-color: rgba(var(--center-channel-color-rgb), 0.24);
+    &:hover :global([class*='text-input__wrapper']) {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
     }
 
-    &:focus-within :global([class*='text-input__wrapper']) {
+    // Beat Compass :has(input:focus-visible) full ring.
+    &#{&}:has(:global([class*='text-input__input']:focus-visible))
+      :global([class*='text-input__wrapper']),
+    &#{&}:focus-within :global([class*='text-input__wrapper']) {
       box-shadow: none;
-      border-bottom-color: var(--button-bg);
+      border: none;
     }
 
-    :global([class*='text-input__inner']) {
-      padding: 0;
+    // Beat .text-input--size-large .text-input__inner (padding m/l, width 100%).
+    &#{&} :global([class*='text-input__inner']) {
+      width: fit-content;
+      max-width: 100%;
+      padding: 0 var(--spacing-xs);
       justify-content: center;
     }
 
-    :global(input) {
+    // Beat Compass .text-input--size-large .text-input__input (0,2,0).
+    &#{&} :global([class*='text-input__input']) {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
       field-sizing: content;
-      min-width: 4ch;
+      padding: 0;
       font-family: var(--font-family-heading);
-      font-size: var(--font-size-900);
+      font-size: var(--font-size-900); // Figma Heading 900: 36px
       font-weight: var(--font-weight-semibold);
-      line-height: var(--line-height-900);
+      line-height: var(--line-height-900); // 44px
       letter-spacing: -0.02em;
       text-align: center;
+
+      &::placeholder {
+        color: rgba(var(--center-channel-color-rgb), 0.64);
+      }
     }
   }
 
@@ -132,22 +156,36 @@
     gap: var(--spacing-s);
   }
 
+  // Invisible 40×40 hit target; chrome is the shape (+ contour ring when selected).
   &__swatch {
     appearance: none;
     box-sizing: border-box;
     width: var(--icon-size-40);
     height: var(--icon-size-40);
-    border: 1px solid transparent;
-    background: rgba(var(--center-channel-color-rgb), 0.04);
+    margin: 0;
     padding: 0;
-    border-radius: var(--radius-s);
+    border: 0;
+    background: transparent;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 
-    &--selected {
-      border-color: var(--button-bg);
+    &:hover .new-agent-modal__swatch-avatar,
+    &:focus-visible .new-agent-modal__swatch-avatar {
+      transform: scale(1.1);
+    }
+  }
+
+  // Compact swatches: shape only — no oval ground shadow (keep on xl preview).
+  &__swatch-avatar {
+    transform-origin: center center;
+    transition: transform var(--duration-quick) var(--ease-transition);
+
+    &::after {
+      content: none;
+      display: none;
     }
   }
 
@@ -163,7 +201,7 @@
     appearance: none;
     border: 0;
     background: transparent;
-    padding: var(--spacing-xxxxs);
+    padding: var(--spacing-xxxs);
     border-radius: var(--radius-full);
     cursor: pointer;
     display: inline-flex;
@@ -179,13 +217,14 @@
     width: var(--icon-size-16);
     height: var(--icon-size-16);
     border-radius: var(--radius-full);
+    @include agent-avatar-fill;
   }
 
-  // Figma: label + textarea gap 12, label centered Body 100 Semibold.
+  // Figma: label + textarea gap 12.
   &__purpose {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--spacing-m);
     width: 100%;
   }
@@ -197,7 +236,7 @@
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-100);
     color: var(--center-channel-color);
-    text-align: center;
+    text-align: left;
   }
 
   &__purpose-field {
@@ -206,9 +245,29 @@
 
   &__footer {
     display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-xs);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
     width: 100%;
+  }
+
+  // Muted caption — Figma footer has no hint yet; secondary body style.
+  &__footer-hint {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__footer-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--spacing-xs);
   }
 }
 
