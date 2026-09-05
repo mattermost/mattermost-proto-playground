@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Modal } from '@mattermost/compass-ui/components/modal';
@@ -31,6 +31,7 @@ export default function NewAgentModal({
   onSave,
 }: NewAgentModalProps) {
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
+  const purposeLabelId = useId();
   const [name, setName] = useState(SENTINEL_DEFAULT.name);
   const [purpose, setPurpose] = useState(SENTINEL_DEFAULT.purpose);
   const [shape, setShape] = useState<AgentShape>(SENTINEL_DEFAULT.shape);
@@ -75,6 +76,7 @@ export default function NewAgentModal({
           size="small"
           title="New agent"
           headerDivider={false}
+          footerDivider={false}
           onClose={onClose}
           footer={
             <div className={styles['new-agent-modal__footer']}>
@@ -94,78 +96,92 @@ export default function NewAgentModal({
           }
         >
           <div className={styles['new-agent-modal__body']}>
-            <div className={styles['new-agent-modal__preview']}>
-              <AgentAvatar shape={shape} color={color} size="lg" eyes />
-              <TextInput
-                className={styles['new-agent-modal__name']}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                aria-label="Agent name"
-                size="large"
+            <div className={styles['new-agent-modal__appearance']}>
+              <div className={styles['new-agent-modal__preview']}>
+                <AgentAvatar shape={shape} color={color} size="xl" eyes />
+                <TextInput
+                  className={styles['new-agent-modal__name']}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  aria-label="Agent name"
+                  size="large"
+                />
+              </div>
+
+              <div
+                className={styles['new-agent-modal__swatches']}
+                role="listbox"
+                aria-label="Appearance shape"
+              >
+                {AGENT_SHAPES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    role="option"
+                    aria-selected={shape === s}
+                    className={[
+                      styles['new-agent-modal__swatch'],
+                      shape === s
+                        ? styles['new-agent-modal__swatch--selected']
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => setShape(s)}
+                  >
+                    <AgentAvatar shape={s} color={color} size="sm" />
+                  </button>
+                ))}
+              </div>
+
+              <div
+                className={styles['new-agent-modal__colors']}
+                role="listbox"
+                aria-label="Appearance color"
+              >
+                {AGENT_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    role="option"
+                    aria-selected={color === c}
+                    className={[
+                      styles['new-agent-modal__color'],
+                      color === c
+                        ? styles['new-agent-modal__color--selected']
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    onClick={() => setColor(c)}
+                  >
+                    <span
+                      className={styles['new-agent-modal__color-dot']}
+                      style={{ background: AGENT_COLOR_HEX[c] }}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles['new-agent-modal__purpose']}>
+              <label
+                id={purposeLabelId}
+                className={styles['new-agent-modal__purpose-label']}
+                htmlFor={`${purposeLabelId}-field`}
+              >
+                What&apos;s the main thing you want this agent to help you
+                with?
+              </label>
+              <TextArea
+                id={`${purposeLabelId}-field`}
+                className={styles['new-agent-modal__purpose-field']}
+                aria-labelledby={purposeLabelId}
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                rows={4}
               />
             </div>
-
-            <div
-              className={styles['new-agent-modal__swatches']}
-              role="listbox"
-              aria-label="Appearance shape"
-            >
-              {AGENT_SHAPES.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  role="option"
-                  aria-selected={shape === s}
-                  className={[
-                    styles['new-agent-modal__swatch'],
-                    shape === s
-                      ? styles['new-agent-modal__swatch--selected']
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  onClick={() => setShape(s)}
-                >
-                  <AgentAvatar shape={s} color={color} size="sm" />
-                </button>
-              ))}
-            </div>
-
-            <div
-              className={styles['new-agent-modal__swatches']}
-              role="listbox"
-              aria-label="Appearance color"
-            >
-              {AGENT_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  role="option"
-                  aria-selected={color === c}
-                  className={[
-                    styles['new-agent-modal__color'],
-                    color === c
-                      ? styles['new-agent-modal__color--selected']
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  onClick={() => setColor(c)}
-                >
-                  <span
-                    className={styles['new-agent-modal__color-dot']}
-                    style={{ background: AGENT_COLOR_HEX[c] }}
-                  />
-                </button>
-              ))}
-            </div>
-
-            <TextArea
-              label="What's the main thing you want this agent to help you with?"
-              value={purpose}
-              onChange={(e) => setPurpose(e.target.value)}
-              rows={4}
-            />
           </div>
         </Modal>
       </div>
