@@ -6,6 +6,27 @@
   justify-content: center;
   flex: 0 0 auto;
 
+  // Soft elliptical contact/ground shadow under the shape (Figma Agentic UX).
+  // Lives on the root so clip-path on __shape does not clip it.
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    z-index: 0;
+    width: 72%;
+    height: 18%;
+    transform: translate(-50%, 40%);
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.28) 0%,
+      rgba(0, 0, 0, 0.12) 42%,
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+
   // Sidebar DM slot (~UserAvatar size 20).
   &--xs {
     width: var(--icon-size-20);
@@ -40,6 +61,8 @@
   // Lit-sphere shading: highlight from top-right over the base color.
   // Applied on the fill so clip-path shapes (pyramid, hexagon, …) inherit it.
   &__shape {
+    position: relative;
+    z-index: 1;
     width: 100%;
     height: 100%;
     background:
@@ -112,6 +135,7 @@
   &__eyes {
     position: absolute;
     inset: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
