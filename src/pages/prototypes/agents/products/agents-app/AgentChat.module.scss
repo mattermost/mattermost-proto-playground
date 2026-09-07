@@ -62,6 +62,10 @@
 
   &__sessions-name {
     margin: 0;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-family: var(--font-family-heading);
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-semibold);
@@ -76,9 +80,37 @@
     overflow: auto;
   }
 
+  &__session-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+
+    &:hover .agent-chat__session-more,
+    &:focus-within .agent-chat__session-more,
+    &.agent-chat__session-row--menu-open .agent-chat__session-more {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &__session-more {
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-xs);
+    z-index: 1;
+    display: inline-flex;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
   // Truncate long chat previews — MenuItem label is nowrap by default.
   &__session-item {
+    flex: 1 1 auto;
     min-width: 0;
+    padding-inline-end: var(--spacing-xxl);
 
     :global([class*='menu-item__middle']),
     :global([class*='menu-item__top-row']),
@@ -259,6 +291,21 @@
     }
   }
 
+  &__message-copy {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  &__message-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
   &__composer {
     flex: 0 0 auto;
     padding: 0 var(--spacing-xxxxl) var(--spacing-xxxxl);
@@ -274,8 +321,15 @@
     background: var(--center-channel-bg);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
     border-radius: var(--radius-full);
-    // Figma Input Container (53:78157): drop-shadow 0 2px 8.5px / 8% black — not an elevation token.
-    box-shadow: 0 2px 8.5px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--elevation-4);
+    transition:
+      border-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:focus-within {
+      border-color: rgba(var(--center-channel-color-rgb), 0.32);
+      box-shadow: var(--elevation-5);
+    }
   }
 
   &__input-plus,
@@ -308,10 +362,21 @@
     background: rgba(var(--center-channel-color-rgb), 0.08);
   }
 
+  &__input-send:not(:disabled) {
+    background: var(--button-bg);
+    color: var(--button-color);
+
+    &:hover {
+      background: var(--button-bg);
+      color: var(--button-color);
+    }
+  }
+
   &__input-field {
     flex: 1 1 auto;
     min-width: 0;
-    padding: var(--spacing-xs) var(--spacing-l);
+    padding-block: var(--spacing-xs);
+    padding-inline: var(--spacing-xs) var(--spacing-l);
     border: none;
     background: transparent;
     font-family: var(--font-family-body);

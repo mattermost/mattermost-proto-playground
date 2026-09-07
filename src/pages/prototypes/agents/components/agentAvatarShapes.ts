@@ -1,4 +1,4 @@
-import type { AgentShape } from '../agentsData';
+import type { AgentColor, AgentShape } from '../agentsData';
 
 /**
  * Unit-space SVG paths (viewBox 0 0 1 1) for non-sphere agent shapes.
@@ -24,7 +24,23 @@ export const AGENT_AVATAR_SHAPE_PATHS: Record<
     'M0.86000 0.00250L0.14000 0.00250C0.05600 0.00250 0.00000 0.05450 0.00000 0.13250L0.00000 0.46250C0.00000 0.62250 0.30000 0.86250 0.44000 0.97250C0.47000 0.99750 0.53000 0.99750 0.56000 0.97250C0.70000 0.86250 1.00000 0.62250 1.00000 0.46250L1.00000 0.13250C1.00000 0.05450 0.94400 0.00250 0.86000 0.00250Z',
 };
 
+/** Resolved hex stops for SVG chip avatars (mirrors AGENT_COLOR_STOPS tokens). */
+const AGENT_CHIP_COLOR_HEX: Record<
+  AgentColor,
+  { highlight: string; mid: string; edge: string }
+> = {
+  yellow: { highlight: '#ffc847', mid: '#f5ab00', edge: '#f5ab00' },
+  orange: { highlight: '#ec8832', mid: '#e07315', edge: '#ec8832' },
+  red: { highlight: '#da6c6e', mid: '#c43133', edge: '#d24b4e' },
+  purple: { highlight: '#6167bd', mid: '#3c4290', edge: '#484fad' },
+  sky: { highlight: '#81a3ef', mid: '#5d89ea', edge: '#81a3ef' },
+  blue: { highlight: '#386fe5', mid: '#1c58d9', edge: '#386fe5' },
+  cyan: { highlight: '#1adbdb', mid: '#119292', edge: '#15b7b7' },
+  green: { highlight: '#75d1ac', mid: '#339970', edge: '#3db887' },
+};
+
 const maskUrlCache = new Map<string, string>();
+const chipSrcCache = new Map<string, string>();
 
 /** CSS mask-image value that scales the unit path to any avatar size. */
 export function agentAvatarShapeMask(shape: AgentShape): string | undefined {
@@ -37,4 +53,30 @@ export function agentAvatarShapeMask(shape: AgentShape): string | undefined {
     maskUrlCache.set(path, url);
   }
   return url;
+}
+
+/**
+ * Combobox chips only accept `leadingAvatar: { src, alt }` (UserAvatar).
+ * `leadingVisual` is forwarded as Chip `leadingIcon` → Icon, which cannot
+ * render AgentAvatar. Build a matching SVG data URL for geometric agents.
+ * NewAgentGroupChatModal CSS clears UserAvatar's circle crop so silhouettes show.
+ */
+export function agentAvatarChipSrc(
+  shape: AgentShape,
+  color: AgentColor,
+): string {
+  const key = `${shape}:${color}`;
+  const cached = chipSrcCache.get(key);
+  if (cached) return cached;
+
+  const stops = AGENT_CHIP_COLOR_HEX[color];
+  const grad = `<radialGradient id="g" cx="66.67%" cy="27.08%" r="77.5%"><stop offset="0%" stop-color="${stops.highlight}"/><stop offset="74.52%" stop-color="${stops.mid}"/><stop offset="98.08%" stop-color="${stops.edge}"/></radialGradient>`;
+  const body =
+    shape === 'sphere'
+      ? `<circle cx="0.5" cy="0.5" r="0.5" fill="url(#g)"/>`
+      : `<path d="${AGENT_AVATAR_SHAPE_PATHS[shape]}" fill="url(#g)"/>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">${grad}${body}</svg>`;
+  const src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  chipSrcCache.set(key, src);
+  return src;
 }

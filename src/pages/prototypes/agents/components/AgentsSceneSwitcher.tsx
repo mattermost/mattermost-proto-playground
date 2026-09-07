@@ -8,13 +8,17 @@ function resolveScene(
   newAgentOpen: boolean,
 ): AgentsSceneId {
   if (newAgentOpen) return 'new-agent';
+  if (search.includes('tab=tasks')) return 'scheduled-work';
   if (search.includes('settings=true')) return 'agent-settings';
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
   if (normalized.startsWith(`${AGENTS_BASE}/agents/`)) return 'matty-chat';
-  if (normalized === `${AGENTS_BASE}/agents`) return 'meet-first-agent';
+  if (normalized === `${AGENTS_BASE}/agents`) {
+    if (search.includes('fte=1')) return 'meet-first-agent';
+    return 'all-agents';
+  }
   return 'channels';
 }
 
@@ -22,6 +26,7 @@ type AgentsSceneSwitcherProps = {
   newAgentOpen: boolean;
   openNewAgent: () => void;
   closeNewAgent: () => void;
+  ensureSentinel: () => void;
 };
 
 /**
@@ -32,6 +37,7 @@ export default function AgentsSceneSwitcher({
   newAgentOpen,
   openNewAgent,
   closeNewAgent,
+  ensureSentinel,
 }: AgentsSceneSwitcherProps) {
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
@@ -45,6 +51,11 @@ export default function AgentsSceneSwitcher({
         return;
       case 'meet-first-agent':
         closeNewAgent();
+        navigate(`${AGENTS_BASE}/agents?fte=1`);
+        return;
+      case 'all-agents':
+        closeNewAgent();
+        ensureSentinel();
         navigate(`${AGENTS_BASE}/agents`);
         return;
       case 'matty-chat':
@@ -57,6 +68,11 @@ export default function AgentsSceneSwitcher({
       case 'agent-settings':
         closeNewAgent();
         navigate(`${AGENTS_BASE}/agents/matty?settings=true`);
+        return;
+      case 'scheduled-work':
+        closeNewAgent();
+        ensureSentinel();
+        navigate(`${AGENTS_BASE}/agents/sentinel?settings=true&tab=tasks`);
         return;
       default:
         return;

@@ -20,6 +20,10 @@
     width: 100%;
   }
 
+  &__bottom {
+    gap: var(--spacing-xxs);
+  }
+
   &__button {
     position: relative;
     appearance: none;
@@ -73,6 +77,9 @@
   }
 
   &__account {
+    // Knock out the status ring against the product rail (AgentsShell body).
+    --status-badge-bg: var(--sidebar-header-bg);
+
     appearance: none;
     border: 0;
     width: 40px;

@@ -7,11 +7,19 @@ import {
   type ReactNode,
 } from 'react';
 import {
+  buildAgentGroupChat,
   buildCreatedAgent,
+  cloneAdvancedConfig,
+  DEFAULT_ADVANCED_CONFIG,
+  SENTINEL_DEFAULT,
+  type AgentAdvancedConfig,
   type AgentColor,
+  type AgentGroupChat,
   type AgentShape,
   type AgentVisibility,
+  type ConnectedMcp,
   type CreatedAgent,
+  type ScheduledJob,
 } from '../agentsData';
 
 export type AgentsProduct = 'channels' | 'agents';
@@ -25,6 +33,11 @@ export type NewAgentDraft = {
   model?: string;
   visibility?: AgentVisibility;
   customImageSrc?: string;
+  knowledgeChannelIds?: string[];
+  knowledgeDocIds?: string[];
+  scheduledJobs?: ScheduledJob[];
+  connectedMcps?: ConnectedMcp[];
+  advancedConfig?: AgentAdvancedConfig;
 };
 
 export type AgentUpdates = Partial<NewAgentDraft>;
@@ -33,19 +46,37 @@ type AgentsContextValue = {
   newAgentOpen: boolean;
   openNewAgent: () => void;
   closeNewAgent: () => void;
+  newGroupChatOpen: boolean;
+  openNewGroupChat: () => void;
+  closeNewGroupChat: () => void;
   customAgents: CreatedAgent[];
+  groupChats: AgentGroupChat[];
+  openedAgentIds: string[];
+  rememberOpenedAgent: (id: string) => void;
   addCreatedAgent: (draft: NewAgentDraft) => CreatedAgent;
+  addGroupChat: (memberIds: string[]) => AgentGroupChat;
   updateAgent: (id: string, updates: AgentUpdates) => CreatedAgent;
+  ensureSentinel: () => CreatedAgent;
 };
 
 const AgentsContext = createContext<AgentsContextValue | null>(null);
 
 export function AgentsProvider({ children }: { children: ReactNode }) {
   const [newAgentOpen, setNewAgentOpen] = useState(false);
+  const [newGroupChatOpen, setNewGroupChatOpen] = useState(false);
   const [customAgents, setCustomAgents] = useState<CreatedAgent[]>([]);
+  const [groupChats, setGroupChats] = useState<AgentGroupChat[]>([]);
+  const [openedAgentIds, setOpenedAgentIds] = useState<string[]>([]);
 
   const openNewAgent = useCallback(() => setNewAgentOpen(true), []);
   const closeNewAgent = useCallback(() => setNewAgentOpen(false), []);
+  const openNewGroupChat = useCallback(() => setNewGroupChatOpen(true), []);
+  const closeNewGroupChat = useCallback(() => setNewGroupChatOpen(false), []);
+
+  const rememberOpenedAgent = useCallback((id: string) => {
+    if (!id) return;
+    setOpenedAgentIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }, []);
 
   const addCreatedAgent = useCallback((draft: NewAgentDraft) => {
     const agent = buildCreatedAgent(draft);
@@ -55,6 +86,32 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
     });
     return agent;
   }, []);
+
+  const addGroupChat = useCallback(
+    (memberIds: string[]) => {
+      const chat = buildAgentGroupChat(memberIds, customAgents);
+      setGroupChats((prev) => [...prev, chat]);
+      setOpenedAgentIds((prev) =>
+        prev.includes(chat.id) ? prev : [...prev, chat.id],
+      );
+      return chat;
+    },
+    [customAgents],
+  );
+
+  const ensureSentinel = useCallback(() => {
+    const existing = customAgents.find((agent) => agent.id === 'sentinel');
+    if (existing) return existing;
+    return addCreatedAgent({
+      name: SENTINEL_DEFAULT.name,
+      shape: SENTINEL_DEFAULT.shape,
+      color: SENTINEL_DEFAULT.color,
+      purpose: SENTINEL_DEFAULT.purpose,
+      description: SENTINEL_DEFAULT.description,
+      model: SENTINEL_DEFAULT.model,
+      visibility: SENTINEL_DEFAULT.visibility,
+    });
+  }, [addCreatedAgent, customAgents]);
 
   const updateAgent = useCallback(
     (id: string, updates: AgentUpdates) => {
@@ -68,6 +125,11 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
         purpose: '',
         model: updates.model ?? 'claude-3-7-sonnet',
         visibility: updates.visibility ?? 'private',
+        knowledgeChannelIds: [],
+        knowledgeDocIds: [],
+        scheduledJobs: [],
+        connectedMcps: [],
+        advancedConfig: cloneAdvancedConfig(DEFAULT_ADVANCED_CONFIG),
       };
       const next = buildCreatedAgent({
         id,
@@ -85,6 +147,12 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
           updates.customImageSrc !== undefined
             ? updates.customImageSrc
             : base.customImageSrc,
+        knowledgeChannelIds:
+          updates.knowledgeChannelIds ?? base.knowledgeChannelIds,
+        knowledgeDocIds: updates.knowledgeDocIds ?? base.knowledgeDocIds,
+        scheduledJobs: updates.scheduledJobs ?? base.scheduledJobs,
+        connectedMcps: updates.connectedMcps ?? base.connectedMcps,
+        advancedConfig: updates.advancedConfig ?? base.advancedConfig,
       });
       setCustomAgents((prev) => {
         const without = prev.filter((agent) => agent.id !== id);
@@ -100,17 +168,33 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       newAgentOpen,
       openNewAgent,
       closeNewAgent,
+      newGroupChatOpen,
+      openNewGroupChat,
+      closeNewGroupChat,
       customAgents,
+      groupChats,
+      openedAgentIds,
+      rememberOpenedAgent,
       addCreatedAgent,
+      addGroupChat,
       updateAgent,
+      ensureSentinel,
     }),
     [
       newAgentOpen,
       openNewAgent,
       closeNewAgent,
+      newGroupChatOpen,
+      openNewGroupChat,
+      closeNewGroupChat,
       customAgents,
+      groupChats,
+      openedAgentIds,
+      rememberOpenedAgent,
       addCreatedAgent,
+      addGroupChat,
       updateAgent,
+      ensureSentinel,
     ],
   );
 

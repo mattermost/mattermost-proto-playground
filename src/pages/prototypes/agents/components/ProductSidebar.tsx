@@ -110,13 +110,13 @@ export default function ProductSidebar({
 
       <div className={styles['product-sidebar__bottom']}>
         <RailButton label="Saved messages">
-          <Icon glyph={<BookmarkOutlineIcon />} size="20" />
+          <Icon glyph={<BookmarkOutlineIcon />} size="16" />
         </RailButton>
         <RailButton label="Recent mentions">
-          <Icon glyph={<AtIcon />} size="20" />
+          <Icon glyph={<AtIcon />} size="16" />
         </RailButton>
         <RailButton label="Settings">
-          <Icon glyph={<CogOutlineIcon />} size="20" />
+          <Icon glyph={<CogOutlineIcon />} size="16" />
         </RailButton>
         <button
           type="button"

@@ -201,12 +201,14 @@
   }
 
   // Figma 73:103170 / Icon Button 97:28242 — medium rounded, center-channel/8 fill.
-  &__upload {
+  // Double-class beats IconButton's single-class transparent resting (same-specificity cascade).
+  &__upload#{&}__upload {
     flex-shrink: 0;
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.56);
 
-    &:hover:not(:disabled):not(:active) {
+    // IconButton hover adds :not(.--active):not(.--toggled); match weight so 12% wins.
+    &:hover:not(:disabled):not(:active):not([class*='icon-button--active']):not([class*='icon-button--toggled']) {
       background-color: rgba(var(--center-channel-color-rgb), 0.12);
     }
   }

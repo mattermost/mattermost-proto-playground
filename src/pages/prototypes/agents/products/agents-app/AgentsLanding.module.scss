@@ -14,15 +14,33 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xxxl);
-    padding: var(--spacing-xxxl);
     background: var(--center-channel-bg);
     border-radius: var(--radius-l);
     border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     box-shadow: var(--elevation-1);
-    overflow: auto;
+
+    &--fte {
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xxxl);
+      padding: var(--spacing-xxxl);
+      overflow: auto;
+    }
+
+    &--directory {
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--spacing-xxl) var(--spacing-xxxl);
+      overflow: hidden;
+    }
+  }
+
+  &__fte {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxxl);
+    width: 100%;
   }
 
   &__intro {
@@ -137,5 +155,156 @@
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-100);
     color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__directory {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  &__dir-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    width: 100%;
+  }
+
+  &__dir-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__dir-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-600);
+    color: var(--center-channel-color);
+  }
+
+  &__dir-subtitle {
+    margin: 0;
+    max-width: 42rem;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__dir-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+
+  &__dir-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__dir-cols,
+  &__row {
+    display: grid;
+    grid-template-columns:
+      minmax(220px, 1.5fr)
+      minmax(120px, 0.7fr)
+      minmax(160px, 1fr)
+      minmax(180px, 1.2fr);
+    gap: var(--spacing-m);
+    align-items: center;
+    width: 100%;
+    padding: 0 var(--spacing-m);
+  }
+
+  &__dir-cols {
+    flex-shrink: 0;
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__dir-rows {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  &__row {
+    appearance: none;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: 0;
+    background: transparent;
+    min-height: var(--icon-size-40);
+    padding-top: var(--spacing-s);
+    padding-bottom: var(--spacing-s);
+    cursor: pointer;
+    text-align: left;
+    color: var(--center-channel-color);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
+  }
+
+  &__row-agent,
+  &__row-owner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  &__row-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+  }
+
+  &__row-role,
+  &__row-channels {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__row-channels,
+  &__row-owner > span:first-child {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 }

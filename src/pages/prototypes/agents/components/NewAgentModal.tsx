@@ -73,7 +73,7 @@ export default function NewAgentModal({
   const nameInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(SENTINEL_DEFAULT.name);
-  const [purpose, setPurpose] = useState(SENTINEL_DEFAULT.purpose);
+  const [purpose, setPurpose] = useState(SENTINEL_DEFAULT.description);
   const [shape, setShape] = useState<AgentShape>(SENTINEL_DEFAULT.shape);
   const [color, setColor] = useState<AgentColor>(SENTINEL_DEFAULT.color);
   const [customImageSrc, setCustomImageSrc] = useState<string | null>(null);
@@ -85,7 +85,7 @@ export default function NewAgentModal({
   useEffect(() => {
     if (!open) return;
     setName(SENTINEL_DEFAULT.name);
-    setPurpose(SENTINEL_DEFAULT.purpose);
+    setPurpose(SENTINEL_DEFAULT.description);
     setShape(SENTINEL_DEFAULT.shape);
     setColor(SENTINEL_DEFAULT.color);
     setCustomImageSrc(null);

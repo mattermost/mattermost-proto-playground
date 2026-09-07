@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { AGENTS_BASE } from './agentsScenes';
 import AgentsSceneSwitcher from './components/AgentsSceneSwitcher';
+import NewAgentGroupChatModal from './components/NewAgentGroupChatModal';
 import NewAgentModal from './components/NewAgentModal';
 import ProductSidebar from './components/ProductSidebar';
 import { useAgents, type AgentsProduct } from './context/AgentsContext';
@@ -25,14 +26,23 @@ function resolveProduct(pathname: string): AgentsProduct {
 
 /**
  * Shared chrome: Product Sidebar + product outlet.
- * Modal is shell-mounted so Channels and Agents can both open it.
+ * Modals are shell-mounted so Channels and Agents can both open them.
  */
 export default function AgentsShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { setCenterSlot } = usePrototypeChrome();
-  const { newAgentOpen, closeNewAgent, openNewAgent, addCreatedAgent } =
-    useAgents();
+  const {
+    newAgentOpen,
+    closeNewAgent,
+    openNewAgent,
+    addCreatedAgent,
+    ensureSentinel,
+    newGroupChatOpen,
+    closeNewGroupChat,
+    addGroupChat,
+    customAgents,
+  } = useAgents();
   const activeProduct = resolveProduct(pathname);
 
   useEffect(() => {
@@ -41,6 +51,7 @@ export default function AgentsShell() {
         newAgentOpen={newAgentOpen}
         openNewAgent={openNewAgent}
         closeNewAgent={closeNewAgent}
+        ensureSentinel={ensureSentinel}
       />,
     );
     return () => setCenterSlot(null);
@@ -49,6 +60,7 @@ export default function AgentsShell() {
     newAgentOpen,
     openNewAgent,
     closeNewAgent,
+    ensureSentinel,
   ]);
 
   return (
@@ -59,6 +71,7 @@ export default function AgentsShell() {
             activeProduct={activeProduct}
             onSelectProduct={(product) => {
               closeNewAgent();
+              closeNewGroupChat();
               navigate(
                 product === 'agents' ? `${AGENTS_BASE}/agents` : AGENTS_BASE,
               );
@@ -74,10 +87,24 @@ export default function AgentsShell() {
         open={newAgentOpen}
         onClose={closeNewAgent}
         onSave={(draft) => {
-          const agent = addCreatedAgent(draft);
+          const agent = addCreatedAgent({
+            ...draft,
+            description: draft.description ?? draft.purpose,
+          });
           closeNewAgent();
           // Route under /agents/:id switches activeProduct to 'agents'.
           navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+        }}
+      />
+
+      <NewAgentGroupChatModal
+        open={newGroupChatOpen}
+        customAgents={customAgents}
+        onClose={closeNewGroupChat}
+        onStart={(memberIds) => {
+          const chat = addGroupChat(memberIds);
+          closeNewGroupChat();
+          navigate(`${AGENTS_BASE}/agents/${chat.id}`);
         }}
       />
     </div>

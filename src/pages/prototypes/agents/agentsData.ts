@@ -1,4 +1,4 @@
-import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
+import avatarIsabella from '@/assets/avatars/Isabella Cruz.png';
 import avatarArjun from '@/assets/avatars/Arjun Patel.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarDarius from '@/assets/avatars/Darius Cole.png';
@@ -8,7 +8,7 @@ import type { ChannelsSidebarModel } from '@mattermost/compass-ui/components/cha
 
 export const VIEWER = {
   name: 'Priya Shah',
-  avatarSrc: avatarDanielle,
+  avatarSrc: avatarIsabella,
   avatarAlt: 'Priya Shah',
 } as const;
 
@@ -67,8 +67,8 @@ export const AGENT_COLORS: AgentColor[] = [
   'orange',
   'red',
   'purple',
-  'sky',
   'blue',
+  'sky',
   'cyan',
   'green',
 ];
@@ -129,11 +129,97 @@ export const AGENT_COLOR_STOPS: Record<AgentColor, AgentColorStops> = {
 export const MATTY = {
   id: 'matty',
   name: 'Matty',
+  role: 'Coordinator',
+  owner: 'Priya Shah',
   description:
     'General purpose agent that manages and connects to your other agents.',
   shape: 'sphere' as AgentShape,
   color: 'yellow' as AgentColor,
+  channels: ['service-status'],
 };
+
+export const AUDITOR = {
+  id: 'auditor',
+  name: 'Auditor',
+  role: 'Compliance',
+  owner: 'Reliability',
+  description: 'Opens tickets, drafts summaries, and keeps the incident record.',
+  shape: 'hexagon' as AgentShape,
+  color: 'purple' as AgentColor,
+  channels: ['service-status'],
+};
+
+export const WARDEN = {
+  id: 'warden',
+  name: 'Warden',
+  role: 'Policy',
+  owner: 'Security',
+  description: 'Decides whether agent actions can proceed, need a human, or stop.',
+  shape: 'shield' as AgentShape,
+  color: 'red' as AgentColor,
+  channels: ['service-status'],
+};
+
+export const OTTO = {
+  id: 'otto',
+  name: 'Otto',
+  role: 'Deployment',
+  owner: 'Platform team',
+  description: 'Runs CI/CD for the platform team. Invite into a channel when a deploy is needed.',
+  shape: 'cube' as AgentShape,
+  color: 'cyan' as AgentColor,
+  channels: [] as string[],
+  managedBy: 'Platform team',
+};
+
+export const RELAY = {
+  id: 'relay',
+  name: 'Relay',
+  role: 'Support',
+  owner: 'Support',
+  description: 'Triages inbound customer issues and drafts replies.',
+  shape: 'pentagon' as AgentShape,
+  color: 'orange' as AgentColor,
+  channels: ['customer-support'],
+};
+
+export const QUILL = {
+  id: 'quill',
+  name: 'Quill',
+  role: 'Writer',
+  owner: 'Documentation',
+  description: 'Keeps runbooks and help center articles current.',
+  shape: 'diamond' as AgentShape,
+  color: 'green' as AgentColor,
+  channels: ['docs'],
+};
+
+export type WorkspaceAgent = {
+  id: string;
+  name: string;
+  role: string;
+  owner: string;
+  description: string;
+  shape: AgentShape;
+  color: AgentColor;
+  channels: string[];
+  managedBy?: string;
+  customImageSrc?: string;
+  fresh?: boolean;
+};
+
+/** Story roster (before Otto is invited into #service-status). */
+export const ORG_AGENTS = [MATTY, AUDITOR, WARDEN, OTTO] as const;
+
+/** Workspace homepage directory, including other departments. */
+export const WORKSPACE_AGENTS: WorkspaceAgent[] = [
+  MATTY,
+  AUDITOR,
+  WARDEN,
+  OTTO,
+  RELAY,
+  QUILL,
+];
 
 export type AgentVisibility = 'private' | 'public';
 
@@ -149,6 +235,350 @@ export const AGENT_MODEL_OPTIONS = [
   { value: 'llama-3-3-70b', label: 'Llama 3.3 70B (On-prem)' },
 ];
 
+export type ScheduledJobTrigger = 'schedule' | 'continuous';
+
+export type ScheduledJobRecurrence =
+  | 'daily'
+  | 'weekly-monday'
+  | 'weekly-tuesday'
+  | 'weekly-wednesday'
+  | 'weekly-thursday'
+  | 'weekly-friday'
+  | 'weekly-saturday'
+  | 'weekly-sunday';
+
+export type ScheduledJob = {
+  id: string;
+  title: string;
+  trigger: ScheduledJobTrigger;
+  /** Used when trigger is `schedule`. */
+  recurrence?: ScheduledJobRecurrence;
+  /** 24h `HH:MM` when trigger is `schedule`. */
+  time?: string;
+  /** What the agent should do when this job runs. */
+  instructions: string;
+};
+
+export const SCHEDULED_JOB_RECURRENCE_OPTIONS: {
+  value: ScheduledJobRecurrence;
+  label: string;
+}[] = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly-monday', label: 'Mondays' },
+  { value: 'weekly-tuesday', label: 'Tuesdays' },
+  { value: 'weekly-wednesday', label: 'Wednesdays' },
+  { value: 'weekly-thursday', label: 'Thursdays' },
+  { value: 'weekly-friday', label: 'Fridays' },
+  { value: 'weekly-saturday', label: 'Saturdays' },
+  { value: 'weekly-sunday', label: 'Sundays' },
+];
+
+export const SCHEDULED_JOB_TIME_OPTIONS: { value: string; label: string }[] = [
+  { value: '06:00', label: '6:00 AM' },
+  { value: '07:00', label: '7:00 AM' },
+  { value: '08:00', label: '8:00 AM' },
+  { value: '09:00', label: '9:00 AM' },
+  { value: '10:00', label: '10:00 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '14:00', label: '2:00 PM' },
+  { value: '17:00', label: '5:00 PM' },
+  { value: '18:00', label: '6:00 PM' },
+];
+
+export const SCHEDULED_JOB_PATTERN_OPTIONS: {
+  value: string;
+  label: string;
+}[] = [
+  ...SCHEDULED_JOB_RECURRENCE_OPTIONS,
+  { value: 'continuous', label: 'Continuous monitoring' },
+];
+
+function formatJobTimeLabel(time: string): string {
+  const match = SCHEDULED_JOB_TIME_OPTIONS.find((opt) => opt.value === time);
+  if (match) return match.label;
+  const [hoursRaw, minutesRaw = '00'] = time.split(':');
+  const hours = Number(hoursRaw);
+  if (Number.isNaN(hours)) return time;
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+  return `${hour12}:${minutesRaw.padStart(2, '0')} ${period}`;
+}
+
+function formatJobRecurrenceLabel(
+  recurrence: ScheduledJobRecurrence | undefined,
+): string {
+  const match = SCHEDULED_JOB_RECURRENCE_OPTIONS.find(
+    (opt) => opt.value === recurrence,
+  );
+  return match?.label ?? 'Daily';
+}
+
+/** Human subtitle for a job row, e.g. "Wednesdays at 8:00 AM". */
+export function formatScheduledJobSubtitle(job: ScheduledJob): string {
+  if (job.trigger === 'continuous') {
+    return 'Continuous monitoring';
+  }
+  const day = formatJobRecurrenceLabel(job.recurrence ?? 'daily');
+  const time = formatJobTimeLabel(job.time ?? '09:00');
+  return `${day} at ${time}`;
+}
+
+export type KnowledgeOption = {
+  value: string;
+  label: string;
+};
+
+export const AGENT_KNOWLEDGE_CHANNEL_OPTIONS: KnowledgeOption[] = [
+  { value: 'service-status', label: '#service-status' },
+  { value: 'release-watch', label: '#release-watch' },
+  { value: 'bugs', label: '#bugs' },
+  { value: 'pr-1847-checkout-queue', label: '#pr-1847-checkout-queue' },
+];
+
+export const AGENT_KNOWLEDGE_DOC_OPTIONS: KnowledgeOption[] = [
+  { value: 'checkout-runbook', label: 'Checkout reliability runbook' },
+  { value: 'payment-webhook-playbook', label: 'Payment webhook playbook' },
+  { value: 'incident-history', label: 'Incident history' },
+  { value: 'oncall-handbook', label: 'On-call handbook' },
+];
+
+export const SENTINEL_KNOWLEDGE_CHANNEL_IDS = [
+  'service-status',
+  'release-watch',
+  'bugs',
+] as const;
+
+export const SENTINEL_KNOWLEDGE_DOC_IDS = [
+  'checkout-runbook',
+  'payment-webhook-playbook',
+  'incident-history',
+] as const;
+
+export const SENTINEL_SCHEDULED_JOBS: ScheduledJob[] = [
+  {
+    id: 'job-reliability-digest',
+    title: 'Weekly reliability summary',
+    trigger: 'schedule',
+    recurrence: 'weekly-wednesday',
+    time: '08:00',
+    instructions:
+      'Compile checkout and payment reliability metrics from the past week. Post a short summary to #service-status with top regressions and open incidents.',
+  },
+  {
+    id: 'job-error-rate',
+    title: 'Flag services with error rates above threshold',
+    trigger: 'continuous',
+    instructions:
+      'Watch connected monitoring tools for services whose error rate exceeds the team threshold. Notify the on-call channel with service name, rate, and a suggested next step.',
+  },
+  {
+    id: 'job-oncall-handoff',
+    title: 'Summarize on-call handoff',
+    trigger: 'schedule',
+    recurrence: 'daily',
+    time: '08:00',
+    instructions:
+      'Summarize overnight pages, open incidents, and outstanding follow-ups for the incoming on-call. Post the handoff to #oncall before shift change.',
+  },
+];
+
+export type McpTool = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type McpServer = {
+  id: string;
+  name: string;
+  description: string;
+  tools: McpTool[];
+};
+
+export type ConnectedMcp = {
+  serverId: string;
+  enabledToolIds: string[];
+};
+
+export type AgentAdvancedConfig = {
+  dynamicToolLoading: boolean;
+  maxToolTurns: string;
+  enableVision: boolean;
+  enableTools: boolean;
+  nativeWebSearch: boolean;
+  nativeWebFetch: boolean;
+  nativeCodeExecution: boolean;
+  extendedThinking: boolean;
+  thinkingBudget: string;
+  structuredOutput: boolean;
+};
+
+export const DEFAULT_ADVANCED_CONFIG: AgentAdvancedConfig = {
+  dynamicToolLoading: true,
+  maxToolTurns: '30',
+  enableVision: true,
+  enableTools: true,
+  nativeWebSearch: true,
+  nativeWebFetch: false,
+  nativeCodeExecution: false,
+  extendedThinking: true,
+  thinkingBudget: '8192',
+  structuredOutput: false,
+};
+
+export const MCP_CATALOG: McpServer[] = [
+  {
+    id: 'github',
+    name: 'GitHub',
+    description: "Acts on Jordan's GitHub account — PRs, issues, and repos.",
+    tools: [
+      {
+        id: 'list-pull-requests',
+        name: 'List pull requests',
+        description: 'Find open and merged PRs in a repository.',
+      },
+      {
+        id: 'create-pull-request',
+        name: 'Create pull request',
+        description: 'Open a PR from a branch.',
+      },
+      {
+        id: 'merge-pull-request',
+        name: 'Merge pull request',
+        description: 'Merge an approved PR.',
+      },
+      {
+        id: 'comment-on-issue',
+        name: 'Comment on issue',
+        description: 'Add a comment to an issue or PR.',
+      },
+    ],
+  },
+  {
+    id: 'jira',
+    name: 'Jira',
+    description: "Search, create, and update issues in the team's Jira project.",
+    tools: [
+      {
+        id: 'search-issues',
+        name: 'Search issues',
+        description: 'Find issues with JQL or a keyword.',
+      },
+      {
+        id: 'create-issue',
+        name: 'Create issue',
+        description: 'Open a new Jira issue.',
+      },
+      {
+        id: 'transition-issue',
+        name: 'Transition issue',
+        description: 'Move an issue across the board.',
+      },
+      {
+        id: 'add-comment',
+        name: 'Add comment',
+        description: 'Comment on an issue.',
+      },
+    ],
+  },
+  {
+    id: 'google-calendar',
+    name: 'Google Calendar',
+    description: "Read and create events on Jordan's calendar.",
+    tools: [
+      {
+        id: 'list-events',
+        name: 'List events',
+        description: 'Show upcoming calendar events.',
+      },
+      {
+        id: 'create-event',
+        name: 'Create event',
+        description: 'Schedule a meeting.',
+      },
+      {
+        id: 'update-event',
+        name: 'Update event',
+        description: 'Change time, title, or guests.',
+      },
+    ],
+  },
+  {
+    id: 'grafana',
+    name: 'Grafana',
+    description: 'Query dashboards and alerts for checkout and payments.',
+    tools: [
+      {
+        id: 'query-dashboards',
+        name: 'Query dashboards',
+        description: 'Read metrics from a dashboard.',
+      },
+      {
+        id: 'list-alerts',
+        name: 'List alerts',
+        description: 'Show firing and pending alerts.',
+      },
+      {
+        id: 'get-metric',
+        name: 'Get metric',
+        description: 'Fetch a named metric over a time range.',
+      },
+    ],
+  },
+  {
+    id: 'pagerduty',
+    name: 'PagerDuty',
+    description: 'Read and acknowledge incidents for the on-call rotation.',
+    tools: [
+      {
+        id: 'list-incidents',
+        name: 'List incidents',
+        description: 'Show open PagerDuty incidents.',
+      },
+      {
+        id: 'acknowledge-incident',
+        name: 'Acknowledge incident',
+        description: 'Ack an incident for the current user.',
+      },
+      {
+        id: 'escalate-incident',
+        name: 'Escalate incident',
+        description: 'Escalate to the next policy level.',
+      },
+    ],
+  },
+];
+
+export function getMcpServer(id: string): McpServer | undefined {
+  return MCP_CATALOG.find((server) => server.id === id);
+}
+
+export function allToolIdsForServer(id: string): string[] {
+  return getMcpServer(id)?.tools.map((tool) => tool.id) ?? [];
+}
+
+export const SENTINEL_CONNECTED_MCPS: ConnectedMcp[] = [
+  'github',
+  'jira',
+  'grafana',
+].map((serverId) => ({
+  serverId,
+  enabledToolIds: allToolIdsForServer(serverId),
+}));
+
+export function cloneConnectedMcps(mcps?: ConnectedMcp[]): ConnectedMcp[] {
+  return (mcps ?? []).map((mcp) => ({
+    serverId: mcp.serverId,
+    enabledToolIds: [...mcp.enabledToolIds],
+  }));
+}
+
+export function cloneAdvancedConfig(
+  config?: AgentAdvancedConfig,
+): AgentAdvancedConfig {
+  return { ...(config ?? DEFAULT_ADVANCED_CONFIG) };
+}
+
 /** User-created agent from the New Agent modal. */
 export type CreatedAgent = {
   id: string;
@@ -163,6 +593,11 @@ export type CreatedAgent = {
   visibility: AgentVisibility;
   /** Optional user-uploaded image data URL from the New Agent modal. */
   customImageSrc?: string;
+  knowledgeChannelIds: string[];
+  knowledgeDocIds: string[];
+  scheduledJobs: ScheduledJob[];
+  connectedMcps: ConnectedMcp[];
+  advancedConfig: AgentAdvancedConfig;
 };
 
 /** Display profile for Matty or a created agent. */
@@ -176,6 +611,20 @@ export type AgentProfile = {
   model?: string;
   visibility?: AgentVisibility;
   customImageSrc?: string;
+  knowledgeChannelIds?: string[];
+  knowledgeDocIds?: string[];
+  scheduledJobs?: ScheduledJob[];
+  connectedMcps?: ConnectedMcp[];
+  advancedConfig?: AgentAdvancedConfig;
+  /** Member agent ids when this profile is a multi-agent group chat. */
+  memberIds?: string[];
+};
+
+/** In-memory multi-agent thread created from the Agents plus menu. */
+export type AgentGroupChat = {
+  id: string;
+  name: string;
+  memberIds: string[];
 };
 
 export type AgentAccessRole = 'admin' | 'editor' | 'viewer';
@@ -223,10 +672,18 @@ export const AGENT_ACCESS_ROLE_OPTIONS = [
   { value: 'viewer', label: 'Viewer' },
 ];
 
+export type AgentToolConnectOption = {
+  id: string;
+  label: string;
+};
+
 export type AgentChatMessage = {
   id: string;
   timestamp: string;
+  /** Heading above body copy (Figma tool-connect post). */
+  title?: string;
   paragraphs: string[];
+  toolOptions?: AgentToolConnectOption[];
 };
 
 export type AgentChatSession = {
@@ -251,14 +708,169 @@ export const MATTY_WELCOME_MESSAGE: AgentChatMessage = {
   ],
 };
 
+/** Second Matty post — pick a tool to connect (Figma 71:103091). Copy kept as designed. */
+export const MATTY_TOOL_CONNECT_OPTIONS: AgentToolConnectOption[] = [
+  { id: 'google-calendar', label: 'Google Calendar' },
+  { id: 'gmail', label: 'Gmail' },
+  { id: 'google-drive', label: 'Google Drive' },
+  { id: 'github', label: 'GitHub' },
+  { id: 'jira', label: 'Jira (Atlassian)' },
+];
+
+export const MATTY_TOOL_CONNECT_MESSAGE: AgentChatMessage = {
+  id: 'matty-tool-connect',
+  timestamp: '10:43 AM',
+  title: 'What I should I connect to first?',
+  paragraphs: [
+    'Your organization allows connections with the following:',
+  ],
+  toolOptions: MATTY_TOOL_CONNECT_OPTIONS,
+};
+
+export const MATTY_TOOL_CONNECT_CONFIRM_ID = 'matty-tool-connect-confirm';
+
+export function buildMattyToolConnectConfirm(
+  toolLabel: string,
+  timestamp: string,
+): AgentChatMessage {
+  return {
+    id: MATTY_TOOL_CONNECT_CONFIRM_ID,
+    timestamp,
+    paragraphs: [
+      `Great — I'll connect ${toolLabel} first.`,
+    ],
+  };
+}
+
+/** Act 1 automation picker — mirrors Sentinel-style scheduled job types. */
+export const AGENT_AUTOMATION_OPTIONS: AgentToolConnectOption[] = [
+  { id: 'reminder', label: 'Reminder' },
+  { id: 'recurring-summary', label: 'Recurring summary' },
+  { id: 'monitor-alert', label: 'Monitor / alert' },
+  { id: 'oncall-handoff', label: 'On-call handoff' },
+  { id: 'something-else', label: 'Something else' },
+];
+
+export const AGENT_AUTOMATION_PROMPT_ID = 'agent-automation-prompt';
+export const AGENT_AUTOMATION_CONFIRM_ID = 'agent-automation-confirm';
+
+export function buildAgentAutomationMessage(
+  timestamp: string,
+): AgentChatMessage {
+  return {
+    id: AGENT_AUTOMATION_PROMPT_ID,
+    timestamp,
+    paragraphs: [
+      'What kind of automated task were you thinking of? A reminder, a recurring summary, or something else?',
+    ],
+    toolOptions: AGENT_AUTOMATION_OPTIONS,
+  };
+}
+
+export function buildAgentAutomationConfirm(
+  optionId: string,
+  optionLabel: string,
+  timestamp: string,
+): AgentChatMessage {
+  const followUps: Record<string, string> = {
+    reminder:
+      "Got it — a reminder. When should I nudge you, and about what?",
+    'recurring-summary':
+      'Nice — a recurring summary. What should I summarize, and how often?',
+    'monitor-alert':
+      "Alright — continuous monitoring. What should I watch for, and where should I alert?",
+    'oncall-handoff':
+      'On-call handoff it is. Which shift or channel should I prepare the handoff for?',
+    'something-else':
+      "No problem — describe the automated task you have in mind and I'll help shape it.",
+  };
+
+  return {
+    id: AGENT_AUTOMATION_CONFIRM_ID,
+    timestamp,
+    paragraphs: [
+      followUps[optionId] ??
+        `Great — let's set up a ${optionLabel.toLowerCase()}. Tell me a bit more about what you need.`,
+    ],
+  };
+}
+
 export const SENTINEL_DEFAULT = {
   name: 'Sentinel',
-  purpose: 'Watch the health of our checkout and payment services.',
+  description:
+    'Watches service health, and when something breaks, digs in — correlate the signals, find what changed, tell us what\'s actually wrong.',
+  purpose:
+    'Watch the health of checkout and payment services. When something breaks, correlate signals, find what changed, and tell the team what is actually wrong.',
   shape: 'sphere' as AgentShape,
   color: 'blue' as AgentColor,
   model: DEFAULT_AGENT_MODEL,
   visibility: DEFAULT_AGENT_VISIBILITY as AgentVisibility,
 };
+
+export function isSentinelName(name: string): boolean {
+  return slugifyAgentName(name) === 'sentinel';
+}
+
+export function emptyKnowledgeAndJobs(): Pick<
+  CreatedAgent,
+  | 'knowledgeChannelIds'
+  | 'knowledgeDocIds'
+  | 'scheduledJobs'
+  | 'connectedMcps'
+  | 'advancedConfig'
+> {
+  return {
+    knowledgeChannelIds: [],
+    knowledgeDocIds: [],
+    scheduledJobs: [],
+    connectedMcps: [],
+    advancedConfig: cloneAdvancedConfig(),
+  };
+}
+
+export function sentinelKnowledgeAndJobs(): Pick<
+  CreatedAgent,
+  | 'knowledgeChannelIds'
+  | 'knowledgeDocIds'
+  | 'scheduledJobs'
+  | 'connectedMcps'
+  | 'advancedConfig'
+> {
+  return {
+    knowledgeChannelIds: [...SENTINEL_KNOWLEDGE_CHANNEL_IDS],
+    knowledgeDocIds: [...SENTINEL_KNOWLEDGE_DOC_IDS],
+    scheduledJobs: SENTINEL_SCHEDULED_JOBS.map((job) => ({ ...job })),
+    connectedMcps: cloneConnectedMcps(SENTINEL_CONNECTED_MCPS),
+    advancedConfig: cloneAdvancedConfig(),
+  };
+}
+
+export function buildKnowledgePreview(
+  agentName: string,
+  channelIds: string[],
+  docIds: string[],
+): string | null {
+  if (channelIds.length === 0 && docIds.length === 0) {
+    return null;
+  }
+  if (isSentinelName(agentName) && channelIds.length > 0 && docIds.length > 0) {
+    return `${agentName.trim() || 'Sentinel'} will have context from 47 past incidents and 12 runbooks.`;
+  }
+  const channelBit =
+    channelIds.length === 1
+      ? '1 channel'
+      : `${channelIds.length} channels`;
+  const docBit =
+    docIds.length === 1 ? '1 doc' : `${docIds.length} docs`;
+  const name = agentName.trim() || 'This agent';
+  if (channelIds.length && docIds.length) {
+    return `${name} will have context from ${channelBit} and ${docBit}.`;
+  }
+  if (channelIds.length) {
+    return `${name} will have context from ${channelBit}.`;
+  }
+  return `${name} will have context from ${docBit}.`;
+}
 
 /** URL-safe id from an agent name (e.g. "Sentinel" → "sentinel"). */
 export function slugifyAgentName(name: string): string {
@@ -279,43 +891,167 @@ export function buildCreatedAgent(input: {
   model?: string;
   visibility?: AgentVisibility;
   customImageSrc?: string;
+  knowledgeChannelIds?: string[];
+  knowledgeDocIds?: string[];
+  scheduledJobs?: ScheduledJob[];
+  connectedMcps?: ConnectedMcp[];
+  advancedConfig?: AgentAdvancedConfig;
   /** Keep an existing id when updating (avoids breaking the chat route). */
   id?: string;
 }): CreatedAgent {
   const name = input.name.trim() || SENTINEL_DEFAULT.name;
   const purpose = input.purpose.trim() || SENTINEL_DEFAULT.purpose;
+  const seed = !input.id && isSentinelName(name);
+  const seeded = seed ? sentinelKnowledgeAndJobs() : emptyKnowledgeAndJobs();
   return {
     id: input.id || slugifyAgentName(name),
     name,
     shape: input.shape,
     color: input.color,
-    description: input.description?.trim() ?? '',
+    description:
+      input.description?.trim() ||
+      (seed ? SENTINEL_DEFAULT.description : ''),
     purpose,
     model: input.model || DEFAULT_AGENT_MODEL,
     visibility: input.visibility || DEFAULT_AGENT_VISIBILITY,
     customImageSrc: input.customImageSrc,
+    knowledgeChannelIds:
+      input.knowledgeChannelIds ?? seeded.knowledgeChannelIds,
+    knowledgeDocIds: input.knowledgeDocIds ?? seeded.knowledgeDocIds,
+    scheduledJobs: input.scheduledJobs ?? seeded.scheduledJobs,
+    connectedMcps: cloneConnectedMcps(
+      input.connectedMcps ?? seeded.connectedMcps,
+    ),
+    advancedConfig: cloneAdvancedConfig(
+      input.advancedConfig ?? seeded.advancedConfig,
+    ),
   };
 }
 
-/** Resolve Matty or a created agent for `/agents/:agentId`. */
-export function resolveAgentProfile(
-  agentId: string | undefined,
+/** Prefix for stub multi-agent threads created from the Agents plus menu. */
+export const AGENT_GROUP_CHAT_PREFIX = 'group-chat-';
+
+export function isAgentGroupChatId(id: string | undefined): boolean {
+  return Boolean(id?.startsWith(AGENT_GROUP_CHAT_PREFIX));
+}
+
+export function nextAgentGroupChatId(): string {
+  return `${AGENT_GROUP_CHAT_PREFIX}${Date.now()}`;
+}
+
+/** Comma-separated display name from selected agent ids (selection order). */
+export function buildAgentGroupChatName(
+  memberIds: string[],
+  customAgents: CreatedAgent[],
+): string {
+  return memberIds
+    .map((id) => resolveSingleAgentProfile(id, customAgents).name)
+    .join(', ');
+}
+
+export function buildAgentGroupChat(
+  memberIds: string[],
+  customAgents: CreatedAgent[],
+  id = nextAgentGroupChatId(),
+): AgentGroupChat {
+  return {
+    id,
+    memberIds: [...memberIds],
+    name: buildAgentGroupChatName(memberIds, customAgents),
+  };
+}
+
+export function buildAgentGroupChatProfile(
+  group: AgentGroupChat,
+): AgentProfile {
+  return {
+    id: group.id,
+    name: group.name,
+    shape: 'sphere',
+    color: 'purple',
+    description: 'Chat with multiple agents in one thread.',
+    purpose: '',
+    model: DEFAULT_AGENT_MODEL,
+    visibility: DEFAULT_AGENT_VISIBILITY,
+    memberIds: group.memberIds,
+    ...emptyKnowledgeAndJobs(),
+  };
+}
+
+/** Resolve a single agent (Matty, created, or org) — never a group chat. */
+export function resolveSingleAgentProfile(
+  agentId: string,
   customAgents: CreatedAgent[],
 ): AgentProfile {
-  const match = customAgents.find(
-    (agent) => agent.id === (agentId || MATTY.id),
-  );
+  const match = customAgents.find((agent) => agent.id === agentId);
   if (match) {
     return match;
   }
-  if (!agentId || agentId === MATTY.id) {
+  if (agentId === MATTY.id) {
     return {
       ...MATTY,
       description: MATTY.description,
       purpose: '',
       model: DEFAULT_AGENT_MODEL,
       visibility: DEFAULT_AGENT_VISIBILITY,
+      ...emptyKnowledgeAndJobs(),
     };
+  }
+  const org = WORKSPACE_AGENTS.find((agent) => agent.id === agentId);
+  if (org) {
+    return {
+      id: org.id,
+      name: org.name,
+      shape: org.shape,
+      color: org.color,
+      description: org.description,
+      purpose: '',
+      model: DEFAULT_AGENT_MODEL,
+      visibility: DEFAULT_AGENT_VISIBILITY,
+      customImageSrc: org.customImageSrc,
+      ...emptyKnowledgeAndJobs(),
+    };
+  }
+  return {
+    id: agentId,
+    name: agentId,
+    shape: 'sphere',
+    color: 'blue',
+    description: '',
+    purpose: '',
+    model: DEFAULT_AGENT_MODEL,
+    visibility: DEFAULT_AGENT_VISIBILITY,
+    ...emptyKnowledgeAndJobs(),
+  };
+}
+
+/** Resolve Matty, an org agent, created agent, or group chat for `/agents/:agentId`. */
+export function resolveAgentProfile(
+  agentId: string | undefined,
+  customAgents: CreatedAgent[],
+  groupChats: AgentGroupChat[] = [],
+): AgentProfile {
+  if (agentId && isAgentGroupChatId(agentId)) {
+    const group = groupChats.find((chat) => chat.id === agentId);
+    if (group) {
+      return buildAgentGroupChatProfile(group);
+    }
+    return buildAgentGroupChatProfile({
+      id: agentId,
+      name: 'Agent group chat',
+      memberIds: [],
+    });
+  }
+  if (!agentId || agentId === MATTY.id) {
+    return resolveSingleAgentProfile(MATTY.id, customAgents);
+  }
+  const match = customAgents.find((agent) => agent.id === agentId);
+  if (match) {
+    return match;
+  }
+  const org = WORKSPACE_AGENTS.find((agent) => agent.id === agentId);
+  if (org) {
+    return resolveSingleAgentProfile(org.id, customAgents);
   }
   const fallback = customAgents[customAgents.length - 1];
   if (fallback) {
@@ -326,11 +1062,122 @@ export function resolveAgentProfile(
     name: SENTINEL_DEFAULT.name,
     shape: SENTINEL_DEFAULT.shape,
     color: SENTINEL_DEFAULT.color,
-    description: '',
+    description: SENTINEL_DEFAULT.description,
     purpose: SENTINEL_DEFAULT.purpose,
     model: DEFAULT_AGENT_MODEL,
     visibility: DEFAULT_AGENT_VISIBILITY,
+    ...sentinelKnowledgeAndJobs(),
   };
+}
+
+export function createdAgentToWorkspace(
+  agent: CreatedAgent,
+): WorkspaceAgent {
+  return {
+    id: agent.id,
+    name: agent.name,
+    role: isSentinelName(agent.name) ? 'Monitoring' : 'Custom',
+    owner: VIEWER.name,
+    description: agent.description || agent.purpose,
+    shape: agent.shape,
+    color: agent.color,
+    channels: agent.knowledgeChannelIds,
+    customImageSrc: agent.customImageSrc,
+    fresh: isSentinelName(agent.name),
+  };
+}
+
+/** All-agents homepage: Matty, then created agents, then the rest of the org. */
+export function buildWorkspaceDirectory(
+  customAgents: CreatedAgent[],
+): WorkspaceAgent[] {
+  const created = customAgents.map(createdAgentToWorkspace);
+  const createdIds = new Set(created.map((agent) => agent.id));
+  const org = WORKSPACE_AGENTS.filter((agent) => !createdIds.has(agent.id));
+  const matty = org.filter((agent) => agent.id === MATTY.id);
+  const rest = org.filter((agent) => agent.id !== MATTY.id);
+  return [...matty, ...created, ...rest];
+}
+
+export type SidebarAgent = Pick<
+  AgentProfile,
+  'id' | 'name' | 'shape' | 'color' | 'customImageSrc'
+> & {
+  /** Populated for multi-agent group chats — drives CSI group-message memberCount. */
+  members?: SidebarAgent[];
+};
+
+function toSidebarAgent(profile: AgentProfile): SidebarAgent {
+  return {
+    id: profile.id,
+    name: profile.name,
+    shape: profile.shape,
+    color: profile.color,
+    customImageSrc: profile.customImageSrc,
+  };
+}
+
+/** LHS Your agents: Matty, created agents, group chats, then opened org agents. */
+export function buildYourAgentsSidebar(
+  customAgents: CreatedAgent[],
+  openedAgentIds: string[] = [],
+  groupChats: AgentGroupChat[] = [],
+): SidebarAgent[] {
+  const listed = new Set<string>([MATTY.id]);
+  const result: SidebarAgent[] = [
+    {
+      id: MATTY.id,
+      name: MATTY.name,
+      shape: MATTY.shape,
+      color: MATTY.color,
+    },
+  ];
+
+  for (const agent of customAgents) {
+    if (listed.has(agent.id)) continue;
+    listed.add(agent.id);
+    result.push({
+      id: agent.id,
+      name: agent.name,
+      shape: agent.shape,
+      color: agent.color,
+      customImageSrc: agent.customImageSrc,
+    });
+  }
+
+  for (const group of groupChats) {
+    if (listed.has(group.id)) continue;
+    listed.add(group.id);
+    result.push({
+      id: group.id,
+      name: group.name,
+      shape: 'sphere',
+      color: 'purple',
+      members: group.memberIds.map((id) =>
+        toSidebarAgent(resolveSingleAgentProfile(id, customAgents)),
+      ),
+    });
+  }
+
+  for (const id of openedAgentIds) {
+    if (listed.has(id)) continue;
+    const profile = resolveAgentProfile(id, customAgents, groupChats);
+    if (listed.has(profile.id)) continue;
+    listed.add(profile.id);
+    result.push({
+      ...toSidebarAgent(profile),
+      members: profile.memberIds?.map((memberId) =>
+        toSidebarAgent(resolveSingleAgentProfile(memberId, customAgents)),
+      ),
+    });
+  }
+
+  return result;
+}
+
+export function formatChannelList(channels: string[]): string {
+  if (channels.length === 0) return '—';
+  return channels.map((name) => `#${name}`).join(' · ');
 }
 
 export function buildAgentWelcomeMessage(agent: AgentProfile): AgentChatMessage {
@@ -342,8 +1189,8 @@ export function buildAgentWelcomeMessage(agent: AgentProfile): AgentChatMessage 
     return MATTY_WELCOME_MESSAGE;
   }
   const setup =
-    agent.description?.trim() ||
     agent.purpose?.trim() ||
+    agent.description?.trim() ||
     SENTINEL_DEFAULT.purpose;
   return {
     id: `${agent.id}-welcome`,
@@ -356,6 +1203,9 @@ export function buildAgentWelcomeMessage(agent: AgentProfile): AgentChatMessage 
 }
 
 export function buildAgentChatSessions(agent: AgentProfile): AgentChatSession[] {
+  if (isAgentGroupChatId(agent.id)) {
+    return [{ id: 'new', preview: 'New group chat' }];
+  }
   if (agent.id === MATTY.id) {
     return MATTY_CHAT_SESSIONS;
   }
@@ -367,14 +1217,102 @@ export function buildAgentChatSessions(agent: AgentProfile): AgentChatSession[] 
   ];
 }
 
+export type ChannelMessagePart =
+  | { type: 'text'; text: string }
+  | {
+      type: 'mention';
+      id: string;
+      label: string;
+      avatarSrc: string;
+      kind: 'agent' | 'person';
+    };
+
 export type ChannelMessage = {
   id: string;
   username: string;
   avatarSrc: string;
   avatarAlt: string;
   timestamp: string;
+  /** Plain-text fallback / search string. */
   body: string;
+  /** Rich body with inline mention chips. When omitted, render `body`. */
+  parts?: ChannelMessagePart[];
 };
+
+export type MentionCandidate = {
+  id: string;
+  name: string;
+  secondaryLabel: string;
+  kind: 'agent' | 'person';
+  avatarSrc: string;
+  avatarAlt: string;
+  /** Shape/color for agent chips that need non-circular crop. */
+  agentShape?: AgentShape;
+  agentColor?: AgentColor;
+};
+
+/**
+ * @-mention roster for `#service-status`. Agents are listed first so Otto
+ * surfaces at the top of the invite-by-mention beat.
+ */
+export function buildServiceStatusMentionables(
+  agentAvatarSrc: (shape: AgentShape, color: AgentColor) => string,
+): MentionCandidate[] {
+  const agents: MentionCandidate[] = [
+    MATTY,
+    AUDITOR,
+    WARDEN,
+    OTTO,
+    RELAY,
+    QUILL,
+  ].map((agent) => ({
+    id: agent.id,
+    name: agent.name,
+    secondaryLabel: agent.role,
+    kind: 'agent' as const,
+    avatarSrc: agentAvatarSrc(agent.shape, agent.color),
+    avatarAlt: agent.name,
+    agentShape: agent.shape,
+    agentColor: agent.color,
+  }));
+
+  const people: MentionCandidate[] = [
+    {
+      id: 'jordan',
+      name: JORDAN.name,
+      secondaryLabel: 'Member',
+      kind: 'person',
+      avatarSrc: JORDAN.avatarSrc,
+      avatarAlt: JORDAN.avatarAlt,
+    },
+    {
+      id: 'emma',
+      name: ON_CALL.name,
+      secondaryLabel: 'On-call',
+      kind: 'person',
+      avatarSrc: ON_CALL.avatarSrc,
+      avatarAlt: ON_CALL.avatarAlt,
+    },
+    {
+      id: 'darius',
+      name: DARIUS.name,
+      secondaryLabel: 'Member',
+      kind: 'person',
+      avatarSrc: DARIUS.avatarSrc,
+      avatarAlt: DARIUS.avatarAlt,
+    },
+    {
+      id: 'priya',
+      name: VIEWER.name,
+      secondaryLabel: 'You',
+      kind: 'person',
+      avatarSrc: VIEWER.avatarSrc,
+      avatarAlt: VIEWER.avatarAlt,
+    },
+  ];
+
+  return [...agents, ...people];
+}
 
 /** Quiet pre-incident thread in `#service-status` — morning SRE chatter before Priya creates Sentinel. */
 export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [

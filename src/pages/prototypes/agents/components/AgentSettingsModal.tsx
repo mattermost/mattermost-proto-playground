@@ -6,18 +6,23 @@ import {
   useState,
   type ChangeEvent,
   type ComponentType,
+  Fragment,
 } from 'react';
 import { createPortal } from 'react-dom';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
+import BookOutlineIcon from '@mattermost/compass-icons/components/book-outline';
 import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-outline';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
+import HammerIcon from '@mattermost/compass-icons/components/hammer';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
 import LockIcon from '@mattermost/compass-icons/components/lock';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import TuneIcon from '@mattermost/compass-icons/components/tune';
 import { Button } from '@mattermost/compass-ui/components/button';
+import { Divider } from '@mattermost/compass-ui/components/divider';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
@@ -38,24 +43,45 @@ import {
   AGENT_SHAPES,
   DEFAULT_AGENT_MODEL,
   DEFAULT_AGENT_VISIBILITY,
+  buildKnowledgePreview,
+  cloneAdvancedConfig,
+  cloneConnectedMcps,
   type AgentAccessRole,
+  type AgentAdvancedConfig,
   type AgentColor,
   type AgentProfile,
   type AgentShape,
   type AgentVisibility,
+  type ConnectedMcp,
+  type ScheduledJob,
 } from '../agentsData';
 import type { AgentUpdates } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
+import AgentSettingsAdvancedPanel from './AgentSettingsAdvancedPanel';
+import AgentSettingsKnowledgePanel from './AgentSettingsKnowledgePanel';
+import AgentSettingsTasksPanel from './AgentSettingsTasksPanel';
+import AgentSettingsToolsPanel from './AgentSettingsToolsPanel';
 import styles from './AgentSettingsModal.module.scss';
 
 const EXIT_MS = 150;
 
-type SettingsTab = 'info' | 'model' | 'access' | 'advanced';
+export const AGENT_SETTINGS_TABS = [
+  'info',
+  'model',
+  'knowledge',
+  'tasks',
+  'tools',
+  'access',
+  'advanced',
+] as const;
+
+export type SettingsTab = (typeof AGENT_SETTINGS_TABS)[number];
 
 type TabDef = {
   id: SettingsTab;
   label: string;
   IconGlyph: ComponentType;
+  dividerBefore?: boolean;
 };
 
 const TABS: TabDef[] = [
@@ -65,12 +91,20 @@ const TABS: TabDef[] = [
     label: 'Model & Instructions',
     IconGlyph: FileTextOutlineIcon,
   },
+  { id: 'knowledge', label: 'Knowledge', IconGlyph: BookOutlineIcon },
+  { id: 'tasks', label: 'Automated tasks', IconGlyph: ClockOutlineIcon },
+  { id: 'tools', label: 'Tools', IconGlyph: HammerIcon },
   {
     id: 'access',
     label: 'Access & sharing',
     IconGlyph: AccountMultipleOutlineIcon,
   },
-  { id: 'advanced', label: 'Advanced', IconGlyph: TuneIcon },
+  {
+    id: 'advanced',
+    label: 'Advanced',
+    IconGlyph: TuneIcon,
+    dividerBefore: true,
+  },
 ];
 
 type VisibilityOption = {
@@ -104,6 +138,11 @@ type DraftState = {
   model: string;
   visibility: AgentVisibility;
   customImageSrc: string | null;
+  knowledgeChannelIds: string[];
+  knowledgeDocIds: string[];
+  scheduledJobs: ScheduledJob[];
+  connectedMcps: ConnectedMcp[];
+  advancedConfig: AgentAdvancedConfig;
 };
 
 function profileToDraft(agent: AgentProfile): DraftState {
@@ -116,7 +155,25 @@ function profileToDraft(agent: AgentProfile): DraftState {
     model: agent.model || DEFAULT_AGENT_MODEL,
     visibility: agent.visibility || DEFAULT_AGENT_VISIBILITY,
     customImageSrc: agent.customImageSrc ?? null,
+    knowledgeChannelIds: agent.knowledgeChannelIds ?? [],
+    knowledgeDocIds: agent.knowledgeDocIds ?? [],
+    scheduledJobs: (agent.scheduledJobs ?? []).map((job) => ({ ...job })),
+    connectedMcps: cloneConnectedMcps(agent.connectedMcps),
+    advancedConfig: cloneAdvancedConfig(agent.advancedConfig),
   };
+}
+
+function jobsEqual(a: ScheduledJob[], b: ScheduledJob[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every(
+    (job, i) =>
+      job.id === b[i].id &&
+      job.title === b[i].title &&
+      job.trigger === b[i].trigger &&
+      job.recurrence === b[i].recurrence &&
+      job.time === b[i].time &&
+      job.instructions === b[i].instructions,
+  );
 }
 
 function draftsEqual(a: DraftState, b: DraftState): boolean {
@@ -128,13 +185,19 @@ function draftsEqual(a: DraftState, b: DraftState): boolean {
     a.color === b.color &&
     a.model === b.model &&
     a.visibility === b.visibility &&
-    a.customImageSrc === b.customImageSrc
+    a.customImageSrc === b.customImageSrc &&
+    a.knowledgeChannelIds.join() === b.knowledgeChannelIds.join() &&
+    a.knowledgeDocIds.join() === b.knowledgeDocIds.join() &&
+    jobsEqual(a.scheduledJobs, b.scheduledJobs) &&
+    JSON.stringify(a.connectedMcps) === JSON.stringify(b.connectedMcps) &&
+    JSON.stringify(a.advancedConfig) === JSON.stringify(b.advancedConfig)
   );
 }
 
 type AgentSettingsModalProps = {
   open: boolean;
   agent: AgentProfile;
+  initialTab?: SettingsTab;
   onClose: () => void;
   onSave: (updates: AgentUpdates) => void;
 };
@@ -142,13 +205,14 @@ type AgentSettingsModalProps = {
 export default function AgentSettingsModal({
   open,
   agent,
+  initialTab = 'info',
   onClose,
   onSave,
 }: AgentSettingsModalProps) {
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
   const baseId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [activeTab, setActiveTab] = useState<SettingsTab>('info');
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [baseline, setBaseline] = useState<DraftState>(() =>
     profileToDraft(agent),
   );
@@ -167,7 +231,7 @@ export default function AgentSettingsModal({
     const next = profileToDraft(agent);
     setBaseline(next);
     setDraft(next);
-    setActiveTab('info');
+    setActiveTab(initialTab);
     setPeopleQuery('');
     setAccessRoles(
       Object.fromEntries(
@@ -175,7 +239,7 @@ export default function AgentSettingsModal({
       ),
     );
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }, [open, agent]);
+  }, [open, agent, initialTab]);
 
   useEffect(() => {
     if (!open) return;
@@ -214,6 +278,11 @@ export default function AgentSettingsModal({
       model: draft.model,
       visibility: draft.visibility,
       customImageSrc: draft.customImageSrc ?? undefined,
+      knowledgeChannelIds: draft.knowledgeChannelIds,
+      knowledgeDocIds: draft.knowledgeDocIds,
+      scheduledJobs: draft.scheduledJobs.filter((job) => job.title.trim()),
+      connectedMcps: draft.connectedMcps,
+      advancedConfig: draft.advancedConfig,
     });
     onClose();
   };
@@ -227,6 +296,12 @@ export default function AgentSettingsModal({
         entry.secondaryLabel.toLowerCase().includes(q),
     );
   }, [peopleQuery]);
+
+  const knowledgePreview = buildKnowledgePreview(
+    draft.name,
+    draft.knowledgeChannelIds,
+    draft.knowledgeDocIds,
+  );
 
   if (!rendered) return null;
 
@@ -269,30 +344,40 @@ export default function AgentSettingsModal({
                 role="tablist"
                 aria-orientation="vertical"
               >
-                {TABS.map(({ id, label, IconGlyph }) => {
+                {TABS.map(({ id, label, IconGlyph, dividerBefore }) => {
                   const selected = activeTab === id;
                   return (
-                    <button
-                      key={id}
-                      type="button"
-                      role="tab"
-                      id={`${baseId}-tab-${id}`}
-                      aria-selected={selected}
-                      aria-controls={panelId}
-                      tabIndex={selected ? 0 : -1}
-                      className={[
-                        styles['agent-settings-modal__tab'],
-                        selected
-                          ? styles['agent-settings-modal__tab--selected']
-                          : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onClick={() => setActiveTab(id)}
-                    >
-                      <Icon glyph={<IconGlyph />} size="16" />
-                      <span>{label}</span>
-                    </button>
+                    <Fragment key={id}>
+                      {dividerBefore ? (
+                        <div
+                          className={
+                            styles['agent-settings-modal__tab-divider']
+                          }
+                        >
+                          <Divider />
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        role="tab"
+                        id={`${baseId}-tab-${id}`}
+                        aria-selected={selected}
+                        aria-controls={panelId}
+                        tabIndex={selected ? 0 : -1}
+                        className={[
+                          styles['agent-settings-modal__tab'],
+                          selected
+                            ? styles['agent-settings-modal__tab--selected']
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        onClick={() => setActiveTab(id)}
+                      >
+                        <Icon glyph={<IconGlyph />} size="16" />
+                        <span>{label}</span>
+                      </button>
+                    </Fragment>
                   );
                 })}
               </div>
@@ -545,6 +630,42 @@ export default function AgentSettingsModal({
                       </div>
                     ) : null}
 
+                    {activeTab === 'knowledge' ? (
+                      <AgentSettingsKnowledgePanel
+                        name={draft.name}
+                        knowledgeChannelIds={draft.knowledgeChannelIds}
+                        knowledgeDocIds={draft.knowledgeDocIds}
+                        preview={knowledgePreview}
+                        onChannelsChange={(knowledgeChannelIds) =>
+                          setDraft((prev) => ({
+                            ...prev,
+                            knowledgeChannelIds,
+                          }))
+                        }
+                        onDocsChange={(knowledgeDocIds) =>
+                          setDraft((prev) => ({ ...prev, knowledgeDocIds }))
+                        }
+                      />
+                    ) : null}
+
+                    {activeTab === 'tasks' ? (
+                      <AgentSettingsTasksPanel
+                        jobs={draft.scheduledJobs}
+                        onChange={(scheduledJobs) =>
+                          setDraft((prev) => ({ ...prev, scheduledJobs }))
+                        }
+                      />
+                    ) : null}
+
+                    {activeTab === 'tools' ? (
+                      <AgentSettingsToolsPanel
+                        connectedMcps={draft.connectedMcps}
+                        onChange={(connectedMcps) =>
+                          setDraft((prev) => ({ ...prev, connectedMcps }))
+                        }
+                      />
+                    ) : null}
+
                     {activeTab === 'access' ? (
                       <div className={styles['agent-settings-modal__access']}>
                         <div
@@ -764,22 +885,12 @@ export default function AgentSettingsModal({
                     ) : null}
 
                     {activeTab === 'advanced' ? (
-                      <div
-                        className={styles['agent-settings-modal__placeholder']}
-                      >
-                        <h3
-                          className={
-                            styles['agent-settings-modal__section-title']
-                          }
-                        >
-                          Advanced
-                        </h3>
-                        <p className={styles['agent-settings-modal__help']}>
-                          Temperature, tool permissions, retention, and other
-                          advanced controls will live here. Nothing to
-                          configure in this prototype yet.
-                        </p>
-                      </div>
+                      <AgentSettingsAdvancedPanel
+                        config={draft.advancedConfig}
+                        onChange={(advancedConfig) =>
+                          setDraft((prev) => ({ ...prev, advancedConfig }))
+                        }
+                      />
                     ) : null}
                   </div>
                 </Scrollbar>

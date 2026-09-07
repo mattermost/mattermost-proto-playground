@@ -42,8 +42,9 @@
     visibility: hidden;
   }
 
-  // Matty DM row: keep ChannelSidebarItem layout/hit target; overlay AgentAvatar
-  // over the built-in UserAvatar (no custom leading ReactNode on CSI).
+  // Single-agent DM row: keep ChannelSidebarItem layout/hit target; overlay
+  // AgentAvatar over the built-in UserAvatar (no custom leading ReactNode on CSI).
+  // Group chats use CSI leadingVisual="group-message" + memberCount as-is.
   &__agent-row {
     position: relative;
   }
@@ -61,7 +62,7 @@
     pointer-events: none;
   }
 
-  &__agent-row :global([class*='icon-container'] > *) {
+  &__agent-row--dm :global([class*='icon-container'] > *) {
     visibility: hidden;
   }
 }
