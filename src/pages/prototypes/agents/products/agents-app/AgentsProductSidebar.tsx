@@ -113,6 +113,7 @@ export default function AgentsProductSidebar({
                   color={agent.color}
                   size="xs"
                   eyes
+                  imageSrc={agent.customImageSrc}
                 />
               </span>
               <ChannelSidebarItem

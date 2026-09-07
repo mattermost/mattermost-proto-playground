@@ -4,9 +4,11 @@ import { AGENTS_BASE, AGENTS_SCENES, type AgentsSceneId } from '../agentsScenes'
 
 function resolveScene(
   pathname: string,
+  search: string,
   newAgentOpen: boolean,
 ): AgentsSceneId {
   if (newAgentOpen) return 'new-agent';
+  if (search.includes('settings=true')) return 'agent-settings';
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
@@ -32,8 +34,8 @@ export default function AgentsSceneSwitcher({
   closeNewAgent,
 }: AgentsSceneSwitcherProps) {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const activeId = resolveScene(pathname, newAgentOpen);
+  const { pathname, search } = useLocation();
+  const activeId = resolveScene(pathname, search, newAgentOpen);
 
   const onChange = (id: string) => {
     switch (id as AgentsSceneId) {
@@ -51,6 +53,10 @@ export default function AgentsSceneSwitcher({
         return;
       case 'new-agent':
         openNewAgent();
+        return;
+      case 'agent-settings':
+        closeNewAgent();
+        navigate(`${AGENTS_BASE}/agents/matty?settings=true`);
         return;
       default:
         return;

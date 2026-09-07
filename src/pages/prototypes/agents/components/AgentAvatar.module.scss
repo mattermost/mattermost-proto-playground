@@ -98,7 +98,7 @@
     height: 96px;
     // Clear gap under shape + 7px oval (mixin). Reserve both so preview gap
     // (--spacing-s) sits below the shadow, not through it.
-    margin-bottom: calc(14px + 7px);
+    margin-bottom: calc(8px + 7px);
   }
 
   // Preview-only soft float (New Agent modal xl). Root motion keeps eyes /
@@ -161,6 +161,22 @@
   }
 
   &--sphere .agent-avatar__shape {
+    border-radius: var(--radius-full);
+  }
+
+  // Custom uploaded image — circular crop (Figma plus-button upload flow).
+  &--image {
+    overflow: hidden;
+    border-radius: var(--radius-full);
+  }
+
+  &__image {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: var(--radius-full);
   }
 

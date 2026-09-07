@@ -325,4 +325,42 @@
       color: rgba(var(--center-channel-color-rgb), 0.64);
     }
   }
+
+  &__options-trigger {
+    flex-shrink: 0;
+    display: inline-flex;
+  }
+
+  &__options-menu {
+    position: fixed;
+    z-index: 1200;
+    transform-origin: top right;
+    animation: agent-chat-options-in var(--duration-quick) var(--ease-entrance) both;
+
+    &--exiting {
+      animation: agent-chat-options-out var(--duration-quick) var(--ease-exit) both;
+    }
+  }
+}
+
+@keyframes agent-chat-options-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes agent-chat-options-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }

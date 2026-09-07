@@ -5,11 +5,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: new-agent-modal-in var(--duration-quick) var(--ease-entrance) both;
-
-  &--exiting {
-    animation: new-agent-modal-out var(--duration-quick) var(--ease-exit) both;
-  }
 
   &__backdrop {
     position: absolute;
@@ -19,6 +14,7 @@
     margin: 0;
     background: rgba(0, 0, 0, 0.48);
     cursor: pointer;
+    animation: new-agent-modal-fade-in var(--duration-quick) var(--ease-entrance) both;
   }
 
   // Figma New Agent Modal: 600×553, size small.
@@ -28,6 +24,8 @@
     width: min(600px, calc(100vw - var(--spacing-xxxxxl)));
     max-height: calc(100vh - var(--spacing-xxxxxl));
     overflow: auto;
+    transform-origin: center center;
+    animation: new-agent-modal-dialog-in var(--duration-quick) var(--ease-entrance) both;
 
     // Hide header title visually — Figma header is close-only; keep text for a11y.
     :global([class*='modal__title']) {
@@ -47,9 +45,9 @@
       padding: 0;
     }
 
-    // Body: Figma pt 12 / px 32; drop Compass pb 28 — footer supplies spacing.
+    // Body: tighter pt so avatar sits closer to header; drop Compass pb 28 — footer supplies spacing.
     :global([class*='modal__body-inner']) {
-      padding-top: var(--spacing-m);
+      padding-top: var(--spacing-xs);
       padding-bottom: 0;
     }
 
@@ -59,21 +57,39 @@
     }
   }
 
+  &--exiting {
+    .new-agent-modal__backdrop {
+      animation: new-agent-modal-fade-out var(--duration-quick) var(--ease-exit) both;
+    }
+
+    .new-agent-modal__dialog {
+      animation: new-agent-modal-dialog-out var(--duration-quick) var(--ease-exit) both;
+    }
+  }
+
   // Figma Content: gap 44 between appearance cluster and purpose.
   &__body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(var(--spacing-xxxxl) + var(--spacing-xxxs));
+    gap: var(--spacing-xxl);
   }
 
-  // Figma: avatar+name, shapes, colors — gap 28.
+  // Preview → selectors pair; keep 28 between preview and swatch group.
   &__appearance {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: calc(var(--spacing-l) + var(--spacing-m));
     width: 100%;
+  }
+
+  // Shape + color swatches as a tighter appearance-selector pair.
+  &__selectors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
   }
 
   // Figma Frame 1939 (53:76217): avatar→name gap 10.
@@ -153,6 +169,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: var(--spacing-s);
   }
 
@@ -181,6 +198,29 @@
   &__swatch-avatar {
     transform-origin: center center;
     transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  // Figma 73:103170 / Icon Button 97:28242 — medium rounded, center-channel/8 fill.
+  &__upload {
+    flex-shrink: 0;
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+
+    &:hover:not(:disabled):not(:active) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.12);
+    }
+  }
+
+  &__file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   &__colors {
@@ -215,6 +255,13 @@
   }
 
   // Figma: label + textarea gap 12.
+  &__settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    width: 100%;
+  }
+
   &__purpose {
     display: flex;
     flex-direction: column;
@@ -235,6 +282,103 @@
 
   &__purpose-field {
     width: 100%;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  // Figma Card Button Group 97:28140 — side-by-side selectable cards.
+  &__visibility {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__visibility-card {
+    appearance: none;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-m);
+    margin: 0;
+    padding: var(--spacing-m) var(--spacing-xl) var(--spacing-m) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+    cursor: pointer;
+    text-align: left;
+    color: var(--center-channel-color);
+    transition:
+      border-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(.new-agent-modal__visibility-card--selected) {
+      border-color: rgba(var(--center-channel-color-rgb), 0.24);
+      box-shadow: var(--elevation-2);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--selected {
+      border-color: rgba(var(--button-bg-rgb), 0.32);
+
+      .new-agent-modal__visibility-icon-wrap {
+        background: rgba(var(--button-bg-rgb), 0.08);
+        color: var(--button-bg);
+      }
+    }
+  }
+
+  &__visibility-icon-wrap {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__visibility-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  &__visibility-title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__visibility-description {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__visibility-check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    color: var(--button-bg);
   }
 
   &__footer {
@@ -265,7 +409,7 @@
   }
 }
 
-@keyframes new-agent-modal-in {
+@keyframes new-agent-modal-fade-in {
   from {
     opacity: 0;
   }
@@ -274,11 +418,49 @@
   }
 }
 
-@keyframes new-agent-modal-out {
+@keyframes new-agent-modal-fade-out {
   from {
     opacity: 1;
   }
   to {
     opacity: 0;
+  }
+}
+
+@keyframes new-agent-modal-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes new-agent-modal-dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .new-agent-modal {
+    &__backdrop,
+    &__dialog {
+      animation: new-agent-modal-fade-in var(--duration-quick) var(--ease-entrance) both;
+    }
+
+    &--exiting {
+      .new-agent-modal__backdrop,
+      .new-agent-modal__dialog {
+        animation: new-agent-modal-fade-out var(--duration-quick) var(--ease-exit) both;
+      }
+    }
   }
 }

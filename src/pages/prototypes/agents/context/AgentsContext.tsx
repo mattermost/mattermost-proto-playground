@@ -10,6 +10,7 @@ import {
   buildCreatedAgent,
   type AgentColor,
   type AgentShape,
+  type AgentVisibility,
   type CreatedAgent,
 } from '../agentsData';
 
@@ -20,7 +21,13 @@ export type NewAgentDraft = {
   shape: AgentShape;
   color: AgentColor;
   purpose: string;
+  description?: string;
+  model?: string;
+  visibility?: AgentVisibility;
+  customImageSrc?: string;
 };
+
+export type AgentUpdates = Partial<NewAgentDraft>;
 
 type AgentsContextValue = {
   newAgentOpen: boolean;
@@ -28,6 +35,7 @@ type AgentsContextValue = {
   closeNewAgent: () => void;
   customAgents: CreatedAgent[];
   addCreatedAgent: (draft: NewAgentDraft) => CreatedAgent;
+  updateAgent: (id: string, updates: AgentUpdates) => CreatedAgent;
 };
 
 const AgentsContext = createContext<AgentsContextValue | null>(null);
@@ -48,6 +56,45 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
     return agent;
   }, []);
 
+  const updateAgent = useCallback(
+    (id: string, updates: AgentUpdates) => {
+      const existing = customAgents.find((agent) => agent.id === id);
+      const base: CreatedAgent = existing ?? {
+        id,
+        name: updates.name?.trim() || id,
+        shape: updates.shape ?? 'sphere',
+        color: updates.color ?? 'blue',
+        description: '',
+        purpose: '',
+        model: updates.model ?? 'claude-3-7-sonnet',
+        visibility: updates.visibility ?? 'private',
+      };
+      const next = buildCreatedAgent({
+        id,
+        name: updates.name ?? base.name,
+        shape: updates.shape ?? base.shape,
+        color: updates.color ?? base.color,
+        purpose: updates.purpose ?? base.purpose,
+        description:
+          updates.description !== undefined
+            ? updates.description
+            : base.description,
+        model: updates.model ?? base.model,
+        visibility: updates.visibility ?? base.visibility,
+        customImageSrc:
+          updates.customImageSrc !== undefined
+            ? updates.customImageSrc
+            : base.customImageSrc,
+      });
+      setCustomAgents((prev) => {
+        const without = prev.filter((agent) => agent.id !== id);
+        return [...without, next];
+      });
+      return next;
+    },
+    [customAgents],
+  );
+
   const value = useMemo(
     () => ({
       newAgentOpen,
@@ -55,6 +102,7 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       closeNewAgent,
       customAgents,
       addCreatedAgent,
+      updateAgent,
     }),
     [
       newAgentOpen,
@@ -62,6 +110,7 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       closeNewAgent,
       customAgents,
       addCreatedAgent,
+      updateAgent,
     ],
   );
 

@@ -97,7 +97,7 @@
  * under clip-path shapes when applied on a root that is not itself clipped.
  *
  * Geometry from New Agent modal xl preview (53:76218 / 53:76220): on a 96px
- * host (= AgentAvatar --xl) → 44×7 oval with 14px clear gap, fill #000 @ 8%.
+ * host (= AgentAvatar --xl) → 44×7 oval with 8px clear gap, fill #000 @ 8%.
  * Width / height / gap are fractions of the host so lg / sm / xs stay proportional.
  */
 @mixin oval-ground-shadow {
@@ -105,8 +105,8 @@
     content: '';
     position: absolute;
     left: 50%;
-    // 14/96 of host height below the shape bottom (14px at --xl).
-    top: calc(100% + 100% * 14 / 96);
+    // 8/96 of host height below the shape bottom (8px at --xl).
+    top: calc(100% + 100% * 8 / 96);
     z-index: 0;
     width: calc(100% * 44 / 96);
     height: calc(100% * 7 / 96);

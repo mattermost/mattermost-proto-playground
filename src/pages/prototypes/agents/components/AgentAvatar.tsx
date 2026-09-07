@@ -23,6 +23,8 @@ type AgentAvatarProps = {
   shadow?: boolean;
   /** When set, draws a 2px --button-bg contour ring outset 4px from the shape. */
   selected?: boolean;
+  /** User-uploaded image — replaces the geometric shape fill when set. */
+  imageSrc?: string;
   className?: string;
 };
 
@@ -56,6 +58,7 @@ export default function AgentAvatar({
   levitate = false,
   shadow = false,
   selected = false,
+  imageSrc,
   className = '',
 }: AgentAvatarProps) {
   const stops = AGENT_COLOR_STOPS[color];
@@ -74,9 +77,10 @@ export default function AgentAvatar({
   const rootRef = useRef<HTMLSpanElement>(null);
   const eyesRef = useRef<HTMLSpanElement>(null);
   const eyeTravel = EYE_TRAVEL[size];
+  const showEyes = eyes && !imageSrc;
 
   useEffect(() => {
-    if (!eyes) return;
+    if (!showEyes) return;
 
     let frame = 0;
 
@@ -124,7 +128,7 @@ export default function AgentAvatar({
         onPointerLeave,
       );
     };
-  }, [eyes, eyeTravel]);
+  }, [showEyes, eyeTravel]);
 
   return (
     <span
@@ -133,16 +137,17 @@ export default function AgentAvatar({
         styles['agent-avatar'],
         styles[`agent-avatar--${size}`],
         styles[`agent-avatar--${shape}`],
+        imageSrc ? styles['agent-avatar--image'] : '',
         shadow ? styles['agent-avatar--shadow'] : '',
         levitate ? styles['agent-avatar--levitate'] : '',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
-      style={colorStyle}
+      style={imageSrc ? undefined : colorStyle}
       aria-hidden
     >
-      {selected ? (
+      {selected && !imageSrc ? (
         <svg
           className={styles['agent-avatar__selection']}
           viewBox="0 0 1 1"
@@ -185,8 +190,17 @@ export default function AgentAvatar({
           )}
         </svg>
       ) : null}
-      <span className={styles['agent-avatar__shape']} style={maskStyle} />
-      {eyes ? (
+      {imageSrc ? (
+        <img
+          className={styles['agent-avatar__image']}
+          src={imageSrc}
+          alt=""
+          draggable={false}
+        />
+      ) : (
+        <span className={styles['agent-avatar__shape']} style={maskStyle} />
+      )}
+      {showEyes ? (
         <span ref={eyesRef} className={styles['agent-avatar__eyes']}>
           <span />
           <span />

@@ -1,19 +1,32 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
+import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
+import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
+import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
+import SettingsOutlineIcon from '@mattermost/compass-icons/components/settings-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import {
+  PopoverMenu,
+  PopoverMenuDivider,
+  PopoverMenuGroup,
+} from '@mattermost/compass-ui/components/popover-menu';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
   buildAgentChatSessions,
   buildAgentWelcomeMessage,
   resolveAgentProfile,
 } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
+import AgentSettingsModal from '../../components/AgentSettingsModal';
 import AgentTypingDots from '../../components/AgentTypingDots';
 import { useAgents } from '../../context/AgentsContext';
 import AgentsProductSidebar from './AgentsProductSidebar';
@@ -24,6 +37,8 @@ const STREAM_MS_PER_WORD = 32;
 const AVATAR_LOADING_MS = 1000;
 /** Matches `--duration-moderate` for the dots → avatar crossfade. */
 const AVATAR_REVEAL_MS = 300;
+const OPTIONS_MENU_EXIT_MS = 150;
+const OPTIONS_MENU_WIDTH = 240;
 
 type AvatarRevealPhase = 'loading' | 'revealing' | 'ready';
 
@@ -120,7 +135,7 @@ function useAvatarReveal(resetKey: string): AvatarRevealPhase {
  */
 export default function AgentChat() {
   const { agentId } = useParams<{ agentId: string }>();
-  const { customAgents } = useAgents();
+  const { customAgents, updateAgent } = useAgents();
   const agent = useMemo(
     () => resolveAgentProfile(agentId, customAgents),
     [agentId, customAgents],
@@ -131,10 +146,30 @@ export default function AgentChat() {
     [agent],
   );
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const settingsParam = searchParams.get('settings') === 'true';
+
   const [activeSessionId, setActiveSessionId] = useState(
     sessions[0]?.id ?? '',
   );
   const [draft, setDraft] = useState('');
+  const [optionsOpen, setOptionsOpen] = useState(false);
+  const [optionsAnchor, setOptionsAnchor] = useState<DOMRect | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(settingsParam);
+  const optionsButtonRef = useRef<HTMLDivElement>(null);
+  const optionsMenuRef = useRef<HTMLDivElement>(null);
+  const skipOptionsOutsideCloseRef = useRef(false);
+  const { rendered: optionsRendered, exiting: optionsExiting } =
+    useExitAnimation(optionsOpen, OPTIONS_MENU_EXIT_MS);
+
+  useOutsideClose(optionsMenuRef, optionsOpen && !optionsExiting, () => {
+    if (skipOptionsOutsideCloseRef.current) {
+      skipOptionsOutsideCloseRef.current = false;
+      return;
+    }
+    setOptionsOpen(false);
+  });
+
   const avatarPhase = useAvatarReveal(agent.id);
   // Bubble + stream only after dots → avatar reveal completes.
   const showBubble = avatarPhase === 'ready';
@@ -148,7 +183,33 @@ export default function AgentChat() {
   useEffect(() => {
     setActiveSessionId(sessions[0]?.id ?? '');
     setDraft('');
-  }, [agent.id, sessions]);
+    setOptionsOpen(false);
+    setSettingsOpen(settingsParam);
+  }, [agent.id, sessions, settingsParam]);
+
+  useEffect(() => {
+    if (settingsParam) {
+      setSettingsOpen(true);
+    }
+  }, [settingsParam]);
+
+  useEffect(() => {
+    if (!optionsOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOptionsOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [optionsOpen]);
+
+  const openOptionsMenu = () => {
+    const rect =
+      optionsButtonRef.current?.getBoundingClientRect() ?? null;
+    setOptionsAnchor(rect);
+    setOptionsOpen((prev) => !prev);
+  };
+
+  const closeOptionsMenu = () => setOptionsOpen(false);
 
   return (
     <div className={styles['agent-chat']}>
@@ -167,17 +228,31 @@ export default function AgentChat() {
                 size="xs"
                 eyes
                 shadow={false}
+                imageSrc={agent.customImageSrc}
               />
               <h1 className={styles['agent-chat__sessions-name']}>
                 {agent.name}
               </h1>
             </div>
-            <IconButton
-              size="small"
-              padding="compact"
-              icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
-              aria-label={`${agent.name} options`}
-            />
+            <div
+              ref={optionsButtonRef}
+              className={styles['agent-chat__options-trigger']}
+              onMouseDown={() => {
+                if (optionsOpen) {
+                  skipOptionsOutsideCloseRef.current = true;
+                }
+              }}
+            >
+              <IconButton
+                size="small"
+                padding="compact"
+                icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
+                aria-label={`${agent.name} options`}
+                aria-haspopup="menu"
+                aria-expanded={optionsOpen}
+                onClick={openOptionsMenu}
+              />
+            </div>
           </header>
 
           <div className={styles['agent-chat__sessions-list']}>
@@ -229,6 +304,7 @@ export default function AgentChat() {
                         size="sm"
                         eyes
                         shadow={false}
+                        imageSrc={agent.customImageSrc}
                       />
                     ) : null}
                   </div>
@@ -291,6 +367,98 @@ export default function AgentChat() {
           </div>
         </section>
       </div>
+
+      {optionsRendered && optionsAnchor
+        ? createPortal(
+            <div
+              ref={optionsMenuRef}
+              className={[
+                styles['agent-chat__options-menu'],
+                optionsExiting
+                  ? styles['agent-chat__options-menu--exiting']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              style={{
+                top: optionsAnchor.bottom + 4,
+                left: Math.max(
+                  8,
+                  optionsAnchor.right - OPTIONS_MENU_WIDTH,
+                ),
+                width: OPTIONS_MENU_WIDTH,
+              }}
+              role="menu"
+              aria-label={`${agent.name} options`}
+            >
+              <PopoverMenu>
+                <PopoverMenuGroup>
+                  <MenuItem
+                    role="menuitem"
+                    label="Agent settings"
+                    leadingVisual={
+                      <Icon glyph={<SettingsOutlineIcon />} size="16" />
+                    }
+                    onClick={() => {
+                      closeOptionsMenu();
+                      setSettingsOpen(true);
+                    }}
+                  />
+                  <MenuItem
+                    role="menuitem"
+                    label="New agent automation"
+                    leadingVisual={
+                      <Icon glyph={<LightningBoltOutlineIcon />} size="16" />
+                    }
+                    onClick={closeOptionsMenu}
+                  />
+                  <MenuItem
+                    role="menuitem"
+                    label="Make template"
+                    leadingVisual={
+                      <Icon glyph={<ContentCopyIcon />} size="16" />
+                    }
+                    onClick={closeOptionsMenu}
+                  />
+                </PopoverMenuGroup>
+                <PopoverMenuDivider />
+                <PopoverMenuGroup>
+                  <MenuItem
+                    role="menuitem"
+                    label="Archive agent"
+                    destructive
+                    leadingVisual={
+                      <Icon glyph={<ArchiveOutlineIcon />} size="16" />
+                    }
+                    onClick={closeOptionsMenu}
+                  />
+                </PopoverMenuGroup>
+              </PopoverMenu>
+            </div>,
+            document.body,
+          )
+        : null}
+
+      <AgentSettingsModal
+        open={settingsOpen}
+        agent={agent}
+        onClose={() => {
+          setSettingsOpen(false);
+          if (searchParams.get('settings')) {
+            setSearchParams(
+              (prev) => {
+                const next = new URLSearchParams(prev);
+                next.delete('settings');
+                return next;
+              },
+              { replace: true },
+            );
+          }
+        }}
+        onSave={(updates) => {
+          updateAgent(agent.id, updates);
+        }}
+      />
     </div>
   );
 }

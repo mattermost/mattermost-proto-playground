@@ -2,6 +2,8 @@ import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarArjun from '@/assets/avatars/Arjun Patel.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarDarius from '@/assets/avatars/Darius Cole.png';
+import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
 import type { ChannelsSidebarModel } from '@mattermost/compass-ui/components/channels-sidebar';
 
 export const VIEWER = {
@@ -133,13 +135,34 @@ export const MATTY = {
   color: 'yellow' as AgentColor,
 };
 
+export type AgentVisibility = 'private' | 'public';
+
+export const DEFAULT_AGENT_MODEL = 'claude-3-7-sonnet';
+export const DEFAULT_AGENT_VISIBILITY: AgentVisibility = 'private';
+
+export const AGENT_MODEL_OPTIONS = [
+  { value: 'claude-opus-4-7', label: 'Claude Opus 4.7 (Anthropic)' },
+  { value: 'claude-3-7-sonnet', label: 'Claude 3.7 Sonnet (Anthropic)' },
+  { value: 'claude-3-5-sonnet', label: 'Claude 3.5 Sonnet (Anthropic)' },
+  { value: 'gpt-4o', label: 'GPT-4o (OpenAI)' },
+  { value: 'o3-mini', label: 'o3-mini (OpenAI)' },
+  { value: 'llama-3-3-70b', label: 'Llama 3.3 70B (On-prem)' },
+];
+
 /** User-created agent from the New Agent modal. */
 export type CreatedAgent = {
   id: string;
   name: string;
   shape: AgentShape;
   color: AgentColor;
+  /** Short blurb shown in Agent Settings → Info. */
+  description: string;
+  /** Custom instructions (Agent Settings → Model & Instructions). */
   purpose: string;
+  model: string;
+  visibility: AgentVisibility;
+  /** Optional user-uploaded image data URL from the New Agent modal. */
+  customImageSrc?: string;
 };
 
 /** Display profile for Matty or a created agent. */
@@ -150,7 +173,55 @@ export type AgentProfile = {
   color: AgentColor;
   description?: string;
   purpose?: string;
+  model?: string;
+  visibility?: AgentVisibility;
+  customImageSrc?: string;
 };
+
+export type AgentAccessRole = 'admin' | 'editor' | 'viewer';
+
+export type AgentAccessEntry = {
+  id: string;
+  name: string;
+  secondaryLabel: string;
+  role: AgentAccessRole;
+  kind: 'person' | 'group';
+  avatarSrc?: string;
+};
+
+/** Fixture people/groups for Agent Settings → Access & sharing. */
+export const AGENT_ACCESS_ENTRIES: AgentAccessEntry[] = [
+  {
+    id: 'leonard',
+    name: 'Leonard Riley',
+    secondaryLabel: '@leonard',
+    role: 'admin',
+    kind: 'person',
+    avatarSrc: avatarLeonard,
+  },
+  {
+    id: 'ux-design',
+    name: 'Members of UX Design',
+    secondaryLabel: 'Group',
+    role: 'editor',
+    kind: 'group',
+    avatarSrc: avatarStaffTeam,
+  },
+  {
+    id: 'contributors',
+    name: 'Members of Contributors',
+    secondaryLabel: 'Group',
+    role: 'viewer',
+    kind: 'group',
+    avatarSrc: avatarStaffTeam,
+  },
+];
+
+export const AGENT_ACCESS_ROLE_OPTIONS = [
+  { value: 'admin', label: 'Admin' },
+  { value: 'editor', label: 'Editor' },
+  { value: 'viewer', label: 'Viewer' },
+];
 
 export type AgentChatMessage = {
   id: string;
@@ -185,6 +256,8 @@ export const SENTINEL_DEFAULT = {
   purpose: 'Watch the health of our checkout and payment services.',
   shape: 'sphere' as AgentShape,
   color: 'blue' as AgentColor,
+  model: DEFAULT_AGENT_MODEL,
+  visibility: DEFAULT_AGENT_VISIBILITY as AgentVisibility,
 };
 
 /** URL-safe id from an agent name (e.g. "Sentinel" → "sentinel"). */
@@ -202,15 +275,25 @@ export function buildCreatedAgent(input: {
   shape: AgentShape;
   color: AgentColor;
   purpose: string;
+  description?: string;
+  model?: string;
+  visibility?: AgentVisibility;
+  customImageSrc?: string;
+  /** Keep an existing id when updating (avoids breaking the chat route). */
+  id?: string;
 }): CreatedAgent {
   const name = input.name.trim() || SENTINEL_DEFAULT.name;
   const purpose = input.purpose.trim() || SENTINEL_DEFAULT.purpose;
   return {
-    id: slugifyAgentName(name),
+    id: input.id || slugifyAgentName(name),
     name,
     shape: input.shape,
     color: input.color,
+    description: input.description?.trim() ?? '',
     purpose,
+    model: input.model || DEFAULT_AGENT_MODEL,
+    visibility: input.visibility || DEFAULT_AGENT_VISIBILITY,
+    customImageSrc: input.customImageSrc,
   };
 }
 
@@ -219,12 +302,20 @@ export function resolveAgentProfile(
   agentId: string | undefined,
   customAgents: CreatedAgent[],
 ): AgentProfile {
-  if (!agentId || agentId === MATTY.id) {
-    return MATTY;
-  }
-  const match = customAgents.find((agent) => agent.id === agentId);
+  const match = customAgents.find(
+    (agent) => agent.id === (agentId || MATTY.id),
+  );
   if (match) {
     return match;
+  }
+  if (!agentId || agentId === MATTY.id) {
+    return {
+      ...MATTY,
+      description: MATTY.description,
+      purpose: '',
+      model: DEFAULT_AGENT_MODEL,
+      visibility: DEFAULT_AGENT_VISIBILITY,
+    };
   }
   const fallback = customAgents[customAgents.length - 1];
   if (fallback) {
@@ -235,12 +326,19 @@ export function resolveAgentProfile(
     name: SENTINEL_DEFAULT.name,
     shape: SENTINEL_DEFAULT.shape,
     color: SENTINEL_DEFAULT.color,
+    description: '',
     purpose: SENTINEL_DEFAULT.purpose,
+    model: DEFAULT_AGENT_MODEL,
+    visibility: DEFAULT_AGENT_VISIBILITY,
   };
 }
 
 export function buildAgentWelcomeMessage(agent: AgentProfile): AgentChatMessage {
-  if (agent.id === MATTY.id) {
+  const isStockMatty =
+    agent.id === MATTY.id &&
+    !agent.purpose?.trim() &&
+    (agent.description === MATTY.description || !agent.description);
+  if (isStockMatty) {
     return MATTY_WELCOME_MESSAGE;
   }
   const setup =

@@ -1,0 +1,594 @@
+@use '@/styles/mixins' as *;
+
+.agent-settings-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+    animation: agent-settings-modal-fade-in var(--duration-quick) var(--ease-entrance)
+      both;
+  }
+
+  // Agent Settings Modal: 904×600 (wider than Modal size large).
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(904px, calc(100vw - var(--spacing-xxxxxl)));
+    height: min(600px, calc(100vh - var(--spacing-xxxxxl)));
+    max-height: calc(100vh - var(--spacing-xxxxxl));
+    display: flex;
+    flex-direction: column;
+    transform-origin: center center;
+    animation: agent-settings-modal-dialog-in var(--duration-quick) var(--ease-entrance)
+      both;
+
+    > :global([class*='modal--size']) {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    // Figma: title + agent name on one row with muted subtitle.
+    :global([class*='modal__title-group']) {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--spacing-m);
+    }
+
+    :global([class*='modal__subtitle']) {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-200);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+
+    :global([class*='modal__body']) {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+
+      :global(.simplebar-wrapper),
+      :global(.simplebar-mask),
+      :global(.simplebar-offset),
+      :global(.simplebar-content-wrapper) {
+        height: 100%;
+      }
+
+      :global(.simplebar-content) {
+        height: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 0 !important;
+      }
+    }
+
+    :global([class*='modal__body-inner']) {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &--exiting {
+    .agent-settings-modal__backdrop {
+      animation: agent-settings-modal-fade-out var(--duration-quick) var(--ease-exit)
+        both;
+    }
+
+    .agent-settings-modal__dialog {
+      animation: agent-settings-modal-dialog-out var(--duration-quick) var(--ease-exit)
+        both;
+    }
+  }
+
+  &__layout {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  // Settings Sidebar Menu: 264px, center-channel/4 fill, p 16, gap 8.
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 264px;
+    width: 264px;
+    min-height: 0;
+    padding: var(--spacing-l);
+    gap: var(--spacing-xs);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__tablist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__tab {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-m);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    > span {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--selected {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
+  }
+
+  &__main {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+    padding: calc(var(--spacing-l) + var(--spacing-xs)) var(--spacing-xxxl);
+    padding-bottom: var(--spacing-xxxxxl);
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+    width: 100%;
+  }
+
+  &__appearance {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--spacing-l) + var(--spacing-m));
+    width: 100%;
+  }
+
+  &__preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-s);
+    width: 100%;
+  }
+
+  &__preview-name {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-900);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-900);
+    letter-spacing: -0.02em;
+    color: var(--center-channel-color);
+    text-align: center;
+  }
+
+  &__selectors {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__swatch {
+    appearance: none;
+    box-sizing: border-box;
+    width: var(--icon-size-40);
+    height: var(--icon-size-40);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+
+    &:hover .agent-settings-modal__swatch-avatar,
+    &:focus-visible .agent-settings-modal__swatch-avatar {
+      transform: scale(1.1);
+    }
+  }
+
+  &__swatch-avatar {
+    transform-origin: center center;
+    transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  &__upload {
+    flex-shrink: 0;
+    // IconButton defaults to transparent / 8% hover — keep a visible resting fill.
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+
+    &:hover:not(:disabled):not(:active) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.12);
+    }
+  }
+
+  &__file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &__colors {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__color {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: var(--spacing-xxxs);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &--selected {
+      box-shadow: 0 0 0 2px var(--button-bg);
+    }
+  }
+
+  &__color-dot {
+    width: var(--icon-size-16);
+    height: var(--icon-size-16);
+    border-radius: var(--radius-full);
+    @include agent-avatar-fill;
+  }
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    width: 100%;
+  }
+
+  &__field-with-help {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__help {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__access {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+    width: 100%;
+  }
+
+  &__access-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    width: 100%;
+  }
+
+  &__section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+
+  &__section-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
+  &__visibility {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__visibility-card {
+    appearance: none;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-m);
+    margin: 0;
+    padding: var(--spacing-m) var(--spacing-xl) var(--spacing-m) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+    cursor: pointer;
+    text-align: left;
+    color: var(--center-channel-color);
+    transition:
+      border-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover:not(.agent-settings-modal__visibility-card--selected) {
+      border-color: rgba(var(--center-channel-color-rgb), 0.24);
+      box-shadow: var(--elevation-2);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    &--selected {
+      border-color: rgba(var(--button-bg-rgb), 0.32);
+
+      .agent-settings-modal__visibility-icon-wrap {
+        background: rgba(var(--button-bg-rgb), 0.08);
+        color: var(--button-bg);
+      }
+    }
+  }
+
+  &__visibility-icon-wrap {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__visibility-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  &__visibility-title {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__visibility-description {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__visibility-check {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    color: var(--button-bg);
+  }
+
+  &__access-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  &__access-row {
+    width: 100%;
+  }
+
+  &__access-item {
+    width: 100%;
+  }
+
+  &__access-role {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  // Figma Modal Floating Footer — unsaved changes bar.
+  &__floating {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: var(--spacing-l) var(--spacing-xxxl);
+    pointer-events: none;
+  }
+
+  &__floating-inner {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    padding: var(--spacing-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-4);
+  }
+
+  &__floating-hint {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__floating-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+}
+
+@keyframes agent-settings-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes agent-settings-modal-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes agent-settings-modal-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes agent-settings-modal-dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-settings-modal {
+    &__backdrop,
+    &__dialog {
+      animation: agent-settings-modal-fade-in var(--duration-quick) var(--ease-entrance)
+        both;
+    }
+
+    &--exiting {
+      .agent-settings-modal__backdrop,
+      .agent-settings-modal__dialog {
+        animation: agent-settings-modal-fade-out var(--duration-quick) var(--ease-exit)
+          both;
+      }
+    }
+  }
+}
