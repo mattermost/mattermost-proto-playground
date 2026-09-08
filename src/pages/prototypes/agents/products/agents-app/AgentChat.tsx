@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
@@ -11,6 +18,7 @@ import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outli
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import SettingsOutlineIcon from '@mattermost/compass-icons/components/settings-outline';
+import { AttachmentCard } from '@mattermost/compass-ui/components/attachment-card';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
@@ -22,34 +30,50 @@ import {
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { RightSidebar } from '@mattermost/compass-proto';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
   AGENT_AUTOMATION_CONFIRM_ID,
   AGENT_AUTOMATION_PROMPT_ID,
+  INCIDENT_RESPONSE_PLAYBOOK_DRAFT,
   MATTY,
   MATTY_TOOL_AUTH_ID,
   MATTY_TOOL_CONNECTED_ID,
   MATTY_TOOL_CONNECT_CONFIRM_ID,
   MATTY_TOOL_CONNECT_MESSAGE,
+  SENTINEL_PLAYBOOK_CARD_ID,
+  SENTINEL_PLAYBOOK_REPLY,
+  SENTINEL_PLAYBOOK_REPLY_ID,
+  SENTINEL_PLAYBOOK_SAVED_ID,
   VIEWER,
   buildAgentAutomationConfirm,
   buildAgentAutomationMessage,
   buildMattyToolAuthMessage,
   buildMattyToolConnectedMessage,
   buildMattyToolConnectConfirm,
+  buildSentinelPlaybookCard,
+  buildSentinelPlaybookCardMessage,
+  buildSentinelPlaybookArtifactSession,
+  buildSentinelPlaybookSavedMessage,
   buildWorkspaceDirectory,
   isAgentGroupChatId,
+  isSentinelName,
   resolveAgentProfile,
   resolveSingleAgentProfile,
   type AgentProfile,
   type AgentToolConnectOption,
+  type ChatAttachment,
   type LiveAgentSession,
   type LiveSessionMessage,
   type WorkspaceAgent,
 } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
 import AgentComputerPip from '../../components/AgentComputerPip';
+import AgentPlaybookCard from '../../components/AgentPlaybookCard';
+import AgentPlaybookPreview, {
+  AgentPlaybookRhsHeader,
+} from '../../components/AgentPlaybookPreview';
 import AgentProfilePopover, {
   profileAnchorFromEvent,
   type AgentProfileAnchor,
@@ -83,7 +107,58 @@ const TOOL_CONNECT_STATUS_LABELS = [
   'Connecting to provider…',
 ] as const;
 
+const PLAYBOOK_STATUS_LABELS = [
+  'Thinking…',
+  'Connecting to Playbooks…',
+  'Reading checklist…',
+] as const;
+
+const COMPOSER_FILE_ACCEPT =
+  '.pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.md,.png,.jpg,.jpeg,.zip';
+
+type PendingAttachment = ChatAttachment & {
+  state: 'uploading' | 'uploaded';
+  progress: number;
+};
+
 type ToolConnectPhase = 'idle' | 'streaming' | 'status' | 'done';
+type PlaybookPhase = 'idle' | 'status' | 'streaming' | 'done';
+
+function formatFileMeta(file: File): string {
+  const ext = (file.name.split('.').pop() || 'FILE').toUpperCase();
+  const kb = Math.max(1, Math.round(file.size / 1024));
+  const size =
+    kb >= 1024 ? `${(kb / 1024).toFixed(kb >= 10240 ? 0 : 1)}MB` : `${kb}KB`;
+  return `${ext} ${size}`;
+}
+
+function attachmentFileType(file: File): ChatAttachment['fileType'] {
+  const name = file.name.toLowerCase();
+  const type = file.type;
+  if (type === 'application/pdf' || name.endsWith('.pdf')) return 'pdf';
+  if (
+    type.includes('spreadsheet') ||
+    type.includes('excel') ||
+    /\.(xlsx?|csv)$/.test(name)
+  ) {
+    return 'excel';
+  }
+  if (type.includes('word') || /\.docx?$/.test(name)) return 'word';
+  if (type.includes('presentation') || /\.pptx?$/.test(name)) {
+    return 'powerpoint';
+  }
+  if (type.startsWith('image/') || /\.(png|jpe?g|gif|webp)$/.test(name)) {
+    return 'image-icon';
+  }
+  if (type.includes('zip') || name.endsWith('.zip')) return 'zip';
+  if (/\.(txt|md|markdown)$/.test(name)) return 'text';
+  if (/\.(js|ts|tsx|jsx|json|html|css)$/.test(name)) return 'code';
+  return 'generic';
+}
+
+function nextAttachmentId() {
+  return `file-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
 
 const EMPTY_CHAT_TITLES = [
   'How can I help today?',
@@ -334,6 +409,7 @@ export default function AgentChat({
   const [profileTarget, setProfileTarget] =
     useState<AgentProfileAnchor | null>(null);
   const settingsParam = searchParams.get('settings') === 'true';
+  const artifactParam = searchParams.get('artifact') === '1';
   const tabParam = searchParams.get('tab');
   const settingsTab: SettingsTab = AGENT_SETTINGS_TABS.includes(
     tabParam as SettingsTab,
@@ -344,6 +420,10 @@ export default function AgentChat({
   const sessions = sessionsByAgentId[agent.id] ?? [];
   const activeSessionId = activeSessionByAgentId[agent.id] ?? '';
   const [draft, setDraft] = useState('');
+  const [pendingAttachments, setPendingAttachments] = useState<
+    PendingAttachment[]
+  >([]);
+  const [dragActive, setDragActive] = useState(false);
   const [welcomePlayed, setWelcomePlayed] = useState(false);
   /** One-shot loading + stream for sessions seeded by New agent automation. */
   const [automationIntroActive, setAutomationIntroActive] = useState(false);
@@ -360,9 +440,15 @@ export default function AgentChat({
   const [computerOpen, setComputerOpen] = useState(false);
   const [computerFullscreen, setComputerFullscreen] = useState(false);
   const [computerAnchor, setComputerAnchor] = useState<DOMRect | null>(null);
+  const [playbookPhase, setPlaybookPhase] = useState<PlaybookPhase>('idle');
+  const [playbookStatusIndex, setPlaybookStatusIndex] = useState(0);
+  const [playbookRhsOpen, setPlaybookRhsOpen] = useState(false);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
   const skipOptionsOutsideCloseRef = useRef(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadTimersRef = useRef<Record<string, number>>({});
+  const dragDepthRef = useRef(0);
   const {
     rendered: optionsRendered,
     exiting: optionsExiting,
@@ -372,7 +458,25 @@ export default function AgentChat({
     setComputerOpen(false);
     setComputerFullscreen(false);
     setComputerAnchor(null);
+    setPendingAttachments([]);
+    setDragActive(false);
+    dragDepthRef.current = 0;
+    setPlaybookPhase('idle');
+    setPlaybookStatusIndex(0);
+    setPlaybookRhsOpen(false);
+    Object.values(uploadTimersRef.current).forEach((id) =>
+      window.clearTimeout(id),
+    );
+    uploadTimersRef.current = {};
   }, [agent.id]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(uploadTimersRef.current).forEach((id) =>
+        window.clearTimeout(id),
+      );
+    };
+  }, []);
 
   useOutsideClose(optionsMenuRef, optionsOpen && !optionsExiting, () => {
     if (skipOptionsOutsideCloseRef.current) {
@@ -420,6 +524,11 @@ export default function AgentChat({
   );
   const playConfirmStream =
     toolConnectPhase === 'streaming' && Boolean(confirmMessage);
+  const playbookReplyMessage = activeSession?.messages.find(
+    (message) => message.id === SENTINEL_PLAYBOOK_REPLY_ID,
+  );
+  const playPlaybookStream =
+    playbookPhase === 'streaming' && Boolean(playbookReplyMessage);
   const avatarRevealKey = playAutomationIntro
     ? `automation-${activeSessionId}`
     : agent.id;
@@ -435,6 +544,10 @@ export default function AgentChat({
     playConfirmStream ? (confirmMessage?.paragraphs ?? []) : [],
     playConfirmStream,
   );
+  const streamedPlaybookParagraphs = useStreamedParagraphs(
+    playPlaybookStream ? (playbookReplyMessage?.paragraphs ?? []) : [],
+    playPlaybookStream,
+  );
   const showDots =
     playIntro &&
     (avatarPhase === 'loading' || avatarPhase === 'revealing');
@@ -449,10 +562,19 @@ export default function AgentChat({
     !playConfirmStream ||
     streamedConfirmParagraphs.join('\n') ===
       (confirmMessage?.paragraphs ?? []).join('\n');
+  const playbookStreamComplete =
+    !playPlaybookStream ||
+    streamedPlaybookParagraphs.join('\n') ===
+      (playbookReplyMessage?.paragraphs ?? []).join('\n');
   const toolConnectStatusLabel =
     toolConnectPhase === 'status'
       ? TOOL_CONNECT_STATUS_LABELS[toolConnectStatusIndex]
       : null;
+  const playbookStatusLabel =
+    playbookPhase === 'status'
+      ? PLAYBOOK_STATUS_LABELS[playbookStatusIndex]
+      : null;
+  const statusLabel = playbookStatusLabel ?? toolConnectStatusLabel;
 
   useEffect(() => {
     if (!playIntro) {
@@ -515,6 +637,75 @@ export default function AgentChat({
     updateSessionsForAgent,
   ]);
 
+  // Sentinel PDF → Playbook: cycle think/connect statuses, then stream reply.
+  useEffect(() => {
+    if (playbookPhase !== 'status') return;
+    const id = window.setTimeout(() => {
+      if (playbookStatusIndex < PLAYBOOK_STATUS_LABELS.length - 1) {
+        setPlaybookStatusIndex((index) => index + 1);
+        return;
+      }
+      const reply: LiveSessionMessage = {
+        ...SENTINEL_PLAYBOOK_REPLY,
+        timestamp: formatChatTime(),
+        role: 'agent',
+      };
+      updateSessionsForAgent(agent.id, (prev) =>
+        prev.map((session) => {
+          if (session.id !== activeSessionId) return session;
+          const withoutReply = session.messages.filter(
+            (message) => message.id !== SENTINEL_PLAYBOOK_REPLY_ID,
+          );
+          return {
+            ...session,
+            messages: [...withoutReply, reply],
+          };
+        }),
+      );
+      setPlaybookPhase('streaming');
+    }, TOOL_CONNECT_STATUS_MS);
+    return () => window.clearTimeout(id);
+  }, [
+    playbookPhase,
+    playbookStatusIndex,
+    agent.id,
+    activeSessionId,
+    updateSessionsForAgent,
+  ]);
+
+  // After playbook reply streams, post the draft card and open the RHS preview.
+  useEffect(() => {
+    if (playbookPhase !== 'streaming' || !playbookStreamComplete) return;
+    const cardMessage: LiveSessionMessage = {
+      ...buildSentinelPlaybookCardMessage(formatChatTime()),
+      role: 'agent',
+    };
+    updateSessionsForAgent(agent.id, (prev) =>
+      prev.map((session) => {
+        if (session.id !== activeSessionId) return session;
+        if (
+          session.messages.some(
+            (message) => message.id === SENTINEL_PLAYBOOK_CARD_ID,
+          )
+        ) {
+          return session;
+        }
+        return {
+          ...session,
+          messages: [...session.messages, cardMessage],
+        };
+      }),
+    );
+    setPlaybookRhsOpen(true);
+    setPlaybookPhase('done');
+  }, [
+    playbookPhase,
+    playbookStreamComplete,
+    agent.id,
+    activeSessionId,
+    updateSessionsForAgent,
+  ]);
+
   useEffect(() => {
     setDraft('');
     setWelcomePlayed(false);
@@ -525,6 +716,9 @@ export default function AgentChat({
     setToolPostReady(false);
     setOptionsOpen(false);
     setSettingsOpen(settingsParam);
+    setPlaybookPhase('idle');
+    setPlaybookStatusIndex(0);
+    setPlaybookRhsOpen(false);
   }, [agent.id]);
 
   useEffect(() => {
@@ -532,6 +726,30 @@ export default function AgentChat({
       setSettingsOpen(true);
     }
   }, [settingsParam]);
+
+  // Artifact scene: hydrate Sentinel PDF → playbook thread with RHS open.
+  useEffect(() => {
+    if (!artifactParam) return;
+    if (!(agent.id === 'sentinel' || isSentinelName(agent.name))) return;
+
+    const artifactSession = buildSentinelPlaybookArtifactSession();
+    updateSessionsForAgent(agent.id, (prev) => {
+      const rest = prev.filter((session) => session.id !== artifactSession.id);
+      return [artifactSession, ...rest];
+    });
+    setActiveSessionForAgent(agent.id, artifactSession.id);
+    setWelcomePlayed(true);
+    setPlaybookPhase('done');
+    setPlaybookStatusIndex(0);
+    setPlaybookRhsOpen(true);
+    setSettingsOpen(false);
+  }, [
+    artifactParam,
+    agent.id,
+    agent.name,
+    updateSessionsForAgent,
+    setActiveSessionForAgent,
+  ]);
 
   useEffect(() => {
     if (activeSessionId && activeSessionId !== 'welcome') {
@@ -585,6 +803,10 @@ export default function AgentChat({
     setWelcomePlayed(true);
     setAutomationIntroActive(false);
     setDraft('');
+    setPendingAttachments([]);
+    setPlaybookPhase('idle');
+    setPlaybookStatusIndex(0);
+    setPlaybookRhsOpen(false);
     setOptionsOpen(false);
     startNewChatForAgent(agent.id);
   };
@@ -626,27 +848,157 @@ export default function AgentChat({
     setAutomationIntroActive(true);
   };
 
+  const clearPendingAttachment = (attachmentId: string) => {
+    const timer = uploadTimersRef.current[attachmentId];
+    if (timer) {
+      window.clearTimeout(timer);
+      delete uploadTimersRef.current[attachmentId];
+    }
+    setPendingAttachments((prev) =>
+      prev.filter((attachment) => attachment.id !== attachmentId),
+    );
+  };
+
+  const queueFilesForUpload = (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (list.length === 0) return;
+
+    for (const file of list) {
+      const id = nextAttachmentId();
+      const pending: PendingAttachment = {
+        id,
+        fileName: file.name,
+        fileMeta: formatFileMeta(file),
+        fileType: attachmentFileType(file),
+        state: 'uploading',
+        progress: 0,
+      };
+      setPendingAttachments((prev) => [...prev, pending]);
+
+      let progress = 0;
+      const tick = () => {
+        progress = Math.min(100, progress + 10 + Math.random() * 18);
+        const done = progress >= 100;
+        setPendingAttachments((prev) =>
+          prev.map((attachment) =>
+            attachment.id === id
+              ? {
+                  ...attachment,
+                  progress: Math.floor(progress),
+                  state: done ? 'uploaded' : 'uploading',
+                }
+              : attachment,
+          ),
+        );
+        if (!done) {
+          uploadTimersRef.current[id] = window.setTimeout(tick, 70);
+        } else {
+          delete uploadTimersRef.current[id];
+        }
+      };
+      uploadTimersRef.current[id] = window.setTimeout(tick, 50);
+    }
+  };
+
+  const onCanvasDragEnter = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragDepthRef.current += 1;
+    if (event.dataTransfer.types.includes('Files')) {
+      setDragActive(true);
+    }
+  };
+
+  const onCanvasDragLeave = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+    if (dragDepthRef.current === 0) {
+      setDragActive(false);
+    }
+  };
+
+  const onCanvasDragOver = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer.types.includes('Files')) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  };
+
+  const onCanvasDrop = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragDepthRef.current = 0;
+    setDragActive(false);
+    if (event.dataTransfer.files?.length) {
+      queueFilesForUpload(event.dataTransfer.files);
+    }
+  };
+
+  const onFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files?.length) {
+      queueFilesForUpload(event.target.files);
+    }
+    event.target.value = '';
+  };
+
   const sendDraft = () => {
     const text = draft.trim();
-    if (!text) return;
+    const readyAttachments = pendingAttachments.filter(
+      (attachment) => attachment.state === 'uploaded',
+    );
+    const uploading = pendingAttachments.some(
+      (attachment) => attachment.state === 'uploading',
+    );
+    if (uploading) return;
+    if (!text && readyAttachments.length === 0) return;
+
+    const attachments: ChatAttachment[] | undefined =
+      readyAttachments.length > 0
+        ? readyAttachments.map(
+            ({ id, fileName, fileMeta, fileType }) => ({
+              id,
+              fileName,
+              fileMeta,
+              fileType,
+            }),
+          )
+        : undefined;
 
     const message: LiveSessionMessage = {
       id: nextId('msg'),
       role: 'user',
       timestamp: formatChatTime(),
-      paragraphs: [text],
+      paragraphs: text ? [text] : [],
+      attachments,
     };
+
+    const preview =
+      text || readyAttachments[0]?.fileName || 'Attachment';
+
+    const isSentinel =
+      agent.id === 'sentinel' || isSentinelName(agent.name);
+    const startPlaybookFlow =
+      isSentinel &&
+      Boolean(attachments?.some((attachment) => attachment.fileType === 'pdf'));
 
     let targetId = activeSession?.id;
     if (!targetId) {
       const created: LiveAgentSession = {
         id: nextId('chat'),
-        preview: text,
+        preview,
         messages: [message],
       };
       updateSessionsForAgent(agent.id, (prev) => [created, ...prev]);
       setActiveSessionForAgent(agent.id, created.id);
       setDraft('');
+      setPendingAttachments([]);
+      if (startPlaybookFlow) {
+        setPlaybookStatusIndex(0);
+        setPlaybookRhsOpen(false);
+        setPlaybookPhase('status');
+      }
       return;
     }
 
@@ -655,12 +1007,18 @@ export default function AgentChat({
         if (session.id !== targetId) return session;
         return {
           ...session,
-          preview: text,
+          preview,
           messages: [...session.messages, message],
         };
       }),
     );
     setDraft('');
+    setPendingAttachments([]);
+    if (startPlaybookFlow) {
+      setPlaybookStatusIndex(0);
+      setPlaybookRhsOpen(false);
+      setPlaybookPhase('status');
+    }
   };
 
   const selectAttachmentOption = (
@@ -735,13 +1093,82 @@ export default function AgentChat({
     );
   };
 
+  const savePlaybookDraft = () => {
+    const draft = INCIDENT_RESPONSE_PLAYBOOK_DRAFT;
+    const activeCard = buildSentinelPlaybookCard(draft, 'active');
+    const savedMessage: LiveSessionMessage = {
+      ...buildSentinelPlaybookSavedMessage(formatChatTime(), draft),
+      role: 'agent',
+    };
+    updateSessionsForAgent(agent.id, (prev) =>
+      prev.map((session) => {
+        if (session.id !== activeSessionId) return session;
+        const alreadySaved = session.messages.some(
+          (message) => message.id === SENTINEL_PLAYBOOK_SAVED_ID,
+        );
+        const messages = session.messages.map((message) =>
+          message.id === SENTINEL_PLAYBOOK_CARD_ID && message.playbookCard
+            ? { ...message, playbookCard: activeCard }
+            : message,
+        );
+        if (alreadySaved) {
+          return { ...session, messages };
+        }
+        return {
+          ...session,
+          messages: [...messages, savedMessage],
+        };
+      }),
+    );
+  };
+
+  const canSend =
+    (Boolean(draft.trim()) ||
+      pendingAttachments.some((attachment) => attachment.state === 'uploaded')) &&
+    !pendingAttachments.some((attachment) => attachment.state === 'uploading');
+
   const composer = (
-    <div className={styles['agent-chat__composer']}>
+    <div
+      className={[
+        styles['agent-chat__composer'],
+        pendingAttachments.length > 0
+          ? styles['agent-chat__composer--has-attachments']
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <input
+        ref={fileInputRef}
+        type="file"
+        className={styles['agent-chat__file-input']}
+        accept={COMPOSER_FILE_ACCEPT}
+        multiple
+        aria-hidden
+        tabIndex={-1}
+        onChange={onFileInputChange}
+      />
+      {pendingAttachments.length > 0 ? (
+        <div className={styles['agent-chat__composer-attachments']}>
+          {pendingAttachments.map((attachment) => (
+            <AttachmentCard
+              key={attachment.id}
+              fileName={attachment.fileName}
+              fileMeta={attachment.fileMeta}
+              fileType={attachment.fileType}
+              state={attachment.state}
+              progress={attachment.progress}
+              onRemove={() => clearPendingAttachment(attachment.id)}
+            />
+          ))}
+        </div>
+      ) : null}
       <div className={styles['agent-chat__input']}>
         <button
           type="button"
           className={styles['agent-chat__input-plus']}
           aria-label="Add attachment"
+          onClick={() => fileInputRef.current?.click()}
         >
           <Icon glyph={<PlusIcon />} size="16" />
         </button>
@@ -763,7 +1190,7 @@ export default function AgentChat({
           type="button"
           className={styles['agent-chat__input-send']}
           aria-label="Send message"
-          disabled={!draft.trim()}
+          disabled={!canSend}
           onClick={sendDraft}
         >
           <Icon glyph={<SendOutlineIcon />} size="16" />
@@ -788,11 +1215,26 @@ export default function AgentChat({
           className={[
             styles['agent-chat__canvas'],
             isEmptyChat ? styles['agent-chat__canvas--empty'] : '',
+            dragActive ? styles['agent-chat__canvas--drag'] : '',
           ]
             .filter(Boolean)
             .join(' ')}
           aria-label={`Chat with ${agent.name}`}
+          onDragEnter={onCanvasDragEnter}
+          onDragLeave={onCanvasDragLeave}
+          onDragOver={onCanvasDragOver}
+          onDrop={onCanvasDrop}
         >
+          {dragActive ? (
+            <div
+              className={styles['agent-chat__drop-overlay']}
+              aria-hidden
+            >
+              <p className={styles['agent-chat__drop-overlay-label']}>
+                Drop file to attach
+              </p>
+            </div>
+          ) : null}
           <header className={styles['agent-chat__header']}>
             <div className={styles['agent-chat__header-title']}>
               {!isGroupChat ? (
@@ -921,6 +1363,23 @@ export default function AgentChat({
                                 {message.paragraphs.map((paragraph, pIndex) => (
                                   <p key={pIndex}>{paragraph}</p>
                                 ))}
+                                {message.attachments?.length ? (
+                                  <div
+                                    className={
+                                      styles['agent-chat__message-attachments']
+                                    }
+                                  >
+                                    {message.attachments.map((attachment) => (
+                                      <AttachmentCard
+                                        key={attachment.id}
+                                        fileName={attachment.fileName}
+                                        fileMeta={attachment.fileMeta}
+                                        fileType={attachment.fileType}
+                                        state="default"
+                                      />
+                                    ))}
+                                  </div>
+                                ) : null}
                               </div>
                             </div>
                           </article>
@@ -930,6 +1389,8 @@ export default function AgentChat({
                       const isIntro = playIntro && index === 0;
                       const isConfirm =
                         message.id === MATTY_TOOL_CONNECT_CONFIRM_ID;
+                      const isPlaybookReply =
+                        message.id === SENTINEL_PLAYBOOK_REPLY_ID;
                       const isToolPost =
                         playWelcomeIntro &&
                         message.id === MATTY_TOOL_CONNECT_MESSAGE.id;
@@ -937,14 +1398,18 @@ export default function AgentChat({
                         isIntro ||
                         isToolPost ||
                         (isConfirm && playConfirmStream) ||
+                        (isPlaybookReply && playPlaybookStream) ||
                         (message.id === MATTY_TOOL_AUTH_ID &&
                           toolConnectPhase === 'done') ||
-                        message.id === MATTY_TOOL_CONNECTED_ID;
+                        message.id === MATTY_TOOL_CONNECTED_ID ||
+                        message.id === SENTINEL_PLAYBOOK_CARD_ID;
                       const paragraphs = isIntro
                         ? streamedParagraphs
                         : isConfirm && playConfirmStream
                           ? streamedConfirmParagraphs
-                          : message.paragraphs;
+                          : isPlaybookReply && playPlaybookStream
+                            ? streamedPlaybookParagraphs
+                            : message.paragraphs;
 
                       return (
                         <article
@@ -1061,13 +1526,19 @@ export default function AgentChat({
                                     onConnected={completeToolAuth}
                                   />
                                 ) : null}
+                                {message.playbookCard ? (
+                                  <AgentPlaybookCard
+                                    card={message.playbookCard}
+                                    onOpen={() => setPlaybookRhsOpen(true)}
+                                  />
+                                ) : null}
                               </div>
                             </div>
                           ) : null}
                         </article>
                       );
                     })}
-                    {toolConnectStatusLabel ? (
+                    {statusLabel ? (
                       <div
                         className={styles['agent-chat__status']}
                         role="status"
@@ -1075,10 +1546,10 @@ export default function AgentChat({
                       >
                         <Spinner
                           size={12}
-                          aria-label={toolConnectStatusLabel}
+                          aria-label={statusLabel}
                         />
                         <span className={styles['agent-chat__status-label']}>
-                          {toolConnectStatusLabel}
+                          {statusLabel}
                         </span>
                       </div>
                     ) : null}
@@ -1090,6 +1561,21 @@ export default function AgentChat({
             </>
           )}
         </section>
+
+        {playbookRhsOpen ? (
+          <div className={styles['agent-chat__rhs']}>
+            <RightSidebar
+              header={
+                <AgentPlaybookRhsHeader
+                  onClose={() => setPlaybookRhsOpen(false)}
+                  onSave={savePlaybookDraft}
+                />
+              }
+            >
+              <AgentPlaybookPreview draft={INCIDENT_RESPONSE_PLAYBOOK_DRAFT} />
+            </RightSidebar>
+          </div>
+        ) : null}
       </div>
 
       {optionsRendered && optionsAnchor

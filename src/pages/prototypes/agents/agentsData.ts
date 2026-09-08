@@ -704,6 +704,66 @@ export type AgentChatMessage = {
   toolOptions?: AgentToolConnectOption[];
   /** Interactive OAuth / connect attachment after tool selection. */
   authCard?: AgentToolAuthCard;
+  /** Files shared in the message (composer upload / PDF → Playbook). */
+  attachments?: ChatAttachment[];
+  /** In-thread playbook draft card (Sentinel PDF → Playbook). */
+  playbookCard?: ChatPlaybookCard;
+};
+
+/** File chip on a chat message (mirrors AttachmentCard props we persist). */
+export type ChatAttachment = {
+  id: string;
+  fileName: string;
+  fileMeta: string;
+  fileType:
+    | 'text'
+    | 'word'
+    | 'excel'
+    | 'powerpoint'
+    | 'pdf'
+    | 'image-icon'
+    | 'generic'
+    | 'code'
+    | 'zip';
+};
+
+/** Playbook summary shown as an in-thread card (draft until saved). */
+export type ChatPlaybookCard = {
+  title: string;
+  subtitle: string;
+  stageCount: number;
+  taskCount: number;
+  status: 'draft' | 'active';
+};
+
+export type PlaybookDraftStage = {
+  id: string;
+  name: string;
+  tasks: {
+    id: string;
+    label: string;
+    description?: string;
+    assignee?: string;
+  }[];
+};
+
+export type PlaybookDraft = {
+  title: string;
+  sourceFileName: string;
+  summary: string;
+  stages: PlaybookDraftStage[];
+  statusUpdateEvery: string;
+  statusChannels: string;
+  statusWebhooks: string;
+  statusTemplate: string[];
+  retrospectiveReminder: string;
+  retrospectiveMetrics: {
+    id: string;
+    label: string;
+    target: string;
+    icon: 'cost' | 'time' | 'customers';
+  }[];
+  retrospectiveTemplate: string[];
 };
 
 export type AgentChatSession = {
@@ -727,6 +787,204 @@ export const MATTY_WELCOME_MESSAGE: AgentChatMessage = {
     'I think a good next step would be to connect to your tools so I can help you get work done.',
   ],
 };
+
+/** Opening Sentinel thread — points at Playbooks / incident response. */
+export const SENTINEL_WELCOME_MESSAGE: AgentChatMessage = {
+  id: 'sentinel-welcome',
+  timestamp: '10:43 AM',
+  paragraphs: [
+    "Hi Priya, I'm Sentinel — a monitoring agent best suited to watch service health, correlate signals when something breaks, and help the team respond.",
+    "If you'd like to create a Playbook, one easy way to do that is to attach a pre-existing checklist document like a PDF or spreadsheet.",
+  ],
+};
+
+export const SENTINEL_PLAYBOOK_REPLY_ID = 'sentinel-playbook-reply';
+export const SENTINEL_PLAYBOOK_CARD_ID = 'sentinel-playbook-card';
+export const SENTINEL_PLAYBOOK_SAVED_ID = 'sentinel-playbook-saved';
+
+export const SENTINEL_PLAYBOOK_REPLY: AgentChatMessage = {
+  id: SENTINEL_PLAYBOOK_REPLY_ID,
+  timestamp: '10:44 AM',
+  paragraphs: [
+    "I've got the steps for your playbook now. I'll get started on that now.",
+  ],
+};
+
+/** Playbook draft from Figma 134:40631 (Agentic UX Research). */
+export const INCIDENT_RESPONSE_PLAYBOOK_DRAFT: PlaybookDraft = {
+  title: 'Incident Response: Checklist v1',
+  sourceFileName: 'Legacy_Incident_Checklist.pdf',
+  summary:
+    "Converted by Sentinel from the reliability team's legacy PDF checklist (Scene 1.4) and approved by Warden before activation. Deployment-related tasks are pre-assigned to Otto.",
+  stages: [
+    {
+      id: 'triage',
+      name: 'Triage',
+      tasks: [
+        { id: 'impact', label: 'Confirm impact and affected services' },
+        {
+          id: 'ticket',
+          label: 'Open incident ticket',
+          description:
+            'Populate the ticket with the impact summary Sentinel already pulled.',
+        },
+        { id: 'severity', label: 'Assign severity level (e.g. #sev-2)' },
+      ],
+    },
+    {
+      id: 'investigate',
+      name: 'Investigate Root Cause',
+      tasks: [
+        {
+          id: 'deploys',
+          label: 'Check recent deployments for correlated changes',
+        },
+        {
+          id: 'infra',
+          label: 'Check for concurrent infrastructure events',
+        },
+        {
+          id: 'reconcile',
+          label: 'Reconcile findings and confirm root cause',
+          description:
+            'If theories conflict, resolve by timeline correlation with the error onset.',
+        },
+      ],
+    },
+  ],
+  statusUpdateEvery: '2 days',
+  statusChannels: '3 channels',
+  statusWebhooks: '1 outgoing webhook',
+  statusTemplate: [
+    '**Summary**',
+    '',
+    '**Customer impact**',
+    '',
+    '**About**',
+    '- Severity: #sev-1/2/3',
+    '- Responders:',
+    '- Agents involved: Sentinel, Otto, Auditor',
+    '- ETA to resolution:',
+  ],
+  retrospectiveReminder: '3 hours',
+  retrospectiveMetrics: [
+    { id: 'cost', label: 'Cost', target: 'Target: 220', icon: 'cost' },
+    {
+      id: 'ack',
+      label: 'Time to acknowledge',
+      target: 'Target: 3d 12h',
+      icon: 'time',
+    },
+    {
+      id: 'resolve',
+      label: 'Time to resolve',
+      target: 'Target: 30 days',
+      icon: 'time',
+    },
+    {
+      id: 'customers',
+      label: 'Customers affected',
+      target: 'No target',
+      icon: 'customers',
+    },
+  ],
+  retrospectiveTemplate: [
+    '### Summary',
+    '',
+    '### What was the impact?',
+    '',
+    '### What were the contributing factors?',
+    "Include the reconciled root-cause finding from Sentinel and Otto's investigation, not just the initial theory.",
+    '',
+    '### What was done?',
+    '',
+    '### What did we learn?',
+    '',
+    '### Follow-up tasks',
+  ],
+};
+
+export function buildSentinelPlaybookCard(
+  draft: PlaybookDraft = INCIDENT_RESPONSE_PLAYBOOK_DRAFT,
+  status: ChatPlaybookCard['status'] = 'draft',
+): ChatPlaybookCard {
+  const taskCount = draft.stages.reduce(
+    (sum, stage) => sum + stage.tasks.length,
+    0,
+  );
+  return {
+    title: draft.title,
+    subtitle:
+      status === 'active'
+        ? `From ${draft.sourceFileName}`
+        : `Draft from ${draft.sourceFileName}`,
+    stageCount: draft.stages.length,
+    taskCount,
+    status,
+  };
+}
+
+/** Short Sentinel timeline line after saving a playbook draft. */
+export function buildSentinelPlaybookSavedMessage(
+  timestamp: string,
+  draft: PlaybookDraft = INCIDENT_RESPONSE_PLAYBOOK_DRAFT,
+): AgentChatMessage {
+  return {
+    id: SENTINEL_PLAYBOOK_SAVED_ID,
+    timestamp,
+    paragraphs: [`Saved as ${draft.title}`],
+  };
+}
+
+export function buildSentinelPlaybookCardMessage(
+  timestamp: string,
+  draft: PlaybookDraft = INCIDENT_RESPONSE_PLAYBOOK_DRAFT,
+): AgentChatMessage {
+  return {
+    id: SENTINEL_PLAYBOOK_CARD_ID,
+    timestamp,
+    paragraphs: [],
+    playbookCard: buildSentinelPlaybookCard(draft),
+  };
+}
+
+/** PDF attachment used in Scene 1.4 / Artifact scene. */
+export const SENTINEL_PLAYBOOK_PDF_ATTACHMENT: ChatAttachment = {
+  id: 'legacy-incident-checklist-pdf',
+  fileName: 'Legacy_Incident_Checklist.pdf',
+  fileMeta: 'PDF · 1 KB',
+  fileType: 'pdf',
+};
+
+/**
+ * Fully hydrated Sentinel thread for the Artifact scene switcher —
+ * welcome + PDF + playbook reply + draft card (RHS opens separately).
+ */
+export function buildSentinelPlaybookArtifactSession(): LiveAgentSession {
+  return {
+    id: 'welcome',
+    preview: SENTINEL_PLAYBOOK_PDF_ATTACHMENT.fileName,
+    messages: [
+      { ...SENTINEL_WELCOME_MESSAGE, role: 'agent' },
+      {
+        id: 'sentinel-playbook-pdf',
+        role: 'user',
+        timestamp: '10:44 AM',
+        paragraphs: [],
+        attachments: [SENTINEL_PLAYBOOK_PDF_ATTACHMENT],
+      },
+      {
+        ...SENTINEL_PLAYBOOK_REPLY,
+        timestamp: '10:44 AM',
+        role: 'agent',
+      },
+      {
+        ...buildSentinelPlaybookCardMessage('10:44 AM'),
+        role: 'agent',
+      },
+    ],
+  };
+}
 
 /** Second Matty post — pick a tool to connect (Figma 71:103091). Copy kept as designed. */
 export const MATTY_TOOL_CONNECT_OPTIONS: AgentToolConnectOption[] = [
@@ -1259,6 +1517,9 @@ export function buildAgentWelcomeMessage(agent: AgentProfile): AgentChatMessage 
   if (isStockMatty) {
     return MATTY_WELCOME_MESSAGE;
   }
+  if (agent.id === 'sentinel' || isSentinelName(agent.name)) {
+    return SENTINEL_WELCOME_MESSAGE;
+  }
   const setup =
     agent.purpose?.trim() ||
     agent.description?.trim() ||
@@ -1279,6 +1540,14 @@ export function buildAgentChatSessions(agent: AgentProfile): AgentChatSession[] 
   }
   if (agent.id === MATTY.id) {
     return MATTY_CHAT_SESSIONS;
+  }
+  if (agent.id === 'sentinel' || isSentinelName(agent.name)) {
+    return [
+      {
+        id: 'welcome',
+        preview: "Hi Priya, I'm Sentinel…",
+      },
+    ];
   }
   return [
     {

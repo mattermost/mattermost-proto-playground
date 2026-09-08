@@ -65,6 +65,45 @@
     }
   }
 
+  // Nested chats: reveal category-style chevron in the 18px left gutter on hover.
+  &__agent-chevron {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sidebar-text);
+    opacity: 0;
+    cursor: pointer;
+    transition:
+      opacity var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition);
+
+    &:focus-visible {
+      opacity: 0.75;
+      outline: 2px solid var(--sidebar-text-active-border);
+      outline-offset: -2px;
+    }
+
+    &--collapsed {
+      opacity: 0.75;
+      transform: rotate(-90deg);
+    }
+  }
+
+  &__agent-row:hover &__agent-chevron,
+  &__agent-row:focus-within &__agent-chevron {
+    opacity: 0.75;
+  }
+
   &__agent-avatar {
     position: absolute;
     top: 0;

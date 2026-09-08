@@ -66,10 +66,10 @@ export default function AgentInviteCard({
           </p>
         ) : (
           <div className={styles['agent-review-card__actions']}>
-            <Button emphasis="tertiary" size="medium" onClick={onDismiss}>
+            <Button emphasis="tertiary" size="small" onClick={onDismiss}>
               Not now
             </Button>
-            <Button emphasis="primary" size="medium" onClick={onAdd}>
+            <Button emphasis="primary" size="small" onClick={onAdd}>
               Add to channel
             </Button>
           </div>

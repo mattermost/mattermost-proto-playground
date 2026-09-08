@@ -8,6 +8,7 @@ function resolveScene(
   newAgentOpen: boolean,
 ): AgentsSceneId {
   if (newAgentOpen) return 'new-agent';
+  if (search.includes('artifact=1')) return 'artifact';
   if (search.includes('tab=tasks')) return 'scheduled-work';
   if (search.includes('settings=true')) return 'agent-settings';
   const normalized =
@@ -74,6 +75,11 @@ export default function AgentsSceneSwitcher({
         closeNewAgent();
         ensureSentinel();
         navigate(`${AGENTS_BASE}/agents/sentinel?settings=true&tab=tasks`);
+        return;
+      case 'artifact':
+        closeNewAgent();
+        ensureSentinel();
+        navigate(`${AGENTS_BASE}/agents/sentinel?artifact=1`);
         return;
       default:
         return;

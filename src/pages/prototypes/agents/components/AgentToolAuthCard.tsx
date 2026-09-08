@@ -49,7 +49,7 @@ export default function AgentToolAuthCard({
         ) : (
           <Button
             emphasis="primary"
-            size="medium"
+            size="small"
             onClick={() => onConnected?.(card)}
           >
             {`Continue with ${label}`}

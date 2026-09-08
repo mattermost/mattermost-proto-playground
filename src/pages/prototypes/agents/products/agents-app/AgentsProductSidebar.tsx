@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
@@ -73,6 +74,9 @@ export default function AgentsProductSidebar({
   );
   const [plusOpen, setPlusOpen] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+  const [collapsedByAgentId, setCollapsedByAgentId] = useState<
+    Record<string, boolean>
+  >({});
   const plusRef = useRef<HTMLDivElement>(null);
 
   const closePlus = useCallback(() => setPlusOpen(false), []);
@@ -83,6 +87,13 @@ export default function AgentsProductSidebar({
     if (next && plusRef.current) {
       setAnchorRect(plusRef.current.getBoundingClientRect());
     }
+  };
+
+  const toggleAgentCollapsed = (agentId: string) => {
+    setCollapsedByAgentId((prev) => ({
+      ...prev,
+      [agentId]: !prev[agentId],
+    }));
   };
 
   return (
@@ -112,11 +123,14 @@ export default function AgentsProductSidebar({
         </div>
 
         <div className={styles['agents-product-sidebar__nav-group']}>
-          <ChannelsSidebarCategory label="Your agents" showChevron />
+          <ChannelsSidebarCategory label="Your agents" showChevron={false} />
           {yourAgents.map((agent) => {
             const isGroup = Boolean(agent.members?.length);
             const sessions = sessionsByAgentId[agent.id] ?? [];
             const activeSessionId = activeSessionByAgentId[agent.id];
+            const hasNestedChats = sessions.length > 1;
+            const sessionsCollapsed = Boolean(collapsedByAgentId[agent.id]);
+            const showSessions = sessions.length > 0 && !sessionsCollapsed;
             return (
               <div
                 key={agent.id}
@@ -132,6 +146,33 @@ export default function AgentsProductSidebar({
                     .filter(Boolean)
                     .join(' ')}
                 >
+                  {hasNestedChats ? (
+                    <button
+                      type="button"
+                      className={[
+                        styles['agents-product-sidebar__agent-chevron'],
+                        sessionsCollapsed
+                          ? styles[
+                              'agents-product-sidebar__agent-chevron--collapsed'
+                            ]
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      aria-label={
+                        sessionsCollapsed
+                          ? `Expand ${agent.name} chats`
+                          : `Collapse ${agent.name} chats`
+                      }
+                      aria-expanded={!sessionsCollapsed}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        toggleAgentCollapsed(agent.id);
+                      }}
+                    >
+                      <Icon glyph={<ChevronDownIcon />} size="12" />
+                    </button>
+                  ) : null}
                   {!isGroup ? (
                     <span
                       className={styles['agents-product-sidebar__agent-avatar']}
@@ -175,7 +216,7 @@ export default function AgentsProductSidebar({
                     />
                   </span>
                 </div>
-                {sessions.length > 0 ? (
+                {showSessions ? (
                   <ul
                     className={styles['agents-product-sidebar__sessions']}
                     aria-label={`${agent.name} chats`}

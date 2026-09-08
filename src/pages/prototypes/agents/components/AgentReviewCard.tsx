@@ -53,7 +53,7 @@ export default function AgentReviewCard({
         {approved ? (
           <p className={styles['agent-review-card__status']}>Approved</p>
         ) : (
-          <Button emphasis="primary" size="medium" onClick={onReview}>
+          <Button emphasis="primary" size="small" onClick={onReview}>
             Review agent
           </Button>
         )}
