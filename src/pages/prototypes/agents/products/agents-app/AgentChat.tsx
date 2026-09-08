@@ -18,6 +18,7 @@ import {
   PopoverMenuGroup,
 } from '@mattermost/compass-ui/components/popover-menu';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
@@ -25,11 +26,15 @@ import {
   AGENT_AUTOMATION_CONFIRM_ID,
   AGENT_AUTOMATION_PROMPT_ID,
   MATTY,
+  MATTY_TOOL_AUTH_ID,
+  MATTY_TOOL_CONNECTED_ID,
   MATTY_TOOL_CONNECT_CONFIRM_ID,
   MATTY_TOOL_CONNECT_MESSAGE,
   VIEWER,
   buildAgentAutomationConfirm,
   buildAgentAutomationMessage,
+  buildMattyToolAuthMessage,
+  buildMattyToolConnectedMessage,
   buildMattyToolConnectConfirm,
   buildWorkspaceDirectory,
   isAgentGroupChatId,
@@ -49,6 +54,7 @@ import AgentSettingsModal, {
   AGENT_SETTINGS_TABS,
   type SettingsTab,
 } from '../../components/AgentSettingsModal';
+import AgentToolAuthCard from '../../components/AgentToolAuthCard';
 import AgentToolConnectCard from '../../components/AgentToolConnectCard';
 import AgentTypingDots from '../../components/AgentTypingDots';
 import { useAgents } from '../../context/AgentsContext';
@@ -64,6 +70,16 @@ const OPTIONS_MENU_EXIT_MS = 150;
 const OPTIONS_MENU_WIDTH = 240;
 /** Brief beat after the welcome stream before the tool-choice post. */
 const TOOL_POST_DELAY_MS = 280;
+/** Dwell time for each post-confirm tool-connect status line. */
+const TOOL_CONNECT_STATUS_MS = 1100;
+
+const TOOL_CONNECT_STATUS_LABELS = [
+  'Thinking…',
+  'Checking connected tools…',
+  'Connecting to provider…',
+] as const;
+
+type ToolConnectPhase = 'idle' | 'streaming' | 'status' | 'done';
 
 const EMPTY_CHAT_TITLES = [
   'How can I help today?',
@@ -319,6 +335,12 @@ export default function AgentChat() {
   const [welcomePlayed, setWelcomePlayed] = useState(false);
   /** One-shot loading + stream for sessions seeded by New agent automation. */
   const [automationIntroActive, setAutomationIntroActive] = useState(false);
+  /** Matty tool-connect: stream confirm → status steps → auth card. */
+  const [toolConnectPhase, setToolConnectPhase] =
+    useState<ToolConnectPhase>('idle');
+  const [toolConnectStatusIndex, setToolConnectStatusIndex] = useState(0);
+  const [pendingToolOption, setPendingToolOption] =
+    useState<AgentToolConnectOption | null>(null);
   const [toolPostReady, setToolPostReady] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [optionsAnchor, setOptionsAnchor] = useState<DOMRect | null>(null);
@@ -355,6 +377,11 @@ export default function AgentChat() {
     activeSession?.messages[0]?.id === AGENT_AUTOMATION_PROMPT_ID;
   /** Shared dots → avatar → stream path for welcome and automation seed. */
   const playIntro = playWelcomeIntro || playAutomationIntro;
+  const confirmMessage = activeSession?.messages.find(
+    (message) => message.id === MATTY_TOOL_CONNECT_CONFIRM_ID,
+  );
+  const playConfirmStream =
+    toolConnectPhase === 'streaming' && Boolean(confirmMessage);
   const avatarRevealKey = playAutomationIntro
     ? `automation-${activeSessionId}`
     : agent.id;
@@ -366,6 +393,10 @@ export default function AgentChat() {
     playIntro ? introParagraphs : [],
     playIntro && showBubble,
   );
+  const streamedConfirmParagraphs = useStreamedParagraphs(
+    playConfirmStream ? (confirmMessage?.paragraphs ?? []) : [],
+    playConfirmStream,
+  );
   const showDots =
     playIntro &&
     (avatarPhase === 'loading' || avatarPhase === 'revealing');
@@ -376,6 +407,14 @@ export default function AgentChat() {
   const firstPostComplete =
     !playIntro ||
     streamedParagraphs.join('\n') === introParagraphs.join('\n');
+  const confirmStreamComplete =
+    !playConfirmStream ||
+    streamedConfirmParagraphs.join('\n') ===
+      (confirmMessage?.paragraphs ?? []).join('\n');
+  const toolConnectStatusLabel =
+    toolConnectPhase === 'status'
+      ? TOOL_CONNECT_STATUS_LABELS[toolConnectStatusIndex]
+      : null;
 
   useEffect(() => {
     if (!playIntro) {
@@ -393,9 +432,58 @@ export default function AgentChat() {
   }, [playIntro, firstPostComplete, showBubble]);
 
   useEffect(() => {
+    if (toolConnectPhase !== 'streaming' || !confirmStreamComplete) {
+      return;
+    }
+    setToolConnectPhase('status');
+    setToolConnectStatusIndex(0);
+  }, [toolConnectPhase, confirmStreamComplete]);
+
+  useEffect(() => {
+    if (toolConnectPhase !== 'status' || !pendingToolOption) {
+      return;
+    }
+    const id = window.setTimeout(() => {
+      if (toolConnectStatusIndex < TOOL_CONNECT_STATUS_LABELS.length - 1) {
+        setToolConnectStatusIndex((index) => index + 1);
+        return;
+      }
+      const authMessage: LiveSessionMessage = {
+        ...buildMattyToolAuthMessage(pendingToolOption, formatChatTime()),
+        role: 'agent',
+      };
+      updateSessionsForAgent(agent.id, (prev) =>
+        prev.map((session) => {
+          if (session.id !== activeSessionId) return session;
+          const withoutAuth = session.messages.filter(
+            (message) => message.id !== MATTY_TOOL_AUTH_ID,
+          );
+          return {
+            ...session,
+            messages: [...withoutAuth, authMessage],
+          };
+        }),
+      );
+      setPendingToolOption(null);
+      setToolConnectPhase('done');
+    }, TOOL_CONNECT_STATUS_MS);
+    return () => window.clearTimeout(id);
+  }, [
+    toolConnectPhase,
+    toolConnectStatusIndex,
+    pendingToolOption,
+    agent.id,
+    activeSessionId,
+    updateSessionsForAgent,
+  ]);
+
+  useEffect(() => {
     setDraft('');
     setWelcomePlayed(false);
     setAutomationIntroActive(false);
+    setToolConnectPhase('idle');
+    setToolConnectStatusIndex(0);
+    setPendingToolOption(null);
     setToolPostReady(false);
     setOptionsOpen(false);
     setSettingsOpen(settingsParam);
@@ -411,6 +499,9 @@ export default function AgentChat() {
     if (activeSessionId && activeSessionId !== 'welcome') {
       setWelcomePlayed(true);
     }
+    setToolConnectPhase('idle');
+    setToolConnectStatusIndex(0);
+    setPendingToolOption(null);
   }, [activeSessionId]);
 
   useEffect(() => {
@@ -545,24 +636,62 @@ export default function AgentChat() {
     const confirmId = isAutomation
       ? AGENT_AUTOMATION_CONFIRM_ID
       : MATTY_TOOL_CONNECT_CONFIRM_ID;
-    const confirmMessage = isAutomation
+    const confirmMessageBody = isAutomation
       ? buildAgentAutomationConfirm(option.id, option.label, formatChatTime())
       : buildMattyToolConnectConfirm(option.label, formatChatTime());
 
     updateSessionsForAgent(agent.id, (prev) =>
       prev.map((session) => {
         if (session.id !== sessionId) return session;
-        const withoutConfirm = session.messages.filter(
-          (message) => message.id !== confirmId,
+        const withoutFollowUps = session.messages.filter(
+          (message) =>
+            message.id !== confirmId &&
+            message.id !== MATTY_TOOL_AUTH_ID &&
+            message.id !== MATTY_TOOL_CONNECTED_ID,
         );
         const confirm: LiveSessionMessage = {
-          ...confirmMessage,
+          ...confirmMessageBody,
           role: 'agent',
         };
         return {
           ...session,
           selectedToolId: option.id,
-          messages: [...withoutConfirm, confirm],
+          messages: [...withoutFollowUps, confirm],
+        };
+      }),
+    );
+
+    if (!isAutomation) {
+      setPendingToolOption(option);
+      setToolConnectStatusIndex(0);
+      setToolConnectPhase('streaming');
+    }
+  };
+
+  const completeToolAuth = (card: NonNullable<LiveSessionMessage['authCard']>) => {
+    const connectedMessage: LiveSessionMessage = {
+      ...buildMattyToolConnectedMessage(card.toolLabel, formatChatTime()),
+      role: 'agent',
+    };
+    updateSessionsForAgent(agent.id, (prev) =>
+      prev.map((session) => {
+        if (session.id !== activeSessionId) return session;
+        const withoutConnected = session.messages.filter(
+          (message) => message.id !== MATTY_TOOL_CONNECTED_ID,
+        );
+        return {
+          ...session,
+          messages: [
+            ...withoutConnected.map((message) =>
+              message.id === MATTY_TOOL_AUTH_ID && message.authCard
+                ? {
+                    ...message,
+                    authCard: { ...message.authCard, connected: true },
+                  }
+                : message,
+            ),
+            connectedMessage,
+          ],
         };
       }),
     );
@@ -721,17 +850,23 @@ export default function AgentChat() {
                       }
 
                       const isIntro = playIntro && index === 0;
+                      const isConfirm =
+                        message.id === MATTY_TOOL_CONNECT_CONFIRM_ID;
                       const isToolPost =
                         playWelcomeIntro &&
                         message.id === MATTY_TOOL_CONNECT_MESSAGE.id;
                       const enterBubble =
                         isIntro ||
                         isToolPost ||
-                        (playWelcomeIntro &&
-                          message.id === MATTY_TOOL_CONNECT_CONFIRM_ID);
+                        (isConfirm && playConfirmStream) ||
+                        (message.id === MATTY_TOOL_AUTH_ID &&
+                          toolConnectPhase === 'done') ||
+                        message.id === MATTY_TOOL_CONNECTED_ID;
                       const paragraphs = isIntro
                         ? streamedParagraphs
-                        : message.paragraphs;
+                        : isConfirm && playConfirmStream
+                          ? streamedConfirmParagraphs
+                          : message.paragraphs;
 
                       return (
                         <article
@@ -839,12 +974,33 @@ export default function AgentChat() {
                                     }
                                   />
                                 ) : null}
+                                {message.authCard ? (
+                                  <AgentToolAuthCard
+                                    card={message.authCard}
+                                    onConnected={completeToolAuth}
+                                  />
+                                ) : null}
                               </div>
                             </div>
                           ) : null}
                         </article>
                       );
                     })}
+                    {toolConnectStatusLabel ? (
+                      <div
+                        className={styles['agent-chat__status']}
+                        role="status"
+                        aria-live="polite"
+                      >
+                        <Spinner
+                          size={12}
+                          aria-label={toolConnectStatusLabel}
+                        />
+                        <span className={styles['agent-chat__status-label']}>
+                          {toolConnectStatusLabel}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
                 </Scrollbar>
               </div>

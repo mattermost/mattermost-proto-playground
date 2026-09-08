@@ -171,15 +171,9 @@ function DirectoryHome({
                   <Tag label={agent.role} size="x-small" />
                 </span>
                 <span className={styles['agents-landing__row-owner']}>
-                  {agent.managedBy ? (
-                    <Tag
-                      label={`Managed by ${agent.managedBy}`}
-                      type="info-dim"
-                      size="x-small"
-                    />
-                  ) : (
-                    <span>{agent.owner}</span>
-                  )}
+                  {agent.managedBy
+                    ? `Managed by ${agent.managedBy}`
+                    : agent.owner}
                 </span>
                 <span className={styles['agents-landing__row-channels']}>
                   {formatChannelList(agent.channels)}

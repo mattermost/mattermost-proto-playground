@@ -687,6 +687,14 @@ export type AgentToolConnectOption = {
   label: string;
 };
 
+export type AgentToolAuthCard = {
+  provider: 'google' | 'github' | 'atlassian';
+  toolId: string;
+  toolLabel: string;
+  /** Set after the fake OAuth popup completes successfully. */
+  connected?: boolean;
+};
+
 export type AgentChatMessage = {
   id: string;
   timestamp: string;
@@ -694,6 +702,8 @@ export type AgentChatMessage = {
   title?: string;
   paragraphs: string[];
   toolOptions?: AgentToolConnectOption[];
+  /** Interactive OAuth / connect attachment after tool selection. */
+  authCard?: AgentToolAuthCard;
 };
 
 export type AgentChatSession = {
@@ -748,6 +758,56 @@ export function buildMattyToolConnectConfirm(
     timestamp,
     paragraphs: [
       `Great — I'll connect ${toolLabel} first.`,
+    ],
+  };
+}
+
+export const MATTY_TOOL_AUTH_ID = 'matty-tool-auth';
+
+export function authProviderForTool(
+  toolId: string,
+): AgentToolAuthCard['provider'] {
+  if (toolId === 'github') return 'github';
+  if (toolId === 'jira') return 'atlassian';
+  return 'google';
+}
+
+export function buildMattyToolAuthMessage(
+  tool: AgentToolConnectOption,
+  timestamp: string,
+): AgentChatMessage {
+  const provider = authProviderForTool(tool.id);
+  const providerLabel =
+    provider === 'github'
+      ? 'GitHub'
+      : provider === 'atlassian'
+        ? 'Atlassian'
+        : 'Google';
+  return {
+    id: MATTY_TOOL_AUTH_ID,
+    timestamp,
+    paragraphs: [
+      `To finish connecting ${tool.label}, authenticate with ${providerLabel} so I can access it securely.`,
+    ],
+    authCard: {
+      provider,
+      toolId: tool.id,
+      toolLabel: tool.label,
+    },
+  };
+}
+
+export const MATTY_TOOL_CONNECTED_ID = 'matty-tool-connected';
+
+export function buildMattyToolConnectedMessage(
+  toolLabel: string,
+  timestamp: string,
+): AgentChatMessage {
+  return {
+    id: MATTY_TOOL_CONNECTED_ID,
+    timestamp,
+    paragraphs: [
+      `You're connected to ${toolLabel}. I can use it whenever you need me.`,
     ],
   };
 }
