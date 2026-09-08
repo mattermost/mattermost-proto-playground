@@ -871,7 +871,7 @@ export const SENTINEL_DEFAULT = {
     'Watches service health, and when something breaks, digs in — correlate the signals, find what changed, tell us what\'s actually wrong.',
   purpose:
     'Watch the health of checkout and payment services. When something breaks, correlate signals, find what changed, and tell the team what is actually wrong.',
-  shape: 'sphere' as AgentShape,
+  shape: 'shield' as AgentShape,
   color: 'blue' as AgentColor,
   model: DEFAULT_AGENT_MODEL,
   visibility: DEFAULT_AGENT_VISIBILITY as AgentVisibility,
@@ -1329,6 +1329,15 @@ export type ChannelMessagePart =
       agentColor?: AgentColor;
     };
 
+/** Interactive attachment on a Matty channel post — opens Agent Settings. */
+export type ChannelAgentReviewCard = {
+  agentId: string;
+  name: string;
+  description: string;
+  /** Set after Priya saves/approves in Agent Settings. */
+  approved?: boolean;
+};
+
 export type ChannelMessage = {
   id: string;
   username: string;
@@ -1339,7 +1348,128 @@ export type ChannelMessage = {
   body: string;
   /** Rich body with inline mention chips. When omitted, render `body`. */
   parts?: ChannelMessagePart[];
+  /** Default `user`. System rows are de-emphasized; agent rows use AgentAvatar. */
+  kind?: 'user' | 'agent' | 'system';
+  agentReviewCard?: ChannelAgentReviewCard;
+  agentShape?: AgentShape;
+  agentColor?: AgentColor;
+  agentImageSrc?: string;
+  /** Emoji reactions under the post (e.g. Sentinel waving after joining). */
+  reactions?: { emoji: string; count: number; byCurrentUser?: boolean }[];
 };
+
+export const MATTY_AGENT_REVIEW_ID = 'matty-agent-review';
+export const SENTINEL_JOINED_SYSTEM_ID = 'sentinel-joined-system';
+export const MATTY_SENTINEL_CONFIRM_ID = 'matty-sentinel-confirm';
+
+export function channelPartsMentionAgent(
+  parts: ChannelMessagePart[],
+  agentId: string,
+): boolean {
+  return parts.some(
+    (part) =>
+      part.type === 'mention' &&
+      part.kind === 'agent' &&
+      part.id === agentId,
+  );
+}
+
+export function buildMattyAgentReviewMessage(
+  timestamp: string,
+): ChannelMessage {
+  return {
+    id: MATTY_AGENT_REVIEW_ID,
+    kind: 'agent',
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp,
+    body: "I can set up a monitoring agent for this channel. Review Sentinel's setup, then save to approve.",
+    parts: [
+      {
+        type: 'text',
+        text: "I can set up a monitoring agent for this channel. Review Sentinel's setup, then save to approve.",
+      },
+    ],
+    agentShape: MATTY.shape,
+    agentColor: MATTY.color,
+    agentReviewCard: {
+      agentId: 'sentinel',
+      name: SENTINEL_DEFAULT.name,
+      description: SENTINEL_DEFAULT.description,
+    },
+  };
+}
+
+export function buildSentinelJoinedSystemMessage(
+  timestamp: string,
+  sentinel: Pick<
+    WorkspaceAgent,
+    'id' | 'name' | 'shape' | 'color' | 'customImageSrc'
+  >,
+): ChannelMessage {
+  return {
+    id: SENTINEL_JOINED_SYSTEM_ID,
+    kind: 'system',
+    username: '',
+    avatarSrc: '',
+    avatarAlt: '',
+    timestamp,
+    body: `${sentinel.name} was created and added to the channel`,
+    parts: [
+      {
+        type: 'mention',
+        id: sentinel.id,
+        label: sentinel.name,
+        avatarSrc: sentinel.customImageSrc ?? '',
+        kind: 'agent',
+        agentShape: sentinel.shape,
+        agentColor: sentinel.color,
+      },
+      {
+        type: 'text',
+        text: ' was created and added to the channel',
+      },
+    ],
+  };
+}
+
+export function buildMattySentinelConfirmMessage(
+  timestamp: string,
+  sentinel: Pick<
+    WorkspaceAgent,
+    'id' | 'name' | 'shape' | 'color' | 'customImageSrc'
+  >,
+): ChannelMessage {
+  return {
+    id: MATTY_SENTINEL_CONFIRM_ID,
+    kind: 'agent',
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp,
+    body: 'Sentinel is now here to monitor services and will notify when thresholds trip.',
+    parts: [
+      {
+        type: 'mention',
+        id: sentinel.id,
+        label: sentinel.name,
+        avatarSrc: sentinel.customImageSrc ?? '',
+        kind: 'agent',
+        agentShape: sentinel.shape,
+        agentColor: sentinel.color,
+      },
+      {
+        type: 'text',
+        text: ' is now here to monitor services and will notify when thresholds trip.',
+      },
+    ],
+    agentShape: MATTY.shape,
+    agentColor: MATTY.color,
+    // Sentinel greets the welcome post after joining.
+    reactions: [{ emoji: '👋', count: 1 }],
+  };
+}
 
 export type MentionCandidate = {
   id: string;
@@ -1528,6 +1658,7 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
 /** Storyline channel tree for the Agents vision demo. */
 export function buildAgentsChannelsSidebarModel(
   activeName = 'service-status',
+  agentAvatarSrc?: (shape: AgentShape, color: AgentColor) => string,
 ): ChannelsSidebarModel {
   return {
     topGroupItems: [
@@ -1607,6 +1738,15 @@ export function buildAgentsChannelsSidebarModel(
         category: { label: 'Direct messages', showChevron: true, showPlusButton: true },
         // Favorited DMs (e.g. Jordan) live only under Favorites.
         items: [
+          {
+            name: MATTY.name,
+            leadingVisual: 'direct-message',
+            avatarSrc: '',
+            avatarAlt: MATTY.name,
+            showAvatarStatus: false,
+            status: 'read',
+            active: activeName === MATTY.name,
+          },
           {
             name: ON_CALL.name,
             leadingVisual: 'direct-message',

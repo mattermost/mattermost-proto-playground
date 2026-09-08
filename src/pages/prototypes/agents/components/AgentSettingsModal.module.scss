@@ -207,7 +207,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(var(--spacing-l) + var(--spacing-m));
     width: 100%;
   }
 
@@ -217,6 +216,78 @@
     align-items: center;
     gap: var(--spacing-s);
     width: 100%;
+  }
+
+  &__avatar-edit {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: visible;
+  }
+
+  &__avatar-badge {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-24);
+    height: var(--icon-size-24);
+    border-radius: var(--radius-full);
+    background: var(--center-channel-bg);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    box-shadow: var(--elevation-2);
+    transition: color var(--duration-quick) var(--ease-transition);
+    pointer-events: none;
+  }
+
+  &__avatar-button {
+    appearance: none;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-full);
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: var(--spacing-xxs);
+    }
+
+    &:hover .agent-settings-modal__avatar-badge,
+    &:focus-visible .agent-settings-modal__avatar-badge {
+      color: var(--center-channel-color);
+    }
+
+    &[aria-expanded='true'] .agent-settings-modal__avatar-badge {
+      opacity: 0;
+    }
+  }
+
+  &__appearance-popover {
+    position: absolute;
+    top: calc(100% + var(--spacing-s));
+    left: 50%;
+    z-index: 10;
+    width: max-content;
+    transform: translateX(-50%);
+    transform-origin: top center;
+    padding: var(--spacing-m);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-4);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    animation: agent-settings-appearance-in var(--duration-quick)
+      var(--ease-entrance) both;
+
+    &--exiting {
+      animation: agent-settings-appearance-out var(--duration-quick)
+        var(--ease-exit) both;
+    }
   }
 
   &__preview-name {
@@ -239,7 +310,7 @@
 
   &__swatches {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-s);
@@ -271,13 +342,15 @@
     transition: transform var(--duration-quick) var(--ease-transition);
   }
 
-  &__upload {
+  &__upload#{&}__upload,
+  &__shuffle#{&}__shuffle {
     flex-shrink: 0;
-    // IconButton defaults to transparent / 8% hover — keep a visible resting fill.
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.56);
 
-    &:hover:not(:disabled):not(:active) {
+    &:hover:not(:disabled):not(:active):not([class*='icon-button--active']):not(
+        [class*='icon-button--toggled']
+      ) {
       background-color: rgba(var(--center-channel-color-rgb), 0.12);
     }
   }
@@ -296,7 +369,7 @@
 
   &__colors {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-xs);
@@ -736,11 +809,12 @@
   }
 
   // Figma Modal Floating Footer — unsaved changes bar.
+  // Outer pad is tighter than the pane (xxxl) so the bar reads wider than the fields.
   &__floating {
     position: absolute;
     inset-inline: 0;
     bottom: 0;
-    padding: var(--spacing-l) var(--spacing-xxxl);
+    padding: var(--spacing-l);
     pointer-events: none;
   }
 
@@ -814,6 +888,28 @@
   }
 }
 
+@keyframes agent-settings-appearance-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes agent-settings-appearance-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.94);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .agent-settings-modal {
     &__backdrop,
@@ -822,12 +918,22 @@
         both;
     }
 
+    &__appearance-popover {
+      animation: agent-settings-modal-fade-in var(--duration-quick)
+        var(--ease-entrance) both;
+    }
+
     &--exiting {
       .agent-settings-modal__backdrop,
       .agent-settings-modal__dialog {
         animation: agent-settings-modal-fade-out var(--duration-quick) var(--ease-exit)
           both;
       }
+    }
+
+    &__appearance-popover--exiting {
+      animation: agent-settings-modal-fade-out var(--duration-quick)
+        var(--ease-exit) both;
     }
   }
 }

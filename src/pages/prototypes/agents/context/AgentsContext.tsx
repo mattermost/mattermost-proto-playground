@@ -11,8 +11,6 @@ import {
   buildCreatedAgent,
   cloneAdvancedConfig,
   DEFAULT_ADVANCED_CONFIG,
-  MATTY,
-  resolveAgentProfile,
   seedAgentLiveSessions,
   SENTINEL_DEFAULT,
   type AgentAdvancedConfig,
@@ -83,31 +81,19 @@ type AgentsContextValue = {
 
 const AgentsContext = createContext<AgentsContextValue | null>(null);
 
-function initialMattySessions(): {
-  sessions: Record<string, LiveAgentSession[]>;
-  active: Record<string, string>;
-} {
-  const matty = resolveAgentProfile(MATTY.id, [], []);
-  const seeded = seedAgentLiveSessions(matty);
-  return {
-    sessions: { [MATTY.id]: seeded },
-    active: { [MATTY.id]: seeded[0]?.id ?? '' },
-  };
-}
-
 export function AgentsProvider({ children }: { children: ReactNode }) {
   const [newAgentOpen, setNewAgentOpen] = useState(false);
   const [newGroupChatOpen, setNewGroupChatOpen] = useState(false);
   const [customAgents, setCustomAgents] = useState<CreatedAgent[]>([]);
   const [groupChats, setGroupChats] = useState<AgentGroupChat[]>([]);
   const [openedAgentIds, setOpenedAgentIds] = useState<string[]>([]);
-  const mattySeed = useMemo(() => initialMattySessions(), []);
+  // Sessions seed on first open of an agent chat (LHS / Chat with Matty / route).
   const [sessionsByAgentId, setSessionsByAgentId] = useState<
     Record<string, LiveAgentSession[]>
-  >(mattySeed.sessions);
+  >({});
   const [activeSessionByAgentId, setActiveSessionByAgentId] = useState<
     Record<string, string>
-  >(mattySeed.active);
+  >({});
 
   const openNewAgent = useCallback(() => setNewAgentOpen(true), []);
   const closeNewAgent = useCallback(() => setNewAgentOpen(false), []);

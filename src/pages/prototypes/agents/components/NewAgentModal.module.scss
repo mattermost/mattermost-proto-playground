@@ -75,12 +75,10 @@
     gap: var(--spacing-xxl);
   }
 
-  // Preview → selectors pair; keep 28 between preview and swatch group.
   &__appearance {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: calc(var(--spacing-l) + var(--spacing-m));
     width: 100%;
   }
 
@@ -99,6 +97,79 @@
     align-items: center;
     gap: var(--spacing-s);
     width: 100%;
+  }
+
+  &__avatar-edit {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: visible;
+  }
+
+  &__avatar-badge {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-24);
+    height: var(--icon-size-24);
+    border-radius: var(--radius-full);
+    background: var(--center-channel-bg);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    box-shadow: var(--elevation-2);
+    transition: color var(--duration-quick) var(--ease-transition);
+    pointer-events: none;
+  }
+
+  &__avatar-button {
+    appearance: none;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-full);
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: var(--spacing-xxs);
+    }
+
+    &:hover .new-agent-modal__avatar-badge,
+    &:focus-visible .new-agent-modal__avatar-badge {
+      color: var(--center-channel-color);
+    }
+
+    &[aria-expanded='true'] .new-agent-modal__avatar-badge {
+      opacity: 0;
+    }
+  }
+
+  // Floated over the name — width hugs the horizontal swatch strip (not the avatar).
+  &__appearance-popover {
+    position: absolute;
+    top: calc(100% + var(--spacing-s));
+    left: 50%;
+    z-index: 10;
+    width: max-content;
+    transform: translateX(-50%);
+    transform-origin: top center;
+    padding: var(--spacing-m);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-4);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    animation: new-agent-appearance-in var(--duration-quick) var(--ease-entrance)
+      both;
+
+    &--exiting {
+      animation: new-agent-appearance-out var(--duration-quick) var(--ease-exit)
+        both;
+    }
   }
 
   // Title-like name under avatar (Figma Frame 1946 / 53:76558;
@@ -167,7 +238,7 @@
 
   &__swatches {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-s);
@@ -202,7 +273,8 @@
 
   // Figma 73:103170 / Icon Button 97:28242 — medium rounded, center-channel/8 fill.
   // Double-class beats IconButton's single-class transparent resting (same-specificity cascade).
-  &__upload#{&}__upload {
+  &__upload#{&}__upload,
+  &__shuffle#{&}__shuffle {
     flex-shrink: 0;
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.56);
@@ -227,7 +299,7 @@
 
   &__colors {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-xs);
@@ -451,6 +523,28 @@
   }
 }
 
+@keyframes new-agent-appearance-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes new-agent-appearance-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.94);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .new-agent-modal {
     &__backdrop,
@@ -458,11 +552,21 @@
       animation: new-agent-modal-fade-in var(--duration-quick) var(--ease-entrance) both;
     }
 
+    &__appearance-popover {
+      animation: new-agent-modal-fade-in var(--duration-quick) var(--ease-entrance)
+        both;
+    }
+
     &--exiting {
       .new-agent-modal__backdrop,
       .new-agent-modal__dialog {
         animation: new-agent-modal-fade-out var(--duration-quick) var(--ease-exit) both;
       }
+    }
+
+    &__appearance-popover--exiting {
+      animation: new-agent-modal-fade-out var(--duration-quick) var(--ease-exit)
+        both;
     }
   }
 }

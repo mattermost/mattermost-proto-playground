@@ -19,7 +19,9 @@ import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import HammerIcon from '@mattermost/compass-icons/components/hammer';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
+import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
+import ShuffleVariantIcon from '@mattermost/compass-icons/components/shuffle-variant';
 import TuneIcon from '@mattermost/compass-icons/components/tune';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Divider } from '@mattermost/compass-ui/components/divider';
@@ -34,6 +36,7 @@ import { TextArea } from '@mattermost/compass-ui/components/text-area';
 import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
   AGENT_ACCESS_ENTRIES,
   AGENT_ACCESS_ROLE_OPTIONS,
@@ -64,6 +67,14 @@ import AgentSettingsToolsPanel from './AgentSettingsToolsPanel';
 import styles from './AgentSettingsModal.module.scss';
 
 const EXIT_MS = 150;
+const APPEARANCE_EXIT_MS = 150;
+
+function pickRandomAppearance(): { shape: AgentShape; color: AgentColor } {
+  return {
+    shape: AGENT_SHAPES[Math.floor(Math.random() * AGENT_SHAPES.length)]!,
+    color: AGENT_COLORS[Math.floor(Math.random() * AGENT_COLORS.length)]!,
+  };
+}
 
 export const AGENT_SETTINGS_TABS = [
   'info',
@@ -198,6 +209,8 @@ type AgentSettingsModalProps = {
   open: boolean;
   agent: AgentProfile;
   initialTab?: SettingsTab;
+  /** Review flow (e.g. channel Matty draft) — always show Approve, even if unchanged. */
+  mode?: 'edit' | 'review';
   onClose: () => void;
   onSave: (updates: AgentUpdates) => void;
 };
@@ -206,12 +219,14 @@ export default function AgentSettingsModal({
   open,
   agent,
   initialTab = 'info',
+  mode = 'edit',
   onClose,
   onSave,
 }: AgentSettingsModalProps) {
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
   const baseId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const appearanceRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [baseline, setBaseline] = useState<DraftState>(() =>
     profileToDraft(agent),
@@ -225,6 +240,15 @@ export default function AgentSettingsModal({
     ),
   );
   const [peopleQuery, setPeopleQuery] = useState('');
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const {
+    rendered: appearanceRendered,
+    exiting: appearanceExiting,
+  } = useExitAnimation(appearanceOpen, APPEARANCE_EXIT_MS);
+
+  useOutsideClose(appearanceRef, appearanceOpen && !appearanceExiting, () =>
+    setAppearanceOpen(false),
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -233,6 +257,7 @@ export default function AgentSettingsModal({
     setDraft(next);
     setActiveTab(initialTab);
     setPeopleQuery('');
+    setAppearanceOpen(false);
     setAccessRoles(
       Object.fromEntries(
         AGENT_ACCESS_ENTRIES.map((entry) => [entry.id, entry.role]),
@@ -244,16 +269,24 @@ export default function AgentSettingsModal({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key !== 'Escape') return;
+      if (appearanceOpen) {
+        e.stopPropagation();
+        setAppearanceOpen(false);
+        return;
+      }
+      onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, onClose, appearanceOpen]);
 
   const isDirty = useMemo(
     () => !draftsEqual(draft, baseline),
     [draft, baseline],
   );
+  const isReview = mode === 'review';
+  const showActions = isReview || isDirty;
 
   const handleCustomImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -266,6 +299,17 @@ export default function AgentSettingsModal({
       }
     };
     reader.readAsDataURL(file);
+  };
+
+  const randomizeAppearance = () => {
+    const random = pickRandomAppearance();
+    setDraft((prev) => ({
+      ...prev,
+      shape: random.shape,
+      color: random.color,
+      customImageSrc: null,
+    }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSave = () => {
@@ -402,15 +446,222 @@ export default function AgentSettingsModal({
                           <div
                             className={styles['agent-settings-modal__preview']}
                           >
-                            <AgentAvatar
-                              shape={draft.shape}
-                              color={draft.color}
-                              size="xl"
-                              eyes
-                              shadow
-                              levitate
-                              imageSrc={draft.customImageSrc ?? undefined}
-                            />
+                            <div
+                              ref={appearanceRef}
+                              className={
+                                styles['agent-settings-modal__avatar-edit']
+                              }
+                            >
+                              <button
+                                type="button"
+                                className={
+                                  styles['agent-settings-modal__avatar-button']
+                                }
+                                aria-label="Edit appearance"
+                                aria-haspopup="dialog"
+                                aria-expanded={appearanceOpen}
+                                onClick={() =>
+                                  setAppearanceOpen((prev) => !prev)
+                                }
+                              >
+                                <AgentAvatar
+                                  shape={draft.shape}
+                                  color={draft.color}
+                                  size="xl"
+                                  eyes
+                                  shadow
+                                  levitate={!appearanceOpen}
+                                  imageSrc={draft.customImageSrc ?? undefined}
+                                />
+                                <span
+                                  className={
+                                    styles['agent-settings-modal__avatar-badge']
+                                  }
+                                  aria-hidden
+                                >
+                                  <Icon
+                                    glyph={<PencilOutlineIcon />}
+                                    size="12"
+                                  />
+                                </span>
+                              </button>
+
+                              {appearanceRendered ? (
+                                <div
+                                  className={[
+                                    styles[
+                                      'agent-settings-modal__appearance-popover'
+                                    ],
+                                    appearanceExiting
+                                      ? styles[
+                                          'agent-settings-modal__appearance-popover--exiting'
+                                        ]
+                                      : '',
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' ')}
+                                  role="dialog"
+                                  aria-label="Appearance"
+                                >
+                                  <div
+                                    className={
+                                      styles['agent-settings-modal__selectors']
+                                    }
+                                  >
+                                    <div
+                                      className={
+                                        styles['agent-settings-modal__swatches']
+                                      }
+                                      role="listbox"
+                                      aria-label="Appearance shape"
+                                    >
+                                      {AGENT_SHAPES.map((s) => (
+                                        <button
+                                          key={s}
+                                          type="button"
+                                          role="option"
+                                          aria-selected={
+                                            !draft.customImageSrc &&
+                                            draft.shape === s
+                                          }
+                                          className={
+                                            styles[
+                                              'agent-settings-modal__swatch'
+                                            ]
+                                          }
+                                          onClick={() => {
+                                            setDraft((prev) => ({
+                                              ...prev,
+                                              shape: s,
+                                              customImageSrc: null,
+                                            }));
+                                            if (fileInputRef.current) {
+                                              fileInputRef.current.value = '';
+                                            }
+                                          }}
+                                        >
+                                          <AgentAvatar
+                                            shape={s}
+                                            color={draft.color}
+                                            size="sm"
+                                            selected={
+                                              !draft.customImageSrc &&
+                                              draft.shape === s
+                                            }
+                                            className={
+                                              styles[
+                                                'agent-settings-modal__swatch-avatar'
+                                              ]
+                                            }
+                                          />
+                                        </button>
+                                      ))}
+                                      <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__file-input'
+                                          ]
+                                        }
+                                        tabIndex={-1}
+                                        aria-hidden
+                                        onChange={handleCustomImageChange}
+                                      />
+                                      <IconButton
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__upload'
+                                          ]
+                                        }
+                                        size="medium"
+                                        rounded
+                                        icon={
+                                          <Icon
+                                            glyph={<PlusIcon />}
+                                            size="20"
+                                          />
+                                        }
+                                        aria-label="Upload custom image"
+                                        onClick={() =>
+                                          fileInputRef.current?.click()
+                                        }
+                                      />
+                                      <IconButton
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__shuffle'
+                                          ]
+                                        }
+                                        size="medium"
+                                        rounded
+                                        icon={
+                                          <Icon
+                                            glyph={<ShuffleVariantIcon />}
+                                            size="20"
+                                          />
+                                        }
+                                        aria-label="Randomize appearance"
+                                        onClick={randomizeAppearance}
+                                      />
+                                    </div>
+
+                                    <div
+                                      className={
+                                        styles['agent-settings-modal__colors']
+                                      }
+                                      role="listbox"
+                                      aria-label="Appearance color"
+                                    >
+                                      {AGENT_COLORS.map((c) => (
+                                        <button
+                                          key={c}
+                                          type="button"
+                                          role="option"
+                                          aria-selected={draft.color === c}
+                                          className={[
+                                            styles[
+                                              'agent-settings-modal__color'
+                                            ],
+                                            draft.color === c
+                                              ? styles[
+                                                  'agent-settings-modal__color--selected'
+                                                ]
+                                              : '',
+                                          ]
+                                            .filter(Boolean)
+                                            .join(' ')}
+                                          onClick={() =>
+                                            setDraft((prev) => ({
+                                              ...prev,
+                                              color: c,
+                                            }))
+                                          }
+                                        >
+                                          <span
+                                            className={
+                                              styles[
+                                                'agent-settings-modal__color-dot'
+                                              ]
+                                            }
+                                            style={{
+                                              ['--agent-avatar-highlight' as string]:
+                                                AGENT_COLOR_STOPS[c].highlight,
+                                              ['--agent-avatar-mid' as string]:
+                                                AGENT_COLOR_STOPS[c].mid,
+                                              ['--agent-avatar-edge' as string]:
+                                                AGENT_COLOR_STOPS[c].edge,
+                                            }}
+                                          />
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </div>
+
                             <p
                               className={
                                 styles['agent-settings-modal__preview-name']
@@ -418,127 +669,6 @@ export default function AgentSettingsModal({
                             >
                               {draft.name.trim() || 'Untitled agent'}
                             </p>
-                          </div>
-
-                          <div
-                            className={
-                              styles['agent-settings-modal__selectors']
-                            }
-                          >
-                            <div
-                              className={
-                                styles['agent-settings-modal__swatches']
-                              }
-                              role="listbox"
-                              aria-label="Appearance shape"
-                            >
-                              {AGENT_SHAPES.map((s) => (
-                                <button
-                                  key={s}
-                                  type="button"
-                                  role="option"
-                                  aria-selected={
-                                    !draft.customImageSrc && draft.shape === s
-                                  }
-                                  className={
-                                    styles['agent-settings-modal__swatch']
-                                  }
-                                  onClick={() => {
-                                    setDraft((prev) => ({
-                                      ...prev,
-                                      shape: s,
-                                      customImageSrc: null,
-                                    }));
-                                    if (fileInputRef.current) {
-                                      fileInputRef.current.value = '';
-                                    }
-                                  }}
-                                >
-                                  <AgentAvatar
-                                    shape={s}
-                                    color={draft.color}
-                                    size="sm"
-                                    selected={
-                                      !draft.customImageSrc &&
-                                      draft.shape === s
-                                    }
-                                    className={
-                                      styles[
-                                        'agent-settings-modal__swatch-avatar'
-                                      ]
-                                    }
-                                  />
-                                </button>
-                              ))}
-                              <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                className={
-                                  styles['agent-settings-modal__file-input']
-                                }
-                                tabIndex={-1}
-                                aria-hidden
-                                onChange={handleCustomImageChange}
-                              />
-                              <IconButton
-                                className={
-                                  styles['agent-settings-modal__upload']
-                                }
-                                size="medium"
-                                rounded
-                                icon={<Icon glyph={<PlusIcon />} size="20" />}
-                                aria-label="Upload custom image"
-                                onClick={() => fileInputRef.current?.click()}
-                              />
-                            </div>
-
-                            <div
-                              className={
-                                styles['agent-settings-modal__colors']
-                              }
-                              role="listbox"
-                              aria-label="Appearance color"
-                            >
-                              {AGENT_COLORS.map((c) => (
-                                <button
-                                  key={c}
-                                  type="button"
-                                  role="option"
-                                  aria-selected={draft.color === c}
-                                  className={[
-                                    styles['agent-settings-modal__color'],
-                                    draft.color === c
-                                      ? styles[
-                                          'agent-settings-modal__color--selected'
-                                        ]
-                                      : '',
-                                  ]
-                                    .filter(Boolean)
-                                    .join(' ')}
-                                  onClick={() =>
-                                    setDraft((prev) => ({
-                                      ...prev,
-                                      color: c,
-                                    }))
-                                  }
-                                >
-                                  <span
-                                    className={
-                                      styles['agent-settings-modal__color-dot']
-                                    }
-                                    style={{
-                                      ['--agent-avatar-highlight' as string]:
-                                        AGENT_COLOR_STOPS[c].highlight,
-                                      ['--agent-avatar-mid' as string]:
-                                        AGENT_COLOR_STOPS[c].mid,
-                                      ['--agent-avatar-edge' as string]:
-                                        AGENT_COLOR_STOPS[c].edge,
-                                    }}
-                                  />
-                                </button>
-                              ))}
-                            </div>
                           </div>
                         </div>
 
@@ -589,7 +719,7 @@ export default function AgentSettingsModal({
                         <Select
                           id={`${baseId}-model`}
                           label="AI Model"
-                          size="large"
+                          size="medium"
                           value={draft.model}
                           options={AGENT_MODEL_OPTIONS}
                           onChange={(val) =>
@@ -896,7 +1026,7 @@ export default function AgentSettingsModal({
                 </Scrollbar>
               </div>
 
-              {isDirty ? (
+              {showActions ? (
                 <div className={styles['agent-settings-modal__floating']}>
                   <div
                     className={
@@ -908,7 +1038,11 @@ export default function AgentSettingsModal({
                         styles['agent-settings-modal__floating-hint']
                       }
                     >
-                      There are unsaved changes
+                      {isReview
+                        ? isDirty
+                          ? 'Review changes, then approve to add this agent'
+                          : 'Approve to add this agent to the channel'
+                        : 'There are unsaved changes'}
                     </p>
                     <div
                       className={
@@ -919,7 +1053,7 @@ export default function AgentSettingsModal({
                         Cancel
                       </Button>
                       <Button emphasis="primary" onClick={handleSave}>
-                        Save
+                        {isReview ? 'Approve' : 'Save'}
                       </Button>
                     </div>
                   </div>

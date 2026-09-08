@@ -53,6 +53,30 @@
     padding-inline: var(--spacing-xs);
   }
 
+  &__header-title-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    min-width: 0;
+    margin: 0;
+    padding: 0 var(--spacing-xxxs) 0 var(--spacing-xxs);
+    border: none;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--center-channel-color);
+    cursor: pointer;
+    text-align: left;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
   &__header-name {
     margin: 0;
     min-width: 0;
@@ -122,7 +146,7 @@
 
   &__canvas--empty .agent-chat__composer {
     width: 100%;
-    max-width: 40rem;
+    max-width: 800px;
     padding: 0;
   }
 
@@ -152,6 +176,9 @@
     flex: 1 1 auto;
     gap: var(--spacing-m);
     min-height: 100%;
+    width: 100%;
+    max-width: 800px;
+    margin-inline: auto;
     padding: var(--spacing-xxl) var(--spacing-xxxxl);
     box-sizing: border-box;
   }
@@ -159,6 +186,7 @@
   &__status {
     display: flex;
     align-items: center;
+    align-self: flex-start;
     gap: var(--spacing-xs);
     padding-inline: calc(
       var(--icon-size-32, 32px) + var(--spacing-xs) + var(--spacing-xs)
@@ -178,7 +206,31 @@
     align-items: flex-start;
     gap: var(--spacing-xs);
     padding-inline: var(--spacing-xs);
+    max-width: 100%;
+  }
+
+  &__message--agent {
     width: 100%;
+
+    .agent-chat__message-bubble {
+      flex: 1 1 auto;
+    }
+  }
+
+  &__message--user {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+    width: fit-content;
+    max-width: 100%;
+
+    .agent-chat__message-bubble {
+      border-radius: var(--radius-xl) 0 var(--radius-xl) var(--radius-xl);
+      transform-origin: top right;
+    }
+
+    .agent-chat__message-meta {
+      justify-content: flex-end;
+    }
   }
 
   &__message-avatar {
@@ -254,8 +306,9 @@
   }
 
   &__message-bubble {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
+    max-width: calc(100% - var(--icon-size-32, 32px) - var(--spacing-xs));
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xxxs);
@@ -330,7 +383,11 @@
 
   &__composer {
     flex: 0 0 auto;
+    width: 100%;
+    max-width: 800px;
+    margin-inline: auto;
     padding: 0 var(--spacing-xxxxl) var(--spacing-xxxxl);
+    box-sizing: border-box;
   }
 
   &__input {
@@ -413,15 +470,10 @@
     }
   }
 
-  &__options-trigger {
-    flex-shrink: 0;
-    display: inline-flex;
-  }
-
   &__options-menu {
     position: fixed;
     z-index: 1200;
-    transform-origin: top right;
+    transform-origin: top left;
     animation: agent-chat-options-in var(--duration-quick) var(--ease-entrance) both;
 
     &--exiting {

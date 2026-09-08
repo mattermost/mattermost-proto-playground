@@ -10,7 +10,9 @@ import { createPortal } from 'react-dom';
 import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
+import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
+import ShuffleVariantIcon from '@mattermost/compass-icons/components/shuffle-variant';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
@@ -19,6 +21,7 @@ import { Select } from '@mattermost/compass-ui/components/select';
 import { TextArea } from '@mattermost/compass-ui/components/text-area';
 import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
   AGENT_COLORS,
   AGENT_COLOR_STOPS,
@@ -34,6 +37,14 @@ import AgentAvatar from './AgentAvatar';
 import styles from './NewAgentModal.module.scss';
 
 const EXIT_MS = 150;
+const APPEARANCE_EXIT_MS = 150;
+
+function pickRandomAppearance(): { shape: AgentShape; color: AgentColor } {
+  return {
+    shape: AGENT_SHAPES[Math.floor(Math.random() * AGENT_SHAPES.length)]!,
+    color: AGENT_COLORS[Math.floor(Math.random() * AGENT_COLORS.length)]!,
+  };
+}
 
 type VisibilityOption = {
   value: AgentVisibility;
@@ -72,25 +83,41 @@ export default function NewAgentModal({
   const purposeLabelId = useId();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const appearanceRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState(SENTINEL_DEFAULT.name);
   const [purpose, setPurpose] = useState(SENTINEL_DEFAULT.description);
-  const [shape, setShape] = useState<AgentShape>(SENTINEL_DEFAULT.shape);
-  const [color, setColor] = useState<AgentColor>(SENTINEL_DEFAULT.color);
+  const [shape, setShape] = useState<AgentShape>(
+    () => pickRandomAppearance().shape,
+  );
+  const [color, setColor] = useState<AgentColor>(
+    () => pickRandomAppearance().color,
+  );
   const [customImageSrc, setCustomImageSrc] = useState<string | null>(null);
   const [model, setModel] = useState<string>(SENTINEL_DEFAULT.model);
   const [visibility, setVisibility] = useState<AgentVisibility>(
     SENTINEL_DEFAULT.visibility,
   );
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const {
+    rendered: appearanceRendered,
+    exiting: appearanceExiting,
+  } = useExitAnimation(appearanceOpen, APPEARANCE_EXIT_MS);
+
+  useOutsideClose(appearanceRef, appearanceOpen && !appearanceExiting, () =>
+    setAppearanceOpen(false),
+  );
 
   useEffect(() => {
     if (!open) return;
+    const random = pickRandomAppearance();
     setName(SENTINEL_DEFAULT.name);
     setPurpose(SENTINEL_DEFAULT.description);
-    setShape(SENTINEL_DEFAULT.shape);
-    setColor(SENTINEL_DEFAULT.color);
+    setShape(random.shape);
+    setColor(random.color);
     setCustomImageSrc(null);
     setModel(SENTINEL_DEFAULT.model);
     setVisibility(SENTINEL_DEFAULT.visibility);
+    setAppearanceOpen(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }, [open]);
 
@@ -106,6 +133,14 @@ export default function NewAgentModal({
     reader.readAsDataURL(file);
   };
 
+  const randomizeAppearance = () => {
+    const random = pickRandomAppearance();
+    setShape(random.shape);
+    setColor(random.color);
+    setCustomImageSrc(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   useEffect(() => {
     if (!open || !rendered || exiting) return;
     nameInputRef.current?.focus();
@@ -114,11 +149,17 @@ export default function NewAgentModal({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key !== 'Escape') return;
+      if (appearanceOpen) {
+        e.stopPropagation();
+        setAppearanceOpen(false);
+        return;
+      }
+      onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, onClose, appearanceOpen]);
 
   if (!rendered) return null;
 
@@ -177,15 +218,153 @@ export default function NewAgentModal({
           <div className={styles['new-agent-modal__body']}>
             <div className={styles['new-agent-modal__appearance']}>
               <div className={styles['new-agent-modal__preview']}>
-                <AgentAvatar
-                  shape={shape}
-                  color={color}
-                  size="xl"
-                  eyes
-                  shadow
-                  levitate
-                  imageSrc={customImageSrc ?? undefined}
-                />
+                <div
+                  ref={appearanceRef}
+                  className={styles['new-agent-modal__avatar-edit']}
+                >
+                  <button
+                    type="button"
+                    className={styles['new-agent-modal__avatar-button']}
+                    aria-label="Edit appearance"
+                    aria-haspopup="dialog"
+                    aria-expanded={appearanceOpen}
+                    onClick={() => setAppearanceOpen((prev) => !prev)}
+                  >
+                    <AgentAvatar
+                      shape={shape}
+                      color={color}
+                      size="xl"
+                      eyes
+                      shadow
+                      levitate={!appearanceOpen}
+                      imageSrc={customImageSrc ?? undefined}
+                    />
+                    <span
+                      className={styles['new-agent-modal__avatar-badge']}
+                      aria-hidden
+                    >
+                      <Icon glyph={<PencilOutlineIcon />} size="12" />
+                    </span>
+                  </button>
+
+                  {appearanceRendered ? (
+                    <div
+                      className={[
+                        styles['new-agent-modal__appearance-popover'],
+                        appearanceExiting
+                          ? styles[
+                              'new-agent-modal__appearance-popover--exiting'
+                            ]
+                          : '',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      role="dialog"
+                      aria-label="Appearance"
+                    >
+                      <div className={styles['new-agent-modal__selectors']}>
+                        <div
+                          className={styles['new-agent-modal__swatches']}
+                          role="listbox"
+                          aria-label="Appearance shape"
+                        >
+                          {AGENT_SHAPES.map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              role="option"
+                              aria-selected={!customImageSrc && shape === s}
+                              className={styles['new-agent-modal__swatch']}
+                              onClick={() => {
+                                setShape(s);
+                                setCustomImageSrc(null);
+                                if (fileInputRef.current) {
+                                  fileInputRef.current.value = '';
+                                }
+                              }}
+                            >
+                              <AgentAvatar
+                                shape={s}
+                                color={color}
+                                size="sm"
+                                selected={!customImageSrc && shape === s}
+                                className={
+                                  styles['new-agent-modal__swatch-avatar']
+                                }
+                              />
+                            </button>
+                          ))}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className={styles['new-agent-modal__file-input']}
+                            tabIndex={-1}
+                            aria-hidden
+                            onChange={handleCustomImageChange}
+                          />
+                          <IconButton
+                            className={styles['new-agent-modal__upload']}
+                            size="medium"
+                            rounded
+                            icon={<Icon glyph={<PlusIcon />} size="20" />}
+                            aria-label="Upload custom image"
+                            onClick={() => fileInputRef.current?.click()}
+                          />
+                          <IconButton
+                            className={styles['new-agent-modal__shuffle']}
+                            size="medium"
+                            rounded
+                            icon={
+                              <Icon glyph={<ShuffleVariantIcon />} size="20" />
+                            }
+                            aria-label="Randomize appearance"
+                            onClick={randomizeAppearance}
+                          />
+                        </div>
+
+                        <div
+                          className={styles['new-agent-modal__colors']}
+                          role="listbox"
+                          aria-label="Appearance color"
+                        >
+                          {AGENT_COLORS.map((c) => (
+                            <button
+                              key={c}
+                              type="button"
+                              role="option"
+                              aria-selected={color === c}
+                              className={[
+                                styles['new-agent-modal__color'],
+                                color === c
+                                  ? styles['new-agent-modal__color--selected']
+                                  : '',
+                              ]
+                                .filter(Boolean)
+                                .join(' ')}
+                              onClick={() => setColor(c)}
+                            >
+                              <span
+                                className={
+                                  styles['new-agent-modal__color-dot']
+                                }
+                                style={{
+                                  ['--agent-avatar-highlight' as string]:
+                                    AGENT_COLOR_STOPS[c].highlight,
+                                  ['--agent-avatar-mid' as string]:
+                                    AGENT_COLOR_STOPS[c].mid,
+                                  ['--agent-avatar-edge' as string]:
+                                    AGENT_COLOR_STOPS[c].edge,
+                                }}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
                 <TextInput
                   ref={nameInputRef}
                   className={styles['new-agent-modal__name']}
@@ -196,92 +375,6 @@ export default function NewAgentModal({
                   size="large"
                   autoFocus
                 />
-              </div>
-
-              <div className={styles['new-agent-modal__selectors']}>
-                <div
-                  className={styles['new-agent-modal__swatches']}
-                  role="listbox"
-                  aria-label="Appearance shape"
-                >
-                  {AGENT_SHAPES.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      role="option"
-                      aria-selected={!customImageSrc && shape === s}
-                      className={styles['new-agent-modal__swatch']}
-                      onClick={() => {
-                        setShape(s);
-                        setCustomImageSrc(null);
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = '';
-                        }
-                      }}
-                    >
-                      <AgentAvatar
-                        shape={s}
-                        color={color}
-                        size="sm"
-                        selected={!customImageSrc && shape === s}
-                        className={styles['new-agent-modal__swatch-avatar']}
-                      />
-                    </button>
-                  ))}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className={styles['new-agent-modal__file-input']}
-                    tabIndex={-1}
-                    aria-hidden
-                    onChange={handleCustomImageChange}
-                  />
-                  <IconButton
-                    className={styles['new-agent-modal__upload']}
-                    size="medium"
-                    rounded
-                    icon={<Icon glyph={<PlusIcon />} size="20" />}
-                    aria-label="Upload custom image"
-                    onClick={() => fileInputRef.current?.click()}
-                  />
-                </div>
-
-                <div
-                  className={styles['new-agent-modal__colors']}
-                  role="listbox"
-                  aria-label="Appearance color"
-                >
-                  {AGENT_COLORS.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      role="option"
-                      aria-selected={color === c}
-                      className={[
-                        styles['new-agent-modal__color'],
-                        color === c
-                          ? styles['new-agent-modal__color--selected']
-                          : '',
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                      onClick={() => setColor(c)}
-                    >
-                      <span
-                        className={styles['new-agent-modal__color-dot']}
-                        style={{
-                          ['--agent-avatar-highlight' as string]:
-                            AGENT_COLOR_STOPS[c].highlight,
-                          ['--agent-avatar-mid' as string]:
-                            AGENT_COLOR_STOPS[c].mid,
-                          ['--agent-avatar-edge' as string]:
-                            AGENT_COLOR_STOPS[c].edge,
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
               </div>
             </div>
 

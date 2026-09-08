@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
-import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
@@ -345,7 +345,7 @@ export default function AgentChat() {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [optionsAnchor, setOptionsAnchor] = useState<DOMRect | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(settingsParam);
-  const optionsButtonRef = useRef<HTMLDivElement>(null);
+  const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
   const skipOptionsOutsideCloseRef = useRef(false);
   const { rendered: optionsRendered, exiting: optionsExiting } =
@@ -760,7 +760,25 @@ export default function AgentChat() {
                   imageSrc={agent.customImageSrc}
                 />
               ) : null}
-              <h1 className={styles['agent-chat__header-name']}>{agent.name}</h1>
+              <button
+                ref={optionsButtonRef}
+                type="button"
+                className={styles['agent-chat__header-title-button']}
+                aria-label={`${agent.name} options`}
+                aria-haspopup="menu"
+                aria-expanded={optionsOpen}
+                onMouseDown={() => {
+                  if (optionsOpen) {
+                    skipOptionsOutsideCloseRef.current = true;
+                  }
+                }}
+                onClick={openOptionsMenu}
+              >
+                <h1 className={styles['agent-chat__header-name']}>
+                  {agent.name}
+                </h1>
+                <Icon glyph={<ChevronDownIcon />} size="16" />
+              </button>
             </div>
             <div className={styles['agent-chat__header-actions']}>
               <IconButton
@@ -770,25 +788,6 @@ export default function AgentChat() {
                 aria-label="New chat"
                 onClick={startNewChat}
               />
-              <div
-                ref={optionsButtonRef}
-                className={styles['agent-chat__options-trigger']}
-                onMouseDown={() => {
-                  if (optionsOpen) {
-                    skipOptionsOutsideCloseRef.current = true;
-                  }
-                }}
-              >
-                <IconButton
-                  size="small"
-                  padding="compact"
-                  icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
-                  aria-label={`${agent.name} options`}
-                  aria-haspopup="menu"
-                  aria-expanded={optionsOpen}
-                  onClick={openOptionsMenu}
-                />
-              </div>
             </div>
           </header>
 
@@ -821,7 +820,10 @@ export default function AgentChat() {
                         return (
                           <article
                             key={message.id}
-                            className={styles['agent-chat__message']}
+                            className={[
+                              styles['agent-chat__message'],
+                              styles['agent-chat__message--user'],
+                            ].join(' ')}
                           >
                             <div className={styles['agent-chat__message-avatar']}>
                               <UserAvatar
@@ -871,7 +873,10 @@ export default function AgentChat() {
                       return (
                         <article
                           key={message.id}
-                          className={styles['agent-chat__message']}
+                          className={[
+                            styles['agent-chat__message'],
+                            styles['agent-chat__message--agent'],
+                          ].join(' ')}
                         >
                           <div
                             className={[
@@ -1025,9 +1030,9 @@ export default function AgentChat() {
                 .join(' ')}
               style={{
                 top: optionsAnchor.bottom + 4,
-                left: Math.max(
-                  8,
-                  optionsAnchor.right - OPTIONS_MENU_WIDTH,
+                left: Math.min(
+                  Math.max(8, optionsAnchor.left),
+                  window.innerWidth - OPTIONS_MENU_WIDTH - 8,
                 ),
                 width: OPTIONS_MENU_WIDTH,
               }}

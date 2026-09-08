@@ -4,7 +4,8 @@ import {
 } from '@mattermost/compass-ui/components/channels-sidebar';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { buildAgentsChannelsSidebarModel } from '../../agentsData';
+import { buildAgentsChannelsSidebarModel, MATTY } from '../../agentsData';
+import { agentAvatarChipSrc } from '../../components/agentAvatarShapes';
 import LhsSidebarHeader from '../../components/LhsSidebarHeader';
 import PlusMenu from '../../components/PlusMenu';
 import { useAgents } from '../../context/AgentsContext';
@@ -20,6 +21,7 @@ export default function ChannelsProductSidebar() {
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const plusRef = useRef<HTMLDivElement>(null);
   const model = buildAgentsChannelsSidebarModel('service-status');
+  const mattyAvatarSrc = agentAvatarChipSrc(MATTY.shape, MATTY.color);
 
   const togglePlus = () => {
     const next = !plusOpen;
@@ -62,6 +64,9 @@ export default function ChannelsProductSidebar() {
               <ChannelSidebarItem
                 key={`${group.key}-${item.name}`}
                 {...item}
+                avatarSrc={
+                  item.name === MATTY.name ? mattyAvatarSrc : item.avatarSrc
+                }
               />
             ))}
           </div>
