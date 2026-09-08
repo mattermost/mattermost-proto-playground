@@ -1,18 +1,32 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Chip } from '@mattermost/compass-ui/components/chip';
-import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
 import { Message } from '@mattermost/compass-ui/components/message';
 import { MessageReactions } from '@mattermost/compass-ui/components/message-reactions';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
+import { RightSidebarHeader } from '@mattermost/compass-ui/components/right-sidebar';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import {
+  ChannelHeader,
+  RightSidebar,
+  RightSidebarChannelMembers,
+  type RightSidebarChannelMember,
+  type RightSidebarChannelMemberGroup,
+} from '@mattermost/compass-proto';
+import {
+  DARIUS,
+  JORDAN,
   MATTY,
   MATTY_AGENT_REVIEW_ID,
+  MATTY_OTTO_INVITE_ID,
+  ON_CALL,
+  OTTO,
   SENTINEL_DEFAULT,
   SERVICE_STATUS_MESSAGES,
   VIEWER,
   buildMattyAgentReviewMessage,
+  buildMattyOttoInviteMessage,
   buildMattySentinelConfirmMessage,
+  buildOttoJoinedSystemMessage,
   buildSentinelJoinedSystemMessage,
   buildWorkspaceDirectory,
   channelPartsMentionAgent,
@@ -25,6 +39,7 @@ import {
 } from '../../agentsData';
 import AddAgentToChannelModal from '../../components/AddAgentToChannelModal';
 import AgentAvatar from '../../components/AgentAvatar';
+import AgentInviteCard from '../../components/AgentInviteCard';
 import AgentProfilePopover, {
   profileAnchorFromEvent,
   type AgentProfileAnchor,
@@ -38,7 +53,47 @@ import { useAgents } from '../../context/AgentsContext';
 import ChannelsProductSidebar from './ChannelsProductSidebar';
 import styles from './ChannelsHome.module.scss';
 
+const CHANNEL_ADMIN_IDS = new Set(['priya']);
+
+const CHANNEL_PEOPLE: RightSidebarChannelMember[] = [
+  {
+    id: 'priya',
+    name: VIEWER.name,
+    secondaryLabel: '@priya.shah',
+    avatarSrc: VIEWER.avatarSrc,
+    status: true,
+  },
+  {
+    id: 'jordan',
+    name: JORDAN.name,
+    secondaryLabel: '@jordan.lee',
+    avatarSrc: JORDAN.avatarSrc,
+    status: true,
+  },
+  {
+    id: 'emma',
+    name: ON_CALL.name,
+    secondaryLabel: '@emma.novak',
+    avatarSrc: ON_CALL.avatarSrc,
+    status: true,
+  },
+  {
+    id: 'darius',
+    name: DARIUS.name,
+    secondaryLabel: '@darius.cole',
+    avatarSrc: DARIUS.avatarSrc,
+    status: true,
+  },
+];
+
+function personIdFromUsername(username: string): string | null {
+  const match = CHANNEL_PEOPLE.find((person) => person.name === username);
+  return match?.id ?? null;
+}
+
 const MATTY_REVIEW_DELAY_MS = 700;
+/** After Sentinel joins, Matty recommends Otto. */
+const MATTY_OTTO_INVITE_DELAY_MS = 1100;
 const STREAM_MS_PER_WORD = 32;
 /** Beat after Matty’s confirm stream before Sentinel’s wave shows. */
 const SENTINEL_WAVE_DELAY_MS = 550;
@@ -90,6 +145,7 @@ function MessageBody({
   body,
   parts,
   onAgentProfile,
+  density = 'default',
 }: {
   body: string;
   parts?: ChannelMessagePart[];
@@ -97,10 +153,14 @@ function MessageBody({
     agentId: string,
     event: { currentTarget: EventTarget & Element },
   ) => void;
+  /** System messages use a smaller chip so it matches muted caption text. */
+  density?: 'default' | 'system';
 }) {
   if (!parts?.length) {
     return <p className={styles['channels-home__post']}>{body}</p>;
   }
+
+  const isSystem = density === 'system';
 
   return (
     <p className={mentionStyles['mention-input__post']}>
@@ -110,7 +170,7 @@ function MessageBody({
         ) : (
           <Chip
             key={`m-${part.id}-${index}`}
-            size="medium-compact"
+            size={isSystem ? 'small' : 'medium-compact'}
             leadingAvatar={{
               src:
                 part.avatarSrc ||
@@ -148,6 +208,7 @@ function MessageBody({
             className={[
               mentionStyles['mention-input__mention-chip'],
               mentionStyles['mention-input__post-chip'],
+              isSystem ? mentionStyles['mention-input__post-chip--system'] : '',
               part.kind === 'agent'
                 ? mentionStyles['mention-input__mention-chip--agent']
                 : '',
@@ -170,6 +231,8 @@ function MattyChannelMessage({
   message,
   onAgentProfile,
   onReview,
+  onInviteAdd,
+  onInviteDismiss,
   cardImageSrc,
 }: {
   message: ChannelMessage;
@@ -178,6 +241,8 @@ function MattyChannelMessage({
     event: { currentTarget: EventTarget & Element },
   ) => void;
   onReview: () => void;
+  onInviteAdd: () => void;
+  onInviteDismiss: () => void;
   cardImageSrc?: string;
 }) {
   const [streamFinished, setStreamFinished] = useState(false);
@@ -243,6 +308,15 @@ function MattyChannelMessage({
             onReview={onReview}
           />
         ) : null}
+        {streamFinished && message.agentInviteCard ? (
+          <AgentInviteCard
+            card={message.agentInviteCard}
+            shape={OTTO.shape}
+            color={OTTO.color}
+            onAdd={onInviteAdd}
+            onDismiss={onInviteDismiss}
+          />
+        ) : null}
         {reactionsVisible && message.reactions?.length ? (
           <MessageReactions reactions={message.reactions} />
         ) : null}
@@ -266,7 +340,6 @@ export default function ChannelsHome() {
   const [channelAgentIds, setChannelAgentIds] = useState(
     () => new Set(initialServiceStatusAgentIds()),
   );
-  const [memberCount, setMemberCount] = useState(6);
   const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(
     null,
   );
@@ -274,13 +347,16 @@ export default function ChannelsHome() {
   const [profileTarget, setProfileTarget] =
     useState<AgentProfileAnchor | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [membersRhsOpen, setMembersRhsOpen] = useState(false);
   const [settingsAgent, setSettingsAgent] = useState(() =>
     customAgents.find((agent) => agent.id === 'sentinel') ?? null,
   );
   const bottomRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
   const mattyReviewTimerRef = useRef<number | null>(null);
+  const mattyOttoTimerRef = useRef<number | null>(null);
   const mattyReviewQueuedRef = useRef(false);
+  const mattyOttoQueuedRef = useRef(false);
   const channelAgentIdsRef = useRef(channelAgentIds);
   channelAgentIdsRef.current = channelAgentIds;
 
@@ -311,11 +387,83 @@ export default function ChannelsHome() {
       if (mattyReviewTimerRef.current != null) {
         window.clearTimeout(mattyReviewTimerRef.current);
       }
+      if (mattyOttoTimerRef.current != null) {
+        window.clearTimeout(mattyOttoTimerRef.current);
+      }
     };
   }, []);
 
   const resolveAgent = (id: string) =>
     buildWorkspaceDirectory(customAgents).find((agent) => agent.id === id);
+
+  const memberGroups = useMemo((): RightSidebarChannelMemberGroup[] => {
+    const toAgentRow = (agent: WorkspaceAgent): RightSidebarChannelMember => ({
+      id: agent.id,
+      name: agent.name,
+      tag: agent.role,
+      leadingVisual: (
+        <span className={styles['channels-home__member-agent-avatar']}>
+          <AgentAvatar
+            shape={agent.shape}
+            color={agent.color}
+            size="xs"
+            eyes
+            trackEyes={false}
+            shadow={false}
+            imageSrc={agent.customImageSrc}
+          />
+        </span>
+      ),
+    });
+
+    const agentsInChannel = buildWorkspaceDirectory(customAgents).filter(
+      (agent) => channelAgentIds.has(agent.id),
+    );
+
+    const peopleById = new Map(
+      CHANNEL_PEOPLE.map((person) => [person.id, person]),
+    );
+    const memberPeople: RightSidebarChannelMember[] = [];
+    const seenPeople = new Set<string>();
+
+    for (const message of messages) {
+      if (message.kind === 'agent' || message.kind === 'system') continue;
+      const personId = personIdFromUsername(message.username);
+      if (!personId || CHANNEL_ADMIN_IDS.has(personId)) continue;
+      if (seenPeople.has(personId)) continue;
+      seenPeople.add(personId);
+      const person = peopleById.get(personId);
+      if (person) {
+        memberPeople.push(person);
+      }
+    }
+
+    return [
+      {
+        id: 'admins',
+        title: 'Channel Admins',
+        members: CHANNEL_PEOPLE.filter((person) =>
+          CHANNEL_ADMIN_IDS.has(person.id),
+        ),
+      },
+      {
+        id: 'agents',
+        title: 'Agents',
+        members: agentsInChannel.map(toAgentRow),
+      },
+      {
+        id: 'members',
+        title: 'Channel Members',
+        members: memberPeople,
+      },
+    ].filter((group) => group.members.length > 0);
+  }, [channelAgentIds, customAgents, messages]);
+
+  const memberCount = useMemo(
+    () =>
+      memberGroups.reduce((total, group) => total + group.members.length, 0),
+    [memberGroups],
+  );
 
   const openAgentProfile = (
     agentId: string,
@@ -365,6 +513,26 @@ export default function ChannelsHome() {
     }, MATTY_REVIEW_DELAY_MS);
   };
 
+  const queueMattyOttoInvite = () => {
+    if (channelAgentIdsRef.current.has(OTTO.id)) return;
+    if (mattyOttoQueuedRef.current) return;
+
+    mattyOttoQueuedRef.current = true;
+    mattyOttoTimerRef.current = window.setTimeout(() => {
+      if (channelAgentIdsRef.current.has(OTTO.id)) {
+        mattyOttoTimerRef.current = null;
+        return;
+      }
+      setMessages((prev) => {
+        if (prev.some((message) => message.id === MATTY_OTTO_INVITE_ID)) {
+          return prev;
+        }
+        return [...prev, buildMattyOttoInviteMessage(formatChannelTime())];
+      });
+      mattyOttoTimerRef.current = null;
+    }, MATTY_OTTO_INVITE_DELAY_MS);
+  };
+
   const handleSend = ({
     parts,
     body,
@@ -394,7 +562,6 @@ export default function ChannelsHome() {
       }
       return next;
     });
-    setMemberCount((count) => count + pendingInvite.agents.length);
     postUserMessage(pendingInvite.parts, pendingInvite.body);
     queueMattyAgentReview(pendingInvite.parts);
     setPendingInvite(null);
@@ -404,13 +571,49 @@ export default function ChannelsHome() {
   const addAgentFromProfile = (agent: WorkspaceAgent) => {
     if (channelAgentIds.has(agent.id)) return;
     setChannelAgentIds((prev) => new Set(prev).add(agent.id));
-    setMemberCount((count) => count + 1);
   };
 
   const openSentinelSettings = () => {
     const agent = ensureSentinel();
     setSettingsAgent(agent);
     setSettingsOpen(true);
+  };
+
+  const acceptOttoInvite = () => {
+    if (channelAgentIdsRef.current.has(OTTO.id)) return;
+
+    setChannelAgentIds((prev) => new Set(prev).add(OTTO.id));
+    setMessages((prev) =>
+      prev.map((message) =>
+        message.id === MATTY_OTTO_INVITE_ID && message.agentInviteCard
+          ? {
+              ...message,
+              agentInviteCard: {
+                ...message.agentInviteCard,
+                accepted: true,
+                dismissed: false,
+              },
+            }
+          : message,
+      ),
+    );
+    appendMessages(buildOttoJoinedSystemMessage(formatChannelTime()));
+  };
+
+  const dismissOttoInvite = () => {
+    setMessages((prev) =>
+      prev.map((message) =>
+        message.id === MATTY_OTTO_INVITE_ID && message.agentInviteCard
+          ? {
+              ...message,
+              agentInviteCard: {
+                ...message.agentInviteCard,
+                dismissed: true,
+              },
+            }
+          : message,
+      ),
+    );
   };
 
   const approveSentinel = (
@@ -436,7 +639,6 @@ export default function ChannelsHome() {
     if (channelAgentIdsRef.current.has('sentinel')) return;
 
     setChannelAgentIds((prev) => new Set(prev).add('sentinel'));
-    setMemberCount((count) => count + 1);
     const timestamp = formatChannelTime();
     appendMessages(
       buildSentinelJoinedSystemMessage(
@@ -448,83 +650,121 @@ export default function ChannelsHome() {
         createdAgentToWorkspace(saved),
       ),
     );
+    queueMattyOttoInvite();
   };
 
   return (
     <div className={styles['channels-home']}>
       <ChannelsProductSidebar />
-      <div className={styles['channels-home__center']}>
-        <ChannelHeader
-          type="channel"
-          name="service-status"
-          description="Customer-facing reliability and checkout health."
-          memberCount={memberCount}
-          pinnedCount={1}
-        />
-        <div className={styles['channels-home__messages']}>
-          <Scrollbar>
-            <div
-              ref={messagesListRef}
-              className={styles['channels-home__messages-list']}
-            >
-              <MessageSeparator type="date" label="Today" />
-              {messages.map((message) => {
-                if (message.kind === 'system') {
+      <div className={styles['channels-home__inner']}>
+        <div className={styles['channels-home__center']}>
+          <ChannelHeader
+            type="channel"
+            name="service-status"
+            description="Customer-facing reliability and checkout health."
+            memberCount={memberCount}
+            pinnedCount={1}
+            onMembersClick={() => setMembersRhsOpen((open) => !open)}
+            membersToggled={membersRhsOpen}
+          />
+          <div className={styles['channels-home__messages']}>
+            <Scrollbar>
+              <div
+                ref={messagesListRef}
+                className={styles['channels-home__messages-list']}
+              >
+                <MessageSeparator type="date" label="Today" />
+                {messages.map((message) => {
+                  if (message.kind === 'system') {
+                    return (
+                      <div
+                        key={message.id}
+                        className={styles['channels-home__system']}
+                        role="status"
+                      >
+                        <MessageBody
+                          body={message.body}
+                          parts={message.parts}
+                          density="system"
+                          onAgentProfile={openAgentProfile}
+                        />
+                      </div>
+                    );
+                  }
+
+                  if (message.kind === 'agent') {
+                    return (
+                      <MattyChannelMessage
+                        key={message.id}
+                        message={message}
+                        onAgentProfile={openAgentProfile}
+                        onReview={openSentinelSettings}
+                        onInviteAdd={acceptOttoInvite}
+                      onInviteDismiss={dismissOttoInvite}
+                        cardImageSrc={settingsAgent?.customImageSrc}
+                      />
+                    );
+                  }
+
                   return (
-                    <div
+                    <Message
                       key={message.id}
-                      className={styles['channels-home__system']}
-                      role="status"
+                      avatarSrc={message.avatarSrc}
+                      avatarAlt={message.avatarAlt}
+                      username={message.username}
+                      timestamp={message.timestamp}
+                      showMessageActions={false}
                     >
                       <MessageBody
                         body={message.body}
                         parts={message.parts}
                         onAgentProfile={openAgentProfile}
                       />
-                    </div>
+                    </Message>
                   );
-                }
-
-                if (message.kind === 'agent') {
-                  return (
-                    <MattyChannelMessage
-                      key={message.id}
-                      message={message}
-                      onAgentProfile={openAgentProfile}
-                      onReview={openSentinelSettings}
-                      cardImageSrc={settingsAgent?.customImageSrc}
-                    />
-                  );
-                }
-
-                return (
-                  <Message
-                    key={message.id}
-                    avatarSrc={message.avatarSrc}
-                    avatarAlt={message.avatarAlt}
-                    username={message.username}
-                    timestamp={message.timestamp}
-                    showMessageActions={false}
-                  >
-                    <MessageBody
-                      body={message.body}
-                      parts={message.parts}
-                      onAgentProfile={openAgentProfile}
-                    />
-                  </Message>
-                );
-              })}
-              <div ref={bottomRef} />
-            </div>
-          </Scrollbar>
+                })}
+                <div ref={bottomRef} />
+              </div>
+            </Scrollbar>
+          </div>
+          <div className={styles['channels-home__composer']}>
+            <MentionMessageInput
+              key={composerKey}
+              placeholder="Write to service-status"
+              onSend={handleSend}
+            />
+          </div>
         </div>
-        <div className={styles['channels-home__composer']}>
-          <MentionMessageInput
-            key={composerKey}
-            placeholder="Write to service-status"
-            onSend={handleSend}
-          />
-        </div>
+        {membersRhsOpen ? (
+          <RightSidebar
+            className={styles['channels-home__rhs']}
+            header={
+              <RightSidebarHeader
+                title="Members"
+                secondaryTitle="service-status"
+                onClose={() => setMembersRhsOpen(false)}
+              />
+            }
+          >
+            <RightSidebarChannelMembers
+              memberCount={memberCount}
+              groups={memberGroups}
+              onMemberClick={(member) => {
+                const agent = resolveAgent(member.id);
+                if (!agent) return;
+                setProfileTarget({
+                  agent,
+                  anchorRect: new DOMRect(
+                    window.innerWidth - 420,
+                    120,
+                    40,
+                    32,
+                  ),
+                });
+              }}
+            />
+          </RightSidebar>
+        ) : null}
       </div>
       <AddAgentToChannelModal
         open={pendingInvite != null}

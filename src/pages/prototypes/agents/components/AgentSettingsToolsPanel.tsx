@@ -135,6 +135,7 @@ export default function AgentSettingsToolsPanel({
                 <Button
                   key={server.id}
                   emphasis="tertiary"
+                  size="small"
                   leadingIcon={<Icon glyph={<PlusIcon />} size="16" />}
                   onClick={() => addServer(server.id)}
                 >

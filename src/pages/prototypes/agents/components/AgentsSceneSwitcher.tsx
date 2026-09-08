@@ -14,6 +14,7 @@ function resolveScene(
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
+  if (normalized.startsWith(`${AGENTS_BASE}/dm/`)) return 'channels';
   if (normalized.startsWith(`${AGENTS_BASE}/agents/`)) return 'matty-chat';
   if (normalized === `${AGENTS_BASE}/agents`) {
     if (search.includes('fte=1')) return 'meet-first-agent';

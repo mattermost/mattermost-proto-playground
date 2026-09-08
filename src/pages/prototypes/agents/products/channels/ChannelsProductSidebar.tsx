@@ -1,26 +1,48 @@
 import { useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   ChannelsSidebarCategory,
 } from '@mattermost/compass-ui/components/channels-sidebar';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { buildAgentsChannelsSidebarModel, MATTY } from '../../agentsData';
+import {
+  buildAgentsChannelsSidebarModel,
+  MATTY,
+} from '../../agentsData';
+import { AGENTS_BASE } from '../../agentsScenes';
 import { agentAvatarChipSrc } from '../../components/agentAvatarShapes';
 import LhsSidebarHeader from '../../components/LhsSidebarHeader';
 import PlusMenu from '../../components/PlusMenu';
 import { useAgents } from '../../context/AgentsContext';
 import styles from './ChannelsProductSidebar.module.scss';
 
+function resolveActiveName(pathname: string): string {
+  const normalized =
+    pathname.length > 1 && pathname.endsWith('/')
+      ? pathname.slice(0, -1)
+      : pathname;
+  const dmPrefix = `${AGENTS_BASE}/dm/`;
+  if (normalized.startsWith(dmPrefix)) {
+    const id = normalized.slice(dmPrefix.length);
+    if (id === MATTY.id) return MATTY.name;
+    return id;
+  }
+  return 'service-status';
+}
+
 /**
  * Channels LHS matching ChannelsSidebar chrome (product title + find), with a
  * host-owned plus menu (Create an Agent).
  */
 export default function ChannelsProductSidebar() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { openNewAgent } = useAgents();
   const [plusOpen, setPlusOpen] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const plusRef = useRef<HTMLDivElement>(null);
-  const model = buildAgentsChannelsSidebarModel('service-status');
+  const activeName = resolveActiveName(pathname);
+  const model = buildAgentsChannelsSidebarModel(activeName);
   const mattyAvatarSrc = agentAvatarChipSrc(MATTY.shape, MATTY.color);
 
   const togglePlus = () => {
@@ -28,6 +50,16 @@ export default function ChannelsProductSidebar() {
     setPlusOpen(next);
     if (next && plusRef.current) {
       setAnchorRect(plusRef.current.getBoundingClientRect());
+    }
+  };
+
+  const onItemClick = (name: string) => {
+    if (name === MATTY.name) {
+      navigate(`${AGENTS_BASE}/dm/${MATTY.id}`);
+      return;
+    }
+    if (name === 'service-status') {
+      navigate(AGENTS_BASE);
     }
   };
 
@@ -66,6 +98,11 @@ export default function ChannelsProductSidebar() {
                 {...item}
                 avatarSrc={
                   item.name === MATTY.name ? mattyAvatarSrc : item.avatarSrc
+                }
+                onClick={
+                  item.name === MATTY.name || item.name === 'service-status'
+                    ? () => onItemClick(item.name)
+                    : undefined
                 }
               />
             ))}

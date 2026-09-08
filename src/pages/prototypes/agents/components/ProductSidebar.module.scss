@@ -1,4 +1,6 @@
 .product-sidebar {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -21,7 +23,7 @@
   }
 
   &__bottom {
-    gap: var(--spacing-xxs);
+    gap: var(--spacing-xxxxs);
   }
 
   &__button {
@@ -53,6 +55,24 @@
     }
   }
 
+  &__tooltip {
+    display: none;
+    position: absolute;
+    left: calc(100% + var(--spacing-xs));
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  &__button:hover &__tooltip,
+  &__button:focus-visible &__tooltip,
+  &__account:hover &__tooltip,
+  &__account:focus-visible &__tooltip {
+    display: block;
+  }
+
   &__active-bar {
     position: absolute;
     left: -8px;
@@ -80,6 +100,7 @@
     // Knock out the status ring against the product rail (AgentsShell body).
     --status-badge-bg: var(--sidebar-header-bg);
 
+    position: relative;
     appearance: none;
     border: 0;
     width: 40px;

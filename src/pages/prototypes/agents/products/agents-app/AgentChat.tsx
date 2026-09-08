@@ -5,6 +5,8 @@ import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-out
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
+import MonitorIcon from '@mattermost/compass-icons/components/monitor';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
@@ -39,6 +41,7 @@ import {
   buildWorkspaceDirectory,
   isAgentGroupChatId,
   resolveAgentProfile,
+  resolveSingleAgentProfile,
   type AgentProfile,
   type AgentToolConnectOption,
   type LiveAgentSession,
@@ -46,6 +49,7 @@ import {
   type WorkspaceAgent,
 } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
+import AgentComputerPip from '../../components/AgentComputerPip';
 import AgentProfilePopover, {
   profileAnchorFromEvent,
   type AgentProfileAnchor,
@@ -67,7 +71,7 @@ const AVATAR_LOADING_MS = 1000;
 /** Matches `--duration-moderate` for the dots → avatar crossfade. */
 const AVATAR_REVEAL_MS = 300;
 const OPTIONS_MENU_EXIT_MS = 150;
-const OPTIONS_MENU_WIDTH = 240;
+const OPTIONS_MENU_WIDTH = 280;
 /** Brief beat after the welcome stream before the tool-choice post. */
 const TOOL_POST_DELAY_MS = 280;
 /** Dwell time for each post-confirm tool-connect status line. */
@@ -288,9 +292,17 @@ function useAvatarReveal(
 /**
  * Agent chat layout — spanning header + message canvas.
  * Sessions live in the product LHS under each agent.
+ * `embedded` hides the Agents LHS for Channels DM center-pane use.
  */
-export default function AgentChat() {
-  const { agentId } = useParams<{ agentId: string }>();
+export default function AgentChat({
+  agentId: agentIdProp,
+  embedded = false,
+}: {
+  agentId?: string;
+  embedded?: boolean;
+} = {}) {
+  const { agentId: agentIdParam } = useParams<{ agentId: string }>();
+  const agentId = agentIdProp ?? agentIdParam;
   const {
     customAgents,
     groupChats,
@@ -345,11 +357,22 @@ export default function AgentChat() {
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [optionsAnchor, setOptionsAnchor] = useState<DOMRect | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(settingsParam);
+  const [computerOpen, setComputerOpen] = useState(false);
+  const [computerFullscreen, setComputerFullscreen] = useState(false);
+  const [computerAnchor, setComputerAnchor] = useState<DOMRect | null>(null);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
   const skipOptionsOutsideCloseRef = useRef(false);
-  const { rendered: optionsRendered, exiting: optionsExiting } =
-    useExitAnimation(optionsOpen, OPTIONS_MENU_EXIT_MS);
+  const {
+    rendered: optionsRendered,
+    exiting: optionsExiting,
+  } = useExitAnimation(optionsOpen, OPTIONS_MENU_EXIT_MS);
+
+  useEffect(() => {
+    setComputerOpen(false);
+    setComputerFullscreen(false);
+    setComputerAnchor(null);
+  }, [agent.id]);
 
   useOutsideClose(optionsMenuRef, optionsOpen && !optionsExiting, () => {
     if (skipOptionsOutsideCloseRef.current) {
@@ -367,9 +390,24 @@ export default function AgentChat() {
     const index = Math.floor(Math.random() * EMPTY_CHAT_TITLES.length);
     return EMPTY_CHAT_TITLES[index];
   }, [activeSessionId]);
-  const emptySubtitle = toFirstPersonAgentBlurb(
-    agent.description?.trim() || agent.purpose?.trim() || '',
-  );
+  const emptySubtitle = useMemo(() => {
+    if (isGroupChat && agent.memberIds?.length) {
+      const names = agent.memberIds.map(
+        (id) => resolveSingleAgentProfile(id, customAgents).name,
+      );
+      if (names.length === 1) {
+        return `This is a group chat with you and ${names[0]}.`;
+      }
+      if (names.length === 2) {
+        return `This is a group chat with you, ${names[0]}, and ${names[1]}.`;
+      }
+      const last = names[names.length - 1];
+      return `This is a group chat with you, ${names.slice(0, -1).join(', ')}, and ${last}.`;
+    }
+    return toFirstPersonAgentBlurb(
+      agent.description?.trim() || agent.purpose?.trim() || '',
+    );
+  }, [isGroupChat, agent.memberIds, agent.description, agent.purpose, customAgents]);
   const playWelcomeIntro =
     activeSession?.id === 'welcome' && !welcomePlayed;
   const playAutomationIntro =
@@ -735,8 +773,15 @@ export default function AgentChat() {
   );
 
   return (
-    <div className={styles['agent-chat']}>
-      <AgentsProductSidebar activeNav={agent.id} />
+    <div
+      className={[
+        styles['agent-chat'],
+        embedded ? styles['agent-chat--embedded'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {!embedded ? <AgentsProductSidebar activeNav={agent.id} /> : null}
 
       <div className={styles['agent-chat__workspace']}>
         <section
@@ -781,6 +826,37 @@ export default function AgentChat() {
               </button>
             </div>
             <div className={styles['agent-chat__header-actions']}>
+              {!isGroupChat ? (
+                computerOpen ? (
+                  <button
+                    type="button"
+                    className={styles['agent-chat__computer-working']}
+                    aria-label={`Close ${agent.name} computer`}
+                    aria-pressed={true}
+                    onClick={() => {
+                      setComputerOpen(false);
+                      setComputerFullscreen(false);
+                      setComputerAnchor(null);
+                    }}
+                  >
+                    <Icon glyph={<MonitorIcon />} size="16" />
+                    <span>Working…</span>
+                  </button>
+                ) : (
+                  <IconButton
+                    size="small"
+                    padding="compact"
+                    icon={<Icon glyph={<MonitorIcon />} size="16" />}
+                    aria-label={`Open ${agent.name} computer`}
+                    aria-pressed={false}
+                    onClick={(event) => {
+                      const rect = event.currentTarget.getBoundingClientRect();
+                      setComputerAnchor(rect);
+                      setComputerOpen(true);
+                    }}
+                  />
+                )
+              ) : null}
               <IconButton
                 size="small"
                 padding="compact"
@@ -1069,6 +1145,39 @@ export default function AgentChat() {
                     onClick={closeOptionsMenu}
                   />
                 </PopoverMenuGroup>
+                {sessions.length > 0 ? (
+                  <>
+                    <PopoverMenuDivider />
+                    <PopoverMenuGroup>
+                      {sessions.map((session) => {
+                        const isActive = session.id === activeSessionId;
+                        return (
+                          <MenuItem
+                            key={session.id}
+                            role="menuitem"
+                            label={session.preview || 'New chat'}
+                            active={isActive}
+                            trailingElement={isActive}
+                            leadingVisual={
+                              <Icon
+                                glyph={<MessageTextOutlineIcon />}
+                                size="16"
+                              />
+                            }
+                            onClick={() => {
+                              closeOptionsMenu();
+                              if (isActive) return;
+                              setWelcomePlayed(true);
+                              setAutomationIntroActive(false);
+                              setDraft('');
+                              setActiveSessionForAgent(agent.id, session.id);
+                            }}
+                          />
+                        );
+                      })}
+                    </PopoverMenuGroup>
+                  </>
+                ) : null}
                 {activeSessionId ? (
                   <>
                     <PopoverMenuDivider />
@@ -1137,6 +1246,25 @@ export default function AgentChat() {
           updateAgent(agent.id, updates);
         }}
       />
+      {!isGroupChat ? (
+        <AgentComputerPip
+          open={computerOpen}
+          fullscreen={computerFullscreen}
+          anchorRect={computerAnchor}
+          agentName={agent.name}
+          shape={agent.shape}
+          color={agent.color}
+          imageSrc={agent.customImageSrc}
+          onClose={() => {
+            setComputerOpen(false);
+            setComputerFullscreen(false);
+            setComputerAnchor(null);
+          }}
+          onToggleFullscreen={() =>
+            setComputerFullscreen((prev) => !prev)
+          }
+        />
+      ) : null}
       <AgentProfilePopover
         target={profileTarget}
         onClose={() => setProfileTarget(null)}

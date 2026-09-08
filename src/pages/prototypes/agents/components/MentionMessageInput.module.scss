@@ -170,6 +170,19 @@
     }
   }
 
+  // Caption-scale chip for system messages (overrides mention-chip font-size-100).
+  &__post-chip--system:global([class*='chip']) {
+    gap: 2px;
+    padding: 0 var(--spacing-xxxxs);
+    min-height: 0;
+
+    :global([class*='chip__label']) {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+      letter-spacing: normal;
+    }
+  }
+
   &__post-chip--interactive:global([class*='chip']) {
     cursor: pointer;
 

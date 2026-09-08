@@ -8,6 +8,31 @@
   min-height: 0;
   background: var(--sidebar-bg);
 
+  // Matches ChannelShell `__inner-panel`: center + RHS share one elevated card.
+  &__inner {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-width: 0;
+    min-height: 0;
+    background: var(--center-channel-bg);
+    border-radius: var(--radius-l);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: var(--elevation-1);
+    overflow: hidden;
+    container-type: inline-size;
+    container-name: channels-home-inner;
+  }
+
+  // Paint RHS above the center so elevation shadows the center column (ChannelShell `__right-sidebar`).
+  &__rhs {
+    position: relative;
+    z-index: 2;
+  }
+
   &__center {
     flex: 1 1 auto;
     min-width: 0;
@@ -15,10 +40,6 @@
     display: flex;
     flex-direction: column;
     background: var(--center-channel-bg);
-    border-radius: var(--radius-l);
-    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-    box-shadow: var(--elevation-1);
-    overflow: hidden;
   }
 
   &__messages {
@@ -54,10 +75,10 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    // Match agent/message body column (outer pad + avatar + gap).
-    padding: var(--spacing-s) var(--spacing-xl);
+    // Match Message / agent body column (outer pad + avatar + gap).
+    padding: var(--spacing-xs) var(--spacing-xxl);
     padding-left: calc(
-      var(--spacing-xl) + var(--icon-size-32, 32px) + var(--spacing-xs)
+      var(--spacing-xxl) + var(--icon-size-32, 32px) + var(--spacing-m)
     );
     font-family: var(--font-family-body);
     font-size: var(--font-size-75);
@@ -76,8 +97,8 @@
   &__agent-message {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) var(--spacing-xl);
+    gap: var(--spacing-m);
+    padding: var(--spacing-xs) var(--spacing-xxl);
   }
 
   &__agent-message-avatar {
@@ -122,5 +143,18 @@
   &__composer {
     flex: 0 0 auto;
     padding: 0 var(--spacing-xl) var(--spacing-l);
+  }
+
+  &__member-agent-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+
+    :global([class*='agent-avatar']) {
+      width: 24px;
+      height: 24px;
+    }
   }
 }

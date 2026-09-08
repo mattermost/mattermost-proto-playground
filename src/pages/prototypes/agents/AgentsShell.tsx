@@ -14,6 +14,10 @@ function resolveProduct(pathname: string): AgentsProduct {
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
+  // Agent DMs under /dm/* stay in the Channels product (Channels LHS).
+  if (normalized.startsWith(`${AGENTS_BASE}/dm/`)) {
+    return 'channels';
+  }
   // /agents and /agents/matty (and future agent chats) stay in Agents product.
   if (
     normalized === `${AGENTS_BASE}/agents` ||

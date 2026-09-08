@@ -59,6 +59,17 @@
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-100);
     color: var(--button-bg);
+
+    &--muted {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xs);
   }
 
   &--approved {

@@ -20,6 +20,17 @@
   min-height: 0;
   background: var(--sidebar-bg);
 
+  // Channels DM: fill the center pane; Agents LHS stays out.
+  &--embedded {
+    background: transparent;
+
+    .agent-chat__workspace {
+      border-radius: 0;
+      border-left: 0;
+      box-shadow: none;
+    }
+  }
+
   &__workspace {
     flex: 1 1 auto;
     min-width: 0;
@@ -97,6 +108,33 @@
     gap: var(--spacing-xxs);
   }
 
+  &__computer-working {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+    padding: var(--spacing-xxxs) var(--spacing-s);
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--online-indicator);
+    color: var(--button-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    cursor: pointer;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      opacity: 0.92;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
   &__canvas {
     flex: 1 1 auto;
     min-width: 0;
@@ -115,6 +153,8 @@
     justify-content: center;
     gap: var(--spacing-xxl);
     padding: var(--spacing-xxxxl);
+    // Sit slightly above true center (xxxxxl 48 + l 16).
+    transform: translateY(calc(-1 * (var(--spacing-xxxxxl) + var(--spacing-l))));
   }
 
   &__empty-intro {
@@ -473,8 +513,23 @@
   &__options-menu {
     position: fixed;
     z-index: 1200;
+    box-sizing: border-box;
     transform-origin: top left;
     animation: agent-chat-options-in var(--duration-quick) var(--ease-entrance) both;
+
+    // PopoverMenu defaults to max-content / 496px — keep session titles inside 280.
+    :global([class*='popover-menu']) {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    :global([class*='menu-item__label']) {
+      min-width: 0;
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     &--exiting {
       animation: agent-chat-options-out var(--duration-quick) var(--ease-exit) both;

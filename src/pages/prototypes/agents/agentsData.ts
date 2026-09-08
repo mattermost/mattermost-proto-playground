@@ -1338,6 +1338,17 @@ export type ChannelAgentReviewCard = {
   approved?: boolean;
 };
 
+/** Matty recommends inviting an existing workspace agent (Act 1.3 — Otto). */
+export type ChannelAgentInviteCard = {
+  agentId: string;
+  name: string;
+  description: string;
+  /** Set after the viewer accepts Matty’s recommendation. */
+  accepted?: boolean;
+  /** Set after the viewer declines with Not now. */
+  dismissed?: boolean;
+};
+
 export type ChannelMessage = {
   id: string;
   username: string;
@@ -1351,6 +1362,7 @@ export type ChannelMessage = {
   /** Default `user`. System rows are de-emphasized; agent rows use AgentAvatar. */
   kind?: 'user' | 'agent' | 'system';
   agentReviewCard?: ChannelAgentReviewCard;
+  agentInviteCard?: ChannelAgentInviteCard;
   agentShape?: AgentShape;
   agentColor?: AgentColor;
   agentImageSrc?: string;
@@ -1361,6 +1373,8 @@ export type ChannelMessage = {
 export const MATTY_AGENT_REVIEW_ID = 'matty-agent-review';
 export const SENTINEL_JOINED_SYSTEM_ID = 'sentinel-joined-system';
 export const MATTY_SENTINEL_CONFIRM_ID = 'matty-sentinel-confirm';
+export const MATTY_OTTO_INVITE_ID = 'matty-otto-invite';
+export const OTTO_JOINED_SYSTEM_ID = 'otto-joined-system';
 
 export function channelPartsMentionAgent(
   parts: ChannelMessagePart[],
@@ -1471,6 +1485,68 @@ export function buildMattySentinelConfirmMessage(
   };
 }
 
+/** Act 1.3 — Matty recommends inviting existing Otto (not create-new). */
+export function buildMattyOttoInviteMessage(timestamp: string): ChannelMessage {
+  return {
+    id: MATTY_OTTO_INVITE_ID,
+    kind: 'agent',
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp,
+    body: `Otto already runs deploys for the platform team. I can add them here so they're ready when we need a rollback.`,
+    parts: [
+      {
+        type: 'mention',
+        id: OTTO.id,
+        label: OTTO.name,
+        avatarSrc: '',
+        kind: 'agent',
+        agentShape: OTTO.shape,
+        agentColor: OTTO.color,
+      },
+      {
+        type: 'text',
+        text: ` already runs deploys for the platform team. I can add them here so they're ready when we need a rollback.`,
+      },
+    ],
+    agentShape: MATTY.shape,
+    agentColor: MATTY.color,
+    agentInviteCard: {
+      agentId: OTTO.id,
+      name: OTTO.name,
+      description: OTTO.description,
+    },
+  };
+}
+
+export function buildOttoJoinedSystemMessage(timestamp: string): ChannelMessage {
+  return {
+    id: OTTO_JOINED_SYSTEM_ID,
+    kind: 'system',
+    username: '',
+    avatarSrc: '',
+    avatarAlt: '',
+    timestamp,
+    body: `${OTTO.name} was added to the channel`,
+    parts: [
+      {
+        type: 'mention',
+        id: OTTO.id,
+        label: OTTO.name,
+        avatarSrc: '',
+        kind: 'agent',
+        agentShape: OTTO.shape,
+        agentColor: OTTO.color,
+      },
+      {
+        type: 'text',
+        text: ' was added to the channel',
+      },
+    ],
+  };
+}
+
 export type MentionCandidate = {
   id: string;
   name: string;
@@ -1483,7 +1559,7 @@ export type MentionCandidate = {
   agentColor?: AgentColor;
 };
 
-/** Agents already in `#service-status` before the invite-by-mention beat. */
+/** Agents already in `#service-status` before Matty recommends Otto. */
 export function initialServiceStatusAgentIds(): string[] {
   return WORKSPACE_AGENTS.filter((agent) =>
     agent.channels.includes('service-status'),
@@ -1491,7 +1567,7 @@ export function initialServiceStatusAgentIds(): string[] {
 }
 
 /**
- * Mentioned agents that are not yet channel members (e.g. Otto before 1.3).
+ * Mentioned agents that are not yet channel members.
  * Dedupes by id; people mentions are ignored.
  */
 export function findAgentsNeedingChannelInvite(
@@ -1517,8 +1593,7 @@ export function findAgentsNeedingChannelInvite(
 }
 
 /**
- * @-mention roster for `#service-status`. Agents are listed first so Otto
- * surfaces at the top of the invite-by-mention beat.
+ * @-mention roster for `#service-status`. Agents are listed first.
  */
 export function buildServiceStatusMentionables(
   agentAvatarSrc: (shape: AgentShape, color: AgentColor) => string,
@@ -1658,7 +1733,6 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
 /** Storyline channel tree for the Agents vision demo. */
 export function buildAgentsChannelsSidebarModel(
   activeName = 'service-status',
-  agentAvatarSrc?: (shape: AgentShape, color: AgentColor) => string,
 ): ChannelsSidebarModel {
   return {
     topGroupItems: [

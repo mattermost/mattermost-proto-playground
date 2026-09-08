@@ -9,6 +9,7 @@ import { Chip } from '@mattermost/compass-ui/components/chip';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
@@ -273,6 +274,12 @@ export default function MentionMessageInput({
                       size="24"
                     />
                   </span>
+                }
+                trailingElement={item.kind === 'agent'}
+                trailingVisual={
+                  item.kind === 'agent' ? (
+                    <Tag label="Agent" size="x-small" casing="all-caps" />
+                  ) : undefined
                 }
                 onClick={() => insertMention(item)}
                 onMouseEnter={() => setActiveIndex(index)}

@@ -9,6 +9,7 @@ import BookmarkOutlineIcon from '@mattermost/compass-icons/components/bookmark-o
 import AtIcon from '@mattermost/compass-icons/components/at';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import type { AgentsProduct } from '../context/AgentsContext';
 import { VIEWER } from '../agentsData';
@@ -44,7 +45,6 @@ function RailButton({
         .filter(Boolean)
         .join(' ')}
       aria-label={label}
-      title={label}
       aria-current={active ? 'page' : undefined}
       onClick={onClick}
     >
@@ -57,6 +57,9 @@ function RailButton({
           .join(' ')}
       >
         {children}
+      </span>
+      <span className={styles['product-sidebar__tooltip']} aria-hidden>
+        <Tooltip label={label} arrow="left" />
       </span>
     </button>
   );
@@ -122,7 +125,6 @@ export default function ProductSidebar({
           type="button"
           className={styles['product-sidebar__account']}
           aria-label={VIEWER.name}
-          title={VIEWER.name}
         >
           <UserAvatar
             size="32"
@@ -130,6 +132,9 @@ export default function ProductSidebar({
             alt={VIEWER.avatarAlt}
             status
           />
+          <span className={styles['product-sidebar__tooltip']} aria-hidden>
+            <Tooltip label={VIEWER.name} arrow="left" />
+          </span>
         </button>
       </div>
     </nav>
