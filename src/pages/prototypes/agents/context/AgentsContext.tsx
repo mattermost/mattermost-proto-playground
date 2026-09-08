@@ -11,14 +11,19 @@ import {
   buildCreatedAgent,
   cloneAdvancedConfig,
   DEFAULT_ADVANCED_CONFIG,
+  MATTY,
+  resolveAgentProfile,
+  seedAgentLiveSessions,
   SENTINEL_DEFAULT,
   type AgentAdvancedConfig,
   type AgentColor,
   type AgentGroupChat,
+  type AgentProfile,
   type AgentShape,
   type AgentVisibility,
   type ConnectedMcp,
   type CreatedAgent,
+  type LiveAgentSession,
   type ScheduledJob,
 } from '../agentsData';
 
@@ -42,6 +47,10 @@ export type NewAgentDraft = {
 
 export type AgentUpdates = Partial<NewAgentDraft>;
 
+function nextSessionId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
 type AgentsContextValue = {
   newAgentOpen: boolean;
   openNewAgent: () => void;
@@ -57,9 +66,34 @@ type AgentsContextValue = {
   addGroupChat: (memberIds: string[]) => AgentGroupChat;
   updateAgent: (id: string, updates: AgentUpdates) => CreatedAgent;
   ensureSentinel: () => CreatedAgent;
+  /** Live chat sessions keyed by agent id. */
+  sessionsByAgentId: Record<string, LiveAgentSession[]>;
+  activeSessionByAgentId: Record<string, string>;
+  ensureAgentSessions: (agent: AgentProfile) => void;
+  selectSession: (agentId: string, sessionId: string) => void;
+  startNewChat: (agentId: string) => string;
+  renameSession: (agentId: string, sessionId: string, preview: string) => void;
+  archiveSession: (agentId: string, sessionId: string) => void;
+  updateSessionsForAgent: (
+    agentId: string,
+    updater: (prev: LiveAgentSession[]) => LiveAgentSession[],
+  ) => void;
+  setActiveSessionForAgent: (agentId: string, sessionId: string) => void;
 };
 
 const AgentsContext = createContext<AgentsContextValue | null>(null);
+
+function initialMattySessions(): {
+  sessions: Record<string, LiveAgentSession[]>;
+  active: Record<string, string>;
+} {
+  const matty = resolveAgentProfile(MATTY.id, [], []);
+  const seeded = seedAgentLiveSessions(matty);
+  return {
+    sessions: { [MATTY.id]: seeded },
+    active: { [MATTY.id]: seeded[0]?.id ?? '' },
+  };
+}
 
 export function AgentsProvider({ children }: { children: ReactNode }) {
   const [newAgentOpen, setNewAgentOpen] = useState(false);
@@ -67,6 +101,13 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
   const [customAgents, setCustomAgents] = useState<CreatedAgent[]>([]);
   const [groupChats, setGroupChats] = useState<AgentGroupChat[]>([]);
   const [openedAgentIds, setOpenedAgentIds] = useState<string[]>([]);
+  const mattySeed = useMemo(() => initialMattySessions(), []);
+  const [sessionsByAgentId, setSessionsByAgentId] = useState<
+    Record<string, LiveAgentSession[]>
+  >(mattySeed.sessions);
+  const [activeSessionByAgentId, setActiveSessionByAgentId] = useState<
+    Record<string, string>
+  >(mattySeed.active);
 
   const openNewAgent = useCallback(() => setNewAgentOpen(true), []);
   const closeNewAgent = useCallback(() => setNewAgentOpen(false), []);
@@ -163,6 +204,109 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
     [customAgents],
   );
 
+  const ensureAgentSessions = useCallback((agent: AgentProfile) => {
+    setSessionsByAgentId((prev) => {
+      if (prev[agent.id]) return prev;
+      const seeded = seedAgentLiveSessions(agent);
+      setActiveSessionByAgentId((active) =>
+        active[agent.id]
+          ? active
+          : { ...active, [agent.id]: seeded[0]?.id ?? '' },
+      );
+      return { ...prev, [agent.id]: seeded };
+    });
+  }, []);
+
+  const selectSession = useCallback((agentId: string, sessionId: string) => {
+    setActiveSessionByAgentId((prev) => ({ ...prev, [agentId]: sessionId }));
+  }, []);
+
+  const setActiveSessionForAgent = useCallback(
+    (agentId: string, sessionId: string) => {
+      setActiveSessionByAgentId((prev) => ({ ...prev, [agentId]: sessionId }));
+    },
+    [],
+  );
+
+  const updateSessionsForAgent = useCallback(
+    (
+      agentId: string,
+      updater: (prev: LiveAgentSession[]) => LiveAgentSession[],
+    ) => {
+      setSessionsByAgentId((prev) => {
+        const current = prev[agentId] ?? [];
+        return { ...prev, [agentId]: updater(current) };
+      });
+    },
+    [],
+  );
+
+  const startNewChat = useCallback((agentId: string) => {
+    let resultId = '';
+    setSessionsByAgentId((prev) => {
+      const current = prev[agentId] ?? [];
+      const empty = current.find((session) => session.messages.length === 0);
+      if (empty) {
+        resultId = empty.id;
+        return prev;
+      }
+      resultId = nextSessionId('chat');
+      const created: LiveAgentSession = {
+        id: resultId,
+        preview: 'New chat',
+        messages: [],
+      };
+      return { ...prev, [agentId]: [created, ...current] };
+    });
+    if (resultId) {
+      setActiveSessionByAgentId((prev) => ({ ...prev, [agentId]: resultId }));
+    }
+    return resultId;
+  }, []);
+
+  const renameSession = useCallback(
+    (agentId: string, sessionId: string, preview: string) => {
+      const trimmed = preview.trim();
+      if (!trimmed) return;
+      setSessionsByAgentId((prev) => {
+        const current = prev[agentId] ?? [];
+        return {
+          ...prev,
+          [agentId]: current.map((session) =>
+            session.id === sessionId
+              ? { ...session, preview: trimmed }
+              : session,
+          ),
+        };
+      });
+    },
+    [],
+  );
+
+  const archiveSession = useCallback((agentId: string, sessionId: string) => {
+    setSessionsByAgentId((prev) => {
+      const current = prev[agentId] ?? [];
+      const next = current.filter((session) => session.id !== sessionId);
+      if (next.length > 0) {
+        setActiveSessionByAgentId((activePrev) => {
+          if (activePrev[agentId] !== sessionId) return activePrev;
+          return { ...activePrev, [agentId]: next[0].id };
+        });
+        return { ...prev, [agentId]: next };
+      }
+      const created: LiveAgentSession = {
+        id: nextSessionId('chat'),
+        preview: 'New chat',
+        messages: [],
+      };
+      setActiveSessionByAgentId((activePrev) => ({
+        ...activePrev,
+        [agentId]: created.id,
+      }));
+      return { ...prev, [agentId]: [created] };
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       newAgentOpen,
@@ -179,6 +323,15 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       addGroupChat,
       updateAgent,
       ensureSentinel,
+      sessionsByAgentId,
+      activeSessionByAgentId,
+      ensureAgentSessions,
+      selectSession,
+      startNewChat,
+      renameSession,
+      archiveSession,
+      updateSessionsForAgent,
+      setActiveSessionForAgent,
     }),
     [
       newAgentOpen,
@@ -195,6 +348,15 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       addGroupChat,
       updateAgent,
       ensureSentinel,
+      sessionsByAgentId,
+      activeSessionByAgentId,
+      ensureAgentSessions,
+      selectSession,
+      startNewChat,
+      renameSession,
+      archiveSession,
+      updateSessionsForAgent,
+      setActiveSessionForAgent,
     ],
   );
 

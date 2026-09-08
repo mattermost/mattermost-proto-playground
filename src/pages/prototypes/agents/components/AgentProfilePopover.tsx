@@ -9,7 +9,7 @@ import {
 import { createPortal } from 'react-dom';
 import { ProfilePopover } from '@mattermost/compass-ui/components/profile-popover';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import type { WorkspaceAgent } from '../agentsData';
+import { agentModelLabel, type WorkspaceAgent } from '../agentsData';
 import { agentAvatarChipSrc } from './agentAvatarShapes';
 import styles from './AgentProfilePopover.module.scss';
 
@@ -38,7 +38,7 @@ function agentTitle(agent: WorkspaceAgent) {
   if (agent.managedBy) {
     return `Managed by ${agent.managedBy}`;
   }
-  return agent.owner ? `Owned by ${agent.owner}` : undefined;
+  return agent.owner ? `Created by ${agent.owner}` : undefined;
 }
 
 export default function AgentProfilePopover({
@@ -53,6 +53,7 @@ export default function AgentProfilePopover({
   const [left, setLeft] = useState(0);
   const [measured, setMeasured] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [detailsHost, setDetailsHost] = useState<HTMLElement | null>(null);
 
   const beginClose = useCallback(() => setClosing(true), []);
 
@@ -71,6 +72,7 @@ export default function AgentProfilePopover({
     if (!target) {
       setMeasured(false);
       setClosing(false);
+      setDetailsHost(null);
       return;
     }
     setClosing(false);
@@ -78,8 +80,38 @@ export default function AgentProfilePopover({
     const { anchorRect } = target;
     const maxLeft = window.innerWidth - POPOVER_WIDTH - 16;
     setLeft(Math.min(Math.max(8, anchorRect.left), Math.max(8, maxLeft)));
-    // Tentative below; refine after measure.
     setTop(anchorRect.bottom + POPOVER_GAP);
+  }, [target]);
+
+  // Mount model + description between ProfilePopover body and footer.
+  useLayoutEffect(() => {
+    if (!target || !ref.current) {
+      setDetailsHost(null);
+      return;
+    }
+    const footer = ref.current.querySelector<HTMLElement>(
+      '[class*="profile-popover__footer"]',
+    );
+    const parent = footer?.parentElement;
+    if (!footer || !parent) {
+      setDetailsHost(null);
+      return;
+    }
+
+    let host = parent.querySelector<HTMLElement>(
+      '[data-agent-profile-details]',
+    );
+    if (!host) {
+      host = document.createElement('div');
+      host.dataset.agentProfileDetails = '';
+      parent.insertBefore(host, footer);
+    }
+    setDetailsHost(host);
+
+    return () => {
+      host?.remove();
+      setDetailsHost(null);
+    };
   }, [target]);
 
   useLayoutEffect(() => {
@@ -95,7 +127,7 @@ export default function AgentProfilePopover({
         : anchorRect.bottom + POPOVER_GAP,
     );
     setMeasured(true);
-  }, [target, measured]);
+  }, [target, measured, detailsHost]);
 
   const handleAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
     if (closing && event.target === event.currentTarget) {
@@ -110,6 +142,8 @@ export default function AgentProfilePopover({
   const { agent } = target;
   const avatarSrc =
     agent.customImageSrc ?? agentAvatarChipSrc(agent.shape, agent.color);
+  const model = agentModelLabel(agent.model);
+  const description = agent.description.trim();
 
   return createPortal(
     <div
@@ -128,7 +162,7 @@ export default function AgentProfilePopover({
         name={agent.name}
         username={agentHandle(agent)}
         title={agentTitle(agent)}
-        jobRole={agent.role}
+        jobRole="Agent"
         onClose={beginClose}
         onPrimaryAction={
           onMessage
@@ -157,6 +191,27 @@ export default function AgentProfilePopover({
         state={closing ? 'closing' : 'open'}
         onAnimationEnd={handleAnimationEnd}
       />
+      {detailsHost
+        ? createPortal(
+            <div className={styles['agent-profile-popover__details']}>
+              <div className={styles['agent-profile-popover__field']}>
+                <p className={styles['agent-profile-popover__label']}>Model</p>
+                <p className={styles['agent-profile-popover__value']}>{model}</p>
+              </div>
+              {description ? (
+                <div className={styles['agent-profile-popover__field']}>
+                  <p className={styles['agent-profile-popover__label']}>
+                    Description
+                  </p>
+                  <p className={styles['agent-profile-popover__value']}>
+                    {description}
+                  </p>
+                </div>
+              ) : null}
+            </div>,
+            detailsHost,
+          )
+        : null}
     </div>,
     document.body,
   );

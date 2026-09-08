@@ -12,7 +12,6 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { SectionNotice } from '@mattermost/compass-ui/components/section-notice';
 import {
   AGENT_KNOWLEDGE_CHANNEL_OPTIONS,
-  AGENT_KNOWLEDGE_DOC_OPTIONS,
   type KnowledgeOption,
 } from '../agentsData';
 import styles from './AgentSettingsModal.module.scss';
@@ -50,8 +49,6 @@ export default function AgentSettingsKnowledgePanel({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedDocs, setUploadedDocs] = useState<KnowledgeOption[]>([]);
-
-  const docOptions = [...AGENT_KNOWLEDGE_DOC_OPTIONS, ...uploadedDocs];
 
   const addFiles = (files: FileList | File[]) => {
     const list = Array.from(files);
@@ -123,7 +120,7 @@ export default function AgentSettingsKnowledgePanel({
       <div className={styles['agent-settings-modal__access-block']}>
         <div className={styles['agent-settings-modal__section-header']}>
           <h3 className={styles['agent-settings-modal__section-title']}>
-            Knowledge
+            Knowledge sources
           </h3>
           <p className={styles['agent-settings-modal__help']}>
             Connect channels and docs so {name.trim() || 'this agent'} opens
@@ -140,17 +137,6 @@ export default function AgentSettingsKnowledgePanel({
             onChannelsChange(
               Array.isArray(next) ? next : next ? [next] : [],
             )
-          }
-          zIndex={1400}
-        />
-        <Combobox
-          label="Docs"
-          placeholder="Add docs and runbooks"
-          multiple
-          options={docOptions}
-          value={knowledgeDocIds}
-          onChange={(next) =>
-            onDocsChange(Array.isArray(next) ? next : next ? [next] : [])
           }
           zIndex={1400}
         />

@@ -203,6 +203,8 @@ export type WorkspaceAgent = {
   shape: AgentShape;
   color: AgentColor;
   channels: string[];
+  /** Model id from AGENT_MODEL_OPTIONS; defaults to DEFAULT_AGENT_MODEL when omitted. */
+  model?: string;
   managedBy?: string;
   customImageSrc?: string;
   fresh?: boolean;
@@ -234,6 +236,14 @@ export const AGENT_MODEL_OPTIONS = [
   { value: 'o3-mini', label: 'o3-mini (OpenAI)' },
   { value: 'llama-3-3-70b', label: 'Llama 3.3 70B (On-prem)' },
 ];
+
+/** Display label for an agent model id (falls back to the raw id). */
+export function agentModelLabel(modelId?: string): string {
+  const id = modelId || DEFAULT_AGENT_MODEL;
+  return (
+    AGENT_MODEL_OPTIONS.find((option) => option.value === id)?.label ?? id
+  );
+}
 
 export type ScheduledJobTrigger = 'schedule' | 'continuous';
 
@@ -1082,6 +1092,7 @@ export function createdAgentToWorkspace(
     shape: agent.shape,
     color: agent.color,
     channels: agent.knowledgeChannelIds,
+    model: agent.model,
     customImageSrc: agent.customImageSrc,
     fresh: isSentinelName(agent.name),
   };
@@ -1215,6 +1226,35 @@ export function buildAgentChatSessions(agent: AgentProfile): AgentChatSession[] 
       preview: "Hey Priya, looks like you're just getting started.",
     },
   ];
+}
+
+export type LiveSessionMessage = AgentChatMessage & {
+  role: 'agent' | 'user';
+};
+
+/** In-memory chat thread (messages + optional tool selection). */
+export type LiveAgentSession = AgentChatSession & {
+  messages: LiveSessionMessage[];
+  selectedToolId?: string;
+};
+
+function seedWelcomeMessages(agent: AgentProfile): LiveSessionMessage[] {
+  const welcome: LiveSessionMessage = {
+    ...buildAgentWelcomeMessage(agent),
+    role: 'agent',
+  };
+  if (agent.id !== MATTY.id) {
+    return [welcome];
+  }
+  return [welcome, { ...MATTY_TOOL_CONNECT_MESSAGE, role: 'agent' }];
+}
+
+/** Seed live sessions (with welcome messages) for an agent chat. */
+export function seedAgentLiveSessions(agent: AgentProfile): LiveAgentSession[] {
+  return buildAgentChatSessions(agent).map((session) => ({
+    ...session,
+    messages: session.id === 'welcome' ? seedWelcomeMessages(agent) : [],
+  }));
 }
 
 export type ChannelMessagePart =

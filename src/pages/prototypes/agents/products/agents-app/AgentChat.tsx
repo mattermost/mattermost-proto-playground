@@ -5,8 +5,6 @@ import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-out
 import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
-import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
-import OpenInNewIcon from '@mattermost/compass-icons/components/open-in-new';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
@@ -32,16 +30,14 @@ import {
   VIEWER,
   buildAgentAutomationConfirm,
   buildAgentAutomationMessage,
-  buildAgentChatSessions,
-  buildAgentWelcomeMessage,
   buildMattyToolConnectConfirm,
   buildWorkspaceDirectory,
   isAgentGroupChatId,
   resolveAgentProfile,
-  type AgentChatMessage,
-  type AgentChatSession,
   type AgentProfile,
   type AgentToolConnectOption,
+  type LiveAgentSession,
+  type LiveSessionMessage,
   type WorkspaceAgent,
 } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
@@ -66,20 +62,67 @@ const AVATAR_LOADING_MS = 1000;
 const AVATAR_REVEAL_MS = 300;
 const OPTIONS_MENU_EXIT_MS = 150;
 const OPTIONS_MENU_WIDTH = 240;
-const SESSION_MENU_WIDTH = 220;
 /** Brief beat after the welcome stream before the tool-choice post. */
 const TOOL_POST_DELAY_MS = 280;
 
+const EMPTY_CHAT_TITLES = [
+  'How can I help today?',
+  "Let's get some work done",
+  'What should we tackle?',
+  'Ready when you are',
+  'Where should we start?',
+  'Got something on your mind?',
+];
+
+/** Turn a directory blurb into a first-person empty-state subtitle. */
+function toFirstPersonAgentBlurb(description: string): string {
+  const trimmed = description.trim();
+  if (!trimmed) return '';
+  if (/^i\b/i.test(trimmed)) {
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+  }
+
+  // Role noun: "General purpose agent that…" → "I am a general purpose agent that…"
+  // Avoid mid-sentence uses like "whether agent actions…".
+  const isAgentRoleNoun =
+    /^(an?\s+)?(?:[\w-]+[\s,]+){0,6}agent\b(?:\s+that\b|\s+who\b|\s+for\b|\s+to\b|\s*[,.]|\s*$)/i.test(
+      trimmed,
+    );
+  if (isAgentRoleNoun) {
+    const rest = trimmed
+      .replace(/^(an?\s+)/i, '')
+      .replace(/^[A-Z]/, (char) => char.toLowerCase());
+    const article = /^[aeiou]/i.test(rest) ? 'an' : 'a';
+    return `I am ${article} ${rest}`;
+  }
+
+  // Verb lead: "Opens tickets…" / "Runs CI/CD…" → "I open…" / "I run…"
+  const match = trimmed.match(/^([A-Za-z]+)([\s\S]*)$/);
+  if (!match) return trimmed;
+  return `I ${toFirstPersonPresentVerb(match[1])}${match[2]}`;
+}
+
+function toFirstPersonPresentVerb(verb: string): string {
+  const lower = verb.toLowerCase();
+  if (lower.endsWith('ies') && lower.length > 4) {
+    return `${lower.slice(0, -3)}y`;
+  }
+  if (
+    lower.endsWith('sses') ||
+    lower.endsWith('xes') ||
+    lower.endsWith('zes') ||
+    lower.endsWith('ches') ||
+    lower.endsWith('shes')
+  ) {
+    return lower.slice(0, -2);
+  }
+  if (lower.endsWith('s') && !lower.endsWith('ss')) {
+    return lower.slice(0, -1);
+  }
+  return lower;
+}
+
 type AvatarRevealPhase = 'loading' | 'revealing' | 'ready';
-
-type SessionMessage = AgentChatMessage & {
-  role: 'agent' | 'user';
-};
-
-type LiveSession = AgentChatSession & {
-  messages: SessionMessage[];
-  selectedToolId?: string;
-};
 
 function nextId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -104,6 +147,7 @@ function profileAgentFromChat(
     shape: agent.shape,
     color: agent.color,
     channels: agent.knowledgeChannelIds ?? [],
+    model: agent.model,
     customImageSrc: agent.customImageSrc,
   };
 }
@@ -113,24 +157,6 @@ function formatChatTime(date = new Date()) {
     hour: 'numeric',
     minute: '2-digit',
   });
-}
-
-function seedWelcomeMessages(agent: AgentProfile): SessionMessage[] {
-  const welcome: SessionMessage = {
-    ...buildAgentWelcomeMessage(agent),
-    role: 'agent',
-  };
-  if (agent.id !== MATTY.id) {
-    return [welcome];
-  }
-  return [welcome, { ...MATTY_TOOL_CONNECT_MESSAGE, role: 'agent' }];
-}
-
-function seedAgentSessions(agent: AgentProfile): LiveSession[] {
-  return buildAgentChatSessions(agent).map((session) => ({
-    ...session,
-    messages: session.id === 'welcome' ? seedWelcomeMessages(agent) : [],
-  }));
 }
 
 function splitParagraphWords(paragraphs: string[]): string[][] {
@@ -244,13 +270,25 @@ function useAvatarReveal(
 }
 
 /**
- * Agent chat layout (Figma 71:102213) — session list + message canvas.
- * Supports Matty and agents created via the New Agent modal.
+ * Agent chat layout — spanning header + message canvas.
+ * Sessions live in the product LHS under each agent.
  */
 export default function AgentChat() {
   const { agentId } = useParams<{ agentId: string }>();
-  const { customAgents, groupChats, updateAgent, rememberOpenedAgent } =
-    useAgents();
+  const {
+    customAgents,
+    groupChats,
+    updateAgent,
+    rememberOpenedAgent,
+    sessionsByAgentId,
+    activeSessionByAgentId,
+    ensureAgentSessions,
+    startNewChat: startNewChatForAgent,
+    renameSession: renameSessionForAgent,
+    archiveSession: archiveSessionForAgent,
+    updateSessionsForAgent,
+    setActiveSessionForAgent,
+  } = useAgents();
   const agent = useMemo(
     () => resolveAgentProfile(agentId, customAgents, groupChats),
     [agentId, customAgents, groupChats],
@@ -261,7 +299,8 @@ export default function AgentChat() {
 
   useEffect(() => {
     rememberOpenedAgent(agent.id);
-  }, [agent.id, rememberOpenedAgent]);
+    ensureAgentSessions(agent);
+  }, [agent, rememberOpenedAgent, ensureAgentSessions]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [profileTarget, setProfileTarget] =
@@ -274,12 +313,8 @@ export default function AgentChat() {
     ? (tabParam as SettingsTab)
     : 'info';
 
-  const [sessions, setSessions] = useState<LiveSession[]>(() =>
-    seedAgentSessions(agent),
-  );
-  const [activeSessionId, setActiveSessionId] = useState(
-    () => seedAgentSessions(agent)[0]?.id ?? '',
-  );
+  const sessions = sessionsByAgentId[agent.id] ?? [];
+  const activeSessionId = activeSessionByAgentId[agent.id] ?? '';
   const [draft, setDraft] = useState('');
   const [welcomePlayed, setWelcomePlayed] = useState(false);
   /** One-shot loading + stream for sessions seeded by New agent automation. */
@@ -287,21 +322,12 @@ export default function AgentChat() {
   const [toolPostReady, setToolPostReady] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [optionsAnchor, setOptionsAnchor] = useState<DOMRect | null>(null);
-  const [sessionMenuId, setSessionMenuId] = useState<string | null>(null);
-  const [sessionMenuAnchor, setSessionMenuAnchor] = useState<DOMRect | null>(
-    null,
-  );
   const [settingsOpen, setSettingsOpen] = useState(settingsParam);
   const optionsButtonRef = useRef<HTMLDivElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
-  const sessionMenuRef = useRef<HTMLDivElement>(null);
   const skipOptionsOutsideCloseRef = useRef(false);
-  const skipSessionOutsideCloseRef = useRef(false);
   const { rendered: optionsRendered, exiting: optionsExiting } =
     useExitAnimation(optionsOpen, OPTIONS_MENU_EXIT_MS);
-  const sessionMenuOpen = sessionMenuId !== null;
-  const { rendered: sessionMenuRendered, exiting: sessionMenuExiting } =
-    useExitAnimation(sessionMenuOpen, OPTIONS_MENU_EXIT_MS);
 
   useOutsideClose(optionsMenuRef, optionsOpen && !optionsExiting, () => {
     if (skipOptionsOutsideCloseRef.current) {
@@ -311,21 +337,17 @@ export default function AgentChat() {
     setOptionsOpen(false);
   });
 
-  useOutsideClose(
-    sessionMenuRef,
-    sessionMenuOpen && !sessionMenuExiting,
-    () => {
-      if (skipSessionOutsideCloseRef.current) {
-        skipSessionOutsideCloseRef.current = false;
-        return;
-      }
-      setSessionMenuId(null);
-    },
-  );
-
   const activeSession =
     sessions.find((session) => session.id === activeSessionId) ??
     sessions[0];
+  const isEmptyChat = (activeSession?.messages.length ?? 0) === 0;
+  const emptyTitle = useMemo(() => {
+    const index = Math.floor(Math.random() * EMPTY_CHAT_TITLES.length);
+    return EMPTY_CHAT_TITLES[index];
+  }, [activeSessionId]);
+  const emptySubtitle = toFirstPersonAgentBlurb(
+    agent.description?.trim() || agent.purpose?.trim() || '',
+  );
   const playWelcomeIntro =
     activeSession?.id === 'welcome' && !welcomePlayed;
   const playAutomationIntro =
@@ -371,15 +393,11 @@ export default function AgentChat() {
   }, [playIntro, firstPostComplete, showBubble]);
 
   useEffect(() => {
-    const seeded = seedAgentSessions(agent);
-    setSessions(seeded);
-    setActiveSessionId(seeded[0]?.id ?? '');
     setDraft('');
     setWelcomePlayed(false);
     setAutomationIntroActive(false);
     setToolPostReady(false);
     setOptionsOpen(false);
-    setSessionMenuId(null);
     setSettingsOpen(settingsParam);
   }, [agent.id]);
 
@@ -390,19 +408,23 @@ export default function AgentChat() {
   }, [settingsParam]);
 
   useEffect(() => {
-    if (!optionsOpen && !sessionMenuOpen) return;
+    if (activeSessionId && activeSessionId !== 'welcome') {
+      setWelcomePlayed(true);
+    }
+  }, [activeSessionId]);
+
+  useEffect(() => {
+    if (!optionsOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOptionsOpen(false);
-        setSessionMenuId(null);
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [optionsOpen, sessionMenuOpen]);
+  }, [optionsOpen]);
 
   const openOptionsMenu = () => {
-    setSessionMenuId(null);
     const rect =
       optionsButtonRef.current?.getBoundingClientRect() ?? null;
     setOptionsAnchor(rect);
@@ -411,76 +433,23 @@ export default function AgentChat() {
 
   const closeOptionsMenu = () => setOptionsOpen(false);
 
-  const closeSessionMenu = () => setSessionMenuId(null);
-
-  const openSessionMenu = (
-    sessionId: string,
-    anchorEl: HTMLElement,
-  ) => {
-    setOptionsOpen(false);
-    setSessionMenuAnchor(anchorEl.getBoundingClientRect());
-    setSessionMenuId((prev) => (prev === sessionId ? null : sessionId));
-  };
-
-  const selectSession = (id: string) => {
-    if (id !== 'welcome') {
-      setWelcomePlayed(true);
-    }
-    setAutomationIntroActive(false);
-    setActiveSessionId(id);
-    setDraft('');
-    setSessionMenuId(null);
-  };
-
   const renameSession = (sessionId: string) => {
-    const session = sessions.find((item) => item.id === sessionId);
-    if (!session) {
-      return;
-    }
+    const session = sessions.find((entry) => entry.id === sessionId);
+    if (!session) return;
     const next = window.prompt('Rename chat', session.preview);
-    closeSessionMenu();
-    if (next === null) {
-      return;
-    }
+    closeOptionsMenu();
+    if (next === null) return;
     const trimmed = next.trim();
-    if (!trimmed || trimmed === session.preview) {
-      return;
-    }
-    setSessions((prev) =>
-      prev.map((item) =>
-        item.id === sessionId ? { ...item, preview: trimmed } : item,
-      ),
-    );
+    if (!trimmed || trimmed === session.preview) return;
+    renameSessionForAgent(agent.id, sessionId, trimmed);
   };
 
   const archiveSession = (sessionId: string) => {
-    closeSessionMenu();
-    setSessions((prev) => {
-      const next = prev.filter((item) => item.id !== sessionId);
-      if (activeSessionId !== sessionId) {
-        return next;
-      }
-      const fallback = next[0];
-      if (fallback) {
-        setActiveSessionId(fallback.id);
-        if (fallback.id !== 'welcome') {
-          setWelcomePlayed(true);
-        }
-        setAutomationIntroActive(false);
-        setDraft('');
-        return next;
-      }
-      const created: LiveSession = {
-        id: nextId('chat'),
-        preview: 'New chat',
-        messages: [],
-      };
-      setActiveSessionId(created.id);
-      setWelcomePlayed(true);
-      setAutomationIntroActive(false);
-      setDraft('');
-      return [created];
-    });
+    closeOptionsMenu();
+    setWelcomePlayed(true);
+    setAutomationIntroActive(false);
+    setDraft('');
+    archiveSessionForAgent(agent.id, sessionId);
   };
 
   const startNewChat = () => {
@@ -488,19 +457,7 @@ export default function AgentChat() {
     setAutomationIntroActive(false);
     setDraft('');
     setOptionsOpen(false);
-    setSessionMenuId(null);
-    const empty = sessions.find((session) => session.messages.length === 0);
-    if (empty) {
-      setActiveSessionId(empty.id);
-      return;
-    }
-    const created: LiveSession = {
-      id: nextId('chat'),
-      preview: 'New chat',
-      messages: [],
-    };
-    setSessions((prev) => [created, ...prev]);
-    setActiveSessionId(created.id);
+    startNewChatForAgent(agent.id);
   };
 
   const startNewAutomation = () => {
@@ -508,13 +465,13 @@ export default function AgentChat() {
     setDraft('');
     setOptionsOpen(false);
     setToolPostReady(false);
-    const prompt: SessionMessage = {
+    const prompt: LiveSessionMessage = {
       ...buildAgentAutomationMessage(formatChatTime()),
       role: 'agent',
     };
     const empty = sessions.find((session) => session.messages.length === 0);
     if (empty) {
-      setSessions((prev) =>
+      updateSessionsForAgent(agent.id, (prev) =>
         prev.map((session) =>
           session.id === empty.id
             ? {
@@ -526,17 +483,17 @@ export default function AgentChat() {
             : session,
         ),
       );
-      setActiveSessionId(empty.id);
+      setActiveSessionForAgent(agent.id, empty.id);
       setAutomationIntroActive(true);
       return;
     }
-    const created: LiveSession = {
+    const created: LiveAgentSession = {
       id: nextId('chat'),
       preview: 'New agent automation',
       messages: [prompt],
     };
-    setSessions((prev) => [created, ...prev]);
-    setActiveSessionId(created.id);
+    updateSessionsForAgent(agent.id, (prev) => [created, ...prev]);
+    setActiveSessionForAgent(agent.id, created.id);
     setAutomationIntroActive(true);
   };
 
@@ -544,7 +501,7 @@ export default function AgentChat() {
     const text = draft.trim();
     if (!text) return;
 
-    const message: SessionMessage = {
+    const message: LiveSessionMessage = {
       id: nextId('msg'),
       role: 'user',
       timestamp: formatChatTime(),
@@ -553,18 +510,18 @@ export default function AgentChat() {
 
     let targetId = activeSession?.id;
     if (!targetId) {
-      const created: LiveSession = {
+      const created: LiveAgentSession = {
         id: nextId('chat'),
         preview: text,
         messages: [message],
       };
-      setSessions((prev) => [created, ...prev]);
-      setActiveSessionId(created.id);
+      updateSessionsForAgent(agent.id, (prev) => [created, ...prev]);
+      setActiveSessionForAgent(agent.id, created.id);
       setDraft('');
       return;
     }
 
-    setSessions((prev) =>
+    updateSessionsForAgent(agent.id, (prev) =>
       prev.map((session) => {
         if (session.id !== targetId) return session;
         return {
@@ -592,13 +549,13 @@ export default function AgentChat() {
       ? buildAgentAutomationConfirm(option.id, option.label, formatChatTime())
       : buildMattyToolConnectConfirm(option.label, formatChatTime());
 
-    setSessions((prev) =>
+    updateSessionsForAgent(agent.id, (prev) =>
       prev.map((session) => {
         if (session.id !== sessionId) return session;
         const withoutConfirm = session.messages.filter(
           (message) => message.id !== confirmId,
         );
-        const confirm: SessionMessage = {
+        const confirm: LiveSessionMessage = {
           ...confirmMessage,
           role: 'agent',
         };
@@ -611,17 +568,59 @@ export default function AgentChat() {
     );
   };
 
+  const composer = (
+    <div className={styles['agent-chat__composer']}>
+      <div className={styles['agent-chat__input']}>
+        <button
+          type="button"
+          className={styles['agent-chat__input-plus']}
+          aria-label="Add attachment"
+        >
+          <Icon glyph={<PlusIcon />} size="16" />
+        </button>
+        <input
+          className={styles['agent-chat__input-field']}
+          type="text"
+          placeholder={`Chat with ${agent.name}`}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              sendDraft();
+            }
+          }}
+          aria-label={`Chat with ${agent.name}`}
+        />
+        <button
+          type="button"
+          className={styles['agent-chat__input-send']}
+          aria-label="Send message"
+          disabled={!draft.trim()}
+          onClick={sendDraft}
+        >
+          <Icon glyph={<SendOutlineIcon />} size="16" />
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles['agent-chat']}>
       <AgentsProductSidebar activeNav={agent.id} />
 
       <div className={styles['agent-chat__workspace']}>
-        <aside
-          className={styles['agent-chat__sessions']}
-          aria-label={`${agent.name} chats`}
+        <section
+          className={[
+            styles['agent-chat__canvas'],
+            isEmptyChat ? styles['agent-chat__canvas--empty'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          aria-label={`Chat with ${agent.name}`}
         >
-          <header className={styles['agent-chat__sessions-header']}>
-            <div className={styles['agent-chat__sessions-title']}>
+          <header className={styles['agent-chat__header']}>
+            <div className={styles['agent-chat__header-title']}>
               {!isGroupChat ? (
                 <AgentAvatar
                   shape={agent.shape}
@@ -632,299 +631,227 @@ export default function AgentChat() {
                   imageSrc={agent.customImageSrc}
                 />
               ) : null}
-              <h1 className={styles['agent-chat__sessions-name']}>
-                {agent.name}
-              </h1>
+              <h1 className={styles['agent-chat__header-name']}>{agent.name}</h1>
             </div>
-            <div
-              ref={optionsButtonRef}
-              className={styles['agent-chat__options-trigger']}
-              onMouseDown={() => {
-                if (optionsOpen) {
-                  skipOptionsOutsideCloseRef.current = true;
-                }
-              }}
-            >
+            <div className={styles['agent-chat__header-actions']}>
               <IconButton
                 size="small"
                 padding="compact"
-                icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
-                aria-label={`${agent.name} options`}
-                aria-haspopup="menu"
-                aria-expanded={optionsOpen}
-                onClick={openOptionsMenu}
+                icon={<Icon glyph={<PlusIcon />} size="16" />}
+                aria-label="New chat"
+                onClick={startNewChat}
               />
+              <div
+                ref={optionsButtonRef}
+                className={styles['agent-chat__options-trigger']}
+                onMouseDown={() => {
+                  if (optionsOpen) {
+                    skipOptionsOutsideCloseRef.current = true;
+                  }
+                }}
+              >
+                <IconButton
+                  size="small"
+                  padding="compact"
+                  icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
+                  aria-label={`${agent.name} options`}
+                  aria-haspopup="menu"
+                  aria-expanded={optionsOpen}
+                  onClick={openOptionsMenu}
+                />
+              </div>
             </div>
           </header>
 
-          <div className={styles['agent-chat__sessions-list']}>
-            {sessions.map((session) => {
-              const menuOpen = sessionMenuId === session.id;
-              return (
-                <div
-                  key={session.id}
-                  className={[
-                    styles['agent-chat__session-row'],
-                    menuOpen
-                      ? styles['agent-chat__session-row--menu-open']
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  <MenuItem
-                    className={styles['agent-chat__session-item']}
-                    label={session.preview}
-                    active={session.id === activeSessionId}
-                    leadingVisual={
-                      <Icon glyph={<MessageTextOutlineIcon />} size="16" />
-                    }
-                    onClick={() => selectSession(session.id)}
-                  />
-                  <div
-                    className={styles['agent-chat__session-more']}
-                    onMouseDown={() => {
-                      if (sessionMenuId === session.id) {
-                        skipSessionOutsideCloseRef.current = true;
-                      }
-                    }}
-                  >
-                    <IconButton
-                      size="x-small"
-                      padding="compact"
-                      icon={<Icon glyph={<DotsHorizontalIcon />} size="16" />}
-                      aria-label={`${session.preview} options`}
-                      aria-haspopup="menu"
-                      aria-expanded={menuOpen}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        openSessionMenu(
-                          session.id,
-                          event.currentTarget,
-                        );
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-            <MenuItem
-              className={styles['agent-chat__session-item']}
-              label="New chat"
-              leadingVisual={<Icon glyph={<PlusIcon />} size="16" />}
-              onClick={startNewChat}
-            />
-          </div>
-        </aside>
-
-        <section
-          className={styles['agent-chat__canvas']}
-          aria-label={`Chat with ${agent.name}`}
-        >
-          <div className={styles['agent-chat__messages']}>
-            <Scrollbar>
-              <div className={styles['agent-chat__messages-list']}>
-                {(activeSession?.messages ?? [])
-                  .filter(
-                    (_, index) =>
-                      !playWelcomeIntro || toolPostReady || index === 0,
-                  )
-                  .map((message, index) => {
-                  if (message.role === 'user') {
-                    return (
-                      <article
-                        key={message.id}
-                        className={styles['agent-chat__message']}
-                      >
-                        <div className={styles['agent-chat__message-avatar']}>
-                          <UserAvatar
-                            size="32"
-                            src={VIEWER.avatarSrc}
-                            alt={VIEWER.avatarAlt}
-                          />
-                        </div>
-                        <div className={styles['agent-chat__message-bubble']}>
-                          <div className={styles['agent-chat__message-meta']}>
-                            <span className={styles['agent-chat__message-name']}>
-                              {VIEWER.name}
-                            </span>
-                            <time className={styles['agent-chat__message-time']}>
-                              {message.timestamp}
-                            </time>
-                          </div>
-                          <div className={styles['agent-chat__message-body']}>
-                            {message.paragraphs.map((paragraph, pIndex) => (
-                              <p key={pIndex}>{paragraph}</p>
-                            ))}
-                          </div>
-                        </div>
-                      </article>
-                    );
-                  }
-
-                  const isIntro = playIntro && index === 0;
-                  const isToolPost =
-                    playWelcomeIntro &&
-                    message.id === MATTY_TOOL_CONNECT_MESSAGE.id;
-                  const enterBubble =
-                    isIntro ||
-                    isToolPost ||
-                    (playWelcomeIntro &&
-                      message.id === MATTY_TOOL_CONNECT_CONFIRM_ID);
-                  const paragraphs = isIntro
-                    ? streamedParagraphs
-                    : message.paragraphs;
-
-                  return (
-                    <article
-                      key={message.id}
-                      className={styles['agent-chat__message']}
-                    >
-                      <div
-                        className={[
-                          styles['agent-chat__message-avatar'],
-                          isIntro
-                            ? styles[
-                                `agent-chat__message-avatar--${avatarPhase}`
-                              ]
-                            : styles['agent-chat__message-avatar--ready'],
-                        ].join(' ')}
-                      >
-                        {isIntro && showDots ? (
-                          <AgentTypingDots
-                            className={styles['agent-chat__message-dots']}
-                            label={`${agent.name} is thinking`}
-                          />
-                        ) : null}
-                        {!isIntro || showAvatar ? (
-                          <button
-                            type="button"
-                            className={
-                              styles['agent-chat__message-avatar-button']
-                            }
-                            aria-label={`View ${agent.name} profile`}
-                            onClick={(event) => {
-                              setProfileTarget(
-                                profileAnchorFromEvent(
-                                  profileAgentFromChat(agent, customAgents),
-                                  event,
-                                ),
-                              );
-                            }}
+          {isEmptyChat ? (
+            <div className={styles['agent-chat__empty']}>
+              <div className={styles['agent-chat__empty-intro']}>
+                <h2 className={styles['agent-chat__empty-title']}>
+                  {emptyTitle}
+                </h2>
+                {emptySubtitle ? (
+                  <p className={styles['agent-chat__empty-subtitle']}>
+                    {emptySubtitle}
+                  </p>
+                ) : null}
+              </div>
+              {composer}
+            </div>
+          ) : (
+            <>
+              <div className={styles['agent-chat__messages']}>
+                <Scrollbar>
+                  <div className={styles['agent-chat__messages-list']}>
+                    {(activeSession?.messages ?? [])
+                      .filter(
+                        (_, index) =>
+                          !playWelcomeIntro || toolPostReady || index === 0,
+                      )
+                      .map((message, index) => {
+                      if (message.role === 'user') {
+                        return (
+                          <article
+                            key={message.id}
+                            className={styles['agent-chat__message']}
                           >
-                            <AgentAvatar
-                              className={
-                                styles['agent-chat__message-avatar-face']
-                              }
-                              shape={agent.shape}
-                              color={agent.color}
-                              size="sm"
-                              eyes
-                              shadow={false}
-                              imageSrc={agent.customImageSrc}
-                            />
-                          </button>
-                        ) : null}
-                      </div>
-                      {!isIntro || showBubble ? (
-                        <div
-                          className={[
-                            styles['agent-chat__message-bubble'],
-                            enterBubble
-                              ? styles['agent-chat__message-bubble--enter']
-                              : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
-                        >
-                          <div className={styles['agent-chat__message-meta']}>
-                            <span className={styles['agent-chat__message-name']}>
-                              {agent.name}
-                            </span>
-                            <time className={styles['agent-chat__message-time']}>
-                              {message.timestamp}
-                            </time>
-                          </div>
-                          <div className={styles['agent-chat__message-body']}>
-                            {message.title ? (
-                              <div
-                                className={styles['agent-chat__message-copy']}
-                              >
-                                <h2
-                                  className={
-                                    styles['agent-chat__message-title']
-                                  }
-                                >
-                                  {message.title}
-                                </h2>
-                                {paragraphs.map((paragraph, pIndex) => (
+                            <div className={styles['agent-chat__message-avatar']}>
+                              <UserAvatar
+                                size="32"
+                                src={VIEWER.avatarSrc}
+                                alt={VIEWER.avatarAlt}
+                              />
+                            </div>
+                            <div className={styles['agent-chat__message-bubble']}>
+                              <div className={styles['agent-chat__message-meta']}>
+                                <span className={styles['agent-chat__message-name']}>
+                                  {VIEWER.name}
+                                </span>
+                                <time className={styles['agent-chat__message-time']}>
+                                  {message.timestamp}
+                                </time>
+                              </div>
+                              <div className={styles['agent-chat__message-body']}>
+                                {message.paragraphs.map((paragraph, pIndex) => (
                                   <p key={pIndex}>{paragraph}</p>
                                 ))}
                               </div>
-                            ) : (
-                              paragraphs.map((paragraph, pIndex) => (
-                                <p key={pIndex}>{paragraph}</p>
-                              ))
-                            )}
-                            {message.toolOptions?.length &&
-                            (!playAutomationIntro || toolPostReady) ? (
-                              <AgentToolConnectCard
-                                options={message.toolOptions}
-                                selectedId={activeSession?.selectedToolId}
-                                ariaLabel={
-                                  message.id === AGENT_AUTOMATION_PROMPT_ID
-                                    ? 'Automated task types'
-                                    : undefined
-                                }
-                                onSelect={(option) =>
-                                  selectAttachmentOption(message.id, option)
-                                }
+                            </div>
+                          </article>
+                        );
+                      }
+
+                      const isIntro = playIntro && index === 0;
+                      const isToolPost =
+                        playWelcomeIntro &&
+                        message.id === MATTY_TOOL_CONNECT_MESSAGE.id;
+                      const enterBubble =
+                        isIntro ||
+                        isToolPost ||
+                        (playWelcomeIntro &&
+                          message.id === MATTY_TOOL_CONNECT_CONFIRM_ID);
+                      const paragraphs = isIntro
+                        ? streamedParagraphs
+                        : message.paragraphs;
+
+                      return (
+                        <article
+                          key={message.id}
+                          className={styles['agent-chat__message']}
+                        >
+                          <div
+                            className={[
+                              styles['agent-chat__message-avatar'],
+                              isIntro
+                                ? styles[
+                                    `agent-chat__message-avatar--${avatarPhase}`
+                                  ]
+                                : styles['agent-chat__message-avatar--ready'],
+                            ].join(' ')}
+                          >
+                            {isIntro && showDots ? (
+                              <AgentTypingDots
+                                className={styles['agent-chat__message-dots']}
+                                label={`${agent.name} is thinking`}
                               />
                             ) : null}
+                            {!isIntro || showAvatar ? (
+                              <button
+                                type="button"
+                                className={
+                                  styles['agent-chat__message-avatar-button']
+                                }
+                                aria-label={`View ${agent.name} profile`}
+                                onClick={(event) => {
+                                  setProfileTarget(
+                                    profileAnchorFromEvent(
+                                      profileAgentFromChat(agent, customAgents),
+                                      event,
+                                    ),
+                                  );
+                                }}
+                              >
+                                <AgentAvatar
+                                  className={
+                                    styles['agent-chat__message-avatar-face']
+                                  }
+                                  shape={agent.shape}
+                                  color={agent.color}
+                                  size="sm"
+                                  eyes
+                                  shadow={false}
+                                  imageSrc={agent.customImageSrc}
+                                />
+                              </button>
+                            ) : null}
                           </div>
-                        </div>
-                      ) : null}
-                    </article>
-                  );
-                })}
+                          {!isIntro || showBubble ? (
+                            <div
+                              className={[
+                                styles['agent-chat__message-bubble'],
+                                enterBubble
+                                  ? styles['agent-chat__message-bubble--enter']
+                                  : '',
+                              ]
+                                .filter(Boolean)
+                                .join(' ')}
+                            >
+                              <div className={styles['agent-chat__message-meta']}>
+                                <span className={styles['agent-chat__message-name']}>
+                                  {agent.name}
+                                </span>
+                                <time className={styles['agent-chat__message-time']}>
+                                  {message.timestamp}
+                                </time>
+                              </div>
+                              <div className={styles['agent-chat__message-body']}>
+                                {message.title ? (
+                                  <div
+                                    className={styles['agent-chat__message-copy']}
+                                  >
+                                    <h2
+                                      className={
+                                        styles['agent-chat__message-title']
+                                      }
+                                    >
+                                      {message.title}
+                                    </h2>
+                                    {paragraphs.map((paragraph, pIndex) => (
+                                      <p key={pIndex}>{paragraph}</p>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  paragraphs.map((paragraph, pIndex) => (
+                                    <p key={pIndex}>{paragraph}</p>
+                                  ))
+                                )}
+                                {message.toolOptions?.length &&
+                                (!playAutomationIntro || toolPostReady) ? (
+                                  <AgentToolConnectCard
+                                    options={message.toolOptions}
+                                    selectedId={activeSession?.selectedToolId}
+                                    ariaLabel={
+                                      message.id === AGENT_AUTOMATION_PROMPT_ID
+                                        ? 'Automated task types'
+                                        : undefined
+                                    }
+                                    onSelect={(option) =>
+                                      selectAttachmentOption(message.id, option)
+                                    }
+                                  />
+                                ) : null}
+                              </div>
+                            </div>
+                          ) : null}
+                        </article>
+                      );
+                    })}
+                  </div>
+                </Scrollbar>
               </div>
-            </Scrollbar>
-          </div>
 
-          <div className={styles['agent-chat__composer']}>
-            <div className={styles['agent-chat__input']}>
-              <button
-                type="button"
-                className={styles['agent-chat__input-plus']}
-                aria-label="Add attachment"
-              >
-                <Icon glyph={<PlusIcon />} size="16" />
-              </button>
-              <input
-                className={styles['agent-chat__input-field']}
-                type="text"
-                placeholder={`Chat with ${agent.name}`}
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter' && !event.shiftKey) {
-                    event.preventDefault();
-                    sendDraft();
-                  }
-                }}
-                aria-label={`Chat with ${agent.name}`}
-              />
-              <button
-                type="button"
-                className={styles['agent-chat__input-send']}
-                aria-label="Send message"
-                disabled={!draft.trim()}
-                onClick={sendDraft}
-              >
-                <Icon glyph={<SendOutlineIcon />} size="16" />
-              </button>
-            </div>
-          </div>
+              {composer}
+            </>
+          )}
         </section>
       </div>
 
@@ -981,6 +908,30 @@ export default function AgentChat() {
                     onClick={closeOptionsMenu}
                   />
                 </PopoverMenuGroup>
+                {activeSessionId ? (
+                  <>
+                    <PopoverMenuDivider />
+                    <PopoverMenuGroup>
+                      <MenuItem
+                        role="menuitem"
+                        label="Rename chat"
+                        leadingVisual={
+                          <Icon glyph={<PencilOutlineIcon />} size="16" />
+                        }
+                        onClick={() => renameSession(activeSessionId)}
+                      />
+                      <MenuItem
+                        role="menuitem"
+                        label="Archive chat"
+                        destructive
+                        leadingVisual={
+                          <Icon glyph={<ArchiveOutlineIcon />} size="16" />
+                        }
+                        onClick={() => archiveSession(activeSessionId)}
+                      />
+                    </PopoverMenuGroup>
+                  </>
+                ) : null}
                 {agent.id !== MATTY.id ? (
                   <>
                     <PopoverMenuDivider />
@@ -997,69 +948,6 @@ export default function AgentChat() {
                     </PopoverMenuGroup>
                   </>
                 ) : null}
-              </PopoverMenu>
-            </div>,
-            document.body,
-          )
-        : null}
-
-      {sessionMenuRendered && sessionMenuAnchor && sessionMenuId
-        ? createPortal(
-            <div
-              ref={sessionMenuRef}
-              className={[
-                styles['agent-chat__options-menu'],
-                sessionMenuExiting
-                  ? styles['agent-chat__options-menu--exiting']
-                  : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              style={{
-                top: sessionMenuAnchor.bottom + 4,
-                left: Math.max(
-                  8,
-                  sessionMenuAnchor.right - SESSION_MENU_WIDTH,
-                ),
-                width: SESSION_MENU_WIDTH,
-              }}
-              role="menu"
-              aria-label="Chat options"
-            >
-              <PopoverMenu>
-                <PopoverMenuGroup>
-                  <MenuItem
-                    role="menuitem"
-                    label="Open in new window"
-                    leadingVisual={
-                      <Icon glyph={<OpenInNewIcon />} size="16" />
-                    }
-                    onClick={() => {
-                      closeSessionMenu();
-                      window.open(window.location.href, '_blank');
-                    }}
-                  />
-                  <MenuItem
-                    role="menuitem"
-                    label="Rename chat"
-                    leadingVisual={
-                      <Icon glyph={<PencilOutlineIcon />} size="16" />
-                    }
-                    onClick={() => renameSession(sessionMenuId)}
-                  />
-                </PopoverMenuGroup>
-                <PopoverMenuDivider />
-                <PopoverMenuGroup>
-                  <MenuItem
-                    role="menuitem"
-                    label="Archive chat"
-                    destructive
-                    leadingVisual={
-                      <Icon glyph={<ArchiveOutlineIcon />} size="16" />
-                    }
-                    onClick={() => archiveSession(sessionMenuId)}
-                  />
-                </PopoverMenuGroup>
               </PopoverMenu>
             </div>,
             document.body,

@@ -18,7 +18,7 @@ import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import HammerIcon from '@mattermost/compass-icons/components/hammer';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
-import LockIcon from '@mattermost/compass-icons/components/lock';
+import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import TuneIcon from '@mattermost/compass-icons/components/tune';
 import { Button } from '@mattermost/compass-ui/components/button';
@@ -91,7 +91,7 @@ const TABS: TabDef[] = [
     label: 'Model & Instructions',
     IconGlyph: FileTextOutlineIcon,
   },
-  { id: 'knowledge', label: 'Knowledge', IconGlyph: BookOutlineIcon },
+  { id: 'knowledge', label: 'Knowledge sources', IconGlyph: BookOutlineIcon },
   { id: 'tasks', label: 'Automated tasks', IconGlyph: ClockOutlineIcon },
   { id: 'tools', label: 'Tools', IconGlyph: HammerIcon },
   {
@@ -125,7 +125,7 @@ const VISIBILITY_OPTIONS: VisibilityOption[] = [
     value: 'private',
     title: 'Private agent',
     description: 'Only invited members',
-    IconGlyph: LockIcon,
+    IconGlyph: LockOutlineIcon,
   },
 ];
 

@@ -2,9 +2,12 @@ import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
+import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
+import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { AGENTS_BASE } from '../../agentsScenes';
 import { buildYourAgentsSidebar } from '../../agentsData';
@@ -58,6 +61,10 @@ export default function AgentsProductSidebar({
     customAgents,
     groupChats,
     openedAgentIds,
+    sessionsByAgentId,
+    activeSessionByAgentId,
+    selectSession,
+    startNewChat,
   } = useAgents();
   const yourAgents = buildYourAgentsSidebar(
     customAgents,
@@ -108,45 +115,118 @@ export default function AgentsProductSidebar({
           <ChannelsSidebarCategory label="Your agents" showChevron />
           {yourAgents.map((agent) => {
             const isGroup = Boolean(agent.members?.length);
+            const sessions = sessionsByAgentId[agent.id] ?? [];
+            const activeSessionId = activeSessionByAgentId[agent.id];
             return (
               <div
                 key={agent.id}
-                className={[
-                  styles['agents-product-sidebar__agent-row'],
-                  isGroup
-                    ? ''
-                    : styles['agents-product-sidebar__agent-row--dm'],
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
+                className={styles['agents-product-sidebar__agent-block']}
               >
-                {!isGroup ? (
+                <div
+                  className={[
+                    styles['agents-product-sidebar__agent-row'],
+                    isGroup
+                      ? ''
+                      : styles['agents-product-sidebar__agent-row--dm'],
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  {!isGroup ? (
+                    <span
+                      className={styles['agents-product-sidebar__agent-avatar']}
+                      aria-hidden
+                    >
+                      <AgentAvatar
+                        shape={agent.shape}
+                        color={agent.color}
+                        size="xs"
+                        eyes
+                        imageSrc={agent.customImageSrc}
+                      />
+                    </span>
+                  ) : null}
+                  <ChannelSidebarItem
+                    name={agent.name}
+                    leadingVisual={
+                      isGroup ? 'group-message' : 'direct-message'
+                    }
+                    memberCount={
+                      isGroup ? agent.members!.length : undefined
+                    }
+                    active={activeNav === agent.id && sessions.length === 0}
+                    onClick={() =>
+                      navigate(`${AGENTS_BASE}/agents/${agent.id}`)
+                    }
+                  />
                   <span
-                    className={styles['agents-product-sidebar__agent-avatar']}
-                    aria-hidden
+                    className={styles['agents-product-sidebar__agent-new']}
                   >
-                    <AgentAvatar
-                      shape={agent.shape}
-                      color={agent.color}
-                      size="xs"
-                      eyes
-                      imageSrc={agent.customImageSrc}
+                    <IconButton
+                      size="x-small"
+                      style="inverted"
+                      icon={<PlusIcon size={12} />}
+                      aria-label={`New chat with ${agent.name}`}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        startNewChat(agent.id);
+                        navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                      }}
                     />
                   </span>
+                </div>
+                {sessions.length > 0 ? (
+                  <ul
+                    className={styles['agents-product-sidebar__sessions']}
+                    aria-label={`${agent.name} chats`}
+                  >
+                    {sessions.map((session) => {
+                      const active =
+                        activeNav === agent.id &&
+                        session.id === activeSessionId;
+                      return (
+                        <li key={session.id}>
+                          <button
+                            type="button"
+                            className={[
+                              styles['agents-product-sidebar__session'],
+                              active
+                                ? styles[
+                                    'agents-product-sidebar__session--active'
+                                  ]
+                                : '',
+                            ]
+                              .filter(Boolean)
+                              .join(' ')}
+                            onClick={() => {
+                              selectSession(agent.id, session.id);
+                              navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                            }}
+                          >
+                            <span
+                              className={
+                                styles['agents-product-sidebar__session-icon']
+                              }
+                              aria-hidden
+                            >
+                              <Icon
+                                glyph={<MessageTextOutlineIcon />}
+                                size="16"
+                              />
+                            </span>
+                            <span
+                              className={
+                                styles['agents-product-sidebar__session-label']
+                              }
+                            >
+                              {session.preview}
+                            </span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 ) : null}
-                <ChannelSidebarItem
-                  name={agent.name}
-                  leadingVisual={
-                    isGroup ? 'group-message' : 'direct-message'
-                  }
-                  memberCount={
-                    isGroup ? agent.members!.length : undefined
-                  }
-                  active={activeNav === agent.id}
-                  onClick={() =>
-                    navigate(`${AGENTS_BASE}/agents/${agent.id}`)
-                  }
-                />
               </div>
             );
           })}

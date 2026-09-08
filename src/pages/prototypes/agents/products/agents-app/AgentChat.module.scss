@@ -25,7 +25,7 @@
     min-width: 0;
     min-height: 0;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: stretch;
     background: var(--center-channel-bg);
     border-radius: var(--radius-l);
@@ -34,24 +34,17 @@
     overflow: hidden;
   }
 
-  &__sessions {
-    display: flex;
-    flex-direction: column;
-    width: 264px;
-    flex: 0 0 264px;
-    min-height: 0;
-    background: var(--center-channel-bg);
-  }
-
-  &__sessions-header {
+  &__header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-l);
+    flex: 0 0 auto;
     padding: var(--spacing-m);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   }
 
-  &__sessions-title {
+  &__header-title {
     display: flex;
     flex: 1 1 auto;
     min-width: 0;
@@ -60,7 +53,7 @@
     padding-inline: var(--spacing-xs);
   }
 
-  &__sessions-name {
+  &__header-name {
     margin: 0;
     min-width: 0;
     white-space: nowrap;
@@ -73,57 +66,11 @@
     color: var(--center-channel-color);
   }
 
-  &__sessions-list {
+  &__header-actions {
     display: flex;
-    flex-direction: column;
-    padding-block: var(--spacing-xs);
-    overflow: auto;
-  }
-
-  &__session-row {
-    position: relative;
-    display: flex;
+    flex: 0 0 auto;
     align-items: center;
-    min-width: 0;
-
-    &:hover .agent-chat__session-more,
-    &:focus-within .agent-chat__session-more,
-    &.agent-chat__session-row--menu-open .agent-chat__session-more {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
-
-  &__session-more {
-    position: absolute;
-    top: 50%;
-    right: var(--spacing-xs);
-    z-index: 1;
-    display: inline-flex;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-50%);
-    transition: opacity var(--duration-quick) var(--ease-transition);
-  }
-
-  // Truncate long chat previews — MenuItem label is nowrap by default.
-  &__session-item {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding-inline-end: var(--spacing-xxl);
-
-    :global([class*='menu-item__middle']),
-    :global([class*='menu-item__top-row']),
-    :global([class*='menu-item__label']) {
-      min-width: 0;
-    }
-
-    :global([class*='menu-item__label']) {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex-shrink: 1;
-    }
+    gap: var(--spacing-xxs);
   }
 
   &__canvas {
@@ -133,8 +80,50 @@
     display: flex;
     flex-direction: column;
     background: var(--center-channel-bg);
-    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-    box-shadow: var(--elevation-2);
+  }
+
+  &__empty {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xxl);
+    padding: var(--spacing-xxxxl);
+  }
+
+  &__empty-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    max-width: 36rem;
+    text-align: center;
+  }
+
+  &__empty-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-600);
+    color: var(--center-channel-color);
+  }
+
+  &__empty-subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__canvas--empty .agent-chat__composer {
+    width: 100%;
+    max-width: 40rem;
+    padding: 0;
   }
 
   &__messages {

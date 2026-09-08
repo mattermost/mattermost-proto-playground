@@ -140,7 +140,7 @@ function DirectoryHome({
         <div className={styles['agents-landing__dir-cols']} aria-hidden>
           <span>Agent</span>
           <span>Role</span>
-          <span>Owner</span>
+          <span>Created by</span>
           <span>Channels</span>
         </div>
         <Scrollbar className={styles['agents-landing__dir-scroll']}>

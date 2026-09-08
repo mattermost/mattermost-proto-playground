@@ -45,8 +45,24 @@
   // Single-agent DM row: keep ChannelSidebarItem layout/hit target; overlay
   // AgentAvatar over the built-in UserAvatar (no custom leading ReactNode on CSI).
   // Group chats use CSI leadingVisual="group-message" + memberCount as-is.
+  &__agent-block {
+    display: flex;
+    flex-direction: column;
+  }
+
   &__agent-row {
     position: relative;
+
+    // CSI kebab can’t swap icons — hide it and overlay New chat +.
+    :global([class*='menu-button']) {
+      display: none;
+    }
+
+    &:hover .agents-product-sidebar__agent-new,
+    &:focus-within .agents-product-sidebar__agent-new {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   &__agent-avatar {
@@ -62,7 +78,88 @@
     pointer-events: none;
   }
 
+  &__agent-new {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding-right: var(--spacing-l);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
   &__agent-row--dm :global([class*='icon-container'] > *) {
     visibility: hidden;
+  }
+
+  // Figma 123:28951 — indented chat sessions under an agent.
+  &__sessions {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__session {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    width: calc(100% - 16px - 38px);
+    height: 32px;
+    margin: 0 16px 0 38px;
+    padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
+      var(--spacing-xxs);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--sidebar-text);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sidebar-text);
+      outline-offset: -2px;
+    }
+  }
+
+  &__session--active {
+    background: rgba(var(--sidebar-text-rgb), 0.08);
+
+    .agents-product-sidebar__session-label {
+      opacity: 1;
+    }
+  }
+
+  &__session-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxxs);
+    color: var(--sidebar-text);
+    opacity: 0.72;
+  }
+
+  &__session-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    letter-spacing: 0.02em;
+    opacity: 0.72;
   }
 }

@@ -9,7 +9,7 @@ import {
 import { createPortal } from 'react-dom';
 import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import LockIcon from '@mattermost/compass-icons/components/lock';
+import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -47,7 +47,7 @@ const VISIBILITY_OPTIONS: VisibilityOption[] = [
     value: 'private',
     title: 'Private agent',
     description: 'Only invited members',
-    IconGlyph: LockIcon,
+    IconGlyph: LockOutlineIcon,
   },
   {
     value: 'public',
@@ -309,7 +309,7 @@ export default function NewAgentModal({
                 <Select
                   id="new-agent-model-select"
                   label="Model"
-                  size="large"
+                  size="medium"
                   value={model}
                   options={AGENT_MODEL_OPTIONS}
                   onChange={(val) => setModel(val)}
