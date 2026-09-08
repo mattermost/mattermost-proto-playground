@@ -42,7 +42,7 @@
     display: flex;
     flex: 1 1 auto;
     flex-direction: column;
-    gap: var(--spacing-xxxxs);
+    gap: 0;
     min-width: 0;
   }
 
@@ -54,26 +54,23 @@
     min-width: 0;
   }
 
-  &__title {
+  // Double-class selectors beat parent `.agent-chat__message-body p` if reintroduced.
+  & &__title {
     margin: 0;
     font-family: var(--font-family-heading);
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-200);
+    line-height: var(--line-height-100);
     color: var(--center-channel-color);
   }
 
-  &__description,
-  &__meta {
+  & &__description,
+  & &__meta {
     margin: 0;
     font-family: var(--font-family-body);
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.75);
-  }
-
-  &__meta {
-    margin-top: var(--spacing-xxxs);
   }
 }
