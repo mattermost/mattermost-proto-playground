@@ -198,6 +198,22 @@
     }
   }
 
+  &__message-avatar-button {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-s);
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
   &__message-avatar--loading {
     .agent-chat__message-dots {
       opacity: 1;

@@ -1225,6 +1225,8 @@ export type ChannelMessagePart =
       label: string;
       avatarSrc: string;
       kind: 'agent' | 'person';
+      agentShape?: AgentShape;
+      agentColor?: AgentColor;
     };
 
 export type ChannelMessage = {
@@ -1250,6 +1252,39 @@ export type MentionCandidate = {
   agentShape?: AgentShape;
   agentColor?: AgentColor;
 };
+
+/** Agents already in `#service-status` before the invite-by-mention beat. */
+export function initialServiceStatusAgentIds(): string[] {
+  return WORKSPACE_AGENTS.filter((agent) =>
+    agent.channels.includes('service-status'),
+  ).map((agent) => agent.id);
+}
+
+/**
+ * Mentioned agents that are not yet channel members (e.g. Otto before 1.3).
+ * Dedupes by id; people mentions are ignored.
+ */
+export function findAgentsNeedingChannelInvite(
+  parts: ChannelMessagePart[],
+  channelAgentIds: ReadonlySet<string>,
+  customAgents: CreatedAgent[] = [],
+): WorkspaceAgent[] {
+  const directory = buildWorkspaceDirectory(customAgents);
+  const seen = new Set<string>();
+  const needed: WorkspaceAgent[] = [];
+
+  for (const part of parts) {
+    if (part.type !== 'mention' || part.kind !== 'agent') continue;
+    if (channelAgentIds.has(part.id) || seen.has(part.id)) continue;
+    seen.add(part.id);
+    const agent = directory.find((entry) => entry.id === part.id);
+    if (agent) {
+      needed.push(agent);
+    }
+  }
+
+  return needed;
+}
 
 /**
  * @-mention roster for `#service-status`. Agents are listed first so Otto

@@ -58,14 +58,15 @@ export function agentAvatarShapeMask(shape: AgentShape): string | undefined {
 /**
  * Combobox chips only accept `leadingAvatar: { src, alt }` (UserAvatar).
  * `leadingVisual` is forwarded as Chip `leadingIcon` → Icon, which cannot
- * render AgentAvatar. Build a matching SVG data URL for geometric agents.
+ * render AgentAvatar. Build a matching SVG data URL for geometric agents,
+ * including static eye dots (no pointer tracking in chip images).
  * NewAgentGroupChatModal CSS clears UserAvatar's circle crop so silhouettes show.
  */
 export function agentAvatarChipSrc(
   shape: AgentShape,
   color: AgentColor,
 ): string {
-  const key = `${shape}:${color}`;
+  const key = `${shape}:${color}:eyes`;
   const cached = chipSrcCache.get(key);
   if (cached) return cached;
 
@@ -75,7 +76,11 @@ export function agentAvatarChipSrc(
     shape === 'sphere'
       ? `<circle cx="0.5" cy="0.5" r="0.5" fill="url(#g)"/>`
       : `<path d="${AGENT_AVATAR_SHAPE_PATHS[shape]}" fill="url(#g)"/>`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">${grad}${body}</svg>`;
+  // Static pupils — match AgentAvatar: 12% diameter, 18% flex gap between
+  // (centers at 35% / 65%, not 18% center-to-center).
+  const eyes =
+    '<circle cx="0.35" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/><circle cx="0.65" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/>';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">${grad}${body}${eyes}</svg>`;
   const src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   chipSrcCache.set(key, src);
   return src;

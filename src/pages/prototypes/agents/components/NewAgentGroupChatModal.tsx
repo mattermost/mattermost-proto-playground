@@ -54,6 +54,8 @@ export default function NewAgentGroupChatModal({
             shape={agent.shape}
             color={agent.color}
             size="xs"
+            eyes
+            trackEyes={false}
             imageSrc={agent.customImageSrc}
           />
         ),

@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-m);
+    padding: var(--spacing-m);
     border-left: 3px solid var(--button-bg);
     box-sizing: border-box;
   }
@@ -23,7 +23,10 @@
       grid-template-rows var(--duration-moderate) var(--ease-transition),
       opacity var(--duration-quick) var(--ease-transition);
 
-    &:not(:last-child) .tool-connect-card__option {
+    // Separators only between visible rows (collapsed siblings must not count).
+    &:not(.tool-connect-card__option-slot--collapsed):has(
+      ~ .tool-connect-card__option-slot:not(.tool-connect-card__option-slot--collapsed)
+    ) .tool-connect-card__option {
       border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     }
   }

@@ -35,14 +35,20 @@ import {
   buildAgentChatSessions,
   buildAgentWelcomeMessage,
   buildMattyToolConnectConfirm,
+  buildWorkspaceDirectory,
   isAgentGroupChatId,
   resolveAgentProfile,
   type AgentChatMessage,
   type AgentChatSession,
   type AgentProfile,
   type AgentToolConnectOption,
+  type WorkspaceAgent,
 } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
+import AgentProfilePopover, {
+  profileAnchorFromEvent,
+  type AgentProfileAnchor,
+} from '../../components/AgentProfilePopover';
 import AgentSettingsModal, {
   AGENT_SETTINGS_TABS,
   type SettingsTab,
@@ -77,6 +83,29 @@ type LiveSession = AgentChatSession & {
 
 function nextId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function profileAgentFromChat(
+  agent: AgentProfile,
+  customAgents: Parameters<typeof buildWorkspaceDirectory>[0],
+): WorkspaceAgent {
+  const fromDirectory = buildWorkspaceDirectory(customAgents).find(
+    (entry) => entry.id === agent.id,
+  );
+  if (fromDirectory) {
+    return fromDirectory;
+  }
+  return {
+    id: agent.id,
+    name: agent.name,
+    role: 'Custom',
+    owner: VIEWER.name,
+    description: agent.description || agent.purpose || '',
+    shape: agent.shape,
+    color: agent.color,
+    channels: agent.knowledgeChannelIds ?? [],
+    customImageSrc: agent.customImageSrc,
+  };
 }
 
 function formatChatTime(date = new Date()) {
@@ -235,6 +264,8 @@ export default function AgentChat() {
   }, [agent.id, rememberOpenedAgent]);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const [profileTarget, setProfileTarget] =
+    useState<AgentProfileAnchor | null>(null);
   const settingsParam = searchParams.get('settings') === 'true';
   const tabParam = searchParams.get('tab');
   const settingsTab: SettingsTab = AGENT_SETTINGS_TABS.includes(
@@ -766,15 +797,33 @@ export default function AgentChat() {
                           />
                         ) : null}
                         {!isIntro || showAvatar ? (
-                          <AgentAvatar
-                            className={styles['agent-chat__message-avatar-face']}
-                            shape={agent.shape}
-                            color={agent.color}
-                            size="sm"
-                            eyes
-                            shadow={false}
-                            imageSrc={agent.customImageSrc}
-                          />
+                          <button
+                            type="button"
+                            className={
+                              styles['agent-chat__message-avatar-button']
+                            }
+                            aria-label={`View ${agent.name} profile`}
+                            onClick={(event) => {
+                              setProfileTarget(
+                                profileAnchorFromEvent(
+                                  profileAgentFromChat(agent, customAgents),
+                                  event,
+                                ),
+                              );
+                            }}
+                          >
+                            <AgentAvatar
+                              className={
+                                styles['agent-chat__message-avatar-face']
+                              }
+                              shape={agent.shape}
+                              color={agent.color}
+                              size="sm"
+                              eyes
+                              shadow={false}
+                              imageSrc={agent.customImageSrc}
+                            />
+                          </button>
                         ) : null}
                       </div>
                       {!isIntro || showBubble ? (
@@ -1038,6 +1087,10 @@ export default function AgentChat() {
         onSave={(updates) => {
           updateAgent(agent.id, updates);
         }}
+      />
+      <AgentProfilePopover
+        target={profileTarget}
+        onClose={() => setProfileTarget(null)}
       />
     </div>
   );

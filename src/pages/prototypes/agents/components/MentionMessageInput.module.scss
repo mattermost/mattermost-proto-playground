@@ -6,10 +6,11 @@
     position: absolute;
     bottom: calc(100% + var(--spacing-xxs));
     left: 0;
-    right: 0;
     z-index: 30;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 496px;
     max-height: 280px;
     margin: 0;
     padding: var(--spacing-xxs) 0;
@@ -97,14 +98,33 @@
   }
 
   &__mention-chip {
-    :global([class*='chip__avatar-slot']) {
-      :global([class*='user-avatar']),
-      :global([class*='user-avatar__image']) {
-        border-radius: 0;
-      }
+    // Compact inline mention: body text + tighter than Chip size tokens.
+    &:global([class*='chip']) {
+      gap: var(--spacing-xxxs);
+      padding: 0 var(--spacing-xxxs);
+    }
 
-      :global([class*='user-avatar__image']) {
-        object-fit: contain;
+    &:global([class*='chip']):has(:global([class*='chip__remove'])) {
+      padding-right: var(--spacing-xxxs);
+    }
+
+    &:global([class*='chip--size-']) :global([class*='chip__label']) {
+      font-size: var(--font-size-100);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--line-height-100);
+      letter-spacing: normal;
+    }
+
+    &--agent {
+      :global([class*='chip__avatar-slot']) {
+        :global([class*='user-avatar']),
+        :global([class*='user-avatar__image']) {
+          border-radius: 0;
+        }
+
+        :global([class*='user-avatar__image']) {
+          object-fit: contain;
+        }
       }
     }
   }
@@ -137,22 +157,24 @@
     white-space: pre-wrap;
   }
 
-  &__post-chip {
+  &__post-chip:global([class*='chip']) {
     display: inline-flex;
-    vertical-align: middle;
+    // Baseline from the label (not the avatar) so chip text sits with the sentence.
+    vertical-align: baseline;
+    align-items: baseline;
     margin-inline: 0.15em;
+
+    :global([class*='chip__avatar-slot']),
+    :global([class*='chip__icon-slot']) {
+      align-self: center;
+    }
   }
 
-  &__post-chip--agent {
-    :global([class*='chip__avatar-slot']) {
-      :global([class*='user-avatar']),
-      :global([class*='user-avatar__image']) {
-        border-radius: 0;
-      }
+  &__post-chip--interactive:global([class*='chip']) {
+    cursor: pointer;
 
-      :global([class*='user-avatar__image']) {
-        object-fit: contain;
-      }
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.16);
     }
   }
 }

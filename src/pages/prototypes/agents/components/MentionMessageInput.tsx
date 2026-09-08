@@ -13,6 +13,8 @@ import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
   buildServiceStatusMentionables,
+  type AgentColor,
+  type AgentShape,
   type ChannelMessagePart,
   type MentionCandidate,
 } from '../agentsData';
@@ -29,13 +31,19 @@ type DraftPart =
       label: string;
       avatarSrc: string;
       kind: 'agent' | 'person';
+      agentShape?: AgentShape;
+      agentColor?: AgentColor;
     };
 
 type AtToken = { start: number; query: string };
 
 type MentionMessageInputProps = {
   placeholder?: string;
-  onSend: (payload: { parts: ChannelMessagePart[]; body: string }) => void;
+  /** Return `false` to keep the draft (e.g. while an invite modal is open). */
+  onSend: (payload: {
+    parts: ChannelMessagePart[];
+    body: string;
+  }) => boolean | void;
 };
 
 function detectAtToken(value: string, cursor: number): AtToken | null {
@@ -86,6 +94,8 @@ function toMessageParts(parts: DraftPart[]): ChannelMessagePart[] {
             label: part.label,
             avatarSrc: part.avatarSrc,
             kind: part.kind,
+            agentShape: part.agentShape,
+            agentColor: part.agentColor,
           },
     );
 }
@@ -140,6 +150,8 @@ export default function MentionMessageInput({
       label: candidate.name,
       avatarSrc: candidate.avatarSrc,
       kind: candidate.kind,
+      agentShape: candidate.agentShape,
+      agentColor: candidate.agentColor,
     });
     if (after.startsWith(' ')) {
       setValue(after);
@@ -179,7 +191,10 @@ export default function MentionMessageInput({
     if (!body) {
       return;
     }
-    onSend({ parts, body });
+    const allowed = onSend({ parts, body });
+    if (allowed === false) {
+      return;
+    }
     setCommitted([]);
     setValue('');
     setToken(null);
@@ -277,15 +292,17 @@ export default function MentionMessageInput({
               part.type === 'mention' ? (
                 <Chip
                   key={`${part.id}-${index}`}
-                  size="small"
-                  colored
+                  size="medium-compact"
                   leadingAvatar={{ src: part.avatarSrc, alt: part.label }}
                   onRemove={() => removeMention(index)}
-                  className={
+                  className={[
+                    styles['mention-input__mention-chip'],
                     part.kind === 'agent'
-                      ? styles['mention-input__mention-chip']
-                      : undefined
-                  }
+                      ? styles['mention-input__mention-chip--agent']
+                      : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                 >
                   {part.label}
                 </Chip>

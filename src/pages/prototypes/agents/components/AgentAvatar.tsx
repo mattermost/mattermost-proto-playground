@@ -14,6 +14,8 @@ type AgentAvatarProps = {
   color: AgentColor;
   size?: AgentAvatarSize;
   eyes?: boolean;
+  /** When false, eyes stay centered (no pointer tracking). Default: true. */
+  trackEyes?: boolean;
   /** Soft float — New Agent modal preview only (not swatches / sidebar). */
   levitate?: boolean;
   /**
@@ -48,13 +50,15 @@ const SELECTION_STROKE = {
 
 /**
  * Geometric agent appearance (shape × color) used in the New Agent modal
- * and Agents landing cards. When `eyes` is set, pupils track the pointer.
+ * and Agents landing cards. When `eyes` is set, pupils track the pointer
+ * unless `trackEyes={false}`.
  */
 export default function AgentAvatar({
   shape,
   color,
   size = 'md',
   eyes = false,
+  trackEyes = true,
   levitate = false,
   shadow = false,
   selected = false,
@@ -78,9 +82,10 @@ export default function AgentAvatar({
   const eyesRef = useRef<HTMLSpanElement>(null);
   const eyeTravel = EYE_TRAVEL[size];
   const showEyes = eyes && !imageSrc;
+  const followPointer = showEyes && trackEyes;
 
   useEffect(() => {
-    if (!showEyes) return;
+    if (!followPointer) return;
 
     let frame = 0;
 
@@ -128,7 +133,7 @@ export default function AgentAvatar({
         onPointerLeave,
       );
     };
-  }, [showEyes, eyeTravel]);
+  }, [followPointer, eyeTravel]);
 
   return (
     <span

@@ -1,0 +1,21 @@
+.agent-profile-popover {
+  position: fixed;
+  z-index: 1400;
+
+  &__surface {
+    // Geometric agent SVGs — drop UserAvatar's circle crop on the large face.
+    :global([class*='user-avatar']),
+    :global([class*='user-avatar__image']) {
+      border-radius: 0;
+    }
+
+    :global([class*='user-avatar__image']) {
+      object-fit: contain;
+    }
+
+    // Status badge sits on a circular assumption; hide for silhouettes.
+    :global([class*='user-avatar__status']) {
+      display: none;
+    }
+  }
+}
