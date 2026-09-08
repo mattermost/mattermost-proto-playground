@@ -390,7 +390,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xxxs);
-    padding: var(--spacing-l);
+    padding: var(--spacing-m) var(--spacing-l);
     background: rgba(var(--center-channel-color-rgb), 0.04);
     border-radius: 0 var(--radius-xl) var(--radius-xl) var(--radius-xl);
     transform-origin: top left;
