@@ -194,6 +194,45 @@ export const QUILL = {
   channels: ['docs'],
 };
 
+/** FTE shelf defaults — additive; do not replace existing scripted agents. */
+export const FORGE = {
+  id: 'forge',
+  name: 'Forge',
+  role: 'Creator',
+  owner: 'Priya Shah',
+  description:
+    'Helps you design and configure new agents for your workspace.',
+  shape: 'pyramid' as AgentShape,
+  color: 'orange' as AgentColor,
+  channels: [] as string[],
+};
+
+export const SCRIBE = {
+  id: 'scribe',
+  name: 'Scribe',
+  role: 'Writer',
+  owner: 'Priya Shah',
+  description:
+    'Drafts docs, runbooks, and polished write-ups from your conversations.',
+  shape: 'diamond' as AgentShape,
+  color: 'blue' as AgentColor,
+  channels: [] as string[],
+};
+
+export const DYNAMO = {
+  id: 'dynamo',
+  name: 'Dynamo',
+  role: 'Coder',
+  owner: 'Priya Shah',
+  description:
+    'Writes and reviews code, debugs issues, and ships small changes with you.',
+  shape: 'octagon' as AgentShape,
+  color: 'green' as AgentColor,
+  channels: [] as string[],
+};
+
+export const FTE_PRECONFIGURED_AGENTS = [FORGE, SCRIBE, DYNAMO] as const;
+
 export type WorkspaceAgent = {
   id: string;
   name: string;
@@ -221,6 +260,9 @@ export const WORKSPACE_AGENTS: WorkspaceAgent[] = [
   OTTO,
   RELAY,
   QUILL,
+  FORGE,
+  SCRIBE,
+  DYNAMO,
 ];
 
 export type AgentVisibility = 'private' | 'public';

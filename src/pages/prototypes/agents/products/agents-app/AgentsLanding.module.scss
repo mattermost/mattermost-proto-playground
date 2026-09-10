@@ -24,7 +24,9 @@
       justify-content: center;
       gap: var(--spacing-xxxl);
       padding: var(--spacing-xxxl);
-      overflow: auto;
+      // Clip at the pane edge (carousel breaks into this padding).
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     &--directory {
@@ -41,6 +43,8 @@
     align-items: center;
     gap: var(--spacing-xxxl);
     width: 100%;
+    min-width: 0;
+    overflow: visible;
   }
 
   &__intro {
@@ -71,19 +75,133 @@
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
-  &__cards {
+  &__carousel {
+    position: relative;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--spacing-l);
+    flex-direction: column;
+    // Span into center --fte padding so the shelf clips/fades at the pane edge.
+    width: calc(100% + 2 * var(--spacing-xxxl));
+    margin-inline: calc(-1 * var(--spacing-xxxl));
+    min-width: 0;
+    overflow: visible;
+    outline: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: var(--spacing-xxs);
+      border-radius: var(--radius-m);
+    }
+
+    &:hover .agents-landing__carousel-nav,
+    &:focus-within .agents-landing__carousel-nav {
+      opacity: 1;
+      pointer-events: auto;
+      transition-timing-function: var(--ease-entrance);
+    }
+  }
+
+  &__carousel-viewport {
     width: 100%;
-    max-width: 980px;
+    min-width: 0;
+    // Clip the shelf horizontally only; vertical ink (elevation) stays visible.
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  &__carousel-track {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--spacing-l);
+    width: max-content;
+    // Elevation lives on the transformed track — pad so shadows stay in-box.
+    padding-block: var(--spacing-xl) var(--spacing-xxxxxl);
+    padding-left: var(--spacing-xxxxl);
+    box-sizing: content-box;
+    // Exaggerated ease-in-out vs --ease-transition for a punchier shelf advance.
+    transform: translateX(var(--agents-landing-shelf-offset, 0px));
+    transition: transform var(--duration-quick) cubic-bezier(0.76, 0, 0.24, 1);
+    will-change: transform;
+
+    &--centered {
+      width: 100%;
+      justify-content: center;
+      transform: none;
+    }
+  }
+
+  &__carousel-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    width: calc(var(--spacing-xxxxxl) + var(--spacing-xxxl));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    &--prev {
+      left: 0;
+      background: linear-gradient(
+        to right,
+        var(--center-channel-bg) 35%,
+        rgba(var(--center-channel-bg-rgb), 0) 100%
+      );
+    }
+
+    &--next {
+      right: 0;
+      background: linear-gradient(
+        to left,
+        var(--center-channel-bg) 35%,
+        rgba(var(--center-channel-bg-rgb), 0) 100%
+      );
+    }
+
+    &--visible {
+      opacity: 1;
+    }
+  }
+
+  &__carousel-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: opacity var(--duration-quick) var(--ease-exit);
+
+    // Near the center pane edges (carousel already spans into pane padding).
+    &--prev {
+      left: calc(var(--spacing-s) + var(--spacing-xs));
+    }
+
+    &--next {
+      right: calc(var(--spacing-s) + var(--spacing-xs));
+    }
+  }
+
+  // Double-class beats IconButton's single-class transparent resting.
+  &__carousel-nav-btn#{&}__carousel-nav-btn {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+
+    &:hover:not(:disabled):not(:active):not(
+        [class*='icon-button--active']
+      ):not([class*='icon-button--toggled']) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.12);
+    }
   }
 
   &__card {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 0 0 320px;
     gap: var(--spacing-xxl);
     width: 320px;
     padding: var(--spacing-xxxxl) var(--spacing-xxxl);
@@ -98,6 +216,16 @@
       box-shadow: var(--elevation-5);
     }
 
+    &:has(.agents-landing__card-hit:focus-visible) {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    // Stretched hit target receives clicks; chrome stays visual-only.
+    > :not(.agents-landing__card-hit) {
+      pointer-events: none;
+    }
+
     &--create {
       border: 2px dashed rgba(var(--center-channel-color-rgb), 0.12);
       background: rgba(var(--center-channel-color-rgb), 0.02);
@@ -107,6 +235,18 @@
         box-shadow: none;
       }
     }
+  }
+
+  &__card-hit {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    cursor: pointer;
   }
 
   &__card-copy {

@@ -48,10 +48,21 @@
   &__rhs {
     position: relative;
     z-index: 2;
+    display: flex;
     flex: 0 0 auto;
+    justify-content: flex-end;
+    align-self: stretch;
+    width: 400px;
     min-width: 0;
     min-height: 0;
-    align-self: stretch;
+    overflow: hidden;
+    animation: agent-chat-rhs-in var(--duration-moderate) var(--ease-entrance)
+      both;
+
+    &--exiting {
+      pointer-events: none;
+      animation: agent-chat-rhs-out var(--duration-moderate) var(--ease-exit) both;
+    }
   }
 
   &__header {
@@ -636,5 +647,27 @@
   to {
     opacity: 0;
     transform: scale(0.9);
+  }
+}
+
+@keyframes agent-chat-rhs-in {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 400px;
+    opacity: 1;
+  }
+}
+
+@keyframes agent-chat-rhs-out {
+  from {
+    width: 400px;
+    opacity: 1;
+  }
+  to {
+    width: 0;
+    opacity: 0;
   }
 }

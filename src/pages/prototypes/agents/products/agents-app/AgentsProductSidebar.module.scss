@@ -148,13 +148,13 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-xxxs);
-    width: calc(100% - 16px - 38px);
+    width: 100%;
     height: 32px;
-    margin: 0 16px 0 38px;
-    padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
-      var(--spacing-xxs);
+    margin: 0;
+    // Keep icon/label indent; background spans the full row.
+    padding: var(--spacing-xxxs) 16px var(--spacing-xxxs) 38px;
     border: 0;
-    border-radius: var(--radius-s);
+    border-radius: 0;
     background: transparent;
     color: var(--sidebar-text);
     text-align: left;

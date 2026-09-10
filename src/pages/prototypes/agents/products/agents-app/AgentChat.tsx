@@ -96,6 +96,8 @@ const AVATAR_LOADING_MS = 1000;
 const AVATAR_REVEAL_MS = 300;
 const OPTIONS_MENU_EXIT_MS = 150;
 const OPTIONS_MENU_WIDTH = 280;
+/** Matches `--duration-moderate` for playbook RHS slide. */
+const PLAYBOOK_RHS_EXIT_MS = 300;
 /** Brief beat after the welcome stream before the tool-choice post. */
 const TOOL_POST_DELAY_MS = 280;
 /** Dwell time for each post-confirm tool-connect status line. */
@@ -453,6 +455,10 @@ export default function AgentChat({
     rendered: optionsRendered,
     exiting: optionsExiting,
   } = useExitAnimation(optionsOpen, OPTIONS_MENU_EXIT_MS);
+  const {
+    rendered: playbookRhsRendered,
+    exiting: playbookRhsExiting,
+  } = useExitAnimation(playbookRhsOpen, PLAYBOOK_RHS_EXIT_MS);
 
   useEffect(() => {
     setComputerOpen(false);
@@ -1562,8 +1568,15 @@ export default function AgentChat({
           )}
         </section>
 
-        {playbookRhsOpen ? (
-          <div className={styles['agent-chat__rhs']}>
+        {playbookRhsRendered ? (
+          <div
+            className={[
+              styles['agent-chat__rhs'],
+              playbookRhsExiting ? styles['agent-chat__rhs--exiting'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
             <RightSidebar
               header={
                 <AgentPlaybookRhsHeader
