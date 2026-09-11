@@ -162,6 +162,8 @@ function MessageBody({
       {parts.map((part, index) =>
         part.type === 'text' ? (
           <span key={`t-${index}`}>{part.text}</span>
+        ) : part.type === 'link' ? (
+          <a key={`l-${index}`} href={part.href} target="_blank" rel="noreferrer">{part.text}</a>
         ) : (
           <Chip
             key={`m-${part.id}-${index}`}
