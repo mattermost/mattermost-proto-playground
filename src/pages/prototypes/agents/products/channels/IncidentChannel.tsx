@@ -13,15 +13,12 @@ import { ThreadFooter } from '@mattermost/compass-ui/components/thread-footer';
 import {
   ChannelHeader,
   RightSidebar,
-  RightSidebarThread,
   type RightSidebarThreadMessage,
 } from '@mattermost/compass-proto';
 import {
   CIPHER,
   INCIDENT_CHANNEL_MESSAGES,
   JORDAN,
-  MATTY,
-  SENTINEL_DEFAULT,
   WORKSPACE_AGENTS,
   type ChannelMessage,
   type WorkspaceAgent,
@@ -64,15 +61,8 @@ const TYPING_DURATION_MS = 1000;
 const CIPHER_ACK_JOINED = CIPHER_ACK_TEXT.trim().split(/\s+/).filter(Boolean).join(' ');
 const CIPHER_RESULT_JOINED = CIPHER_RESULT_TEXT.trim().split(/\s+/).filter(Boolean).join(' ');
 
-// Static thread data for the Matty post
-const MATTY_THREAD_MESSAGES: RightSidebarThreadMessage[] = [
-  {
-    avatarSrc: agentAvatarChipSrc(MATTY.shape, MATTY.color),
-    avatarAlt: MATTY.name,
-    username: MATTY.name,
-    timestamp: '2:15 PM',
-    body: <>I&apos;ve created Jira ticket <a href="https://mattermost.atlassian.net/browse/INC-4471" target="_blank" rel="noreferrer" className={styles['incident-channel__link']}>INC-4471</a> for this incident and started the Incident Response playbook. Sentinel is on the Diagnosis stage and Otto is pre-assigned to Deployment — same playbook assignments from when you saved it.</>,
-  },
+// Reply messages for the Matty thread — root post comes from INCIDENT_CHANNEL_MESSAGES
+const MATTY_THREAD_REPLIES: RightSidebarThreadMessage[] = [
   {
     avatarSrc: JORDAN.avatarSrc,
     avatarAlt: JORDAN.avatarAlt,
@@ -81,14 +71,6 @@ const MATTY_THREAD_MESSAGES: RightSidebarThreadMessage[] = [
     body: "On it — I'll take point on the Deployment checklist once Diagnosis is done. Looping in Emma from on-call just in case.",
   },
 ];
-
-const SENTINEL_ROOT_MSG: RightSidebarThreadMessage = {
-  avatarSrc: agentAvatarChipSrc(SENTINEL_DEFAULT.shape, SENTINEL_DEFAULT.color),
-  avatarAlt: SENTINEL_DEFAULT.name,
-  username: SENTINEL_DEFAULT.name,
-  timestamp: '2:16 PM',
-  body: "PayForge webhook error rate hit 5.2% at 2:14 PM — threshold is 5%. Error onset matches the deployment of build 8842 exactly at T+0. Signature doesn't point to one cause cleanly. Cipher, can you dig in?",
-};
 
 const CIPHER_AVATAR_SRC = agentAvatarChipSrc(CIPHER.shape, CIPHER.color);
 
@@ -358,6 +340,9 @@ export default function IncidentChannel() {
   };
 
   // Thread content is derived from which post is active.
+  // Root post is looked up from the channel so the same AgentPost component renders it.
+  const rootMessage = INCIDENT_CHANNEL_MESSAGES.find((m) => m.id === activePostId) ?? null;
+
   const cipherBase: Omit<RightSidebarThreadMessage, 'body'> = {
     avatarSrc: CIPHER_AVATAR_SRC,
     avatarAlt: CIPHER.name,
@@ -370,7 +355,7 @@ export default function IncidentChannel() {
   let showTypingRow = false;
 
   if (activePostId === SENTINEL_POST_ID) {
-    threadMessages = [SENTINEL_ROOT_MSG];
+    threadMessages = [];
 
     if (cipherPhase === 'typing') {
       showTypingRow = true;
@@ -446,7 +431,7 @@ export default function IncidentChannel() {
           ? '2 Replies'
           : '1 Reply';
   } else if (activePostId === 'inc-matty-1') {
-    threadMessages = MATTY_THREAD_MESSAGES;
+    threadMessages = MATTY_THREAD_REPLIES;
     replySeparatorLabel = '1 Reply';
   }
 
@@ -608,10 +593,29 @@ export default function IncidentChannel() {
                   </div>
                 }
               >
-                <RightSidebarThread
-                  messages={threadMessages}
-                  replySeparatorLabel={replySeparatorLabel}
-                />
+                {rootMessage?.kind === 'agent' && (
+                  <AgentPost
+                    message={rootMessage}
+                    onAgentClick={openAgentProfile}
+                    onOpenThread={() => undefined}
+                    showThreadReplies={false}
+                  />
+                )}
+                {Boolean(replySeparatorLabel) && threadMessages.length > 0 && (
+                  <MessageSeparator type="reply-count" label={replySeparatorLabel} />
+                )}
+                {threadMessages.map((message, i) => (
+                  <Message
+                    key={`${message.username}-${message.timestamp}-${i}`}
+                    avatarSrc={message.avatarSrc}
+                    avatarAlt={message.avatarAlt}
+                    username={message.username}
+                    timestamp={message.timestamp}
+                    showMessageActions={false}
+                  >
+                    {message.body}
+                  </Message>
+                ))}
                 {/* Typing dots — replaces Cipher's avatar+name while they "type" */}
                 {showTypingRow ? (
                   <div className={styles['incident-channel__thread-typing-row']}>
