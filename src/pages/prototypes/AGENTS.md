@@ -141,14 +141,14 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
 | Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
 | Scroll region | `Scrollbar` | raw `overflow` |
-
-**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
 | Date or unread rule in a message list | `MessageSeparator` | `Divider` |
 | Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
 | Tab strip (mutually exclusive view switcher) | `Tabs` | custom `button[role="tab"]` / `div[role="tablist"]` |
 | Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
+
+**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
 
 ### Overlay wiring
 
@@ -166,19 +166,7 @@ Render `Modal` only while it should be on screen (plus the exit-animation hold).
 
 ### RHS panels
 
-When a prototype renders a `RightSidebar` panel alongside a center pane, the wrapper div must carry these styles — the defaults on each property cause clipping or missing shadow:
-
-```scss
-&__rhs {
-  position: relative;
-  z-index: 2;          // above center pane
-  flex-shrink: 0;      // default flex: 0 1 auto allows shrink below 400px → clips content
-  overflow: hidden;    // clips thread overlay slide animation
-  box-shadow: var(--elevation-2); // must be on wrapper — overflow: hidden clips child box-shadows
-}
-```
-
-For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../.claude/projects/-Users-matthew-birtch-Documents-GitHub-mattermost-mattermost-proto-playground/memory/project_rhs_overlay_pattern.md) memory.
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
 
 ### Prototype-only UI
 
