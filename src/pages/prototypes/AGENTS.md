@@ -166,7 +166,7 @@ Render `Modal` only while it should be on screen (plus the exit-animation hold).
 
 ### RHS panels
 
-When a prototype renders a `RightSidebar` panel alongside a center pane, put `overflow: hidden`, `flex-shrink: 0`, `z-index`, and `box-shadow` on the `.rhs` wrapper — not on inner panels. `overflow: hidden` clips child box-shadows, so the elevation value must live on the wrapper itself.
+When a prototype renders a `RightSidebar` panel alongside a center pane, put `overflow: hidden`, `flex-shrink: 0`, `z-index: 2`, and `box-shadow` on the `.rhs` wrapper — not on inner panels. `overflow: hidden` clips child box-shadows, so the elevation value must live on the wrapper itself.
 
 For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
 
