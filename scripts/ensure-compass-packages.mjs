@@ -23,16 +23,6 @@ function resolveCompassDesignRoot() {
     }
   }
 
-  if (process.env.VERCEL || process.env.CI) {
-    const cloneTarget = path.resolve(root, '../compass-design');
-    console.log(`[compass-design] CI environment detected — cloning into ${cloneTarget}…`);
-    execSync(
-      `git clone --depth=1 https://github.com/mattermost/compass-design.git "${cloneTarget}"`,
-      { stdio: 'inherit' },
-    );
-    return cloneTarget;
-  }
-
   console.error(
     'compass-design not found.\n' +
       '  Clone https://github.com/mattermost/compass-design next to this repo as ../compass-design,\n' +
@@ -156,66 +146,46 @@ if (!linkExists) {
     root,
     '../compass-design/packages/compass-proto',
   );
-  const broken = (() => {
-    try {
-      fs.lstatSync(workspaceLink);
-      return true;
-    } catch {
-      return false;
-    }
-  })();
+  const broken =
+    fs.existsSync(workspaceLink) ||
+    (() => {
+      try {
+        fs.lstatSync(workspaceLink);
+        return true;
+      } catch {
+        return false;
+      }
+    })();
 
-  if (process.env.VERCEL || process.env.CI) {
-    // npm may have created a broken symlink when compass-design was absent at install time.
-    // Fix it now that the repo has been cloned.
-    if (broken) {
-      console.log('[compass-proto] Removing broken node_modules link…');
-      fs.rmSync(workspaceLink, { recursive: true, force: true });
-    }
-    console.log(`[compass-proto] Creating node_modules link → ${protoRoot}`);
-    fs.mkdirSync(path.join(root, 'node_modules/@mattermost'), { recursive: true });
-    fs.symlinkSync(protoRoot, workspaceLink);
-  } else {
-    console.error(
-      `[compass-proto] ${broken ? 'node_modules link is broken' : 'node_modules link missing'}.\n` +
-        '  Expected sibling layout:\n' +
-        '    parent/\n' +
-        '      compass-design/\n' +
-        '      mattermost-proto-playground/   ← run npm install here\n' +
-        `  Package path: ${expectedFileDep}\n` +
-        (fs.existsSync(expectedFileDep) ? '' : '  (that path does not exist yet)\n') +
-        '  Then: rm -rf node_modules && npm install && npm run dev',
-    );
-    process.exit(1);
-  }
+  console.error(
+    `[compass-proto] ${broken ? 'node_modules link is broken' : 'node_modules link missing'}.\n` +
+      '  Expected sibling layout:\n' +
+      '    parent/\n' +
+      '      compass-design/\n' +
+      '      mattermost-proto-playground/   ← run npm install here\n' +
+      `  Package path: ${expectedFileDep}\n` +
+      (fs.existsSync(expectedFileDep) ? '' : '  (that path does not exist yet)\n') +
+      '  Then: rm -rf node_modules && npm install && npm run dev',
+  );
+  process.exit(1);
 }
 
 const linkedProtoRoot = fs.realpathSync(workspaceLink);
 const expectedProtoRoot = fs.realpathSync(protoRoot);
 if (linkedProtoRoot !== expectedProtoRoot) {
-  if (process.env.VERCEL || process.env.CI) {
-    // Symlink was just created by us above; any remaining mismatch means we should recreate it.
-    fs.rmSync(workspaceLink, { recursive: true, force: true });
-    fs.symlinkSync(protoRoot, workspaceLink);
-  } else {
-    console.error(
-      '[compass-proto] node_modules link does not match the ensure-script source.\n' +
-        `  Linked:  ${linkedProtoRoot}\n` +
-        `  Expected: ${expectedProtoRoot}\n` +
-        '  COMPASS_DESIGN_PATH only affects which tree this script builds.\n' +
-        '  npm still resolves the package.json `file:` dependency from ../compass-design.\n' +
-        '  Symlink that sibling path (or align COMPASS_DESIGN_PATH), then reinstall.',
-    );
-    process.exit(1);
-  }
+  console.error(
+    '[compass-proto] node_modules link does not match the ensure-script source.\n' +
+      `  Linked:  ${linkedProtoRoot}\n` +
+      `  Expected: ${expectedProtoRoot}\n` +
+      '  COMPASS_DESIGN_PATH only affects which tree this script builds.\n' +
+      '  npm still resolves the package.json `file:` dependency from ../compass-design.\n' +
+      '  Symlink that sibling path (or align COMPASS_DESIGN_PATH), then reinstall.',
+  );
+  process.exit(1);
 }
 
 if (!distReady(protoDistFiles) || distIsStale(protoRoot, protoDistFiles)) {
   console.log('[compass-proto] Building in compass-design…');
-  if (!fs.existsSync(path.join(designRoot, 'node_modules'))) {
-    console.log('[compass-proto] Installing compass-design dependencies…');
-    execSync('npm install --ignore-scripts', { cwd: designRoot, stdio: 'inherit' });
-  }
   execSync('npm run build:proto', {
     cwd: designRoot,
     stdio: 'inherit',
