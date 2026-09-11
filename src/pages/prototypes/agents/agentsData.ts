@@ -1580,15 +1580,16 @@ export function buildAgentWelcomeMessage(agent: AgentProfile): AgentChatMessage 
   if (agent.id === 'sentinel' || isSentinelName(agent.name)) {
     return SENTINEL_WELCOME_MESSAGE;
   }
-  const setup =
+  const setupRaw =
     agent.purpose?.trim() ||
     agent.description?.trim() ||
     SENTINEL_DEFAULT.purpose;
+  const setup = setupRaw.charAt(0).toLowerCase() + setupRaw.slice(1).replace(/\.$/, '');
   return {
     id: `${agent.id}-welcome`,
     timestamp: '10:43 AM',
     paragraphs: [
-      `Hey Priya, looks like you're just getting started. Welcome to the new and improved Agents in Mattermost. I'm ${agent.name}, and I'm set up to ${setup}`,
+      `Hey Priya, looks like you're just getting started. Welcome to the new and improved Agents in Mattermost. I'm ${agent.name}, and I'm set up to ${setup}.`,
       'I think a good next step would be to connect to your tools so I can help you get work done.',
     ],
   };
@@ -1648,6 +1649,7 @@ export function seedAgentLiveSessions(agent: AgentProfile): LiveAgentSession[] {
 
 export type ChannelMessagePart =
   | { type: 'text'; text: string }
+  | { type: 'link'; text: string; href: string }
   | {
       type: 'mention';
       id: string;
@@ -2348,7 +2350,9 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
     timestamp: '2:15 PM',
     body: "I've created Jira ticket INC-4471 for this incident and started the Incident Response playbook. Sentinel is on the Diagnosis stage and Otto is pre-assigned to Deployment — same playbook assignments from when you saved it.",
     parts: [
-      { type: 'text', text: "I've created Jira ticket INC-4471 for this incident and started the Incident Response playbook. " },
+      { type: 'text', text: "I've created Jira ticket " },
+      { type: 'link', text: 'INC-4471', href: 'https://mattermost.atlassian.net/browse/INC-4471' },
+      { type: 'text', text: ' for this incident and started the Incident Response playbook. ' },
       { type: 'mention', id: 'sentinel', label: SENTINEL_DEFAULT.name, avatarSrc: '', kind: 'agent', agentShape: SENTINEL_DEFAULT.shape, agentColor: SENTINEL_DEFAULT.color },
       { type: 'text', text: ' is on the Diagnosis stage and ' },
       { type: 'mention', id: OTTO.id, label: OTTO.name, avatarSrc: '', kind: 'agent', agentShape: OTTO.shape, agentColor: OTTO.color },

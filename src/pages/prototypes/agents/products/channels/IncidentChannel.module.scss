@@ -44,10 +44,6 @@
       animation: incident-thread-out var(--duration-moderate) var(--ease-transition) both;
     }
 
-    // Agent avatars are non-circular shapes — unclip the UserAvatar img
-    :global([class*='user-avatar__image']) {
-      border-radius: 0;
-    }
   }
 
   &__center {
@@ -85,6 +81,15 @@
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
     color: var(--center-channel-color);
+  }
+
+  &__link {
+    color: var(--color-info);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__system {

@@ -1,0 +1,89 @@
+.channel-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xxl) var(--spacing-xxl) var(--spacing-l);
+  width: 100%;
+
+  &__illustration {
+    display: block;
+    width: 130px;
+    height: 102px;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-l);
+    width: 100%;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: var(--spacing-l);
+    width: 100%;
+  }
+
+  &__name {
+    margin: 0 0 var(--spacing-xs);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-900);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-900);
+    letter-spacing: -0.02em;
+    color: var(--center-channel-color);
+    text-align: center;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    margin: 0;
+    font-size: var(--font-size-50);
+    line-height: var(--line-height-50);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__description {
+    margin: var(--spacing-xs) 0 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    text-align: center;
+    max-width: 480px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-m);
+    align-items: flex-start;
+  }
+
+  &__action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    width: 88px;
+    padding: var(--spacing-m) var(--spacing-l) var(--spacing-s);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border: none;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-50);
+    text-align: center;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+}

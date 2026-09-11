@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Message } from '@mattermost/compass-ui/components/message';
 import { MessageReactions } from '@mattermost/compass-ui/components/message-reactions';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
@@ -287,6 +288,7 @@ function MattyChannelMessage({
           <span className={styles['channels-home__agent-message-name']}>
             {message.username}
           </span>
+          <Tag label="Agent" size="x-small" />
           <time className={styles['channels-home__agent-message-time']}>
             {message.timestamp}
           </time>

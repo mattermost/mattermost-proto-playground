@@ -20,6 +20,7 @@ type AgentPlaybookPreviewProps = {
 type AgentPlaybookRhsHeaderProps = {
   onClose: () => void;
   onSave?: () => void;
+  secondaryTitle?: string;
 };
 
 type MetricIcon = ComponentType<SVGProps<SVGSVGElement>>;
@@ -49,6 +50,7 @@ function StatusChip({ label }: { label: string }) {
 export function AgentPlaybookRhsHeader({
   onClose,
   onSave,
+  secondaryTitle = 'Playbook',
 }: AgentPlaybookRhsHeaderProps) {
   return (
     <div className={styles['agent-playbook-rhs-header']}>
@@ -61,7 +63,7 @@ export function AgentPlaybookRhsHeader({
           aria-hidden
         />
         <span className={styles['agent-playbook-rhs-header__secondary']}>
-          Playbook
+          {secondaryTitle}
         </span>
       </div>
       <div className={styles['agent-playbook-rhs-header__actions']}>

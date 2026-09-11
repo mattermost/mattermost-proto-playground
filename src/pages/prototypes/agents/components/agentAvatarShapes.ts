@@ -72,14 +72,19 @@ export function agentAvatarChipSrc(
 
   const stops = AGENT_CHIP_COLOR_HEX[color];
   const grad = `<radialGradient id="g" cx="66.67%" cy="27.08%" r="77.5%"><stop offset="0%" stop-color="${stops.highlight}"/><stop offset="74.52%" stop-color="${stops.mid}"/><stop offset="98.08%" stop-color="${stops.edge}"/></radialGradient>`;
+  // Scale non-sphere shapes to 75% so the farthest corners fit within the
+  // inscribed circle (radius 0.5). This keeps the shape fully visible when
+  // UserAvatar applies border-radius: full, without needing a CSS override.
+  const scale = shape === 'sphere' ? '' : ' transform="translate(0.5 0.5) scale(0.75) translate(-0.5 -0.5)"';
   const body =
     shape === 'sphere'
       ? `<circle cx="0.5" cy="0.5" r="0.5" fill="url(#g)"/>`
-      : `<path d="${AGENT_AVATAR_SHAPE_PATHS[shape]}" fill="url(#g)"/>`;
+      : `<path d="${AGENT_AVATAR_SHAPE_PATHS[shape]}" fill="url(#g)"${scale}/>`;
   // Static pupils — match AgentAvatar: 12% diameter, 18% flex gap between
-  // (centers at 35% / 65%, not 18% center-to-center).
-  const eyes =
-    '<circle cx="0.35" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/><circle cx="0.65" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/>';
+  // (centers at 35% / 65%, not 18% center-to-center). Scale with the body.
+  const eyes = shape === 'sphere'
+    ? '<circle cx="0.35" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/><circle cx="0.65" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/>'
+    : `<g transform="translate(0.5 0.5) scale(0.75) translate(-0.5 -0.5)"><circle cx="0.35" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/><circle cx="0.65" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/></g>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">${grad}${body}${eyes}</svg>`;
   const src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   chipSrcCache.set(key, src);
