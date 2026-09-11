@@ -1,13 +1,5 @@
 # RHS overlay pattern
 
-When a prototype renders a `RightSidebar` panel alongside a center pane, the wrapper div must carry these styles — the defaults on each property cause clipping or missing shadow:
+Use `RightSidebar` from `@mattermost/compass-proto` as the primary panel. It accepts `header`, `children` (body), and `footer` slots, and has shadow, border, and layout built in.
 
-```scss
-&__rhs {
-  position: relative;
-  z-index: 2;          // above center pane
-  flex-shrink: 0;      // default flex: 0 1 auto allows shrink below 400px → clips content
-  overflow: hidden;    // clips thread overlay slide animation
-  box-shadow: var(--elevation-2); // must be on wrapper — overflow: hidden clips child box-shadows
-}
-```
+For a secondary panel that slides in over the primary (e.g. a thread over a playbook), give the shared wrapper `position: relative` and the secondary panel `position: absolute`. Animation and stacking are the prototype's concern.
