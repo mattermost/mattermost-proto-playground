@@ -1,0 +1,28 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
+import AgentsShell from './AgentsShell';
+import { AgentsProvider } from './context/AgentsContext';
+import AgentChat from './products/agents-app/AgentChat';
+import AgentsLanding from './products/agents-app/AgentsLanding';
+import ChannelsAgentDm from './products/channels/ChannelsAgentDm';
+
+/**
+ * Agents vision prototype — nested under `/prototypes/agents/*`.
+ * Slice 1–2: Product Sidebar, Channels home, Meet your first agent,
+ * New agent modal, Matty + created-agent chat.
+ */
+export default function Agents() {
+  return (
+    <AgentsProvider>
+      <Routes>
+        <Route element={<AgentsShell />}>
+          <Route index element={null} />
+          <Route path="dm/:agentId" element={<ChannelsAgentDm />} />
+          <Route path="channel/:channelId" element={null} />
+          <Route path="agents/:agentId" element={<AgentChat />} />
+          <Route path="agents" element={<AgentsLanding />} />
+          <Route path="*" element={<Navigate to="." replace />} />
+        </Route>
+      </Routes>
+    </AgentsProvider>
+  );
+}

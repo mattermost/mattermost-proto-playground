@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import Agents from '@/pages/prototypes/agents/Agents';
 import Automations from '@/pages/prototypes/automations/Automations';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
@@ -14,6 +15,13 @@ export type PrototypeEntry = {
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
+  {
+    id: 'agents',
+    label: 'Agents',
+    path: '/prototypes/agents',
+    component: Agents,
+    nested: true,
+  },
   {
     id: 'automations',
     label: 'Automations',

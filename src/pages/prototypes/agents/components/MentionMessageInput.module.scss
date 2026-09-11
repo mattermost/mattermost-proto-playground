@@ -1,0 +1,193 @@
+.mention-input {
+  position: relative;
+  width: 100%;
+
+  &__menu {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 496px;
+    max-height: 280px;
+    margin: 0;
+    padding: var(--spacing-xxs) 0;
+    overflow-y: auto;
+    list-style: none;
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-4);
+  }
+
+  &__menu-item {
+    margin: 0;
+    padding: 0;
+  }
+
+  &__agent-avatar {
+    display: inline-flex;
+
+    :global([class*='user-avatar']),
+    :global([class*='user-avatar__image']) {
+      border-radius: 0;
+    }
+
+    :global([class*='user-avatar__image']) {
+      object-fit: contain;
+    }
+  }
+
+  &__container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: var(--center-channel-bg);
+    border: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    transition: border-color var(--duration-quick) var(--ease-transition);
+
+    &:focus-within {
+      border-color: rgba(var(--center-channel-color-rgb), 0.32);
+    }
+  }
+
+  &__body {
+    display: flex;
+    min-width: 0;
+    padding: 14px 56px 14px var(--spacing-l);
+    cursor: text;
+  }
+
+  &__field {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__text {
+    white-space: pre-wrap;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__input {
+    flex: 1 1 8rem;
+    min-width: 8rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+
+    &::placeholder {
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__mention-chip {
+    // Compact inline mention: body text + tighter than Chip size tokens.
+    &:global([class*='chip']) {
+      gap: var(--spacing-xxxs);
+      padding: 0 var(--spacing-xxxs);
+    }
+
+    &:global([class*='chip']):has(:global([class*='chip__remove'])) {
+      padding-right: var(--spacing-xxxs);
+    }
+
+    &:global([class*='chip--size-']) :global([class*='chip__label']) {
+      font-size: var(--font-size-100);
+      font-weight: var(--font-weight-regular);
+      line-height: var(--line-height-100);
+      letter-spacing: normal;
+    }
+
+    &--agent {
+      :global([class*='chip__avatar-slot']) {
+        :global([class*='user-avatar']),
+        :global([class*='user-avatar__image']) {
+          border-radius: 0;
+        }
+
+        :global([class*='user-avatar__image']) {
+          object-fit: contain;
+        }
+      }
+    }
+  }
+
+  &__actions {
+    position: absolute;
+    right: var(--spacing-xs);
+    bottom: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+
+    :global(button:not(:disabled)) {
+      background-color: var(--button-bg);
+      color: var(--button-color);
+    }
+
+    :global(button:not(:disabled):hover) {
+      background-color: var(--button-bg);
+      color: var(--button-color);
+      opacity: 0.92;
+    }
+  }
+
+  &__post {
+    display: inline;
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    white-space: pre-wrap;
+  }
+
+  &__post-chip:global([class*='chip']) {
+    display: inline-flex;
+    // Baseline from the label (not the avatar) so chip text sits with the sentence.
+    vertical-align: baseline;
+    align-items: baseline;
+    margin-inline: 0.15em;
+
+    :global([class*='chip__avatar-slot']),
+    :global([class*='chip__icon-slot']) {
+      align-self: center;
+    }
+  }
+
+  // Caption-scale chip for system messages (overrides mention-chip font-size-100).
+  &__post-chip--system:global([class*='chip']) {
+    gap: 2px;
+    padding: 0 var(--spacing-xxxxs);
+    min-height: 0;
+
+    :global([class*='chip__label']) {
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+      letter-spacing: normal;
+    }
+  }
+
+  &__post-chip--interactive:global([class*='chip']) {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+  }
+}

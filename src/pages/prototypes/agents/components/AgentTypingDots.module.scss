@@ -1,0 +1,105 @@
+// Figma 53:80444 — 1.2s loop; left → middle → right peak (bounce + fade).
+// Peak easings approximate Figma: up [0.33, 1, 0.68, 1], down [0.32, 0, 0.67, 0].
+@keyframes agent-typing-dot-1 {
+  0% {
+    opacity: 0.4;
+    transform: translateY(0) scale(1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  20.83% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.15);
+    animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  }
+
+  41.67%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes agent-typing-dot-2 {
+  0%,
+  12.5% {
+    opacity: 0.4;
+    transform: translateY(0) scale(1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  33.33% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.15);
+    animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  }
+
+  54.17%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes agent-typing-dot-3 {
+  0%,
+  25% {
+    opacity: 0.4;
+    transform: translateY(0) scale(1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  45.83% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.15);
+    animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+  }
+
+  66.67%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.agent-typing-dots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xxxs);
+  // Figma frame 42×22 leaves room for the -5px bounce.
+  width: 42px;
+  height: 22px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+
+  &__dot {
+    display: block;
+    width: var(--spacing-xxs);
+    height: var(--spacing-xxs);
+    border-radius: var(--radius-full);
+    // Figma fill #D9D9D9 — themeable stand-in for the light gray dots.
+    background: rgba(var(--center-channel-color-rgb), 0.24);
+    flex: 0 0 auto;
+    will-change: transform, opacity;
+
+    &:nth-child(1) {
+      animation: agent-typing-dot-1 1.2s linear infinite;
+    }
+
+    &:nth-child(2) {
+      animation: agent-typing-dot-2 1.2s linear infinite;
+    }
+
+    &:nth-child(3) {
+      animation: agent-typing-dot-3 1.2s linear infinite;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agent-typing-dots__dot {
+      animation: none;
+      opacity: 0.72;
+    }
+  }
+}

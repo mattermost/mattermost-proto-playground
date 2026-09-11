@@ -1,0 +1,78 @@
+// Avatar md = 40px; padding-xxs = 4px each side; 1px border each side → 50px circle
+$fab-size: calc(40px + var(--spacing-xxs) * 2 + 2px);
+$fab-expanded: 160px;
+
+.matty-fab {
+  position: absolute;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  z-index: 31;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  width: $fab-size;
+  height: $fab-size;
+  padding: var(--spacing-xxs);
+  border-radius: var(--radius-full);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-4);
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    width var(--duration-moderate) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition),
+    opacity var(--duration-moderate) var(--ease-exit),
+    transform var(--duration-moderate) var(--ease-exit);
+
+  &:hover,
+  &:focus-visible {
+    width: $fab-expanded;
+    box-shadow: var(--elevation-5);
+  }
+
+  &--open {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.9);
+  }
+}
+
+.matty-fab__label {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 var(--spacing-s) 0 var(--spacing-xs);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  color: var(--center-channel-color);
+  opacity: 0;
+  transition: opacity var(--duration-quick) var(--ease-transition);
+
+  .matty-fab:hover &,
+  .matty-fab:focus-visible & {
+    opacity: 1;
+  }
+}
+
+.matty-fab__avatar {
+  display: flex;
+  flex-shrink: 0;
+  transition: transform var(--duration-quick) var(--ease-transition);
+
+  .matty-fab:hover &,
+  .matty-fab:focus-visible & {
+    transform: scale(1.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matty-fab,
+  .matty-fab__label,
+  .matty-fab__avatar {
+    transition: none;
+  }
+}

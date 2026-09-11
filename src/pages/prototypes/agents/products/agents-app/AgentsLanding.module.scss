@@ -1,0 +1,451 @@
+.agents-landing {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--sidebar-bg);
+
+  &__center {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--center-channel-bg);
+    border-radius: var(--radius-l);
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    box-shadow: var(--elevation-1);
+
+    &--fte {
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xxxl);
+      padding: var(--spacing-xxxl);
+      // Clip at the pane edge (carousel breaks into this padding).
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    &--directory {
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: var(--spacing-xxl) var(--spacing-xxxl);
+      overflow: hidden;
+    }
+  }
+
+  &__fte {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxxl);
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-align: center;
+    max-width: 640px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-1000);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-1000);
+    letter-spacing: -0.02em;
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__carousel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    // Span into center --fte padding so the shelf clips/fades at the pane edge.
+    width: calc(100% + 2 * var(--spacing-xxxl));
+    margin-inline: calc(-1 * var(--spacing-xxxl));
+    min-width: 0;
+    overflow: visible;
+    outline: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: var(--spacing-xxs);
+      border-radius: var(--radius-m);
+    }
+
+    &:hover .agents-landing__carousel-nav,
+    &:focus-within .agents-landing__carousel-nav {
+      opacity: 1;
+      pointer-events: auto;
+      transition-timing-function: var(--ease-entrance);
+    }
+  }
+
+  &__carousel-viewport {
+    width: 100%;
+    min-width: 0;
+    // Clip the shelf horizontally only; vertical ink (elevation) stays visible.
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  &__carousel-track {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: var(--spacing-l);
+    width: max-content;
+    // Elevation lives on the transformed track — pad so shadows stay in-box.
+    padding-block: var(--spacing-xl) var(--spacing-xxxxxl);
+    padding-left: var(--spacing-xxxxl);
+    box-sizing: content-box;
+    // Exaggerated ease-in-out vs --ease-transition for a punchier shelf advance.
+    transform: translateX(var(--agents-landing-shelf-offset, 0px));
+    transition: transform var(--duration-quick) cubic-bezier(0.76, 0, 0.24, 1);
+    will-change: transform;
+
+    &--centered {
+      width: 100%;
+      justify-content: center;
+      transform: none;
+    }
+  }
+
+  &__carousel-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    width: calc(var(--spacing-xxxxxl) + var(--spacing-xxxl));
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    &--prev {
+      left: 0;
+      background: linear-gradient(
+        to right,
+        var(--center-channel-bg) 35%,
+        rgba(var(--center-channel-bg-rgb), 0) 100%
+      );
+    }
+
+    &--next {
+      right: 0;
+      background: linear-gradient(
+        to left,
+        var(--center-channel-bg) 35%,
+        rgba(var(--center-channel-bg-rgb), 0) 100%
+      );
+    }
+
+    &--visible {
+      opacity: 1;
+    }
+  }
+
+  &__carousel-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: opacity var(--duration-quick) var(--ease-exit);
+
+    // Near the center pane edges (carousel already spans into pane padding).
+    &--prev {
+      left: calc(var(--spacing-s) + var(--spacing-xs));
+    }
+
+    &--next {
+      right: calc(var(--spacing-s) + var(--spacing-xs));
+    }
+  }
+
+  // Double-class beats IconButton's single-class transparent resting.
+  &__carousel-nav-btn#{&}__carousel-nav-btn {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+
+    &:hover:not(:disabled):not(:active):not(
+        [class*='icon-button--active']
+      ):not([class*='icon-button--toggled']) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.12);
+    }
+  }
+
+  &__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 320px;
+    gap: var(--spacing-xxl);
+    width: 320px;
+    padding: var(--spacing-xxxxl) var(--spacing-xxxl);
+    text-align: center;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-4);
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      box-shadow: var(--elevation-5);
+    }
+
+    &:has(.agents-landing__card-hit:focus-visible) {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+
+    // Stretched hit target receives clicks; chrome stays visual-only.
+    > :not(.agents-landing__card-hit) {
+      pointer-events: none;
+    }
+
+    &--create {
+      border: 2px dashed rgba(var(--center-channel-color-rgb), 0.12);
+      background: rgba(var(--center-channel-color-rgb), 0.02);
+      box-shadow: none;
+
+      &:hover {
+        box-shadow: none;
+      }
+    }
+  }
+
+  &__card-hit {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  &__card-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__create-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 74px;
+    height: 74px;
+    // Match AgentAvatar --lg: Figma frame 88 for 74 shape (53:71406).
+    margin-bottom: 14px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    // Same oval ground shadow as AgentAvatar (Figma 53:71406).
+    @include oval-ground-shadow;
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  &__card-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-500);
+    color: var(--center-channel-color);
+  }
+
+  &__card-body {
+    margin: 0;
+    min-height: 40px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__directory {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  &__dir-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    width: 100%;
+  }
+
+  &__dir-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__dir-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-600);
+    color: var(--center-channel-color);
+  }
+
+  &__dir-subtitle {
+    margin: 0;
+    max-width: 42rem;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__dir-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+
+  &__dir-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__dir-cols,
+  &__row {
+    display: grid;
+    grid-template-columns:
+      minmax(220px, 1.5fr)
+      minmax(120px, 0.7fr)
+      minmax(160px, 1fr)
+      minmax(180px, 1.2fr);
+    gap: var(--spacing-m);
+    align-items: center;
+    width: 100%;
+    padding: 0 var(--spacing-m);
+  }
+
+  &__dir-cols {
+    flex-shrink: 0;
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    text-transform: uppercase;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__dir-rows {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  &__row {
+    appearance: none;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: 0;
+    background: transparent;
+    min-height: var(--icon-size-40);
+    padding-top: var(--spacing-s);
+    padding-bottom: var(--spacing-s);
+    cursor: pointer;
+    text-align: left;
+    color: var(--center-channel-color);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
+  }
+
+  &__row-agent,
+  &__row-owner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  &__row-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+  }
+
+  &__row-role,
+  &__row-owner,
+  &__row-channels {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__row-channels,
+  &__row-owner {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
