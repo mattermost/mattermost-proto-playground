@@ -45,6 +45,7 @@ import AgentProfilePopover, {
   type AgentProfileAnchor,
 } from '../../components/AgentProfilePopover';
 import AgentReviewCard from '../../components/AgentReviewCard';
+import WebhookPost from '../../components/WebhookPost';
 import AgentSettingsModal from '../../components/AgentSettingsModal';
 import MentionMessageInput from '../../components/MentionMessageInput';
 import mentionStyles from '../../components/MentionMessageInput.module.scss';
@@ -703,6 +704,23 @@ export default function ChannelsHome() {
                       onInviteDismiss={dismissOttoInvite}
                         cardImageSrc={settingsAgent?.customImageSrc}
                       />
+                    );
+                  }
+
+                  if (message.kind === 'webhook') {
+                    return (
+                      <Message
+                        key={message.id}
+                        avatarSrc={message.avatarSrc}
+                        avatarAlt={message.avatarAlt}
+                        username={message.username}
+                        timestamp={message.timestamp}
+                        showMessageActions={false}
+                      >
+                        {message.webhookPost ? (
+                          <WebhookPost data={message.webhookPost} />
+                        ) : null}
+                      </Message>
                     );
                   }
 

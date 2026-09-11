@@ -45,4 +45,16 @@
     overflow: hidden;
     background: var(--sidebar-bg);
   }
+
+  &__channel-view {
+    display: none;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    &--active {
+      display: flex;
+      flex: 1 1 auto;
+    }
+  }
 }

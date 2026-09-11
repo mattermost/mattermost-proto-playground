@@ -16,6 +16,7 @@ function resolveScene(
       ? pathname.slice(0, -1)
       : pathname;
   if (normalized.startsWith(`${AGENTS_BASE}/dm/`)) return 'channels';
+  if (normalized.startsWith(`${AGENTS_BASE}/channel/`)) return 'incident-channel';
   if (normalized.startsWith(`${AGENTS_BASE}/agents/`)) return 'matty-chat';
   if (normalized === `${AGENTS_BASE}/agents`) {
     if (search.includes('fte=1')) return 'meet-first-agent';
@@ -80,6 +81,11 @@ export default function AgentsSceneSwitcher({
         closeNewAgent();
         ensureSentinel();
         navigate(`${AGENTS_BASE}/agents/sentinel?artifact=1`);
+        return;
+      case 'incident-channel':
+        closeNewAgent();
+        ensureSentinel();
+        navigate(`${AGENTS_BASE}/channel/INC-4471`);
         return;
       default:
         return;

@@ -1,0 +1,120 @@
+.webhook-post {
+  max-width: 560px;
+  overflow: clip;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  box-shadow: var(--elevation-1);
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    // 3px left border + 16px visual gap = 19px padding-left
+    padding: var(--spacing-l) var(--spacing-l) var(--spacing-l) calc(var(--spacing-l) + 3px);
+    border-left: 3px solid currentColor;
+    box-sizing: border-box;
+  }
+
+  &--good    { color: var(--color-success); }
+  &--warning { color: var(--color-warning); }
+  &--danger  { color: var(--color-danger); }
+  &--info    { color: var(--color-info); }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-300);
+    color: var(--center-channel-color);
+  }
+
+  &__text {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  // Metric tiles — rendered for short:true fields
+  &__metrics {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  &__metric {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    min-width: 0;
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-s);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-s);
+  }
+
+  &__metric-value {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-300);
+    color: var(--center-channel-color);
+  }
+
+  &__metric-label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  // Plain key-value fields — rendered for short:false fields
+  &__fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-m);
+  }
+
+  &__field {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    min-width: 120px;
+  }
+
+  &__field-label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__field-value {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__footer {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+}

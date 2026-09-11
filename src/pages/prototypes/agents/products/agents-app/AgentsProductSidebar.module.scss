@@ -65,17 +65,17 @@
     }
   }
 
-  // Nested chats: reveal category-style chevron in the 18px left gutter on hover.
+  // Nested chats: reveal category-style chevron aligned with category row chevrons.
   &__agent-chevron {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 0;
+    left: var(--spacing-xs);
     z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
+    width: 12px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -136,7 +136,19 @@
   }
 
   // Figma 123:28951 — indented chat sessions under an agent.
+  &__sessions-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+
+    &--expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+
   &__sessions {
+    overflow: hidden;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -145,6 +157,7 @@
   }
 
   &__session {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--spacing-xxxs);
@@ -172,6 +185,17 @@
 
   &__session--active {
     background: rgba(var(--sidebar-text-rgb), 0.08);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 2px;
+      border-radius: 0 2px 2px 0;
+      background: var(--sidebar-text-active-border);
+    }
 
     .agents-product-sidebar__session-label {
       opacity: 1;

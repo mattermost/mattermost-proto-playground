@@ -4,6 +4,7 @@ import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarDarius from '@/assets/avatars/Darius Cole.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
+import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
 import type { ChannelsSidebarModel } from '@mattermost/compass-ui/components/channels-sidebar';
 
 export const VIEWER = {
@@ -230,6 +231,23 @@ export const DYNAMO = {
   color: 'green' as AgentColor,
   channels: [] as string[],
 };
+
+export const CIPHER = {
+  id: 'cipher',
+  name: 'Cipher',
+  role: 'Analyst',
+  owner: 'Security team',
+  description: 'Forensic log analysis and root-cause investigation.',
+  shape: 'hexagon' as AgentShape,
+  color: 'purple' as AgentColor,
+  channels: [] as string[],
+};
+
+export const ALEX = {
+  name: 'Alex Rivera',
+  avatarSrc: avatarEthan,
+  avatarAlt: 'Alex Rivera',
+} as const;
 
 export const FTE_PRECONFIGURED_AGENTS = [FORGE, SCRIBE, DYNAMO] as const;
 
@@ -1654,10 +1672,43 @@ export type ChannelAgentInviteCard = {
   agentId: string;
   name: string;
   description: string;
-  /** Set after the viewer accepts Matty’s recommendation. */
+  /** Set after the viewer accepts Matty's recommendation. */
   accepted?: boolean;
   /** Set after the viewer declines with Not now. */
   dismissed?: boolean;
+};
+
+export type ChannelJiraCard = {
+  issueKey: string;
+  summary: string;
+  status: 'Open' | 'In Progress' | 'Resolved';
+};
+
+export type ChannelWebhookPostField = {
+  title: string;
+  value: string;
+  short?: boolean;
+};
+
+export type ChannelWebhookPost = {
+  /** Left-border accent color category. */
+  color: 'good' | 'warning' | 'danger' | 'info';
+  title?: string;
+  text?: string;
+  fields?: ChannelWebhookPostField[];
+  footer?: string;
+};
+
+export type ChannelThreadReply = {
+  count: number;
+  lastReplyTime: string;
+  participants: Array<{
+    key: string;
+    name: string;
+    agentShape?: AgentShape;
+    agentColor?: AgentColor;
+    avatarSrc?: string;
+  }>;
 };
 
 export type ChannelMessage = {
@@ -1671,9 +1722,12 @@ export type ChannelMessage = {
   /** Rich body with inline mention chips. When omitted, render `body`. */
   parts?: ChannelMessagePart[];
   /** Default `user`. System rows are de-emphasized; agent rows use AgentAvatar. */
-  kind?: 'user' | 'agent' | 'system';
+  kind?: 'user' | 'agent' | 'system' | 'webhook';
   agentReviewCard?: ChannelAgentReviewCard;
   agentInviteCard?: ChannelAgentInviteCard;
+  jiraCard?: ChannelJiraCard;
+  webhookPost?: ChannelWebhookPost;
+  threadReplies?: ChannelThreadReply;
   agentShape?: AgentShape;
   agentColor?: AgentColor;
   agentImageSrc?: string;
@@ -1967,6 +2021,129 @@ export function buildServiceStatusMentionables(
 
 /** Quiet pre-incident thread in `#service-status` — morning SRE chatter before Priya creates Sentinel. */
 export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
+  // ── Early-morning automated checks ─────────────────────────────────────────
+  {
+    id: 'wh-1',
+    kind: 'webhook',
+    username: 'Grafana',
+    avatarSrc: '',
+    avatarAlt: 'Grafana',
+    timestamp: '2:00 AM',
+    body: 'Nightly health summary — all systems normal',
+    webhookPost: {
+      color: 'good',
+      title: 'Nightly Health Summary — All Systems Normal',
+      fields: [
+        { title: 'Checkout API p95', value: '112ms', short: true },
+        { title: 'Error Rate', value: '0.02%', short: true },
+        { title: 'PayForge Delivery', value: '99.97%', short: true },
+        { title: 'Queue Depth', value: '142 jobs', short: true },
+      ],
+      footer: 'Grafana Alerting · 2:00 AM',
+    },
+  },
+  {
+    id: 'wh-2',
+    kind: 'webhook',
+    username: 'PayForge Monitor',
+    avatarSrc: '',
+    avatarAlt: 'PayForge Monitor',
+    timestamp: '4:45 AM',
+    body: 'Transaction throughput normal',
+    webhookPost: {
+      color: 'good',
+      title: 'PayForge Gateway — Hourly Check',
+      fields: [
+        { title: 'Transactions / min', value: '1,240', short: true },
+        { title: 'Approval Rate', value: '98.4%', short: true },
+        { title: 'Webhook Delivery', value: '99.98%', short: true },
+        { title: 'Avg Latency', value: '67ms', short: true },
+      ],
+      footer: 'PayForge Monitor · 4:45 AM',
+    },
+  },
+  {
+    id: 'wh-3',
+    kind: 'webhook',
+    username: 'Checkout API',
+    avatarSrc: '',
+    avatarAlt: 'Checkout API',
+    timestamp: '5:30 AM',
+    body: 'DB connection pool healthy',
+    webhookPost: {
+      color: 'good',
+      title: 'checkout-primary — Connection Pool Health',
+      fields: [
+        { title: 'Pool Utilisation', value: '42%', short: true },
+        { title: 'Active Connections', value: '34 / 80', short: true },
+        { title: 'Slow Queries (>500ms)', value: '0', short: true },
+        { title: 'Replication Lag', value: '0.8s', short: true },
+      ],
+      footer: 'Checkout API · 5:30 AM',
+    },
+  },
+  {
+    id: 'wh-4',
+    kind: 'webhook',
+    username: 'Grafana',
+    avatarSrc: '',
+    avatarAlt: 'Grafana',
+    timestamp: '6:15 AM',
+    body: 'Payment Worker queue depth normal',
+    webhookPost: {
+      color: 'good',
+      title: 'Payment Worker — Queue Depth OK',
+      fields: [
+        { title: 'Queue Depth', value: '318 jobs', short: true },
+        { title: 'Processing Rate', value: '620 jobs/min', short: true },
+        { title: 'Failed Jobs (1h)', value: '2', short: true },
+        { title: 'Worker Instances', value: '8 / 8 healthy', short: true },
+      ],
+      footer: 'Grafana Alerting · 6:15 AM',
+    },
+  },
+  // ── Alert: overnight queue spike (explains Jordan's 7:18 comment) ──────────
+  {
+    id: 'wh-5',
+    kind: 'webhook',
+    username: 'Grafana',
+    avatarSrc: '',
+    avatarAlt: 'Grafana',
+    timestamp: '7:01 AM',
+    body: 'ALERT: Checkout queue p95 spike',
+    webhookPost: {
+      color: 'warning',
+      title: '⚠ ALERT — checkout_queue_depth Threshold Exceeded',
+      text: 'p95 latency crossed warn threshold. Correlates with batch settlement job window.',
+      fields: [
+        { title: 'Current p95', value: '340ms', short: true },
+        { title: 'Threshold (warn)', value: '200ms', short: true },
+        { title: 'Duration', value: '04:23', short: true },
+        { title: 'Affected Service', value: 'checkout-queue', short: true },
+      ],
+      footer: 'Grafana Alerting · 7:01 AM',
+    },
+  },
+  {
+    id: 'wh-6',
+    kind: 'webhook',
+    username: 'Grafana',
+    avatarSrc: '',
+    avatarAlt: 'Grafana',
+    timestamp: '7:14 AM',
+    body: 'RESOLVED: Checkout queue p95 back to normal',
+    webhookPost: {
+      color: 'good',
+      title: '✓ RESOLVED — checkout_queue_depth',
+      text: 'p95 latency returned to normal. Batch settlement completed.',
+      fields: [
+        { title: 'Current p95', value: '108ms', short: true },
+        { title: 'Duration', value: '13 min', short: true },
+      ],
+      footer: 'Grafana Alerting · 7:14 AM',
+    },
+  },
+  // ── Human conversation ──────────────────────────────────────────────────────
   {
     id: 'm1',
     username: JORDAN.name,
@@ -1981,7 +2158,7 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
     avatarSrc: ON_CALL.avatarSrc,
     avatarAlt: ON_CALL.avatarAlt,
     timestamp: '7:24 AM',
-    body: 'Saw that too — coincided with the batch settlement job. Latency is back under 120ms. I’ll keep the alert muted unless it reappears.',
+    body: "Saw that too — coincided with the batch settlement job. Latency is back under 120ms. I'll keep the alert muted unless it reappears.",
   },
   {
     id: 'm3',
@@ -2007,6 +2184,27 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
     timestamp: '8:02 AM',
     body: 'Confirmed Grafana `checkout_queue_depth` alert thresholds still match the runbook (warn 2k / page 5k). No flapping overnight.',
   },
+  // ── Deploy health check (post canary rollout) ───────────────────────────────
+  {
+    id: 'wh-7',
+    kind: 'webhook',
+    username: 'Checkout API',
+    avatarSrc: '',
+    avatarAlt: 'Checkout API',
+    timestamp: '8:10 AM',
+    body: 'Deploy health check passed — payments-api 2.14.0',
+    webhookPost: {
+      color: 'good',
+      title: '✓ Deploy Health Check — payments-api 2.14.0',
+      fields: [
+        { title: 'Error Rate (5 min)', value: '0.01%', short: true },
+        { title: 'p95 Latency', value: '94ms', short: true },
+        { title: 'Pods Ready', value: '12 / 12', short: true },
+        { title: 'Rollout Duration', value: '7m 43s', short: true },
+      ],
+      footer: 'Checkout API · 8:10 AM',
+    },
+  },
   {
     id: 'm6',
     username: ON_CALL.name,
@@ -2029,7 +2227,7 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
     avatarSrc: JORDAN.avatarSrc,
     avatarAlt: JORDAN.avatarAlt,
     timestamp: '8:42 AM',
-    body: 'Checkout latency looks normal after last night’s deploy. Keeping an eye on the payment queue through lunch.',
+    body: "Checkout latency looks normal after last night's deploy. Keeping an eye on the payment queue through lunch.",
   },
   {
     id: 'm9',
@@ -2037,7 +2235,155 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
     avatarSrc: VIEWER.avatarSrc,
     avatarAlt: VIEWER.avatarAlt,
     timestamp: '8:51 AM',
-    body: 'Thanks. I’ll spin up a monitoring agent for this channel so we catch spikes before support does.',
+    body: "Thanks. I'll spin up a monitoring agent for this channel so we catch spikes before support does.",
+  },
+  // ── Midday routine checks ───────────────────────────────────────────────────
+  {
+    id: 'wh-8',
+    kind: 'webhook',
+    username: 'PayForge Monitor',
+    avatarSrc: '',
+    avatarAlt: 'PayForge Monitor',
+    timestamp: '10:00 AM',
+    body: 'PayForge webhook delivery rate check',
+    webhookPost: {
+      color: 'good',
+      title: 'PayForge Webhook Delivery — Hourly',
+      fields: [
+        { title: 'Delivery Rate', value: '99.9%', short: true },
+        { title: 'Retries (1h)', value: '14', short: true },
+        { title: 'Avg Response Time', value: '81ms', short: true },
+        { title: 'Timeouts (1h)', value: '0', short: true },
+      ],
+      footer: 'PayForge Monitor · 10:00 AM',
+    },
+  },
+  {
+    id: 'wh-9',
+    kind: 'webhook',
+    username: 'Grafana',
+    avatarSrc: '',
+    avatarAlt: 'Grafana',
+    timestamp: '12:00 PM',
+    body: 'Midday summary — all services healthy',
+    webhookPost: {
+      color: 'good',
+      title: 'Midday Health Summary — All Services Healthy',
+      fields: [
+        { title: 'Checkout API p95', value: '97ms', short: true },
+        { title: 'Error Rate', value: '0.03%', short: true },
+        { title: 'DB Pool', value: '51%', short: true },
+        { title: 'Queue Depth', value: '284 jobs', short: true },
+      ],
+      footer: 'Grafana Alerting · 12:00 PM',
+    },
+  },
+  // ── Pre-peak afternoon check ────────────────────────────────────────────────
+  {
+    id: 'wh-10',
+    kind: 'webhook',
+    username: 'PayForge Monitor',
+    avatarSrc: '',
+    avatarAlt: 'PayForge Monitor',
+    timestamp: '1:45 PM',
+    body: 'Pre-peak traffic check — PayForge normal',
+    webhookPost: {
+      color: 'good',
+      title: 'PayForge Gateway — Pre-Peak Check',
+      text: 'All metrics within normal bounds ahead of afternoon peak window (2–4 PM).',
+      fields: [
+        { title: 'Transactions / min', value: '1,890', short: true },
+        { title: 'Approval Rate', value: '98.6%', short: true },
+        { title: 'Webhook Delivery', value: '99.98%', short: true },
+        { title: 'Error Rate', value: '0.04%', short: true },
+      ],
+      footer: 'PayForge Monitor · 1:45 PM',
+    },
+  },
+  // ── THE alert — triggers the incident ──────────────────────────────────────
+  {
+    id: 'wh-11',
+    kind: 'webhook',
+    username: 'PayForge Monitor',
+    avatarSrc: '',
+    avatarAlt: 'PayForge Monitor',
+    timestamp: '2:14 PM',
+    body: 'ALERT: PayForge webhook error rate spike',
+    webhookPost: {
+      color: 'danger',
+      title: '🔴 ALERT — PayForge Webhook Error Rate Spike',
+      text: 'Error rate crossed critical threshold. Onset matches build 8842 deployment at 2:09 PM.',
+      fields: [
+        { title: 'Error Rate', value: '5.2% (threshold 5%)', short: true },
+        { title: 'Affected Endpoint', value: '/api/v2/webhook/payforge', short: true },
+        { title: 'Error Type', value: 'HTTP 422 Unprocessable', short: true },
+        { title: 'First Seen', value: '2:09 PM (T+0)', short: true },
+      ],
+      footer: 'PayForge Monitor · 2:14 PM',
+    },
+  },
+];
+
+/** Pre-seeded incident channel posts for INC-4471. */
+export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
+  {
+    id: 'inc-sys-1',
+    kind: 'system',
+    username: 'system',
+    avatarSrc: '',
+    avatarAlt: '',
+    timestamp: '2:15 PM',
+    body: 'Matty created this channel and started the Incident Response playbook.',
+    parts: [
+      { type: 'mention', id: MATTY.id, label: MATTY.name, avatarSrc: '', kind: 'agent', agentShape: MATTY.shape, agentColor: MATTY.color },
+      { type: 'text', text: ' created this channel and started the Incident Response playbook.' },
+    ],
+  },
+  {
+    id: 'inc-matty-1',
+    kind: 'agent',
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp: '2:15 PM',
+    body: "I've created Jira ticket INC-4471 for this incident and started the Incident Response playbook. Sentinel is on the Diagnosis stage and Otto is pre-assigned to Deployment — same playbook assignments from when you saved it.",
+    parts: [
+      { type: 'text', text: "I've created Jira ticket INC-4471 for this incident and started the Incident Response playbook. " },
+      { type: 'mention', id: 'sentinel', label: SENTINEL_DEFAULT.name, avatarSrc: '', kind: 'agent', agentShape: SENTINEL_DEFAULT.shape, agentColor: SENTINEL_DEFAULT.color },
+      { type: 'text', text: ' is on the Diagnosis stage and ' },
+      { type: 'mention', id: OTTO.id, label: OTTO.name, avatarSrc: '', kind: 'agent', agentShape: OTTO.shape, agentColor: OTTO.color },
+      { type: 'text', text: ' is pre-assigned to Deployment — same playbook assignments from when you saved it.' },
+    ],
+    jiraCard: {
+      issueKey: 'INC-4471',
+      summary: 'Checkout failures during peak traffic',
+      status: 'Open',
+    },
+    agentShape: MATTY.shape,
+    agentColor: MATTY.color,
+  },
+  {
+    id: 'inc-sentinel-1',
+    kind: 'agent',
+    username: SENTINEL_DEFAULT.name,
+    avatarSrc: '',
+    avatarAlt: SENTINEL_DEFAULT.name,
+    timestamp: '2:16 PM',
+    body: "PayForge webhook error rate hit 5.2% at 2:14 PM — threshold is 5%. Error onset matches the deployment of build 8842 exactly at T+0. Signature doesn't point to one cause cleanly. Cipher, can you dig in?",
+    parts: [
+      { type: 'text', text: "PayForge webhook error rate hit 5.2% at 2:14 PM — threshold is 5%. Error onset matches the deployment of build 8842 exactly at T+0. Signature doesn't point to one cause cleanly. " },
+      { type: 'mention', id: CIPHER.id, label: CIPHER.name, avatarSrc: '', kind: 'agent', agentShape: CIPHER.shape, agentColor: CIPHER.color },
+      { type: 'text', text: ', can you dig in?' },
+    ],
+    threadReplies: {
+      count: 1,
+      lastReplyTime: '2:18 PM',
+      participants: [
+        { key: CIPHER.id, name: CIPHER.name, agentShape: CIPHER.shape, agentColor: CIPHER.color },
+      ],
+    },
+    agentShape: SENTINEL_DEFAULT.shape,
+    agentColor: SENTINEL_DEFAULT.color,
   },
 ];
 
@@ -2101,6 +2447,30 @@ export function buildAgentsChannelsSidebarModel(
         ],
       },
       {
+        key: 'incidents',
+        category: { label: 'Incidents', showChevron: true, showPlusButton: false },
+        items: [
+          {
+            name: 'INC-4469',
+            leadingVisual: 'public',
+            status: 'read',
+            active: activeName === 'INC-4469',
+          },
+          {
+            name: 'INC-4470',
+            leadingVisual: 'public',
+            status: 'read',
+            active: activeName === 'INC-4470',
+          },
+          {
+            name: 'INC-4471',
+            leadingVisual: 'public',
+            status: activeName === 'INC-4471' ? 'read' : 'unread',
+            active: activeName === 'INC-4471',
+          },
+        ],
+      },
+      {
         key: 'engineering',
         category: { label: 'Engineering', showChevron: true, showPlusButton: true },
         items: [
@@ -2119,9 +2489,8 @@ export function buildAgentsChannelsSidebarModel(
         ],
       },
       {
-        key: 'direct-messages',
-        category: { label: 'Direct messages', showChevron: true, showPlusButton: true },
-        // Favorited DMs (e.g. Jordan) live only under Favorites.
+        key: 'agents',
+        category: { label: 'Agents', showChevron: true, showPlusButton: true },
         items: [
           {
             name: MATTY.name,
@@ -2132,6 +2501,13 @@ export function buildAgentsChannelsSidebarModel(
             status: 'read',
             active: activeName === MATTY.name,
           },
+        ],
+      },
+      {
+        key: 'direct-messages',
+        category: { label: 'Direct messages', showChevron: true, showPlusButton: true },
+        // Favorited DMs (e.g. Jordan) live only under Favorites.
+        items: [
           {
             name: ON_CALL.name,
             leadingVisual: 'direct-message',

@@ -128,9 +128,8 @@ export default function AgentsProductSidebar({
             const isGroup = Boolean(agent.members?.length);
             const sessions = sessionsByAgentId[agent.id] ?? [];
             const activeSessionId = activeSessionByAgentId[agent.id];
-            const hasNestedChats = sessions.length > 1;
+            const hasNestedChats = sessions.length > 0;
             const sessionsCollapsed = Boolean(collapsedByAgentId[agent.id]);
-            const showSessions = sessions.length > 0 && !sessionsCollapsed;
             return (
               <div
                 key={agent.id}
@@ -195,10 +194,22 @@ export default function AgentsProductSidebar({
                     memberCount={
                       isGroup ? agent.members!.length : undefined
                     }
-                    active={activeNav === agent.id && sessions.length === 0}
-                    onClick={() =>
-                      navigate(`${AGENTS_BASE}/agents/${agent.id}`)
-                    }
+                    active={activeNav === agent.id && (sessions.length === 0 || sessionsCollapsed)}
+                    onClick={() => {
+                      if (sessions.length > 0) {
+                        if (activeNav !== agent.id) {
+                          // Coming from elsewhere: open last used session and expand.
+                          const targetId = activeSessionId || sessions[0].id;
+                          selectSession(agent.id, targetId);
+                          setCollapsedByAgentId((prev) => ({ ...prev, [agent.id]: false }));
+                          navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                        } else {
+                          toggleAgentCollapsed(agent.id);
+                        }
+                      } else {
+                        navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                      }
+                    }}
                   />
                   <span
                     className={styles['agents-product-sidebar__agent-new']}
@@ -216,57 +227,74 @@ export default function AgentsProductSidebar({
                     />
                   </span>
                 </div>
-                {showSessions ? (
-                  <ul
-                    className={styles['agents-product-sidebar__sessions']}
-                    aria-label={`${agent.name} chats`}
+                {sessions.length > 0 ? (
+                  <div
+                    className={[
+                      styles['agents-product-sidebar__sessions-collapse'],
+                      !sessionsCollapsed
+                        ? styles[
+                            'agents-product-sidebar__sessions-collapse--expanded'
+                          ]
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-hidden={sessionsCollapsed}
                   >
-                    {sessions.map((session) => {
-                      const active =
-                        activeNav === agent.id &&
-                        session.id === activeSessionId;
-                      return (
-                        <li key={session.id}>
-                          <button
-                            type="button"
-                            className={[
-                              styles['agents-product-sidebar__session'],
-                              active
-                                ? styles[
-                                    'agents-product-sidebar__session--active'
+                    <ul
+                      className={styles['agents-product-sidebar__sessions']}
+                      aria-label={`${agent.name} chats`}
+                    >
+                      {sessions.map((session) => {
+                        const active =
+                          activeNav === agent.id &&
+                          session.id === activeSessionId;
+                        return (
+                          <li key={session.id}>
+                            <button
+                              type="button"
+                              className={[
+                                styles['agents-product-sidebar__session'],
+                                active
+                                  ? styles[
+                                      'agents-product-sidebar__session--active'
+                                    ]
+                                  : '',
+                              ]
+                                .filter(Boolean)
+                                .join(' ')}
+                              tabIndex={sessionsCollapsed ? -1 : 0}
+                              onClick={() => {
+                                selectSession(agent.id, session.id);
+                                navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                              }}
+                            >
+                              <span
+                                className={
+                                  styles['agents-product-sidebar__session-icon']
+                                }
+                                aria-hidden
+                              >
+                                <Icon
+                                  glyph={<MessageTextOutlineIcon />}
+                                  size="16"
+                                />
+                              </span>
+                              <span
+                                className={
+                                  styles[
+                                    'agents-product-sidebar__session-label'
                                   ]
-                                : '',
-                            ]
-                              .filter(Boolean)
-                              .join(' ')}
-                            onClick={() => {
-                              selectSession(agent.id, session.id);
-                              navigate(`${AGENTS_BASE}/agents/${agent.id}`);
-                            }}
-                          >
-                            <span
-                              className={
-                                styles['agents-product-sidebar__session-icon']
-                              }
-                              aria-hidden
-                            >
-                              <Icon
-                                glyph={<MessageTextOutlineIcon />}
-                                size="16"
-                              />
-                            </span>
-                            <span
-                              className={
-                                styles['agents-product-sidebar__session-label']
-                              }
-                            >
-                              {session.preview}
-                            </span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                                }
+                              >
+                                {session.preview}
+                              </span>
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 ) : null}
               </div>
             );

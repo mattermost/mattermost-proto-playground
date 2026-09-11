@@ -1644,7 +1644,7 @@ export default function AgentChat({
                     onClick={closeOptionsMenu}
                   />
                 </PopoverMenuGroup>
-                {sessions.length > 0 ? (
+                {!embedded && sessions.length > 0 ? (
                   <>
                     <PopoverMenuDivider />
                     <PopoverMenuGroup>

@@ -6,7 +6,8 @@ export type AgentsSceneId =
   | 'new-agent'
   | 'agent-settings'
   | 'scheduled-work'
-  | 'artifact';
+  | 'artifact'
+  | 'incident-channel';
 
 export const AGENTS_SCENES: Array<{ id: AgentsSceneId; label: string }> = [
   { id: 'channels', label: 'Channels' },
@@ -17,6 +18,7 @@ export const AGENTS_SCENES: Array<{ id: AgentsSceneId; label: string }> = [
   { id: 'agent-settings', label: 'Agent settings' },
   { id: 'scheduled-work', label: 'Scheduled work' },
   { id: 'artifact', label: 'Artifact' },
+  { id: 'incident-channel', label: 'Incident channel' },
 ];
 
 export const AGENTS_BASE = '/prototypes/agents';

@@ -7,6 +7,8 @@ import NewAgentGroupChatModal from './components/NewAgentGroupChatModal';
 import NewAgentModal from './components/NewAgentModal';
 import ProductSidebar from './components/ProductSidebar';
 import { useAgents, type AgentsProduct } from './context/AgentsContext';
+import ChannelsHome from './products/channels/ChannelsHome';
+import IncidentChannel from './products/channels/IncidentChannel';
 import styles from './AgentsShell.module.scss';
 
 function resolveProduct(pathname: string): AgentsProduct {
@@ -14,8 +16,11 @@ function resolveProduct(pathname: string): AgentsProduct {
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
-  // Agent DMs under /dm/* stay in the Channels product (Channels LHS).
-  if (normalized.startsWith(`${AGENTS_BASE}/dm/`)) {
+  // Agent DMs and incident channels stay in the Channels product (Channels LHS).
+  if (
+    normalized.startsWith(`${AGENTS_BASE}/dm/`) ||
+    normalized.startsWith(`${AGENTS_BASE}/channel/`)
+  ) {
     return 'channels';
   }
   // /agents and /agents/matty (and future agent chats) stay in Agents product.
@@ -48,6 +53,13 @@ export default function AgentsShell() {
     customAgents,
   } = useAgents();
   const activeProduct = resolveProduct(pathname);
+
+  const normalized =
+    pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const isChannelsHome =
+    normalized === AGENTS_BASE || normalized === `${AGENTS_BASE}/`;
+  const isIncidentChannel = normalized.startsWith(`${AGENTS_BASE}/channel/`);
+  const isChannelView = isChannelsHome || isIncidentChannel;
 
   useEffect(() => {
     setCenterSlot(
@@ -82,7 +94,19 @@ export default function AgentsShell() {
             }}
           />
           <div className={styles['agents-shell__product']}>
-            <Outlet />
+            <div className={[
+              styles['agents-shell__channel-view'],
+              isChannelsHome ? styles['agents-shell__channel-view--active'] : '',
+            ].filter(Boolean).join(' ')}>
+              <ChannelsHome />
+            </div>
+            <div className={[
+              styles['agents-shell__channel-view'],
+              isIncidentChannel ? styles['agents-shell__channel-view--active'] : '',
+            ].filter(Boolean).join(' ')}>
+              <IncidentChannel />
+            </div>
+            {!isChannelView && <Outlet />}
           </div>
         </div>
       </div>
@@ -96,8 +120,12 @@ export default function AgentsShell() {
             description: draft.description ?? draft.purpose,
           });
           closeNewAgent();
-          // Route under /agents/:id switches activeProduct to 'agents'.
-          navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+          if (activeProduct === 'channels') {
+            // Stay in Channels — open the new agent as a DM.
+            navigate(`${AGENTS_BASE}/dm/${agent.id}`);
+          } else {
+            navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+          }
         }}
       />
 
