@@ -2438,7 +2438,7 @@ export function buildAgentsChannelsSidebarModel(
       },
       {
         key: 'reliability',
-        category: { label: 'Reliability', showChevron: true, showPlusButton: true },
+        category: { label: 'Reliability', showChevron: true },
         // Favorited channels (e.g. service-status) live only under Favorites.
         items: [
           {
@@ -2475,8 +2475,13 @@ export function buildAgentsChannelsSidebarModel(
         ],
       },
       {
+        key: 'agents',
+        category: { label: 'Agents', showChevron: true, showPlusButton: true },
+        items: [],
+      },
+      {
         key: 'engineering',
-        category: { label: 'Engineering', showChevron: true, showPlusButton: true },
+        category: { label: 'Engineering', showChevron: true },
         items: [
           {
             name: 'pr-1847-checkout-queue',
@@ -2489,21 +2494,6 @@ export function buildAgentsChannelsSidebarModel(
             leadingVisual: 'private',
             status: 'read',
             active: activeName === 'pr-1832-payments-retry',
-          },
-        ],
-      },
-      {
-        key: 'agents',
-        category: { label: 'Agents', showChevron: true, showPlusButton: true },
-        items: [
-          {
-            name: MATTY.name,
-            leadingVisual: 'direct-message',
-            avatarSrc: '',
-            avatarAlt: MATTY.name,
-            showAvatarStatus: false,
-            status: 'read',
-            active: activeName === MATTY.name,
           },
         ],
       },

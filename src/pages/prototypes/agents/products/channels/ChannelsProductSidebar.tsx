@@ -8,7 +8,7 @@ import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/chann
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { buildAgentsChannelsSidebarModel, MATTY, type AgentColor, type AgentShape } from '../../agentsData';
+import { buildAgentsChannelsSidebarModel, buildYourAgentsSidebar, type SidebarAgent } from '../../agentsData';
 import { AGENTS_BASE } from '../../agentsScenes';
 import AgentAvatar from '../../components/AgentAvatar';
 import LhsSidebarHeader from '../../components/LhsSidebarHeader';
@@ -28,13 +28,6 @@ function resolveActiveName(pathname: string): string {
   return 'service-status';
 }
 
-type SidebarAgentEntry = {
-  id: string;
-  name: string;
-  shape: AgentShape;
-  color: AgentColor;
-  customImageSrc?: string;
-};
 
 /**
  * Channels LHS matching ChannelsSidebar chrome (product title + find), with a
@@ -46,11 +39,14 @@ export default function ChannelsProductSidebar() {
   const {
     openNewAgent,
     customAgents,
+    groupChats,
+    openedAgentIds,
     sessionsByAgentId,
     activeSessionByAgentId,
     selectSession,
     startNewChat,
   } = useAgents();
+  const yourAgents = buildYourAgentsSidebar(customAgents, openedAgentIds, groupChats);
   const [plusOpen, setPlusOpen] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [collapsedByAgentId, setCollapsedByAgentId] = useState<Record<string, boolean>>({});
@@ -74,7 +70,8 @@ export default function ChannelsProductSidebar() {
     }
   };
 
-  const renderAgentBlock = (agent: SidebarAgentEntry, groupKey: string) => {
+  const renderAgentBlock = (agent: SidebarAgent, groupKey: string) => {
+    const isGroup = Boolean(agent.members?.length);
     const sessions = sessionsByAgentId[agent.id] ?? [];
     const agentActiveSessionId = activeSessionByAgentId[agent.id] ?? '';
     const isActive = activeName === agent.id;
@@ -95,8 +92,10 @@ export default function ChannelsProductSidebar() {
         <div
           className={[
             styles['channels-nav__agent-row'],
-            styles['channels-nav__agent-row--dm'],
-          ].join(' ')}
+            !isGroup ? styles['channels-nav__agent-row--dm'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
         >
           {hasNestedChats ? (
             <button
@@ -121,21 +120,24 @@ export default function ChannelsProductSidebar() {
               <Icon glyph={<ChevronDownIcon />} size="12" />
             </button>
           ) : null}
-          <span className={styles['channels-nav__agent-avatar']} aria-hidden>
-            <AgentAvatar
-              shape={agent.shape}
-              color={agent.color}
-              size="xs"
-              eyes
-              imageSrc={agent.customImageSrc}
-            />
-          </span>
+          {!isGroup ? (
+            <span className={styles['channels-nav__agent-avatar']} aria-hidden>
+              <AgentAvatar
+                shape={agent.shape}
+                color={agent.color}
+                size="xs"
+                eyes
+                imageSrc={agent.customImageSrc}
+              />
+            </span>
+          ) : null}
           <ChannelSidebarItem
             name={agent.name}
-            leadingVisual="direct-message"
-            avatarSrc=""
-            avatarAlt={agent.name}
-            showAvatarStatus={false}
+            leadingVisual={isGroup ? 'group-message' : 'direct-message'}
+            memberCount={isGroup ? agent.members!.length : undefined}
+            avatarSrc={isGroup ? undefined : ''}
+            avatarAlt={isGroup ? undefined : agent.name}
+            showAvatarStatus={isGroup ? undefined : false}
             active={isActive && (sessions.length === 0 || collapsed)}
             onClick={() => {
               if (sessions.length > 0) {
@@ -248,24 +250,19 @@ export default function ChannelsProductSidebar() {
               showChevron={group.category.showChevron}
               showPlusButton={group.category.showPlusButton}
             />
-            {group.items.map((item) => {
-              if (item.name === MATTY.name) {
-                return renderAgentBlock(MATTY, group.key);
-              }
-              return (
-                <ChannelSidebarItem
-                  key={`${group.key}-${item.name}`}
-                  {...item}
-                  onClick={
-                    item.name === 'service-status' || item.name.startsWith('INC-')
-                      ? () => onItemClick(item.name)
-                      : undefined
-                  }
-                />
-              );
-            })}
-            {group.key === 'agents' &&
-              customAgents.map((agent) => renderAgentBlock(agent, group.key))}
+            {group.key === 'agents'
+              ? yourAgents.map((agent) => renderAgentBlock(agent, group.key))
+              : group.items.map((item) => (
+                  <ChannelSidebarItem
+                    key={`${group.key}-${item.name}`}
+                    {...item}
+                    onClick={
+                      item.name === 'service-status' || item.name.startsWith('INC-')
+                        ? () => onItemClick(item.name)
+                        : undefined
+                    }
+                  />
+                ))}
           </div>
         ))}
       </Scrollbar>
