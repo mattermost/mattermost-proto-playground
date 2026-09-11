@@ -164,6 +164,22 @@ Render `Modal` only while it should be on screen (plus the exit-animation hold).
 
 **Exceptions:** `Combobox`, `Select`, and `DateRangePicker` own their menus. Mobile sheets use `MobileModal` + playground `MobileModalStage` (see **Mobile Channel → Modal** below).
 
+### RHS panels
+
+When a prototype renders a `RightSidebar` panel alongside a center pane, the wrapper div must carry these styles — the defaults on each property cause clipping or missing shadow:
+
+```scss
+&__rhs {
+  position: relative;
+  z-index: 2;          // above center pane
+  flex-shrink: 0;      // default flex: 0 1 auto allows shrink below 400px → clips content
+  overflow: hidden;    // clips thread overlay slide animation
+  box-shadow: var(--elevation-2); // must be on wrapper — overflow: hidden clips child box-shadows
+}
+```
+
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../.claude/projects/-Users-matthew-birtch-Documents-GitHub-mattermost-mattermost-proto-playground/memory/project_rhs_overlay_pattern.md) memory.
+
 ### Prototype-only UI
 
 1. Name matches a Compass export → use it. Do not restyle a cousin.
