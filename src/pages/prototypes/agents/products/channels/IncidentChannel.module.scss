@@ -27,7 +27,9 @@
   &__rhs {
     position: relative;
     z-index: 2;
+    flex-shrink: 0;
     overflow: hidden;
+    box-shadow: var(--elevation-2);
   }
 
   &__rhs-thread {
