@@ -148,6 +148,8 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
 
+**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
+
 ### Overlay wiring
 
 `Modal`, `Tooltip`, `PopoverMenu`, and `ProfilePopover` are **visual chrome only**. The host owns:
@@ -162,11 +164,22 @@ Render `Modal` only while it should be on screen (plus the exit-animation hold).
 
 **Exceptions:** `Combobox`, `Select`, and `DateRangePicker` own their menus. Mobile sheets use `MobileModal` + playground `MobileModalStage` (see **Mobile Channel → Modal** below).
 
+### RHS panels
+
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
+
 ### Prototype-only UI
 
-1. Name matches a Compass export → use it. Do not restyle a cousin.
-2. Flow-specific composition (a Find Channels dialog, a call PIP) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM.
-3. Reusable design-system control → implement in **compass-design**, not under playground `src/components/` or a prototype folder.
+**Before writing any custom element, ask: does a Compass component cover this structure?**
+If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components.
+
+The threshold for "close enough to use Compass" is low. A `Chip` that needs a blue tint, a `Button` that needs `align-self: flex-start`, a `Checkbox` with an extra margin — all still use the Compass component with a className override. Only reach for custom HTML when Compass has nothing structurally close.
+
+Decision order:
+1. **Name matches a Compass export → use it.** Do not restyle a structural cousin.
+2. **Compass component + className override → use it.** Minor visual differences (color, display, margin) do not justify a custom element.
+3. **No Compass match → build from primitives.** Flow-specific composition (a Find Channels dialog, a call PIP, a card layout) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM. Be explicit about why Compass has nothing that fits.
+4. **Reusable design-system control → implement in compass-design**, not under playground `src/components/` or a prototype folder.
 
 Invented UI must:
 
