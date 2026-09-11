@@ -229,17 +229,14 @@
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 
-  &__assignee {
+  &__assignee-chip {
     align-self: flex-start;
     margin-top: var(--spacing-xxxxs);
-    padding: 0 var(--spacing-xs);
     border-radius: var(--radius-full);
-    background: rgba(var(--center-channel-color-rgb), 0.08);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-50);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    :global([class*='chip__label']) {
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
   }
 
   &__status-copy {
@@ -257,20 +254,19 @@
     }
   }
 
-  &__chip {
+  &__status-chip {
     display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxs);
-    margin-inline: 2px;
-    padding: 3px 6px 3px 10px;
-    border-radius: 12px;
-    background: rgba(var(--button-bg-rgb), 0.08);
-    color: var(--button-bg);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
-    line-height: 15px;
     vertical-align: middle;
+    margin-inline: 2px;
+    background: rgba(var(--button-bg-rgb), 0.08);
+
+    :global([class*='chip__label']) {
+      color: var(--button-bg);
+    }
+
+    :global([class*='chip__remove']) {
+      color: var(--button-bg);
+    }
   }
 
   &__template-block {

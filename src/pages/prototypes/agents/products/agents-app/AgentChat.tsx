@@ -9,6 +9,7 @@ import {
 import { createPortal } from 'react-dom';
 import { useParams, useSearchParams } from 'react-router-dom';
 import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
+import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
@@ -435,6 +436,7 @@ export default function AgentChat({
   const [toolConnectStatusIndex, setToolConnectStatusIndex] = useState(0);
   const [pendingToolOption, setPendingToolOption] =
     useState<AgentToolConnectOption | null>(null);
+  const [connectedToolLabel, setConnectedToolLabel] = useState<string | null>(null);
   const [toolPostReady, setToolPostReady] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [optionsAnchor, setOptionsAnchor] = useState<DOMRect | null>(null);
@@ -581,6 +583,13 @@ export default function AgentChat({
       ? PLAYBOOK_STATUS_LABELS[playbookStatusIndex]
       : null;
   const statusLabel = playbookStatusLabel ?? toolConnectStatusLabel;
+  // Persistent "done" label — shown with checkmark after the status steps complete.
+  const doneLabel =
+    playbookPhase === 'done'
+      ? 'Loaded Incident Response Playbook'
+      : toolConnectPhase === 'done' && connectedToolLabel
+        ? `Connected to ${connectedToolLabel}`
+        : null;
 
   useEffect(() => {
     if (!playIntro) {
@@ -630,6 +639,7 @@ export default function AgentChat({
           };
         }),
       );
+      setConnectedToolLabel(pendingToolOption.label);
       setPendingToolOption(null);
       setToolConnectPhase('done');
     }, TOOL_CONNECT_STATUS_MS);
@@ -719,6 +729,7 @@ export default function AgentChat({
     setToolConnectPhase('idle');
     setToolConnectStatusIndex(0);
     setPendingToolOption(null);
+    setConnectedToolLabel(null);
     setToolPostReady(false);
     setOptionsOpen(false);
     setSettingsOpen(settingsParam);
@@ -1544,18 +1555,22 @@ export default function AgentChat({
                         </article>
                       );
                     })}
-                    {statusLabel ? (
+                    {(statusLabel || doneLabel) ? (
                       <div
-                        className={styles['agent-chat__status']}
+                        className={[
+                          styles['agent-chat__status'],
+                          doneLabel ? styles['agent-chat__status--done'] : '',
+                        ].filter(Boolean).join(' ')}
                         role="status"
                         aria-live="polite"
                       >
-                        <Spinner
-                          size={12}
-                          aria-label={statusLabel}
-                        />
+                        {doneLabel ? (
+                          <Icon glyph={<CheckCircleOutlineIcon />} size="12" />
+                        ) : (
+                          <Spinner size={12} aria-label={statusLabel!} />
+                        )}
                         <span className={styles['agent-chat__status-label']}>
-                          {statusLabel}
+                          {doneLabel ?? statusLabel}
                         </span>
                       </div>
                     ) : null}

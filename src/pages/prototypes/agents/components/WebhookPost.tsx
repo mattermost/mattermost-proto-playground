@@ -27,8 +27,8 @@ export default function WebhookPost({ data }: WebhookPostProps) {
           <div className={styles['webhook-post__metrics']}>
             {metrics.map((field, i) => (
               <div key={i} className={styles['webhook-post__metric']}>
-                <span className={styles['webhook-post__metric-value']}>{field.value}</span>
                 <span className={styles['webhook-post__metric-label']}>{field.title}</span>
+                <span className={styles['webhook-post__metric-value']}>{field.value}</span>
               </div>
             ))}
           </div>

@@ -1,5 +1,5 @@
 .webhook-post {
-  max-width: 560px;
+  max-width: 700px;
   overflow: clip;
   background: var(--center-channel-bg);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
@@ -45,29 +45,20 @@
     color: var(--center-channel-color);
   }
 
-  // Metric tiles — rendered for short:true fields
+  // Short fields rendered as a flex-wrap key-value row (label above value)
   &__metrics {
     display: flex;
-    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    gap: var(--spacing-m);
+    width: 100%;
   }
 
   &__metric {
     display: flex;
     flex: 1 0 0;
     flex-direction: column;
-    min-width: 0;
-    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-s);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-    border-radius: var(--radius-s);
-  }
-
-  &__metric-value {
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-300);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-300);
-    color: var(--center-channel-color);
+    gap: var(--spacing-xxxxs);
+    min-width: 120px;
   }
 
   &__metric-label {
@@ -76,6 +67,14 @@
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__metric-value {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
   }
 
   // Plain key-value fields — rendered for short:false fields

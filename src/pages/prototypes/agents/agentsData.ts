@@ -843,7 +843,7 @@ export const MATTY_WELCOME_MESSAGE: AgentChatMessage = {
   id: 'matty-welcome',
   timestamp: '10:43 AM',
   paragraphs: [
-    "Hey Priya, looks like you're just getting started. Welcome to the new and improved Agents in Mattermost. I'm Matty, you're all-purpose agent and I will run point across all of the other agents you can work with.",
+    "Hey Priya, looks like you're just getting started. Welcome to the new and improved Agents in Mattermost. I'm Matty, your all-purpose agent and I will run point across all of the other agents you can work with.",
     'I think a good next step would be to connect to your tools so I can help you get work done.',
   ],
 };
@@ -2315,7 +2315,7 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
       text: 'Error rate crossed critical threshold. Onset matches build 8842 deployment at 2:09 PM.',
       fields: [
         { title: 'Error Rate', value: '5.2% (threshold 5%)', short: true },
-        { title: 'Affected Endpoint', value: '/api/v2/webhook/payforge', short: true },
+        { title: 'Affected Endpoint', value: 'api/v2/payforge', short: true },
         { title: 'Error Type', value: 'HTTP 422 Unprocessable', short: true },
         { title: 'First Seen', value: '2:09 PM (T+0)', short: true },
       ],

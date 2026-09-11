@@ -5,6 +5,7 @@ import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import CurrencyUsdIcon from '@mattermost/compass-icons/components/currency-usd';
 import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
+import { Chip } from '@mattermost/compass-ui/components/chip';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Switch } from '@mattermost/compass-ui/components/switch';
@@ -34,10 +35,13 @@ const METRIC_ICONS: Record<
 
 function StatusChip({ label }: { label: string }) {
   return (
-    <span className={styles['agent-playbook-preview__chip']}>
+    <Chip
+      size="medium"
+      className={styles['agent-playbook-preview__status-chip']}
+      onRemove={() => undefined}
+    >
       {label}
-      <Icon glyph={<CloseIcon />} size="12" />
-    </span>
+    </Chip>
   );
 }
 
@@ -177,13 +181,12 @@ export default function AgentPlaybookPreview({
                           </span>
                         ) : null}
                         {task.assignee ? (
-                          <span
-                            className={
-                              styles['agent-playbook-preview__assignee']
-                            }
+                          <Chip
+                            size="small"
+                            className={styles['agent-playbook-preview__assignee-chip']}
                           >
                             {task.assignee}
-                          </span>
+                          </Chip>
                         ) : null}
                       </span>
                     </Checkbox>

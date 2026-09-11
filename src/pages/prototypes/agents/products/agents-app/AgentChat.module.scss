@@ -282,6 +282,10 @@
       var(--icon-size-32, 32px) + var(--spacing-xs) + var(--spacing-xs)
     );
     color: rgba(var(--center-channel-color-rgb), 0.64);
+
+    &--done {
+      color: var(--color-success);
+    }
   }
 
   &__status-label {
