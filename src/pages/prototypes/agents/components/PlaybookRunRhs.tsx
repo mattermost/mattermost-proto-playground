@@ -6,56 +6,158 @@ import { Chip } from '@mattermost/compass-ui/components/chip';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import isabellaPng from '@/assets/avatars/Isabella Cruz.png';
-import { CIPHER, MATTY, SENTINEL_DEFAULT } from '../agentsData';
+import ethanPng from '@/assets/avatars/Ethan Brooks.png';
+import { ALEX, CIPHER, DYNAMO, JORDAN, MATTY, OTTO, SENTINEL_DEFAULT, VIEWER } from '../agentsData';
 import { agentAvatarChipSrc } from './agentAvatarShapes';
 import styles from './PlaybookRunRhs.module.scss';
+
+type RunTaskAssignee = {
+  label: string;
+  agentShape?: string;
+  agentColor?: string;
+  avatarSrc?: string;
+};
 
 type RunTask = {
   id: string;
   label: string;
-  assignee?: { label: string; shape: string; color: string };
+  description?: string;
+  assignees?: RunTaskAssignee[];
   done: boolean;
 };
 
 type RunStage = {
   id: string;
   name: string;
+  status: 'done' | 'active' | 'upcoming';
   tasks: RunTask[];
 };
 
+const sentinelAvatar = agentAvatarChipSrc(SENTINEL_DEFAULT.shape, SENTINEL_DEFAULT.color);
+const cipherAvatar = agentAvatarChipSrc(CIPHER.shape, CIPHER.color);
+const mattyAvatar = agentAvatarChipSrc(MATTY.shape, MATTY.color);
+const ottoAvatar = agentAvatarChipSrc(OTTO.shape, OTTO.color);
+const dynamoAvatar = agentAvatarChipSrc(DYNAMO.shape, DYNAMO.color);
+
 const PLAYBOOK_RUN_STAGES: RunStage[] = [
+  {
+    id: 'triage',
+    name: 'Triage',
+    status: 'done',
+    tasks: [
+      {
+        id: 't1',
+        label: 'Confirm impact and affected services',
+        description: 'Verify which services are degraded and estimate customer impact scope.',
+        assignees: [{ label: SENTINEL_DEFAULT.name, agentShape: SENTINEL_DEFAULT.shape, agentColor: SENTINEL_DEFAULT.color, avatarSrc: sentinelAvatar }],
+        done: true,
+      },
+      {
+        id: 't2',
+        label: 'Open incident ticket',
+        description: 'Create a Jira ticket and link it to this channel. Use the impact summary from Sentinel.',
+        assignees: [{ label: MATTY.name, agentShape: MATTY.shape, agentColor: MATTY.color, avatarSrc: mattyAvatar }],
+        done: true,
+      },
+      {
+        id: 't3',
+        label: 'Assign severity level',
+        description: 'Declare SEV-1 given checkout impact on active peak traffic.',
+        assignees: [{ label: VIEWER.name, avatarSrc: isabellaPng }],
+        done: true,
+      },
+    ],
+  },
   {
     id: 'diagnosis',
     name: 'Diagnosis',
+    status: 'active',
     tasks: [
       {
         id: 'd1',
         label: 'Identify root cause',
-        assignee: { label: 'Cipher', shape: CIPHER.shape, color: CIPHER.color },
+        description: 'Correlate error onset with build 8842 deployment window and analyze webhook retry logs.',
+        assignees: [{ label: CIPHER.name, agentShape: CIPHER.shape, agentColor: CIPHER.color, avatarSrc: cipherAvatar }],
         done: true,
       },
-      { id: 'd2', label: 'Document findings', done: false },
-      { id: 'd3', label: 'Assign severity level', done: false },
+      {
+        id: 'd2',
+        label: 'Document findings in ticket',
+        description: 'Post Cipher\'s root-cause summary directly to INC-4471 as a comment.',
+        assignees: [{ label: CIPHER.name, agentShape: CIPHER.shape, agentColor: CIPHER.color, avatarSrc: cipherAvatar }],
+        done: false,
+      },
+      {
+        id: 'd3',
+        label: 'Reconcile and confirm root cause',
+        description: 'Cross-check findings against infra telemetry before moving to Resolution.',
+        assignees: [{ label: VIEWER.name, avatarSrc: isabellaPng }],
+        done: false,
+      },
+    ],
+  },
+  {
+    id: 'resolution',
+    name: 'Resolution',
+    status: 'upcoming',
+    tasks: [
+      {
+        id: 'r1',
+        label: 'Fix PayForge webhook handler',
+        description: 'Restore header propagation in WebhookClient.sendWithRetry — see Cipher\'s full report for the exact change.',
+        assignees: [
+          { label: ALEX.name, avatarSrc: ethanPng },
+          { label: DYNAMO.name, agentShape: DYNAMO.shape, agentColor: DYNAMO.color, avatarSrc: dynamoAvatar },
+        ],
+        done: false,
+      },
+      {
+        id: 'r2',
+        label: 'Open PR and get approval',
+        description: 'Create a PR against main, request review, and wait for approval before merging.',
+        assignees: [
+          { label: ALEX.name, avatarSrc: ethanPng },
+          { label: DYNAMO.name, agentShape: DYNAMO.shape, agentColor: DYNAMO.color, avatarSrc: dynamoAvatar },
+        ],
+        done: false,
+      },
     ],
   },
   {
     id: 'deployment',
     name: 'Deployment',
+    status: 'upcoming',
     tasks: [
-      { id: 'dep1', label: 'Prepare rollback procedure', done: false },
-      { id: 'dep2', label: 'Verify deployment health', done: false },
+      {
+        id: 'dep1',
+        label: 'Roll back deployment',
+        description: 'Stage a rollback to build 8841 as a fallback if the code fix doesn\'t land in time.',
+        assignees: [{ label: OTTO.name, agentShape: OTTO.shape, agentColor: OTTO.color, avatarSrc: ottoAvatar }],
+        done: false,
+      },
+      {
+        id: 'dep2',
+        label: 'Verify deployment health',
+        description: 'Confirm error rate recovers to baseline after the fix or rollback is applied.',
+        assignees: [
+          { label: OTTO.name, agentShape: OTTO.shape, agentColor: OTTO.color, avatarSrc: ottoAvatar },
+          { label: JORDAN.name, avatarSrc: JORDAN.avatarSrc },
+        ],
+        done: false,
+      },
     ],
   },
 ];
 
 const PARTICIPANTS = [
-  { key: 'sentinel', name: 'Sentinel', src: agentAvatarChipSrc(SENTINEL_DEFAULT.shape, SENTINEL_DEFAULT.color) },
-  { key: 'cipher', name: 'Cipher', src: agentAvatarChipSrc(CIPHER.shape, CIPHER.color) },
-  { key: 'matty', name: 'Matty', src: agentAvatarChipSrc(MATTY.shape, MATTY.color) },
-  { key: 'priya', name: 'Priya Shah', src: isabellaPng },
-  { key: 'jordan', name: 'Jordan Lee' },
-  { key: 'alex', name: 'Alex Rivera' },
-  { key: 'otto', name: 'Otto' },
+  { key: 'sentinel', name: SENTINEL_DEFAULT.name, src: sentinelAvatar },
+  { key: 'cipher', name: CIPHER.name, src: cipherAvatar },
+  { key: 'matty', name: MATTY.name, src: mattyAvatar },
+  { key: 'priya', name: VIEWER.name, src: isabellaPng },
+  { key: 'jordan', name: JORDAN.name, src: JORDAN.avatarSrc },
+  { key: 'alex', name: ALEX.name, src: ethanPng },
+  { key: 'otto', name: OTTO.name, src: ottoAvatar },
+  { key: 'dynamo', name: DYNAMO.name, src: dynamoAvatar },
 ];
 
 type PlaybookRunRhsProps = {
@@ -99,13 +201,13 @@ export default function PlaybookRunRhs({
         </div>
         <div className={styles['playbook-run-rhs__meta-row']}>
           <span className={styles['playbook-run-rhs__meta-label']}>Assignee</span>
-          <Chip size="medium" leadingAvatar={{ src: isabellaPng, alt: 'Priya Shah' }}>
-            Priya Shah
+          <Chip size="medium" leadingAvatar={{ src: isabellaPng, alt: VIEWER.name }}>
+            {VIEWER.name}
           </Chip>
         </div>
         <div className={styles['playbook-run-rhs__meta-row']}>
           <span className={styles['playbook-run-rhs__meta-label']}>Participants</span>
-          <UserAvatarGroup avatars={PARTICIPANTS} size="24" max={3} />
+          <UserAvatarGroup avatars={PARTICIPANTS} size="24" max={4} />
         </div>
       </div>
 
@@ -128,7 +230,16 @@ export default function PlaybookRunRhs({
           {PLAYBOOK_RUN_STAGES.map((stage, index) => {
             const doneCount = stage.tasks.filter((t) => t.done).length;
             return (
-              <div key={stage.id} className={styles['playbook-run-rhs__checklist-card']}>
+              <div
+                key={stage.id}
+                className={[
+                  styles['playbook-run-rhs__checklist-card'],
+                  stage.status === 'done' ? styles['playbook-run-rhs__checklist-card--done'] : '',
+                  stage.status === 'upcoming' ? styles['playbook-run-rhs__checklist-card--upcoming'] : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
                 <div className={styles['playbook-run-rhs__checklist-header']}>
                   <span className={styles['playbook-run-rhs__checklist-name']}>
                     {index + 1}. {stage.name}
@@ -149,17 +260,22 @@ export default function PlaybookRunRhs({
                           {task.label}
                         </span>
                       </Checkbox>
-                      {task.assignee ? (
+                      {task.description ? (
+                        <p className={styles['playbook-run-rhs__task-description']}>
+                          {task.description}
+                        </p>
+                      ) : null}
+                      {task.assignees?.length ? (
                         <div className={styles['playbook-run-rhs__task-tags']}>
-                          <Chip
-                            size="small"
-                            leadingAvatar={{
-                              src: agentAvatarChipSrc(task.assignee.shape as any, task.assignee.color as any),
-                              alt: task.assignee.label,
-                            }}
-                          >
-                            {task.assignee.label}
-                          </Chip>
+                          {task.assignees.map((a) => (
+                            <Chip
+                              key={a.label}
+                              size="small"
+                              leadingAvatar={{ src: a.avatarSrc ?? '', alt: a.label }}
+                            >
+                              {a.label}
+                            </Chip>
+                          ))}
                         </div>
                       ) : null}
                     </li>

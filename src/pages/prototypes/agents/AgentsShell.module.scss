@@ -9,7 +9,7 @@
   gap: var(--spacing-m);
 
   &__frame {
-    position: relative;
+    position: relative; // positioning context for MattyPanel
     display: flex;
     flex-direction: column;
     width: 100%;

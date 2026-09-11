@@ -18,16 +18,12 @@ import {
   JORDAN,
   MATTY,
   MATTY_AGENT_REVIEW_ID,
-  MATTY_OTTO_INVITE_ID,
   ON_CALL,
-  OTTO,
   SENTINEL_DEFAULT,
   SERVICE_STATUS_MESSAGES,
   VIEWER,
   buildMattyAgentReviewMessage,
-  buildMattyOttoInviteMessage,
   buildMattySentinelConfirmMessage,
-  buildOttoJoinedSystemMessage,
   buildSentinelJoinedSystemMessage,
   buildWorkspaceDirectory,
   channelPartsMentionAgent,
@@ -40,7 +36,6 @@ import {
 } from '../../agentsData';
 import AddAgentToChannelModal from '../../components/AddAgentToChannelModal';
 import AgentAvatar from '../../components/AgentAvatar';
-import AgentInviteCard from '../../components/AgentInviteCard';
 import AgentProfilePopover, {
   profileAnchorFromEvent,
   type AgentProfileAnchor,
@@ -94,8 +89,6 @@ function personIdFromUsername(username: string): string | null {
 }
 
 const MATTY_REVIEW_DELAY_MS = 700;
-/** After Sentinel joins, Matty recommends Otto. */
-const MATTY_OTTO_INVITE_DELAY_MS = 1100;
 const STREAM_MS_PER_WORD = 32;
 /** Beat after Matty’s confirm stream before Sentinel’s wave shows. */
 const SENTINEL_WAVE_DELAY_MS = 550;
@@ -233,8 +226,6 @@ function MattyChannelMessage({
   message,
   onAgentProfile,
   onReview,
-  onInviteAdd,
-  onInviteDismiss,
   cardImageSrc,
 }: {
   message: ChannelMessage;
@@ -243,8 +234,6 @@ function MattyChannelMessage({
     event: { currentTarget: EventTarget & Element },
   ) => void;
   onReview: () => void;
-  onInviteAdd: () => void;
-  onInviteDismiss: () => void;
   cardImageSrc?: string;
 }) {
   const [streamFinished, setStreamFinished] = useState(false);
@@ -311,15 +300,6 @@ function MattyChannelMessage({
             onReview={onReview}
           />
         ) : null}
-        {streamFinished && message.agentInviteCard ? (
-          <AgentInviteCard
-            card={message.agentInviteCard}
-            shape={OTTO.shape}
-            color={OTTO.color}
-            onAdd={onInviteAdd}
-            onDismiss={onInviteDismiss}
-          />
-        ) : null}
         {reactionsVisible && message.reactions?.length ? (
           <MessageReactions reactions={message.reactions} />
         ) : null}
@@ -357,9 +337,7 @@ export default function ChannelsHome() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
   const mattyReviewTimerRef = useRef<number | null>(null);
-  const mattyOttoTimerRef = useRef<number | null>(null);
   const mattyReviewQueuedRef = useRef(false);
-  const mattyOttoQueuedRef = useRef(false);
   const channelAgentIdsRef = useRef(channelAgentIds);
   channelAgentIdsRef.current = channelAgentIds;
 
@@ -389,9 +367,6 @@ export default function ChannelsHome() {
     return () => {
       if (mattyReviewTimerRef.current != null) {
         window.clearTimeout(mattyReviewTimerRef.current);
-      }
-      if (mattyOttoTimerRef.current != null) {
-        window.clearTimeout(mattyOttoTimerRef.current);
       }
     };
   }, []);
@@ -516,26 +491,6 @@ export default function ChannelsHome() {
     }, MATTY_REVIEW_DELAY_MS);
   };
 
-  const queueMattyOttoInvite = () => {
-    if (channelAgentIdsRef.current.has(OTTO.id)) return;
-    if (mattyOttoQueuedRef.current) return;
-
-    mattyOttoQueuedRef.current = true;
-    mattyOttoTimerRef.current = window.setTimeout(() => {
-      if (channelAgentIdsRef.current.has(OTTO.id)) {
-        mattyOttoTimerRef.current = null;
-        return;
-      }
-      setMessages((prev) => {
-        if (prev.some((message) => message.id === MATTY_OTTO_INVITE_ID)) {
-          return prev;
-        }
-        return [...prev, buildMattyOttoInviteMessage(formatChannelTime())];
-      });
-      mattyOttoTimerRef.current = null;
-    }, MATTY_OTTO_INVITE_DELAY_MS);
-  };
-
   const handleSend = ({
     parts,
     body,
@@ -582,43 +537,6 @@ export default function ChannelsHome() {
     setSettingsOpen(true);
   };
 
-  const acceptOttoInvite = () => {
-    if (channelAgentIdsRef.current.has(OTTO.id)) return;
-
-    setChannelAgentIds((prev) => new Set(prev).add(OTTO.id));
-    setMessages((prev) =>
-      prev.map((message) =>
-        message.id === MATTY_OTTO_INVITE_ID && message.agentInviteCard
-          ? {
-              ...message,
-              agentInviteCard: {
-                ...message.agentInviteCard,
-                accepted: true,
-                dismissed: false,
-              },
-            }
-          : message,
-      ),
-    );
-    appendMessages(buildOttoJoinedSystemMessage(formatChannelTime()));
-  };
-
-  const dismissOttoInvite = () => {
-    setMessages((prev) =>
-      prev.map((message) =>
-        message.id === MATTY_OTTO_INVITE_ID && message.agentInviteCard
-          ? {
-              ...message,
-              agentInviteCard: {
-                ...message.agentInviteCard,
-                dismissed: true,
-              },
-            }
-          : message,
-      ),
-    );
-  };
-
   const approveSentinel = (
     updates: Parameters<typeof updateAgent>[1],
   ) => {
@@ -653,7 +571,6 @@ export default function ChannelsHome() {
         createdAgentToWorkspace(saved),
       ),
     );
-    queueMattyOttoInvite();
   };
 
   return (
@@ -702,8 +619,6 @@ export default function ChannelsHome() {
                         message={message}
                         onAgentProfile={openAgentProfile}
                         onReview={openSentinelSettings}
-                        onInviteAdd={acceptOttoInvite}
-                      onInviteDismiss={dismissOttoInvite}
                         cardImageSrc={settingsAgent?.customImageSrc}
                       />
                     );

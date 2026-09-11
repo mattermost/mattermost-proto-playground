@@ -1,0 +1,268 @@
+.matty-panel {
+  position: absolute;
+  top: calc(var(--spacing-xs) + 72px);
+  right: var(--spacing-xl);
+  bottom: var(--spacing-xl);
+  width: 360px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-5);
+  transform-origin: bottom right;
+  transform: translateY(var(--spacing-l)) scale(0.92);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform var(--duration-moderate) var(--ease-entrance),
+    opacity var(--duration-moderate) var(--ease-entrance),
+    visibility 0s linear var(--duration-moderate);
+  will-change: transform, opacity;
+
+  &--open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      transform var(--duration-moderate) var(--ease-entrance),
+      opacity var(--duration-moderate) var(--ease-entrance),
+      visibility 0s linear 0s;
+  }
+}
+
+.matty-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  padding: var(--spacing-m) var(--spacing-m) var(--spacing-m) calc(var(--spacing-m) + var(--spacing-xxxxs));
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  flex-shrink: 0;
+}
+
+.matty-panel__avatar {
+  flex-shrink: 0;
+}
+
+.matty-panel__title-block {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.matty-panel__title {
+  margin: 0;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-200);
+  color: var(--center-channel-color);
+}
+
+.matty-panel__role {
+  margin: 0;
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.matty-panel__messages {
+  flex: 1;
+  min-height: 0;
+  padding: var(--spacing-xs) 0;
+}
+
+.matty-panel__msg-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  padding: var(--spacing-m) var(--spacing-l);
+}
+
+.matty-panel__msg {
+  display: flex;
+
+  &--user {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+
+    .matty-panel__msg-bubble {
+      border-radius: var(--radius-xl) 0 var(--radius-xl) var(--radius-xl);
+      transform-origin: top right;
+    }
+
+    .matty-panel__msg-meta {
+      justify-content: flex-end;
+    }
+  }
+}
+
+.matty-panel__msg-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxs);
+  padding: var(--spacing-m) var(--spacing-l);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border-radius: 0 var(--radius-xl) var(--radius-xl) var(--radius-xl);
+  max-width: 100%;
+
+  .matty-panel__msg--user & {
+    background: var(--button-bg);
+
+    .matty-panel__msg-name,
+    .matty-panel__msg-body > p {
+      color: var(--button-color);
+    }
+
+    .matty-panel__msg-time {
+      color: rgba(var(--button-color-rgb, 255, 255, 255), 0.72);
+    }
+  }
+}
+
+.matty-panel__msg-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+}
+
+.matty-panel__msg-name {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-100);
+  color: var(--center-channel-color);
+}
+
+.matty-panel__msg-time {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.75);
+}
+
+.matty-panel__msg-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  > p {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+}
+
+.matty-panel__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  padding: 0 var(--spacing-l) var(--spacing-m);
+}
+
+.matty-panel__suggestion {
+  border: 0;
+  border-radius: var(--radius-s);
+  background: rgba(var(--button-bg-rgb), 0.06);
+  color: var(--button-bg);
+  text-align: left;
+  font: inherit;
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-xs) var(--spacing-s);
+  cursor: pointer;
+  transition: background var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--button-bg-rgb), 0.1);
+  }
+}
+
+.matty-panel__composer {
+  flex: 0 0 auto;
+  padding: 0 var(--spacing-l) var(--spacing-l);
+}
+
+.matty-panel__input {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-xs);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elevation-3);
+  transition: border-color var(--duration-quick) var(--ease-transition);
+
+  &:focus-within {
+    border-color: rgba(var(--center-channel-color-rgb), 0.32);
+  }
+}
+
+.matty-panel__input-field {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-block: var(--spacing-xs);
+  padding-inline: var(--spacing-xs) var(--spacing-l);
+  border: none;
+  background: transparent;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-100);
+  color: var(--center-channel-color);
+  outline: none;
+
+  &::placeholder {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+}
+
+.matty-panel__input-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: calc(var(--spacing-xs) + var(--spacing-xxxxs));
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-quick) var(--ease-transition),
+    color var(--duration-quick) var(--ease-transition);
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.4;
+  }
+
+  &:not(:disabled) {
+    background: var(--button-bg);
+    color: var(--button-color);
+
+    &:hover {
+      background: var(--button-bg);
+      color: var(--button-color);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matty-panel,
+  .matty-panel--open {
+    transition: none;
+  }
+}

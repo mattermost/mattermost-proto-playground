@@ -53,6 +53,8 @@ type AgentsContextValue = {
   newAgentOpen: boolean;
   openNewAgent: () => void;
   closeNewAgent: () => void;
+  mattyPanelOpen: boolean;
+  setMattyPanelOpen: (open: boolean) => void;
   newGroupChatOpen: boolean;
   openNewGroupChat: () => void;
   closeNewGroupChat: () => void;
@@ -84,6 +86,7 @@ const AgentsContext = createContext<AgentsContextValue | null>(null);
 export function AgentsProvider({ children }: { children: ReactNode }) {
   const [newAgentOpen, setNewAgentOpen] = useState(false);
   const [newGroupChatOpen, setNewGroupChatOpen] = useState(false);
+  const [mattyPanelOpen, setMattyPanelOpen] = useState(false);
   const [customAgents, setCustomAgents] = useState<CreatedAgent[]>([]);
   const [groupChats, setGroupChats] = useState<AgentGroupChat[]>([]);
   const [openedAgentIds, setOpenedAgentIds] = useState<string[]>([]);
@@ -298,6 +301,8 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       newAgentOpen,
       openNewAgent,
       closeNewAgent,
+      mattyPanelOpen,
+      setMattyPanelOpen,
       newGroupChatOpen,
       openNewGroupChat,
       closeNewGroupChat,
@@ -323,6 +328,8 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
       newAgentOpen,
       openNewAgent,
       closeNewAgent,
+      mattyPanelOpen,
+      setMattyPanelOpen,
       newGroupChatOpen,
       openNewGroupChat,
       closeNewGroupChat,

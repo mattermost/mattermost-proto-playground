@@ -114,6 +114,12 @@
     border-radius: var(--radius-s);
     background: var(--center-channel-bg);
     overflow: hidden;
+
+    &--upcoming {
+      .playbook-run-rhs__checklist-header {
+        opacity: 0.72;
+      }
+    }
   }
 
   &__checklist-header {
@@ -169,9 +175,21 @@
     color: var(--center-channel-color);
   }
 
+  &__task-description {
+    // indent to align under the checkbox label (16px box + 10px gap)
+    padding-left: calc(var(--icon-size-16, 16px) + var(--spacing-s));
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
   &__task-tags {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--spacing-xs);
     padding-left: calc(var(--icon-size-16, 16px) + var(--spacing-s)); // 16px checkbox box + 10px Checkbox gap
   }

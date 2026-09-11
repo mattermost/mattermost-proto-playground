@@ -18,11 +18,14 @@ import {
 import {
   CIPHER,
   INCIDENT_CHANNEL_MESSAGES,
+  INCIDENT_OTTO_INVITE_ID,
   JORDAN,
+  OTTO,
   WORKSPACE_AGENTS,
   type ChannelMessage,
   type WorkspaceAgent,
 } from '../../agentsData';
+import AgentInviteCard from '../../components/AgentInviteCard';
 import AgentArtifactCard from '../../components/AgentArtifactCard';
 import AgentAvatar from '../../components/AgentAvatar';
 import { AgentPlaybookRhsHeader } from '../../components/AgentPlaybookPreview';
@@ -159,11 +162,13 @@ function AgentPost({
   onAgentClick,
   onOpenThread,
   showThreadReplies = false,
+  inviteCardNode,
 }: {
   message: ChannelMessage;
   onAgentClick: OnAgentClick;
   onOpenThread: () => void;
   showThreadReplies?: boolean;
+  inviteCardNode?: React.ReactNode;
 }) {
   const agent = agentForMessage(message);
   return (
@@ -212,6 +217,7 @@ function AgentPost({
         </div>
         {renderParts(message, onAgentClick)}
         {message.jiraCard ? <JiraCard card={message.jiraCard} /> : null}
+        {inviteCardNode ?? null}
         {message.threadReplies && showThreadReplies ? (
           <div className={styles['incident-channel__thread-footer']}>
             <ThreadFooter
@@ -268,6 +274,8 @@ export default function IncidentChannel() {
   }, []);
 
   const [profileTarget, setProfileTarget] = useState<AgentProfileAnchor | null>(null);
+  const [ottoInviteAccepted, setOttoInviteAccepted] = useState(false);
+  const [ottoInviteDismissed, setOttoInviteDismissed] = useState(false);
   const [cipherPhase, setCipherPhase] = useState<CipherPhase>('idle');
   const [cipherStatusIndex, setCipherStatusIndex] = useState(0);
   /** Sticky flag — stays true once Cipher starts replying. Controls center-channel ThreadFooter. */
@@ -503,6 +511,19 @@ export default function IncidentChannel() {
                   }
 
                   if (message.kind === 'agent') {
+                    const inviteCard = message.id === INCIDENT_OTTO_INVITE_ID && message.agentInviteCard ? (
+                      <AgentInviteCard
+                        card={{
+                          ...message.agentInviteCard,
+                          accepted: ottoInviteAccepted,
+                          dismissed: ottoInviteDismissed,
+                        }}
+                        shape={OTTO.shape}
+                        color={OTTO.color}
+                        onAdd={() => setOttoInviteAccepted(true)}
+                        onDismiss={() => setOttoInviteDismissed(true)}
+                      />
+                    ) : undefined;
                     return (
                       <AgentPost
                         key={message.id}
@@ -512,6 +533,7 @@ export default function IncidentChannel() {
                         showThreadReplies={
                           message.id === SENTINEL_POST_ID ? cipherHasReplied : true
                         }
+                        inviteCardNode={inviteCard}
                       />
                     );
                   }

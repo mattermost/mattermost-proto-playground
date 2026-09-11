@@ -3,6 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { AGENTS_BASE } from './agentsScenes';
 import AgentsSceneSwitcher from './components/AgentsSceneSwitcher';
+import MattyFab from './components/MattyFab';
+import MattyPanel from './components/MattyPanel';
 import NewAgentGroupChatModal from './components/NewAgentGroupChatModal';
 import NewAgentModal from './components/NewAgentModal';
 import ProductSidebar from './components/ProductSidebar';
@@ -93,6 +95,8 @@ export default function AgentsShell() {
               );
             }}
           />
+          <MattyPanel />
+          <MattyFab />
           <div className={styles['agents-shell__product']}>
             <div className={[
               styles['agents-shell__channel-view'],

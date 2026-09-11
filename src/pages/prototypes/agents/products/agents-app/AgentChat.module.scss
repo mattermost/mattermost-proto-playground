@@ -320,10 +320,21 @@
     .agent-chat__message-bubble {
       border-radius: var(--radius-xl) 0 var(--radius-xl) var(--radius-xl);
       transform-origin: top right;
+      background: var(--button-bg);
     }
 
     .agent-chat__message-meta {
       justify-content: flex-end;
+    }
+
+    .agent-chat__message-name,
+    .agent-chat__message-body > p,
+    .agent-chat__message-copy > p {
+      color: var(--button-color);
+    }
+
+    .agent-chat__message-time {
+      color: rgba(var(--button-color-rgb, 255, 255, 255), 0.72);
     }
   }
 

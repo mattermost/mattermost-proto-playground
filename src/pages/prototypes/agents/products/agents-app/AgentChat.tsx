@@ -1,4 +1,4 @@
-import {
+import React, {
   useEffect,
   useMemo,
   useRef,
@@ -588,7 +588,7 @@ export default function AgentChat({
     playbookPhase === 'done'
       ? 'Loaded Incident Response Playbook'
       : toolConnectPhase === 'done' && connectedToolLabel
-        ? `Connected to ${connectedToolLabel}`
+        ? `Pending authentication with ${connectedToolLabel}`
         : null;
 
   useEffect(() => {
@@ -1428,9 +1428,27 @@ export default function AgentChat({
                             ? streamedPlaybookParagraphs
                             : message.paragraphs;
 
+                      const isAuthMessage =
+                        message.id === MATTY_TOOL_AUTH_ID;
+
                       return (
+                        <React.Fragment key={message.id}>
+                        {isAuthMessage && doneLabel ? (
+                          <div
+                            className={[
+                              styles['agent-chat__status'],
+                              styles['agent-chat__status--done'],
+                            ].join(' ')}
+                            role="status"
+                            aria-live="polite"
+                          >
+                            <Icon glyph={<CheckCircleOutlineIcon />} size="12" />
+                            <span className={styles['agent-chat__status-label']}>
+                              {doneLabel}
+                            </span>
+                          </div>
+                        ) : null}
                         <article
-                          key={message.id}
                           className={[
                             styles['agent-chat__message'],
                             styles['agent-chat__message--agent'],
@@ -1553,9 +1571,10 @@ export default function AgentChat({
                             </div>
                           ) : null}
                         </article>
+                        </React.Fragment>
                       );
                     })}
-                    {(statusLabel || doneLabel) ? (
+                    {(statusLabel || (doneLabel && toolConnectPhase !== 'done')) ? (
                       <div
                         className={[
                           styles['agent-chat__status'],

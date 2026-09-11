@@ -2326,6 +2326,8 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
   },
 ];
 
+export const INCIDENT_OTTO_INVITE_ID = 'inc-matty-otto-invite';
+
 /** Pre-seeded incident channel posts for INC-4471. */
 export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
   {
@@ -2348,15 +2350,13 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
     avatarSrc: '',
     avatarAlt: MATTY.name,
     timestamp: '2:15 PM',
-    body: "I've created Jira ticket INC-4471 for this incident and started the Incident Response playbook. Sentinel is on the Diagnosis stage and Otto is pre-assigned to Deployment — same playbook assignments from when you saved it.",
+    body: "I've created Jira ticket INC-4471 for this incident and started the Incident Response playbook. Sentinel is on the Diagnosis stage.",
     parts: [
       { type: 'text', text: "I've created Jira ticket " },
       { type: 'link', text: 'INC-4471', href: 'https://mattermost.atlassian.net/browse/INC-4471' },
       { type: 'text', text: ' for this incident and started the Incident Response playbook. ' },
       { type: 'mention', id: 'sentinel', label: SENTINEL_DEFAULT.name, avatarSrc: '', kind: 'agent', agentShape: SENTINEL_DEFAULT.shape, agentColor: SENTINEL_DEFAULT.color },
-      { type: 'text', text: ' is on the Diagnosis stage and ' },
-      { type: 'mention', id: OTTO.id, label: OTTO.name, avatarSrc: '', kind: 'agent', agentShape: OTTO.shape, agentColor: OTTO.color },
-      { type: 'text', text: ' is pre-assigned to Deployment — same playbook assignments from when you saved it.' },
+      { type: 'text', text: ' is on the Diagnosis stage.' },
     ],
     jiraCard: {
       issueKey: 'INC-4471',
@@ -2365,6 +2365,27 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
     },
     agentShape: MATTY.shape,
     agentColor: MATTY.color,
+  },
+  {
+    id: INCIDENT_OTTO_INVITE_ID,
+    kind: 'agent',
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp: '2:15 PM',
+    body: "If this turns into a deployment issue, you'll want Otto in here — they've been running the platform team's rollbacks and deployments for months.",
+    parts: [
+      { type: 'text', text: "If this turns into a deployment issue, you'll want " },
+      { type: 'mention', id: OTTO.id, label: OTTO.name, avatarSrc: '', kind: 'agent', agentShape: OTTO.shape, agentColor: OTTO.color },
+      { type: 'text', text: " in here — they've been running the platform team's rollbacks and deployments for months." },
+    ],
+    agentShape: MATTY.shape,
+    agentColor: MATTY.color,
+    agentInviteCard: {
+      agentId: OTTO.id,
+      name: OTTO.name,
+      description: OTTO.description,
+    },
   },
   {
     id: 'inc-sentinel-1',

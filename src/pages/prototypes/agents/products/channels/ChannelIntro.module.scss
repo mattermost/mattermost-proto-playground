@@ -6,14 +6,7 @@
   padding: var(--spacing-xxl) var(--spacing-xxl) var(--spacing-l);
   width: 100%;
 
-  &__illustration {
-    display: block;
-    width: 130px;
-    height: 102px;
-    flex-shrink: 0;
-  }
-
-  &__body {
+&__body {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -65,25 +58,4 @@
     align-items: flex-start;
   }
 
-  &__action {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-xxxxs);
-    width: 88px;
-    padding: var(--spacing-m) var(--spacing-l) var(--spacing-s);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border: none;
-    border-radius: var(--radius-s);
-    cursor: pointer;
-    color: rgba(var(--center-channel-color-rgb), 0.56);
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-50);
-    text-align: center;
-
-    &:hover {
-      background: rgba(var(--center-channel-color-rgb), 0.08);
-    }
-  }
 }

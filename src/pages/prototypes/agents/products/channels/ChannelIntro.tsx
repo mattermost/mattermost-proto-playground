@@ -2,8 +2,10 @@ import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import LockIcon from '@mattermost/compass-icons/components/lock';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
+import { ActionButton } from '@mattermost/compass-ui/components/action-button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import privateChannelIntroSrc from '@/assets/illustrations/private-channel-intro.svg';
+import { Illustration } from '@mattermost/compass-ui/components/illustration';
+import PrivateChannelIntro from '@/assets/illustrations/private-channel-intro.svg?react';
 import styles from './ChannelIntro.module.scss';
 
 type Props = {
@@ -16,12 +18,9 @@ type Props = {
 export default function ChannelIntro({ name, createdBy, createdAt, description }: Props) {
   return (
     <div className={styles['channel-intro']}>
-      <img
-        className={styles['channel-intro__illustration']}
-        src={privateChannelIntroSrc}
-        alt=""
-        aria-hidden
-      />
+      <Illustration width="130px" height="102px" aria-label="">
+        <PrivateChannelIntro />
+      </Illustration>
       <div className={styles['channel-intro__body']}>
         <div className={styles['channel-intro__info']}>
           <h2 className={styles['channel-intro__name']}>{name}</h2>
@@ -32,18 +31,9 @@ export default function ChannelIntro({ name, createdBy, createdAt, description }
           <p className={styles['channel-intro__description']}>{description}</p>
         </div>
         <div className={styles['channel-intro__actions']}>
-          <button type="button" className={styles['channel-intro__action']}>
-            <Icon glyph={<AccountPlusOutlineIcon />} size="20" />
-            Add people
-          </button>
-          <button type="button" className={styles['channel-intro__action']}>
-            <Icon glyph={<PencilOutlineIcon />} size="20" />
-            Set header
-          </button>
-          <button type="button" className={styles['channel-intro__action']}>
-            <Icon glyph={<BellOutlineIcon />} size="20" />
-            Notifications
-          </button>
+          <ActionButton icon={<Icon glyph={<AccountPlusOutlineIcon />} size="20" />} label="Add people" />
+          <ActionButton icon={<Icon glyph={<PencilOutlineIcon />} size="20" />} label="Set header" />
+          <ActionButton icon={<Icon glyph={<BellOutlineIcon />} size="20" />} label="Notifications" />
         </div>
       </div>
     </div>
