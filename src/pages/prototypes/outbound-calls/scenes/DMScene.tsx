@@ -1,13 +1,11 @@
 import type { MouseEvent } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { Message } from '@mattermost/compass-ui/components/message';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-proto';
+import { layoutStyles, ChannelHeader, Message } from '@mattermost/compass-proto';
 
 export function DMScene({
   onOpenProfile,
