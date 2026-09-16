@@ -5,7 +5,7 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Message } from '@mattermost/compass-proto';
-import { MessageReactions } from '@mattermost/compass-ui/components/message-reactions';
+import { ReactionsRow } from '@mattermost/compass-ui/components/reactions-row';
 import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
 import { ThreadFooter } from '@mattermost/compass-ui/components/thread-footer';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
@@ -55,6 +55,7 @@ import MentionMessageInput from '../../components/MentionMessageInput';
 import mentionStyles from '../../components/MentionMessageInput.module.scss';
 import { agentAvatarChipSrc } from '../../components/agentAvatarShapes';
 import { useAgents } from '../../context/AgentsContext';
+import ChannelIntro from './ChannelIntro';
 import ChannelsProductSidebar from './ChannelsProductSidebar';
 import styles from './ChannelsHome.module.scss';
 
@@ -369,7 +370,7 @@ function MattyChannelMessage({
             onMouseEnter={() => setReactionTooltipOpen(true)}
             onMouseLeave={() => setReactionTooltipOpen(false)}
           >
-            <MessageReactions reactions={message.reactions} />
+            <ReactionsRow reactions={message.reactions} />
             {reactionTooltipOpen && (
               <div className={styles['channels-home__reaction-tooltip']}>
                 <Tooltip label="Sentinel reacted with 👋" arrow="bottom" />
@@ -709,6 +710,13 @@ export default function ChannelsHome() {
                 ref={messagesListRef}
                 className={styles['channels-home__messages-list']}
               >
+                <ChannelIntro
+                  variant="public"
+                  name="service-status"
+                  createdBy="Priya"
+                  createdAt="6 months ago"
+                  description="Customer-facing reliability and checkout health."
+                />
                 <MessageSeparator type="date" label="Today" />
                 {messages.map((message) => {
                   if (message.kind === 'system') {
