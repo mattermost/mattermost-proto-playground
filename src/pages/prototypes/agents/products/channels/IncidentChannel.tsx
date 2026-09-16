@@ -123,7 +123,6 @@ const DYNAMO_WORK_STATUS_LABELS_2 = [
   'Opening pull request on GitHub…',
 ] as const;
 const DYNAMO_WORK_STATUS_MS = 950;
-const DYNAMO_WORK_START_DELAY_MS = 1200;
 
 const JORDAN_OTTO_DEPLOY_ACK_TEXT = "On it — deploying the fix now.";
 const JORDAN_OTTO_DEPLOY_RESULT_TEXT = "Fix is live. Error rate is dropping — we're clear.";
@@ -266,15 +265,11 @@ function AgentAddedMsg({
   agentName,
   byName,
   bySrc,
-  byAgentShape,
-  byAgentColor,
 }: {
   agentSrc: string;
   agentName: string;
   byName: string;
   bySrc?: string;
-  byAgentShape?: string;
-  byAgentColor?: string;
 }) {
   return (
     <div className={styles['incident-channel__system']}>

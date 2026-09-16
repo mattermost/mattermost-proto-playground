@@ -73,7 +73,7 @@ export default function GitHubPrCard({
 
         <div className={styles['gh-pr-card__footer']}>
           <div className={styles['gh-pr-card__repo-badge']}>
-            <Icon glyph={<GithubCircleIcon />} size="14" />
+            <Icon glyph={<GithubCircleIcon />} size="12" />
             <span className={styles['gh-pr-card__pr-number']}>#{prNumber}</span>
           </div>
           <div className={styles['gh-pr-card__actions']}>
