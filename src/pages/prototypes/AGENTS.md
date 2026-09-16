@@ -37,9 +37,9 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
 | Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
 | Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
-| Chat message | `Message` | `@mattermost/compass-ui/components/message` |
-| Composer | `MessageInput` | `@mattermost/compass-ui/components/message-input` |
-| Channel header | `ChannelHeader` | `@mattermost/compass-ui/components/channel-header` |
+| Chat message | `Message` | `@mattermost/compass-proto` |
+| Composer | `MessageInput` | `@mattermost/compass-proto` |
+| Channel header | `ChannelHeader` | `@mattermost/compass-proto` |
 | Divider | `Divider` | `@mattermost/compass-ui/components/divider` |
 | Scroll container | `Scrollbar` | `@mattermost/compass-ui/components/scrollbar` |
 | Chip | `Chip` | `@mattermost/compass-ui/components/chip` |
@@ -137,18 +137,18 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
 | Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
 | Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
-| Full desktop channel column | `ChannelShell` (proto) + ui `ChannelHeader` / `Message*` | rebuilding the chrome |
+| Full desktop channel column | `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput` (all proto) | rebuilding the chrome |
 | Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
 | Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
 | Scroll region | `Scrollbar` | raw `overflow` |
-
-**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
 | Date or unread rule in a message list | `MessageSeparator` | `Divider` |
 | Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
 | Tab strip (mutually exclusive view switcher) | `Tabs` | custom `button[role="tab"]` / `div[role="tablist"]` |
 | Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
+
+**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
 
 ### Overlay wiring
 
@@ -166,19 +166,7 @@ Render `Modal` only while it should be on screen (plus the exit-animation hold).
 
 ### RHS panels
 
-When a prototype renders a `RightSidebar` panel alongside a center pane, the wrapper div must carry these styles — the defaults on each property cause clipping or missing shadow:
-
-```scss
-&__rhs {
-  position: relative;
-  z-index: 2;          // above center pane
-  flex-shrink: 0;      // default flex: 0 1 auto allows shrink below 400px → clips content
-  overflow: hidden;    // clips thread overlay slide animation
-  box-shadow: var(--elevation-2); // must be on wrapper — overflow: hidden clips child box-shadows
-}
-```
-
-For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../.claude/projects/-Users-matthew-birtch-Documents-GitHub-mattermost-mattermost-proto-playground/memory/project_rhs_overlay_pattern.md) memory.
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
 
 ### Prototype-only UI
 
