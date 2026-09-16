@@ -1,8 +1,7 @@
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
-import { Message, messageStyles } from '@mattermost/compass-ui/components/message';
-import { MessageInput } from '@mattermost/compass-ui/components/message-input';
+import { Message, messageStyles, MessageInput } from '@mattermost/compass-proto';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';

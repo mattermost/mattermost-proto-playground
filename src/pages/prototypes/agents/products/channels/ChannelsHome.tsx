@@ -4,12 +4,12 @@ import { Chip } from '@mattermost/compass-ui/components/chip';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { Tag } from '@mattermost/compass-ui/components/tag';
-import { Message } from '@mattermost/compass-ui/components/message';
+import { Message } from '@mattermost/compass-proto';
 import { MessageReactions } from '@mattermost/compass-ui/components/message-reactions';
 import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
 import { ThreadFooter } from '@mattermost/compass-ui/components/thread-footer';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { RightSidebarHeader } from '@mattermost/compass-ui/components/right-sidebar';
+import { RightSidebarHeader } from '@mattermost/compass-ui/components/right-sidebar-header';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import {
   ChannelHeader,
