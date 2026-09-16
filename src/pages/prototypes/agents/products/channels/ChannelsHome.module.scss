@@ -197,6 +197,7 @@
   &__reaction-anchor {
     position: relative;
     display: inline-flex;
+    align-self: flex-start;
   }
 
   &__reaction-tooltip {
