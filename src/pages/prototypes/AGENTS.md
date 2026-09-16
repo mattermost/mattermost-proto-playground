@@ -37,9 +37,9 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
 | Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
 | Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
-| Chat message | `Message` | `@mattermost/compass-ui/components/message` |
-| Composer | `MessageInput` | `@mattermost/compass-ui/components/message-input` |
-| Channel header | `ChannelHeader` | `@mattermost/compass-ui/components/channel-header` |
+| Chat message | `Message` | `@mattermost/compass-proto` |
+| Composer | `MessageInput` | `@mattermost/compass-proto` |
+| Channel header | `ChannelHeader` | `@mattermost/compass-proto` |
 | Divider | `Divider` | `@mattermost/compass-ui/components/divider` |
 | Scroll container | `Scrollbar` | `@mattermost/compass-ui/components/scrollbar` |
 | Chip | `Chip` | `@mattermost/compass-ui/components/chip` |
@@ -137,7 +137,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
 | Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
 | Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
-| Full desktop channel column | `ChannelShell` (proto) + ui `ChannelHeader` / `Message*` | rebuilding the chrome |
+| Full desktop channel column | `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput` (all proto) | rebuilding the chrome |
 | Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
 | Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
 | Scroll region | `Scrollbar` | raw `overflow` |
