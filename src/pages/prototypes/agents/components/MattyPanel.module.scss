@@ -3,7 +3,7 @@
   top: calc(var(--spacing-xs) + 72px);
   right: var(--spacing-xl);
   bottom: var(--spacing-xl);
-  width: 360px;
+  width: 400px;
   z-index: 30;
   display: flex;
   flex-direction: column;
@@ -18,9 +18,9 @@
   visibility: hidden;
   pointer-events: none;
   transition:
-    transform var(--duration-moderate) var(--ease-entrance),
-    opacity var(--duration-moderate) var(--ease-entrance),
-    visibility 0s linear var(--duration-moderate);
+    transform var(--duration-quick) var(--ease-entrance),
+    opacity var(--duration-quick) var(--ease-entrance),
+    visibility 0s linear var(--duration-quick);
   will-change: transform, opacity;
 
   &--open {
@@ -29,8 +29,8 @@
     visibility: visible;
     pointer-events: auto;
     transition:
-      transform var(--duration-moderate) var(--ease-entrance),
-      opacity var(--duration-moderate) var(--ease-entrance),
+      transform var(--duration-quick) var(--ease-entrance),
+      opacity var(--duration-quick) var(--ease-entrance),
       visibility 0s linear 0s;
   }
 }

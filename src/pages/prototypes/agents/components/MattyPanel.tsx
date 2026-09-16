@@ -69,33 +69,29 @@ export default function MattyPanel() {
 
   const ctx = useMemo(() => resolveContext(pathname), [pathname]);
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    { id: 'greeting', role: 'matty', text: ctx.greeting, timestamp: nowLabel() },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
-  const seededOpen = useRef(false);
-  const prevContextKey = useRef(pathname);
+  const prevOpenRef = useRef(false);
+  const prevPathnameRef = useRef(pathname);
 
-  // Seed greeting on first open.
+  // Seed on open; append context announcement when route changes while open.
   useEffect(() => {
-    if (!mattyPanelOpen || seededOpen.current) return;
-    seededOpen.current = true;
-    setMessages([{ id: 'greeting-init', role: 'matty', text: ctx.greeting, timestamp: nowLabel() }]);
-  }, [mattyPanelOpen, ctx]);
+    const wasOpen = prevOpenRef.current;
+    const prevPathname = prevPathnameRef.current;
+    prevOpenRef.current = mattyPanelOpen;
+    prevPathnameRef.current = pathname;
 
-  // Announce context change while panel is open.
-  useEffect(() => {
-    if (!mattyPanelOpen) {
-      prevContextKey.current = pathname;
-      return;
+    if (!mattyPanelOpen) return;
+
+    if (!wasOpen) {
+      setMessages([{ id: `greeting-${Date.now()}`, role: 'matty', text: ctx.greeting, timestamp: nowLabel() }]);
+    } else if (prevPathname !== pathname) {
+      setMessages((prev) => [
+        ...prev,
+        { id: `ctx-${Date.now()}`, role: 'matty', text: ctx.greeting, timestamp: nowLabel() },
+      ]);
     }
-    if (prevContextKey.current === pathname) return;
-    prevContextKey.current = pathname;
-    setMessages((prev) => [
-      ...prev,
-      { id: `ctx-${Date.now()}`, role: 'matty', text: ctx.greeting, timestamp: nowLabel() },
-    ]);
-  }, [pathname, mattyPanelOpen, ctx]);
+  }, [mattyPanelOpen, pathname, ctx]);
 
   const send = (text: string) => {
     if (!text.trim()) return;

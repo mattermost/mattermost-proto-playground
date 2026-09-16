@@ -1,10 +1,11 @@
-import { MATTY } from '../agentsData';
+import { MATTY, resolveSingleAgentProfile } from '../agentsData';
 import { useAgents } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import styles from './MattyFab.module.scss';
 
 export default function MattyFab() {
-  const { mattyPanelOpen, setMattyPanelOpen } = useAgents();
+  const { mattyPanelOpen, setMattyPanelOpen, customAgents } = useAgents();
+  const mattyProfile = resolveSingleAgentProfile(MATTY.id, customAgents);
 
   return (
     <button
@@ -22,11 +23,12 @@ export default function MattyFab() {
       <span className={styles['matty-fab__label']}>Ask Matty</span>
       <span className={styles['matty-fab__avatar']}>
         <AgentAvatar
-          shape={MATTY.shape}
-          color={MATTY.color}
+          shape={mattyProfile.shape}
+          color={mattyProfile.color}
           size="md"
           eyes
           shadow={false}
+          imageSrc={mattyProfile.customImageSrc ?? undefined}
         />
       </span>
     </button>

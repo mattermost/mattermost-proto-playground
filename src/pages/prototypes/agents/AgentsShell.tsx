@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
+import AgentsGlobalHeader from './components/AgentsGlobalHeader';
 import { AGENTS_BASE } from './agentsScenes';
-import AgentsSceneSwitcher from './components/AgentsSceneSwitcher';
+import AgentsSceneDropdown from './components/AgentsSceneDropdown';
 import MattyFab from './components/MattyFab';
 import MattyPanel from './components/MattyPanel';
 import NewAgentGroupChatModal from './components/NewAgentGroupChatModal';
@@ -42,7 +43,8 @@ function resolveProduct(pathname: string): AgentsProduct {
 export default function AgentsShell() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { setCenterSlot } = usePrototypeChrome();
+  const { setStartSlot } = usePrototypeChrome();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const {
     newAgentOpen,
     closeNewAgent,
@@ -53,6 +55,8 @@ export default function AgentsShell() {
     closeNewGroupChat,
     addGroupChat,
     customAgents,
+    mattyPanelOpen,
+    setMattyPanelOpen,
   } = useAgents();
   const activeProduct = resolveProduct(pathname);
 
@@ -63,27 +67,38 @@ export default function AgentsShell() {
   const isIncidentChannel = normalized.startsWith(`${AGENTS_BASE}/channel/`);
   const isChannelView = isChannelsHome || isIncidentChannel;
 
+  const handleDropdownOpenChange = useCallback((open: boolean) => setDropdownOpen(open), []);
+
   useEffect(() => {
-    setCenterSlot(
-      <AgentsSceneSwitcher
+    setStartSlot(
+      <AgentsSceneDropdown
+        open={dropdownOpen}
+        onOpenChange={handleDropdownOpenChange}
         newAgentOpen={newAgentOpen}
         openNewAgent={openNewAgent}
         closeNewAgent={closeNewAgent}
         ensureSentinel={ensureSentinel}
+        mattyPanelOpen={mattyPanelOpen}
+        setMattyPanelOpen={setMattyPanelOpen}
       />,
     );
-    return () => setCenterSlot(null);
+    return () => setStartSlot(null);
   }, [
-    setCenterSlot,
+    setStartSlot,
+    dropdownOpen,
+    handleDropdownOpenChange,
     newAgentOpen,
     openNewAgent,
     closeNewAgent,
     ensureSentinel,
+    mattyPanelOpen,
+    setMattyPanelOpen,
   ]);
 
   return (
     <div className={styles['agents-shell']}>
       <div className={styles['agents-shell__frame']}>
+        <AgentsGlobalHeader className={styles['agents-shell__header']} />
         <div className={styles['agents-shell__body']}>
           <ProductSidebar
             activeProduct={activeProduct}

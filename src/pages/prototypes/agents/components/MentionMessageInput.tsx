@@ -4,10 +4,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import SendIcon from '@mattermost/compass-icons/components/send';
 import { Chip } from '@mattermost/compass-ui/components/chip';
-import { Icon } from '@mattermost/compass-ui/components/icon';
-import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
@@ -20,6 +17,7 @@ import {
   type MentionCandidate,
 } from '../agentsData';
 import { agentAvatarChipSrc } from './agentAvatarShapes';
+import ComposerShell from './ComposerShell';
 import styles from './MentionMessageInput.module.scss';
 
 const AT_TOKEN = /(^|[\s([{])@([^\s@]*)$/;
@@ -40,6 +38,7 @@ type AtToken = { start: number; query: string };
 
 type MentionMessageInputProps = {
   placeholder?: string;
+  disabled?: boolean;
   /** Return `false` to keep the draft (e.g. while an invite modal is open). */
   onSend: (payload: {
     parts: ChannelMessagePart[];
@@ -103,6 +102,7 @@ function toMessageParts(parts: DraftPart[]): ChannelMessagePart[] {
 
 export default function MentionMessageInput({
   placeholder = 'Write to service-status',
+  disabled,
   onSend,
 }: MentionMessageInputProps) {
   const mentionables = useMemo(
@@ -289,64 +289,54 @@ export default function MentionMessageInput({
         </ul>
       ) : null}
 
-      <div className={styles['mention-input__container']}>
+      <ComposerShell canSend={canSend} disabled={disabled} onSend={send}>
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div
-          className={styles['mention-input__body']}
+          className={styles['mention-input__field']}
           onClick={() => inputRef.current?.focus()}
         >
-          <div className={styles['mention-input__field']}>
-            {committed.map((part, index) =>
-              part.type === 'mention' ? (
-                <Chip
-                  key={`${part.id}-${index}`}
-                  size="medium-compact"
-                  leadingAvatar={{ src: part.avatarSrc, alt: part.label }}
-                  onRemove={() => removeMention(index)}
-                  className={[
-                    styles['mention-input__mention-chip'],
-                    part.kind === 'agent'
-                      ? styles['mention-input__mention-chip--agent']
-                      : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  {part.label}
-                </Chip>
-              ) : (
-                <span key={`text-${index}`} className={styles['mention-input__text']}>
-                  {part.text}
-                </span>
-              ),
-            )}
-            <input
-              ref={inputRef}
-              className={styles['mention-input__input']}
-              type="text"
-              value={value}
-              placeholder={showPlaceholder ? placeholder : undefined}
-              aria-label={placeholder}
-              onChange={(event) => handleChange(event.target.value)}
-              onKeyDown={onKeyDown}
-              onSelect={() => {
-                const el = inputRef.current;
-                if (!el) return;
-                recomputeToken(value, el.selectionStart ?? value.length);
-              }}
-            />
-          </div>
-        </div>
-        <div className={styles['mention-input__actions']}>
-          <IconButton
-            size="small"
-            padding="compact"
-            aria-label="Send message"
-            disabled={!canSend}
-            icon={<Icon glyph={<SendIcon />} size="16" />}
-            onClick={send}
+          {committed.map((part, index) =>
+            part.type === 'mention' ? (
+              <Chip
+                key={`${part.id}-${index}`}
+                size="medium-compact"
+                leadingAvatar={{ src: part.avatarSrc, alt: part.label }}
+                onRemove={() => removeMention(index)}
+                className={[
+                  styles['mention-input__mention-chip'],
+                  part.kind === 'agent'
+                    ? styles['mention-input__mention-chip--agent']
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {part.label}
+              </Chip>
+            ) : (
+              <span key={`text-${index}`} className={styles['mention-input__text']}>
+                {part.text}
+              </span>
+            ),
+          )}
+          <input
+            ref={inputRef}
+            className={styles['mention-input__input']}
+            type="text"
+            value={value}
+            placeholder={showPlaceholder ? placeholder : undefined}
+            aria-label={placeholder}
+            disabled={disabled}
+            onChange={(event) => handleChange(event.target.value)}
+            onKeyDown={onKeyDown}
+            onSelect={() => {
+              const el = inputRef.current;
+              if (!el) return;
+              recomputeToken(value, el.selectionStart ?? value.length);
+            }}
           />
         </div>
-      </div>
+      </ComposerShell>
     </div>
   );
 }

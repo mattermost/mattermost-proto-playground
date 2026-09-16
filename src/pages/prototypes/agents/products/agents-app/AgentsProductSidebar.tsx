@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
+import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-outline';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
+import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
@@ -120,6 +122,8 @@ export default function AgentsProductSidebar({
             onClick={() => navigate(`${AGENTS_BASE}/agents`)}
           />
           <NavRow name="Custom Prompts" glyph={<CodeBracketsIcon />} />
+          <NavRow name="Skills" glyph={<FileTextOutlineIcon />} />
+          <NavRow name="Connectors" glyph={<PowerPlugOutlineIcon />} />
         </div>
 
         <div className={styles['agents-product-sidebar__nav-group']}>

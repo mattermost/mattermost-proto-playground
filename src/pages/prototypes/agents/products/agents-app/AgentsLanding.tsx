@@ -6,6 +6,7 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MouseEvent,
 } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ArrowLeftIcon from '@mattermost/compass-icons/components/arrow-left';
@@ -17,10 +18,12 @@ import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { SearchInput } from '@mattermost/compass-ui/components/search-input';
 import { Tag } from '@mattermost/compass-ui/components/tag';
+import { Tabs } from '@mattermost/compass-ui/components/tabs';
 import { AGENTS_BASE } from '../../agentsScenes';
 import {
   FTE_PRECONFIGURED_AGENTS,
   MATTY,
+  VIEWER,
   buildWorkspaceDirectory,
   formatChannelList,
   type WorkspaceAgent,
@@ -40,9 +43,11 @@ const FTE_SLIDE_COUNT = 1 + FTE_SHELF_AGENTS.length; // create + agents
 function FirstTimeHome({
   onOpenAgent,
   onCreate,
+  onSkip,
 }: {
   onOpenAgent: (id: string) => void;
   onCreate: () => void;
+  onSkip: () => void;
 }) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const [viewportWidth, setViewportWidth] = useState(0);
@@ -268,24 +273,51 @@ function FirstTimeHome({
           </div>
         </div>
       </div>
+
+      <Button
+        emphasis="quaternary"
+        className={styles['agents-landing__skip']}
+        onClick={onSkip}
+      >
+        Skip this
+      </Button>
     </div>
   );
 }
+
+const DIR_TABS = [
+  { key: 'your-agents', label: 'Your agents' },
+  { key: 'all-agents', label: 'All agents' },
+] as const;
+
+type DirTab = (typeof DIR_TABS)[number]['key'];
 
 function DirectoryHome({
   agents,
   onOpenAgent,
   onCreate,
+  initialTab = 'your-agents',
 }: {
   agents: WorkspaceAgent[];
   onOpenAgent: (id: string) => void;
   onCreate: () => void;
+  initialTab?: DirTab;
 }) {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<DirTab>(initialTab);
   const [query, setQuery] = useState('');
+
+  const tabAgents = useMemo(() => {
+    if (activeTab === 'your-agents') {
+      return agents.filter((agent) => agent.owner === VIEWER.name);
+    }
+    return agents;
+  }, [agents, activeTab]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return agents;
-    return agents.filter((agent) => {
+    if (!q) return tabAgents;
+    return tabAgents.filter((agent) => {
       const channels = formatChannelList(agent.channels).toLowerCase();
       return (
         agent.name.toLowerCase().includes(q) ||
@@ -295,13 +327,21 @@ function DirectoryHome({
         channels.includes(q)
       );
     });
-  }, [agents, query]);
+  }, [tabAgents, query]);
+
+  const tabs = useMemo(
+    () => [
+      { key: 'your-agents', label: 'Your agents' },
+      { key: 'all-agents', label: 'All agents' },
+    ],
+    [],
+  );
 
   return (
     <div className={styles['agents-landing__directory']}>
       <div className={styles['agents-landing__dir-header']}>
         <div className={styles['agents-landing__dir-heading']}>
-          <h1 className={styles['agents-landing__dir-title']}>All agents</h1>
+          <h1 className={styles['agents-landing__dir-title']}>Agents</h1>
           <p className={styles['agents-landing__dir-subtitle']}>
             Agents live at the workspace level — like people. Invite them into
             any channel that needs them.
@@ -315,6 +355,13 @@ function DirectoryHome({
           Create an agent
         </Button>
       </div>
+
+      <Tabs
+        tabs={tabs}
+        activeKey={activeTab}
+        onChange={(key) => setActiveTab(key as DirTab)}
+        className={styles['agents-landing__dir-tabs']}
+      />
 
       <SearchInput
         placeholder="Find agents"
@@ -364,7 +411,20 @@ function DirectoryHome({
                     : agent.owner}
                 </span>
                 <span className={styles['agents-landing__row-channels']}>
-                  {formatChannelList(agent.channels)}
+                  {agent.channels.length === 0 ? '—' : agent.channels.map((ch, i) => (
+                    <span key={ch} className={styles['agents-landing__channel-item']}>
+                      {i > 0 && <span className={styles['agents-landing__channel-sep']} aria-hidden>{' · '}</span>}
+                      <span
+                        className={styles['agents-landing__channel-link']}
+                        onClick={(e: MouseEvent) => {
+                          e.stopPropagation();
+                          navigate(AGENTS_BASE);
+                        }}
+                      >
+                        {ch}
+                      </span>
+                    </span>
+                  ))}
                 </span>
               </button>
             ))}
@@ -381,7 +441,8 @@ export default function AgentsLanding() {
   const [searchParams] = useSearchParams();
   const { openNewAgent, customAgents } = useAgents();
   const forceFte = searchParams.get('fte') === '1';
-  const showFte = forceFte || customAgents.length === 0;
+  const [skipped, setSkipped] = useState(false);
+  const showFte = !skipped && (forceFte || customAgents.length === 0);
   const directory = useMemo(
     () => buildWorkspaceDirectory(customAgents),
     [customAgents],
@@ -402,12 +463,17 @@ export default function AgentsLanding() {
         ].join(' ')}
       >
         {showFte ? (
-          <FirstTimeHome onOpenAgent={openAgent} onCreate={openNewAgent} />
+          <FirstTimeHome
+            onOpenAgent={openAgent}
+            onCreate={openNewAgent}
+            onSkip={() => setSkipped(true)}
+          />
         ) : (
           <DirectoryHome
             agents={directory}
             onOpenAgent={openAgent}
             onCreate={openNewAgent}
+            initialTab={skipped ? 'all-agents' : 'your-agents'}
           />
         )}
       </div>

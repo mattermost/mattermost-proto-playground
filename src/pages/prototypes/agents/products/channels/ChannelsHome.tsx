@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Message } from '@mattermost/compass-ui/components/message';
 import { MessageReactions } from '@mattermost/compass-ui/components/message-reactions';
+import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
+import { ThreadFooter } from '@mattermost/compass-ui/components/thread-footer';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { RightSidebarHeader } from '@mattermost/compass-ui/components/right-sidebar';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
@@ -17,11 +22,13 @@ import {
   DARIUS,
   JORDAN,
   MATTY,
+  MATTY_ACK_ID,
   MATTY_AGENT_REVIEW_ID,
   ON_CALL,
   SENTINEL_DEFAULT,
   SERVICE_STATUS_MESSAGES,
   VIEWER,
+  buildMattyAckMessage,
   buildMattyAgentReviewMessage,
   buildMattySentinelConfirmMessage,
   buildSentinelJoinedSystemMessage,
@@ -34,6 +41,7 @@ import {
   type ChannelMessagePart,
   type WorkspaceAgent,
 } from '../../agentsData';
+import AgentTypingDots from '../../components/AgentTypingDots';
 import AddAgentToChannelModal from '../../components/AddAgentToChannelModal';
 import AgentAvatar from '../../components/AgentAvatar';
 import AgentProfilePopover, {
@@ -88,10 +96,23 @@ function personIdFromUsername(username: string): string | null {
   return match?.id ?? null;
 }
 
-const MATTY_REVIEW_DELAY_MS = 700;
+type MattyPhase = 'idle' | 'typing' | 'ack' | 'thinking' | 'result';
+
 const STREAM_MS_PER_WORD = 32;
-/** Beat after Matty’s confirm stream before Sentinel’s wave shows. */
+/** Beat after Matty's confirm stream before Sentinel's wave shows. */
 const SENTINEL_WAVE_DELAY_MS = 550;
+
+/** Duration typing dots show before the ack message streams in. */
+const MATTY_TYPING_DURATION_MS = 1000;
+const MATTY_ACK_TEXT = "I can help with that. I'll first look to see if there is an existing agent already suited for this task. If not, I'll create one.";
+const MATTY_THINKING_LABELS = [
+  'Reviewing channel activity…',
+  'Checking available agents…',
+  'Drafting agent config…',
+] as const;
+const MATTY_THINKING_MS = 1100;
+/** Short pause between thinking done and review card appearing. */
+const MATTY_CARD_DELAY_MS = 400;
 
 function formatChannelTime(date = new Date()) {
   return date.toLocaleTimeString('en-US', {
@@ -229,6 +250,10 @@ function MattyChannelMessage({
   onAgentProfile,
   onReview,
   cardImageSrc,
+  phase,
+  streamedBody,
+  thinkingIndex,
+  thinkingLabels,
 }: {
   message: ChannelMessage;
   onAgentProfile: (
@@ -237,19 +262,26 @@ function MattyChannelMessage({
   ) => void;
   onReview: () => void;
   cardImageSrc?: string;
+  /** When provided, switches to external phase-driven rendering (ack message). */
+  phase?: MattyPhase;
+  /** Externally streamed visible text — used when phase is provided. */
+  streamedBody?: string;
+  thinkingIndex?: number;
+  thinkingLabels?: readonly string[];
 }) {
+  // Internal streaming — only used when phase is not provided (card / confirm messages).
   const [streamFinished, setStreamFinished] = useState(false);
   const [reactionsVisible, setReactionsVisible] = useState(false);
+  const [reactionTooltipOpen, setReactionTooltipOpen] = useState(false);
   const { visible, complete } = useStreamedText(
     message.body,
-    !streamFinished,
+    phase === undefined && !streamFinished,
   );
 
   useEffect(() => {
-    if (complete) {
-      setStreamFinished(true);
-    }
-  }, [complete]);
+    if (phase !== undefined) return;
+    if (complete) setStreamFinished(true);
+  }, [complete, phase]);
 
   useEffect(() => {
     if (!streamFinished || !message.reactions?.length) {
@@ -284,7 +316,36 @@ function MattyChannelMessage({
             {message.timestamp}
           </time>
         </div>
-        {streamFinished ? (
+        {phase !== undefined ? (
+          <>
+            <p className={styles['channels-home__post']}>{streamedBody ?? message.body}</p>
+            {phase === 'thinking' && thinkingLabels && thinkingIndex !== undefined && (
+              <div
+                className={styles['channels-home__agent-status']}
+                role="status"
+                aria-live="polite"
+              >
+                <Spinner size={12} aria-label={thinkingLabels[thinkingIndex]} />
+                <span className={styles['channels-home__agent-status-label']}>
+                  {thinkingLabels[thinkingIndex]}
+                </span>
+              </div>
+            )}
+            {phase === 'result' && (
+              <div
+                className={[
+                  styles['channels-home__agent-status'],
+                  styles['channels-home__agent-status--done'],
+                ].join(' ')}
+              >
+                <Icon glyph={<CheckCircleOutlineIcon />} size="12" />
+                <span className={styles['channels-home__agent-status-label']}>
+                  Agent config drafted
+                </span>
+              </div>
+            )}
+          </>
+        ) : streamFinished ? (
           <MessageBody
             body={message.body}
             parts={message.parts}
@@ -293,7 +354,7 @@ function MattyChannelMessage({
         ) : (
           <p className={styles['channels-home__post']}>{visible}</p>
         )}
-        {streamFinished && message.agentReviewCard ? (
+        {phase === undefined && streamFinished && message.agentReviewCard ? (
           <AgentReviewCard
             card={message.agentReviewCard}
             shape={SENTINEL_DEFAULT.shape}
@@ -303,7 +364,18 @@ function MattyChannelMessage({
           />
         ) : null}
         {reactionsVisible && message.reactions?.length ? (
-          <MessageReactions reactions={message.reactions} />
+          <div
+            className={styles['channels-home__reaction-anchor']}
+            onMouseEnter={() => setReactionTooltipOpen(true)}
+            onMouseLeave={() => setReactionTooltipOpen(false)}
+          >
+            <MessageReactions reactions={message.reactions} />
+            {reactionTooltipOpen && (
+              <div className={styles['channels-home__reaction-tooltip']}>
+                <Tooltip label="Sentinel reacted with 👋" arrow="bottom" />
+              </div>
+            )}
+          </div>
         ) : null}
       </div>
     </article>
@@ -319,6 +391,8 @@ type PendingInvite = {
 /** Channels product — quiet `#service-status` home for the vision demo. */
 export default function ChannelsHome() {
   const { customAgents, ensureSentinel, updateAgent } = useAgents();
+  const [mattyPhase, setMattyPhase] = useState<MattyPhase>('idle');
+  const [mattyThinkingIndex, setMattyThinkingIndex] = useState(0);
   const [messages, setMessages] = useState<ChannelMessage[]>(
     SERVICE_STATUS_MESSAGES,
   );
@@ -372,6 +446,44 @@ export default function ChannelsHome() {
       }
     };
   }, []);
+
+  const { visible: mattyAckVisible, complete: mattyAckComplete } = useStreamedText(
+    MATTY_ACK_TEXT,
+    mattyPhase === 'ack',
+  );
+
+  // ack → thinking
+  useEffect(() => {
+    if (mattyPhase !== 'ack') return;
+    if (!mattyAckComplete) return;
+    setMattyPhase('thinking');
+    setMattyThinkingIndex(0);
+  }, [mattyPhase, mattyAckComplete]);
+
+  // thinking: cycle labels then → result
+  useEffect(() => {
+    if (mattyPhase !== 'thinking') return;
+    const id = window.setTimeout(() => {
+      if (mattyThinkingIndex < MATTY_THINKING_LABELS.length - 1) {
+        setMattyThinkingIndex((i) => i + 1);
+      } else {
+        setMattyPhase('result');
+      }
+    }, MATTY_THINKING_MS);
+    return () => window.clearTimeout(id);
+  }, [mattyPhase, mattyThinkingIndex]);
+
+  // result → show review card message (short beat after checkmark appears)
+  useEffect(() => {
+    if (mattyPhase !== 'result') return;
+    const id = window.setTimeout(() => {
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === MATTY_AGENT_REVIEW_ID)) return prev;
+        return [...prev, buildMattyAgentReviewMessage(formatChannelTime())];
+      });
+    }, MATTY_CARD_DELAY_MS);
+    return () => window.clearTimeout(id);
+  }, [mattyPhase]);
 
   const resolveAgent = (id: string) =>
     buildWorkspaceDirectory(customAgents).find((agent) => agent.id === id);
@@ -478,19 +590,21 @@ export default function ChannelsHome() {
 
     mattyReviewQueuedRef.current = true;
     ensureSentinel();
+    setMattyPhase('typing');
+
     mattyReviewTimerRef.current = window.setTimeout(() => {
       if (channelAgentIdsRef.current.has('sentinel')) {
         mattyReviewTimerRef.current = null;
+        setMattyPhase('idle');
         return;
       }
       setMessages((prev) => {
-        if (prev.some((message) => message.id === MATTY_AGENT_REVIEW_ID)) {
-          return prev;
-        }
-        return [...prev, buildMattyAgentReviewMessage(formatChannelTime())];
+        if (prev.some((m) => m.id === MATTY_ACK_ID)) return prev;
+        return [...prev, buildMattyAckMessage(formatChannelTime())];
       });
+      setMattyPhase('ack');
       mattyReviewTimerRef.current = null;
-    }, MATTY_REVIEW_DELAY_MS);
+    }, MATTY_TYPING_DURATION_MS);
   };
 
   const handleSend = ({
@@ -615,6 +729,7 @@ export default function ChannelsHome() {
                   }
 
                   if (message.kind === 'agent') {
+                    const isAck = message.id === MATTY_ACK_ID;
                     return (
                       <MattyChannelMessage
                         key={message.id}
@@ -622,6 +737,10 @@ export default function ChannelsHome() {
                         onAgentProfile={openAgentProfile}
                         onReview={openSentinelSettings}
                         cardImageSrc={settingsAgent?.customImageSrc}
+                        phase={isAck ? mattyPhase : undefined}
+                        streamedBody={isAck ? mattyAckVisible : undefined}
+                        thinkingIndex={isAck ? mattyThinkingIndex : undefined}
+                        thinkingLabels={isAck ? MATTY_THINKING_LABELS : undefined}
                       />
                     );
                   }
@@ -657,14 +776,37 @@ export default function ChannelsHome() {
                         parts={message.parts}
                         onAgentProfile={openAgentProfile}
                       />
+                      {message.threadReplies ? (
+                        <div className={styles['channels-home__thread-footer']}>
+                          <ThreadFooter
+                            replyCount={message.threadReplies.count}
+                            lastReplyTime={message.threadReplies.lastReplyTime}
+                            avatars={message.threadReplies.participants.map((p) => ({
+                              key: p.key,
+                              name: p.name,
+                              src: p.agentShape && p.agentColor
+                                ? agentAvatarChipSrc(p.agentShape, p.agentColor)
+                                : p.avatarSrc,
+                            }))}
+                          />
+                        </div>
+                      ) : null}
                     </Message>
                   );
                 })}
+                {mattyPhase === 'typing' && (
+                  <div className={styles['channels-home__typing-row']}>
+                    <AgentTypingDots label="Matty is typing" />
+                  </div>
+                )}
                 <div ref={bottomRef} />
               </div>
             </Scrollbar>
           </div>
-          <div className={styles['channels-home__composer']}>
+          <div className={[
+            styles['channels-home__composer'],
+            membersRhsOpen ? styles['channels-home__composer--rhs-open'] : '',
+          ].filter(Boolean).join(' ')}>
             <MentionMessageInput
               key={composerKey}
               placeholder="Write to service-status"

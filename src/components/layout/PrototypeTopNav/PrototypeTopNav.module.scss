@@ -40,6 +40,15 @@
     }
   }
 
+  &__sep {
+    display: block;
+    flex-shrink: 0;
+    width: 1px;
+    height: 16px;
+    background: rgba(var(--center-channel-color-rgb), 0.2);
+    border-radius: 1px;
+  }
+
   &__title {
     margin: 0;
     min-width: 0;

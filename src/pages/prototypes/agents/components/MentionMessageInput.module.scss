@@ -40,28 +40,6 @@
     }
   }
 
-  &__container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    background: var(--center-channel-bg);
-    border: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
-    border-radius: var(--radius-s);
-    transition: border-color var(--duration-quick) var(--ease-transition);
-
-    &:focus-within {
-      border-color: rgba(var(--center-channel-color-rgb), 0.32);
-    }
-  }
-
-  &__body {
-    display: flex;
-    min-width: 0;
-    padding: 14px 56px 14px var(--spacing-l);
-    cursor: text;
-  }
-
   &__field {
     display: flex;
     flex: 1 1 auto;
@@ -83,7 +61,7 @@
     flex: 1 1 8rem;
     min-width: 8rem;
     margin: 0;
-    padding: 0;
+    padding: var(--spacing-xs) 0;
     border: none;
     outline: none;
     background: transparent;
@@ -130,11 +108,9 @@
   }
 
   &__actions {
-    position: absolute;
-    right: var(--spacing-xs);
-    bottom: var(--spacing-xs);
     display: flex;
     align-items: center;
+    flex: 0 0 auto;
 
     :global(button:not(:disabled)) {
       background-color: var(--button-bg);

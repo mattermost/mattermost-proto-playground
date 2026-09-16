@@ -17,7 +17,6 @@ import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message
 import MonitorIcon from '@mattermost/compass-icons/components/monitor';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
-import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import SettingsOutlineIcon from '@mattermost/compass-icons/components/settings-outline';
 import { AttachmentCard } from '@mattermost/compass-ui/components/attachment-card';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -39,6 +38,7 @@ import {
   AGENT_AUTOMATION_PROMPT_ID,
   INCIDENT_RESPONSE_PLAYBOOK_DRAFT,
   MATTY,
+  MATTY_CALENDAR_REPLY_ID,
   MATTY_TOOL_AUTH_ID,
   MATTY_TOOL_CONNECTED_ID,
   MATTY_TOOL_CONNECT_CONFIRM_ID,
@@ -50,6 +50,7 @@ import {
   VIEWER,
   buildAgentAutomationConfirm,
   buildAgentAutomationMessage,
+  buildMattyCalendarReplyMessage,
   buildMattyToolAuthMessage,
   buildMattyToolConnectedMessage,
   buildMattyToolConnectConfirm,
@@ -86,6 +87,7 @@ import AgentSettingsModal, {
 import AgentToolAuthCard from '../../components/AgentToolAuthCard';
 import AgentToolConnectCard from '../../components/AgentToolConnectCard';
 import AgentTypingDots from '../../components/AgentTypingDots';
+import ComposerShell from '../../components/ComposerShell';
 import { useAgents } from '../../context/AgentsContext';
 import AgentsProductSidebar from './AgentsProductSidebar';
 import styles from './AgentChat.module.scss';
@@ -114,6 +116,12 @@ const PLAYBOOK_STATUS_LABELS = [
   'Thinking…',
   'Connecting to Playbooks…',
   'Reading checklist…',
+] as const;
+
+const CALENDAR_STATUS_LABELS = [
+  'Thinking…',
+  'Checking your calendar…',
+  "Reading this week's events…",
 ] as const;
 
 const COMPOSER_FILE_ACCEPT =
@@ -447,6 +455,10 @@ export default function AgentChat({
   const [playbookPhase, setPlaybookPhase] = useState<PlaybookPhase>('idle');
   const [playbookStatusIndex, setPlaybookStatusIndex] = useState(0);
   const [playbookRhsOpen, setPlaybookRhsOpen] = useState(false);
+  const [calendarConnected, setCalendarConnected] = useState(false);
+  const [calendarReplyPhase, setCalendarReplyPhase] = useState<PlaybookPhase>('idle');
+  const [calendarReplyStatusIndex, setCalendarReplyStatusIndex] = useState(0);
+  const chatScrollbarRef = useRef<HTMLDivElement>(null);
   const optionsButtonRef = useRef<HTMLButtonElement>(null);
   const optionsMenuRef = useRef<HTMLDivElement>(null);
   const skipOptionsOutsideCloseRef = useRef(false);
@@ -472,6 +484,9 @@ export default function AgentChat({
     setPlaybookPhase('idle');
     setPlaybookStatusIndex(0);
     setPlaybookRhsOpen(false);
+    setCalendarConnected(false);
+    setCalendarReplyPhase('idle');
+    setCalendarReplyStatusIndex(0);
     Object.values(uploadTimersRef.current).forEach((id) =>
       window.clearTimeout(id),
     );
@@ -537,6 +552,11 @@ export default function AgentChat({
   );
   const playPlaybookStream =
     playbookPhase === 'streaming' && Boolean(playbookReplyMessage);
+  const calendarReplyMessage = activeSession?.messages.find(
+    (message) => message.id === MATTY_CALENDAR_REPLY_ID,
+  );
+  const playCalendarReplyStream =
+    calendarReplyPhase === 'streaming' && Boolean(calendarReplyMessage);
   const avatarRevealKey = playAutomationIntro
     ? `automation-${activeSessionId}`
     : agent.id;
@@ -556,6 +576,10 @@ export default function AgentChat({
     playPlaybookStream ? (playbookReplyMessage?.paragraphs ?? []) : [],
     playPlaybookStream,
   );
+  const streamedCalendarParagraphs = useStreamedParagraphs(
+    playCalendarReplyStream ? (calendarReplyMessage?.paragraphs ?? []) : [],
+    playCalendarReplyStream,
+  );
   const showDots =
     playIntro &&
     (avatarPhase === 'loading' || avatarPhase === 'revealing');
@@ -574,6 +598,28 @@ export default function AgentChat({
     !playPlaybookStream ||
     streamedPlaybookParagraphs.join('\n') ===
       (playbookReplyMessage?.paragraphs ?? []).join('\n');
+  const calendarStreamComplete =
+    !playCalendarReplyStream ||
+    streamedCalendarParagraphs.join('\n') ===
+      (calendarReplyMessage?.paragraphs ?? []).join('\n');
+  const isStreaming =
+    playIntro || playConfirmStream || playPlaybookStream || playCalendarReplyStream;
+
+  // Scroll to bottom when a new message arrives or the session switches.
+  useEffect(() => {
+    const el = chatScrollbarRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [activeSession?.messages.length, activeSessionId]);
+
+  // Keep scrolled to bottom while content is streaming in.
+  useEffect(() => {
+    if (!isStreaming) return;
+    const el = chatScrollbarRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  });
+
   const toolConnectStatusLabel =
     toolConnectPhase === 'status'
       ? TOOL_CONNECT_STATUS_LABELS[toolConnectStatusIndex]
@@ -582,12 +628,16 @@ export default function AgentChat({
     playbookPhase === 'status'
       ? PLAYBOOK_STATUS_LABELS[playbookStatusIndex]
       : null;
-  const statusLabel = playbookStatusLabel ?? toolConnectStatusLabel;
+  const calendarStatusLabel =
+    calendarReplyPhase === 'status'
+      ? CALENDAR_STATUS_LABELS[calendarReplyStatusIndex]
+      : null;
+  const statusLabel = playbookStatusLabel ?? calendarStatusLabel ?? toolConnectStatusLabel;
   // Persistent "done" label — shown with checkmark after the status steps complete.
   const doneLabel =
     playbookPhase === 'done'
       ? 'Loaded Incident Response Playbook'
-      : toolConnectPhase === 'done' && connectedToolLabel
+      : toolConnectPhase === 'done' && connectedToolLabel && !calendarConnected
         ? `Pending authentication with ${connectedToolLabel}`
         : null;
 
@@ -689,6 +739,44 @@ export default function AgentChat({
     updateSessionsForAgent,
   ]);
 
+  // Calendar reply: cycle status labels, then post the reply message and stream it.
+  useEffect(() => {
+    if (calendarReplyPhase !== 'status') return;
+    const id = window.setTimeout(() => {
+      if (calendarReplyStatusIndex < CALENDAR_STATUS_LABELS.length - 1) {
+        setCalendarReplyStatusIndex((index) => index + 1);
+        return;
+      }
+      const reply: LiveSessionMessage = {
+        ...buildMattyCalendarReplyMessage(formatChatTime()),
+        role: 'agent',
+      };
+      updateSessionsForAgent(agent.id, (prev) =>
+        prev.map((session) => {
+          if (session.id !== activeSessionId) return session;
+          const withoutReply = session.messages.filter(
+            (message) => message.id !== MATTY_CALENDAR_REPLY_ID,
+          );
+          return { ...session, messages: [...withoutReply, reply] };
+        }),
+      );
+      setCalendarReplyPhase('streaming');
+    }, TOOL_CONNECT_STATUS_MS);
+    return () => window.clearTimeout(id);
+  }, [
+    calendarReplyPhase,
+    calendarReplyStatusIndex,
+    agent.id,
+    activeSessionId,
+    updateSessionsForAgent,
+  ]);
+
+  // After calendar reply streams, mark done.
+  useEffect(() => {
+    if (calendarReplyPhase !== 'streaming' || !calendarStreamComplete) return;
+    setCalendarReplyPhase('done');
+  }, [calendarReplyPhase, calendarStreamComplete]);
+
   // After playbook reply streams, post the draft card and open the RHS preview.
   useEffect(() => {
     if (playbookPhase !== 'streaming' || !playbookStreamComplete) return;
@@ -736,6 +824,9 @@ export default function AgentChat({
     setPlaybookPhase('idle');
     setPlaybookStatusIndex(0);
     setPlaybookRhsOpen(false);
+    setCalendarConnected(false);
+    setCalendarReplyPhase('idle');
+    setCalendarReplyStatusIndex(0);
   }, [agent.id]);
 
   useEffect(() => {
@@ -824,6 +915,8 @@ export default function AgentChat({
     setPlaybookPhase('idle');
     setPlaybookStatusIndex(0);
     setPlaybookRhsOpen(false);
+    setCalendarReplyPhase('idle');
+    setCalendarReplyStatusIndex(0);
     setOptionsOpen(false);
     startNewChatForAgent(agent.id);
   };
@@ -999,6 +1092,8 @@ export default function AgentChat({
     const startPlaybookFlow =
       isSentinel &&
       Boolean(attachments?.some((attachment) => attachment.fileType === 'pdf'));
+    const startCalendarReplyFlow =
+      calendarConnected && calendarReplyPhase === 'idle';
 
     let targetId = activeSession?.id;
     if (!targetId) {
@@ -1015,6 +1110,9 @@ export default function AgentChat({
         setPlaybookStatusIndex(0);
         setPlaybookRhsOpen(false);
         setPlaybookPhase('status');
+      } else if (startCalendarReplyFlow) {
+        setCalendarReplyStatusIndex(0);
+        setCalendarReplyPhase('status');
       }
       return;
     }
@@ -1035,6 +1133,9 @@ export default function AgentChat({
       setPlaybookStatusIndex(0);
       setPlaybookRhsOpen(false);
       setPlaybookPhase('status');
+    } else if (startCalendarReplyFlow) {
+      setCalendarReplyStatusIndex(0);
+      setCalendarReplyPhase('status');
     }
   };
 
@@ -1108,6 +1209,11 @@ export default function AgentChat({
         };
       }),
     );
+    if (card.toolId === 'google-calendar') {
+      setCalendarConnected(true);
+      setCalendarReplyStatusIndex(0);
+      setCalendarReplyPhase('idle');
+    }
   };
 
   const savePlaybookDraft = () => {
@@ -1180,15 +1286,11 @@ export default function AgentChat({
           ))}
         </div>
       ) : null}
-      <div className={styles['agent-chat__input']}>
-        <button
-          type="button"
-          className={styles['agent-chat__input-plus']}
-          aria-label="Add attachment"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Icon glyph={<PlusIcon />} size="16" />
-        </button>
+      <ComposerShell
+        canSend={canSend}
+        onSend={sendDraft}
+        onAttachClick={() => fileInputRef.current?.click()}
+      >
         <input
           className={styles['agent-chat__input-field']}
           type="text"
@@ -1203,16 +1305,7 @@ export default function AgentChat({
           }}
           aria-label={`Chat with ${agent.name}`}
         />
-        <button
-          type="button"
-          className={styles['agent-chat__input-send']}
-          aria-label="Send message"
-          disabled={!canSend}
-          onClick={sendDraft}
-        >
-          <Icon glyph={<SendOutlineIcon />} size="16" />
-        </button>
-      </div>
+      </ComposerShell>
     </div>
   );
 
@@ -1343,7 +1436,7 @@ export default function AgentChat({
           ) : (
             <>
               <div className={styles['agent-chat__messages']}>
-                <Scrollbar>
+                <Scrollbar ref={chatScrollbarRef}>
                   <div className={styles['agent-chat__messages-list']}>
                     {(activeSession?.messages ?? [])
                       .filter(
@@ -1408,6 +1501,8 @@ export default function AgentChat({
                         message.id === MATTY_TOOL_CONNECT_CONFIRM_ID;
                       const isPlaybookReply =
                         message.id === SENTINEL_PLAYBOOK_REPLY_ID;
+                      const isCalendarReply =
+                        message.id === MATTY_CALENDAR_REPLY_ID;
                       const isToolPost =
                         playWelcomeIntro &&
                         message.id === MATTY_TOOL_CONNECT_MESSAGE.id;
@@ -1416,6 +1511,7 @@ export default function AgentChat({
                         isToolPost ||
                         (isConfirm && playConfirmStream) ||
                         (isPlaybookReply && playPlaybookStream) ||
+                        (isCalendarReply && playCalendarReplyStream) ||
                         (message.id === MATTY_TOOL_AUTH_ID &&
                           toolConnectPhase === 'done') ||
                         message.id === MATTY_TOOL_CONNECTED_ID ||
@@ -1426,7 +1522,9 @@ export default function AgentChat({
                           ? streamedConfirmParagraphs
                           : isPlaybookReply && playPlaybookStream
                             ? streamedPlaybookParagraphs
-                            : message.paragraphs;
+                            : isCalendarReply && playCalendarReplyStream
+                              ? streamedCalendarParagraphs
+                              : message.paragraphs;
 
                       const isAuthMessage =
                         message.id === MATTY_TOOL_AUTH_ID;

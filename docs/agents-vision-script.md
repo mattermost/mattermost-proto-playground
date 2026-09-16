@@ -81,8 +81,7 @@ Auditor and Warden remain cut, as in v4 — see Open Questions for what that tra
 |---|---|---|---|
 | 3.1 | Inside the thread Matty already created, **Alex** posts: *"Find where our PayForge webhook handling changed in the last deploy."* Dynamo searches the repo, surfaces the relevant diff from build 8842, and proposes a fix inline. | On-screen tag: *"Thread 1 — code"* | Continuing an existing, named thread rather than opening a new one — consistent with 2.3. |
 | 3.2 | **Simultaneously**, in the second thread Matty created — **Jordan** posts: *"What's our rollback readiness if the code fix doesn't land in time?"* Otto reports rollback is staged and ready, timestamped. | On-screen tag: *"Thread 2 — infra, running at the same time"* | Needs a split-screen or fast-interleave treatment with 3.1 to sell "simultaneous," not sequential — a directing choice, not just a scripting one. |
-| 3.3 | **Priya** — still coordinating, but now also working directly — opens her *own* thread with **Dynamo**: *"Does this bug also affect refunds?"* Dynamo answers correctly in this separate thread, with no bleed from Alex's concurrent conversation. | On-screen tag: *"Same agent, different person, clean separation"* | **The load-bearing beat.** Concrete proof that multiple humans work with agents here, not just one person mediating everything. Priya engaging Dynamo herself — after spending Act 1–2 mostly coordinating others — shows growth: she's working the problem too, not just directing it. |
-| 3.4 | The two threads converge back to the main incident channel. Alex + Dynamo post the code fix is ready. Jordan + Otto confirm rollback is on standby, unused. Priya synthesizes: *"Let's ship the fix directly — we know the cause, no need to roll back."* | | Resolves both parallel paths into one human decision, with both agents' work visible and credited. |
+| 3.3 | The two threads converge back to the main incident channel. Alex + Dynamo post the code fix is ready. Jordan + Otto confirm rollback is on standby, unused. Priya synthesizes: *"Let's ship the fix directly — we know the cause, no need to roll back."* | | Resolves both parallel paths into one human decision, with both agents' work visible and credited. |
 
 ---
 
@@ -100,14 +99,14 @@ Auditor and Warden remain cut, as in v4 — see Open Questions for what that tra
 
 | Scene | Visual | VO / On-screen text | Note |
 |---|---|---|---|
-| 5.1 | The **native Playbook run timeline** — task state changes, assignee changes, status updates — shown chronologically across the whole incident, with entries attributable back to which thread (3.1, 3.2, or 3.3) generated them. | "Every step, every thread, one timeline — not reconstructed after the fact, generated as it happened." | Replaces the old model-routing scene. This is a **native Playbooks feature**, not an invented compliance view — worth confirming exactly how it works before stating it as Proven, but if accurate, it's a real capability that helps rebuild some of the credibility the model-routing cut cost the act. |
+| 5.1 | The **native Playbook run timeline** — task state changes, assignee changes, status updates — shown chronologically across the whole incident, with entries attributable back to which thread (3.1 or 3.2) generated them. | "Every step, every thread, one timeline — not reconstructed after the fact, generated as it happened." | Replaces the old model-routing scene. This is a **native Playbooks feature**, not an invented compliance view — worth confirming exactly how it works before stating it as Proven, but if accurate, it's a real capability that helps rebuild some of the credibility the model-routing cut cost the act. |
 | 5.2 | **Matty** posts a final wrap-up summary to the incident channel and, in the same action, books the postmortem on Priya's calendar: *"Postmortem: INC-4471, Thursday 2pm. Invited: Priya, Jordan, Alex."* | "The coordinator that knew the roster on day one is the same one closing the loop now." | Ties back to 1.1/1.3 — Matty's process knowledge, applied one more time at the close. |
 
 ---
 
 ## Closing Frame
 
-Visual: `#service-status` sidebar showing the full team — Priya, Jordan, Alex, Emma, Darius (humans) and Matty, Sentinel, Otto, Dynamo, Cipher (agents — Cipher shown slightly greyed to signal it's not always active). Two resolved thread icons still visible under the old triage message. The playbook timeline scrolling in the background, interleaved entries from all three threads.
+Visual: `#service-status` sidebar showing the full team — Priya, Jordan, Alex, Emma, Darius (humans) and Matty, Sentinel, Otto, Dynamo, Cipher (agents — Cipher shown slightly greyed to signal it's not always active). Two resolved thread icons still visible under the old triage message. The playbook timeline scrolling in the background, interleaved entries from both threads.
 
 > *"The industry showed the world that people want AI teammates.*
 > *We're finishing it — with a team that actually works together, in parallel, on the same problem.*

@@ -281,6 +281,7 @@ export const WORKSPACE_AGENTS: WorkspaceAgent[] = [
   FORGE,
   SCRIBE,
   DYNAMO,
+  CIPHER,
 ];
 
 export type AgentVisibility = 'private' | 'public';
@@ -1130,6 +1131,25 @@ export function buildMattyToolConnectedMessage(
   };
 }
 
+export const MATTY_CALENDAR_REPLY_ID = 'matty-calendar-reply';
+
+export function buildMattyCalendarReplyMessage(
+  timestamp: string,
+): AgentChatMessage {
+  return {
+    id: MATTY_CALENDAR_REPLY_ID,
+    timestamp,
+    paragraphs: [
+      "Here's a look at your week ahead:",
+      'Monday — Team standup (9:00 AM), 1:1 with Ravi (2:00 PM)',
+      'Tuesday — Engineering all-hands (10:00 AM)',
+      'Wednesday — Design review: Mobile onboarding (3:00 PM), Sprint planning (4:30 PM)',
+      'Thursday — Architecture deep-dive (11:00 AM)',
+      'Friday — Team retrospective (1:00 PM)',
+    ],
+  };
+}
+
 /** Act 1 automation picker — mirrors Sentinel-style scheduled job types. */
 export const AGENT_AUTOMATION_OPTIONS: AgentToolConnectOption[] = [
   { id: 'reminder', label: 'Reminder' },
@@ -1194,6 +1214,18 @@ export const SENTINEL_DEFAULT = {
   model: DEFAULT_AGENT_MODEL,
   visibility: DEFAULT_AGENT_VISIBILITY as AgentVisibility,
 };
+
+export const SENTINEL: WorkspaceAgent = {
+  id: 'sentinel',
+  name: SENTINEL_DEFAULT.name,
+  role: 'Monitor',
+  owner: 'Platform team',
+  description: SENTINEL_DEFAULT.description,
+  shape: SENTINEL_DEFAULT.shape,
+  color: SENTINEL_DEFAULT.color,
+  channels: [],
+};
+WORKSPACE_AGENTS.push(SENTINEL);
 
 export function isSentinelName(name: string): boolean {
   return slugifyAgentName(name) === 'sentinel';
@@ -1512,13 +1544,15 @@ export function buildYourAgentsSidebar(
   openedAgentIds: string[] = [],
   groupChats: AgentGroupChat[] = [],
 ): SidebarAgent[] {
+  const mattyOverride = customAgents.find((a) => a.id === MATTY.id);
   const listed = new Set<string>([MATTY.id]);
   const result: SidebarAgent[] = [
     {
       id: MATTY.id,
-      name: MATTY.name,
-      shape: MATTY.shape,
-      color: MATTY.color,
+      name: mattyOverride?.name ?? MATTY.name,
+      shape: mattyOverride?.shape ?? MATTY.shape,
+      color: mattyOverride?.color ?? MATTY.color,
+      customImageSrc: mattyOverride?.customImageSrc,
     },
   ];
 
@@ -1704,6 +1738,8 @@ export type ChannelWebhookPost = {
 export type ChannelThreadReply = {
   count: number;
   lastReplyTime: string;
+  resolved?: boolean;
+  resolvedBy?: string;
   participants: Array<{
     key: string;
     name: string;
@@ -1737,6 +1773,7 @@ export type ChannelMessage = {
   reactions?: { emoji: string; count: number; byCurrentUser?: boolean }[];
 };
 
+export const MATTY_ACK_ID = 'matty-sentinel-ack';
 export const MATTY_AGENT_REVIEW_ID = 'matty-agent-review';
 export const SENTINEL_JOINED_SYSTEM_ID = 'sentinel-joined-system';
 export const MATTY_SENTINEL_CONFIRM_ID = 'matty-sentinel-confirm';
@@ -1755,6 +1792,20 @@ export function channelPartsMentionAgent(
   );
 }
 
+export function buildMattyAckMessage(timestamp: string): ChannelMessage {
+  return {
+    id: MATTY_ACK_ID,
+    kind: 'agent',
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp,
+    body: "I can help with that. I'll first look to see if there is an existing agent already suited for this task. If not, I'll create one.",
+    agentShape: MATTY.shape,
+    agentColor: MATTY.color,
+  };
+}
+
 export function buildMattyAgentReviewMessage(
   timestamp: string,
 ): ChannelMessage {
@@ -1765,11 +1816,11 @@ export function buildMattyAgentReviewMessage(
     avatarSrc: '',
     avatarAlt: MATTY.name,
     timestamp,
-    body: "I can set up a monitoring agent for this channel. Review Sentinel's setup, then save to approve.",
+    body: "I drafted a new agent called 'Sentinel' to monitor this channel. Review the setup and approve to save it.",
     parts: [
       {
         type: 'text',
-        text: "I can set up a monitoring agent for this channel. Review Sentinel's setup, then save to approve.",
+        text: "I drafted a new agent called 'Sentinel' to monitor this channel. Review the setup and approve to save it.",
       },
     ],
     agentShape: MATTY.shape,
@@ -2104,6 +2155,24 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
       footer: 'Grafana Alerting · 6:15 AM',
     },
   },
+  // ── End-of-night handoff ───────────────────────────────────────────────────
+  {
+    id: 'm-shift-1',
+    username: JORDAN.name,
+    avatarSrc: JORDAN.avatarSrc,
+    avatarAlt: JORDAN.avatarAlt,
+    timestamp: '5:08 AM',
+    body: 'Night shift was quiet — just the batch settlement burst between 2 and 2:15. Queue cleared on its own. Handing off.',
+  },
+  // ── Pre-deploy heads-up ────────────────────────────────────────────────────
+  {
+    id: 'm-predeploy-1',
+    username: DARIUS.name,
+    avatarSrc: DARIUS.avatarSrc,
+    avatarAlt: DARIUS.avatarAlt,
+    timestamp: '6:48 AM',
+    body: "Rolling payments-api 2.14 at 08:00 as planned. Smoke tests on staging are green and the error budget looks healthy — 28 day burn is at 4%. Let me know if you see anything that'd make you want to hold.",
+  },
   // ── Alert: overnight queue spike (explains Jordan's 7:18 comment) ──────────
   {
     id: 'wh-5',
@@ -2186,6 +2255,15 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
     timestamp: '8:02 AM',
     body: 'Confirmed Grafana `checkout_queue_depth` alert thresholds still match the runbook (warn 2k / page 5k). No flapping overnight.',
   },
+  // ── Quick canary confirmation from on-call ─────────────────────────────────
+  {
+    id: 'm-canary-confirm',
+    username: ON_CALL.name,
+    avatarSrc: ON_CALL.avatarSrc,
+    avatarAlt: ON_CALL.avatarAlt,
+    timestamp: '8:07 AM',
+    body: 'Pool utilisation held at 78% peak and dropped back. No spill-over to secondary. Good to proceed.',
+  },
   // ── Deploy health check (post canary rollout) ───────────────────────────────
   {
     id: 'wh-7',
@@ -2260,6 +2338,38 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
       footer: 'PayForge Monitor · 10:00 AM',
     },
   },
+  // ── Mid-morning chatter ────────────────────────────────────────────────────
+  {
+    id: 'm-replication',
+    username: JORDAN.name,
+    avatarSrc: JORDAN.avatarSrc,
+    avatarAlt: JORDAN.avatarAlt,
+    timestamp: '10:34 AM',
+    body: 'Replication lag hit 0.8s this morning during the settlement window — confirmed normal with the DB team. The replica falls behind during bulk writes and catches up within a few minutes. Nothing to page on, but worth watching if we ever push that batch job earlier.',
+    threadReplies: {
+      count: 3,
+      lastReplyTime: '10:51 AM',
+      participants: [
+        { key: 'darius', name: DARIUS.name, avatarSrc: DARIUS.avatarSrc },
+        { key: 'emma', name: ON_CALL.name, avatarSrc: ON_CALL.avatarSrc },
+      ],
+    },
+  },
+  {
+    id: 'm-memory',
+    username: DARIUS.name,
+    avatarSrc: DARIUS.avatarSrc,
+    avatarAlt: DARIUS.avatarAlt,
+    timestamp: '11:14 AM',
+    body: 'Worker memory crept up ~15% post-deploy. Still well under the limit — probably the new middleware holding request state longer. Watching it.',
+    threadReplies: {
+      count: 1,
+      lastReplyTime: '11:22 AM',
+      participants: [
+        { key: 'jordan', name: JORDAN.name, avatarSrc: JORDAN.avatarSrc },
+      ],
+    },
+  },
   {
     id: 'wh-9',
     kind: 'webhook',
@@ -2278,6 +2388,38 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
         { title: 'Queue Depth', value: '284 jobs', short: true },
       ],
       footer: 'Grafana Alerting · 12:00 PM',
+    },
+  },
+  // ── Post-midday ops chatter ────────────────────────────────────────────────
+  {
+    id: 'm-oncall-coverage',
+    username: ON_CALL.name,
+    avatarSrc: ON_CALL.avatarSrc,
+    avatarAlt: ON_CALL.avatarAlt,
+    timestamp: '12:26 PM',
+    body: "On-call coverage is confirmed through the weekend. Friday evening swap is at 18:00 — Darius takes primary, I'm secondary. If anything pages overnight, acknowledge within 5 min or it escalates to the SRE manager. Runbook link is pinned.",
+  },
+  {
+    id: 'm-priya-ooo',
+    username: VIEWER.name,
+    avatarSrc: VIEWER.avatarSrc,
+    avatarAlt: VIEWER.avatarAlt,
+    timestamp: '12:48 PM',
+    body: 'Thanks. Offline after 3 — yell if anything spikes before then.',
+  },
+  {
+    id: 'm-pre-peak',
+    username: JORDAN.name,
+    avatarSrc: JORDAN.avatarSrc,
+    avatarAlt: JORDAN.avatarAlt,
+    timestamp: '1:31 PM',
+    body: 'Error rate is at 0.01%, well below the 2% pager threshold. Queue depth and latency both look normal heading into peak window. Good shape.',
+    threadReplies: {
+      count: 2,
+      lastReplyTime: '1:38 PM',
+      participants: [
+        { key: 'darius', name: DARIUS.name, avatarSrc: DARIUS.avatarSrc },
+      ],
     },
   },
   // ── Pre-peak afternoon check ────────────────────────────────────────────────
@@ -2344,6 +2486,20 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
     ],
   },
   {
+    id: 'inc-sys-sentinel',
+    kind: 'system',
+    username: 'system',
+    avatarSrc: '',
+    avatarAlt: '',
+    timestamp: '2:15 PM',
+    body: 'Sentinel was added to the channel by Matty',
+    parts: [
+      { type: 'mention', id: 'sentinel', label: SENTINEL_DEFAULT.name, avatarSrc: '', kind: 'agent', agentShape: SENTINEL_DEFAULT.shape, agentColor: SENTINEL_DEFAULT.color },
+      { type: 'text', text: ' was added to the channel by ' },
+      { type: 'mention', id: MATTY.id, label: MATTY.name, avatarSrc: '', kind: 'agent', agentShape: MATTY.shape, agentColor: MATTY.color },
+    ],
+  },
+  {
     id: 'inc-matty-1',
     kind: 'agent',
     username: MATTY.name,
@@ -2386,6 +2542,27 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
       name: OTTO.name,
       description: OTTO.description,
     },
+    threadReplies: {
+      count: 1,
+      lastReplyTime: '2:16 PM',
+      participants: [
+        { key: OTTO.id, name: OTTO.name, agentShape: OTTO.shape, agentColor: OTTO.color },
+      ],
+    },
+  },
+  {
+    id: 'inc-sys-cipher',
+    kind: 'system',
+    username: 'system',
+    avatarSrc: '',
+    avatarAlt: '',
+    timestamp: '2:16 PM',
+    body: 'Cipher was added to the channel by Sentinel',
+    parts: [
+      { type: 'mention', id: CIPHER.id, label: CIPHER.name, avatarSrc: '', kind: 'agent', agentShape: CIPHER.shape, agentColor: CIPHER.color },
+      { type: 'text', text: ' was added to the channel by ' },
+      { type: 'mention', id: 'sentinel', label: SENTINEL_DEFAULT.name, avatarSrc: '', kind: 'agent', agentShape: SENTINEL_DEFAULT.shape, agentColor: SENTINEL_DEFAULT.color },
+    ],
   },
   {
     id: 'inc-sentinel-1',
@@ -2401,8 +2578,8 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
       { type: 'text', text: ', can you dig in?' },
     ],
     threadReplies: {
-      count: 1,
-      lastReplyTime: '2:18 PM',
+      count: 3,
+      lastReplyTime: '2:19 PM',
       participants: [
         { key: CIPHER.id, name: CIPHER.name, agentShape: CIPHER.shape, agentColor: CIPHER.color },
       ],

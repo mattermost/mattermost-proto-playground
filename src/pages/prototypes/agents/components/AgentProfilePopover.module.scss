@@ -3,13 +3,15 @@
   z-index: 1400;
 
   &__surface {
-    // Geometric agent SVGs — drop UserAvatar's circle crop on the large face.
-    :global([class*='user-avatar']),
-    :global([class*='user-avatar__image']) {
+    // Step the large avatar down from 120px → 96px and remove the circle crop.
+    :global([class*='user-avatar']):not([class*='user-avatar__']) {
+      width: 96px;
+      height: 96px;
       border-radius: 0;
     }
 
     :global([class*='user-avatar__image']) {
+      border-radius: 0;
       object-fit: contain;
     }
 

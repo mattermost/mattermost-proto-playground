@@ -141,7 +141,7 @@ export default function AgentProfilePopover({
 
   const { agent } = target;
   const avatarSrc =
-    agent.customImageSrc ?? agentAvatarChipSrc(agent.shape, agent.color);
+    agent.customImageSrc ?? agentAvatarChipSrc(agent.shape, agent.color, { fullSize: true });
   const model = agentModelLabel(agent.model);
   const description = agent.description.trim();
 
@@ -161,7 +161,7 @@ export default function AgentProfilePopover({
         avatarAlt={agent.name}
         name={agent.name}
         username={agentHandle(agent)}
-        title={agentTitle(agent)}
+        title={undefined}
         jobRole="Agent"
         onClose={beginClose}
         onPrimaryAction={
@@ -198,6 +198,16 @@ export default function AgentProfilePopover({
                 <p className={styles['agent-profile-popover__label']}>Model</p>
                 <p className={styles['agent-profile-popover__value']}>{model}</p>
               </div>
+              {agentTitle(agent) ? (
+                <div className={styles['agent-profile-popover__field']}>
+                  <p className={styles['agent-profile-popover__label']}>
+                    {agent.managedBy ? 'Managed by' : 'Created by'}
+                  </p>
+                  <p className={styles['agent-profile-popover__value']}>
+                    {agent.managedBy ?? agent.owner}
+                  </p>
+                </div>
+              ) : null}
               {description ? (
                 <div className={styles['agent-profile-popover__field']}>
                   <p className={styles['agent-profile-popover__label']}>
