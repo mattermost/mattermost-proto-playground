@@ -299,7 +299,8 @@ export default function MentionMessageInput({
             part.type === 'mention' ? (
               <Chip
                 key={`${part.id}-${index}`}
-                size="medium-compact"
+                size="medium"
+                compact
                 leadingAvatar={{ src: part.avatarSrc, alt: part.label }}
                 onRemove={() => removeMention(index)}
                 className={[

@@ -189,7 +189,8 @@ function MessageBody({
         ) : (
           <Chip
             key={`m-${part.id}-${index}`}
-            size={isSystem ? 'small' : 'medium-compact'}
+            size={isSystem ? 'small' : 'medium'}
+            compact={!isSystem}
             leadingAvatar={{
               src:
                 part.avatarSrc ||

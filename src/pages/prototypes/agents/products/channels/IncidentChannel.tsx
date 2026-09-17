@@ -223,7 +223,8 @@ function renderParts(message: ChannelMessage, onAgentClick: OnAgentClick) {
         ) : (
           <Chip
             key={i}
-            size="medium-compact"
+            size="medium"
+            compact
             leadingAvatar={{
               src:
                 part.agentShape && part.agentColor
@@ -955,7 +956,8 @@ export default function IncidentChannel() {
         <p className={styles['incident-channel__post']}>
           <span>{'On it — confirming rollback readiness with '}</span>
           <Chip
-            size="medium-compact"
+            size="medium"
+            compact
             leadingAvatar={{ src: OTTO_AVATAR_SRC, alt: OTTO.name }}
             className={[
               mentionStyles['mention-input__mention-chip'],
@@ -1304,7 +1306,8 @@ export default function IncidentChannel() {
               <span>{CIPHER_RESULT_TEXT}</span>
               {' '}
               <Chip
-                size="medium-compact"
+                size="medium"
+                compact
                 leadingAvatar={{ src: agentAvatarChipSrc(SENTINEL_DEFAULT.shape, SENTINEL_DEFAULT.color), alt: SENTINEL_DEFAULT.name }}
                 className={[
                   mentionStyles['mention-input__mention-chip'],
@@ -1321,7 +1324,8 @@ export default function IncidentChannel() {
               </Chip>
               {' '}
               <Chip
-                size="medium-compact"
+                size="medium"
+                compact
                 leadingAvatar={{ src: agentAvatarChipSrc(mattyProfile.shape, mattyProfile.color), alt: mattyProfile.name }}
                 className={[
                   mentionStyles['mention-input__mention-chip'],
@@ -1399,7 +1403,8 @@ export default function IncidentChannel() {
         body: (
           <p className={styles['incident-channel__post']}>
             <Chip
-              size="medium-compact"
+              size="medium"
+              compact
               leadingAvatar={{ src: OTTO_AVATAR_SRC, alt: OTTO.name }}
               className={[
                 mentionStyles['mention-input__mention-chip'],
@@ -1471,7 +1476,8 @@ export default function IncidentChannel() {
               <p className={styles['incident-channel__thread-result-text']}>
                 {JORDAN_OTTO_DEPLOY_RESULT_TEXT + ' '}
                 <Chip
-                  size="medium-compact"
+                  size="medium"
+                  compact
                   leadingAvatar={{ src: SENTINEL_AVATAR_SRC, alt: SENTINEL_DEFAULT.name }}
                   className={[
                     mentionStyles['mention-input__mention-chip'],
@@ -1736,7 +1742,8 @@ export default function IncidentChannel() {
                       <p className={styles['incident-channel__post']}>
                         {'Rollback to 8841 is staged — '}
                         <Chip
-                          size="medium-compact"
+                          size="medium"
+                          compact
                           leadingAvatar={{ src: OTTO_AVATAR_SRC, alt: OTTO.name }}
                           className={[
                             mentionStyles['mention-input__mention-chip'],
@@ -1863,7 +1870,8 @@ export default function IncidentChannel() {
                           <p className={styles['incident-channel__post']}>
                             {'Rollback to 8841 is staged — '}
                             <Chip
-                              size="medium-compact"
+                              size="medium"
+                              compact
                               leadingAvatar={{ src: OTTO_AVATAR_SRC, alt: OTTO.name }}
                               className={[
                                 mentionStyles['mention-input__mention-chip'],
