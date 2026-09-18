@@ -472,7 +472,7 @@ export default function IncidentChannel({ active = false }: { active?: boolean }
     if (!el) return;
     const viewport = el.closest('.simplebar-content-wrapper') as HTMLElement | null;
     if (viewport) viewport.scrollTop = viewport.scrollHeight;
-  }, [cipherPhase, ottoPhase, ottoWorkPhase, dynamoWorkPhase, jordanOttoPhase]);
+  }, [activePostId, threadRendered, cipherPhase, ottoPhase, ottoWorkPhase, dynamoWorkPhase, jordanOttoPhase]);
 
   const streamedAck = useStreamedText(CIPHER_ACK_TEXT, cipherPhase === 'ack');
   const streamedResult = useStreamedText(CIPHER_RESULT_TEXT, cipherPhase === 'result');

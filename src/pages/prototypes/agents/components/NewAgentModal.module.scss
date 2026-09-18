@@ -27,33 +27,10 @@
     transform-origin: center center;
     animation: new-agent-modal-dialog-in var(--duration-quick) var(--ease-entrance) both;
 
-    // Hide header title visually — Figma header is close-only; keep text for a11y.
-    :global([class*='modal__title']) {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    :global([class*='modal__header-inner']) {
+    // Close-only header: drop the leftover title-row inset so the avatar can sit closer.
+    :global([class*='modal-header__content']) {
       min-height: 0;
-      padding: 0;
-    }
-
-    // Body: tighter pt so avatar sits closer to header; drop Compass pb 28 — footer supplies spacing.
-    :global([class*='modal__body-inner']) {
-      padding-top: var(--spacing-xs);
-      padding-bottom: 0;
-    }
-
-    // footerDivider=false zeroes padding-top; restore Figma py 24.
-    :global([class*='modal__footer--no-divider']) {
-      padding-top: var(--spacing-xxl);
+      padding: var(--spacing-xxl) var(--spacing-xxxl) 0;
     }
   }
 
@@ -72,7 +49,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--spacing-xxl);
+    gap: calc(var(--spacing-xxxxl) + var(--spacing-xxxs));
   }
 
   &__appearance {

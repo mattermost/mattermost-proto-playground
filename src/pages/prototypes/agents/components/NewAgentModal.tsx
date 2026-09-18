@@ -182,6 +182,7 @@ export default function NewAgentModal({
         <Modal
           size="small"
           title="New agent"
+          hideTitle
           headerDivider={false}
           footerDivider={false}
           onClose={onClose}

@@ -446,6 +446,7 @@ export default function ChannelsHome({
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
+  const threadBodyRef = useRef<HTMLDivElement>(null);
   const mattyReviewTimerRef = useRef<number | null>(null);
   const mattyReviewQueuedRef = useRef(false);
   const sentinelNotifyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -472,6 +473,16 @@ export default function ChannelsHome({
     observer.observe(list);
     return () => observer.disconnect();
   }, [messages.length]);
+
+  // Thread RHS — scroll to bottom whenever new content appears
+  useEffect(() => {
+    const el = threadBodyRef.current;
+    if (!el) return;
+    const viewport = el.closest('.simplebar-content-wrapper') as HTMLElement | null;
+    if (viewport) {
+      viewport.scrollTop = viewport.scrollHeight;
+    }
+  }, [mattyPhase, threadReviewCardVisible, sentinelApproved, threadRendered]);
 
   useEffect(() => {
     return () => {
@@ -1018,9 +1029,9 @@ export default function ChannelsHome({
                   />
                 </div>
               }
+              alignBody="end"
             >
-              <Scrollbar className={styles['channels-home__thread-scroll']}>
-                <div className={styles['channels-home__thread-body']}>
+                <div ref={threadBodyRef} className={styles['channels-home__thread-body']}>
                   {/* Root post */}
                   {rootThreadMessage ? (
                     <Message
@@ -1118,7 +1129,6 @@ export default function ChannelsHome({
                     </>
                   ) : null}
                 </div>
-              </Scrollbar>
             </RightSidebar>
           )}
         </div>
