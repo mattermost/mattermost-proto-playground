@@ -11,6 +11,7 @@ import NewAgentModal from './components/NewAgentModal';
 import ProductSidebar from './components/ProductSidebar';
 import { useAgents, type AgentsProduct } from './context/AgentsContext';
 import ChannelsHome from './products/channels/ChannelsHome';
+import ChannelsHomeAlert from './products/channels/ChannelsHomeAlert';
 import IncidentChannel from './products/channels/IncidentChannel';
 import styles from './AgentsShell.module.scss';
 
@@ -64,8 +65,10 @@ export default function AgentsShell() {
     pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
   const isChannelsHome =
     normalized === AGENTS_BASE || normalized === `${AGENTS_BASE}/`;
-  const isIncidentChannel = normalized.startsWith(`${AGENTS_BASE}/channel/`);
-  const isChannelView = isChannelsHome || isIncidentChannel;
+  const isServiceStatusAlert = normalized === `${AGENTS_BASE}/channel/service-status-alert`;
+  const isIncidentChannel =
+    normalized.startsWith(`${AGENTS_BASE}/channel/`) && !isServiceStatusAlert;
+  const isChannelView = isChannelsHome || isServiceStatusAlert || isIncidentChannel;
 
   const handleDropdownOpenChange = useCallback((open: boolean) => setDropdownOpen(open), []);
 
@@ -117,7 +120,13 @@ export default function AgentsShell() {
               styles['agents-shell__channel-view'],
               isChannelsHome ? styles['agents-shell__channel-view--active'] : '',
             ].filter(Boolean).join(' ')}>
-              <ChannelsHome />
+              <ChannelsHome onNavigateToIncident={() => navigate(`${AGENTS_BASE}/channel/INC-4471`)} />
+            </div>
+            <div className={[
+              styles['agents-shell__channel-view'],
+              isServiceStatusAlert ? styles['agents-shell__channel-view--active'] : '',
+            ].filter(Boolean).join(' ')}>
+              <ChannelsHomeAlert onNavigateToIncident={() => navigate(`${AGENTS_BASE}/channel/INC-4471`)} />
             </div>
             <div className={[
               styles['agents-shell__channel-view'],

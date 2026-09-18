@@ -1684,7 +1684,7 @@ export default function AgentChat({
                         {doneLabel ? (
                           <Icon glyph={<CheckCircleOutlineIcon />} size="12" />
                         ) : (
-                          <Spinner size={12} aria-label={statusLabel!} />
+                          <Spinner size="12" aria-label={statusLabel!} />
                         )}
                         <span className={styles['agent-chat__status-label']}>
                           {doneLabel ?? statusLabel}

@@ -25,6 +25,7 @@ function resolveScene(
       ? pathname.slice(0, -1)
       : pathname;
   if (normalized.startsWith(`${AGENTS_BASE}/dm/`)) return 'channels';
+  if (normalized === `${AGENTS_BASE}/channel/service-status-alert`) return 'service-status-alert';
   if (normalized.startsWith(`${AGENTS_BASE}/channel/`)) return 'incident-channel';
   if (normalized.startsWith(`${AGENTS_BASE}/agents/`)) return 'matty-chat';
   if (normalized === `${AGENTS_BASE}/agents`) {
@@ -101,6 +102,11 @@ export default function AgentsSceneDropdown({
           closeNewAgent();
           ensureSentinel();
           navigate(`${AGENTS_BASE}/agents/sentinel?artifact=1`);
+          return;
+        case 'service-status-alert':
+          closeNewAgent();
+          ensureSentinel();
+          navigate(`${AGENTS_BASE}/channel/service-status-alert`);
           return;
         case 'incident-channel':
           closeNewAgent();

@@ -25,6 +25,8 @@ type AgentAvatarProps = {
   shadow?: boolean;
   /** When set, draws a 2px --button-bg contour ring outset 4px from the shape. */
   selected?: boolean;
+  /** When set, draws a 2px --center-channel-color outline tracing the shape edge. */
+  outlined?: boolean;
   /** User-uploaded image — replaces the geometric shape fill when set. */
   imageSrc?: string;
   className?: string;
@@ -62,6 +64,7 @@ export default function AgentAvatar({
   levitate = false,
   shadow = false,
   selected = false,
+  outlined = false,
   imageSrc,
   className = '',
 }: AgentAvatarProps) {
@@ -152,6 +155,33 @@ export default function AgentAvatar({
       style={imageSrc ? undefined : colorStyle}
       aria-hidden
     >
+      {outlined && !imageSrc ? (
+        <svg
+          className={styles['agent-avatar__selection']}
+          viewBox="0 0 1 1"
+          preserveAspectRatio="none"
+          aria-hidden
+        >
+          {shape === 'sphere' ? (
+            <circle
+              className={styles['agent-avatar__outline-ring']}
+              cx="0.5"
+              cy="0.5"
+              r="0.5"
+              fill="none"
+              vectorEffect="non-scaling-stroke"
+            />
+          ) : (
+            <path
+              className={styles['agent-avatar__outline-ring']}
+              d={AGENT_AVATAR_SHAPE_PATHS[shape]}
+              strokeLinejoin="round"
+              fill="none"
+              vectorEffect="non-scaling-stroke"
+            />
+          )}
+        </svg>
+      ) : null}
       {selected && !imageSrc ? (
         <svg
           className={styles['agent-avatar__selection']}

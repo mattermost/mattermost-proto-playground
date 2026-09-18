@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import { Chip } from '@mattermost/compass-ui/components/chip';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -23,15 +23,19 @@ import {
   JORDAN,
   MATTY,
   MATTY_ACK_ID,
-  MATTY_AGENT_REVIEW_ID,
+  MATTY_MESSAGED_SENTINEL_SYSTEM_ID,
   ON_CALL,
+  PAYFORGE_ALERT_MESSAGE,
   SENTINEL_DEFAULT,
+  SENTINEL_SECOPS_NOTIFY_ID,
+  PRIYA_MATTY_THREAD_MESSAGE,
   SERVICE_STATUS_MESSAGES,
   VIEWER,
-  buildMattyAckMessage,
   buildMattyAgentReviewMessage,
+  buildMattyMessagedSentinelNotice,
   buildMattySentinelConfirmMessage,
   buildSentinelJoinedSystemMessage,
+  buildSentinelSecopNotifyMessage,
   buildWorkspaceDirectory,
   channelPartsMentionAgent,
   createdAgentToWorkspace,
@@ -41,6 +45,7 @@ import {
   type ChannelMessagePart,
   type WorkspaceAgent,
 } from '../../agentsData';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import AgentTypingDots from '../../components/AgentTypingDots';
 import AddAgentToChannelModal from '../../components/AddAgentToChannelModal';
 import AgentAvatar from '../../components/AgentAvatar';
@@ -49,6 +54,11 @@ import AgentProfilePopover, {
   type AgentProfileAnchor,
 } from '../../components/AgentProfilePopover';
 import AgentReviewCard from '../../components/AgentReviewCard';
+import ChannelLinkCard from '../../components/ChannelLinkCard';
+import MattyDelegationDM, {
+  computeDelegationAnchor,
+  type DelegationDmAnchor,
+} from '../../components/MattyDelegationDM';
 import WebhookPost from '../../components/WebhookPost';
 import AgentSettingsModal from '../../components/AgentSettingsModal';
 import MentionMessageInput from '../../components/MentionMessageInput';
@@ -100,10 +110,7 @@ function personIdFromUsername(username: string): string | null {
 type MattyPhase = 'idle' | 'typing' | 'ack' | 'thinking' | 'result';
 
 const STREAM_MS_PER_WORD = 32;
-/** Beat after Matty's confirm stream before Sentinel's wave shows. */
 const SENTINEL_WAVE_DELAY_MS = 550;
-
-/** Duration typing dots show before the ack message streams in. */
 const MATTY_TYPING_DURATION_MS = 1000;
 const MATTY_ACK_TEXT = "I can help with that. I'll first look to see if there is an existing agent already suited for this task. If not, I'll create one.";
 const MATTY_THINKING_LABELS = [
@@ -112,8 +119,9 @@ const MATTY_THINKING_LABELS = [
   'Drafting agent config…',
 ] as const;
 const MATTY_THINKING_MS = 1100;
-/** Short pause between thinking done and review card appearing. */
 const MATTY_CARD_DELAY_MS = 400;
+const PANEL_EXIT_MS = 300;
+const SENTINEL_NOTIFY_DELAY_MS = 1500;
 
 function formatChannelTime(date = new Date()) {
   return date.toLocaleTimeString('en-US', {
@@ -122,7 +130,6 @@ function formatChannelTime(date = new Date()) {
   });
 }
 
-/** Word-by-word reveal for Matty channel replies. */
 function useStreamedText(
   text: string,
   enabled: boolean,
@@ -163,6 +170,7 @@ function MessageBody({
   parts,
   onAgentProfile,
   density = 'default',
+  disableAgentChips = false,
 }: {
   body: string;
   parts?: ChannelMessagePart[];
@@ -170,8 +178,8 @@ function MessageBody({
     agentId: string,
     event: { currentTarget: EventTarget & Element },
   ) => void;
-  /** System messages use a smaller chip so it matches muted caption text. */
   density?: 'default' | 'system';
+  disableAgentChips?: boolean;
 }) {
   if (!parts?.length) {
     return <p className={styles['channels-home__post']}>{body}</p>;
@@ -201,13 +209,13 @@ function MessageBody({
                   : ''),
               alt: part.label,
             }}
-            role={part.kind === 'agent' ? 'button' : undefined}
-            tabIndex={part.kind === 'agent' ? 0 : undefined}
+            role={part.kind === 'agent' && !disableAgentChips ? 'button' : undefined}
+            tabIndex={part.kind === 'agent' && !disableAgentChips ? 0 : undefined}
             aria-label={
-              part.kind === 'agent' ? `View ${part.label} profile` : undefined
+              part.kind === 'agent' && !disableAgentChips ? `View ${part.label} profile` : undefined
             }
             onClick={
-              part.kind === 'agent'
+              part.kind === 'agent' && !disableAgentChips
                 ? (event) => {
                     event.stopPropagation();
                     onAgentProfile(part.id, event);
@@ -215,7 +223,7 @@ function MessageBody({
                 : undefined
             }
             onKeyDown={
-              part.kind === 'agent'
+              part.kind === 'agent' && !disableAgentChips
                 ? (event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
@@ -229,10 +237,10 @@ function MessageBody({
               mentionStyles['mention-input__mention-chip'],
               mentionStyles['mention-input__post-chip'],
               isSystem ? mentionStyles['mention-input__post-chip--system'] : '',
-              part.kind === 'agent'
+              part.kind === 'agent' && !disableAgentChips
                 ? mentionStyles['mention-input__mention-chip--agent']
                 : '',
-              part.kind === 'agent'
+              part.kind === 'agent' && !disableAgentChips
                 ? mentionStyles['mention-input__post-chip--interactive']
                 : '',
             ]
@@ -264,14 +272,11 @@ function MattyChannelMessage({
   ) => void;
   onReview: () => void;
   cardImageSrc?: string;
-  /** When provided, switches to external phase-driven rendering (ack message). */
   phase?: MattyPhase;
-  /** Externally streamed visible text — used when phase is provided. */
   streamedBody?: string;
   thinkingIndex?: number;
   thinkingLabels?: readonly string[];
 }) {
-  // Internal streaming — only used when phase is not provided (card / confirm messages).
   const [streamFinished, setStreamFinished] = useState(false);
   const [reactionsVisible, setReactionsVisible] = useState(false);
   const [reactionTooltipOpen, setReactionTooltipOpen] = useState(false);
@@ -327,7 +332,7 @@ function MattyChannelMessage({
                 role="status"
                 aria-live="polite"
               >
-                <Spinner size={12} aria-label={thinkingLabels[thinkingIndex]} />
+                <Spinner size="12" aria-label={thinkingLabels[thinkingIndex]} />
                 <span className={styles['channels-home__agent-status-label']}>
                   {thinkingLabels[thinkingIndex]}
                 </span>
@@ -390,36 +395,63 @@ type PendingInvite = {
   body: string;
 };
 
+type ChannelsHomeSnapshot = {
+  messages: ChannelMessage[];
+  channelAgentIds: Set<string>;
+};
+
 /** Channels product — quiet `#service-status` home for the vision demo. */
-export default function ChannelsHome() {
+export default function ChannelsHome({
+  initialSnapshot,
+  onNavigateToIncident,
+}: {
+  initialSnapshot?: ChannelsHomeSnapshot;
+  onNavigateToIncident?: () => void;
+}) {
   const { customAgents, ensureSentinel, updateAgent } = useAgents();
   const [mattyPhase, setMattyPhase] = useState<MattyPhase>('idle');
   const [mattyThinkingIndex, setMattyThinkingIndex] = useState(0);
   const [messages, setMessages] = useState<ChannelMessage[]>(
-    SERVICE_STATUS_MESSAGES,
+    () => initialSnapshot?.messages ?? SERVICE_STATUS_MESSAGES,
   );
   const [channelAgentIds, setChannelAgentIds] = useState(
-    () => new Set(initialServiceStatusAgentIds()),
+    () => initialSnapshot?.channelAgentIds ?? new Set(initialServiceStatusAgentIds()),
   );
-  const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(
-    null,
-  );
+  const [pendingInvite, setPendingInvite] = useState<PendingInvite | null>(null);
   const [composerKey, setComposerKey] = useState(0);
-  const [profileTarget, setProfileTarget] =
-    useState<AgentProfileAnchor | null>(null);
+  const [profileTarget, setProfileTarget] = useState<AgentProfileAnchor | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [membersRhsOpen, setMembersRhsOpen] = useState(false);
   const [settingsAgent, setSettingsAgent] = useState(() =>
     customAgents.find((agent) => agent.id === 'sentinel') ?? null,
   );
+
+  // ── Thread RHS state ───────────────────────────────────────────────────────
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+  const { rendered: threadRendered, exiting: threadExiting } = useExitAnimation(
+    activePostId !== null,
+    PANEL_EXIT_MS,
+  );
+  const [threadReviewCardVisible, setThreadReviewCardVisible] = useState(false);
+  const [sentinelApproved, setSentinelApproved] = useState(false);
+  const [confirmedSentinel, setConfirmedSentinel] = useState<WorkspaceAgent | null>(null);
+  const priyaMentionPostIdRef = useRef<string | null>(null);
+  const mattyAckTimestampRef = useRef<string>('');
+  const approvalTimestampRef = useRef<string>('');
+
+  // ── Delegation DM panel state ──────────────────────────────────────────────
+  const [delegationDmOpen, setDelegationDmOpen] = useState(false);
+  const [delegationAnchor, setDelegationAnchor] = useState<DelegationDmAnchor>({ top: 0, left: 0 });
+  const delegationDmWasOpenedRef = useRef(false);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
   const mattyReviewTimerRef = useRef<number | null>(null);
   const mattyReviewQueuedRef = useRef(false);
+  const sentinelNotifyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const channelAgentIdsRef = useRef(channelAgentIds);
   channelAgentIdsRef.current = channelAgentIds;
 
-  // Keep the SimpleBar viewport pinned to the latest message (incl. streaming growth).
   useEffect(() => {
     const list = messagesListRef.current;
     if (!list) return;
@@ -446,6 +478,9 @@ export default function ChannelsHome() {
       if (mattyReviewTimerRef.current != null) {
         window.clearTimeout(mattyReviewTimerRef.current);
       }
+      if (sentinelNotifyTimerRef.current != null) {
+        clearTimeout(sentinelNotifyTimerRef.current);
+      }
     };
   }, []);
 
@@ -453,6 +488,30 @@ export default function ChannelsHome() {
     MATTY_ACK_TEXT,
     mattyPhase === 'ack',
   );
+
+  // ack → stamp root post with thread footer as soon as first reply appears
+  useEffect(() => {
+    if (mattyPhase !== 'ack') return;
+    const mentionPostId = priyaMentionPostIdRef.current;
+    if (!mentionPostId) return;
+    const replyTs = mattyAckTimestampRef.current || formatChannelTime();
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === mentionPostId && !m.threadReplies
+          ? {
+              ...m,
+              threadReplies: {
+                count: 1,
+                lastReplyTime: replyTs,
+                participants: [
+                  { key: 'matty', name: MATTY.name, agentShape: MATTY.shape, agentColor: MATTY.color },
+                ],
+              },
+            }
+          : m,
+      ),
+    );
+  }, [mattyPhase]);
 
   // ack → thinking
   useEffect(() => {
@@ -475,14 +534,11 @@ export default function ChannelsHome() {
     return () => window.clearTimeout(id);
   }, [mattyPhase, mattyThinkingIndex]);
 
-  // result → show review card message (short beat after checkmark appears)
+  // result → show review card in thread (short beat after checkmark appears)
   useEffect(() => {
     if (mattyPhase !== 'result') return;
     const id = window.setTimeout(() => {
-      setMessages((prev) => {
-        if (prev.some((m) => m.id === MATTY_AGENT_REVIEW_ID)) return prev;
-        return [...prev, buildMattyAgentReviewMessage(formatChannelTime())];
-      });
+      setThreadReviewCardVisible(true);
     }, MATTY_CARD_DELAY_MS);
     return () => window.clearTimeout(id);
   }, [mattyPhase]);
@@ -572,9 +628,14 @@ export default function ChannelsHome() {
     setMessages((prev) => [...prev, ...next]);
   };
 
-  const postUserMessage = (parts: ChannelMessagePart[], body: string) => {
+  const postUserMessage = (
+    parts: ChannelMessagePart[],
+    body: string,
+    id?: string,
+  ): string => {
+    const msgId = id ?? `live-${Date.now()}`;
     appendMessages({
-      id: `live-${Date.now()}`,
+      id: msgId,
       kind: 'user',
       username: VIEWER.name,
       avatarSrc: VIEWER.avatarSrc,
@@ -583,31 +644,33 @@ export default function ChannelsHome() {
       body,
       parts,
     });
+    return msgId;
   };
 
-  const queueMattyAgentReview = (parts: ChannelMessagePart[]) => {
-    if (!channelPartsMentionAgent(parts, MATTY.id)) return;
-    if (channelAgentIdsRef.current.has('sentinel')) return;
-    if (mattyReviewQueuedRef.current) return;
+  const queueMattyAgentReview = useCallback(
+    (parts: ChannelMessagePart[], triggerPostId: string) => {
+      if (!channelPartsMentionAgent(parts, MATTY.id)) return;
+      if (channelAgentIdsRef.current.has('sentinel')) return;
+      if (mattyReviewQueuedRef.current) return;
 
-    mattyReviewQueuedRef.current = true;
-    ensureSentinel();
-    setMattyPhase('typing');
+      mattyReviewQueuedRef.current = true;
+      ensureSentinel();
+      setActivePostId(triggerPostId);
+      setMattyPhase('typing');
 
-    mattyReviewTimerRef.current = window.setTimeout(() => {
-      if (channelAgentIdsRef.current.has('sentinel')) {
+      mattyReviewTimerRef.current = window.setTimeout(() => {
+        if (channelAgentIdsRef.current.has('sentinel')) {
+          mattyReviewTimerRef.current = null;
+          setMattyPhase('idle');
+          return;
+        }
+        mattyAckTimestampRef.current = formatChannelTime();
+        setMattyPhase('ack');
         mattyReviewTimerRef.current = null;
-        setMattyPhase('idle');
-        return;
-      }
-      setMessages((prev) => {
-        if (prev.some((m) => m.id === MATTY_ACK_ID)) return prev;
-        return [...prev, buildMattyAckMessage(formatChannelTime())];
-      });
-      setMattyPhase('ack');
-      mattyReviewTimerRef.current = null;
-    }, MATTY_TYPING_DURATION_MS);
-  };
+      }, MATTY_TYPING_DURATION_MS);
+    },
+    [ensureSentinel],
+  );
 
   const handleSend = ({
     parts,
@@ -625,8 +688,16 @@ export default function ChannelsHome() {
       setPendingInvite({ agents: needed, parts, body });
       return false;
     }
-    postUserMessage(parts, body);
-    queueMattyAgentReview(parts);
+    const newId = `live-${Date.now()}`;
+    const isMattySend = channelPartsMentionAgent(parts, MATTY.id);
+    // Substitute canned message when Matty is mentioned so the narrative is consistent.
+    const postedParts = isMattySend ? (PRIYA_MATTY_THREAD_MESSAGE.parts ?? parts) : parts;
+    const postedBody = isMattySend ? PRIYA_MATTY_THREAD_MESSAGE.body : body;
+    if (isMattySend) {
+      priyaMentionPostIdRef.current = newId;
+    }
+    postUserMessage(postedParts, postedBody, newId);
+    queueMattyAgentReview(postedParts, newId);
   };
 
   const confirmInvite = () => {
@@ -638,8 +709,15 @@ export default function ChannelsHome() {
       }
       return next;
     });
-    postUserMessage(pendingInvite.parts, pendingInvite.body);
-    queueMattyAgentReview(pendingInvite.parts);
+    const newId = `live-${Date.now()}`;
+    const isMattySend = channelPartsMentionAgent(pendingInvite.parts, MATTY.id);
+    const postedParts = isMattySend ? (PRIYA_MATTY_THREAD_MESSAGE.parts ?? pendingInvite.parts) : pendingInvite.parts;
+    const postedBody = isMattySend ? PRIYA_MATTY_THREAD_MESSAGE.body : pendingInvite.body;
+    if (isMattySend) {
+      priyaMentionPostIdRef.current = newId;
+    }
+    postUserMessage(postedParts, postedBody, newId);
+    queueMattyAgentReview(postedParts, newId);
     setPendingInvite(null);
     setComposerKey((key) => key + 1);
   };
@@ -655,41 +733,95 @@ export default function ChannelsHome() {
     setSettingsOpen(true);
   };
 
+  const openDelegationDm = (triggerEl: HTMLElement) => {
+    const rect = triggerEl.getBoundingClientRect();
+    setDelegationAnchor(computeDelegationAnchor(rect));
+    delegationDmWasOpenedRef.current = true;
+    setDelegationDmOpen(true);
+  };
+
+  const closeDelegationDm = () => {
+    setDelegationDmOpen(false);
+    if (!delegationDmWasOpenedRef.current) return;
+
+    // Gate: only fire the alert sequence once, on first close
+    delegationDmWasOpenedRef.current = false;
+
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === PAYFORGE_ALERT_MESSAGE.id)) return prev;
+      return [...prev, PAYFORGE_ALERT_MESSAGE];
+    });
+
+    sentinelNotifyTimerRef.current = setTimeout(() => {
+      const agent = buildWorkspaceDirectory(customAgents).find((a) => a.id === 'sentinel');
+      const ts = formatChannelTime();
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === SENTINEL_SECOPS_NOTIFY_ID)) return prev;
+        return [
+          ...prev,
+          buildSentinelSecopNotifyMessage(ts, agent ?? SENTINEL_DEFAULT),
+        ];
+      });
+    }, SENTINEL_NOTIFY_DELAY_MS);
+  };
+
   const approveSentinel = (
     updates: Parameters<typeof updateAgent>[1],
   ) => {
     const saved = updateAgent('sentinel', updates);
+    const savedAsWorkspace = createdAgentToWorkspace(saved);
     setSettingsAgent(saved);
-    setMessages((prev) =>
-      prev.map((message) =>
-        message.id === MATTY_AGENT_REVIEW_ID && message.agentReviewCard
-          ? {
-              ...message,
-              agentReviewCard: {
-                ...message.agentReviewCard,
-                approved: true,
-              },
-            }
-          : message,
-      ),
-    );
     setSettingsOpen(false);
+
+    // Thread stays open; confirm + delegation notice appear inside it.
+    approvalTimestampRef.current = formatChannelTime();
+    setSentinelApproved(true);
+    setConfirmedSentinel(savedAsWorkspace);
+
+    // Stamp the root @Matty post with a thread footer (5 replies: ack + thinking + card + confirm + delegation).
+    const mentionPostId = priyaMentionPostIdRef.current;
+    if (mentionPostId) {
+      const replyTs = approvalTimestampRef.current;
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === mentionPostId
+            ? {
+                ...m,
+                threadReplies: {
+                  count: 5,
+                  lastReplyTime: replyTs,
+                  participants: [
+                    { key: 'matty', name: MATTY.name, agentShape: MATTY.shape, agentColor: MATTY.color },
+                  ],
+                },
+              }
+            : m,
+        ),
+      );
+    }
 
     if (channelAgentIdsRef.current.has('sentinel')) return;
 
     setChannelAgentIds((prev) => new Set(prev).add('sentinel'));
-    const timestamp = formatChannelTime();
+    const timestamp = approvalTimestampRef.current;
+    // Confirm message + delegation notice live in the thread — only the system notice goes to center channel.
     appendMessages(
-      buildSentinelJoinedSystemMessage(
-        timestamp,
-        createdAgentToWorkspace(saved),
-      ),
-      buildMattySentinelConfirmMessage(
-        timestamp,
-        createdAgentToWorkspace(saved),
-      ),
+      buildSentinelJoinedSystemMessage(timestamp, savedAsWorkspace),
     );
   };
+
+  const rootThreadMessage = activePostId
+    ? messages.find((m) => m.id === activePostId) ?? null
+    : null;
+
+  const threadReviewMessage = threadReviewCardVisible
+    ? buildMattyAgentReviewMessage(mattyAckTimestampRef.current || formatChannelTime())
+    : null;
+
+  const threadDelegationNotice =
+    sentinelApproved && confirmedSentinel
+      ? buildMattyMessagedSentinelNotice(approvalTimestampRef.current, confirmedSentinel)
+      : null;
 
   return (
     <div className={styles['channels-home']}>
@@ -721,6 +853,40 @@ export default function ChannelsHome() {
                 <MessageSeparator type="date" label="Today" />
                 {messages.map((message) => {
                   if (message.kind === 'system') {
+                    if (message.actionable) {
+                      return (
+                        <div
+                          key={message.id}
+                          role="button"
+                          tabIndex={0}
+                          className={[
+                            styles['channels-home__system'],
+                            styles['channels-home__system--actionable'],
+                          ].join(' ')}
+                          onClick={(e) => {
+                            if (message.id === MATTY_MESSAGED_SENTINEL_SYSTEM_ID) {
+                              openDelegationDm(e.currentTarget);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              if (message.id === MATTY_MESSAGED_SENTINEL_SYSTEM_ID) {
+                                openDelegationDm(e.currentTarget);
+                              }
+                            }
+                          }}
+                        >
+                          <MessageBody
+                            body={message.body}
+                            parts={message.parts}
+                            density="system"
+                            disableAgentChips
+                            onAgentProfile={openAgentProfile}
+                          />
+                        </div>
+                      );
+                    }
                     return (
                       <div
                         key={message.id}
@@ -738,19 +904,27 @@ export default function ChannelsHome() {
                   }
 
                   if (message.kind === 'agent') {
-                    const isAck = message.id === MATTY_ACK_ID;
                     return (
-                      <MattyChannelMessage
-                        key={message.id}
-                        message={message}
-                        onAgentProfile={openAgentProfile}
-                        onReview={openSentinelSettings}
-                        cardImageSrc={settingsAgent?.customImageSrc}
-                        phase={isAck ? mattyPhase : undefined}
-                        streamedBody={isAck ? mattyAckVisible : undefined}
-                        thinkingIndex={isAck ? mattyThinkingIndex : undefined}
-                        thinkingLabels={isAck ? MATTY_THINKING_LABELS : undefined}
-                      />
+                      <div key={message.id}>
+                        <MattyChannelMessage
+                          message={message}
+                          onAgentProfile={openAgentProfile}
+                          onReview={openSentinelSettings}
+                          cardImageSrc={settingsAgent?.customImageSrc}
+                        />
+                        {message.channelLinkCard ? (
+                          <div className={styles['channels-home__channel-link-card']}>
+                            <ChannelLinkCard
+                              card={message.channelLinkCard}
+                              onOpen={
+                                message.channelLinkCard.channelName === 'INC-4471'
+                                  ? onNavigateToIncident
+                                  : undefined
+                              }
+                            />
+                          </div>
+                        ) : null}
+                      </div>
                     );
                   }
 
@@ -803,11 +977,6 @@ export default function ChannelsHome() {
                     </Message>
                   );
                 })}
-                {mattyPhase === 'typing' && (
-                  <div className={styles['channels-home__typing-row']}>
-                    <AgentTypingDots label="Matty is typing" />
-                  </div>
-                )}
                 <div ref={bottomRef} />
               </div>
             </Scrollbar>
@@ -823,6 +992,137 @@ export default function ChannelsHome() {
             />
           </div>
         </div>
+
+        {/* Thread RHS — flex sibling that contracts the center channel */}
+        <div
+          className={[
+            styles['channels-home__thread-rhs'],
+            threadRendered && !threadExiting ? styles['channels-home__thread-rhs--open'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
+          {threadRendered && (
+            <RightSidebar
+              header={
+                <RightSidebarHeader
+                  title="Thread"
+                  onClose={() => setActivePostId(null)}
+                />
+              }
+              footer={
+                <div className={styles['channels-home__thread-composer']}>
+                  <MentionMessageInput
+                    placeholder="Reply in thread…"
+                    onSend={() => {}}
+                  />
+                </div>
+              }
+            >
+              <Scrollbar className={styles['channels-home__thread-scroll']}>
+                <div className={styles['channels-home__thread-body']}>
+                  {/* Root post */}
+                  {rootThreadMessage ? (
+                    <Message
+                      avatarSrc={rootThreadMessage.avatarSrc}
+                      avatarAlt={rootThreadMessage.avatarAlt}
+                      username={rootThreadMessage.username}
+                      timestamp={rootThreadMessage.timestamp}
+                      showMessageActions={false}
+                    >
+                      <MessageBody
+                        body={rootThreadMessage.body}
+                        parts={rootThreadMessage.parts}
+                        onAgentProfile={openAgentProfile}
+                      />
+                    </Message>
+                  ) : null}
+
+                  <MessageSeparator type="reply-count" label="Replies" />
+
+                  {/* Matty typing dots */}
+                  {mattyPhase === 'typing' && (
+                    <div className={styles['channels-home__typing-row']}>
+                      <AgentTypingDots label="Matty is typing" />
+                    </div>
+                  )}
+
+                  {/* Matty ack / thinking / result phase */}
+                  {(mattyPhase === 'ack' || mattyPhase === 'thinking' || mattyPhase === 'result') && (
+                    <MattyChannelMessage
+                      message={{
+                        id: MATTY_ACK_ID,
+                        kind: 'agent',
+                        username: MATTY.name,
+                        avatarSrc: '',
+                        avatarAlt: MATTY.name,
+                        timestamp: mattyAckTimestampRef.current,
+                        body: MATTY_ACK_TEXT,
+                        agentShape: MATTY.shape,
+                        agentColor: MATTY.color,
+                      }}
+                      onAgentProfile={openAgentProfile}
+                      onReview={openSentinelSettings}
+                      phase={mattyPhase}
+                      streamedBody={mattyAckVisible}
+                      thinkingIndex={mattyThinkingIndex}
+                      thinkingLabels={MATTY_THINKING_LABELS}
+                    />
+                  )}
+
+                  {/* Review card — appears after result phase delay */}
+                  {threadReviewMessage ? (
+                    <MattyChannelMessage
+                      message={threadReviewMessage}
+                      onAgentProfile={openAgentProfile}
+                      onReview={openSentinelSettings}
+                      cardImageSrc={settingsAgent?.customImageSrc}
+                    />
+                  ) : null}
+
+                  {/* Post-approval: confirm message + delegation notice stay in thread */}
+                  {sentinelApproved && confirmedSentinel && threadDelegationNotice ? (
+                    <>
+                      <MattyChannelMessage
+                        message={buildMattySentinelConfirmMessage(
+                          approvalTimestampRef.current,
+                          confirmedSentinel,
+                        )}
+                        onAgentProfile={openAgentProfile}
+                        onReview={openSentinelSettings}
+                        cardImageSrc={confirmedSentinel.customImageSrc}
+                      />
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        className={[
+                          styles['channels-home__system'],
+                          styles['channels-home__system--actionable'],
+                        ].join(' ')}
+                        onClick={(e) => openDelegationDm(e.currentTarget)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openDelegationDm(e.currentTarget);
+                          }
+                        }}
+                      >
+                        <MessageBody
+                          body={threadDelegationNotice.body}
+                          parts={threadDelegationNotice.parts}
+                          density="system"
+                          disableAgentChips
+                          onAgentProfile={openAgentProfile}
+                        />
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </Scrollbar>
+            </RightSidebar>
+          )}
+        </div>
+
         {membersRhsOpen ? (
           <RightSidebar
             className={styles['channels-home__rhs']}
@@ -854,6 +1154,13 @@ export default function ChannelsHome() {
           </RightSidebar>
         ) : null}
       </div>
+
+      <MattyDelegationDM
+        anchor={delegationAnchor}
+        open={delegationDmOpen}
+        onClose={closeDelegationDm}
+      />
+
       <AddAgentToChannelModal
         open={pendingInvite != null}
         agents={pendingInvite?.agents ?? []}

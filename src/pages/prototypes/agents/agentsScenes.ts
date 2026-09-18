@@ -1,5 +1,6 @@
 export type AgentsSceneId =
   | 'channels'
+  | 'service-status-alert'
   | 'meet-first-agent'
   | 'all-agents'
   | 'matty-chat'
@@ -11,6 +12,7 @@ export type AgentsSceneId =
 
 export const AGENTS_SCENES: Array<{ id: AgentsSceneId; label: string }> = [
   { id: 'channels', label: 'Channels' },
+  { id: 'service-status-alert', label: '#service-status — PayForge Alert' },
   { id: 'meet-first-agent', label: 'Meet your first agent' },
   { id: 'all-agents', label: 'All agents' },
   { id: 'matty-chat', label: 'Chat with Matty' },

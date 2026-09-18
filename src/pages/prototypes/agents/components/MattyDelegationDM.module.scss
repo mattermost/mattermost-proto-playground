@@ -1,0 +1,172 @@
+.delegation-dm {
+  position: fixed;
+  width: 400px;
+  height: 360px;
+  max-height: calc(100vh - var(--spacing-xl) * 2);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-l);
+  overflow: hidden;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-5);
+  transform-origin: bottom right;
+  transform: translateY(var(--spacing-l)) scale(0.92);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform var(--duration-quick) var(--ease-entrance),
+    opacity var(--duration-quick) var(--ease-entrance),
+    visibility 0s linear var(--duration-quick);
+  will-change: transform, opacity;
+
+  &--open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+      transform var(--duration-quick) var(--ease-entrance),
+      opacity var(--duration-quick) var(--ease-entrance),
+      visibility 0s linear 0s;
+  }
+}
+
+.delegation-dm__header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  padding: var(--spacing-m) var(--spacing-m) var(--spacing-m) calc(var(--spacing-m) + var(--spacing-xxxxs));
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  flex-shrink: 0;
+}
+
+.delegation-dm__avatars {
+  display: flex;
+  flex-shrink: 0;
+  transform: scale(0.9);
+  transform-origin: left center;
+
+  > * + * {
+    margin-left: calc(var(--spacing-s) * -1);
+  }
+}
+
+.delegation-dm__avatar-wrap {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.delegation-dm__title-block {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.delegation-dm__title {
+  margin: 0;
+  font-size: var(--font-size-200);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-200);
+  color: var(--center-channel-color);
+}
+
+.delegation-dm__messages {
+  flex: 1;
+  min-height: 0;
+  padding: var(--spacing-xs) 0;
+}
+
+.delegation-dm__msg-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  padding: var(--spacing-m) var(--spacing-l);
+}
+
+.delegation-dm__msg {
+  display: flex;
+
+  &--sentinel {
+    flex-direction: row-reverse;
+    align-self: flex-end;
+
+    .delegation-dm__msg-bubble {
+      border-radius: var(--radius-xl) 0 var(--radius-xl) var(--radius-xl);
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      transform-origin: top right;
+    }
+
+    .delegation-dm__msg-meta {
+      justify-content: flex-end;
+    }
+  }
+}
+
+.delegation-dm__msg-bubble {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxs);
+  padding: var(--spacing-m) var(--spacing-l);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border-radius: 0 var(--radius-xl) var(--radius-xl) var(--radius-xl);
+  max-width: 88%;
+}
+
+.delegation-dm__msg-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+}
+
+.delegation-dm__msg-name {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-100);
+  color: var(--center-channel-color);
+}
+
+.delegation-dm__msg-time {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.delegation-dm__msg-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+
+  > p {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+}
+
+.delegation-dm__readonly-notice {
+  margin: 0;
+  padding: var(--spacing-m) var(--spacing-l);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delegation-dm,
+  .delegation-dm--open {
+    transition: none;
+  }
+}

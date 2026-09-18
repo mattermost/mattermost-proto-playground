@@ -1001,7 +1001,7 @@ export default function IncidentChannel() {
               role="status"
               aria-live="polite"
             >
-              <Spinner size={12} aria-label={OTTO_WORK_STATUS_LABELS[ottoWorkStatusIndex]} />
+              <Spinner size="12" aria-label={OTTO_WORK_STATUS_LABELS[ottoWorkStatusIndex]} />
               <span className={styles['incident-channel__thread-status-label']}>
                 {OTTO_WORK_STATUS_LABELS[ottoWorkStatusIndex]}
               </span>
@@ -1067,7 +1067,7 @@ export default function IncidentChannel() {
               role="status"
               aria-live="polite"
             >
-              <Spinner size={12} aria-label={DYNAMO_WORK_STATUS_LABELS_1[dynamoWorkStatusIndex]} />
+              <Spinner size="12" aria-label={DYNAMO_WORK_STATUS_LABELS_1[dynamoWorkStatusIndex]} />
               <span className={styles['incident-channel__thread-status-label']}>
                 {DYNAMO_WORK_STATUS_LABELS_1[dynamoWorkStatusIndex]}
               </span>
@@ -1132,7 +1132,7 @@ export default function IncidentChannel() {
               role="status"
               aria-live="polite"
             >
-              <Spinner size={12} aria-label={DYNAMO_WORK_STATUS_LABELS_2[dynamoWorkStatusIndex]} />
+              <Spinner size="12" aria-label={DYNAMO_WORK_STATUS_LABELS_2[dynamoWorkStatusIndex]} />
               <span className={styles['incident-channel__thread-status-label']}>
                 {DYNAMO_WORK_STATUS_LABELS_2[dynamoWorkStatusIndex]}
               </span>
@@ -1267,7 +1267,7 @@ export default function IncidentChannel() {
               role="status"
               aria-live="polite"
             >
-              <Spinner size={12} aria-label={CIPHER_STATUS_LABELS[cipherStatusIndex]} />
+              <Spinner size="12" aria-label={CIPHER_STATUS_LABELS[cipherStatusIndex]} />
               <span className={styles['incident-channel__thread-status-label']}>
                 {CIPHER_STATUS_LABELS[cipherStatusIndex]}
               </span>
@@ -1443,7 +1443,7 @@ export default function IncidentChannel() {
             <>
               {JORDAN_OTTO_DEPLOY_ACK_TEXT}
               <div className={styles['incident-channel__thread-status']} role="status" aria-live="polite">
-                <Spinner size={12} aria-label={JORDAN_OTTO_DEPLOY_STATUS_LABELS[jordanOttoStatusIndex]} />
+                <Spinner size="12" aria-label={JORDAN_OTTO_DEPLOY_STATUS_LABELS[jordanOttoStatusIndex]} />
                 <span className={styles['incident-channel__thread-status-label']}>
                   {JORDAN_OTTO_DEPLOY_STATUS_LABELS[jordanOttoStatusIndex]}
                 </span>

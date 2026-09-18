@@ -158,7 +158,7 @@ export const WARDEN = {
   description: 'Decides whether agent actions can proceed, need a human, or stop.',
   shape: 'shield' as AgentShape,
   color: 'red' as AgentColor,
-  channels: ['service-status'],
+  channels: [] as string[],
 };
 
 export const OTTO = {
@@ -1720,6 +1720,12 @@ export type ChannelJiraCard = {
   status: 'Open' | 'In Progress' | 'Resolved';
 };
 
+export type ChannelLinkCardData = {
+  channelName: string;
+  channelDescription: string;
+  channelType: 'public' | 'private';
+};
+
 export type ChannelWebhookPostField = {
   title: string;
   value: string;
@@ -1771,6 +1777,10 @@ export type ChannelMessage = {
   agentImageSrc?: string;
   /** Emoji reactions under the post (e.g. Sentinel waving after joining). */
   reactions?: { emoji: string; count: number; byCurrentUser?: boolean }[];
+  /** System notice that opens an overlay when clicked. */
+  actionable?: boolean;
+  /** Inline card linking to another channel. */
+  channelLinkCard?: ChannelLinkCardData;
 };
 
 export const MATTY_ACK_ID = 'matty-sentinel-ack';
@@ -1779,6 +1789,8 @@ export const SENTINEL_JOINED_SYSTEM_ID = 'sentinel-joined-system';
 export const MATTY_SENTINEL_CONFIRM_ID = 'matty-sentinel-confirm';
 export const MATTY_OTTO_INVITE_ID = 'matty-otto-invite';
 export const OTTO_JOINED_SYSTEM_ID = 'otto-joined-system';
+export const MATTY_MESSAGED_SENTINEL_SYSTEM_ID = 'matty-messaged-sentinel-system';
+export const SENTINEL_SECOPS_NOTIFY_ID = 'sentinel-secops-notify';
 
 export function channelPartsMentionAgent(
   parts: ChannelMessagePart[],
@@ -1962,6 +1974,80 @@ export function buildOttoJoinedSystemMessage(timestamp: string): ChannelMessage 
         text: ' was added to the channel',
       },
     ],
+  };
+}
+
+/** "Matty messaged Sentinel" — actionable system notice that opens the delegation DM panel. */
+export function buildMattyMessagedSentinelNotice(
+  timestamp: string,
+  sentinel: Pick<
+    WorkspaceAgent,
+    'id' | 'name' | 'shape' | 'color' | 'customImageSrc'
+  > = SENTINEL,
+): ChannelMessage {
+  return {
+    id: MATTY_MESSAGED_SENTINEL_SYSTEM_ID,
+    kind: 'system',
+    username: '',
+    avatarSrc: '',
+    avatarAlt: '',
+    timestamp,
+    body: `Matty sent a message to ${sentinel.name}`,
+    actionable: true,
+    parts: [
+      {
+        type: 'mention',
+        id: MATTY.id,
+        label: MATTY.name,
+        avatarSrc: '',
+        kind: 'agent',
+        agentShape: MATTY.shape,
+        agentColor: MATTY.color,
+      },
+      {
+        type: 'text',
+        text: ' sent a message to ',
+      },
+      {
+        type: 'mention',
+        id: sentinel.id,
+        label: sentinel.name,
+        avatarSrc: sentinel.customImageSrc ?? '',
+        kind: 'agent',
+        agentShape: sentinel.shape,
+        agentColor: sentinel.color,
+      },
+    ],
+  };
+}
+
+/** Sentinel's post to #service-status notifying the secops team of the incident. */
+export function buildSentinelSecopNotifyMessage(
+  timestamp: string,
+  agent: Pick<WorkspaceAgent, 'name' | 'shape' | 'color'> = SENTINEL_DEFAULT,
+): ChannelMessage {
+  return {
+    id: SENTINEL_SECOPS_NOTIFY_ID,
+    kind: 'agent',
+    username: agent.name,
+    avatarSrc: '',
+    avatarAlt: agent.name,
+    timestamp,
+    body: "@secops-team — PayForge webhook error rate crossed 5%. I've opened #INC-4471 and activated the Incident Response playbook. Investigating now.",
+    parts: [
+      { type: 'mention', id: 'secops-team', label: 'secops-team', avatarSrc: '', kind: 'person' },
+      {
+        type: 'text',
+        text: " — PayForge webhook error rate crossed 5%. I've opened #INC-4471 and activated the Incident Response playbook. Investigating now.",
+      },
+    ],
+    agentShape: agent.shape,
+    agentColor: agent.color,
+    channelLinkCard: {
+      channelName: 'INC-4471',
+      channelDescription: 'PayForge Incident \xb7 Playbook running',
+      channelType: 'private',
+    },
   };
 }
 
@@ -2444,29 +2530,126 @@ export const SERVICE_STATUS_MESSAGES: ChannelMessage[] = [
       footer: 'PayForge Monitor · 1:45 PM',
     },
   },
-  // ── THE alert — triggers the incident ──────────────────────────────────────
-  {
-    id: 'wh-11',
-    kind: 'webhook',
-    username: 'PayForge Monitor',
-    avatarSrc: '',
-    avatarAlt: 'PayForge Monitor',
-    timestamp: '2:14 PM',
-    body: 'ALERT: PayForge webhook error rate spike',
-    webhookPost: {
-      color: 'danger',
-      title: '🔴 ALERT — PayForge Webhook Error Rate Spike',
-      text: 'Error rate crossed critical threshold. Onset matches build 8842 deployment at 2:09 PM.',
-      fields: [
-        { title: 'Error Rate', value: '5.2% (threshold 5%)', short: true },
-        { title: 'Affected Endpoint', value: 'api/v2/payforge', short: true },
-        { title: 'Error Type', value: 'HTTP 422 Unprocessable', short: true },
-        { title: 'First Seen', value: '2:09 PM (T+0)', short: true },
-      ],
-      footer: 'PayForge Monitor · 2:14 PM',
+];
+
+// ── Priya's @Matty request — in snapshot with resolved thread footer ────────
+export const PRIYA_MATTY_THREAD_ID = 'priya-matty-sentinel-request';
+
+export const PRIYA_MATTY_THREAD_MESSAGE: ChannelMessage = {
+  id: PRIYA_MATTY_THREAD_ID,
+  kind: 'user',
+  username: VIEWER.name,
+  avatarSrc: VIEWER.avatarSrc,
+  avatarAlt: VIEWER.avatarAlt,
+  timestamp: '2:01 PM',
+  body: '@Matty can you set up an agent to watch the PayForge webhook for us? Error rate has been a bit volatile lately.',
+  parts: [
+    {
+      type: 'mention',
+      id: MATTY.id,
+      label: MATTY.name,
+      avatarSrc: '',
+      kind: 'agent',
+      agentShape: MATTY.shape,
+      agentColor: MATTY.color,
     },
+    {
+      type: 'text',
+      text: ' can you set up an agent to watch the PayForge webhook for us? Error rate has been a bit volatile lately.',
+    },
+  ],
+  threadReplies: {
+    count: 3,
+    lastReplyTime: '2:04 PM',
+    participants: [
+      { key: 'matty', name: MATTY.name, agentShape: MATTY.shape, agentColor: MATTY.color },
+    ],
+  },
+};
+
+// ── THE alert — gated until Sentinel is in the channel ─────────────────────
+export const PAYFORGE_ALERT_MESSAGE: ChannelMessage = {
+  id: 'wh-11',
+  kind: 'webhook',
+  username: 'PayForge Monitor',
+  avatarSrc: '',
+  avatarAlt: 'PayForge Monitor',
+  timestamp: '2:14 PM',
+  body: 'ALERT: PayForge webhook error rate spike',
+  webhookPost: {
+    color: 'danger',
+    title: '🔴 ALERT — PayForge Webhook Error Rate Spike',
+    text: 'Error rate crossed critical threshold. Onset matches build 8842 deployment at 2:09 PM.',
+    fields: [
+      { title: 'Error Rate', value: '5.2% (threshold 5%)', short: true },
+      { title: 'Affected Endpoint', value: 'api/v2/payforge', short: true },
+      { title: 'Error Type', value: 'HTTP 422 Unprocessable', short: true },
+      { title: 'First Seen', value: '2:09 PM (T+0)', short: true },
+    ],
+    footer: 'PayForge Monitor · 2:14 PM',
+  },
+};
+
+/** Scripted delegation DM between Matty and Sentinel — shown in the read-only DM panel. */
+export type DmMessage = {
+  id: string;
+  role: 'matty' | 'sentinel';
+  text: string;
+  timestamp: string;
+};
+
+export const MATTY_SENTINEL_DM_MESSAGES: DmMessage[] = [
+  {
+    id: 'dm-1',
+    role: 'matty',
+    text: "Hey Sentinel — Priya asked us to keep an eye on the PayForge webhook. I've added you to #service-status. Your job: watch for error-rate spikes on api/v2/payforge. Threshold is 5%. When it trips, post to the channel and loop in the on-call engineer.",
+    timestamp: '2:15 PM',
+  },
+  {
+    id: 'dm-2',
+    role: 'sentinel',
+    text: "Got it. I'll track api/v2/payforge error rate and alert at ≥5%. I'll tag on-call when I fire. Anything else from Priya's brief?",
+    timestamp: '2:15 PM',
+  },
+  {
+    id: 'dm-3',
+    role: 'matty',
+    text: "That's it for now. Stand by.",
+    timestamp: '2:15 PM',
+  },
+  {
+    id: 'dm-4',
+    role: 'sentinel',
+    text: 'Ready.',
+    timestamp: '2:15 PM',
   },
 ];
+
+/** Pre-seeded snapshot for the "PayForge Alert" jump scene. */
+export const PAYFORGE_ALERT_SNAPSHOT: {
+  messages: ChannelMessage[];
+  channelAgentIds: Set<string>;
+} = (() => {
+  const ts = '2:15 PM';
+  const sentinel = {
+    id: 'sentinel',
+    name: SENTINEL_DEFAULT.name,
+    shape: SENTINEL_DEFAULT.shape,
+    color: SENTINEL_DEFAULT.color,
+    customImageSrc: undefined as string | undefined,
+  };
+  return {
+    messages: [
+      ...SERVICE_STATUS_MESSAGES,
+      PRIYA_MATTY_THREAD_MESSAGE,
+      PAYFORGE_ALERT_MESSAGE,
+      buildSentinelJoinedSystemMessage(ts, sentinel),
+      buildMattyMessagedSentinelNotice(ts, sentinel),
+      buildSentinelSecopNotifyMessage(ts),
+    ],
+    channelAgentIds: new Set(['sentinel']),
+  };
+})();
 
 export const INCIDENT_OTTO_INVITE_ID = 'inc-matty-otto-invite';
 

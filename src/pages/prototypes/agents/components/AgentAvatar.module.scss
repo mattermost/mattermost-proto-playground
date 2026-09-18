@@ -133,6 +133,12 @@
     pointer-events: none;
   }
 
+  &__outline-ring {
+    stroke: var(--center-channel-bg);
+    // 4px centered stroke → 2px visible outside the shape edge (half clips under shape fill)
+    stroke-width: 4px;
+  }
+
   &__selection-ring {
     stroke: var(--button-bg);
     // 2 * (gap 4 + ring 2) = 12 → 6px outside centerline
