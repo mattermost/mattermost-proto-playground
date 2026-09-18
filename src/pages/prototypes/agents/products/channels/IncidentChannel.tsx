@@ -378,7 +378,7 @@ function AgentPost({
 }
 
 // Delay (ms) between each pre-seeded message appearing on channel entry.
-const MSG_STAGGER_DELAYS = [0, 600, 1200, 1900, 2600, 3400];
+const MSG_STAGGER_DELAYS = [0, 700, 1500, 3200, 4000, 4800];
 
 /** Incident channel view — INC-4471 with playbook run RHS open. */
 export default function IncidentChannel({ active = false }: { active?: boolean }) {
