@@ -377,10 +377,33 @@ function AgentPost({
   );
 }
 
+// Delay (ms) between each pre-seeded message appearing on channel entry.
+const MSG_STAGGER_DELAYS = [0, 600, 1200, 1900, 2600, 3400];
+
 /** Incident channel view — INC-4471 with playbook run RHS open. */
-export default function IncidentChannel() {
+export default function IncidentChannel({ active = false }: { active?: boolean }) {
   const { customAgents } = useAgents();
   const mattyProfile = resolveSingleAgentProfile(MATTY.id, customAgents);
+
+  // How many pre-seeded messages are currently visible. Resets and staggers in on each channel entry.
+  const [visibleCount, setVisibleCount] = useState(0);
+  const staggerTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(() => {
+    if (!active) return;
+    // Reset and replay the stagger every time the user navigates here.
+    staggerTimersRef.current.forEach(clearTimeout);
+    staggerTimersRef.current = [];
+    setVisibleCount(0);
+    const total = INCIDENT_CHANNEL_MESSAGES.length;
+    MSG_STAGGER_DELAYS.forEach((delay, i) => {
+      if (i >= total) return;
+      const t = setTimeout(() => setVisibleCount(i + 1), delay);
+      staggerTimersRef.current.push(t);
+    });
+    return () => {
+      staggerTimersRef.current.forEach(clearTimeout);
+    };
+  }, [active]);
 
   // ID of the post whose thread is open, or null when the thread panel is closed.
   const [activePostId, setActivePostId] = useState<string | null>(null);
@@ -1569,7 +1592,7 @@ export default function IncidentChannel() {
                   description="Checkout failures during peak traffic — PayForge webhook regression. This channel was created automatically when the incident was declared."
                 />
                 <MessageSeparator type="date" label="Today" />
-                {INCIDENT_CHANNEL_MESSAGES.map((message) => {
+                {INCIDENT_CHANNEL_MESSAGES.slice(0, visibleCount).map((message) => {
                   if (message.kind === 'system') {
                     // System messages aren't threaded — render as non-interactive
                     return (

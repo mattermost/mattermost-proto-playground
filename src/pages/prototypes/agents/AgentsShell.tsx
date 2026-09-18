@@ -132,7 +132,7 @@ export default function AgentsShell() {
               styles['agents-shell__channel-view'],
               isIncidentChannel ? styles['agents-shell__channel-view--active'] : '',
             ].filter(Boolean).join(' ')}>
-              <IncidentChannel />
+              <IncidentChannel active={isIncidentChannel} />
             </div>
             {!isChannelView && <Outlet />}
           </div>
