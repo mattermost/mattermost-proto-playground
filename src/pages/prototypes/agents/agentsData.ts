@@ -2642,8 +2642,8 @@ export const PAYFORGE_ALERT_SNAPSHOT: {
     messages: [
       ...SERVICE_STATUS_MESSAGES,
       PRIYA_MATTY_THREAD_MESSAGE,
-      PAYFORGE_ALERT_MESSAGE,
       buildSentinelJoinedSystemMessage(ts, sentinel),
+      PAYFORGE_ALERT_MESSAGE,
       buildSentinelSecopNotifyMessage(ts),
     ],
     channelAgentIds: new Set(['sentinel']),
