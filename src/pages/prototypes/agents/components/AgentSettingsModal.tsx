@@ -1,0 +1,1069 @@
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ComponentType,
+  Fragment,
+} from 'react';
+import { createPortal } from 'react-dom';
+import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
+import BookOutlineIcon from '@mattermost/compass-icons/components/book-outline';
+import CheckCircleIcon from '@mattermost/compass-icons/components/check-circle';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
+import FileTextOutlineIcon from '@mattermost/compass-icons/components/file-text-outline';
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
+import HammerIcon from '@mattermost/compass-icons/components/hammer';
+import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
+import LockOutlineIcon from '@mattermost/compass-icons/components/lock-outline';
+import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
+import PlusIcon from '@mattermost/compass-icons/components/plus';
+import ShuffleVariantIcon from '@mattermost/compass-icons/components/shuffle-variant';
+import TuneIcon from '@mattermost/compass-icons/components/tune';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Divider } from '@mattermost/compass-ui/components/divider';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { Modal } from '@mattermost/compass-ui/components/modal';
+import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { SearchInput } from '@mattermost/compass-ui/components/search-input';
+import { Select } from '@mattermost/compass-ui/components/select';
+import { TextArea } from '@mattermost/compass-ui/components/text-area';
+import { TextInput } from '@mattermost/compass-ui/components/text-input';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import {
+  AGENT_ACCESS_ENTRIES,
+  AGENT_ACCESS_ROLE_OPTIONS,
+  AGENT_COLORS,
+  AGENT_COLOR_STOPS,
+  AGENT_MODEL_OPTIONS,
+  AGENT_SHAPES,
+  DEFAULT_AGENT_MODEL,
+  DEFAULT_AGENT_VISIBILITY,
+  buildKnowledgePreview,
+  cloneAdvancedConfig,
+  cloneConnectedMcps,
+  type AgentAccessRole,
+  type AgentAdvancedConfig,
+  type AgentColor,
+  type AgentProfile,
+  type AgentShape,
+  type AgentVisibility,
+  type ConnectedMcp,
+  type ScheduledJob,
+} from '../agentsData';
+import type { AgentUpdates } from '../context/AgentsContext';
+import AgentAvatar from './AgentAvatar';
+import AgentSettingsAdvancedPanel from './AgentSettingsAdvancedPanel';
+import AgentSettingsKnowledgePanel from './AgentSettingsKnowledgePanel';
+import AgentSettingsTasksPanel from './AgentSettingsTasksPanel';
+import AgentSettingsToolsPanel from './AgentSettingsToolsPanel';
+import styles from './AgentSettingsModal.module.scss';
+
+const EXIT_MS = 150;
+const APPEARANCE_EXIT_MS = 150;
+
+function pickRandomAppearance(): { shape: AgentShape; color: AgentColor } {
+  return {
+    shape: AGENT_SHAPES[Math.floor(Math.random() * AGENT_SHAPES.length)]!,
+    color: AGENT_COLORS[Math.floor(Math.random() * AGENT_COLORS.length)]!,
+  };
+}
+
+export const AGENT_SETTINGS_TABS = [
+  'info',
+  'model',
+  'knowledge',
+  'tasks',
+  'tools',
+  'access',
+  'advanced',
+] as const;
+
+export type SettingsTab = (typeof AGENT_SETTINGS_TABS)[number];
+
+type TabDef = {
+  id: SettingsTab;
+  label: string;
+  IconGlyph: ComponentType;
+  dividerBefore?: boolean;
+};
+
+const TABS: TabDef[] = [
+  { id: 'info', label: 'Info', IconGlyph: InformationOutlineIcon },
+  {
+    id: 'model',
+    label: 'Model & Instructions',
+    IconGlyph: FileTextOutlineIcon,
+  },
+  { id: 'knowledge', label: 'Knowledge sources', IconGlyph: BookOutlineIcon },
+  { id: 'tasks', label: 'Automated tasks', IconGlyph: ClockOutlineIcon },
+  { id: 'tools', label: 'Tools', IconGlyph: HammerIcon },
+  {
+    id: 'access',
+    label: 'Access & sharing',
+    IconGlyph: AccountMultipleOutlineIcon,
+  },
+  {
+    id: 'advanced',
+    label: 'Advanced',
+    IconGlyph: TuneIcon,
+    dividerBefore: true,
+  },
+];
+
+type VisibilityOption = {
+  value: AgentVisibility;
+  title: string;
+  description: string;
+  IconGlyph: ComponentType;
+};
+
+const VISIBILITY_OPTIONS: VisibilityOption[] = [
+  {
+    value: 'public',
+    title: 'Public agent',
+    description: 'Any member can use',
+    IconGlyph: GlobeIcon,
+  },
+  {
+    value: 'private',
+    title: 'Private agent',
+    description: 'Only invited members',
+    IconGlyph: LockOutlineIcon,
+  },
+];
+
+type DraftState = {
+  name: string;
+  description: string;
+  purpose: string;
+  shape: AgentShape;
+  color: AgentColor;
+  model: string;
+  visibility: AgentVisibility;
+  customImageSrc: string | null;
+  knowledgeChannelIds: string[];
+  knowledgeDocIds: string[];
+  scheduledJobs: ScheduledJob[];
+  connectedMcps: ConnectedMcp[];
+  advancedConfig: AgentAdvancedConfig;
+};
+
+function profileToDraft(agent: AgentProfile): DraftState {
+  return {
+    name: agent.name,
+    description: agent.description ?? '',
+    purpose: agent.purpose ?? '',
+    shape: agent.shape,
+    color: agent.color,
+    model: agent.model || DEFAULT_AGENT_MODEL,
+    visibility: agent.visibility || DEFAULT_AGENT_VISIBILITY,
+    customImageSrc: agent.customImageSrc ?? null,
+    knowledgeChannelIds: agent.knowledgeChannelIds ?? [],
+    knowledgeDocIds: agent.knowledgeDocIds ?? [],
+    scheduledJobs: (agent.scheduledJobs ?? []).map((job) => ({ ...job })),
+    connectedMcps: cloneConnectedMcps(agent.connectedMcps),
+    advancedConfig: cloneAdvancedConfig(agent.advancedConfig),
+  };
+}
+
+function jobsEqual(a: ScheduledJob[], b: ScheduledJob[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every(
+    (job, i) =>
+      job.id === b[i].id &&
+      job.title === b[i].title &&
+      job.trigger === b[i].trigger &&
+      job.recurrence === b[i].recurrence &&
+      job.time === b[i].time &&
+      job.instructions === b[i].instructions,
+  );
+}
+
+function draftsEqual(a: DraftState, b: DraftState): boolean {
+  return (
+    a.name === b.name &&
+    a.description === b.description &&
+    a.purpose === b.purpose &&
+    a.shape === b.shape &&
+    a.color === b.color &&
+    a.model === b.model &&
+    a.visibility === b.visibility &&
+    a.customImageSrc === b.customImageSrc &&
+    a.knowledgeChannelIds.join() === b.knowledgeChannelIds.join() &&
+    a.knowledgeDocIds.join() === b.knowledgeDocIds.join() &&
+    jobsEqual(a.scheduledJobs, b.scheduledJobs) &&
+    JSON.stringify(a.connectedMcps) === JSON.stringify(b.connectedMcps) &&
+    JSON.stringify(a.advancedConfig) === JSON.stringify(b.advancedConfig)
+  );
+}
+
+type AgentSettingsModalProps = {
+  open: boolean;
+  agent: AgentProfile;
+  initialTab?: SettingsTab;
+  /** Review flow (e.g. channel Matty draft) — always show Approve, even if unchanged. */
+  mode?: 'edit' | 'review';
+  onClose: () => void;
+  onSave: (updates: AgentUpdates) => void;
+};
+
+export default function AgentSettingsModal({
+  open,
+  agent,
+  initialTab = 'info',
+  mode = 'edit',
+  onClose,
+  onSave,
+}: AgentSettingsModalProps) {
+  const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
+  const baseId = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const appearanceRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
+  const [baseline, setBaseline] = useState<DraftState>(() =>
+    profileToDraft(agent),
+  );
+  const [draft, setDraft] = useState<DraftState>(() => profileToDraft(agent));
+  const [accessRoles, setAccessRoles] = useState<
+    Record<string, AgentAccessRole>
+  >(() =>
+    Object.fromEntries(
+      AGENT_ACCESS_ENTRIES.map((entry) => [entry.id, entry.role]),
+    ),
+  );
+  const [peopleQuery, setPeopleQuery] = useState('');
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const {
+    rendered: appearanceRendered,
+    exiting: appearanceExiting,
+  } = useExitAnimation(appearanceOpen, APPEARANCE_EXIT_MS);
+
+  useOutsideClose(appearanceRef, appearanceOpen && !appearanceExiting, () =>
+    setAppearanceOpen(false),
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const next = profileToDraft(agent);
+    setBaseline(next);
+    setDraft(next);
+    setActiveTab(initialTab);
+    setPeopleQuery('');
+    setAppearanceOpen(false);
+    setAccessRoles(
+      Object.fromEntries(
+        AGENT_ACCESS_ENTRIES.map((entry) => [entry.id, entry.role]),
+      ),
+    );
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [open, agent, initialTab]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (appearanceOpen) {
+        e.stopPropagation();
+        setAppearanceOpen(false);
+        return;
+      }
+      onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, onClose, appearanceOpen]);
+
+  const isDirty = useMemo(
+    () => !draftsEqual(draft, baseline),
+    [draft, baseline],
+  );
+  const isReview = mode === 'review';
+  const showActions = isReview || isDirty;
+
+  const handleCustomImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        const src = reader.result;
+        setDraft((prev) => ({ ...prev, customImageSrc: src }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const randomizeAppearance = () => {
+    const random = pickRandomAppearance();
+    setDraft((prev) => ({
+      ...prev,
+      shape: random.shape,
+      color: random.color,
+      customImageSrc: null,
+    }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleSave = () => {
+    onSave({
+      name: draft.name,
+      description: draft.description,
+      purpose: draft.purpose,
+      shape: draft.shape,
+      color: draft.color,
+      model: draft.model,
+      visibility: draft.visibility,
+      customImageSrc: draft.customImageSrc ?? undefined,
+      knowledgeChannelIds: draft.knowledgeChannelIds,
+      knowledgeDocIds: draft.knowledgeDocIds,
+      scheduledJobs: draft.scheduledJobs.filter((job) => job.title.trim()),
+      connectedMcps: draft.connectedMcps,
+      advancedConfig: draft.advancedConfig,
+    });
+    onClose();
+  };
+
+  const filteredAccess = useMemo(() => {
+    const q = peopleQuery.trim().toLowerCase();
+    if (!q) return AGENT_ACCESS_ENTRIES;
+    return AGENT_ACCESS_ENTRIES.filter(
+      (entry) =>
+        entry.name.toLowerCase().includes(q) ||
+        entry.secondaryLabel.toLowerCase().includes(q),
+    );
+  }, [peopleQuery]);
+
+  const knowledgePreview = buildKnowledgePreview(
+    draft.name,
+    draft.knowledgeChannelIds,
+    draft.knowledgeDocIds,
+  );
+
+  if (!rendered) return null;
+
+  const panelId = `${baseId}-panel`;
+
+  return createPortal(
+    <div
+      className={[
+        styles['agent-settings-modal'],
+        exiting ? styles['agent-settings-modal--exiting'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <button
+        type="button"
+        className={styles['agent-settings-modal__backdrop']}
+        aria-label="Close dialog"
+        onClick={onClose}
+      />
+      <div
+        className={styles['agent-settings-modal__dialog']}
+        role="presentation"
+      >
+        <Modal
+          size="large"
+          title="Agent Settings"
+          subtitle={agent.name}
+          headerDivider
+          footerDivider={false}
+          onClose={onClose}
+        >
+          <div className={styles['agent-settings-modal__layout']}>
+            <nav
+              className={styles['agent-settings-modal__sidebar']}
+              aria-label="Agent settings sections"
+            >
+              <div
+                className={styles['agent-settings-modal__tablist']}
+                role="tablist"
+                aria-orientation="vertical"
+              >
+                {TABS.map(({ id, label, IconGlyph, dividerBefore }) => {
+                  const selected = activeTab === id;
+                  return (
+                    <Fragment key={id}>
+                      {dividerBefore ? (
+                        <div
+                          className={
+                            styles['agent-settings-modal__tab-divider']
+                          }
+                        >
+                          <Divider />
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        role="tab"
+                        id={`${baseId}-tab-${id}`}
+                        aria-selected={selected}
+                        aria-controls={panelId}
+                        tabIndex={selected ? 0 : -1}
+                        className={[
+                          styles['agent-settings-modal__tab'],
+                          selected
+                            ? styles['agent-settings-modal__tab--selected']
+                            : '',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        onClick={() => setActiveTab(id)}
+                      >
+                        <Icon glyph={<IconGlyph />} size="16" />
+                        <span>{label}</span>
+                      </button>
+                    </Fragment>
+                  );
+                })}
+              </div>
+            </nav>
+
+            <div className={styles['agent-settings-modal__main']}>
+              <div className={styles['agent-settings-modal__scroll']}>
+                <Scrollbar>
+                  <div
+                    className={styles['agent-settings-modal__panel']}
+                    role="tabpanel"
+                    id={panelId}
+                    aria-labelledby={`${baseId}-tab-${activeTab}`}
+                  >
+                    {activeTab === 'info' ? (
+                      <div className={styles['agent-settings-modal__info']}>
+                        <div
+                          className={
+                            styles['agent-settings-modal__appearance']
+                          }
+                        >
+                          <div
+                            className={styles['agent-settings-modal__preview']}
+                          >
+                            <div
+                              ref={appearanceRef}
+                              className={
+                                styles['agent-settings-modal__avatar-edit']
+                              }
+                            >
+                              <button
+                                type="button"
+                                className={
+                                  styles['agent-settings-modal__avatar-button']
+                                }
+                                aria-label="Edit appearance"
+                                aria-haspopup="dialog"
+                                aria-expanded={appearanceOpen}
+                                onClick={() =>
+                                  setAppearanceOpen((prev) => !prev)
+                                }
+                              >
+                                <AgentAvatar
+                                  shape={draft.shape}
+                                  color={draft.color}
+                                  size="xl"
+                                  eyes
+                                  shadow
+                                  levitate={!appearanceOpen}
+                                  imageSrc={draft.customImageSrc ?? undefined}
+                                />
+                                <span
+                                  className={
+                                    styles['agent-settings-modal__avatar-badge']
+                                  }
+                                  aria-hidden
+                                >
+                                  <Icon
+                                    glyph={<PencilOutlineIcon />}
+                                    size="12"
+                                  />
+                                </span>
+                              </button>
+
+                              {appearanceRendered ? (
+                                <div
+                                  className={[
+                                    styles[
+                                      'agent-settings-modal__appearance-popover'
+                                    ],
+                                    appearanceExiting
+                                      ? styles[
+                                          'agent-settings-modal__appearance-popover--exiting'
+                                        ]
+                                      : '',
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' ')}
+                                  role="dialog"
+                                  aria-label="Appearance"
+                                >
+                                  <div
+                                    className={
+                                      styles['agent-settings-modal__selectors']
+                                    }
+                                  >
+                                    <div
+                                      className={
+                                        styles['agent-settings-modal__swatches']
+                                      }
+                                      role="listbox"
+                                      aria-label="Appearance shape"
+                                    >
+                                      {AGENT_SHAPES.map((s) => (
+                                        <button
+                                          key={s}
+                                          type="button"
+                                          role="option"
+                                          aria-selected={
+                                            !draft.customImageSrc &&
+                                            draft.shape === s
+                                          }
+                                          className={
+                                            styles[
+                                              'agent-settings-modal__swatch'
+                                            ]
+                                          }
+                                          onClick={() => {
+                                            setDraft((prev) => ({
+                                              ...prev,
+                                              shape: s,
+                                              customImageSrc: null,
+                                            }));
+                                            if (fileInputRef.current) {
+                                              fileInputRef.current.value = '';
+                                            }
+                                          }}
+                                        >
+                                          <AgentAvatar
+                                            shape={s}
+                                            color={draft.color}
+                                            size="sm"
+                                            selected={
+                                              !draft.customImageSrc &&
+                                              draft.shape === s
+                                            }
+                                            className={
+                                              styles[
+                                                'agent-settings-modal__swatch-avatar'
+                                              ]
+                                            }
+                                          />
+                                        </button>
+                                      ))}
+                                      <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__file-input'
+                                          ]
+                                        }
+                                        tabIndex={-1}
+                                        aria-hidden
+                                        onChange={handleCustomImageChange}
+                                      />
+                                      <IconButton
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__upload'
+                                          ]
+                                        }
+                                        size="medium"
+                                        rounded
+                                        icon={
+                                          <Icon
+                                            glyph={<PlusIcon />}
+                                            size="20"
+                                          />
+                                        }
+                                        aria-label="Upload custom image"
+                                        onClick={() =>
+                                          fileInputRef.current?.click()
+                                        }
+                                      />
+                                      <IconButton
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__shuffle'
+                                          ]
+                                        }
+                                        size="medium"
+                                        rounded
+                                        icon={
+                                          <Icon
+                                            glyph={<ShuffleVariantIcon />}
+                                            size="20"
+                                          />
+                                        }
+                                        aria-label="Randomize appearance"
+                                        onClick={randomizeAppearance}
+                                      />
+                                    </div>
+
+                                    <div
+                                      className={
+                                        styles['agent-settings-modal__colors']
+                                      }
+                                      role="listbox"
+                                      aria-label="Appearance color"
+                                    >
+                                      {AGENT_COLORS.map((c) => (
+                                        <button
+                                          key={c}
+                                          type="button"
+                                          role="option"
+                                          aria-selected={draft.color === c}
+                                          className={[
+                                            styles[
+                                              'agent-settings-modal__color'
+                                            ],
+                                            draft.color === c
+                                              ? styles[
+                                                  'agent-settings-modal__color--selected'
+                                                ]
+                                              : '',
+                                          ]
+                                            .filter(Boolean)
+                                            .join(' ')}
+                                          onClick={() =>
+                                            setDraft((prev) => ({
+                                              ...prev,
+                                              color: c,
+                                            }))
+                                          }
+                                        >
+                                          <span
+                                            className={
+                                              styles[
+                                                'agent-settings-modal__color-dot'
+                                              ]
+                                            }
+                                            style={{
+                                              ['--agent-avatar-highlight' as string]:
+                                                AGENT_COLOR_STOPS[c].highlight,
+                                              ['--agent-avatar-mid' as string]:
+                                                AGENT_COLOR_STOPS[c].mid,
+                                              ['--agent-avatar-edge' as string]:
+                                                AGENT_COLOR_STOPS[c].edge,
+                                            }}
+                                          />
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </div>
+
+                            <p
+                              className={
+                                styles['agent-settings-modal__preview-name']
+                              }
+                            >
+                              {draft.name.trim() || 'Untitled agent'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className={styles['agent-settings-modal__fields']}>
+                          <TextInput
+                            label="Name"
+                            value={draft.name}
+                            onChange={(e) =>
+                              setDraft((prev) => ({
+                                ...prev,
+                                name: e.target.value,
+                              }))
+                            }
+                            aria-label="Agent name"
+                          />
+                          <div
+                            className={
+                              styles['agent-settings-modal__field-with-help']
+                            }
+                          >
+                            <TextArea
+                              value={draft.description}
+                              onChange={(e) =>
+                                setDraft((prev) => ({
+                                  ...prev,
+                                  description: e.target.value,
+                                }))
+                              }
+                              placeholder="Enter a description for this agent"
+                              rows={3}
+                              aria-label="Agent description"
+                              aria-describedby={`${baseId}-description-help`}
+                            />
+                            <p
+                              id={`${baseId}-description-help`}
+                              className={styles['agent-settings-modal__help']}
+                            >
+                              Describe what this agent can do and what it
+                              should be used for
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {activeTab === 'model' ? (
+                      <div className={styles['agent-settings-modal__fields']}>
+                        <Select
+                          id={`${baseId}-model`}
+                          label="AI Model"
+                          size="medium"
+                          value={draft.model}
+                          options={AGENT_MODEL_OPTIONS}
+                          onChange={(val) =>
+                            setDraft((prev) => ({ ...prev, model: val }))
+                          }
+                          zIndex={1400}
+                        />
+                        <div
+                          className={
+                            styles['agent-settings-modal__field-with-help']
+                          }
+                        >
+                          <TextArea
+                            value={draft.purpose}
+                            onChange={(e) =>
+                              setDraft((prev) => ({
+                                ...prev,
+                                purpose: e.target.value,
+                              }))
+                            }
+                            placeholder="Enter custom instructions for how you'd like this agent to work."
+                            rows={10}
+                            aria-label="Custom instructions"
+                            aria-describedby={`${baseId}-instructions-help`}
+                          />
+                          <p
+                            id={`${baseId}-instructions-help`}
+                            className={styles['agent-settings-modal__help']}
+                          >
+                            Custom instructions allow you to share anything
+                            you&apos;d like the agent to consider in its
+                            response. This can include things like the
+                            agent&apos;s role, its tone and personality, its
+                            scope, do&apos;s and don&apos;ts, or how you want
+                            responses formatted.
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {activeTab === 'knowledge' ? (
+                      <AgentSettingsKnowledgePanel
+                        name={draft.name}
+                        knowledgeChannelIds={draft.knowledgeChannelIds}
+                        knowledgeDocIds={draft.knowledgeDocIds}
+                        preview={knowledgePreview}
+                        onChannelsChange={(knowledgeChannelIds) =>
+                          setDraft((prev) => ({
+                            ...prev,
+                            knowledgeChannelIds,
+                          }))
+                        }
+                        onDocsChange={(knowledgeDocIds) =>
+                          setDraft((prev) => ({ ...prev, knowledgeDocIds }))
+                        }
+                      />
+                    ) : null}
+
+                    {activeTab === 'tasks' ? (
+                      <AgentSettingsTasksPanel
+                        jobs={draft.scheduledJobs}
+                        onChange={(scheduledJobs) =>
+                          setDraft((prev) => ({ ...prev, scheduledJobs }))
+                        }
+                      />
+                    ) : null}
+
+                    {activeTab === 'tools' ? (
+                      <AgentSettingsToolsPanel
+                        connectedMcps={draft.connectedMcps}
+                        onChange={(connectedMcps) =>
+                          setDraft((prev) => ({ ...prev, connectedMcps }))
+                        }
+                      />
+                    ) : null}
+
+                    {activeTab === 'access' ? (
+                      <div className={styles['agent-settings-modal__access']}>
+                        <div
+                          className={styles['agent-settings-modal__access-block']}
+                        >
+                          <h3
+                            className={
+                              styles['agent-settings-modal__section-title']
+                            }
+                          >
+                            Access
+                          </h3>
+                          <div
+                            className={
+                              styles['agent-settings-modal__visibility']
+                            }
+                            role="radiogroup"
+                            aria-label="Agent visibility"
+                          >
+                            {VISIBILITY_OPTIONS.map(
+                              ({
+                                value,
+                                title,
+                                description,
+                                IconGlyph,
+                              }) => {
+                                const selected = draft.visibility === value;
+                                return (
+                                  <button
+                                    key={value}
+                                    type="button"
+                                    role="radio"
+                                    aria-checked={selected}
+                                    className={[
+                                      styles[
+                                        'agent-settings-modal__visibility-card'
+                                      ],
+                                      selected
+                                        ? styles[
+                                            'agent-settings-modal__visibility-card--selected'
+                                          ]
+                                        : '',
+                                    ]
+                                      .filter(Boolean)
+                                      .join(' ')}
+                                    onClick={() =>
+                                      setDraft((prev) => ({
+                                        ...prev,
+                                        visibility: value,
+                                      }))
+                                    }
+                                  >
+                                    <span
+                                      className={
+                                        styles[
+                                          'agent-settings-modal__visibility-icon-wrap'
+                                        ]
+                                      }
+                                    >
+                                      <Icon glyph={<IconGlyph />} size="24" />
+                                    </span>
+                                    <span
+                                      className={
+                                        styles[
+                                          'agent-settings-modal__visibility-text'
+                                        ]
+                                      }
+                                    >
+                                      <span
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__visibility-title'
+                                          ]
+                                        }
+                                      >
+                                        {title}
+                                      </span>
+                                      <span
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__visibility-description'
+                                          ]
+                                        }
+                                      >
+                                        {description}
+                                      </span>
+                                    </span>
+                                    {selected ? (
+                                      <span
+                                        className={
+                                          styles[
+                                            'agent-settings-modal__visibility-check'
+                                          ]
+                                        }
+                                        aria-hidden
+                                      >
+                                        <Icon
+                                          glyph={<CheckCircleIcon />}
+                                          size="20"
+                                        />
+                                      </span>
+                                    ) : null}
+                                  </button>
+                                );
+                              },
+                            )}
+                          </div>
+                        </div>
+
+                        <div
+                          className={styles['agent-settings-modal__access-block']}
+                        >
+                          <div
+                            className={
+                              styles['agent-settings-modal__section-header']
+                            }
+                          >
+                            <h3
+                              className={
+                                styles['agent-settings-modal__section-title']
+                              }
+                            >
+                              People and groups with access
+                            </h3>
+                            <p
+                              className={styles['agent-settings-modal__help']}
+                            >
+                              Specific people, groups, and links that override
+                              general access.
+                            </p>
+                          </div>
+                          <SearchInput
+                            placeholder="Add people, groups or channels"
+                            value={peopleQuery}
+                            onChange={(e) => setPeopleQuery(e.target.value)}
+                            onClear={() => setPeopleQuery('')}
+                            aria-label="Add people, groups or channels"
+                          />
+                          <div
+                            className={
+                              styles['agent-settings-modal__access-list']
+                            }
+                            role="list"
+                            aria-label="People and groups with access"
+                          >
+                            {filteredAccess.map((entry) => (
+                              <div
+                                key={entry.id}
+                                className={
+                                  styles['agent-settings-modal__access-row']
+                                }
+                                role="listitem"
+                              >
+                                <MenuItem
+                                  className={
+                                    styles[
+                                      'agent-settings-modal__access-item'
+                                    ]
+                                  }
+                                  label={entry.name}
+                                  secondaryLabel={entry.secondaryLabel}
+                                  secondaryLabelPosition="inline"
+                                  leadingVisual={
+                                    <UserAvatar
+                                      alt={entry.name}
+                                      name={entry.name}
+                                      src={entry.avatarSrc}
+                                      size="24"
+                                    />
+                                  }
+                                  trailingVisual={
+                                    <span
+                                      className={
+                                        styles[
+                                          'agent-settings-modal__access-role'
+                                        ]
+                                      }
+                                    >
+                                      {
+                                        AGENT_ACCESS_ROLE_OPTIONS.find(
+                                          (opt) =>
+                                            opt.value ===
+                                            accessRoles[entry.id],
+                                        )?.label
+                                      }
+                                      <Icon
+                                        glyph={<ChevronDownIcon />}
+                                        size="16"
+                                      />
+                                    </span>
+                                  }
+                                  trailingElement
+                                  onClick={() => {
+                                    const order: AgentAccessRole[] = [
+                                      'admin',
+                                      'editor',
+                                      'viewer',
+                                    ];
+                                    const current =
+                                      accessRoles[entry.id] ?? entry.role;
+                                    const next =
+                                      order[
+                                        (order.indexOf(current) + 1) %
+                                          order.length
+                                      ];
+                                    setAccessRoles((prev) => ({
+                                      ...prev,
+                                      [entry.id]: next,
+                                    }));
+                                  }}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {activeTab === 'advanced' ? (
+                      <AgentSettingsAdvancedPanel
+                        config={draft.advancedConfig}
+                        onChange={(advancedConfig) =>
+                          setDraft((prev) => ({ ...prev, advancedConfig }))
+                        }
+                      />
+                    ) : null}
+                  </div>
+                </Scrollbar>
+              </div>
+
+              {showActions ? (
+                <div className={styles['agent-settings-modal__floating']}>
+                  <div
+                    className={
+                      styles['agent-settings-modal__floating-inner']
+                    }
+                  >
+                    <p
+                      className={
+                        styles['agent-settings-modal__floating-hint']
+                      }
+                    >
+                      {isReview
+                        ? isDirty
+                          ? 'Review changes, then approve to add this agent'
+                          : 'Approve to add this agent to the channel'
+                        : 'There are unsaved changes'}
+                    </p>
+                    <div
+                      className={
+                        styles['agent-settings-modal__floating-actions']
+                      }
+                    >
+                      <Button emphasis="tertiary" onClick={onClose}>
+                        Cancel
+                      </Button>
+                      <Button emphasis="primary" onClick={handleSave}>
+                        {isReview ? 'Approve' : 'Save'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </Modal>
+      </div>
+    </div>,
+    document.body,
+  );
+}

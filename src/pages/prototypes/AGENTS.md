@@ -37,9 +37,9 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
 | Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
 | Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
-| Chat message | `Message` | `@mattermost/compass-ui/components/message` |
-| Composer | `MessageInput` | `@mattermost/compass-ui/components/message-input` |
-| Channel header | `ChannelHeader` | `@mattermost/compass-ui/components/channel-header` |
+| Chat message | `Message` | `@mattermost/compass-proto` |
+| Composer | `MessageInput` | `@mattermost/compass-proto` |
+| Channel header | `ChannelHeader` | `@mattermost/compass-proto` |
 | Divider | `Divider` | `@mattermost/compass-ui/components/divider` |
 | Scroll container | `Scrollbar` | `@mattermost/compass-ui/components/scrollbar` |
 | Chip | `Chip` | `@mattermost/compass-ui/components/chip` |
@@ -137,7 +137,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
 | Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
 | Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
-| Full desktop channel column | `ChannelShell` (proto) + ui `ChannelHeader` / `Message*` | rebuilding the chrome |
+| Full desktop channel column | `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput` (all proto) | rebuilding the chrome |
 | Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
 | Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
 | Scroll region | `Scrollbar` | raw `overflow` |
@@ -147,6 +147,8 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
+
+**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
 
 ### Overlay wiring
 
@@ -162,11 +164,22 @@ Render `Modal` only while it should be on screen (plus the exit-animation hold).
 
 **Exceptions:** `Combobox`, `Select`, and `DateRangePicker` own their menus. Mobile sheets use `MobileModal` + playground `MobileModalStage` (see **Mobile Channel → Modal** below).
 
+### RHS panels
+
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
+
 ### Prototype-only UI
 
-1. Name matches a Compass export → use it. Do not restyle a cousin.
-2. Flow-specific composition (a Find Channels dialog, a call PIP) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM.
-3. Reusable design-system control → implement in **compass-design**, not under playground `src/components/` or a prototype folder.
+**Before writing any custom element, ask: does a Compass component cover this structure?**
+If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components.
+
+The threshold for "close enough to use Compass" is low. A `Chip` that needs a blue tint, a `Button` that needs `align-self: flex-start`, a `Checkbox` with an extra margin — all still use the Compass component with a className override. Only reach for custom HTML when Compass has nothing structurally close.
+
+Decision order:
+1. **Name matches a Compass export → use it.** Do not restyle a structural cousin.
+2. **Compass component + className override → use it.** Minor visual differences (color, display, margin) do not justify a custom element.
+3. **No Compass match → build from primitives.** Flow-specific composition (a Find Channels dialog, a call PIP, a card layout) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM. Be explicit about why Compass has nothing that fits.
+4. **Reusable design-system control → implement in compass-design**, not under playground `src/components/` or a prototype folder.
 
 Invented UI must:
 

@@ -7,11 +7,13 @@ import styles from './PrototypeTopNav.module.scss';
 export interface PrototypeTopNavProps {
   title: string;
   centerSlot?: ReactNode;
+  startSlot?: ReactNode;
 }
 
 export default function PrototypeTopNav({
   title,
   centerSlot,
+  startSlot,
 }: PrototypeTopNavProps) {
   return (
     <header className={styles['prototype-top-nav']}>
@@ -24,6 +26,12 @@ export default function PrototypeTopNav({
           <ArrowLeftIcon size={20} aria-hidden />
         </Link>
         <h1 className={styles['prototype-top-nav__title']}>{title}</h1>
+        {startSlot && (
+          <>
+            <span className={styles['prototype-top-nav__sep']} aria-hidden />
+            {startSlot}
+          </>
+        )}
       </div>
 
       <div className={styles['prototype-top-nav__center']}>{centerSlot}</div>

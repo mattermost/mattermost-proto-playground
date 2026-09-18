@@ -1,0 +1,172 @@
+import { useCallback, useEffect, useState } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
+import AgentsGlobalHeader from './components/AgentsGlobalHeader';
+import { AGENTS_BASE } from './agentsScenes';
+import AgentsSceneDropdown from './components/AgentsSceneDropdown';
+import MattyFab from './components/MattyFab';
+import MattyPanel from './components/MattyPanel';
+import NewAgentGroupChatModal from './components/NewAgentGroupChatModal';
+import NewAgentModal from './components/NewAgentModal';
+import ProductSidebar from './components/ProductSidebar';
+import { useAgents, type AgentsProduct } from './context/AgentsContext';
+import ChannelsHome from './products/channels/ChannelsHome';
+import ChannelsHomeAlert from './products/channels/ChannelsHomeAlert';
+import IncidentChannel from './products/channels/IncidentChannel';
+import styles from './AgentsShell.module.scss';
+
+function resolveProduct(pathname: string): AgentsProduct {
+  const normalized =
+    pathname.length > 1 && pathname.endsWith('/')
+      ? pathname.slice(0, -1)
+      : pathname;
+  // Agent DMs and incident channels stay in the Channels product (Channels LHS).
+  if (
+    normalized.startsWith(`${AGENTS_BASE}/dm/`) ||
+    normalized.startsWith(`${AGENTS_BASE}/channel/`)
+  ) {
+    return 'channels';
+  }
+  // /agents and /agents/matty (and future agent chats) stay in Agents product.
+  if (
+    normalized === `${AGENTS_BASE}/agents` ||
+    normalized.startsWith(`${AGENTS_BASE}/agents/`)
+  ) {
+    return 'agents';
+  }
+  return 'channels';
+}
+
+/**
+ * Shared chrome: Product Sidebar + product outlet.
+ * Modals are shell-mounted so Channels and Agents can both open them.
+ */
+export default function AgentsShell() {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { setStartSlot } = usePrototypeChrome();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const {
+    newAgentOpen,
+    closeNewAgent,
+    openNewAgent,
+    addCreatedAgent,
+    ensureSentinel,
+    newGroupChatOpen,
+    closeNewGroupChat,
+    addGroupChat,
+    customAgents,
+    mattyPanelOpen,
+    setMattyPanelOpen,
+  } = useAgents();
+  const activeProduct = resolveProduct(pathname);
+
+  const normalized =
+    pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  const isChannelsHome =
+    normalized === AGENTS_BASE || normalized === `${AGENTS_BASE}/`;
+  const isServiceStatusAlert = normalized === `${AGENTS_BASE}/channel/service-status-alert`;
+  const isIncidentChannel =
+    normalized.startsWith(`${AGENTS_BASE}/channel/`) && !isServiceStatusAlert;
+  const isChannelView = isChannelsHome || isServiceStatusAlert || isIncidentChannel;
+
+  const handleDropdownOpenChange = useCallback((open: boolean) => setDropdownOpen(open), []);
+
+  useEffect(() => {
+    setStartSlot(
+      <AgentsSceneDropdown
+        open={dropdownOpen}
+        onOpenChange={handleDropdownOpenChange}
+        newAgentOpen={newAgentOpen}
+        openNewAgent={openNewAgent}
+        closeNewAgent={closeNewAgent}
+        ensureSentinel={ensureSentinel}
+        mattyPanelOpen={mattyPanelOpen}
+        setMattyPanelOpen={setMattyPanelOpen}
+      />,
+    );
+    return () => setStartSlot(null);
+  }, [
+    setStartSlot,
+    dropdownOpen,
+    handleDropdownOpenChange,
+    newAgentOpen,
+    openNewAgent,
+    closeNewAgent,
+    ensureSentinel,
+    mattyPanelOpen,
+    setMattyPanelOpen,
+  ]);
+
+  return (
+    <div className={styles['agents-shell']}>
+      <div className={styles['agents-shell__frame']}>
+        <AgentsGlobalHeader className={styles['agents-shell__header']} />
+        <div className={styles['agents-shell__body']}>
+          <ProductSidebar
+            activeProduct={activeProduct}
+            onSelectProduct={(product) => {
+              closeNewAgent();
+              closeNewGroupChat();
+              navigate(
+                product === 'agents' ? `${AGENTS_BASE}/agents` : AGENTS_BASE,
+              );
+            }}
+          />
+          <MattyPanel />
+          <MattyFab />
+          <div className={styles['agents-shell__product']}>
+            <div className={[
+              styles['agents-shell__channel-view'],
+              isChannelsHome ? styles['agents-shell__channel-view--active'] : '',
+            ].filter(Boolean).join(' ')}>
+              <ChannelsHome onNavigateToIncident={() => navigate(`${AGENTS_BASE}/channel/INC-4471`)} />
+            </div>
+            <div className={[
+              styles['agents-shell__channel-view'],
+              isServiceStatusAlert ? styles['agents-shell__channel-view--active'] : '',
+            ].filter(Boolean).join(' ')}>
+              <ChannelsHomeAlert onNavigateToIncident={() => navigate(`${AGENTS_BASE}/channel/INC-4471`)} />
+            </div>
+            <div className={[
+              styles['agents-shell__channel-view'],
+              isIncidentChannel ? styles['agents-shell__channel-view--active'] : '',
+            ].filter(Boolean).join(' ')}>
+              <IncidentChannel active={isIncidentChannel} />
+            </div>
+            {!isChannelView && <Outlet />}
+          </div>
+        </div>
+      </div>
+
+      <NewAgentModal
+        open={newAgentOpen}
+        onClose={closeNewAgent}
+        onSave={(draft) => {
+          const agent = addCreatedAgent({
+            ...draft,
+            description: draft.description ?? draft.purpose,
+          });
+          closeNewAgent();
+          if (activeProduct === 'channels') {
+            // Stay in Channels — open the new agent as a DM.
+            navigate(`${AGENTS_BASE}/dm/${agent.id}`);
+          } else {
+            navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+          }
+        }}
+      />
+
+      <NewAgentGroupChatModal
+        open={newGroupChatOpen}
+        customAgents={customAgents}
+        onClose={closeNewGroupChat}
+        onStart={(memberIds) => {
+          const chat = addGroupChat(memberIds);
+          closeNewGroupChat();
+          navigate(`${AGENTS_BASE}/agents/${chat.id}`);
+        }}
+      />
+    </div>
+  );
+}

@@ -1,0 +1,228 @@
+.agents-product-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 264px;
+  flex: 0 0 264px;
+  min-height: 0;
+  color: var(--sidebar-text);
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__nav-top,
+  &__nav-group {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--spacing-s);
+  }
+
+  // Custom icons: keep ChannelSidebarItem's icon slot, overlay the glyph, hide
+  // the built-in SVG — same pattern as Automations ProductNav.
+  &__nav-row {
+    position: relative;
+  }
+
+  &__nav-icon {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding-left: calc(18px + var(--spacing-xxxs));
+    color: var(--sidebar-text);
+    opacity: 0.64;
+    pointer-events: none;
+  }
+
+  &__nav-row :global([class*='icon-container'] > svg) {
+    visibility: hidden;
+  }
+
+  // Single-agent DM row: keep ChannelSidebarItem layout/hit target; overlay
+  // AgentAvatar over the built-in UserAvatar (no custom leading ReactNode on CSI).
+  // Group chats use CSI leadingVisual="group-message" + memberCount as-is.
+  &__agent-block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__agent-row {
+    position: relative;
+
+    // CSI kebab can’t swap icons — hide it and overlay New chat +.
+    :global([class*='menu-button']) {
+      display: none;
+    }
+
+    &:hover .agents-product-sidebar__agent-new,
+    &:focus-within .agents-product-sidebar__agent-new {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  // Nested chats: reveal category-style chevron aligned with category row chevrons.
+  &__agent-chevron {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--spacing-xs);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--sidebar-text);
+    opacity: 0;
+    cursor: pointer;
+    transition:
+      opacity var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition);
+
+    &:focus-visible {
+      opacity: 0.75;
+      outline: 2px solid var(--sidebar-text-active-border);
+      outline-offset: -2px;
+    }
+
+    &--collapsed {
+      opacity: 0.75;
+      transform: rotate(-90deg);
+    }
+  }
+
+  &__agent-row:hover &__agent-chevron,
+  &__agent-row:focus-within &__agent-chevron {
+    opacity: 0.75;
+  }
+
+  &__agent-avatar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    // Match DM icon-container: left padding 18px + spacing-xxxxs.
+    padding-left: calc(18px + var(--spacing-xxxxs));
+    pointer-events: none;
+  }
+
+  &__agent-new {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding-right: var(--spacing-l);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__agent-row--dm :global([class*='icon-container'] > *) {
+    visibility: hidden;
+  }
+
+  // Figma 123:28951 — indented chat sessions under an agent.
+  &__sessions-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+
+    &--expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  &__sessions {
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__session {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    width: 100%;
+    height: 32px;
+    margin: 0;
+    // Keep icon/label indent; background spans the full row.
+    padding: var(--spacing-xxxs) 16px var(--spacing-xxxs) 38px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--sidebar-text);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--sidebar-text);
+      outline-offset: -2px;
+    }
+  }
+
+  &__session--active {
+    background: rgba(var(--sidebar-text-rgb), 0.08);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 2px;
+      border-radius: 0 2px 2px 0;
+      background: var(--sidebar-text-active-border);
+    }
+
+    .agents-product-sidebar__session-label {
+      opacity: 1;
+    }
+  }
+
+  &__session-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxxs);
+    color: var(--sidebar-text);
+    opacity: 0.72;
+  }
+
+  &__session-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-100);
+    letter-spacing: 0.02em;
+    opacity: 0.72;
+  }
+}

@@ -158,6 +158,10 @@ In-place expand/collapse must animate — never snap. Prefer CSS grid `0fr`↔`1
 }
 ```
 
+## overflow: hidden and box-shadow
+
+`overflow: hidden` on a parent clips the `box-shadow` of its children. If a child component (e.g. `RightSidebar`) has a built-in shadow that needs to be visible, place `box-shadow` on the wrapper element instead — a element's own `box-shadow` is not clipped by its own `overflow: hidden`.
+
 ## Scrollbars
 
 Scrolling regions: use `Scrollbar` from `@mattermost/compass-ui/components/scrollbar` (not raw overflow). Parent needs `flex: 1; min-height: 0` in a flex column; pad a child inside `Scrollbar`, not the root. Dark surfaces: `color="--sidebar-text-rgb"`.
