@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import AgentsGlobalHeader from '../agents/components/AgentsGlobalHeader';
+import MattyFab from '../agents/components/MattyFab';
+import MattyPanel from '../agents/components/MattyPanel';
 import NewAgentGroupChatModal from '../agents/components/NewAgentGroupChatModal';
 import NewAgentModal from '../agents/components/NewAgentModal';
 import ProductSidebar from '../agents/components/ProductSidebar';
@@ -63,6 +65,8 @@ export default function AgentsDocsShell() {
     closeNewGroupChat,
     addGroupChat,
     customAgents,
+    mattyPanelOpen,
+    setMattyPanelOpen,
   } = useAgents();
 
   const activeScene = resolveDocsScene(pathname, search, newAgentOpen);
@@ -87,6 +91,8 @@ export default function AgentsDocsShell() {
         newAgentOpen={newAgentOpen}
         openNewAgent={openNewAgent}
         closeNewAgent={closeNewAgent}
+        mattyPanelOpen={mattyPanelOpen}
+        setMattyPanelOpen={setMattyPanelOpen}
       />,
     );
     return () => setStartSlot(null);
@@ -97,6 +103,8 @@ export default function AgentsDocsShell() {
     newAgentOpen,
     openNewAgent,
     closeNewAgent,
+    mattyPanelOpen,
+    setMattyPanelOpen,
   ]);
 
   return (
@@ -120,6 +128,8 @@ export default function AgentsDocsShell() {
               );
             }}
           />
+          <MattyPanel />
+          <MattyFab />
           <div className={styles['agents-shell__product']}>
             <div
               className={[

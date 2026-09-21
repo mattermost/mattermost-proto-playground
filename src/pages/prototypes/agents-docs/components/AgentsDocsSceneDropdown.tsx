@@ -1,4 +1,7 @@
+import RobotHappyIcon from '@mattermost/compass-icons/components/robot-happy';
+import { Divider } from '@mattermost/compass-ui/components/divider';
 import { Dropdown } from '@mattermost/compass-ui/components/dropdown';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
 import { useCallback, useRef } from 'react';
@@ -37,6 +40,8 @@ type AgentsDocsSceneDropdownProps = {
   newAgentOpen: boolean;
   openNewAgent: () => void;
   closeNewAgent: () => void;
+  mattyPanelOpen: boolean;
+  setMattyPanelOpen: (open: boolean) => void;
 };
 
 export default function AgentsDocsSceneDropdown({
@@ -45,6 +50,7 @@ export default function AgentsDocsSceneDropdown({
   newAgentOpen,
   openNewAgent,
   closeNewAgent,
+  setMattyPanelOpen,
 }: AgentsDocsSceneDropdownProps) {
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
@@ -132,6 +138,16 @@ export default function AgentsDocsSceneDropdown({
                 onClick={() => navigate_(scene.id)}
               />
             ))}
+            <Divider />
+            <MenuItem
+              label="Open Matty panel"
+              leadingElement
+              leadingVisual={<Icon glyph={<RobotHappyIcon />} size="16" />}
+              onClick={() => {
+                onOpenChange(false);
+                setMattyPanelOpen(true);
+              }}
+            />
           </PopoverMenu>
         </div>
       )}

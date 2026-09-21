@@ -179,7 +179,7 @@
   }
 
   &__thread-footer {
-    padding: 0 var(--spacing-m) 0 calc(var(--spacing-m) + 32px + var(--spacing-m));
+    padding-left: 40px;
   }
 
   &__thread-rhs {
@@ -196,6 +196,6 @@
   }
 
   &__rhs-composer {
-    padding: var(--spacing-s) var(--spacing-m) var(--spacing-m);
+    padding: 0 80px var(--spacing-xl) var(--spacing-xl);
   }
 }

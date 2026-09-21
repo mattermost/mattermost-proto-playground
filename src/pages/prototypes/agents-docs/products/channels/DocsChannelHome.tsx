@@ -12,6 +12,10 @@ import {
 } from '@mattermost/compass-proto';
 import AgentApprovalCard from '../../../agents/components/AgentApprovalCard';
 import AgentAvatar from '../../../agents/components/AgentAvatar';
+import AgentProfilePopover, {
+  profileAnchorFromEvent,
+  type AgentProfileAnchor,
+} from '../../../agents/components/AgentProfilePopover';
 import { agentAvatarChipSrc } from '../../../agents/components/agentAvatarShapes';
 import MentionMessageInput from '../../../agents/components/MentionMessageInput';
 import mentionStyles from '../../../agents/components/MentionMessageInput.module.scss';
@@ -22,15 +26,15 @@ import ChannelsProductSidebar from '../../../agents/products/channels/ChannelsPr
 import {
   CODER,
   DOCS_CHANNEL_MESSAGES,
+  DOCS_WORKSPACE_AGENTS,
   DOCS_MSG_CODER_PR,
+  DOCS_MSG_EMMA_FLAG,
   DOCS_MSG_JORDAN_PREVIEW,
   DOCS_MSG_JORDAN_REACTION,
   DOCS_MSG_MATTY_CODER2_SYSTEM,
   DOCS_MSG_MATTY_CODER_SYSTEM,
   DOCS_MSG_MATTY_TRACKER,
   DOCS_MSG_MATTY_WRITER_SYSTEM,
-  DOCS_MSG_PRIYA_MENTION,
-  DOCS_MSG_PRIYA_REPLY,
   DOCS_MSG_REVIEWER_WRITER_SYSTEM,
   DOCS_SCENE_CUTOFFS,
   MATTY,
@@ -40,9 +44,8 @@ import {
   REVIEWER,
   REVIEWER_WRITER_DM_MESSAGES,
   THREAD_CODER_PR_REPLIES,
+  THREAD_EMMA_FLAG_REPLIES,
   THREAD_JORDAN_REACTION_REPLIES,
-  THREAD_PRIYA_MENTION_REPLIES,
-  THREAD_PRIYA_REPLY_REPLIES,
   WRITER,
   type DocThreadReply,
   type DocsAgentDmMessage,
@@ -60,7 +63,15 @@ import styles from './DocsChannelHome.module.scss';
 // MessageBody — renders plain text or parts with mention chips
 // ---------------------------------------------------------------------------
 
-function MessageBody({ body, parts }: { body: string; parts?: ChannelMessagePart[] }) {
+function MessageBody({
+  body,
+  parts,
+  onAgentProfile,
+}: {
+  body: string;
+  parts?: ChannelMessagePart[];
+  onAgentProfile?: (id: string, e: React.MouseEvent<HTMLElement>) => void;
+}) {
   if (!parts?.length) return <p className={styles['docs-channel__post']}>{body}</p>;
   return (
     <p className={mentionStyles['mention-input__post']}>
@@ -82,10 +93,30 @@ function MessageBody({ body, parts }: { body: string; parts?: ChannelMessagePart
                   : ''),
               alt: part.label,
             }}
+            role={part.kind === 'agent' && onAgentProfile ? 'button' : undefined}
+            tabIndex={part.kind === 'agent' && onAgentProfile ? 0 : undefined}
+            aria-label={part.kind === 'agent' && onAgentProfile ? `View ${part.label} profile` : undefined}
+            onClick={
+              part.kind === 'agent' && onAgentProfile
+                ? (e) => { e.stopPropagation(); onAgentProfile(part.id, e as React.MouseEvent<HTMLElement>); }
+                : undefined
+            }
+            onKeyDown={
+              part.kind === 'agent' && onAgentProfile
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onAgentProfile(part.id, e as unknown as React.MouseEvent<HTMLElement>);
+                    }
+                  }
+                : undefined
+            }
             className={[
               mentionStyles['mention-input__mention-chip'],
               mentionStyles['mention-input__post-chip'],
               part.kind === 'agent' ? mentionStyles['mention-input__mention-chip--agent'] : '',
+              part.kind === 'agent' && onAgentProfile ? mentionStyles['mention-input__post-chip--interactive'] : '',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -162,8 +193,7 @@ const DM_DELEGATION_MAP: Record<string, {
 // ---------------------------------------------------------------------------
 
 const THREAD_REPLIES_BY_ID: Record<string, DocThreadReply[]> = {
-  [DOCS_MSG_PRIYA_MENTION]: THREAD_PRIYA_MENTION_REPLIES,
-  [DOCS_MSG_PRIYA_REPLY]: THREAD_PRIYA_REPLY_REPLIES,
+  [DOCS_MSG_EMMA_FLAG]: THREAD_EMMA_FLAG_REPLIES,
   [DOCS_MSG_JORDAN_REACTION]: THREAD_JORDAN_REACTION_REPLIES,
   [DOCS_MSG_CODER_PR]: THREAD_CODER_PR_REPLIES,
 };
@@ -174,9 +204,21 @@ const THREAD_REPLIES_BY_ID: Record<string, DocThreadReply[]> = {
 
 export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const threadBodyRef = useRef<HTMLDivElement>(null);
   const [activeDm, setActiveDm] = useState<ActiveDm | null>(null);
   const [previewApproved, setPreviewApproved] = useState(false);
   const [activePostId, setActivePostId] = useState<string | null>(null);
+  const [profileTarget, setProfileTarget] = useState<AgentProfileAnchor | null>(null);
+
+  const openAgentProfile = (agentId: string, e: React.MouseEvent<HTMLElement>) => {
+    const agent = DOCS_WORKSPACE_AGENTS.find((a) => a.id === agentId);
+    if (agent) setProfileTarget(profileAnchorFromEvent(agent, e));
+  };
+
+  const openAgentProfileByShapeColor = (shape: AgentShape, color: AgentColor, e: React.MouseEvent<HTMLElement>) => {
+    const agent = DOCS_WORKSPACE_AGENTS.find((a) => a.shape === shape && a.color === color);
+    if (agent) setProfileTarget(profileAnchorFromEvent(agent, e));
+  };
 
   const openThread = (postId: string) => setActivePostId(postId);
   const closeThread = () => setActivePostId(null);
@@ -191,19 +233,36 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
   const isApprovalScene = activeScene === 'approval';
   const isLaterThatWeek = activeScene === 'later-that-week';
 
-  // Scroll to bottom when scene changes
+  // Scroll channel to bottom on scene change — rAF ensures DOM is fully painted
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    const viewport = el.closest('.simplebar-content-wrapper') as HTMLElement | null;
-    if (viewport) {
-      setTimeout(() => { viewport.scrollTop = viewport.scrollHeight; }, 50);
-    }
+    const raf = requestAnimationFrame(() => {
+      const viewport = el.closest('.simplebar-content-wrapper') as HTMLElement | null;
+      if (viewport) viewport.scrollTop = viewport.scrollHeight;
+    });
+    return () => cancelAnimationFrame(raf);
   }, [activeScene]);
 
-  // Close thread when scene changes
+  // Scroll thread RHS to bottom when thread opens or replies change
   useEffect(() => {
-    setActivePostId(null);
+    if (!activePostId) return;
+    const el = threadBodyRef.current;
+    if (!el) return;
+    const raf = requestAnimationFrame(() => {
+      const viewport = el.closest('.simplebar-content-wrapper') as HTMLElement | null;
+      if (viewport) viewport.scrollTop = viewport.scrollHeight;
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [activePostId]);
+
+  // Auto-open Emma's flag thread on 'channels' scene; close on other scenes
+  useEffect(() => {
+    if (activeScene === 'channels') {
+      setActivePostId(DOCS_MSG_EMMA_FLAG);
+    } else {
+      setActivePostId(null);
+    }
   }, [activeScene]);
 
   function openDm(msgId: string, triggerEl: HTMLElement) {
@@ -267,7 +326,13 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                   if (message.kind === 'webhook' && message.webhookPost) {
                     return (
                       <div key={message.id} className={styles['docs-channel__agent-message']}>
-                        <div className={styles['docs-channel__agent-message-avatar']}>
+                        <div
+                          className={styles['docs-channel__agent-message-avatar']}
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => openAgentProfileByShapeColor(message.agentShape ?? 'shield', message.agentColor ?? 'blue', e)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(message.agentShape ?? 'shield', message.agentColor ?? 'blue', e as unknown as React.MouseEvent<HTMLElement>); } }}
+                        >
                           <AgentAvatar
                             shape={message.agentShape ?? 'shield'}
                             color={message.agentColor ?? 'blue'}
@@ -294,7 +359,13 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
 
                     return (
                       <div key={message.id} className={styles['docs-channel__agent-message']}>
-                        <div className={styles['docs-channel__agent-message-avatar']}>
+                        <div
+                          className={styles['docs-channel__agent-message-avatar']}
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => openAgentProfileByShapeColor(message.agentShape ?? 'sphere', message.agentColor ?? 'yellow', e)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(message.agentShape ?? 'sphere', message.agentColor ?? 'yellow', e as unknown as React.MouseEvent<HTMLElement>); } }}
+                        >
                           <AgentAvatar
                             shape={message.agentShape ?? 'sphere'}
                             color={message.agentColor ?? 'yellow'}
@@ -317,7 +388,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                             </div>
                           ) : message.agentReviewCard ? (
                             <>
-                              <MessageBody body={message.body} parts={message.parts} />
+                              <MessageBody body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} />
                               <div className={styles['docs-channel__card']}>
                                 <AgentApprovalCard
                                   title={message.agentReviewCard.name}
@@ -332,7 +403,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                               </div>
                             </>
                           ) : (
-                            <MessageBody body={message.body} parts={message.parts} />
+                            <MessageBody body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} />
                           )}
                           {message.threadReplies && (
                             <div className={styles['docs-channel__thread-footer']}>
@@ -367,7 +438,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                           timestamp={message.timestamp}
                           showMessageActions={false}
                         >
-                          <MessageBody body={message.body} parts={message.parts} />
+                          <MessageBody body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} />
                           <DocsPagePreviewCard
                             approved={previewApproved}
                             onApprove={() => setPreviewApproved(true)}
@@ -405,7 +476,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         timestamp={message.timestamp}
                         showMessageActions={false}
                       >
-                        <MessageBody body={message.body} parts={message.parts} />
+                        <MessageBody body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} />
                       </Message>
                       {message.threadReplies && (
                         <div className={styles['docs-channel__thread-footer']}>
@@ -455,11 +526,17 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                 </div>
               }
             >
-              <div className={styles['docs-channel__rhs-thread-messages']}>
+              <div ref={threadBodyRef} className={styles['docs-channel__rhs-thread-messages']}>
                 {/* Root post */}
                 {rootMessage?.kind === 'agent' && (
                   <div className={styles['docs-channel__agent-message']}>
-                    <div className={styles['docs-channel__agent-message-avatar']}>
+                    <div
+                      className={styles['docs-channel__agent-message-avatar']}
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => openAgentProfileByShapeColor(rootMessage.agentShape ?? 'sphere', rootMessage.agentColor ?? 'yellow', e)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(rootMessage.agentShape ?? 'sphere', rootMessage.agentColor ?? 'yellow', e as unknown as React.MouseEvent<HTMLElement>); } }}
+                    >
                       <AgentAvatar
                         shape={rootMessage.agentShape ?? 'sphere'}
                         color={rootMessage.agentColor ?? 'yellow'}
@@ -473,7 +550,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         <Tag label="Agent" size="x-small" />
                         <time className={styles['docs-channel__agent-message-time']}>{rootMessage.timestamp}</time>
                       </div>
-                      <MessageBody body={rootMessage.body} parts={rootMessage.parts} />
+                      <MessageBody body={rootMessage.body} parts={rootMessage.parts} onAgentProfile={openAgentProfile} />
                     </div>
                   </div>
                 )}
@@ -486,7 +563,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                       timestamp={rootMessage.timestamp}
                       showMessageActions={false}
                     >
-                      <MessageBody body={rootMessage.body} parts={rootMessage.parts} />
+                      <MessageBody body={rootMessage.body} parts={rootMessage.parts} onAgentProfile={openAgentProfile} />
                     </Message>
                   </div>
                 )}
@@ -503,7 +580,13 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                 {currentThreadReplies.map((reply, i) =>
                   reply.agentShape ? (
                     <div key={i} className={styles['docs-channel__agent-message']}>
-                      <div className={styles['docs-channel__agent-message-avatar']}>
+                      <div
+                        className={styles['docs-channel__agent-message-avatar']}
+                        role="button"
+                        tabIndex={0}
+                        onClick={(e) => openAgentProfileByShapeColor(reply.agentShape!, reply.agentColor ?? 'yellow', e)}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(reply.agentShape!, reply.agentColor ?? 'yellow', e as unknown as React.MouseEvent<HTMLElement>); } }}
+                      >
                         <AgentAvatar
                           shape={reply.agentShape}
                           color={reply.agentColor ?? 'yellow'}
@@ -517,7 +600,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                           <Tag label="Agent" size="x-small" />
                           <time className={styles['docs-channel__agent-message-time']}>{reply.timestamp}</time>
                         </div>
-                        <p className={styles['docs-channel__post']}>{reply.body}</p>
+                        <MessageBody body={reply.body} parts={reply.parts} onAgentProfile={openAgentProfile} />
                       </div>
                     </div>
                   ) : (
@@ -529,7 +612,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         timestamp={reply.timestamp}
                         showMessageActions={false}
                       >
-                        <p className={styles['docs-channel__post']}>{reply.body}</p>
+                        <MessageBody body={reply.body} parts={reply.parts} onAgentProfile={openAgentProfile} />
                       </Message>
                     </div>
                   ),
@@ -539,6 +622,14 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
           </div>
         )}
       </div>
+
+      {/* Agent profile popover */}
+      {profileTarget && (
+        <AgentProfilePopover
+          target={profileTarget}
+          onClose={() => setProfileTarget(null)}
+        />
+      )}
 
       {/* Delegation DM popovers */}
       {activeDm && (

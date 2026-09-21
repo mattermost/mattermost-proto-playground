@@ -1,4 +1,5 @@
 import CloseIcon from '@mattermost/compass-icons/components/close';
+import LockIcon from '@mattermost/compass-icons/components/lock';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
@@ -130,6 +131,12 @@ export default function MattyPanel() {
         </span>
         <div className={styles['matty-panel__title-block']}>
           <h2 className={styles['matty-panel__title']}>Matty</h2>
+          <p className={styles['matty-panel__subtitle']}>
+            <span className={styles['matty-panel__subtitle-icon']}>
+              <Icon glyph={<LockIcon />} size="12" />
+            </span>
+            Only visible to you
+          </p>
         </div>
         <IconButton
           aria-label="Close Matty panel"

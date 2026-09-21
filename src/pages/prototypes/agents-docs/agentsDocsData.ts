@@ -3,7 +3,7 @@ import avatarArjun from '@/assets/avatars/Arjun Patel.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
 import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
-import type { AgentColor, AgentShape, ChannelMessage, WorkspaceAgent } from '../agents/agentsData';
+import type { AgentColor, AgentShape, ChannelMessage, ChannelMessagePart, WorkspaceAgent } from '../agents/agentsData';
 import { MATTY } from '../agents/agentsData';
 
 export { MATTY };
@@ -182,15 +182,15 @@ export const DOCS_MSG_MONITOR_PLAYBOOK = 'docs-monitor-playbook';
 
 // Scene message cutoffs — last visible message ID per scene
 export const DOCS_SCENE_CUTOFFS: Record<string, string> = {
-  channels: DOCS_MSG_PRIYA_MENTION,
+  channels: DOCS_MSG_EMMA_FLAG,
   grounding: DOCS_MSG_WRITER_DRAFT,
   review: DOCS_MSG_CODER_PR,
   approval: DOCS_MSG_EMMA_REACTION,
   'later-that-week': DOCS_MSG_MONITOR_PLAYBOOK,
-  'matty-chat': DOCS_MSG_MATTY_ACK,
-  'all-agents': DOCS_MSG_MATTY_ACK,
-  'new-agent': DOCS_MSG_MATTY_ACK,
-  'group-chat': DOCS_MSG_MATTY_ACK,
+  'matty-chat': DOCS_MSG_EMMA_FLAG,
+  'all-agents': DOCS_MSG_EMMA_FLAG,
+  'new-agent': DOCS_MSG_EMMA_FLAG,
+  'group-chat': DOCS_MSG_EMMA_FLAG,
 };
 
 // ---------------------------------------------------------------------------
@@ -203,11 +203,48 @@ export type DocThreadReply = {
   avatarAlt: string;
   timestamp: string;
   body: string;
+  parts?: ChannelMessagePart[];
   agentShape?: AgentShape;
   agentColor?: AgentColor;
 };
 
-export const THREAD_PRIYA_MENTION_REPLIES: DocThreadReply[] = [
+export const THREAD_EMMA_FLAG_REPLIES: DocThreadReply[] = [
+  {
+    username: PRIYA.name,
+    avatarSrc: PRIYA.avatarSrc,
+    avatarAlt: PRIYA.avatarAlt,
+    timestamp: '10:00 AM',
+    body: "Yeah, I've seen a few of these too — mind if I get Matty on it?",
+  },
+  {
+    username: JORDAN.name,
+    avatarSrc: JORDAN.avatarSrc,
+    avatarAlt: JORDAN.avatarAlt,
+    timestamp: '10:00 AM',
+    body: 'Go for it. I can review the updated page when it\'s ready.',
+  },
+  {
+    username: PRIYA.name,
+    avatarSrc: PRIYA.avatarSrc,
+    avatarAlt: PRIYA.avatarAlt,
+    timestamp: '10:01 AM',
+    body: '@Matty Can we check how SSO actually works today and fix this page to match?',
+    parts: [
+      {
+        type: 'mention',
+        id: 'matty',
+        label: 'Matty',
+        avatarSrc: '',
+        kind: 'agent',
+        agentShape: MATTY.shape as AgentShape,
+        agentColor: MATTY.color as AgentColor,
+      },
+      {
+        type: 'text',
+        text: ' Can we check how SSO actually works today and fix this page to match?',
+      },
+    ],
+  },
   {
     username: MATTY.name,
     avatarSrc: '',
@@ -216,16 +253,6 @@ export const THREAD_PRIYA_MENTION_REPLIES: DocThreadReply[] = [
     body: "On it. I'll check the current SSO implementation and get the docs page updated to match.",
     agentShape: MATTY.shape as AgentShape,
     agentColor: MATTY.color as AgentColor,
-  },
-];
-
-export const THREAD_PRIYA_REPLY_REPLIES: DocThreadReply[] = [
-  {
-    username: JORDAN.name,
-    avatarSrc: JORDAN.avatarSrc,
-    avatarAlt: JORDAN.avatarAlt,
-    timestamp: '10:01 AM',
-    body: 'Go for it. I can review when the updated page is ready.',
   },
 ];
 
@@ -309,7 +336,7 @@ export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
     },
   },
 
-  // Act 1: Emma flags, Priya delegates, Matty acks
+  // Act 1: Emma flags; Priya, Jordan, and Matty respond in the thread
   {
     id: DOCS_MSG_EMMA_FLAG,
     username: EMMA.name,
@@ -317,48 +344,12 @@ export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
     avatarAlt: EMMA.avatarAlt,
     timestamp: '9:58 AM',
     body: "Getting a steady trickle of support tickets about the SSO setup steps on the onboarding page — looks like it's out of date.",
-  },
-  {
-    id: DOCS_MSG_PRIYA_REPLY,
-    username: PRIYA.name,
-    avatarSrc: PRIYA.avatarSrc,
-    avatarAlt: PRIYA.avatarAlt,
-    timestamp: '10:00 AM',
-    body: "Yeah, I've seen a few of these too — mind if I get Matty on it?",
     threadReplies: {
-      count: 1,
+      count: 4,
       lastReplyTime: '10:01 AM',
       participants: [
+        { key: 'priya', name: 'Priya Shah', avatarSrc: PRIYA.avatarSrc },
         { key: 'jordan', name: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc },
-      ],
-    },
-  },
-  {
-    id: DOCS_MSG_PRIYA_MENTION,
-    username: PRIYA.name,
-    avatarSrc: PRIYA.avatarSrc,
-    avatarAlt: PRIYA.avatarAlt,
-    timestamp: '10:01 AM',
-    body: '@Matty Can we check how SSO actually works today and fix this page to match?',
-    parts: [
-      {
-        type: 'mention',
-        id: 'matty',
-        label: 'Matty',
-        avatarSrc: '',
-        kind: 'agent',
-        agentShape: MATTY.shape as AgentShape,
-        agentColor: MATTY.color as AgentColor,
-      },
-      {
-        type: 'text',
-        text: ' Can we check how SSO actually works today and fix this page to match?',
-      },
-    ],
-    threadReplies: {
-      count: 1,
-      lastReplyTime: '10:01 AM',
-      participants: [
         { key: 'matty', name: 'Matty', agentShape: MATTY.shape as AgentShape, agentColor: MATTY.color as AgentColor },
       ],
     },
