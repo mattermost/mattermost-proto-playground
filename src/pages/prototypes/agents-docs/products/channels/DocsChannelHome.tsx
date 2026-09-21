@@ -244,14 +244,20 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
     return () => cancelAnimationFrame(raf);
   }, [activeScene]);
 
-  // Scroll thread RHS to bottom when thread opens or replies change
+  // Scroll both channel and thread RHS to bottom when thread opens
   useEffect(() => {
     if (!activePostId) return;
-    const el = threadBodyRef.current;
-    if (!el) return;
+    const channelEl = scrollRef.current;
+    const threadEl = threadBodyRef.current;
     const raf = requestAnimationFrame(() => {
-      const viewport = el.closest('.simplebar-content-wrapper') as HTMLElement | null;
-      if (viewport) viewport.scrollTop = viewport.scrollHeight;
+      if (channelEl) {
+        const vp = channelEl.closest('.simplebar-content-wrapper') as HTMLElement | null;
+        if (vp) vp.scrollTop = vp.scrollHeight;
+      }
+      if (threadEl) {
+        const vp = threadEl.closest('.simplebar-content-wrapper') as HTMLElement | null;
+        if (vp) vp.scrollTop = vp.scrollHeight;
+      }
     });
     return () => cancelAnimationFrame(raf);
   }, [activePostId]);
@@ -445,6 +451,51 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                             onReject={() => {}}
                           />
                         </Message>
+                      </div>
+                    );
+                  }
+
+                  // Emma's flag post — heading + body
+                  if (message.id === DOCS_MSG_EMMA_FLAG) {
+                    return (
+                      <div
+                        key={message.id}
+                        className={[
+                          styles['docs-channel__message-row'],
+                          styles['docs-channel__message-row--threaded'],
+                        ].join(' ')}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => openThread(message.id)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') openThread(message.id); }}
+                      >
+                        <Message
+                          username={message.username}
+                          avatarSrc={message.avatarSrc}
+                          avatarAlt={message.avatarAlt}
+                          timestamp={message.timestamp}
+                          showMessageActions={false}
+                        >
+                          <p className={styles['docs-channel__post-heading']}>SSO setup page is out of date</p>
+                          <p className={styles['docs-channel__post']}>{message.body}</p>
+                        </Message>
+                        {message.threadReplies && (
+                          <div className={styles['docs-channel__thread-footer']}>
+                            <ThreadFooter
+                              replyCount={message.threadReplies.count}
+                              lastReplyTime={message.threadReplies.lastReplyTime}
+                              avatars={message.threadReplies.participants.map((p) => ({
+                                key: p.key,
+                                name: p.name,
+                                src:
+                                  p.agentShape && p.agentColor
+                                    ? agentAvatarChipSrc(p.agentShape as AgentShape, p.agentColor as AgentColor)
+                                    : (p.avatarSrc ?? ''),
+                              }))}
+                              onReply={() => openThread(message.id)}
+                            />
+                          </div>
+                        )}
                       </div>
                     );
                   }

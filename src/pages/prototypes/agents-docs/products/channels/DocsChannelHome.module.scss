@@ -163,6 +163,14 @@
     color: var(--center-channel-color);
   }
 
+  &__post-heading {
+    margin: 0 0 var(--spacing-xxs);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    line-height: var(--line-height-200);
+  }
+
   // Tracker card and preview card have slight extra left indent inside agent body
   &__card {
     margin-top: var(--spacing-xxs);

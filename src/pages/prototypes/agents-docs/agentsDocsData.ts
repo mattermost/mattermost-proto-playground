@@ -345,12 +345,11 @@ export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
     timestamp: '9:58 AM',
     body: "Getting a steady trickle of support tickets about the SSO setup steps on the onboarding page — looks like it's out of date.",
     threadReplies: {
-      count: 4,
-      lastReplyTime: '10:01 AM',
+      count: 2,
+      lastReplyTime: '10:00 AM',
       participants: [
         { key: 'priya', name: 'Priya Shah', avatarSrc: PRIYA.avatarSrc },
         { key: 'jordan', name: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc },
-        { key: 'matty', name: 'Matty', agentShape: MATTY.shape as AgentShape, agentColor: MATTY.color as AgentColor },
       ],
     },
   },
