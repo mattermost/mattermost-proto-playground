@@ -2793,6 +2793,12 @@ export function buildAgentsChannelsSidebarModel(
         key: 'favorites',
         category: { label: 'Favorites', showChevron: true },
         items: [
+          ...(activeName === 'docs-site' ? [{
+            name: 'docs-site',
+            leadingVisual: 'public' as const,
+            status: 'read' as const,
+            active: true,
+          }] : []),
           {
             name: 'service-status',
             leadingVisual: 'public',

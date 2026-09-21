@@ -182,7 +182,7 @@ export const DOCS_MSG_MONITOR_PLAYBOOK = 'docs-monitor-playbook';
 
 // Scene message cutoffs — last visible message ID per scene
 export const DOCS_SCENE_CUTOFFS: Record<string, string> = {
-  channels: DOCS_MSG_MATTY_ACK,
+  channels: DOCS_MSG_PRIYA_MENTION,
   grounding: DOCS_MSG_WRITER_DRAFT,
   review: DOCS_MSG_CODER_PR,
   approval: DOCS_MSG_EMMA_REACTION,
@@ -196,6 +196,83 @@ export const DOCS_SCENE_CUTOFFS: Record<string, string> = {
 // ---------------------------------------------------------------------------
 // Channel messages
 // ---------------------------------------------------------------------------
+
+export type DocThreadReply = {
+  username: string;
+  avatarSrc: string;
+  avatarAlt: string;
+  timestamp: string;
+  body: string;
+  agentShape?: AgentShape;
+  agentColor?: AgentColor;
+};
+
+export const THREAD_PRIYA_MENTION_REPLIES: DocThreadReply[] = [
+  {
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp: '10:01 AM',
+    body: "On it. I'll check the current SSO implementation and get the docs page updated to match.",
+    agentShape: MATTY.shape as AgentShape,
+    agentColor: MATTY.color as AgentColor,
+  },
+];
+
+export const THREAD_PRIYA_REPLY_REPLIES: DocThreadReply[] = [
+  {
+    username: JORDAN.name,
+    avatarSrc: JORDAN.avatarSrc,
+    avatarAlt: JORDAN.avatarAlt,
+    timestamp: '10:01 AM',
+    body: 'Go for it. I can review when the updated page is ready.',
+  },
+];
+
+export const THREAD_JORDAN_REACTION_REPLIES: DocThreadReply[] = [
+  {
+    username: PRIYA.name,
+    avatarSrc: PRIYA.avatarSrc,
+    avatarAlt: PRIYA.avatarAlt,
+    timestamp: '11:21 AM',
+    body: 'Good catch. Is adding a collapsible component feasible in the same pass?',
+  },
+  {
+    username: MATTY.name,
+    avatarSrc: '',
+    avatarAlt: MATTY.name,
+    timestamp: '11:22 AM',
+    body: "Yes — I'll have Coder build it and open a PR against the docs site repo. Jordan, I'll tag you for review once it's up.",
+    agentShape: MATTY.shape as AgentShape,
+    agentColor: MATTY.color as AgentColor,
+  },
+];
+
+export const THREAD_CODER_PR_REPLIES: DocThreadReply[] = [
+  {
+    username: ALEX.name,
+    avatarSrc: ALEX.avatarSrc,
+    avatarAlt: ALEX.avatarAlt,
+    timestamp: '11:52 AM',
+    body: 'Reviewing now. Component API looks clean — leaving one comment on prop naming.',
+  },
+  {
+    username: CODER.name,
+    avatarSrc: '',
+    avatarAlt: CODER.name,
+    timestamp: '11:58 AM',
+    body: 'Addressed the prop naming — renamed `isOpen` to `defaultOpen` to match the docs site convention. Force-pushed.',
+    agentShape: CODER.shape as AgentShape,
+    agentColor: CODER.color as AgentColor,
+  },
+  {
+    username: ALEX.name,
+    avatarSrc: ALEX.avatarSrc,
+    avatarAlt: ALEX.avatarAlt,
+    timestamp: '12:10 PM',
+    body: 'Approved.',
+  },
+];
 
 export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
   // Pre-seeded chatter
@@ -278,17 +355,13 @@ export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
         text: ' Can we check how SSO actually works today and fix this page to match?',
       },
     ],
-  },
-  {
-    id: DOCS_MSG_MATTY_ACK,
-    kind: 'agent',
-    username: MATTY.name,
-    avatarSrc: '',
-    avatarAlt: MATTY.name,
-    timestamp: '10:01 AM',
-    body: "On it. I'll check the current SSO implementation and get the docs page updated to match.",
-    agentShape: MATTY.shape as AgentShape,
-    agentColor: MATTY.color as AgentColor,
+    threadReplies: {
+      count: 1,
+      lastReplyTime: '10:01 AM',
+      participants: [
+        { key: 'matty', name: 'Matty', agentShape: MATTY.shape as AgentShape, agentColor: MATTY.color as AgentColor },
+      ],
+    },
   },
 
   // Act 2: Coder research + Writer draft

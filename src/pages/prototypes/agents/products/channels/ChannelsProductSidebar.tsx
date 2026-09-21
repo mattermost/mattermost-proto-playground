@@ -33,7 +33,7 @@ function resolveActiveName(pathname: string): string {
  * Channels LHS matching ChannelsSidebar chrome (product title + find), with a
  * host-owned plus menu (Create an Agent).
  */
-export default function ChannelsProductSidebar() {
+export default function ChannelsProductSidebar({ activeChannelName }: { activeChannelName?: string } = {}) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const {
@@ -51,7 +51,7 @@ export default function ChannelsProductSidebar() {
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [collapsedByAgentId, setCollapsedByAgentId] = useState<Record<string, boolean>>({});
   const plusRef = useRef<HTMLDivElement>(null);
-  const activeName = resolveActiveName(pathname);
+  const activeName = activeChannelName ?? resolveActiveName(pathname);
   const model = buildAgentsChannelsSidebarModel(activeName);
 
   const togglePlus = () => {
