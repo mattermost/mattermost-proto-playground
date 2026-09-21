@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import Agents from '@/pages/prototypes/agents/Agents';
+import AgentsDocs from '@/pages/prototypes/agents-docs/AgentsDocs';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -19,6 +20,13 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Agents',
     path: '/prototypes/agents',
     component: Agents,
+    nested: true,
+  },
+  {
+    id: 'agents-docs',
+    label: 'Agents — Docs Site',
+    path: '/prototypes/agents-docs',
+    component: AgentsDocs,
     nested: true,
   },
   {

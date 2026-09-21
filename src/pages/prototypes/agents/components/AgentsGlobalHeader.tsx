@@ -25,7 +25,14 @@ function NavIconButton({ ariaLabel, glyph }: { ariaLabel: string; glyph: React.R
   );
 }
 
-export default function AgentsGlobalHeader({ className }: { className?: string }) {
+type AgentsGlobalHeaderProps = {
+  className?: string;
+  teamName?: string;
+  teamLogoSrc?: string;
+};
+
+export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc }: AgentsGlobalHeaderProps) {
+  const displayName = teamName ?? 'Acme Co';
   return (
     <header className={[styles['agents-header'], className].filter(Boolean).join(' ')}>
       <div className={styles['agents-header__left']}>
@@ -33,7 +40,15 @@ export default function AgentsGlobalHeader({ className }: { className?: string }
           <NavIconButton ariaLabel="Product switcher" glyph={<ProductsIcon />} />
           <div className={styles['agents-header__team']}>
             <div className={styles['agents-header__team-avatar']}>
-              <span className={styles['agents-header__team-initials']}>Ac</span>
+              {teamLogoSrc ? (
+                <img
+                  src={teamLogoSrc}
+                  className={styles['agents-header__team-logo']}
+                  alt={displayName}
+                />
+              ) : (
+                <span className={styles['agents-header__team-initials']}>Ac</span>
+              )}
               <span className={styles['agents-header__team-badge']} aria-hidden />
             </div>
             <button
@@ -41,7 +56,7 @@ export default function AgentsGlobalHeader({ className }: { className?: string }
               className={styles['agents-header__team-dropdown']}
               aria-label="Switch team"
             >
-              <span className={styles['agents-header__team-name']}>Acme Co</span>
+              <span className={styles['agents-header__team-name']}>{displayName}</span>
               <Icon glyph={<ChevronDownIcon />} size="12" />
             </button>
           </div>
