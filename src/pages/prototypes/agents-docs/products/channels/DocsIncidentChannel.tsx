@@ -235,6 +235,10 @@ const CODER_DM_MESSAGES: DocsAgentDmMessage[] = [
     toolCalls: [
       { tool: 'playbook.check_task', label: 'Marked "Identify root cause" complete' },
     ],
+    artifact: {
+      title: 'INC-4472: Root Cause Analysis',
+      meta: 'Markdown · 280 words',
+    },
   },
 ];
 
@@ -568,6 +572,7 @@ export default function DocsIncidentChannel() {
                     tasks={CODER_INVESTIGATION_TASKS}
                     thinkingSteps={CODER_THINKING_STEPS}
                     onSettled={() => setCoderSettled(true)}
+                    onArtifactOpen={() => setArtifactOpen(true)}
                   />
                   {coderSettled && (
                     <div className={styles['docs-incident-channel__agent-message']}>
