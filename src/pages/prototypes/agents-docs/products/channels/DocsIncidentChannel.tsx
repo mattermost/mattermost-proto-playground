@@ -1,14 +1,19 @@
+import { useState } from 'react';
+import ArrowCollapseIcon from '@mattermost/compass-icons/components/arrow-collapse';
+import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
+import CloseIcon from '@mattermost/compass-icons/components/close';
 import TimelineTextOutlineIcon from '@mattermost/compass-icons/components/timeline-text-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
 import { Chip } from '@mattermost/compass-ui/components/chip';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { PermalinkPreview } from '@mattermost/compass-ui/components/permalink-preview';
-import { RightSidebarHeader } from '@mattermost/compass-ui/components/right-sidebar-header';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Tag } from '@mattermost/compass-ui/components/tag';
+import { ThreadFooter } from '@mattermost/compass-ui/components/thread-footer';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import {
   ChannelHeader,
@@ -20,8 +25,11 @@ import MentionMessageInput from '../../../agents/components/MentionMessageInput'
 import mentionStyles from '../../../agents/components/MentionMessageInput.module.scss';
 import ChannelIntro from '../../../agents/products/channels/ChannelIntro';
 import ChannelsProductSidebar from '../../../agents/products/channels/ChannelsProductSidebar';
+import { useExitAnimation } from '../../../../../hooks/useExitAnimation';
+import type { DocsAgentDmMessage } from '../../agentsDocsData';
 import { CODER, MATTY, MONITOR, PRIYA } from '../../agentsDocsData';
 import { AGENTS_DOCS_BASE } from '../../agentsDocsScenes';
+import DocsInlineDelegation, { type InlineDelegationAgent, type InlineDelegationTask } from '../../components/DocsInlineDelegation';
 import styles from './DocsIncidentChannel.module.scss';
 
 const coderAvatar = agentAvatarChipSrc(CODER.shape, CODER.color);
@@ -87,7 +95,7 @@ const OUTAGE_STAGES: OutageStage[] = [
         id: 'i1',
         label: 'Review recent deployments',
         description: 'Check for any infrastructure changes or deploys in the 30 minutes before the outage began.',
-        done: true,
+        done: false,
         assignees: [{ label: CODER.name, agentShape: CODER.shape, agentColor: CODER.color, avatarSrc: coderAvatar }],
       },
       {
@@ -172,7 +180,72 @@ const participants = [
   { key: 'priya', name: PRIYA.name, src: PRIYA.avatarSrc },
 ];
 
+const MONITOR_POST_ID = 'monitor-root-post';
+
+const MONITOR_DELEGATION_AGENT: InlineDelegationAgent = {
+  id: 'monitor', name: MONITOR.name, shape: MONITOR.shape, color: MONITOR.color,
+};
+const CODER_DELEGATION_AGENT: InlineDelegationAgent = {
+  id: 'coder', name: CODER.name, shape: CODER.shape, color: CODER.color,
+};
+
+const CODER_THINKING_STEPS = [
+  'Reviewing deployment history…',
+  'Scanning error logs…',
+  'Isolating failure window…',
+] as const;
+
+const CODER_INVESTIGATION_TASKS: InlineDelegationTask[] = [
+  { id: 'i1', label: 'Review recent deployments', status: 'done', agentId: 'coder', startsAtStep: 0, doneAtStep: 1 },
+  { id: 'i2', label: 'Identify root cause', status: 'done', agentId: 'coder', startsAtStep: 1, doneAtStep: 3 },
+  { id: 'i3', label: 'Check CDN and DNS configuration', status: 'pending', agentId: 'coder', startsAtStep: 2 },
+  { id: 'i4', label: 'Document findings in incident channel', status: 'pending', agentId: 'coder' },
+];
+
+const CODER_DM_MESSAGES: DocsAgentDmMessage[] = [
+  {
+    id: 'inc-dm-1',
+    role: 'from',
+    text: 'Coder — work through the Investigation checklist. Pull deployment history around 3:09 AM and correlate with the 503 onset.',
+    timestamp: '3:14 AM',
+    visibleAtStep: 0,
+    parts: [
+      { type: 'mention', id: 'coder', label: CODER.name, avatarSrc: coderAvatar, kind: 'agent', agentShape: CODER.shape, agentColor: CODER.color },
+      { type: 'text', text: ' — work through the Investigation checklist. Pull deployment history around 3:09 AM and correlate with the 503 onset.' },
+    ],
+  },
+  {
+    id: 'inc-dm-2',
+    role: 'to',
+    agentId: 'coder',
+    text: 'On it. Reviewing deployment history now.',
+    timestamp: '3:14 AM',
+    visibleAtStep: 0,
+    toolCalls: [
+      { tool: 'playbook.check_task', label: 'Marked "Review recent deployments" complete' },
+    ],
+  },
+  {
+    id: 'inc-dm-3',
+    role: 'to',
+    agentId: 'coder',
+    text: 'Found it — a CDN cache purge from the 3:09 AM deploy is serving stale 503 responses for static assets. Rolling back the purge config should restore service.',
+    timestamp: '3:15 AM',
+    visibleAtStep: 3,
+    toolCalls: [
+      { tool: 'playbook.check_task', label: 'Marked "Identify root cause" complete' },
+    ],
+  },
+];
+
 export default function DocsIncidentChannel() {
+  const [activePostId, setActivePostId] = useState<string | null>(null);
+  const [coderSettled, setCoderSettled] = useState(false);
+  const [rhsExpanded, setRhsExpanded] = useState(false);
+  const [playbookExpanded, setPlaybookExpanded] = useState(false);
+  const { rendered: threadRendered, exiting: threadExiting } = useExitAnimation(!!activePostId, 220);
+  const closeThread = () => { setActivePostId(null); setRhsExpanded(false); };
+
   return (
     <div className={styles['docs-incident-channel']}>
       <ChannelsProductSidebar basePath={AGENTS_DOCS_BASE} activeChannelName="INC-4472" />
@@ -218,7 +291,7 @@ export default function DocsIncidentChannel() {
                       <time className={styles['docs-incident-channel__agent-message-time']}>3:14 AM</time>
                     </div>
                     <p className={styles['docs-incident-channel__post']}>
-                      Playbook run started. Coder — I&apos;ve assigned you to investigate the root cause. I&apos;ll continue monitoring service status and update the channel.
+                      Playbook run started for the following alert:
                     </p>
                     <PermalinkPreview
                       authorName="Mattermost Web Services"
@@ -229,6 +302,51 @@ export default function DocsIncidentChannel() {
                     />
                   </div>
                 </div>
+                <div
+                  className={[
+                    styles['docs-incident-channel__agent-message'],
+                    styles['docs-incident-channel__agent-message--clickable'],
+                    activePostId === MONITOR_POST_ID ? styles['docs-incident-channel__agent-message--active'] : '',
+                  ].filter(Boolean).join(' ')}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setActivePostId(MONITOR_POST_ID)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActivePostId(MONITOR_POST_ID); }}
+                >
+                  <div className={styles['docs-incident-channel__agent-message-avatar']}>
+                    <AgentAvatar shape={MONITOR.shape} color={MONITOR.color} size="sm" eyes />
+                  </div>
+                  <div className={styles['docs-incident-channel__agent-message-body']}>
+                    <div className={styles['docs-incident-channel__agent-message-meta']}>
+                      <span className={styles['docs-incident-channel__agent-message-name']}>{MONITOR.name}</span>
+                      <Tag label="Agent" size="x-small" />
+                      <time className={styles['docs-incident-channel__agent-message-time']}>3:14 AM</time>
+                    </div>
+                    <p className={[styles['docs-incident-channel__post'], mentionStyles['mention-input__post']].join(' ')}>
+                      I&apos;ve assigned{' '}
+                      <Chip
+                        size="small"
+                        leadingAvatar={{ src: coderAvatar, alt: CODER.name }}
+                        className={[
+                          mentionStyles['mention-input__mention-chip'],
+                          mentionStyles['mention-input__post-chip'],
+                          mentionStyles['mention-input__mention-chip--agent'],
+                        ].join(' ')}
+                      >
+                        {CODER.name}
+                      </Chip>
+                      {' to investigate the root cause. I will continue to monitor service status and will post updates in the channel as things progress.'}
+                    </p>
+                    {coderSettled && (
+                      <ThreadFooter
+                        replyCount={1}
+                        lastReplyTime="3:15 AM"
+                        avatars={[{ key: 'coder', name: CODER.name, src: coderAvatar }]}
+                        onReply={() => setActivePostId(MONITOR_POST_ID)}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
             </Scrollbar>
           </div>
@@ -237,16 +355,35 @@ export default function DocsIncidentChannel() {
           </div>
         </div>
         <div className={styles['docs-incident-channel__rhs']}>
-          <RightSidebar
-            header={
-              <RightSidebarHeader
-                title="INC-4472: Docs site outage"
-                secondaryTitle="Website outage"
-                onExpand={() => undefined}
-                onClose={() => undefined}
-              />
-            }
-          >
+          <div className={[
+            styles['docs-incident-channel__playbook-panel'],
+            playbookExpanded ? styles['docs-incident-channel__playbook-panel--expanded'] : '',
+          ].filter(Boolean).join(' ')}>
+            <RightSidebar
+              fill
+              header={
+                <div className={styles['docs-incident-channel__rhs-header']}>
+                  <div className={styles['docs-incident-channel__rhs-header-title-group']}>
+                    <span className={styles['docs-incident-channel__rhs-header-title']}>INC-4472: Docs site outage</span>
+                    <span className={styles['docs-incident-channel__rhs-header-subtitle']}>Website outage</span>
+                  </div>
+                  <div className={styles['docs-incident-channel__rhs-header-actions']}>
+                    <IconButton
+                      size="small"
+                      aria-label={playbookExpanded ? 'Collapse' : 'Expand'}
+                      onClick={() => setPlaybookExpanded((v) => !v)}
+                      icon={<Icon size="16" glyph={playbookExpanded ? <ArrowCollapseIcon /> : <ArrowExpandIcon />} />}
+                    />
+                    <IconButton
+                      size="small"
+                      aria-label="Close"
+                      onClick={() => undefined}
+                      icon={<Icon size="16" glyph={<CloseIcon />} />}
+                    />
+                  </div>
+                </div>
+              }
+            >
             <div className={styles['docs-incident-channel__playbook-body']}>
               <Button
                 size="small"
@@ -304,7 +441,7 @@ export default function DocsIncidentChannel() {
                 <h3 className={styles['docs-incident-channel__playbook-section-title']}>Checklists</h3>
                 <div className={styles['docs-incident-channel__playbook-checklist-list']}>
                   {OUTAGE_STAGES.map((stage, index) => {
-                    const doneCount = stage.tasks.filter((t) => t.done).length;
+                    const doneCount = stage.tasks.filter((t) => (t.id === 'i1' || t.id === 'i2' ? coderSettled : t.done)).length;
                     return (
                       <div
                         key={stage.id}
@@ -328,7 +465,7 @@ export default function DocsIncidentChannel() {
                         <ul className={styles['docs-incident-channel__playbook-task-list']}>
                           {stage.tasks.map((task) => (
                             <li key={task.id} className={styles['docs-incident-channel__playbook-task-item']}>
-                              <Checkbox size="medium" checked={task.done} onChange={() => undefined}>
+                              <Checkbox size="medium" checked={(task.id === 'i1' || task.id === 'i2') ? coderSettled : task.done} onChange={() => undefined}>
                                 <span className={styles['docs-incident-channel__playbook-task-label']}>
                                   {task.label}
                                 </span>
@@ -361,6 +498,79 @@ export default function DocsIncidentChannel() {
               </div>
             </div>
           </RightSidebar>
+          </div>
+          {threadRendered && (
+            <div className={[
+              styles['docs-incident-channel__thread-panel'],
+              rhsExpanded ? styles['docs-incident-channel__thread-panel--expanded'] : '',
+              threadExiting ? styles['docs-incident-channel__thread-panel--exiting'] : '',
+            ].filter(Boolean).join(' ')}>
+              <RightSidebar
+                fill
+                header={
+                  <div className={styles['docs-incident-channel__rhs-header']}>
+                    <div className={styles['docs-incident-channel__rhs-header-title-group']}>
+                      <span className={styles['docs-incident-channel__rhs-header-title']}>Thread</span>
+                      <span className={styles['docs-incident-channel__rhs-header-subtitle']}>INC-4472</span>
+                    </div>
+                    <div className={styles['docs-incident-channel__rhs-header-actions']}>
+                      <IconButton
+                        size="small"
+                        aria-label={rhsExpanded ? 'Collapse' : 'Expand'}
+                        onClick={() => setRhsExpanded((v) => !v)}
+                        icon={<Icon size="16" glyph={rhsExpanded ? <ArrowCollapseIcon /> : <ArrowExpandIcon />} />}
+                      />
+                      <IconButton
+                        size="small"
+                        aria-label="Close"
+                        onClick={closeThread}
+                        icon={<Icon size="16" glyph={<CloseIcon />} />}
+                      />
+                    </div>
+                  </div>
+                }
+              >
+                <div className={styles['docs-incident-channel__thread-body']}>
+                  <div className={styles['docs-incident-channel__agent-message']}>
+                    <div className={styles['docs-incident-channel__agent-message-avatar']}>
+                      <AgentAvatar shape={MONITOR.shape} color={MONITOR.color} size="sm" eyes />
+                    </div>
+                    <div className={styles['docs-incident-channel__agent-message-body']}>
+                      <div className={styles['docs-incident-channel__agent-message-meta']}>
+                        <span className={styles['docs-incident-channel__agent-message-name']}>{MONITOR.name}</span>
+                        <Tag label="Agent" size="x-small" />
+                        <time className={styles['docs-incident-channel__agent-message-time']}>3:14 AM</time>
+                      </div>
+                      <p className={[styles['docs-incident-channel__post'], mentionStyles['mention-input__post']].join(' ')}>
+                        I&apos;ve assigned{' '}
+                        <Chip
+                          size="small"
+                          leadingAvatar={{ src: coderAvatar, alt: CODER.name }}
+                          className={[
+                            mentionStyles['mention-input__mention-chip'],
+                            mentionStyles['mention-input__post-chip'],
+                            mentionStyles['mention-input__mention-chip--agent'],
+                          ].join(' ')}
+                        >
+                          {CODER.name}
+                        </Chip>
+                        {' to investigate the root cause. I will continue to monitor service status and will post updates in the channel as things progress.'}
+                      </p>
+                    </div>
+                  </div>
+                  <DocsInlineDelegation
+                    label="Coder investigated root cause"
+                    fromAgent={MONITOR_DELEGATION_AGENT}
+                    toAgents={[CODER_DELEGATION_AGENT]}
+                    messages={CODER_DM_MESSAGES}
+                    tasks={CODER_INVESTIGATION_TASKS}
+                    thinkingSteps={CODER_THINKING_STEPS}
+                    onSettled={() => setCoderSettled(true)}
+                  />
+                </div>
+              </RightSidebar>
+            </div>
+          )}
         </div>
       </div>
     </div>
