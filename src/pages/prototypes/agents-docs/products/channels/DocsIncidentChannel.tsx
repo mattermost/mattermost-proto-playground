@@ -30,6 +30,7 @@ import type { DocsAgentDmMessage } from '../../agentsDocsData';
 import { CODER, MATTY, MONITOR, PRIYA } from '../../agentsDocsData';
 import { AGENTS_DOCS_BASE } from '../../agentsDocsScenes';
 import AgentArtifactCard from '../../../agents/components/AgentArtifactCard';
+import { AgentPlaybookRhsHeader } from '../../../agents/components/AgentPlaybookPreview';
 import DocsInlineDelegation, { type InlineDelegationAgent, type InlineDelegationTask } from '../../components/DocsInlineDelegation';
 import DocsRootCauseRhs from '../../components/DocsRootCauseRhs';
 import styles from './DocsIncidentChannel.module.scss';
@@ -608,20 +609,10 @@ export default function DocsIncidentChannel() {
               <RightSidebar
                 fill
                 header={
-                  <div className={styles['docs-incident-channel__rhs-header']}>
-                    <div className={styles['docs-incident-channel__rhs-header-title-group']}>
-                      <span className={styles['docs-incident-channel__rhs-header-title']}>INC-4472: Root Cause Analysis</span>
-                      <span className={styles['docs-incident-channel__rhs-header-subtitle']}>Markdown · 280 words</span>
-                    </div>
-                    <div className={styles['docs-incident-channel__rhs-header-actions']}>
-                      <IconButton
-                        size="small"
-                        aria-label="Close"
-                        onClick={() => setArtifactOpen(false)}
-                        icon={<Icon size="16" glyph={<CloseIcon />} />}
-                      />
-                    </div>
-                  </div>
+                  <AgentPlaybookRhsHeader
+                    secondaryTitle="INC-4472: Root Cause Analysis"
+                    onClose={() => setArtifactOpen(false)}
+                  />
                 }
               >
                 <DocsRootCauseRhs />
