@@ -29,7 +29,9 @@ import { useExitAnimation } from '../../../../../hooks/useExitAnimation';
 import type { DocsAgentDmMessage } from '../../agentsDocsData';
 import { CODER, MATTY, MONITOR, PRIYA } from '../../agentsDocsData';
 import { AGENTS_DOCS_BASE } from '../../agentsDocsScenes';
+import AgentArtifactCard from '../../../agents/components/AgentArtifactCard';
 import DocsInlineDelegation, { type InlineDelegationAgent, type InlineDelegationTask } from '../../components/DocsInlineDelegation';
+import DocsRootCauseRhs from '../../components/DocsRootCauseRhs';
 import styles from './DocsIncidentChannel.module.scss';
 
 const coderAvatar = agentAvatarChipSrc(CODER.shape, CODER.color);
@@ -198,8 +200,6 @@ const CODER_THINKING_STEPS = [
 const CODER_INVESTIGATION_TASKS: InlineDelegationTask[] = [
   { id: 'i1', label: 'Review recent deployments', status: 'done', agentId: 'coder', startsAtStep: 0, doneAtStep: 1 },
   { id: 'i2', label: 'Identify root cause', status: 'done', agentId: 'coder', startsAtStep: 1, doneAtStep: 3 },
-  { id: 'i3', label: 'Check CDN and DNS configuration', status: 'pending', agentId: 'coder', startsAtStep: 2 },
-  { id: 'i4', label: 'Document findings in incident channel', status: 'pending', agentId: 'coder' },
 ];
 
 const CODER_DM_MESSAGES: DocsAgentDmMessage[] = [
@@ -241,10 +241,12 @@ const CODER_DM_MESSAGES: DocsAgentDmMessage[] = [
 export default function DocsIncidentChannel() {
   const [activePostId, setActivePostId] = useState<string | null>(null);
   const [coderSettled, setCoderSettled] = useState(false);
+  const [artifactOpen, setArtifactOpen] = useState(false);
   const [rhsExpanded, setRhsExpanded] = useState(false);
   const [playbookExpanded, setPlaybookExpanded] = useState(false);
   const { rendered: threadRendered, exiting: threadExiting } = useExitAnimation(!!activePostId, 220);
-  const closeThread = () => { setActivePostId(null); setRhsExpanded(false); };
+  const { rendered: artifactRendered, exiting: artifactExiting } = useExitAnimation(artifactOpen, 220);
+  const closeThread = () => { setActivePostId(null); setRhsExpanded(false); setArtifactOpen(false); };
 
   return (
     <div className={styles['docs-incident-channel']}>
@@ -567,7 +569,58 @@ export default function DocsIncidentChannel() {
                     thinkingSteps={CODER_THINKING_STEPS}
                     onSettled={() => setCoderSettled(true)}
                   />
+                  {coderSettled && (
+                    <div className={styles['docs-incident-channel__agent-message']}>
+                      <div className={styles['docs-incident-channel__agent-message-avatar']}>
+                        <AgentAvatar shape={MONITOR.shape} color={MONITOR.color} size="sm" eyes />
+                      </div>
+                      <div className={styles['docs-incident-channel__agent-message-body']}>
+                        <div className={styles['docs-incident-channel__agent-message-meta']}>
+                          <span className={styles['docs-incident-channel__agent-message-name']}>{MONITOR.name}</span>
+                          <Tag label="Agent" size="x-small" />
+                          <time className={styles['docs-incident-channel__agent-message-time']}>3:15 AM</time>
+                        </div>
+                        <p className={styles['docs-incident-channel__post']}>
+                          Root cause confirmed. CDN cache purge from the 3:09 AM deploy is serving a stale 503 error page. Rollback is the fix.
+                        </p>
+                        <AgentArtifactCard
+                          title="INC-4472: Root Cause Analysis"
+                          meta="Markdown · 280 words"
+                          compact
+                          onOpen={() => setArtifactOpen(true)}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
+              </RightSidebar>
+            </div>
+          )}
+          {artifactRendered && (
+            <div className={[
+              styles['docs-incident-channel__artifact-panel'],
+              artifactExiting ? styles['docs-incident-channel__artifact-panel--exiting'] : '',
+            ].filter(Boolean).join(' ')}>
+              <RightSidebar
+                fill
+                header={
+                  <div className={styles['docs-incident-channel__rhs-header']}>
+                    <div className={styles['docs-incident-channel__rhs-header-title-group']}>
+                      <span className={styles['docs-incident-channel__rhs-header-title']}>INC-4472: Root Cause Analysis</span>
+                      <span className={styles['docs-incident-channel__rhs-header-subtitle']}>Markdown · 280 words</span>
+                    </div>
+                    <div className={styles['docs-incident-channel__rhs-header-actions']}>
+                      <IconButton
+                        size="small"
+                        aria-label="Close"
+                        onClick={() => setArtifactOpen(false)}
+                        icon={<Icon size="16" glyph={<CloseIcon />} />}
+                      />
+                    </div>
+                  </div>
+                }
+              >
+                <DocsRootCauseRhs />
               </RightSidebar>
             </div>
           )}
