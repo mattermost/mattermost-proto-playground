@@ -146,13 +146,18 @@ function DmMessageBody({ text, parts }: { text: string; parts?: ChannelMessagePa
   );
 }
 
+function toolCallIcon(tool: string) {
+  if (tool.startsWith('playbook.')) return <PlaylistCheckIcon />;
+  return <GithubCircleIcon />;
+}
+
 function ToolCallList({ toolCalls }: { toolCalls: DocsToolCall[] }) {
   return (
     <div className={styles['inline-delegation__msg-tool-calls']}>
       {toolCalls.map((tc, i) => (
         <div key={i} className={styles['inline-delegation__msg-tool-call']}>
           <span className={styles['inline-delegation__msg-tool-call-icon']}>
-            <Icon size="10" glyph={<GithubCircleIcon />} />
+            <Icon size="10" glyph={toolCallIcon(tc.tool)} />
           </span>
           <span className={styles['inline-delegation__msg-tool-call-name']}>{tc.tool}</span>
           <span className={styles['inline-delegation__msg-tool-call-sep']}>·</span>
