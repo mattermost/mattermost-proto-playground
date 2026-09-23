@@ -243,9 +243,55 @@ const CODER_DM_MESSAGES: DocsAgentDmMessage[] = [
   },
 ];
 
+const CODER_FOLLOWUP_THINKING_STEPS = [
+  'Auditing Cloudflare edge config…',
+  'Checking DNS records…',
+  'Composing findings summary…',
+] as const;
+
+const CODER_FOLLOWUP_TASKS: InlineDelegationTask[] = [
+  { id: 'i3', label: 'Check CDN and DNS configuration', status: 'done', agentId: 'coder', startsAtStep: 0, doneAtStep: 2 },
+  { id: 'i4', label: 'Document findings in incident channel', status: 'done', agentId: 'coder', startsAtStep: 2, doneAtStep: 3 },
+];
+
+const CODER_FOLLOWUP_DM_MESSAGES: DocsAgentDmMessage[] = [
+  {
+    id: 'inc-fu-1',
+    role: 'from',
+    text: 'Coder — check CDN and DNS configuration to confirm no other edge changes landed in the deploy, then document the findings in INC-4472.',
+    timestamp: '3:15 AM',
+    visibleAtStep: 0,
+    parts: [
+      { type: 'mention', id: 'coder', label: CODER.name, avatarSrc: coderAvatar, kind: 'agent', agentShape: CODER.shape, agentColor: CODER.color },
+      { type: 'text', text: ' — check CDN and DNS configuration to confirm no other edge changes landed in the deploy, then document the findings in INC-4472.' },
+    ],
+  },
+  {
+    id: 'inc-fu-2',
+    role: 'to',
+    agentId: 'coder',
+    text: 'On it. Auditing Cloudflare edge config and DNS records now.',
+    timestamp: '3:15 AM',
+    visibleAtStep: 1,
+  },
+  {
+    id: 'inc-fu-3',
+    role: 'to',
+    agentId: 'coder',
+    text: 'CDN confirmed — only the purge config changed, DNS is clean. Posting findings summary to INC-4472 now.',
+    timestamp: '3:16 AM',
+    visibleAtStep: 3,
+    toolCalls: [
+      { tool: 'playbook.check_task', label: 'Marked "Check CDN and DNS configuration" complete' },
+      { tool: 'playbook.check_task', label: 'Marked "Document findings in incident channel" complete' },
+    ],
+  },
+];
+
 export default function DocsIncidentChannel() {
   const [activePostId, setActivePostId] = useState<string | null>(null);
   const [coderSettled, setCoderSettled] = useState(false);
+  const [followupSettled, setFollowupSettled] = useState(false);
   const [artifactOpen, setArtifactOpen] = useState(false);
   const [rhsExpanded, setRhsExpanded] = useState(false);
   const [playbookExpanded, setPlaybookExpanded] = useState(false);
@@ -448,7 +494,11 @@ export default function DocsIncidentChannel() {
                 <h3 className={styles['docs-incident-channel__playbook-section-title']}>Checklists</h3>
                 <div className={styles['docs-incident-channel__playbook-checklist-list']}>
                   {OUTAGE_STAGES.map((stage, index) => {
-                    const doneCount = stage.tasks.filter((t) => (t.id === 'i1' || t.id === 'i2' ? coderSettled : t.done)).length;
+                    const doneCount = stage.tasks.filter((t) => (
+                      (t.id === 'i1' || t.id === 'i2') ? coderSettled
+                      : (t.id === 'i3' || t.id === 'i4') ? followupSettled
+                      : t.done
+                    )).length;
                     return (
                       <div
                         key={stage.id}
@@ -472,7 +522,15 @@ export default function DocsIncidentChannel() {
                         <ul className={styles['docs-incident-channel__playbook-task-list']}>
                           {stage.tasks.map((task) => (
                             <li key={task.id} className={styles['docs-incident-channel__playbook-task-item']}>
-                              <Checkbox size="medium" checked={(task.id === 'i1' || task.id === 'i2') ? coderSettled : task.done} onChange={() => undefined}>
+                              <Checkbox
+                                size="medium"
+                                checked={
+                                  (task.id === 'i1' || task.id === 'i2') ? coderSettled
+                                  : (task.id === 'i3' || task.id === 'i4') ? followupSettled
+                                  : task.done
+                                }
+                                onChange={() => undefined}
+                              >
                                 <span className={styles['docs-incident-channel__playbook-task-label']}>
                                   {task.label}
                                 </span>
@@ -576,26 +634,64 @@ export default function DocsIncidentChannel() {
                     onArtifactOpen={() => setArtifactOpen(true)}
                   />
                   {coderSettled && (
-                    <div className={styles['docs-incident-channel__agent-message']}>
-                      <div className={styles['docs-incident-channel__agent-message-avatar']}>
-                        <AgentAvatar shape={MONITOR.shape} color={MONITOR.color} size="sm" eyes />
-                      </div>
-                      <div className={styles['docs-incident-channel__agent-message-body']}>
-                        <div className={styles['docs-incident-channel__agent-message-meta']}>
-                          <span className={styles['docs-incident-channel__agent-message-name']}>{MONITOR.name}</span>
-                          <Tag label="Agent" size="x-small" />
-                          <time className={styles['docs-incident-channel__agent-message-time']}>3:15 AM</time>
+                    <>
+                      <div className={styles['docs-incident-channel__agent-message']}>
+                        <div className={styles['docs-incident-channel__agent-message-avatar']}>
+                          <AgentAvatar shape={MONITOR.shape} color={MONITOR.color} size="sm" eyes />
                         </div>
-                        <p className={styles['docs-incident-channel__post']}>
-                          Root cause confirmed. CDN cache purge from the 3:09 AM deploy is serving a stale 503 error page. Rollback is the fix.
-                        </p>
-                        <AgentArtifactCard
-                          title="INC-4472: Root Cause Analysis"
-                          meta="Markdown · 280 words"
-                          onOpen={() => setArtifactOpen(true)}
-                        />
+                        <div className={styles['docs-incident-channel__agent-message-body']}>
+                          <div className={styles['docs-incident-channel__agent-message-meta']}>
+                            <span className={styles['docs-incident-channel__agent-message-name']}>{MONITOR.name}</span>
+                            <Tag label="Agent" size="x-small" />
+                            <time className={styles['docs-incident-channel__agent-message-time']}>3:15 AM</time>
+                          </div>
+                          <p className={styles['docs-incident-channel__post']}>
+                            Root cause confirmed. CDN cache purge from the 3:09 AM deploy is serving a stale 503 error page. Rollback is the fix.
+                          </p>
+                          <AgentArtifactCard
+                            title="INC-4472: Root Cause Analysis"
+                            meta="Markdown · 280 words"
+                            onOpen={() => setArtifactOpen(true)}
+                          />
+                        </div>
                       </div>
-                    </div>
+                      <div className={styles['docs-incident-channel__agent-message']}>
+                        <div className={styles['docs-incident-channel__agent-message-avatar']}>
+                          <AgentAvatar shape={MONITOR.shape} color={MONITOR.color} size="sm" eyes />
+                        </div>
+                        <div className={styles['docs-incident-channel__agent-message-body']}>
+                          <div className={styles['docs-incident-channel__agent-message-meta']}>
+                            <span className={styles['docs-incident-channel__agent-message-name']}>{MONITOR.name}</span>
+                            <Tag label="Agent" size="x-small" />
+                            <time className={styles['docs-incident-channel__agent-message-time']}>3:15 AM</time>
+                          </div>
+                          <p className={[styles['docs-incident-channel__post'], mentionStyles['mention-input__post']].join(' ')}>
+                            Good work. Moving{' '}
+                            <Chip
+                              size="small"
+                              leadingAvatar={{ src: coderAvatar, alt: CODER.name }}
+                              className={[
+                                mentionStyles['mention-input__mention-chip'],
+                                mentionStyles['mention-input__post-chip'],
+                                mentionStyles['mention-input__mention-chip--agent'],
+                              ].join(' ')}
+                            >
+                              {CODER.name}
+                            </Chip>
+                            {' on to the remaining investigation tasks.'}
+                          </p>
+                        </div>
+                      </div>
+                      <DocsInlineDelegation
+                        label="Coder checked CDN and documented findings"
+                        fromAgent={MONITOR_DELEGATION_AGENT}
+                        toAgents={[CODER_DELEGATION_AGENT]}
+                        messages={CODER_FOLLOWUP_DM_MESSAGES}
+                        tasks={CODER_FOLLOWUP_TASKS}
+                        thinkingSteps={CODER_FOLLOWUP_THINKING_STEPS}
+                        onSettled={() => setFollowupSettled(true)}
+                      />
+                    </>
                   )}
                 </div>
               </RightSidebar>
