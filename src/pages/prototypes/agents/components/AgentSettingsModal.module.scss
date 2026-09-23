@@ -41,11 +41,11 @@
       flex-direction: column;
     }
 
-    // Figma: title + agent name on one row with muted subtitle.
-    :global([class*='modal__title-group']) {
-      flex-direction: row;
-      align-items: center;
-      gap: var(--spacing-m);
+    // Prevent title h2 from expanding and pushing beside subtitle to the far right.
+    // Target h2 specifically — [class*='modal-header__title'] would also match
+    // the plural __titles wrapper and collapse its flex: 1 1 auto, moving the close button.
+    :global(h2[class*='modal-header__title']) {
+      flex: 0 0 auto;
     }
 
     :global([class*='modal__subtitle']) {
@@ -419,7 +419,13 @@
     font-weight: var(--font-weight-regular);
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    code {
+      font-family: var(--font-family-mono);
+      font-size: inherit;
+    }
   }
+
 
   &__access {
     display: flex;
@@ -845,6 +851,108 @@
     flex-shrink: 0;
     align-items: center;
     gap: var(--spacing-xs);
+  }
+
+  &__skill-drop {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m) var(--spacing-l);
+    border: 2px dashed rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.02);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    cursor: pointer;
+    transition: border-color var(--duration-quick) var(--ease-transition),
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover,
+    &--over {
+      border-color: rgba(var(--button-bg-rgb), 0.56);
+      background-color: rgba(var(--button-bg-rgb), 0.06);
+      color: var(--button-bg);
+    }
+  }
+
+  &__skill-drop-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+
+    code {
+      font-family: monospace;
+      font-size: inherit;
+      opacity: 0.9;
+    }
+  }
+
+  &__skill-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xxs);
+  }
+
+  &__skill-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xs) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+    min-width: 0;
+    transition:
+      box-shadow var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      box-shadow: var(--elevation-2);
+      border-color: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+  }
+
+  &__skill-card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+    min-width: 0;
+  }
+
+  &__skill-card-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__skill-card-name {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__skill-card-desc {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    line-height: var(--line-height-75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__skill-card-action {
+    display: flex;
+    flex-shrink: 0;
   }
 }
 

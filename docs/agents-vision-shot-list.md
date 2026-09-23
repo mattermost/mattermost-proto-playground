@@ -1,190 +1,225 @@
-# Shot List — "Human + Machine, On the Same Team" (v4)
-For production/mockup planning. Cross-referenced to script scene numbers.
+# Shot List — "The Team, Updating the Site" (v1)
+For production/mockup planning. Cross-referenced to script beats discussed in chat.
+Reuses the component library built for "Human + Machine, On the Same Team" v5
+(`mattermost-proto-playground`, branch `cursor/agents-vision-prototype-c820`, PRs #62/#68).
 
-**Build status key:** ✅ Built · 🔶 Partial · ⬜ Not built
-
----
-
-## Act 1 — Meet the Team
-
-### 1.1 — Building Sentinel
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Main channel view, `#service-status` | Active, lived-in channel with a scroll-back of historical alerting webhook posts from various monitored systems (PayForge among them) — establishes this channel already exists as the team's real status feed, not a fresh empty room. Priya + Jordan present. **Matty is already present and available** — implies Matty pre-exists as a standing/default coordinator, not something Priya builds. |
-| ⬜ | Chat with Matty (DM or in-channel) | Priya asks Matty to create a monitoring agent. Matty creates it in the background and replies with a link/reference to the new agent — name: **Sentinel** · description: *"Watches error rates and flags anything that could affect customers"* · source connections: reliability team channels/docs. |
-| ⬜ | Agent settings/profile review screen | Priya opens Sentinel's settings page to review before approving — name, description, and source-connection list all visible and editable. |
-| ⬜ | Approval action | Priya approves from this settings screen. |
-| ⬜ | Confirmation card/message, main channel | Sentinel is added to `#service-status` on approval. Preview text: *"Sentinel will have context from 47 past incidents and 12 runbooks."* |
-
-### 1.2 — Roster pan
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Channel member list / roster sidebar | **Jordan Lee, Emma Novak, Darius Cole, Priya Shah** (humans) · **Matty** — Coordinator tag · **Sentinel** — Monitoring tag. 6 members total at this point. |
-
-### 1.3 — *(moved — see Act 2, Scene 2.2)*
-Matty suggesting Otto now happens inside the playbook-run/incident channel, not the pre-incident alerting channel. Content moved below.
-
-### 1.4 — PDF → Playbook
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Main channel → DM transition | Priya switches out of `#service-status` into a personal DM with Matty |
-| ⬜ | DM/chat view, Priya + Matty | Priya states her intent: something like *"Can you help me turn an old checklist I've used in the past into a playbook?"* |
-| ⬜ | DM/chat view, Priya + Matty | Priya drags in the file: attachment thumbnail for **Legacy_Incident_Checklist.pdf** appears in the compose box |
-| ⬜ | DM/chat view, Priya + Matty | Matty reads the attachment and replies in chat — a short response confirming it can turn this into a runnable playbook |
-| ⬜ | DM/chat view, Priya + Matty | Follow-up post: a compact **card preview** of the playbook (title, stage count, task count at a glance — not the full editable view) |
-| ⬜ | RHS (right sidebar) — auto-opens | The full playbook artifact opens automatically alongside the chat, ready to save. Needs to show at least: a stage titled something like **Resolution — Deployment** containing **Roll back deployment** and **Verify deployment health** |
-| ⬜ | DM/chat view, Priya + Matty | Matty proactively suggests where agents could be assigned — e.g. *"The deployment tasks look like a fit for Otto, if you want to assign it now."* Priya agrees. |
-| ⬜ | RHS — Playbook draft, updated state | Same two tasks now showing **Otto** as assignee (avatar/tag) |
-| ⬜ | Main channel or DM | Matty's confirmation post: *"Saved playbook 'Incident Response Checklist v1'"* |
+**Build status key:** ✅ Reusable as-is or with rename only · 🔶 Reusable, needs adaptation · ⬜ New, not built
 
 ---
 
-## Act 2 — The Incident Ignites, the Team Assembles
+## Cast & Setting
 
-### 2.1 — Detection, ticket, playbook kickoff
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Time-jump transition | *"A few days later"* — or similar cut treatment, signaling this is a new day, not a continuation of Act 1 |
-| ⬜ | Main channel view | A **PayForge** webhook post arrives, distinct from the historical/routine webhook traffic seeded in 1.1 — this one signals an actual issue |
-| ⬜ | Main channel view | Sentinel notifies Priya — a mention/alert directed at her specifically |
-| ⬜ | Jira ticket card (embedded in channel) | Sentinel posts the ticket card/link directly in-channel as part of the notification — *"Opened INC-4471: Checkout failures during peak traffic."* |
-| ⬜ | Main channel view | Sentinel's impact card: affected services list, error-rate %, small chart/sparkline |
-| ⬜ | Main channel view | **Matty** posts a follow-up message with a prompt/card — something like *"Ready to start the Incident Response playbook for this?"* with a **Start Playbook** button |
-| ⬜ | Main channel view | Priya clicks **Start Playbook** on the card |
-| ⬜ | Main channel view | Matty shows visible thinking/creating status indicators (e.g. a processing or "building..." state) before anything appears — no instant result |
+- **Emma** — Support lead (human) — flags the problem
+- **Priya** — PM (human) — makes the plain-language ask
+- **Jordan** — Docs owner (human) — content approver
+- **Alex** — Engineer (human) — code approver
+- **Matty** — Orchestrator agent (existing, standing coordinator — same character as prior script)
+- **Writer** — Content drafting/publishing specialist
+- **Reviewer** — Proofreading specialist (grammar, style, broken links — not UX/architecture judgment)
+- **Coder** — Research (product/implementation inspection) + layout/component-build + deploy specialist
+- **Monitor** — Uptime/monitoring specialist, appears only in Act 5
 
-### 2.2 — Playbook run assembles the team
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ✅ | Main channel view | Matty's post starting the playbook run — this is the new, dedicated incident channel created from Priya's click in 2.1 |
-| ✅ | New incident channel | Agent-to-agent message styling — **Sentinel → Cipher:** *"Signature doesn't point to one cause cleanly. Can you dig in?"* — needs a visual treatment distinct from human messages, small "→" or agent-badge convention |
-| ✅ | Playbook run RHS panel (open) | The Diagnosis stage's task shows **Cipher** as the assigned agent, working it live — this is how Cipher's addition to the effort is shown, not a channel member list update |
-| ✅ | New incident channel | Cipher's finding post: *"Root cause: build 8842 changed how we handle PayForge webhook events, deployed at T+0 — matches error onset exactly."* (animated — streamed with tool-call cycle) |
-| ✅ | New incident channel | Cipher's follow-up: Jira link + playbook tasks d1/d2 checked off |
-| ✅ | Main channel view (incident channel) | Matty's message: *"If this ever turns into a deployment issue, you'll want Otto in here…"* |
-| ✅ | Suggestion card, main channel | Matty's suggestion arrives as an invite card — Otto's name, Deployment tag, quick **Add** button |
-| ✅ | Playbook run RHS panel, updated | Deployment-tasks stage now shows **Otto** as assignee · Resolution stage shows **Alex** and **Dynamo** |
-
-### 2.3 — Triage split
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Main channel view | Matty posts a brief triage summary — something like *"Splitting this into two workstreams."* |
-| ⬜ | Main channel view | Matty **creates two separate coordination threads**, each opened with its own starter message — Thread 1: *"Alex + Dynamo: the PayForge webhook handler itself"* · Thread 2: *"Jordan + Otto: infra and rollback path"* — Priya is added to both, coordinating across them rather than owning a thread herself |
-| ⬜ | Thread indicators | Two distinct thread entries visible under Matty's posts, each already named/scoped rather than being generic reply counts |
+**Setting:** `#docs-site`, an established channel. **Scenario:** the onboarding page's SSO section is stale; the team fixes it together, and along the way builds a reusable page component.
 
 ---
 
-## Act 2.5 — Matty's Approval Gate + Dynamo Fix *(not in original shot list; built between 2.2 and Act 3)*
+## Act 1 — Trigger & Ask
 
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ✅ | New incident channel | Matty posts with @Priya mention, approval card for bringing in Dynamo with Alex |
-| ✅ | Thread RHS (Matty approval post) | On Approve: Otto works through deployment-readiness tool-call cycle (typing → ack → spinner labels → result) |
-| ✅ | Thread RHS (same thread) | Dynamo follows Otto: two-cycle tool sequence — (1) scanning/isolating regression → finding post — (2) applying fix/opening PR → result post with GitHub PR card |
-| ✅ | GitHub PR card | *"Fix PayForge webhook handler regression"* · Alex Rivera via Dynamo · Awaiting review · Approve button |
-| ✅ | Playbook run RHS | r1 + r2 (Resolution stage tasks) checked off when PR is opened |
+### 1.1 — Emma flags the problem
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| 🔶 | `#docs-site` main channel view | `ChannelsHome.tsx`, `ChannelIntro.tsx` | Repurpose the `ChannelsHome` shell (was `#service-status`) as `#docs-site`. Needs new pre-seeded scroll-back so the channel reads as lived-in — docs/site chatter, not empty. |
+| ✅ | Emma's flag — plain human message | `Message`/`MessageInput` (compass-proto) | Decided: Emma's post is a normal human message, not a webhook card — she's raising a concern, not reporting an automated event. `WebhookPost.tsx` stays in reserve for other automated-trigger moments elsewhere in the demo where an actual system event fires (not used in this beat). |
 
----
+### 1.2 — Team beat (humans only, no agent yet)
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Thread reply under Emma's post | `Message`/`MessageInput` (compass-proto), `ComposerShell.tsx` | Priya replies to Emma; Jordan chimes in agreeing to loop in Matty. Pure human-to-human — no agent components needed. |
 
-## Act 3 — Parallel Threads
-
-### 3.1 — Thread 1 (Alex + Dynamo, code) — continuing the thread Matty created in 2.3
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ✅ | Thread view | Alex posts into the existing thread: *"Find where our PayForge webhook handling changed in the last deploy."* |
-| ✅ | Code diff view (embedded or linked GitHub file) | Diff from build 8842, highlighting the regression |
-| ✅ | Thread view | Dynamo's proposed fix, inline |
-
-### 3.2 — Thread 2 (Jordan + Otto, infra) — continuing the thread Matty created in 2.3, concurrent with 3.1
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ✅ | Thread view (separate from 3.1) | Jordan posts into the existing thread: *"What's our rollback readiness if the code fix doesn't land in time?"* |
-| ✅ | Thread view | Otto's status report: rollback staged, timestamped |
-| ⬜ | **Layout note:** | Needs a split-screen or fast-interleave treatment with 3.1 to sell "simultaneous," not sequential — flag for editor/storyboard artist |
-
-### 3.3 — Convergence
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ✅ | Main channel view | Alex + Dynamo's "fix ready" post · Jordan + Otto's "rollback on standby, unused" post |
-| ✅ | Main channel view | Priya's synthesis: *"Let's ship the fix directly — we know the cause, no need to roll back."* |
+### 1.3 — The ask
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Same thread, @-mention | `MentionMessageInput.tsx` | Priya tags Matty in plain language. Mention-chip and invite-out-of-channel-agent flow already built (from Act 1.3 commit "invite-by-mention flow"). |
 
 ---
 
-## Act 4 — Review and Resolution
+## Act 2 — Grounding & Informed Rewrite
 
-### 4.1 — PR and review
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ✅ | GitHub PR card (embedded in Mattermost) | Title: *"Fix PayForge webhook handler regression."* · Author: Alex Rivera (via Dynamo) · Status: Awaiting review · Approve action visible — shown in Dynamo's thread after Act 2.5 |
+### 2.1 — Delegation to Coder (research)
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | "Matty sent a message to Coder" notice + DM panel | `MattyDelegationDM.tsx` | Directly reusable — this component already renders exactly this handoff pattern (was Matty→Sentinel). Rename target agent only. |
+| ✅ | Coder's research report | `MarkdownArtifactRhs.tsx` | Decided: this is a larger finding, not a quick note — reuse `MarkdownArtifactRhs` (was Cipher's root-cause report) for Coder's SSO research writeup, opened as its own RHS panel. |
 
-### 4.2 — Deploy and confirm
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Main channel view | Otto's merge/deploy confirmation |
-| ⬜ | Main channel view | Sentinel's recovery confirmation (error rates dropping) |
-| ⬜ | Jira ticket card | Status updated to **Resolved**, linked to the merged PR |
+### 2.2 — Delegation to Writer (informed rewrite)
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Matty's confirmation check | `AgentPost` + inline action (e.g. `AgentApprovalCard`-style yes/no) | New beat: before delegating, Matty asks in-thread — "Want me to loop in Writer to make the copy changes?" — and a human confirms. Reuses the existing approval/confirmation card pattern rather than a silent auto-delegate. |
+| ✅ | Second delegation notice/DM | `MattyDelegationDM.tsx` | Same component, second use — Matty→Writer instead of Matty→Coder. Now follows the confirmation above rather than firing automatically. |
+| ✅ | Writer's proposed rewrite | `MarkdownArtifactRhs.tsx` | Decided: a Markdown artifact of the proposed text changes, same component as Coder's research report. Simple, reuses what's built. |
+| ⬜ *(optional upgrade)* | True diff view (line-level additions/deletions highlighted) | New: needs a diff library (e.g. `diff`) + new rendering | Not the default — moderate lift, not huge. Worth doing later if you want the extra polish; the plain Markdown artifact above ships the beat without it. |
 
-### 4.3 — Summary card
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Auto-generated summary card, main channel | *"Resolved in 12 minutes. Root cause: Cipher. Fix: Alex + Dynamo. Rollback standby: Jordan + Otto (not needed). Detection: Sentinel."* |
-
----
-
-## Act 5 — Trust and Control
-
-### 5.2 — Audit log
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Playbook run timeline | The native Playbook run's event timeline — task state changes, assignee changes, status updates — shown chronologically across the whole incident, with entries attributable back to which thread (3.1 vs 3.2) generated them |
-
-### 5.3 — Wrap-up and calendar
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Main channel view | Matty's wrap-up summary post |
-| ⬜ | Calendar event card (embedded) | *"Postmortem: INC-4471, Thursday 2pm. Invited: Priya, Jordan, Alex."* |
+### 2.3 — *(folded into 3.2)*
+Jordan's reaction to Writer's draft now happens together with her spotting the component gap — one combined human beat rather than two separate ones. See Act 3.2.
 
 ---
 
-## Closing Frame
-| Status | Screen | On-screen content needed |
-|---|---|---|
-| ⬜ | Main channel view, full sidebar | All 8 members visible: Priya, Jordan, Alex (humans) · Matty, Sentinel, Otto, Dynamo, **Cipher** (agents — Cipher shown slightly greyed/inactive to signal it's not always present) |
-| ⬜ | Main channel view | Two resolved thread icons still visible under the old triage message |
-| ⬜ | Playbook timeline | Scrolling in background, interleaved multi-thread entries (reuse 5.2 asset) |
+## Act 3 — The Catch & Component Build
+
+### 3.1 — Reviewer's proofread pass (peer message to Writer)
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Reviewer → Writer, visible peer message | `MattyDelegationDM.tsx` shell, reused for a non-Matty pairing | Revised: staged as a direct Reviewer→Writer exchange (reusing the same delegation-DM visual language, just peer-to-peer) rather than a post into the channel — makes agent-to-agent coordination visible without Matty mediating. Scope unchanged: proofreader only — grammar, typos, style, broken links. Comes back clean. |
+
+### 3.2 — Human beat: Jordan spots the UX gap
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Thread reply | `Message`/`MessageInput` | Jordan reacts to Writer's draft (folding in the old 2.3 beat) and separately notices the new SSO steps really need a **reusable collapsible section component** — a human observation about page structure, not something Reviewer would plausibly catch. Proposes it in-thread. |
+
+### 3.3 — Delegation to Coder (component build)
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Delegation notice/DM (third use) | `MattyDelegationDM.tsx` | Reused again — Matty (or Priya/Jordan directly) → Coder for the build task, triggered by Jordan's suggestion above rather than Reviewer's flag. |
+| ✅ | Coder's PR card | `GitHubPrCard.tsx` | Built for exactly this (was Dynamo's fix PR). Rename authorship/title only: "Add reusable collapsible section component." |
+| ✅ | Code preview | `CodeSnippet.tsx` | Decided: include it — a quick code snippet before the full PR card is a nice concrete beat for the demo, showing Coder's actual work rather than jumping straight to the PR summary. |
+
+### 3.4 — Human beat: Jordan checks with Alex
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Thread reply | `Message`/`MessageInput` | Jordan asks Alex whether the new component affects content flow; Alex replies. Plain human exchange. |
+
+---
+
+## Act 4 — Approval & Publish
+
+### 4.1 — Parallel delegation tracker: Coder's CI check + Reviewer's page check
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ⬜ | Delegation tracker card, two rows running at once | New: no equivalent exists | **Genuinely new component**, styled after Claude Code's subagent UX — a single card posted by Matty with a live status row per task ("Coder: running CI checks on the merged PR" / "Reviewer: checking the combined page"), both shown running together rather than as two separate sequential posts. Rolls up to "2 of 2 passed" once both finish. Needs a visual treatment (sync pulse, shared "N running" counter) that actually reads as parallel, not just labeled as parallel — the same problem flagged in the v5 script's Act 3.2 for its Alex+Dynamo / Jordan+Otto threads. This is the demo's one explicit parallel-delegation moment; deliberately built from two checks that were already independent rather than inventing new work elsewhere. |
+
+### 4.2 — Alex approves the PR
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | GitHub PR card, approve action | `GitHubPrCard.tsx` | Required gate: the PR cannot merge without Alex's explicit approval. Approve action already present on the card (built for Alex's equivalent approval in the prior script). Now follows Coder's CI-passing report in 4.1 rather than appearing with no lead-in. |
+
+### 4.3 — Jordan approves via embedded live preview
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ⬜ | Minimized preview card, inline in post | New: no equivalent exists | **Biggest net-new build (part 1).** A compact card in the channel post — thumbnail/summary of the staged page, with approve/reject actions directly on the card and an "expand" action. Closest relatives (`AgentPlaybookPreview.tsx`, `MarkdownArtifactRhs.tsx`) preview *artifacts*, not a rendered page, so this is new. |
+| ⬜ | Expanded full-screen/larger preview window | New: no equivalent exists | **Biggest net-new build (part 2).** Opened from the card's expand action — a larger or full-screen live, scrollable render of the staging page for closer inspection before approving. Visual reference: this will likely resemble the real docs site at https://docs.mattermost.com/ — detailed design guidance on the exact look/layout to come separately. |
+| — | — | — | Confirmed sequence: this pair **is** the final content approval gate — Jordan approves from either state, on the combined staging preview (content + component together), and that approval is what triggers the actual publish/deploy in 4.4. |
+
+### 4.4 — Coder deploys; dissemination
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ⬜ | Publish/deploy confirmation | No direct equivalent | Following Jordan's approval in 4.3 and Alex's merge in 4.2, **Coder** deploys — it already owns the PR/merge/CI mechanics from 3.3 and 4.1, so pushing the combined change (component + approved content) live is a continuation of its work, not a new agent's job. Writer's part ended at the approved draft; it doesn't deploy anything itself. Needs a visible "publishing... → live" state, not an instant cut. |
+| ⬜ | Announcement post | No direct equivalent | Matty drafts a short announcement; Priya edits and posts, tagging the support team. Likely just `MentionMessageInput` + `ComposerShell` with new copy — low build cost, but the "Matty drafts, human sends" pattern itself hasn't been shown before. |
+| ✅ | Emma's reaction | `ReactionsRow` (compass-ui, already migrated from `MessageReactions`) | Already built and in use. |
+
+---
+
+## Act 5 — Later That Week *(short, deliberately unresolved coda — not a full incident)*
+
+### 5.1 — Webhook trigger
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Automated uptime-failure post | `WebhookPost.tsx` | First actual use of `WebhookPost` in the script — held in reserve since Act 1.1, where Emma's flag was deliberately a plain human message instead. This is the genuine automated-system-event case it was built for. |
+
+### 5.2 — Monitor auto-starts a Playbook
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ⬜ | Playbook auto-start + RHS checklist opens | `PlaybookRunRhs.tsx` (existing), but the **auto-trigger-by-agent mechanic is new** | Reuses the existing Playbook RHS panel visually, but nothing in the library shows an agent initiating a playbook run without a human click — v5's 2.1 had Priya click "Start Playbook" explicitly. This needs a scripted/simulated auto-start state, not just reusing the panel as-is. |
+
+### 5.3 — Task assigned to Coder
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ⬜ | Task row in RHS shows an agent as assignee | `PlaybookRunRhs.tsx` task-list rows — needs confirming they support an **agent avatar as assignee**, not just human avatars | This is the actual point of the whole act: playbook tasks assigned to agents, not only people. If the existing task-row component only supports human assignee avatars, this is a small but real UI gap to check before assuming reuse. Scene ends here — no investigation, fix, or resolution shown. |
+
+---
+
+## Appendix 1+2 — Matty's Floating Presence → Dedicated Agents View
+
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Floating icon + slide-in panel | `MattyFab.tsx`, `MattyPanel.tsx` | **Already fully built** — this is the exact component pair for Matty's floating presence. No new work needed beyond scripting which channel/context it appears in. |
+| ✅ | "Open full view" escalation | `AgentsContext.tsx` routing, `AgentsShell.tsx` | Escalating from panel to full dedicated view is a routing/state concern already supported by the shared Agents context. |
+| ✅ | Dedicated Agents view, personal chat | `AgentChat.tsx` | Existing 1:1 chat surface. |
+| ✅ | Calendar OAuth flow | `AgentToolConnectCard.tsx`, `AgentToolAuthCard.tsx` | Built for exactly this (fake OAuth, status steps, streaming connect state). |
+| ✅ | Multiple concurrent chat threads | Nested sessions in `AgentsContext.tsx` / LHS | Built — "Nest agent chat sessions in the LHS and add empty-chat state" commit. |
+
+---
+
+## Appendix 3 — All Agents View
+
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | First-time "meet your first agent" | `AgentsLanding.tsx` | Built — Matty card + "Create your own" card, FTE agent shelf carousel. |
+| ✅ | 1:1 chat with Coder directly | `AgentChat.tsx` | Same chat surface, different agent — no new build. |
+| ✅ | "Your agents" / "All agents" tabs | Existing tab component (already built) | Corrected: tabs already exist in the prototype — no new UI needed, just confirming the roster data feeding "Your agents" vs. "All agents" matches this scenario's cast. |
+| ✅ | Agent profile popover (owner/description) | `AgentProfilePopover.tsx` | Built — opens from chips and chat avatars already. |
+
+---
+
+## Appendix 4 — Creating a New Agent
+
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | New Agent modal, chat-guided build | `NewAgentModal.tsx` | Built — appearance (shape × color), name, purpose flow. |
+| ✅ | Agent settings, modal/UI mode | `AgentSettingsModal.tsx` + `AgentSettingsKnowledgePanel.tsx`, `AgentSettingsToolsPanel.tsx`, `AgentSettingsTasksPanel.tsx`, `AgentSettingsAdvancedPanel.tsx` | Fully built — Knowledge/Tools/Tasks/Advanced tabs already shipped. |
+| ✅ | PDF → playbook artifact flow | `AgentArtifactCard.tsx`, `AgentPlaybookCard.tsx`, `AgentPlaybookPreview.tsx`, `PlaybookRunRhs.tsx` | Built — this is the exact "attach PDF, get playbook artifact, save to Playbooks" flow from the prior script's 1.4 scene. Only the new agent's name/purpose changes. |
+
+---
+
+## Appendix 5 — GM with Multiple Agents *(lowest priority)*
+
+| Status | Screen | Component(s) | On-screen content needed |
+|---|---|---|---|
+| ✅ | Group-chat creation with agents | `NewAgentGroupChatModal.tsx` | Already built and scaffolded — "Add invite-by-mention flow... group-chat create" commit. |
 
 ---
 
 ## Consolidated Asset List
-*Every distinct screen/surface type needed across the whole demo, for planning how many mockups to build.*
+*Every distinct screen/surface needed, sorted by build status.*
 
-1. **Main channel view** (`#service-status`) — reused constantly; needs multiple states as the roster/member count grows (4 → 5 → 7 → 8 members) and as posts accumulate. Baseline state (1.1) needs pre-seeded scroll-back of historical webhook alerts from various systems, PayForge included, so the channel reads as an established status feed rather than a fresh room.
-2. **Channel member list / roster sidebar** — 4 distinct states (1.2 baseline, 1.3 +Otto, 2.1 +Cipher, 2.2 +Alex/+Dynamo, Closing +full roster)
-3. **Agent-creation-via-Matty flow** — 1.1 only, now three distinct screens: chat request/creation reference, agent settings/profile review page, and approval action — needs design decisions on all three, especially the settings-review page since it doesn't exist as a described surface anywhere else
-4. **Suggestion card with quick-add button** ✅ — replaces the old Add People dialog entirely, since Otto (and by the same convention, potentially other agents) now get proposed via a card Matty posts rather than a human searching manually. One state, used in 2.2.
-5. **RHS panel** — 2 states: playbook auto-opened (initial, full editable artifact), playbook updated (Otto assigned). No longer needs a separate PDF-preview state — the PDF stays in the chat as an attachment, and the RHS goes straight to the generated artifact.
-6. **In-chat card preview** — new surface, one state: compact playbook summary card (title, stage/task counts) posted before the RHS auto-opens
-7. **Jira ticket card/view** ✅ — 3 states: opened (2.1), commented (2.1), resolved (4.2)
-8. **Agent-to-agent message styling** ✅ — built in IncidentChannel (Sentinel→Cipher system message treatment)
-9. **Playbook run RHS panel** ✅ — built with dynamic task check-offs: d1/d2 on Cipher report, r1/r2 on PR open
-10. **Thread view** 🔶 — Matty approval thread built (Otto + Dynamo); standalone 3.1/3.2 threads not yet built
-11. **Code diff view** — one state, 3.1 ⬜
-12. **GitHub PR card** ✅ — built; shown in Dynamo's thread post-fix
-13. **Playbook run timeline** — one state, reused in 5.2 and Closing. Native Playbooks feature ⬜
-14. **Calendar event card** — one state, 5.2 (renumbered from 5.3 now that 5.1 is cut) ⬜
-15. **Summary card** (auto-generated) — one state, 4.3 ⬜
+**Fully reusable (rename/copy only):**
+1. `MattyDelegationDM` — used 4× in the main scene: 3 hub delegations (Matty→Coder, Matty→Writer, →Coder again) + 1 peer-to-peer reuse (Reviewer→Writer in 3.1)
+2. `GitHubPrCard` — Coder's component-build PR + Alex's approval
+3. `MattyFab` / `MattyPanel` — floating Matty, Appendix 1+2
+4. `AgentToolConnectCard` / `AgentToolAuthCard` — Calendar OAuth, Appendix 1
+5. `AgentsLanding` — first-time agent meet, Appendix 3
+6. `AgentProfilePopover` — Appendix 3
+7. `NewAgentModal` + full `AgentSettings*Panel` set — Appendix 4
+8. `AgentArtifactCard` / `AgentPlaybookCard` / `AgentPlaybookPreview` / `PlaybookRunRhs` — Appendix 4's PDF→playbook flow
+9. `NewAgentGroupChatModal` — Appendix 5
+10. `MarkdownArtifactRhs` — used 2× (Coder's SSO research report, Writer's proposed rewrite)
+11. "Your agents" / "All agents" tabs — already built in the prototype, just needs correct roster data for this scenario's agents
+12. `WebhookPost` — finally used, Act 5.1's outage trigger (held in reserve since Act 1, now has an honest use)
 
-**Total distinct screens/surfaces: 15**, several with multiple states — worth confirming with whoever's building mockups whether reused surfaces (main channel, RHS, Jira) get built as one flexible template or as separate static frames per state.
+**Needs moderate adaptation:**
+13. `ChannelsHome` / `ChannelIntro` — repurpose `#service-status` chrome as `#docs-site`, new scroll-back content
+14. `PlaybookRunRhs` task-list rows — needs confirming they support an agent avatar as assignee, not just human avatars (Act 5.3)
+
+**Genuinely new builds:**
+15. **Parallel delegation tracker card** — Matty's two-rows-running-at-once card in 4.1 (Coder's CI check + Reviewer's page check); styled after Claude Code's subagent UX; supersedes the earlier plan to extend `GitHubPrCard` with a CI sub-state, since the checks-passing signal now lives on the tracker card instead
+16. **Embedded staging preview — minimized card** — inline in the post, approve/reject actions + expand control; the biggest net-new component, nothing in the library previews a live page rather than an artifact
+17. **Embedded staging preview — expanded/full-screen view** — opened from the card, larger live render for closer inspection before approving
+18. **Publish/deploy confirmation state** — the "publishing... → live" transition, owned by Coder (it already has the PR/merge/CI mechanics from 3.3/4.1); no direct equivalent, though it's in the same spirit as Otto's merge/deploy beat from the prior script
+19. **Announcement/dissemination post** — low build cost (likely just composer + new copy), but the "agent drafts, human sends" pattern is new
+20. **Agent-initiated playbook auto-start** — Act 5.2; the RHS panel itself is reused, but nothing in the library shows a playbook starting without a human click (v5's 2.1 had Priya click "Start Playbook" explicitly)
+
+**Deferred / optional upgrade (not in scope unless requested):**
+- **True diff view** for Writer's rewrite — moderate lift (diff library + new rendering); the plain Markdown artifact above covers the beat without it.
+
+**Total: 20 distinct surfaces — 12 fully reusable, 2 needing adaptation, 6 new — plus 1 deferred (diff view). WebhookPost is no longer held in reserve — it has an honest use in Act 5.**
 
 ---
 
 ## Flags for Whoever Builds This
 
-- **Agent-to-agent message styling (#7)** doesn't exist as a described visual anywhere else in the script — needs a design decision before 2.1 can be mocked up.
-- **Split-screen/simultaneity treatment (3.1–3.2)** is a directing choice, not just a screen to design — flagged in the script itself as needing storyboard input.
-- **Cipher's "greyed out" closing-frame treatment** is the only place inactive-agent styling is mentioned — worth deciding if that's a real product pattern (agents can be "present but idle") or just a demo-only visual shortcut.
-- **Master script inconsistency:** this shot list now has Priya asking Matty to create Sentinel in 1.1, which means Matty must already exist before Sentinel does — as a standing/default coordinator, not something built for this scenario. The master script (v4) still describes 1.1 as Priya using a manual creation panel, and introduces Matty in 1.2 as if newly noticed alongside Sentinel. These two documents now disagree on sequencing. Let me know if you want v4 updated to match — it's a small edit to 1.1/1.2, but it does shift the framing of "Act 1 — Meet the Team" slightly, since Matty would no longer be one of the agents the audience meets for the first time.
-- **Two new humans, unclear role:** 1.2's roster now names **Emma Novak** and **Darius Cole** alongside Jordan Lee and Priya Shah, but neither appears anywhere else in the script — not in the Act 3 threads, not in the Closing Frame's headcount (which currently says "3 humans, 5 agents"). Worth confirming whether they're background/non-speaking roster members just for realism (a channel with only 2 people feels sparse for a real incident-response channel) or whether they need an actual beat somewhere, which would mean revising Act 3's thread assignments and the closing headcount to match.
-- **Otto's timing moved:** Otto now joins during the incident (2.2), not pre-emptively in Act 1. This is a bigger change than it looks — the master script's cast list still describes Otto as "already in the channel from Act 1," and Act 3's parallel-threads structure (Jordan + Otto working infra) assumes Otto's already established and comfortable in the channel by the time the incident starts. Worth deciding whether that still reads fine with Otto joining moments earlier as part of the same channel-assembly beat, or whether it undercuts the "Otto's the one specialist that's been around" feeling the master script currently uses to make Act 3's infra thread feel earned.
-- **Possible bigger change to 2.1/2.2, unconfirmed:** an earlier draft of the last review comment described Sentinel itself opening a dedicated incident channel and adding the necessary agents (Cipher, Otto, etc.) into it, tagging Priya as Incident Commander, and separately tagging Cipher for root-cause analysis in its own thread (with Cipher acknowledging — *"looking into it, will reply when done"* — before actually responding). That's a meaningfully different structure from what's built above: it would mean **Sentinel**, not Matty, does the channel-creation-and-agent-assembly work that 2.2 currently owns, and it introduces a two-step acknowledge-then-answer pattern for Cipher that isn't in the script anywhere else. I implemented the shorter, most recent version of the comment (webhook trigger, notification, pre-existing ticket) since it looked like a trim rather than an abandonment, but wanted to check before reassigning 2.2's core mechanic from Matty to Sentinel — that's a bigger structural move than a single-scene edit.
-- **5.1 (model routing) cut entirely**, per your request. Worth noting for the master script, not just this shot list: that scene was flagged there as one of the strongest **Proven** claims in the whole demo (real today via the LiteLLM gateway) — cutting it means the demo no longer states outright that customers control which model runs each agent. If that claim matters for the workshop audience, it might be worth finding it a smaller mention elsewhere rather than dropping it completely; if it's fine to leave for a different setting, no action needed.
+- **Biggest net-new item is the embedded staging preview, now two states (#16 minimized card, #17 expanded view) — closely followed by the parallel delegation tracker (#15), also genuinely new.** Everything else in the main scene has a close or exact match in the existing library. Worth prioritizing design passes on both since they're the newest builds and carry the most narrative weight (the tracker proves real parallel delegation; the preview proves the docs-vs-code stakes asymmetry).
+- **The tracker card (#15) needs its "running together" treatment designed deliberately** — a static list of two rows reads as sequential, not parallel, unless there's a visual cue (sync pulse, shared counter) that says otherwise. This is the same problem the v5 script flagged for its own parallel-thread scene and never fully resolved.
+- **`PlaybookRunRhs`'s agent-as-assignee support (#14) needs a quick check before Act 5.3 is scripted further** — if task rows currently assume a human assignee, this is more than a rename job.
+- **Act 5's auto-start mechanic (#20) is a genuinely new interaction pattern**, not just a new visual — worth a design conversation on what "an agent starts a playbook with no human click" actually looks like in terms of confirmation/undo, since it's a bigger trust step than anything else in either script.
+- **MattyDelegationDM's peer-to-peer reuse (Reviewer↔Writer in 3.1) needs a quick UI check** — the component was built for Matty-as-hub delegations; confirm it reads sensibly with two non-Matty agents as the pair before assuming it's a pure rename job.
+- **WebhookPost's reserve status is resolved — it's in active use now.** Act 1.1 confirmed a plain human message for Emma's flag; Act 5.1 gives the component its genuine automated-trigger use case.
+- **Reuse carries old naming in the codebase.** Component names (`AgentApprovalCard`, `AgentInviteCard`, variable names inside `MattyDelegationDM`, etc.) still reference Sentinel/Otto/Cipher/Dynamo internally. Renaming on-screen copy is enough for the demo, but worth a note if this code is ever extended past this video.

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import type { AgentColor, AgentShape } from '../agentsData';
 import AgentAvatar from './AgentAvatar';
@@ -6,8 +7,9 @@ import styles from './AgentReviewCard.module.scss';
 type AgentApprovalCardProps = {
   title: string;
   description: string;
-  agentShape: AgentShape;
-  agentColor: AgentColor;
+  leadingIcon?: ReactNode;
+  agentShape?: AgentShape;
+  agentColor?: AgentColor;
   accepted: boolean;
   dismissed: boolean;
   onApprove: () => void;
@@ -18,6 +20,7 @@ type AgentApprovalCardProps = {
 export default function AgentApprovalCard({
   title,
   description,
+  leadingIcon,
   agentShape,
   agentColor,
   accepted,
@@ -38,7 +41,11 @@ export default function AgentApprovalCard({
     >
       <div className={styles['agent-review-card__body']}>
         <div className={styles['agent-review-card__identity']}>
-          <AgentAvatar shape={agentShape} color={agentColor} size="sm" eyes shadow={false} />
+          {leadingIcon ? (
+            <div className={styles['agent-review-card__leading-icon']}>{leadingIcon}</div>
+          ) : agentShape && agentColor ? (
+            <AgentAvatar shape={agentShape} color={agentColor} size="sm" eyes shadow={false} />
+          ) : null}
           <div className={styles['agent-review-card__copy']}>
             <p className={styles['agent-review-card__title']}>{title}</p>
             <p className={styles['agent-review-card__description']}>{description}</p>

@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
+import ArrowCollapseIcon from '@mattermost/compass-icons/components/arrow-collapse';
+import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
+import CheckIcon from '@mattermost/compass-icons/components/check';
+import CloseIcon from '@mattermost/compass-icons/components/close';
+import GithubCircleIcon from '@mattermost/compass-icons/components/github-circle';
+import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { RightSidebarHeader } from '@mattermost/compass-ui/components/right-sidebar-header';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { ThreadFooter } from '@mattermost/compass-ui/components/thread-footer';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import {
   ChannelHeader,
   Message,
@@ -37,10 +45,13 @@ import {
   DOCS_MSG_COLLAPSIBLE_ROOT,
   DOCS_MSG_EMMA_FLAG,
   DOCS_MSG_JORDAN_PREVIEW,
+  DOCS_MSG_MATTY_ANNOUNCE,
   DOCS_MSG_MATTY_CODER2_SYSTEM,
   DOCS_MSG_MATTY_CODER_STAGING_SYSTEM,
+  DOCS_MSG_MATTY_CODER_PR_FIX_SYSTEM,
   DOCS_MSG_MATTY_CODER_SYSTEM,
   DOCS_MSG_MATTY_TRACKER,
+  DOCS_MSG_MONITOR_WEBHOOK,
   DOCS_HISTORY_ENTRIES,
   DOCS_SCENE_CUTOFFS,
   DOCS_THREADS,
@@ -50,6 +61,7 @@ import {
   MATTY_CODER_STAGING_DM_MESSAGES,
   MATTY_CODER_SSO_STAGING_DM_MESSAGES,
   MATTY_CODER_WRITER_GROUP_DM_MESSAGES,
+  MONITOR,
   REVIEWER,
   THREAD_COLLAPSIBLE_POST_DELEGATION,
   WRITER,
@@ -57,11 +69,20 @@ import {
   type DocsHistoryEntry,
   type DocsThread,
 } from '../../agentsDocsData';
-import type { AgentsDocsSceneId } from '../../agentsDocsScenes';
+import { AGENTS_DOCS_BASE, type AgentsDocsSceneId } from '../../agentsDocsScenes';
 import AgentParallelTrackerCard from '../../components/AgentParallelTrackerCard';
 import DocsInlineDelegation, { type InlineDelegationTask } from '../../components/DocsInlineDelegation';
 import DocsPagePreviewCard from '../../components/DocsPagePreviewCard';
+import DocsPrRhs from '../../components/DocsPrRhs';
 import styles from './DocsChannelHome.module.scss';
+
+const SYSTEM_CHIP_CLASS = [
+  mentionStyles['mention-input__mention-chip'],
+  mentionStyles['mention-input__post-chip'],
+  mentionStyles['mention-input__post-chip--system'],
+].join(' ');
+
+const RESOLVED_LEADING_ICON = <Icon glyph={<CheckIcon />} />;
 
 // ---------------------------------------------------------------------------
 // Streaming helpers
@@ -200,6 +221,7 @@ function StreamingAgentPost({
 
 type DocsChannelHomeProps = {
   activeScene: AgentsDocsSceneId;
+  onPlaybookApprove?: () => void;
 };
 
 // ---------------------------------------------------------------------------
@@ -223,6 +245,27 @@ const STAGING_DEPLOY_THINKING = [
   'Merging PR #1851',
   'Running staging deploy pipeline',
   'Verifying staging deployment',
+] as const;
+
+const PR_FIX_THINKING = [
+  'Reading Alex\'s review comment on PR #1851',
+  'Renaming isOpen to defaultOpen',
+  'Updating prop type exports',
+  'Force-pushing fix',
+] as const;
+
+const PARALLEL_CHECKS_THINKING = [
+  'Running CI on PR #1851',
+  'Testing CollapsibleStep in isolation',
+  'Checking combined page structure',
+  'Verifying internal links',
+  'Checking style guide compliance',
+] as const;
+
+const PROD_DEPLOY_THINKING = [
+  'Merging PR #1851 to main',
+  'Triggering production deploy',
+  'Verifying docs.mattermost.com is live',
 ] as const;
 
 const EMMA_THREAD_DELEGATION_THINKING = [
@@ -302,6 +345,16 @@ const DM_DELEGATION_MAP: Record<string, DelegationDef> = {
       { id: 't2', label: 'Deploy CollapsibleStep to staging', status: 'done', agentId: CODER.id },
     ],
     thinkingSteps: STAGING_DEPLOY_THINKING,
+  },
+  [DOCS_MSG_MATTY_CODER_PR_FIX_SYSTEM]: {
+    fromAgent: { id: MATTY.id, name: MATTY.name, shape: MATTY.shape as AgentShape, color: MATTY.color as AgentColor },
+    toAgents: [{ id: CODER.id, name: CODER.name, shape: CODER.shape, color: CODER.color }],
+    messages: [],
+    tasks: [
+      { id: 'f1', label: 'Rename isOpen → defaultOpen to match docs convention', status: 'done', agentId: CODER.id },
+      { id: 'f2', label: 'Force-push fix to PR #1851', status: 'done', agentId: CODER.id },
+    ],
+    thinkingSteps: PR_FIX_THINKING,
   },
 };
 
@@ -403,11 +456,13 @@ function renderHistoryEntry(
 // Component
 // ---------------------------------------------------------------------------
 
-export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
+export default function DocsChannelHome({ activeScene, onPlaybookApprove }: DocsChannelHomeProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const threadBodyRef = useRef<HTMLDivElement>(null);
   const [previewApproved, setPreviewApproved] = useState(false);
   const [approvalThreadApproved, setApprovalThreadApproved] = useState(false);
+  const [checksSettled, setChecksSettled] = useState(false);
+  const [deploySettled, setDeploySettled] = useState(false);
   const [activePostId, setActivePostId] = useState<string | null>(null);
   const [delegationSettled, setDelegationSettled] = useState(false);
   const [collapsibleSettled, setCollapsibleSettled] = useState(false);
@@ -415,12 +470,31 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
   const [artifactOpen, setArtifactOpen] = useState(false);
   const [artifactApproved, setArtifactApproved] = useState(false);
   const { rendered: artifactRendered, exiting: artifactExiting } = useExitAnimation(artifactOpen, 220);
+  const [ssoStagingApproved, setSsoStagingApproved] = useState(false);
+  const [monitorApprovalAccepted, setMonitorApprovalAccepted] = useState(false);
+  const [collapsibleReopened, setCollapsibleReopened] = useState(false);
+  const [emmaReopened, setEmmaReopened] = useState(false);
+  const [prOpen, setPrOpen] = useState(false);
+  const [prApproved, setPrApproved] = useState(false);
+  const { rendered: prRendered, exiting: prExiting } = useExitAnimation(prOpen, 220);
   const [profileTarget, setProfileTarget] = useState<AgentProfileAnchor | null>(null);
   // Numeric phase: even = showing messages, odd = showing typing indicator for step floor(phase/2)
+  const [rhsExpanded, setRhsExpanded] = useState(false);
   const [threadPhase, setThreadPhase] = useState(0);
   // Sequential reveal index for post-delegation collapsible content (0 = none visible)
   const [postDelegationPhase, setPostDelegationPhase] = useState(0);
   const { rendered: rhsRendered, exiting: rhsExiting } = useExitAnimation(!!activePostId, 220);
+
+  const collapsibleThreadResolved = deploySettled && !collapsibleReopened;
+  const emmaThreadResolved = ssoStagingApproved && !emmaReopened;
+  const activeThreadResolved =
+    (collapsibleThreadResolved && activePostId === DOCS_MSG_COLLAPSIBLE_ROOT) ||
+    (emmaThreadResolved && activePostId === DOCS_MSG_EMMA_FLAG);
+
+  function handleReopenThread() {
+    if (activePostId === DOCS_MSG_COLLAPSIBLE_ROOT) setCollapsibleReopened(true);
+    if (activePostId === DOCS_MSG_EMMA_FLAG) setEmmaReopened(true);
+  }
 
   const openAgentProfile = (agentId: string, e: React.MouseEvent<HTMLElement>) => {
     const agent = DOCS_WORKSPACE_AGENTS.find((a) => a.id === agentId);
@@ -433,7 +507,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
   };
 
   const openThread = (postId: string) => setActivePostId(postId);
-  const closeThread = () => setActivePostId(null);
+  const closeThread = () => { setActivePostId(null); setRhsExpanded(false); };
 
   const cutoffId = DOCS_SCENE_CUTOFFS[activeScene] ?? DOCS_MSG_MATTY_TRACKER;
   const cutoffIndex = DOCS_CHANNEL_MESSAGES.findIndex((m) => m.id === cutoffId);
@@ -517,6 +591,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
     setThreadPhase(0);
     setDelegationSettled(false);
     setCollapsibleSettled(false);
+    setChecksSettled(false);
     setArtifactApproved(false);
     setApprovalThreadApproved(false);
     if (!activePostId) return;
@@ -536,6 +611,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
       if (steps?.length) setThreadPhase(steps.length * 2);
       setDelegationSettled(true);
       setCollapsibleSettled(true);
+      setChecksSettled(true);
       return;
     }
 
@@ -609,8 +685,10 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
       n += postDelegationPhase;
       if (collapsibleSettled) n += 1; // Matty's staging-preview post
       if (activeScene === 'approval' && collapsibleSettled) {
-        n += 3; // Matty tracker, Alex, Jordan
-        if (approvalThreadApproved) n += 1; // Coder deploy
+        n += 1; // parallel checks delegation
+        if (checksSettled) n += 1; // Alex code review
+        if (approvalThreadApproved) n += 2; // Jordan confirmation + deploy delegation
+        if (deploySettled) n += 1; // Matty completion
       }
     } else if (activePostId === DOCS_MSG_EMMA_FLAG) {
       if (delegationSettled) n += 1; // Matty's revised-doc post
@@ -622,7 +700,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
 
   return (
     <div className={styles['docs-channel']}>
-      <ChannelsProductSidebar activeChannelName="docs-site" />
+      <ChannelsProductSidebar activeChannelName="docs-site" basePath={AGENTS_DOCS_BASE} />
       <div className={styles['docs-channel__inner']}>
         <div className={styles['docs-channel__center']}>
           <ChannelHeader
@@ -673,32 +751,44 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                     );
                   }
 
-                  // Webhook posts (Monitor uptime alert)
+                  // Webhook posts (Mattermost Web Services uptime alert)
                   if (message.kind === 'webhook' && message.webhookPost) {
+                    const webhookThread = DOCS_THREADS[message.id];
                     return (
-                      <div key={message.id} className={styles['docs-channel__agent-message']}>
-                        <div
-                          className={styles['docs-channel__agent-message-avatar']}
-                          role="button"
-                          tabIndex={0}
-                          onClick={(e) => openAgentProfileByShapeColor(message.agentShape ?? 'shield', message.agentColor ?? 'blue', e)}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(message.agentShape ?? 'shield', message.agentColor ?? 'blue', e as unknown as React.MouseEvent<HTMLElement>); } }}
+                      <div
+                        key={message.id}
+                        className={[
+                          styles['docs-channel__message-row'],
+                          webhookThread ? styles['docs-channel__message-row--threaded'] : '',
+                        ].filter(Boolean).join(' ')}
+                        role={webhookThread ? 'button' : undefined}
+                        tabIndex={webhookThread ? 0 : undefined}
+                        onClick={webhookThread ? () => openThread(message.id) : undefined}
+                        onKeyDown={webhookThread ? (e) => { if (e.key === 'Enter') openThread(message.id); } : undefined}
+                      >
+                        <Message
+                          username={message.username}
+                          avatarSrc={message.avatarSrc}
+                          avatarAlt={message.avatarAlt ?? message.username}
+                          timestamp={message.timestamp}
+                          showMessageActions={false}
                         >
-                          <AgentAvatar
-                            shape={message.agentShape ?? 'shield'}
-                            color={message.agentColor ?? 'blue'}
-                            size="sm"
-                            eyes
-                          />
-                        </div>
-                        <div className={styles['docs-channel__agent-message-body']}>
-                          <div className={styles['docs-channel__agent-message-meta']}>
-                            <span className={styles['docs-channel__agent-message-name']}>{message.username}</span>
-                            <Tag label="Agent" size="x-small" />
-                            <time className={styles['docs-channel__agent-message-time']}>{message.timestamp}</time>
-                          </div>
                           <WebhookPost data={message.webhookPost} />
-                        </div>
+                          {webhookThread && (
+                            <ThreadFooter
+                              replyCount={webhookThread.replyCount}
+                              lastReplyTime={webhookThread.lastReplyTime}
+                              avatars={webhookThread.participants.map((p) => ({
+                                key: p.key,
+                                name: p.name,
+                                src: p.agentShape && p.agentColor
+                                  ? agentAvatarChipSrc(p.agentShape as AgentShape, p.agentColor as AgentColor)
+                                  : (p.avatarSrc ?? ''),
+                              }))}
+                              onReply={() => openThread(message.id)}
+                            />
+                          )}
+                        </Message>
                       </div>
                     );
                   }
@@ -730,6 +820,9 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                             <Tag label="Agent" size="x-small" />
                             <time className={styles['docs-channel__agent-message-time']}>{message.timestamp}</time>
                           </div>
+                          {message.id === DOCS_MSG_MATTY_ANNOUNCE && (
+                            <p className={styles['docs-channel__post-heading']}>Updated SSO setup page is live</p>
+                          )}
                           {isTracker ? (
                             <div className={styles['docs-channel__card']}>
                               <AgentParallelTrackerCard
@@ -818,31 +911,33 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         onClick={() => openThread(message.id)}
                         onKeyDown={(e) => { if (e.key === 'Enter') openThread(message.id); }}
                       >
-                        <Message
-                          username={message.username}
-                          avatarSrc={message.avatarSrc}
-                          avatarAlt={message.avatarAlt}
-                          timestamp={message.timestamp}
-                          showMessageActions={false}
-                        >
-                          <p className={styles['docs-channel__post-heading']}>New collapsible component needed</p>
-                          <p className={styles['docs-channel__post']}>{message.body}</p>
-                          {showFooter && thread && (
-                            <ThreadFooter
-                              replyCount={footerCount}
-                              lastReplyTime={thread.lastReplyTime}
-                              avatars={thread.participants.map((p) => ({
-                                key: p.key,
-                                name: p.name,
-                                src:
-                                  p.agentShape && p.agentColor
-                                    ? agentAvatarChipSrc(p.agentShape as AgentShape, p.agentColor as AgentColor)
-                                    : (p.avatarSrc ?? ''),
-                              }))}
-                              onReply={() => openThread(message.id)}
-                            />
-                          )}
-                        </Message>
+                        <div className={styles['docs-channel__human-message']}>
+                          <UserAvatar src={message.avatarSrc} alt={message.avatarAlt ?? message.username} size="32" />
+                          <div className={styles['docs-channel__agent-message-body']}>
+                            <div className={styles['docs-channel__agent-message-meta']}>
+                              <span className={styles['docs-channel__agent-message-name']}>{message.username}</span>
+                              {collapsibleThreadResolved && <Tag label="Resolved" size="x-small" leadingIcon={RESOLVED_LEADING_ICON} />}
+                              <time className={styles['docs-channel__agent-message-time']}>{message.timestamp}</time>
+                            </div>
+                            <p className={styles['docs-channel__post-heading']}>New collapsible component needed</p>
+                            <p className={styles['docs-channel__post']}>{message.body}</p>
+                            {showFooter && thread && (
+                              <ThreadFooter
+                                replyCount={footerCount}
+                                lastReplyTime={thread.lastReplyTime}
+                                avatars={thread.participants.map((p) => ({
+                                  key: p.key,
+                                  name: p.name,
+                                  src:
+                                    p.agentShape && p.agentColor
+                                      ? agentAvatarChipSrc(p.agentShape as AgentShape, p.agentColor as AgentColor)
+                                      : (p.avatarSrc ?? ''),
+                                }))}
+                                onReply={() => openThread(message.id)}
+                              />
+                            )}
+                          </div>
+                        </div>
                       </div>
                     );
                   }
@@ -865,31 +960,33 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         onClick={() => openThread(message.id)}
                         onKeyDown={(e) => { if (e.key === 'Enter') openThread(message.id); }}
                       >
-                        <Message
-                          username={message.username}
-                          avatarSrc={message.avatarSrc}
-                          avatarAlt={message.avatarAlt}
-                          timestamp={message.timestamp}
-                          showMessageActions={false}
-                        >
-                          <p className={styles['docs-channel__post-heading']}>SSO setup page is out of date</p>
-                          <p className={styles['docs-channel__post']}>{message.body}</p>
-                          {showFooter && t && (
-                            <ThreadFooter
-                              replyCount={footerCount}
-                              lastReplyTime={t.lastReplyTime}
-                              avatars={t.participants.map((p) => ({
-                                key: p.key,
-                                name: p.name,
-                                src:
-                                  p.agentShape && p.agentColor
-                                    ? agentAvatarChipSrc(p.agentShape as AgentShape, p.agentColor as AgentColor)
-                                    : (p.avatarSrc ?? ''),
-                              }))}
-                              onReply={() => openThread(message.id)}
-                            />
-                          )}
-                        </Message>
+                        <div className={styles['docs-channel__human-message']}>
+                          <UserAvatar src={message.avatarSrc} alt={message.avatarAlt ?? message.username} size="32" />
+                          <div className={styles['docs-channel__agent-message-body']}>
+                            <div className={styles['docs-channel__agent-message-meta']}>
+                              <span className={styles['docs-channel__agent-message-name']}>{message.username}</span>
+                              {emmaThreadResolved && <Tag label="Resolved" size="x-small" leadingIcon={RESOLVED_LEADING_ICON} />}
+                              <time className={styles['docs-channel__agent-message-time']}>{message.timestamp}</time>
+                            </div>
+                            <p className={styles['docs-channel__post-heading']}>SSO setup page is out of date</p>
+                            <p className={styles['docs-channel__post']}>{message.body}</p>
+                            {showFooter && t && (
+                              <ThreadFooter
+                                replyCount={footerCount}
+                                lastReplyTime={t.lastReplyTime}
+                                avatars={t.participants.map((p) => ({
+                                  key: p.key,
+                                  name: p.name,
+                                  src:
+                                    p.agentShape && p.agentColor
+                                      ? agentAvatarChipSrc(p.agentShape as AgentShape, p.agentColor as AgentColor)
+                                      : (p.avatarSrc ?? ''),
+                                }))}
+                                onReply={() => openThread(message.id)}
+                              />
+                            )}
+                          </div>
+                        </div>
                       </div>
                     );
                   }
@@ -947,7 +1044,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
               </div>
             </Scrollbar>
           </div>
-          <div className={[styles['docs-channel__composer'], activePostId ? styles['docs-channel__composer--rhs-open'] : ''].filter(Boolean).join(' ')}>
+          <div className={styles['docs-channel__composer']}>
             <MentionMessageInput
               placeholder="Write to docs-site"
               onSend={() => undefined}
@@ -961,19 +1058,45 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
             styles['docs-channel__rhs'],
             rhsExiting ? styles['docs-channel__rhs--exiting'] : '',
           ].filter(Boolean).join(' ')}>
-            <div className={styles['docs-channel__rhs-thread']}>
+            <div className={[
+              styles['docs-channel__rhs-thread'],
+              rhsExpanded ? styles['docs-channel__rhs-thread--expanded'] : '',
+            ].filter(Boolean).join(' ')}>
             <RightSidebar
+              fill
               alignBody="end"
               header={
-                <RightSidebarHeader
-                  title="Thread"
-                  onClose={closeThread}
-                />
+                <div className={styles['docs-channel__thread-header']}>
+                  <div className={styles['docs-channel__thread-header-title-group']}>
+                    <span className={styles['docs-channel__thread-header-title']}>Thread</span>
+                    {activeThreadResolved && (
+                      <Tag label="Resolved" size="x-small" leadingIcon={RESOLVED_LEADING_ICON} />
+                    )}
+                  </div>
+                  <div className={styles['docs-channel__thread-header-actions']}>
+                    <IconButton
+                      size="small"
+                      aria-label={rhsExpanded ? 'Collapse' : 'Expand'}
+                      onClick={() => setRhsExpanded((v) => !v)}
+                      icon={<Icon size="16" glyph={rhsExpanded ? <ArrowCollapseIcon /> : <ArrowExpandIcon />} />}
+                    />
+                    <IconButton
+                      size="small"
+                      aria-label="Close"
+                      onClick={closeThread}
+                      icon={<Icon size="16" glyph={<CloseIcon />} />}
+                    />
+                  </div>
+                </div>
               }
               footer={
-                <div className={styles['docs-channel__rhs-composer']}>
-                  <MentionMessageInput placeholder="Reply in thread…" onSend={() => undefined} />
-                </div>
+                activeThreadResolved ? (
+                  <div className={styles['docs-channel__rhs-resolved-footer']} />
+                ) : (
+                  <div className={styles['docs-channel__rhs-composer']}>
+                    <MentionMessageInput placeholder="Reply in thread…" onSend={() => undefined} />
+                  </div>
+                )
               }
             >
               <div key={activePostId} ref={threadBodyRef} className={styles['docs-channel__rhs-thread-messages']}>
@@ -1000,6 +1123,9 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         <Tag label="Agent" size="x-small" />
                         <time className={styles['docs-channel__agent-message-time']}>{rootMessage.timestamp}</time>
                       </div>
+                      {rootMessage.id === DOCS_MSG_MATTY_ANNOUNCE && (
+                        <p className={styles['docs-channel__post-heading']}>Updated SSO setup page is live</p>
+                      )}
                       <MessageBody body={rootMessage.body} parts={rootMessage.parts} onAgentProfile={openAgentProfile} />
                     </div>
                   </div>
@@ -1019,7 +1145,10 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                       {rootMessage.id === DOCS_MSG_EMMA_FLAG && (
                         <p className={styles['docs-channel__post-heading']}>SSO setup page is out of date</p>
                       )}
-                      <MessageBody body={rootMessage.body} parts={rootMessage.parts} onAgentProfile={openAgentProfile} />
+                      {rootMessage.kind === 'webhook' && rootMessage.webhookPost
+                        ? <WebhookPost data={rootMessage.webhookPost} />
+                        : <MessageBody body={rootMessage.body} parts={rootMessage.parts} onAgentProfile={openAgentProfile} />
+                      }
                     </Message>
                   </div>
                 )}
@@ -1086,7 +1215,24 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                           <Tag label="Agent" size="x-small" />
                           <time className={styles['docs-channel__agent-message-time']}>{reply.timestamp}</time>
                         </div>
-                        <StreamingAgentPost body={reply.body} parts={reply.parts} onAgentProfile={openAgentProfile} />
+                        <StreamingAgentPost body={reply.body} parts={reply.parts} onAgentProfile={openAgentProfile}>
+                          {activePostId === DOCS_MSG_MONITOR_WEBHOOK && (
+                            <div className={styles['docs-channel__card']}>
+                              <AgentApprovalCard
+                                title="Start Docs Site Outage playbook?"
+                                description="I'll assign Coder to investigate the root cause and confirm service impact."
+                                leadingIcon={<Icon glyph={<ProductPlaybooksIcon />} size="24" />}
+                                accepted={monitorApprovalAccepted}
+                                dismissed={false}
+                                onApprove={() => {
+                                  setMonitorApprovalAccepted(true);
+                                  onPlaybookApprove?.();
+                                }}
+                                onDismiss={() => {}}
+                              />
+                            </div>
+                          )}
+                        </StreamingAgentPost>
                       </div>
                     </div>
                   ) : (
@@ -1157,7 +1303,18 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                                   <Tag label="Agent" size="x-small" />
                                   <time className={styles['docs-channel__agent-message-time']}>{reply.timestamp}</time>
                                 </div>
-                                <StreamingAgentPost body={reply.body} parts={reply.parts} onAgentProfile={openAgentProfile} />
+                                <StreamingAgentPost body={reply.body} parts={reply.parts} onAgentProfile={openAgentProfile}>
+                                  {reply.artifact && (
+                                    <div className={styles['docs-channel__card']}>
+                                      <AgentArtifactCard
+                                        title={reply.artifact.title}
+                                        meta={reply.artifact.meta}
+                                        icon={<GithubCircleIcon />}
+                                        onOpen={() => setPrOpen(true)}
+                                      />
+                                    </div>
+                                  )}
+                                </StreamingAgentPost>
                               </div>
                             </div>
                           );
@@ -1210,7 +1367,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                           <AgentArtifactCard
                             title="SSO setup page — revised"
                             meta="Markdown · 528 words"
-                            onOpen={() => { setArtifactTitle('SSO setup page — revised'); setArtifactOpen(true); }}
+                            onOpen={() => { setArtifactTitle('SSO setup page content — revised'); setArtifactOpen(true); }}
                           />
                         </div>
                       </StreamingAgentPost>
@@ -1246,85 +1403,104 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         onAgentProfile={openAgentProfile}
                       >
                         <div className={styles['docs-channel__card']}>
-                          <DocsPagePreviewCard showActions={false} />
+                          <DocsPagePreviewCard
+                            showActions={activeScene === 'approval' && checksSettled}
+                            approved={approvalThreadApproved}
+                            onApprove={() => setApprovalThreadApproved(true)}
+                            onReject={() => {}}
+                          />
                         </div>
                       </StreamingAgentPost>
                     </div>
                   </div>
                 )}
 
-                {/* Approval scene: tracker (done), Alex code review, Jordan staging preview with Approve, Coder deploy */}
+                {/* Approval scene: parallel checks delegation, Alex code review, Jordan confirmation, deploy delegation, Matty completion */}
                 {activeScene === 'approval' && activePostId === DOCS_MSG_COLLAPSIBLE_ROOT && collapsibleSettled && (
                   <>
-                    <div className={styles['docs-channel__agent-message']}>
-                      <div
-                        className={styles['docs-channel__agent-message-avatar']}
-                        role="button"
-                        tabIndex={0}
-                        onClick={(e) => openAgentProfileByShapeColor(MATTY.shape as AgentShape, MATTY.color as AgentColor, e)}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(MATTY.shape as AgentShape, MATTY.color as AgentColor, e as unknown as React.MouseEvent<HTMLElement>); } }}
-                      >
-                        <AgentAvatar shape={MATTY.shape as AgentShape} color={MATTY.color as AgentColor} size="sm" eyes />
+                    {/* Parallel checks delegation (Matty → Coder + Reviewer) */}
+                    <DocsInlineDelegation
+                      label="Matty is running final checks"
+                      fromAgent={{ id: MATTY.id, name: MATTY.name, shape: MATTY.shape as AgentShape, color: MATTY.color as AgentColor }}
+                      toAgents={[
+                        { id: CODER.id, name: CODER.name, shape: CODER.shape, color: CODER.color },
+                        { id: REVIEWER.id, name: REVIEWER.name, shape: REVIEWER.shape, color: REVIEWER.color },
+                      ]}
+                      messages={[]}
+                      tasks={[
+                        { id: 'c1', label: 'CI checks on PR #1851', status: 'done', agentId: CODER.id },
+                        { id: 'r1', label: 'Combined page and link check', status: 'done', agentId: REVIEWER.id },
+                      ]}
+                      thinkingSteps={PARALLEL_CHECKS_THINKING}
+                      onSettled={() => setChecksSettled(true)}
+                    />
+
+                    {/* After checks pass: Alex's code review message */}
+                    {checksSettled && (
+                      <div className={styles['docs-channel__message-row']}>
+                        <Message
+                          avatarSrc={ALEX.avatarSrc}
+                          avatarAlt={ALEX.avatarAlt}
+                          username={ALEX.name}
+                          timestamp="12:10 PM"
+                          showMessageActions={false}
+                        >
+                          <p className={styles['docs-channel__post']}>Code looks good — approved the PR. The CollapsibleStep component is clean.</p>
+                        </Message>
                       </div>
-                      <div className={styles['docs-channel__agent-message-body']}>
-                        <div className={styles['docs-channel__agent-message-meta']}>
-                          <span className={styles['docs-channel__agent-message-name']}>{MATTY.name}</span>
-                          <Tag label="Agent" size="x-small" />
-                          <time className={styles['docs-channel__agent-message-time']}>12:05 PM</time>
-                        </div>
-                        <p className={styles['docs-channel__post']}>Running final checks in parallel before publish.</p>
-                        <div className={styles['docs-channel__card']}>
-                          <AgentParallelTrackerCard rows={TRACKER_ROWS_DONE} allDone />
-                        </div>
-                      </div>
-                    </div>
-                    <div className={styles['docs-channel__message-row']}>
-                      <Message
-                        avatarSrc={ALEX.avatarSrc}
-                        avatarAlt={ALEX.avatarAlt}
-                        username={ALEX.name}
-                        timestamp="12:10 PM"
-                        showMessageActions={false}
-                      >
-                        <p className={styles['docs-channel__post']}>Code looks good — approved the PR. The CollapsibleStep component is clean.</p>
-                      </Message>
-                    </div>
-                    <div className={styles['docs-channel__message-row']}>
-                      <Message
-                        avatarSrc={JORDAN.avatarSrc}
-                        avatarAlt={JORDAN.avatarAlt}
-                        username={JORDAN.name}
-                        timestamp="12:15 PM"
-                        showMessageActions={false}
-                      >
-                        <p className={styles['docs-channel__post']}>Staging preview looks great. Approving.</p>
-                        <div className={styles['docs-channel__card']}>
-                          <DocsPagePreviewCard
-                            approved={approvalThreadApproved}
-                            onApprove={() => setApprovalThreadApproved(true)}
-                            onReject={() => {}}
-                          />
-                        </div>
-                      </Message>
-                    </div>
+                    )}
+
+                    {/* After Jordan approves via card above: her confirmation reply */}
                     {approvalThreadApproved && (
+                      <div className={styles['docs-channel__message-row']}>
+                        <Message
+                          avatarSrc={JORDAN.avatarSrc}
+                          avatarAlt={JORDAN.avatarAlt}
+                          username={JORDAN.name}
+                          timestamp="12:15 PM"
+                          showMessageActions={false}
+                        >
+                          <p className={styles['docs-channel__post']}>Staging preview looks great.</p>
+                        </Message>
+                      </div>
+                    )}
+
+                    {/* After Jordan approves: production deploy delegation */}
+                    {approvalThreadApproved && (
+                      <DocsInlineDelegation
+                        label="Matty sent a message to Coder"
+                        fromAgent={{ id: MATTY.id, name: MATTY.name, shape: MATTY.shape as AgentShape, color: MATTY.color as AgentColor }}
+                        toAgents={[{ id: CODER.id, name: CODER.name, shape: CODER.shape, color: CODER.color }]}
+                        messages={[]}
+                        tasks={[
+                          { id: 'd1', label: 'Merge PR #1851 to main', status: 'done', agentId: CODER.id },
+                          { id: 'd2', label: 'Deploy to production', status: 'done', agentId: CODER.id },
+                          { id: 'd3', label: 'Verify live at docs.mattermost.com', status: 'done', agentId: CODER.id },
+                        ]}
+                        thinkingSteps={PROD_DEPLOY_THINKING}
+                        onSettled={() => setDeploySettled(true)}
+                      />
+                    )}
+
+                    {/* After deploy: Matty's completion message */}
+                    {deploySettled && (
                       <div className={styles['docs-channel__agent-message']}>
                         <div
                           className={styles['docs-channel__agent-message-avatar']}
                           role="button"
                           tabIndex={0}
-                          onClick={(e) => openAgentProfileByShapeColor(CODER.shape, CODER.color, e)}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(CODER.shape, CODER.color, e as unknown as React.MouseEvent<HTMLElement>); } }}
+                          onClick={(e) => openAgentProfileByShapeColor(MATTY.shape as AgentShape, MATTY.color as AgentColor, e)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openAgentProfileByShapeColor(MATTY.shape as AgentShape, MATTY.color as AgentColor, e as unknown as React.MouseEvent<HTMLElement>); } }}
                         >
-                          <AgentAvatar shape={CODER.shape} color={CODER.color} size="sm" eyes />
+                          <AgentAvatar shape={MATTY.shape as AgentShape} color={MATTY.color as AgentColor} size="sm" eyes />
                         </div>
                         <div className={styles['docs-channel__agent-message-body']}>
                           <div className={styles['docs-channel__agent-message-meta']}>
-                            <span className={styles['docs-channel__agent-message-name']}>{CODER.name}</span>
+                            <span className={styles['docs-channel__agent-message-name']}>{MATTY.name}</span>
                             <Tag label="Agent" size="x-small" />
                             <time className={styles['docs-channel__agent-message-time']}>12:20 PM</time>
                           </div>
-                          <StreamingAgentPost body="SSO setup page published to docs.mattermost.com. Deploy complete." />
+                          <StreamingAgentPost body="The SSO setup page is live at docs.mattermost.com. All changes are published." />
                         </div>
                       </div>
                     )}
@@ -1420,10 +1596,31 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         onAgentProfile={openAgentProfile}
                       >
                         <div className={styles['docs-channel__card']}>
-                          <DocsPagePreviewCard showActions={false} />
+                          <DocsPagePreviewCard
+                            approved={ssoStagingApproved}
+                            onApprove={() => setSsoStagingApproved(true)}
+                            onReject={() => {}}
+                          />
                         </div>
                       </StreamingAgentPost>
                     </div>
+                  </div>
+                )}
+
+                {/* Resolved notice */}
+                {activeThreadResolved && (
+                  <div className={styles['docs-channel__thread-resolved-notice']}>
+                    <p>
+                      <Chip
+                        size="small"
+                        leadingAvatar={{ src: agentAvatarChipSrc(MATTY.shape as AgentShape, MATTY.color as AgentColor), alt: MATTY.name }}
+                        className={SYSTEM_CHIP_CLASS}
+                      >
+                        {MATTY.name}
+                      </Chip>
+                      {' marked the thread resolved. '}
+                      <button className={styles['docs-channel__reopen-btn']} onClick={handleReopenThread}>Re-open</button>
+                    </p>
                   </div>
                 )}
               </div>
@@ -1433,9 +1630,11 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
             {artifactRendered && (
               <div className={[
                 styles['docs-channel__rhs-artifact'],
+                rhsExpanded ? styles['docs-channel__rhs-artifact--expanded'] : '',
                 artifactExiting ? styles['docs-channel__rhs-artifact--exiting'] : '',
               ].filter(Boolean).join(' ')}>
                 <RightSidebar
+                  fill
                   header={
                     <AgentPlaybookRhsHeader
                       secondaryTitle={artifactTitle}
@@ -1448,7 +1647,7 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                         <span className={styles['docs-channel__artifact-approved']}>Approved</span>
                       ) : (
                         <>
-                          <Button emphasis="primary" size="medium" onClick={() => setArtifactApproved(true)}>
+                          <Button emphasis="primary" size="medium" onClick={() => { setArtifactApproved(true); setArtifactOpen(false); }}>
                             Approve
                           </Button>
                           <Button emphasis="tertiary" size="medium">
@@ -1460,6 +1659,44 @@ export default function DocsChannelHome({ activeScene }: DocsChannelHomeProps) {
                   }
                 >
                   <DocsArtifactRhs title={artifactTitle} approved={artifactApproved} />
+                </RightSidebar>
+              </div>
+            )}
+
+            {/* PR panel — slides over thread within the RHS wrapper */}
+            {prRendered && (
+              <div className={[
+                styles['docs-channel__rhs-artifact'],
+                rhsExpanded ? styles['docs-channel__rhs-artifact--expanded'] : '',
+                prExiting ? styles['docs-channel__rhs-artifact--exiting'] : '',
+              ].filter(Boolean).join(' ')}>
+                <RightSidebar
+                  fill
+                  header={
+                    <AgentPlaybookRhsHeader
+                      secondaryTitle="PR #1851"
+                      hideSave
+                      onClose={() => setPrOpen(false)}
+                    />
+                  }
+                  footer={
+                    <div className={styles['docs-channel__artifact-footer']}>
+                      {prApproved ? (
+                        <span className={styles['docs-channel__artifact-approved']}>Approved</span>
+                      ) : (
+                        <>
+                          <Button emphasis="primary" size="medium" onClick={() => { setPrApproved(true); setPrOpen(false); }}>
+                            Approve
+                          </Button>
+                          <Button emphasis="tertiary" size="medium">
+                            Request changes
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  }
+                >
+                  <DocsPrRhs />
                 </RightSidebar>
               </div>
             )}

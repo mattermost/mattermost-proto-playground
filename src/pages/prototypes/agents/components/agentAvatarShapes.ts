@@ -39,6 +39,11 @@ const AGENT_CHIP_COLOR_HEX: Record<
   green: { highlight: '#75d1ac', mid: '#339970', edge: '#3db887' },
 };
 
+/** The primary (mid) hex color for a given agent color — use for dots and accents. */
+export function agentMidColor(color: AgentColor): string {
+  return AGENT_CHIP_COLOR_HEX[color]?.mid ?? '#339970';
+}
+
 const maskUrlCache = new Map<string, string>();
 const chipSrcCache = new Map<string, string>();
 

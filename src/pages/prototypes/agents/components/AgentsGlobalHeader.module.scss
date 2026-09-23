@@ -31,14 +31,18 @@
 
   &__team-avatar {
     position: relative;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
     border-radius: var(--radius-m); // closest token to rounded-[6px]
     background: rgba(var(--sidebar-text-rgb), 0.16);
     display: flex;
     align-items: center;
     justify-content: center;
+
+    img {
+      border-radius: 6px;
+    }
   }
 
   &__team-logo {
@@ -171,6 +175,28 @@
     gap: var(--spacing-xs); // gap-[8px]
     padding: 0 var(--spacing-xs);
     flex-shrink: 0;
+  }
+
+  &__matty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxxs);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      opacity var(--duration-quick) var(--ease-exit);
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+    }
+
+    &--open {
+      opacity: 0.6;
+    }
   }
 
   &__account {

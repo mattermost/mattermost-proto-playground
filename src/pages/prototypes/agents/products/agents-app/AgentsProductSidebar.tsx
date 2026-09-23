@@ -8,7 +8,6 @@ import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message
 import PowerPlugOutlineIcon from '@mattermost/compass-icons/components/power-plug-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
-import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
@@ -25,6 +24,7 @@ export type AgentsNavId = 'all-agents' | string;
 
 type AgentsProductSidebarProps = {
   activeNav: AgentsNavId;
+  basePath?: string;
 };
 
 function NavRow({
@@ -56,6 +56,7 @@ function NavRow({
 /** Agents product LHS — All agents, tools, and Your agents list. */
 export default function AgentsProductSidebar({
   activeNav,
+  basePath = AGENTS_BASE,
 }: AgentsProductSidebarProps) {
   const navigate = useNavigate();
   const {
@@ -119,7 +120,7 @@ export default function AgentsProductSidebar({
             name="All agents"
             glyph={<CreationOutlineIcon />}
             active={activeNav === 'all-agents'}
-            onClick={() => navigate(`${AGENTS_BASE}/agents`)}
+            onClick={() => navigate(`${basePath}/agents`)}
           />
           <NavRow name="Custom Prompts" glyph={<CodeBracketsIcon />} />
           <NavRow name="Skills" glyph={<FileTextOutlineIcon />} />
@@ -127,7 +128,16 @@ export default function AgentsProductSidebar({
         </div>
 
         <div className={styles['agents-product-sidebar__nav-group']}>
-          <ChannelsSidebarCategory label="Your agents" showChevron={false} />
+          <div className={styles['agents-product-sidebar__your-agents-category']}>
+            <span className={styles['agents-product-sidebar__your-agents-label']}>Your agents</span>
+            <IconButton
+              size="x-small"
+              style="inverted"
+              icon={<PlusIcon size={12} />}
+              aria-label="Create an agent"
+              onClick={openNewAgent}
+            />
+          </div>
           {yourAgents.map((agent) => {
             const isGroup = Boolean(agent.members?.length);
             const sessions = sessionsByAgentId[agent.id] ?? [];
@@ -206,12 +216,12 @@ export default function AgentsProductSidebar({
                           const targetId = activeSessionId || sessions[0].id;
                           selectSession(agent.id, targetId);
                           setCollapsedByAgentId((prev) => ({ ...prev, [agent.id]: false }));
-                          navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                          navigate(`${basePath}/agents/${agent.id}`);
                         } else {
                           toggleAgentCollapsed(agent.id);
                         }
                       } else {
-                        navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                        navigate(`${basePath}/agents/${agent.id}`);
                       }
                     }}
                   />
@@ -226,7 +236,7 @@ export default function AgentsProductSidebar({
                       onClick={(event) => {
                         event.stopPropagation();
                         startNewChat(agent.id);
-                        navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                        navigate(`${basePath}/agents/${agent.id}`);
                       }}
                     />
                   </span>
@@ -270,7 +280,7 @@ export default function AgentsProductSidebar({
                               tabIndex={sessionsCollapsed ? -1 : 0}
                               onClick={() => {
                                 selectSession(agent.id, session.id);
-                                navigate(`${AGENTS_BASE}/agents/${agent.id}`);
+                                navigate(`${basePath}/agents/${agent.id}`);
                               }}
                             >
                               <span

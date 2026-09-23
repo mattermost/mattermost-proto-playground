@@ -10,7 +10,9 @@ import ProductsIcon from '@mattermost/compass-icons/components/products';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import type { AgentColor, AgentShape } from '../agentsData';
 import { VIEWER } from '../agentsData';
+import AgentAvatar from './AgentAvatar';
 import styles from './AgentsGlobalHeader.module.scss';
 
 function NavIconButton({ ariaLabel, glyph }: { ariaLabel: string; glyph: React.ReactNode }) {
@@ -25,13 +27,22 @@ function NavIconButton({ ariaLabel, glyph }: { ariaLabel: string; glyph: React.R
   );
 }
 
+type MattyHeaderProfile = {
+  shape: AgentShape;
+  color: AgentColor;
+  customImageSrc?: string | null;
+};
+
 type AgentsGlobalHeaderProps = {
   className?: string;
   teamName?: string;
   teamLogoSrc?: string;
+  mattyPanelOpen?: boolean;
+  onMattyToggle?: () => void;
+  mattyProfile?: MattyHeaderProfile;
 };
 
-export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc }: AgentsGlobalHeaderProps) {
+export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc, mattyPanelOpen, onMattyToggle, mattyProfile }: AgentsGlobalHeaderProps) {
   const displayName = teamName ?? 'Acme Co';
   return (
     <header className={[styles['agents-header'], className].filter(Boolean).join(' ')}>
@@ -83,6 +94,29 @@ export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc }:
       </div>
 
       <div className={styles['agents-header__right']}>
+        {onMattyToggle && mattyProfile && (
+          <button
+            type="button"
+            className={[
+              styles['agents-header__matty'],
+              mattyPanelOpen ? styles['agents-header__matty--open'] : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            aria-label={mattyPanelOpen ? 'Close Matty' : 'Ask Matty'}
+            aria-pressed={mattyPanelOpen}
+            onClick={onMattyToggle}
+          >
+            <AgentAvatar
+              shape={mattyProfile.shape}
+              color={mattyProfile.color}
+              size="xs"
+              eyes
+              shadow={false}
+              imageSrc={mattyProfile.customImageSrc ?? undefined}
+            />
+          </button>
+        )}
         <NavIconButton ariaLabel="Recent mentions" glyph={<AtIcon />} />
         <NavIconButton ariaLabel="Saved messages" glyph={<BookmarkOutlineIcon />} />
         <NavIconButton ariaLabel="Settings" glyph={<CogOutlineIcon />} />

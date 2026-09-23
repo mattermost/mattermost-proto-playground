@@ -20,6 +20,39 @@
     padding-bottom: var(--spacing-s);
   }
 
+  &__agents-category {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: var(--spacing-xxxs) var(--spacing-l) var(--spacing-xxxs) var(--spacing-xs);
+    flex-shrink: 0;
+    gap: var(--spacing-xxxxs);
+  }
+
+  &__agents-category-chevron {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--sidebar-text);
+    opacity: 0.75;
+  }
+
+  &__agents-category-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--sidebar-text);
+    opacity: 0.75;
+  }
+
   // Matty agent DM — nested sessions block (mirrors AgentsProductSidebar pattern).
   &__agent-block {
     display: flex;

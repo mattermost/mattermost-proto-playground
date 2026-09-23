@@ -37,18 +37,20 @@ const FTE_CARD_WIDTH = 320;
 const FTE_CARD_GAP = 16; // --spacing-l
 const FTE_CARD_STRIDE = FTE_CARD_WIDTH + FTE_CARD_GAP;
 
-const FTE_SHELF_AGENTS = [MATTY, ...FTE_PRECONFIGURED_AGENTS] as const;
-const FTE_SLIDE_COUNT = 1 + FTE_SHELF_AGENTS.length; // create + agents
+const DEFAULT_FTE_SHELF_AGENTS: readonly WorkspaceAgent[] = [MATTY, ...FTE_PRECONFIGURED_AGENTS];
 
 function FirstTimeHome({
   onOpenAgent,
   onCreate,
   onSkip,
+  fteAgents = DEFAULT_FTE_SHELF_AGENTS,
 }: {
   onOpenAgent: (id: string) => void;
   onCreate: () => void;
   onSkip: () => void;
+  fteAgents?: readonly WorkspaceAgent[];
 }) {
+  const slideCount = 1 + fteAgents.length; // create + agents
   const viewportRef = useRef<HTMLDivElement>(null);
   const [viewportWidth, setViewportWidth] = useState(0);
   const [startIndex, setStartIndex] = useState(0);
@@ -75,7 +77,7 @@ function FirstTimeHome({
     );
   }, [viewportWidth]);
 
-  const maxStart = Math.max(0, FTE_SLIDE_COUNT - visibleCount);
+  const maxStart = Math.max(0, slideCount - visibleCount);
   const canScroll = maxStart > 0;
 
   useEffect(() => {
@@ -242,7 +244,7 @@ function FirstTimeHome({
               </Button>
             </article>
 
-            {FTE_SHELF_AGENTS.map((agent) => (
+            {fteAgents.map((agent) => (
               <article key={agent.id} className={styles['agents-landing__card']}>
                 <button
                   type="button"
@@ -297,11 +299,13 @@ function DirectoryHome({
   onOpenAgent,
   onCreate,
   initialTab = 'your-agents',
+  basePath = AGENTS_BASE,
 }: {
   agents: WorkspaceAgent[];
   onOpenAgent: (id: string) => void;
   onCreate: () => void;
   initialTab?: DirTab;
+  basePath?: string;
 }) {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<DirTab>(initialTab);
@@ -418,7 +422,7 @@ function DirectoryHome({
                         className={styles['agents-landing__channel-link']}
                         onClick={(e: MouseEvent) => {
                           e.stopPropagation();
-                          navigate(AGENTS_BASE);
+                          navigate(basePath);
                         }}
                       >
                         {ch}
@@ -436,23 +440,32 @@ function DirectoryHome({
 }
 
 /** Agents product homepage — FTE when only Matty exists, directory otherwise. */
-export default function AgentsLanding() {
+export default function AgentsLanding({
+  basePath = AGENTS_BASE,
+  fteAgents,
+  forceFte: forceFteProp = false,
+}: {
+  basePath?: string;
+  fteAgents?: readonly WorkspaceAgent[];
+  forceFte?: boolean;
+} = {}) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { openNewAgent, customAgents } = useAgents();
-  const forceFte = searchParams.get('fte') === '1';
+  const forceList = searchParams.get('view') === 'all';
+  const forceFte = !forceList && (forceFteProp || searchParams.get('fte') === '1');
   const [skipped, setSkipped] = useState(false);
-  const showFte = !skipped && (forceFte || customAgents.length === 0);
+  const showFte = !skipped && !forceList && (forceFte || customAgents.length === 0);
   const directory = useMemo(
     () => buildWorkspaceDirectory(customAgents),
     [customAgents],
   );
 
-  const openAgent = (id: string) => navigate(`${AGENTS_BASE}/agents/${id}`);
+  const openAgent = (id: string) => navigate(`${basePath}/agents/${id}`);
 
   return (
     <div className={styles['agents-landing']}>
-      <AgentsProductSidebar activeNav="all-agents" />
+      <AgentsProductSidebar activeNav="all-agents" basePath={basePath} />
 
       <div
         className={[
@@ -467,13 +480,15 @@ export default function AgentsLanding() {
             onOpenAgent={openAgent}
             onCreate={openNewAgent}
             onSkip={() => setSkipped(true)}
+            fteAgents={fteAgents}
           />
         ) : (
           <DirectoryHome
             agents={directory}
             onOpenAgent={openAgent}
             onCreate={openNewAgent}
-            initialTab={skipped ? 'all-agents' : 'your-agents'}
+            initialTab={forceList || skipped ? 'all-agents' : 'your-agents'}
+            basePath={basePath}
           />
         )}
       </div>

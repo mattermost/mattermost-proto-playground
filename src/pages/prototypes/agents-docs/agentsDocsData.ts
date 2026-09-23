@@ -43,6 +43,7 @@ export const WRITER: WorkspaceAgent = {
   shape: 'diamond' as AgentShape,
   color: 'green' as AgentColor,
   channels: [],
+  skillIds: ['draft-docs-page'],
 };
 
 export const REVIEWER: WorkspaceAgent = {
@@ -86,6 +87,11 @@ export type DocsAgentDmArtifact = {
   buttonLabel?: string;
 };
 
+export type DocsToolCall = {
+  tool: string;
+  label: string;
+};
+
 export type DocsAgentDmMessage = {
   id: string;
   role: 'from' | 'to';
@@ -95,6 +101,7 @@ export type DocsAgentDmMessage = {
   // thinking step index at which this message becomes visible. Omit = always visible.
   visibleAtStep?: number;
   parts?: ChannelMessagePart[];
+  toolCalls?: DocsToolCall[];
   artifact?: DocsAgentDmArtifact;
   timestamp: string;
 };
@@ -116,6 +123,11 @@ export const MATTY_CODER_DM_MESSAGES: DocsAgentDmMessage[] = [
     id: 'mc-3',
     role: 'to',
     text: "Done. SAML flow has changed — IdP-initiated login now skips the relay state step that the docs describe. OAuth2 is unchanged. Full summary ready for Writer.",
+    toolCalls: [
+      { tool: 'github.get_file_contents', label: 'Read auth/saml/config.yaml' },
+      { tool: 'github.search_code', label: 'Searched for SAML assertion handler' },
+      { tool: 'github.list_commits', label: 'Checked auth service commit history' },
+    ],
     timestamp: '10:04 AM',
   },
 ];
@@ -158,6 +170,11 @@ export const MATTY_CODER_WRITER_GROUP_DM_MESSAGES: DocsAgentDmMessage[] = [
       { type: 'mention', id: 'writer', label: 'Writer', avatarSrc: '', kind: 'agent', agentShape: WRITER.shape, agentColor: WRITER.color },
       { type: 'text', text: '.' },
     ],
+    toolCalls: [
+      { tool: 'github.get_file_contents', label: 'Read auth/saml/config.yaml' },
+      { tool: 'github.search_code', label: 'Searched for SAML assertion handler' },
+      { tool: 'github.list_commits', label: 'Checked auth service commit history' },
+    ],
     artifact: {
       title: 'SSO auth flow findings',
       meta: 'Markdown · 340 words',
@@ -168,13 +185,13 @@ export const MATTY_CODER_WRITER_GROUP_DM_MESSAGES: DocsAgentDmMessage[] = [
     id: 'mcw-4',
     role: 'from',
     visibleAtStep: 6,
-    text: "Thanks Coder. Writer — here are the findings. Please update the SSO setup page to match the current flow. Keep the same page structure but fix every step that changed.",
+    text: "Thanks Coder. Writer — invoking your /draft-page skill. Here are Coder's findings. Rewrite the SSO setup page to match the current flow; keep the same structure but fix every step that changed.",
     parts: [
       { type: 'text', text: 'Thanks ' },
       { type: 'mention', id: 'coder', label: 'Coder', avatarSrc: '', kind: 'agent', agentShape: CODER.shape, agentColor: CODER.color },
       { type: 'text', text: '. ' },
       { type: 'mention', id: 'writer', label: 'Writer', avatarSrc: '', kind: 'agent', agentShape: WRITER.shape, agentColor: WRITER.color },
-      { type: 'text', text: ' — here are the findings. Please update the SSO setup page to match the current flow. Keep the same page structure but fix every step that changed.' },
+      { type: 'text', text: " — invoking your /draft-page skill. Here are Coder's findings. Rewrite the SSO setup page to match the current flow; keep the same structure but fix every step that changed." },
     ],
     timestamp: '10:04 AM',
   },
@@ -185,7 +202,7 @@ export const MATTY_CODER_WRITER_GROUP_DM_MESSAGES: DocsAgentDmMessage[] = [
     visibleAtStep: 9,
     text: "Got it. I'll remove the relay state step, add the new IdP metadata URL field, and reorder the SAML steps. Draft ready for review.",
     artifact: {
-      title: 'SSO setup page — updated draft',
+      title: 'SSO setup page content — updated draft',
       meta: 'Markdown · 520 words',
     },
     timestamp: '10:06 AM',
@@ -211,7 +228,7 @@ export const MATTY_CODER_WRITER_GROUP_DM_MESSAGES: DocsAgentDmMessage[] = [
     visibleAtStep: 12,
     text: "Reviewed. A few minor changes: corrected 'IdP' capitalization throughout, tightened the intro paragraph, and fixed a run-on sentence in the SAML steps section. Revised doc attached.",
     artifact: {
-      title: 'SSO setup page — revised',
+      title: 'SSO setup page content — revised',
       meta: 'Markdown · 528 words',
     },
     timestamp: '10:08 AM',
@@ -260,6 +277,11 @@ export const MATTY_CODER2_DM_MESSAGES: DocsAgentDmMessage[] = [
     role: 'to',
     visibleAtStep: 7,
     text: "Component built and styled — the branching step now expands inline. Wiring it into the docs component library now before I open the PR.",
+    toolCalls: [
+      { tool: 'github.search_code', label: 'Found existing docs component patterns' },
+      { tool: 'github.create_or_update_file', label: 'Created CollapsibleStep.tsx' },
+      { tool: 'github.create_or_update_file', label: 'Created CollapsibleStep.module.css' },
+    ],
     timestamp: '11:44 AM',
   },
   {
@@ -267,6 +289,9 @@ export const MATTY_CODER2_DM_MESSAGES: DocsAgentDmMessage[] = [
     role: 'to',
     visibleAtStep: 10,
     text: "PR open against the docs site repo. Build is green.",
+    toolCalls: [
+      { tool: 'github.create_pull_request', label: 'Opened PR #1851 against docs-site' },
+    ],
     artifact: {
       title: 'CollapsibleStep component — PR #1851',
       meta: 'React · 3 files changed',
@@ -292,6 +317,10 @@ export const MATTY_CODER_SSO_STAGING_DM_MESSAGES: DocsAgentDmMessage[] = [
     id: 'mcss-3',
     role: 'to',
     text: "Deployed. Staging is live — SSO setup page reflects the updated SAML flow.",
+    toolCalls: [
+      { tool: 'github.create_pull_request', label: 'Opened PR with SSO text updates' },
+      { tool: 'github.get_check_runs', label: 'Confirmed build passed' },
+    ],
     timestamp: '10:14 AM',
   },
 ];
@@ -313,6 +342,9 @@ export const MATTY_CODER_STAGING_DM_MESSAGES: DocsAgentDmMessage[] = [
     id: 'mcs-3',
     role: 'to',
     text: "Merged and deployed. Staging is live — CollapsibleStep is wired into the SAML section.",
+    toolCalls: [
+      { tool: 'github.merge_pull_request', label: 'Merged PR #1851' },
+    ],
     timestamp: '12:14 PM',
   },
 ];
@@ -343,6 +375,7 @@ export const DOCS_MSG_MATTY_ACK = 'docs-matty-ack';
 export const DOCS_MSG_MATTY_CODER_SYSTEM = 'docs-matty-coder-system';
 export const DOCS_MSG_MATTY_CODER2_SYSTEM = 'docs-matty-coder2-system';
 export const DOCS_MSG_MATTY_CODER_STAGING_SYSTEM = 'docs-matty-coder-staging-system';
+export const DOCS_MSG_MATTY_CODER_PR_FIX_SYSTEM = 'docs-matty-coder-pr-fix-system';
 export const DOCS_MSG_COLLAPSIBLE_ROOT = 'docs-collapsible-root';
 export const DOCS_MSG_MATTY_TRACKER = 'docs-matty-tracker';
 export const DOCS_MSG_ALEX_APPROVAL = 'docs-alex-approval';
@@ -352,7 +385,6 @@ export const DOCS_MSG_MATTY_ANNOUNCE = 'docs-matty-announce';
 export const DOCS_MSG_PRIYA_POSTS = 'docs-priya-posts';
 export const DOCS_MSG_EMMA_REACTION = 'docs-emma-reaction';
 export const DOCS_MSG_MONITOR_WEBHOOK = 'docs-monitor-webhook';
-export const DOCS_MSG_MONITOR_PLAYBOOK = 'docs-monitor-playbook';
 
 // Scene message cutoffs — last visible message ID per scene
 export const DOCS_SCENE_CUTOFFS: Record<string, string> = {
@@ -360,7 +392,7 @@ export const DOCS_SCENE_CUTOFFS: Record<string, string> = {
   grounding: DOCS_MSG_EMMA_FLAG,
   review: DOCS_MSG_COLLAPSIBLE_ROOT,
   approval: DOCS_MSG_COLLAPSIBLE_ROOT,
-  'later-that-week': DOCS_MSG_MONITOR_PLAYBOOK,
+  'later-that-week': DOCS_MSG_MONITOR_WEBHOOK,
   'matty-chat': DOCS_MSG_EMMA_FLAG,
   'all-agents': DOCS_MSG_EMMA_FLAG,
   'new-agent': DOCS_MSG_EMMA_FLAG,
@@ -381,6 +413,7 @@ export type DocThreadReply = {
   kind?: 'system';
   actionable?: boolean;
   parts?: ChannelMessagePart[];
+  artifact?: DocsAgentDmArtifact;
   agentShape?: AgentShape;
   agentColor?: AgentColor;
 };
@@ -483,13 +516,14 @@ export const THREAD_CODER_PR_REPLIES: DocThreadReply[] = [
     body: 'Reviewing now. Component API looks clean — leaving one comment on prop naming.',
   },
   {
-    username: CODER.name,
+    id: DOCS_MSG_MATTY_CODER_PR_FIX_SYSTEM,
+    username: '',
     avatarSrc: '',
-    avatarAlt: CODER.name,
-    timestamp: '11:58 AM',
-    body: 'Addressed the prop naming — renamed `isOpen` to `defaultOpen` to match the docs site convention. Force-pushed.',
-    agentShape: CODER.shape as AgentShape,
-    agentColor: CODER.color as AgentColor,
+    avatarAlt: '',
+    timestamp: '11:53 AM',
+    body: 'Matty sent a message to Coder',
+    kind: 'system' as const,
+    actionable: true,
   },
   {
     username: ALEX.name,
@@ -506,11 +540,15 @@ export const THREAD_COLLAPSIBLE_REPLIES: DocThreadReply[] = [
     avatarSrc: PRIYA.avatarSrc,
     avatarAlt: PRIYA.avatarAlt,
     timestamp: '11:21 AM',
-    body: 'Good idea. @Matty can you help out with this?',
+    body: 'Good idea. @Matty can you handle this? Tag @Alex Rivera for code review and @Jordan Lee for a final review once it\'s on staging.',
     parts: [
       { type: 'text', text: 'Good idea. ' },
-      { type: 'mention', id: 'matty', label: 'Matty', avatarSrc: '', kind: 'agent', agentShape: MATTY.shape as AgentShape, agentColor: MATTY.color as AgentColor },
-      { type: 'text', text: ' can you help out with this?' },
+      { type: 'mention', id: 'matty', label: 'Matty', avatarSrc: '', kind: 'agent' as const, agentShape: MATTY.shape as AgentShape, agentColor: MATTY.color as AgentColor },
+      { type: 'text', text: ' can you handle this? Tag ' },
+      { type: 'mention', id: 'alex', label: 'Alex Rivera', avatarSrc: ALEX.avatarSrc, kind: 'user' as const },
+      { type: 'text', text: ' for code review and ' },
+      { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'user' as const },
+      { type: 'text', text: ' for a final review once it\'s on staging.' },
     ],
   },
   {
@@ -518,7 +556,7 @@ export const THREAD_COLLAPSIBLE_REPLIES: DocThreadReply[] = [
     avatarSrc: '',
     avatarAlt: MATTY.name,
     timestamp: '11:22 AM',
-    body: "Yes — I'll have Coder build it and open a PR against the docs site repo. Jordan, I'll tag you for review once it's up.",
+    body: "On it. I'll have Coder build the component and open a PR — I'll tag Alex for code review and Jordan for a final check once it's on staging.",
     agentShape: MATTY.shape as AgentShape,
     agentColor: MATTY.color as AgentColor,
   },
@@ -534,32 +572,45 @@ export const THREAD_COLLAPSIBLE_REPLIES: DocThreadReply[] = [
   },
 ];
 
+export const THREAD_ANNOUNCE_REPLIES: DocThreadReply[] = [
+  {
+    username: PRIYA.name,
+    avatarSrc: PRIYA.avatarSrc,
+    avatarAlt: PRIYA.avatarAlt,
+    timestamp: '12:23 PM',
+    body: 'Sent to the support team channel.',
+  },
+  {
+    username: EMMA.name,
+    avatarSrc: EMMA.avatarSrc,
+    avatarAlt: EMMA.avatarAlt,
+    timestamp: '12:25 PM',
+    body: 'Perfect — already linking customers to the updated page. This is exactly what we needed.',
+  },
+];
+
 // Post-delegation replies for the collapsible thread — rendered conditionally in
 // DocsChannelHome once the Coder2 delegation card settles (delegationSettled).
 export const THREAD_COLLAPSIBLE_POST_DELEGATION: DocThreadReply[] = [
   {
-    username: CODER.name,
-    avatarSrc: '',
-    avatarAlt: CODER.name,
-    timestamp: '11:48 AM',
-    body: 'CollapsibleStep component built and wired into the SAML section. PR open.',
-    agentShape: CODER.shape,
-    agentColor: CODER.color,
-  },
-  ...THREAD_CODER_PR_REPLIES,
-  {
     username: MATTY.name,
     avatarSrc: '',
     avatarAlt: MATTY.name,
-    timestamp: '12:11 PM',
-    body: "Alex approved — Coder, can you merge the PR and deploy to staging so Jordan can review the component changes?",
+    timestamp: '11:48 AM',
+    body: 'CollapsibleStep component is built and wired into the SAML section — PR is open. @Alex Rivera, can you take a look when you get a chance?',
     parts: [
-      { type: 'mention', id: 'coder', label: 'Coder', avatarSrc: '', kind: 'agent' as const, agentShape: CODER.shape, agentColor: CODER.color },
-      { type: 'text', text: ' Alex approved — can you merge the PR and deploy to staging so Jordan can review the component changes?' },
+      { type: 'text', text: 'CollapsibleStep component is built and wired into the SAML section — PR is open. ' },
+      { type: 'mention', id: 'alex', label: 'Alex Rivera', avatarSrc: ALEX.avatarSrc, kind: 'user' as const },
+      { type: 'text', text: ', can you take a look when you get a chance?' },
     ],
+    artifact: {
+      title: 'CollapsibleStep component — PR #1851',
+      meta: 'React · 3 files changed',
+    },
     agentShape: MATTY.shape as AgentShape,
     agentColor: MATTY.color as AgentColor,
   },
+  ...THREAD_CODER_PR_REPLIES,
   {
     id: DOCS_MSG_MATTY_CODER_STAGING_SYSTEM,
     username: '',
@@ -793,6 +844,33 @@ export const DOCS_THREADS: Record<string, DocsThread> = {
       { afterIndex: 3, label: 'Matty is thinking' },
     ],
   },
+  [DOCS_MSG_MATTY_ANNOUNCE]: {
+    replyCount: 2,
+    lastReplyTime: '12:25 PM',
+    participants: [
+      { key: 'priya', name: 'Priya Shah', avatarSrc: PRIYA.avatarSrc },
+      { key: 'emma', name: 'Emma Novak', avatarSrc: EMMA.avatarSrc },
+    ],
+    replies: THREAD_ANNOUNCE_REPLIES,
+  },
+  [DOCS_MSG_MONITOR_WEBHOOK]: {
+    replyCount: 1,
+    lastReplyTime: 'Thu, Sep 18 · 3:14 AM',
+    participants: [
+      { key: 'monitor', name: 'Monitor', agentShape: MONITOR.shape as AgentShape, agentColor: MONITOR.color as AgentColor },
+    ],
+    replies: [
+      {
+        username: MONITOR.name,
+        avatarSrc: '',
+        avatarAlt: MONITOR.name,
+        timestamp: 'Thu, Sep 18 · 3:14 AM',
+        body: "Uptime check failed. Want me to start the 'Docs Site Outage' playbook? I'd assign Coder to investigate.",
+        agentShape: MONITOR.shape,
+        agentColor: MONITOR.color,
+      },
+    ],
+  },
   [DOCS_MSG_COLLAPSIBLE_ROOT]: {
     replyCount: 14,
     lastReplyTime: '12:20 PM',
@@ -856,32 +934,13 @@ export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
     agentShape: MATTY.shape as AgentShape,
     agentColor: MATTY.color as AgentColor,
   },
-  {
-    id: DOCS_MSG_PRIYA_POSTS,
-    username: PRIYA.name,
-    avatarSrc: PRIYA.avatarSrc,
-    avatarAlt: PRIYA.avatarAlt,
-    timestamp: '12:23 PM',
-    body: 'Sent to the support team channel.',
-    reactions: [{ emoji: '👏', count: 3 }],
-  },
-  {
-    id: DOCS_MSG_EMMA_REACTION,
-    username: EMMA.name,
-    avatarSrc: EMMA.avatarSrc,
-    avatarAlt: EMMA.avatarAlt,
-    timestamp: '12:25 PM',
-    body: "Perfect — already linking customers to the updated page. This is exactly what we needed.",
-    reactions: [{ emoji: '🙌', count: 2 }],
-  },
-
-  // Act 5: Monitor webhook + playbook auto-start
+  // Act 5: Mattermost Web Services webhook — Monitor replies in thread
   {
     id: DOCS_MSG_MONITOR_WEBHOOK,
     kind: 'webhook',
-    username: 'Monitor',
+    username: 'Mattermost Web Services',
     avatarSrc: '',
-    avatarAlt: 'Monitor',
+    avatarAlt: 'Mattermost Web Services',
     timestamp: 'Thu, Sep 18 · 3:14 AM',
     body: 'docs.mattermost.com uptime failure detected',
     webhookPost: {
@@ -895,16 +954,5 @@ export const DOCS_CHANNEL_MESSAGES: ChannelMessage[] = [
       ],
       footer: 'Monitor · docs-site uptime check',
     },
-  },
-  {
-    id: DOCS_MSG_MONITOR_PLAYBOOK,
-    kind: 'agent',
-    username: MONITOR.name,
-    avatarSrc: '',
-    avatarAlt: MONITOR.name,
-    timestamp: 'Thu, Sep 18 · 3:14 AM',
-    body: 'Uptime check failed. I\'ve auto-started the "Docs Site Outage" playbook. Coder is assigned to triage.',
-    agentShape: MONITOR.shape,
-    agentColor: MONITOR.color,
   },
 ];

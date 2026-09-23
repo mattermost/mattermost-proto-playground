@@ -72,20 +72,24 @@ type NewAgentModalProps = {
   open: boolean;
   onClose: () => void;
   onSave: (draft: NewAgentDraft) => void;
+  defaultName?: string;
+  defaultPurpose?: string;
 };
 
 export default function NewAgentModal({
   open,
   onClose,
   onSave,
+  defaultName = SENTINEL_DEFAULT.name,
+  defaultPurpose = SENTINEL_DEFAULT.description,
 }: NewAgentModalProps) {
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
   const purposeLabelId = useId();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const appearanceRef = useRef<HTMLDivElement>(null);
-  const [name, setName] = useState(SENTINEL_DEFAULT.name);
-  const [purpose, setPurpose] = useState(SENTINEL_DEFAULT.description);
+  const [name, setName] = useState(defaultName);
+  const [purpose, setPurpose] = useState(defaultPurpose);
   const [shape, setShape] = useState<AgentShape>(
     () => pickRandomAppearance().shape,
   );
@@ -110,8 +114,8 @@ export default function NewAgentModal({
   useEffect(() => {
     if (!open) return;
     const random = pickRandomAppearance();
-    setName(SENTINEL_DEFAULT.name);
-    setPurpose(SENTINEL_DEFAULT.description);
+    setName(defaultName);
+    setPurpose(defaultPurpose);
     setShape(random.shape);
     setColor(random.color);
     setCustomImageSrc(null);
@@ -395,6 +399,7 @@ export default function NewAgentModal({
                   aria-labelledby={purposeLabelId}
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
+                  placeholder="Describe what this agent should help you with…"
                   rows={3}
                 />
               </div>

@@ -50,6 +50,11 @@
     }
   }
 
+  &__status--approved {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-success);
+  }
+
   &__section {
     display: flex;
     flex-direction: column;

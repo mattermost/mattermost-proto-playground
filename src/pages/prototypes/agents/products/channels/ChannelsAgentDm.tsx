@@ -6,12 +6,12 @@ import styles from './ChannelsHome.module.scss';
 /**
  * Agent DM inside the Channels product — Channels LHS stays; center is AgentChat.
  */
-export default function ChannelsAgentDm() {
+export default function ChannelsAgentDm({ basePath }: { basePath?: string } = {}) {
   const { agentId = 'matty' } = useParams<{ agentId: string }>();
 
   return (
     <div className={styles['channels-home']}>
-      <ChannelsProductSidebar />
+      <ChannelsProductSidebar basePath={basePath} />
       <div className={styles['channels-home__inner']}>
         <div className={styles['channels-home__center']}>
           <AgentChat agentId={agentId} embedded />

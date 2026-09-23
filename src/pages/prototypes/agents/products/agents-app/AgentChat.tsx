@@ -13,6 +13,7 @@ import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-c
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
+import LockIcon from '@mattermost/compass-icons/components/lock';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
 import MonitorIcon from '@mattermost/compass-icons/components/monitor';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
@@ -90,6 +91,7 @@ import AgentTypingDots from '../../components/AgentTypingDots';
 import ComposerShell from '../../components/ComposerShell';
 import { useAgents } from '../../context/AgentsContext';
 import AgentsProductSidebar from './AgentsProductSidebar';
+import { AGENTS_BASE } from '../../agentsScenes';
 import styles from './AgentChat.module.scss';
 
 const STREAM_MS_PER_WORD = 32;
@@ -383,9 +385,11 @@ function useAvatarReveal(
 export default function AgentChat({
   agentId: agentIdProp,
   embedded = false,
+  basePath = AGENTS_BASE,
 }: {
   agentId?: string;
   embedded?: boolean;
+  basePath?: string;
 } = {}) {
   const { agentId: agentIdParam } = useParams<{ agentId: string }>();
   const agentId = agentIdProp ?? agentIdParam;
@@ -1318,7 +1322,7 @@ export default function AgentChat({
         .filter(Boolean)
         .join(' ')}
     >
-      {!embedded ? <AgentsProductSidebar activeNav={agent.id} /> : null}
+      {!embedded ? <AgentsProductSidebar activeNav={agent.id} basePath={basePath} /> : null}
 
       <div className={styles['agent-chat__workspace']}>
         <section
@@ -1376,6 +1380,12 @@ export default function AgentChat({
                 </h1>
                 <Icon glyph={<ChevronDownIcon />} size="16" />
               </button>
+              {!isGroupChat ? (
+                <span className={styles['agent-chat__header-private']}>
+                  <Icon glyph={<LockIcon />} size="12" />
+                  Only visible to you
+                </span>
+              ) : null}
             </div>
             <div className={styles['agent-chat__header-actions']}>
               {!isGroupChat ? (

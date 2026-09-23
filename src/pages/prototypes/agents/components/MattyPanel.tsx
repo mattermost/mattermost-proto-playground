@@ -11,18 +11,70 @@ import { useAgents } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import styles from './MattyPanel.module.scss';
 
+const STREAM_MS_PER_WORD = 50;
+
+function useStreamedText(text: string, enabled: boolean): string {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const [count, setCount] = useState(enabled ? 0 : words.length);
+
+  useEffect(() => {
+    if (!enabled) {
+      setCount(words.length);
+      return;
+    }
+    setCount(0);
+    if (!words.length) return;
+    let c = 0;
+    const id = window.setInterval(() => {
+      c += 1;
+      setCount(c);
+      if (c >= words.length) window.clearInterval(id);
+    }, STREAM_MS_PER_WORD);
+    return () => window.clearInterval(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, enabled, words.length]);
+
+  return words.slice(0, count).join(' ');
+}
+
+function MattyMessage({ message, stream }: { message: ChatMessage; stream: boolean }) {
+  const displayText = useStreamedText(message.text, stream);
+  return (
+    <article
+      className={[
+        styles['matty-panel__msg'],
+        message.role === 'user' ? styles['matty-panel__msg--user'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <div className={styles['matty-panel__msg-bubble']}>
+        <div className={styles['matty-panel__msg-meta']}>
+          <span className={styles['matty-panel__msg-name']}>
+            {message.role === 'matty' ? 'Matty' : 'Priya'}
+          </span>
+          <time className={styles['matty-panel__msg-time']}>{message.timestamp}</time>
+        </div>
+        <div className={styles['matty-panel__msg-body']}>
+          <p>{displayText}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 type MattyContext = {
   placeLabel: string;
   greeting: string;
   suggestions: string[];
 };
 
-function resolveContext(pathname: string): MattyContext {
+function resolveContext(pathname: string, basePath: string): MattyContext {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
-  if (normalized.startsWith(`${AGENTS_BASE}/channel/`)) {
-    const channelId = normalized.replace(`${AGENTS_BASE}/channel/`, '');
+  if (normalized.startsWith(`${basePath}/channel/`)) {
+    const channelId = normalized.replace(`${basePath}/channel/`, '');
     return {
       placeLabel: `#${channelId}`,
       greeting: `You're in ${channelId}. Want me to coordinate the response, summarize where things stand, or loop in another agent?`,
@@ -30,7 +82,7 @@ function resolveContext(pathname: string): MattyContext {
     };
   }
 
-  if (normalized.startsWith(`${AGENTS_BASE}/dm/`)) {
+  if (normalized.startsWith(`${basePath}/dm/`)) {
     return {
       placeLabel: 'Direct message',
       greeting: `Want me to loop in another agent, start a group chat, or help with something else?`,
@@ -38,7 +90,7 @@ function resolveContext(pathname: string): MattyContext {
     };
   }
 
-  if (normalized.startsWith(`${AGENTS_BASE}/agents`)) {
+  if (normalized.startsWith(`${basePath}/agents`)) {
     return {
       placeLabel: 'Agents',
       greeting: `You're in the Agents view — looking to build something new or adjust your team setup?`,
@@ -64,16 +116,24 @@ function nowLabel() {
   return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
-export default function MattyPanel() {
+export default function MattyPanel({ basePath = AGENTS_BASE }: { basePath?: string } = {}) {
   const { mattyPanelOpen, setMattyPanelOpen } = useAgents();
   const { pathname } = useLocation();
 
-  const ctx = useMemo(() => resolveContext(pathname), [pathname]);
+  const ctx = useMemo(() => resolveContext(pathname, basePath), [pathname, basePath]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [streamingId, setStreamingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const prevOpenRef = useRef(false);
   const prevPathnameRef = useRef(pathname);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const addMattyMessage = (text: string) => {
+    const id = `matty-${Date.now()}`;
+    setMessages((prev) => [...prev, { id, role: 'matty', text, timestamp: nowLabel() }]);
+    setStreamingId(id);
+  };
 
   // Seed on open; append context announcement when route changes while open.
   useEffect(() => {
@@ -85,14 +145,19 @@ export default function MattyPanel() {
     if (!mattyPanelOpen) return;
 
     if (!wasOpen) {
-      setMessages([{ id: `greeting-${Date.now()}`, role: 'matty', text: ctx.greeting, timestamp: nowLabel() }]);
+      const id = `greeting-${Date.now()}`;
+      setMessages([{ id, role: 'matty', text: ctx.greeting, timestamp: nowLabel() }]);
+      setStreamingId(id);
     } else if (prevPathname !== pathname) {
-      setMessages((prev) => [
-        ...prev,
-        { id: `ctx-${Date.now()}`, role: 'matty', text: ctx.greeting, timestamp: nowLabel() },
-      ]);
+      addMattyMessage(ctx.greeting);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mattyPanelOpen, pathname, ctx]);
+
+  // Scroll to bottom when a new message is added.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: 'end' });
+  }, [messages.length]);
 
   const send = (text: string) => {
     if (!text.trim()) return;
@@ -102,15 +167,7 @@ export default function MattyPanel() {
     ]);
     setDraft('');
     window.setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `matty-${Date.now()}`,
-          role: 'matty',
-          text: `Got it — I'll get started on that.`,
-          timestamp: nowLabel(),
-        },
-      ]);
+      addMattyMessage(`Got it — I'll get started on that.`);
     }, 420);
   };
 
@@ -150,30 +207,13 @@ export default function MattyPanel() {
       <Scrollbar className={styles['matty-panel__messages']}>
         <div className={styles['matty-panel__msg-list']}>
           {messages.map((m) => (
-            <article
+            <MattyMessage
               key={m.id}
-              className={[
-                styles['matty-panel__msg'],
-                m.role === 'user' ? styles['matty-panel__msg--user'] : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <div className={styles['matty-panel__msg-bubble']}>
-                <div className={styles['matty-panel__msg-meta']}>
-                  <span className={styles['matty-panel__msg-name']}>
-                    {m.role === 'matty' ? 'Matty' : 'Priya'}
-                  </span>
-                  <time className={styles['matty-panel__msg-time']}>
-                    {m.timestamp}
-                  </time>
-                </div>
-                <div className={styles['matty-panel__msg-body']}>
-                  <p>{m.text}</p>
-                </div>
-              </div>
-            </article>
+              message={m}
+              stream={m.role === 'matty' && m.id === streamingId}
+            />
           ))}
+          <div ref={bottomRef} />
         </div>
       </Scrollbar>
 

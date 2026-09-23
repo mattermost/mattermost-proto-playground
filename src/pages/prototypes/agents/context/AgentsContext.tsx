@@ -23,6 +23,7 @@ import {
   type CreatedAgent,
   type LiveAgentSession,
   type ScheduledJob,
+  type WorkspaceAgent,
 } from '../agentsData';
 
 export type AgentsProduct = 'channels' | 'agents';
@@ -41,6 +42,7 @@ export type NewAgentDraft = {
   scheduledJobs?: ScheduledJob[];
   connectedMcps?: ConnectedMcp[];
   advancedConfig?: AgentAdvancedConfig;
+  skillIds?: string[];
 };
 
 export type AgentUpdates = Partial<NewAgentDraft>;
@@ -83,11 +85,31 @@ type AgentsContextValue = {
 
 const AgentsContext = createContext<AgentsContextValue | null>(null);
 
-export function AgentsProvider({ children }: { children: ReactNode }) {
+export function AgentsProvider({
+  children,
+  initialAgents,
+}: {
+  children: ReactNode;
+  initialAgents?: readonly WorkspaceAgent[];
+}) {
   const [newAgentOpen, setNewAgentOpen] = useState(false);
   const [newGroupChatOpen, setNewGroupChatOpen] = useState(false);
   const [mattyPanelOpen, setMattyPanelOpen] = useState(false);
-  const [customAgents, setCustomAgents] = useState<CreatedAgent[]>([]);
+  const [customAgents, setCustomAgents] = useState<CreatedAgent[]>(() =>
+    (initialAgents ?? []).map((a) =>
+      buildCreatedAgent({
+        id: a.id,
+        name: a.name,
+        shape: a.shape,
+        color: a.color,
+        purpose: a.description ?? '',
+        description: a.description ?? '',
+        model: a.model,
+        customImageSrc: a.customImageSrc,
+        skillIds: a.skillIds,
+      }),
+    ),
+  );
   const [groupChats, setGroupChats] = useState<AgentGroupChat[]>([]);
   const [openedAgentIds, setOpenedAgentIds] = useState<string[]>([]);
   // Sessions seed on first open of an agent chat (LHS / Chat with Matty / route).
@@ -160,6 +182,7 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
         scheduledJobs: [],
         connectedMcps: [],
         advancedConfig: cloneAdvancedConfig(DEFAULT_ADVANCED_CONFIG),
+        skillIds: [],
       };
       const next = buildCreatedAgent({
         id,
@@ -183,6 +206,7 @@ export function AgentsProvider({ children }: { children: ReactNode }) {
         scheduledJobs: updates.scheduledJobs ?? base.scheduledJobs,
         connectedMcps: updates.connectedMcps ?? base.connectedMcps,
         advancedConfig: updates.advancedConfig ?? base.advancedConfig,
+        skillIds: updates.skillIds ?? base.skillIds,
       });
       setCustomAgents((prev) => {
         const without = prev.filter((agent) => agent.id !== id);

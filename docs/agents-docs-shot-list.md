@@ -3,7 +3,8 @@ For production/mockup planning. Cross-referenced to script beats discussed in ch
 Reuses the component library built for "Human + Machine, On the Same Team" v5
 (`mattermost-proto-playground`, branch `cursor/agents-vision-prototype-c820`, PRs #62/#68).
 
-**Build status key:** ✅ Reusable as-is or with rename only · 🔶 Reusable, needs adaptation · ⬜ New, not built
+**Build status key:** ✅ Built · 🔶 Partial / needs work · ⬜ Not built
+**Last audited:** 2026-09-22 — All 20 surfaces complete. Act 5 handled as a dedicated `docs-outage` scene (DocsIncidentChannel) with full playbook RHS; agent-assigned task rows confirmed working.
 
 ---
 
@@ -28,7 +29,7 @@ Reuses the component library built for "Human + Machine, On the Same Team" v5
 ### 1.1 — Emma flags the problem
 | Status | Screen | Component(s) | On-screen content needed |
 |---|---|---|---|
-| 🔶 | `#docs-site` main channel view | `ChannelsHome.tsx`, `ChannelIntro.tsx` | Repurpose the `ChannelsHome` shell (was `#service-status`) as `#docs-site`. Needs new pre-seeded scroll-back so the channel reads as lived-in — docs/site chatter, not empty. |
+| ✅ | `#docs-site` main channel view | `DocsChannelHome.tsx`, `ChannelIntro.tsx` | `#docs-site` is live with pre-seeded history scroll-back (`DOCS_HISTORY_ENTRIES`). |
 | ✅ | Emma's flag — plain human message | `Message`/`MessageInput` (compass-proto) | Decided: Emma's post is a normal human message, not a webhook card — she's raising a concern, not reporting an automated event. `WebhookPost.tsx` stays in reserve for other automated-trigger moments elsewhere in the demo where an actual system event fires (not used in this beat). |
 
 ### 1.2 — Team beat (humans only, no agent yet)
@@ -95,7 +96,7 @@ Jordan's reaction to Writer's draft now happens together with her spotting the c
 ### 4.1 — Parallel delegation tracker: Coder's CI check + Reviewer's page check
 | Status | Screen | Component(s) | On-screen content needed |
 |---|---|---|---|
-| ⬜ | Delegation tracker card, two rows running at once | New: no equivalent exists | **Genuinely new component**, styled after Claude Code's subagent UX — a single card posted by Matty with a live status row per task ("Coder: running CI checks on the merged PR" / "Reviewer: checking the combined page"), both shown running together rather than as two separate sequential posts. Rolls up to "2 of 2 passed" once both finish. Needs a visual treatment (sync pulse, shared "N running" counter) that actually reads as parallel, not just labeled as parallel — the same problem flagged in the v5 script's Act 3.2 for its Alex+Dynamo / Jordan+Otto threads. This is the demo's one explicit parallel-delegation moment; deliberately built from two checks that were already independent rather than inventing new work elsewhere. |
+| ✅ | Delegation tracker card, two rows running at once | `AgentParallelTrackerCard.tsx` | Built — staggered pulse dots per row while running, check-circle icon when done, rolls up to "N of N passed" header. |
 
 ### 4.2 — Alex approves the PR
 | Status | Screen | Component(s) | On-screen content needed |
@@ -105,15 +106,15 @@ Jordan's reaction to Writer's draft now happens together with her spotting the c
 ### 4.3 — Jordan approves via embedded live preview
 | Status | Screen | Component(s) | On-screen content needed |
 |---|---|---|---|
-| ⬜ | Minimized preview card, inline in post | New: no equivalent exists | **Biggest net-new build (part 1).** A compact card in the channel post — thumbnail/summary of the staged page, with approve/reject actions directly on the card and an "expand" action. Closest relatives (`AgentPlaybookPreview.tsx`, `MarkdownArtifactRhs.tsx`) preview *artifacts*, not a rendered page, so this is new. |
-| ⬜ | Expanded full-screen/larger preview window | New: no equivalent exists | **Biggest net-new build (part 2).** Opened from the card's expand action — a larger or full-screen live, scrollable render of the staging page for closer inspection before approving. Visual reference: this will likely resemble the real docs site at https://docs.mattermost.com/ — detailed design guidance on the exact look/layout to come separately. |
+| ✅ | Minimized preview card, inline in post | `DocsPagePreviewCard.tsx` | Built — scaled iframe thumbnail + title/subtitle + Approve/Reject actions + expand icon. Approved state shows "Approved by Jordan" label in place of actions. |
+| ✅ | Expanded full-screen/larger preview window | `DocsPreviewPopout.tsx`, `/agents-docs-preview` route | Built — full docs.mattermost.com simulation (sidebar nav, TOC, page content with SAML section); opens via `window.open` at 960×700 from the card's expand button. |
 | — | — | — | Confirmed sequence: this pair **is** the final content approval gate — Jordan approves from either state, on the combined staging preview (content + component together), and that approval is what triggers the actual publish/deploy in 4.4. |
 
 ### 4.4 — Coder deploys; dissemination
 | Status | Screen | Component(s) | On-screen content needed |
 |---|---|---|---|
-| ⬜ | Publish/deploy confirmation | No direct equivalent | Following Jordan's approval in 4.3 and Alex's merge in 4.2, **Coder** deploys — it already owns the PR/merge/CI mechanics from 3.3 and 4.1, so pushing the combined change (component + approved content) live is a continuation of its work, not a new agent's job. Writer's part ended at the approved draft; it doesn't deploy anything itself. Needs a visible "publishing... → live" state, not an instant cut. |
-| ⬜ | Announcement post | No direct equivalent | Matty drafts a short announcement; Priya edits and posts, tagging the support team. Likely just `MentionMessageInput` + `ComposerShell` with new copy — low build cost, but the "Matty drafts, human sends" pattern itself hasn't been shown before. |
+| ✅ | Publish/deploy confirmation | `DocsInlineDelegation` with `PROD_DEPLOY_THINKING` steps | Built — Coder deploy uses `DocsInlineDelegation` with merge/deploy/verify-live thinking steps; `deploySettled` state fires on completion and reveals Matty's follow-up. |
+| ✅ | Announcement post | `DOCS_MSG_MATTY_ANNOUNCE` + `DOCS_MSG_PRIYA_POSTS` in channel data | Built — Matty posts draft announcement text ("Page is live. Here's a support team announcement you can send…"); Priya's follow-up message: "Sent to the support team channel." Emma reacts. "Matty drafts, human sends" pattern is present. |
 | ✅ | Emma's reaction | `ReactionsRow` (compass-ui, already migrated from `MessageReactions`) | Already built and in use. |
 
 ---
@@ -128,12 +129,12 @@ Jordan's reaction to Writer's draft now happens together with her spotting the c
 ### 5.2 — Monitor auto-starts a Playbook
 | Status | Screen | Component(s) | On-screen content needed |
 |---|---|---|---|
-| ⬜ | Playbook auto-start + RHS checklist opens | `PlaybookRunRhs.tsx` (existing), but the **auto-trigger-by-agent mechanic is new** | Reuses the existing Playbook RHS panel visually, but nothing in the library shows an agent initiating a playbook run without a human click — v5's 2.1 had Priya click "Start Playbook" explicitly. This needs a scripted/simulated auto-start state, not just reusing the panel as-is. |
+| ✅ | Playbook auto-start + RHS checklist | `DocsIncidentChannel.tsx` — dedicated `docs-outage` scene | Built as a standalone scene (scene id `docs-outage`, label "Docs Site Outage") showing the INC-4472 channel immediately after Monitor triggered the run. RHS is always-open with full playbook structure: View timeline btn, attributes block (Status/Severity/Assignee/Participants), Update due in box, 4-stage checklist (Triage ✓ / Investigation active / Resolution upcoming / Communication upcoming), 12 tasks with descriptions. Playbook name = "Website outage"; header title = "INC-4472: Docs site outage". |
 
 ### 5.3 — Task assigned to Coder
 | Status | Screen | Component(s) | On-screen content needed |
 |---|---|---|---|
-| ⬜ | Task row in RHS shows an agent as assignee | `PlaybookRunRhs.tsx` task-list rows — needs confirming they support an **agent avatar as assignee**, not just human avatars | This is the actual point of the whole act: playbook tasks assigned to agents, not only people. If the existing task-row component only supports human assignee avatars, this is a small but real UI gap to check before assuming reuse. Scene ends here — no investigation, fix, or resolution shown. |
+| ✅ | Task rows in RHS show agent avatar chips as assignees | `DocsIncidentChannel.tsx` checklist tasks | Confirmed — each task uses `Chip` with `leadingAvatar` sourced from `agentAvatarChipSrc(shape, color)` for Monitor, Coder, and Matty; Priya's human avatar also works in the same row. Agent-as-assignee and human-as-assignee coexist in the same checklist card without any gaps. |
 
 ---
 
@@ -196,30 +197,27 @@ Jordan's reaction to Writer's draft now happens together with her spotting the c
 12. `WebhookPost` — finally used, Act 5.1's outage trigger (held in reserve since Act 1, now has an honest use)
 
 **Needs moderate adaptation:**
-13. `ChannelsHome` / `ChannelIntro` — repurpose `#service-status` chrome as `#docs-site`, new scroll-back content
-14. `PlaybookRunRhs` task-list rows — needs confirming they support an agent avatar as assignee, not just human avatars (Act 5.3)
+13. ✅ `DocsChannelHome` / `ChannelIntro` — `#docs-site` with new scroll-back history — done
+14. ✅ `PlaybookRunRhs` task-list rows — agent avatar as assignee confirmed working; `DocsIncidentChannel` uses `agentAvatarChipSrc` chips for Monitor, Coder, and Matty alongside human avatars in the same lists
 
 **Genuinely new builds:**
-15. **Parallel delegation tracker card** — Matty's two-rows-running-at-once card in 4.1 (Coder's CI check + Reviewer's page check); styled after Claude Code's subagent UX; supersedes the earlier plan to extend `GitHubPrCard` with a CI sub-state, since the checks-passing signal now lives on the tracker card instead
-16. **Embedded staging preview — minimized card** — inline in the post, approve/reject actions + expand control; the biggest net-new component, nothing in the library previews a live page rather than an artifact
-17. **Embedded staging preview — expanded/full-screen view** — opened from the card, larger live render for closer inspection before approving
-18. **Publish/deploy confirmation state** — the "publishing... → live" transition, owned by Coder (it already has the PR/merge/CI mechanics from 3.3/4.1); no direct equivalent, though it's in the same spirit as Otto's merge/deploy beat from the prior script
-19. **Announcement/dissemination post** — low build cost (likely just composer + new copy), but the "agent drafts, human sends" pattern is new
-20. **Agent-initiated playbook auto-start** — Act 5.2; the RHS panel itself is reused, but nothing in the library shows a playbook starting without a human click (v5's 2.1 had Priya click "Start Playbook" explicitly)
+15. ✅ **Parallel delegation tracker card** — `AgentParallelTrackerCard.tsx`; staggered pulse rows + "N of N passed" rollup — done
+16. ✅ **Embedded staging preview — minimized card** — `DocsPagePreviewCard.tsx`; scaled iframe + approve/reject + expand — done
+17. ✅ **Embedded staging preview — expanded/full-screen view** — `DocsPreviewPopout.tsx` at `/agents-docs-preview` route — done
+18. ✅ **Publish/deploy confirmation state** — `DocsInlineDelegation` with `PROD_DEPLOY_THINKING` steps (merge, deploy, verify live); `deploySettled` triggers Matty's follow-up
+19. ✅ **Announcement/dissemination post** — Matty posts draft; Priya posts "Sent to the support team channel."; Emma reacts — done
+20. ✅ **Agent-initiated playbook auto-start** — `DocsIncidentChannel.tsx`, scene id `docs-outage`; full INC-4472 channel with 4-stage/12-task playbook RHS, attributes block, update-due-in, and view timeline; playbook = "Website outage"
 
 **Deferred / optional upgrade (not in scope unless requested):**
 - **True diff view** for Writer's rewrite — moderate lift (diff library + new rendering); the plain Markdown artifact above covers the beat without it.
 
-**Total: 20 distinct surfaces — 12 fully reusable, 2 needing adaptation, 6 new — plus 1 deferred (diff view). WebhookPost is no longer held in reserve — it has an honest use in Act 5.**
+**Total: 20 distinct surfaces. As of 2026-09-22: 20/20 done.**
 
 ---
 
-## Flags for Whoever Builds This
+## Notes
 
-- **Biggest net-new item is the embedded staging preview, now two states (#16 minimized card, #17 expanded view) — closely followed by the parallel delegation tracker (#15), also genuinely new.** Everything else in the main scene has a close or exact match in the existing library. Worth prioritizing design passes on both since they're the newest builds and carry the most narrative weight (the tracker proves real parallel delegation; the preview proves the docs-vs-code stakes asymmetry).
-- **The tracker card (#15) needs its "running together" treatment designed deliberately** — a static list of two rows reads as sequential, not parallel, unless there's a visual cue (sync pulse, shared counter) that says otherwise. This is the same problem the v5 script flagged for its own parallel-thread scene and never fully resolved.
-- **`PlaybookRunRhs`'s agent-as-assignee support (#14) needs a quick check before Act 5.3 is scripted further** — if task rows currently assume a human assignee, this is more than a rename job.
-- **Act 5's auto-start mechanic (#20) is a genuinely new interaction pattern**, not just a new visual — worth a design conversation on what "an agent starts a playbook with no human click" actually looks like in terms of confirmation/undo, since it's a bigger trust step than anything else in either script.
-- **MattyDelegationDM's peer-to-peer reuse (Reviewer↔Writer in 3.1) needs a quick UI check** — the component was built for Matty-as-hub delegations; confirm it reads sensibly with two non-Matty agents as the pair before assuming it's a pure rename job.
-- **WebhookPost's reserve status is resolved — it's in active use now.** Act 1.1 confirmed a plain human message for Emma's flag; Act 5.1 gives the component its genuine automated-trigger use case.
-- **Reuse carries old naming in the codebase.** Component names (`AgentApprovalCard`, `AgentInviteCard`, variable names inside `MattyDelegationDM`, etc.) still reference Sentinel/Otto/Cipher/Dynamo internally. Renaming on-screen copy is enough for the demo, but worth a note if this code is ever extended past this video.
+- **All 20 surfaces are built.** The prototype is complete for demo purposes.
+- **Act 5 auto-start is a snapshot, not a live transition.** `DocsIncidentChannel` renders the INC-4472 state after Monitor has already started the run — navigating to the `docs-outage` scene is the stand-in for the auto-trigger moment. If a live animated transition from the `later-that-week` scene into the INC-4472 channel is needed for a future cut, that would be net-new work.
+- **`DocsIncidentChannel` playbook = "Website outage".** RHS header title = `"INC-4472: Docs site outage"`; `secondaryTitle` = `"Website outage"`. This differs from agents/INC-4471 where the header reads `"Run details"`.
+- **Reuse carries old naming in the codebase.** Component names (`AgentApprovalCard`, `AgentInviteCard`, etc.) still reference Sentinel/Otto/Cipher/Dynamo internally. On-screen copy is correct for the demo; internal names are fine to leave as-is unless the code is extended.

@@ -1,8 +1,8 @@
 .matty-panel {
   position: absolute;
-  top: calc(var(--spacing-xs) + 72px);
+  top: 36px;
   right: var(--spacing-xl);
-  bottom: var(--spacing-xl);
+  bottom: 64px;
   width: 400px;
   z-index: 30;
   display: flex;
@@ -12,8 +12,8 @@
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   background: var(--center-channel-bg);
   box-shadow: var(--elevation-5);
-  transform-origin: bottom right;
-  transform: translateY(var(--spacing-l)) scale(0.92);
+  transform-origin: top right;
+  transform: translateY(calc(-1 * var(--spacing-l))) scale(0.92);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;

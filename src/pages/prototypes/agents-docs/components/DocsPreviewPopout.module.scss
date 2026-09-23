@@ -1,0 +1,484 @@
+// Simulates docs.mattermost.com (Docusaurus light theme).
+// Colors are intentionally hardcoded — this is an external site, not a Compass surface.
+//
+// The CSS custom property block at the root overrides any dark-mode Compass variables
+// that would otherwise bleed into plain HTML elements styled by global Compass rules.
+
+$sidebar-bg: #f5f6f7;
+$sidebar-text: #374151;
+$sidebar-muted: #9ca3af;
+$sidebar-active-color: #166de0;
+$sidebar-active-bg: rgba(22, 109, 224, 0.08);
+$content-text: #1c1e21;
+$content-link: #166de0;
+$border: #e3e7ec;
+$toc-text: #636970;
+$code-text: #c92a70;
+$code-bg: #f6f7f8;
+$note-bg: #eef4ff;
+$warn-bg: #fff8e6;
+$plan-bg: #f0f4ff;
+
+.docs-popout {
+  // ── Force light mode: override any dark-mode Compass CSS variables ──────────
+  // Compass global styles target plain HTML elements with var(--center-channel-*)
+  // etc. Setting them here makes all descendants resolve to light-mode values
+  // regardless of what data-theme is set on <html>.
+  --center-channel-color: #{$content-text};
+  --center-channel-bg: #ffffff;
+  --center-channel-color-rgb: 28, 30, 33;
+  --center-channel-bg-rgb: 255, 255, 255;
+  --link-color: #{$content-link};
+  --button-bg: #{$content-link};
+  --button-bg-rgb: 22, 109, 224;
+  --button-color: #ffffff;
+  --sidebar-bg: #{$sidebar-bg};
+  --sidebar-text: #{$sidebar-text};
+
+  // ── Layout ──────────────────────────────────────────────────────────────────
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  color-scheme: light;
+  background-color: #fff;
+  color: $content-text;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+
+  // ── Staging notice (very top) ────────────────────────────────────────────────
+  &__staging-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 20px;
+    background: #fff8e6;
+    border-bottom: 1px solid #f5d67a;
+    font-size: 12px;
+    color: #7a5c00;
+    flex-shrink: 0;
+  }
+
+  // ── Site header ──────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 54px;
+    padding: 0 20px;
+    background: #1b2130;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__logo-wordmark {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  &__logo-sep {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.32);
+  }
+
+  &__logo-docs {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.64);
+    font-weight: 500;
+  }
+
+  &__header-nav {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+
+  &__header-link {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.72);
+    cursor: pointer;
+  }
+
+  &__header-search {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.56);
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 140px;
+  }
+
+  &__search-icon {
+    font-size: 13px;
+  }
+
+  &__search-text {
+    flex: 1;
+  }
+
+  &__search-kbd {
+    font-size: 11px;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  // ── Body row ─────────────────────────────────────────────────────────────────
+  &__body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: flex-start;
+    background: #fff;
+    overflow-y: auto; // scrollbar sits at the far right edge of the window
+    scrollbar-gutter: stable;
+  }
+
+  // ── Left sidebar (light) ──────────────────────────────────────────────────────
+  &__sidebar {
+    position: sticky;
+    top: 0;
+    width: 228px;
+    flex-shrink: 0;
+    background: $sidebar-bg;
+    border-right: 1px solid $border;
+    overflow-y: auto;
+    max-height: calc(100vh - 82px); // viewport minus staging notice + header
+    padding: 12px 0 24px;
+    scrollbar-width: none;
+    align-self: flex-start;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__sidebar-label {
+    display: block;
+    padding: 10px 16px 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $sidebar-muted;
+    margin-top: 8px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  &__sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 5px 16px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: $sidebar-text;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    &--indent-1 { padding-left: 28px; }
+    &--indent-2 { padding-left: 40px; }
+    &--indent-3 { padding-left: 52px; }
+
+    &--active {
+      color: $sidebar-active-color;
+      background: $sidebar-active-bg;
+      font-weight: 600;
+      border-left-color: $sidebar-active-color;
+
+      &:hover {
+        background: $sidebar-active-bg;
+      }
+    }
+
+    &--parent {
+      font-weight: 500;
+      color: darken($sidebar-text, 10%);
+    }
+  }
+
+  &__sidebar-chevron {
+    font-size: 10px;
+    color: $sidebar-muted;
+    flex-shrink: 0;
+  }
+
+  &__sidebar-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: $sidebar-muted;
+    flex-shrink: 0;
+    margin-left: 2px;
+
+    &--active {
+      background: $sidebar-active-color;
+    }
+  }
+
+  // ── Main content ──────────────────────────────────────────────────────────────
+  &__main {
+    flex: 1;
+    min-width: 0;
+    background: #fff;
+    padding: 28px 36px 40px;
+    color: $content-text;
+  }
+
+  &__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 18px;
+    font-size: 12px;
+    color: $toc-text;
+  }
+
+  &__breadcrumb-sep {
+    opacity: 0.5;
+    font-size: 11px;
+  }
+
+  &__breadcrumb-link {
+    color: $toc-text;
+    cursor: pointer;
+
+    &:hover {
+      color: $content-link;
+    }
+  }
+
+  &__breadcrumb-current {
+    color: rgba(28, 30, 33, 0.56);
+  }
+
+  &__plan-badge {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 3px 10px;
+    background: $plan-bg;
+    border: 1px solid rgba(22, 109, 224, 0.2);
+    border-radius: 4px;
+    font-size: 11px;
+    color: $content-link;
+    font-weight: 600;
+  }
+
+  &__article-title {
+    margin: 0 0 12px;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: $content-text;
+    letter-spacing: -0.02em;
+  }
+
+  &__article-divider {
+    border: none;
+    border-top: 1px solid $border;
+    margin: 20px 0;
+  }
+
+  &__h2 {
+    margin: 28px 0 10px;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: $content-text;
+    padding-bottom: 8px;
+    border-bottom: 1px solid $border;
+  }
+
+  &__h3 {
+    margin: 20px 0 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: $content-text;
+  }
+
+  &__p {
+    margin: 0 0 12px;
+    line-height: 1.7;
+    color: rgba(28, 30, 33, 0.88);
+  }
+
+  &__ul {
+    margin: 0 0 12px;
+    padding-left: 22px;
+    line-height: 1.7;
+    color: rgba(28, 30, 33, 0.88);
+  }
+
+  &__ol {
+    margin: 0 0 12px;
+    padding-left: 22px;
+    line-height: 1.7;
+    color: rgba(28, 30, 33, 0.88);
+  }
+
+  &__li {
+    margin-bottom: 4px;
+    color: rgba(28, 30, 33, 0.88);
+  }
+
+  &__code {
+    font-family: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 12px;
+    background: $code-bg;
+    border: 1px solid $border;
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: $code-text;
+  }
+
+  &__note {
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: $note-bg;
+    border-left: 4px solid $content-link;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: $content-text;
+  }
+
+  &__note-label {
+    font-weight: 700;
+    color: $content-link;
+  }
+
+  &__warning {
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: $warn-bg;
+    border-left: 4px solid #f5a623;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: $content-text;
+  }
+
+  &__warning-label {
+    font-weight: 700;
+    color: #b07d00;
+  }
+
+  &__article-footer {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid $border;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: $toc-text;
+  }
+
+  &__edit-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $toc-text;
+    cursor: pointer;
+
+    &:hover {
+      color: $content-link;
+    }
+  }
+
+  &__prev-next {
+    display: flex;
+    gap: 16px;
+  }
+
+  &__nav-arrow {
+    color: $content-link;
+    cursor: pointer;
+    font-size: 13px;
+  }
+
+  // ── Right TOC ─────────────────────────────────────────────────────────────────
+  &__toc {
+    position: sticky;
+    top: 0;
+    width: 192px;
+    flex-shrink: 0;
+    max-height: calc(100vh - 82px);
+    padding: 28px 16px 24px;
+    border-left: 1px solid $border;
+    background: #fff;
+    overflow-y: auto;
+    align-self: flex-start;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__toc-heading {
+    margin: 0 0 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $toc-text;
+  }
+
+  &__toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__toc-link {
+    display: block;
+    padding: 3px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: $toc-text;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+
+    &:hover {
+      color: $content-link;
+      border-left-color: $content-link;
+    }
+
+    &--active {
+      color: $content-link;
+      border-left-color: $content-link;
+      font-weight: 600;
+    }
+  }
+}

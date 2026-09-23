@@ -124,6 +124,21 @@
     color: var(--center-channel-color);
   }
 
+  &__header-private {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    flex-shrink: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    svg {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+      flex-shrink: 0;
+    }
+  }
+
   &__header-actions {
     display: flex;
     flex: 0 0 auto;

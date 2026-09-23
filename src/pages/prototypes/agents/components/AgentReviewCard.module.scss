@@ -65,6 +65,18 @@
     }
   }
 
+  &__leading-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-s);
+    background: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--button-bg);
+  }
+
   &__actions {
     display: flex;
     flex-wrap: wrap;

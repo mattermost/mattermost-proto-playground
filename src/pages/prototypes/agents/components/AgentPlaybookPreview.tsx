@@ -21,6 +21,7 @@ type AgentPlaybookRhsHeaderProps = {
   onClose: () => void;
   onSave?: () => void;
   secondaryTitle?: string;
+  hideSave?: boolean;
 };
 
 type MetricIcon = ComponentType<SVGProps<SVGSVGElement>>;
@@ -51,6 +52,7 @@ export function AgentPlaybookRhsHeader({
   onClose,
   onSave,
   secondaryTitle = 'Playbook',
+  hideSave = false,
 }: AgentPlaybookRhsHeaderProps) {
   return (
     <div className={styles['agent-playbook-rhs-header']}>
@@ -67,26 +69,28 @@ export function AgentPlaybookRhsHeader({
         </span>
       </div>
       <div className={styles['agent-playbook-rhs-header__actions']}>
-        <div className={styles['agent-playbook-rhs-header__save']}>
-          <button
-            type="button"
-            className={styles['agent-playbook-rhs-header__save-primary']}
-            onClick={onSave}
-          >
-            Save
-          </button>
-          <span
-            className={styles['agent-playbook-rhs-header__save-divider']}
-            aria-hidden
-          />
-          <button
-            type="button"
-            className={styles['agent-playbook-rhs-header__save-chevron']}
-            aria-label="Save options"
-          >
-            <Icon glyph={<ChevronDownIcon />} size="16" />
-          </button>
-        </div>
+        {!hideSave && (
+          <div className={styles['agent-playbook-rhs-header__save']}>
+            <button
+              type="button"
+              className={styles['agent-playbook-rhs-header__save-primary']}
+              onClick={onSave}
+            >
+              Save
+            </button>
+            <span
+              className={styles['agent-playbook-rhs-header__save-divider']}
+              aria-hidden
+            />
+            <button
+              type="button"
+              className={styles['agent-playbook-rhs-header__save-chevron']}
+              aria-label="Save options"
+            >
+              <Icon glyph={<ChevronDownIcon />} size="16" />
+            </button>
+          </div>
+        )}
         <IconButton
           size="small"
           aria-label="Expand"

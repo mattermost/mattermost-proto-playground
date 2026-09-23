@@ -16,14 +16,14 @@ import PlusMenu from '../../components/PlusMenu';
 import { useAgents } from '../../context/AgentsContext';
 import styles from './ChannelsProductSidebar.module.scss';
 
-function resolveActiveName(pathname: string): string {
+function resolveActiveName(pathname: string, basePath: string): string {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
-  const dmPrefix = `${AGENTS_BASE}/dm/`;
+  const dmPrefix = `${basePath}/dm/`;
   if (normalized.startsWith(dmPrefix)) return normalized.slice(dmPrefix.length);
-  const channelPrefix = `${AGENTS_BASE}/channel/`;
+  const channelPrefix = `${basePath}/channel/`;
   if (normalized.startsWith(channelPrefix)) return normalized.slice(channelPrefix.length);
   return 'service-status';
 }
@@ -33,7 +33,13 @@ function resolveActiveName(pathname: string): string {
  * Channels LHS matching ChannelsSidebar chrome (product title + find), with a
  * host-owned plus menu (Create an Agent).
  */
-export default function ChannelsProductSidebar({ activeChannelName }: { activeChannelName?: string } = {}) {
+export default function ChannelsProductSidebar({
+  activeChannelName,
+  basePath = AGENTS_BASE,
+}: {
+  activeChannelName?: string;
+  basePath?: string;
+} = {}) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const {
@@ -51,7 +57,7 @@ export default function ChannelsProductSidebar({ activeChannelName }: { activeCh
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [collapsedByAgentId, setCollapsedByAgentId] = useState<Record<string, boolean>>({});
   const plusRef = useRef<HTMLDivElement>(null);
-  const activeName = activeChannelName ?? resolveActiveName(pathname);
+  const activeName = activeChannelName ?? resolveActiveName(pathname, basePath);
   const model = buildAgentsChannelsSidebarModel(activeName);
 
   const togglePlus = () => {
@@ -64,9 +70,9 @@ export default function ChannelsProductSidebar({ activeChannelName }: { activeCh
 
   const onItemClick = (name: string) => {
     if (name === 'service-status') {
-      navigate(AGENTS_BASE);
+      navigate(basePath);
     } else if (name.startsWith('INC-')) {
-      navigate(`${AGENTS_BASE}/channel/${name}`);
+      navigate(`${basePath}/channel/${name}`);
     }
   };
 
@@ -146,12 +152,12 @@ export default function ChannelsProductSidebar({ activeChannelName }: { activeCh
                   const targetId = agentActiveSessionId || sessions[0].id;
                   selectSession(agent.id, targetId);
                   setCollapsedByAgentId((prev) => ({ ...prev, [agent.id]: false }));
-                  navigate(`${AGENTS_BASE}/dm/${agent.id}`);
+                  navigate(`${basePath}/dm/${agent.id}`);
                 } else {
                   toggleCollapsed();
                 }
               } else {
-                navigate(`${AGENTS_BASE}/dm/${agent.id}`);
+                navigate(`${basePath}/dm/${agent.id}`);
               }
             }}
           />
@@ -164,7 +170,7 @@ export default function ChannelsProductSidebar({ activeChannelName }: { activeCh
               onClick={(e) => {
                 e.stopPropagation();
                 startNewChat(agent.id);
-                navigate(`${AGENTS_BASE}/dm/${agent.id}`);
+                navigate(`${basePath}/dm/${agent.id}`);
               }}
             />
           </span>
@@ -198,7 +204,7 @@ export default function ChannelsProductSidebar({ activeChannelName }: { activeCh
                       tabIndex={collapsed ? -1 : 0}
                       onClick={() => {
                         selectSession(agent.id, session.id);
-                        navigate(`${AGENTS_BASE}/dm/${agent.id}`);
+                        navigate(`${basePath}/dm/${agent.id}`);
                       }}
                     >
                       <span
@@ -245,11 +251,27 @@ export default function ChannelsProductSidebar({ activeChannelName }: { activeCh
 
         {model.groups.map((group) => (
           <div key={group.key} className={styles['channels-nav__group']}>
-            <ChannelsSidebarCategory
-              label={group.category.label}
-              showChevron={group.category.showChevron}
-              showPlusButton={group.category.showPlusButton}
-            />
+            {group.key === 'agents' ? (
+              <div className={styles['channels-nav__agents-category']}>
+                <span className={styles['channels-nav__agents-category-chevron']} aria-hidden>
+                  <Icon glyph={<ChevronDownIcon />} size="12" />
+                </span>
+                <span className={styles['channels-nav__agents-category-label']}>Agents</span>
+                <IconButton
+                  size="x-small"
+                  style="inverted"
+                  icon={<PlusIcon size={12} />}
+                  aria-label="Create an agent"
+                  onClick={openNewAgent}
+                />
+              </div>
+            ) : (
+              <ChannelsSidebarCategory
+                label={group.category.label}
+                showChevron={group.category.showChevron}
+                showPlusButton={group.category.showPlusButton}
+              />
+            )}
             {group.key === 'agents'
               ? yourAgents.map((agent) => renderAgentBlock(agent, group.key))
               : group.items.map((item) => (

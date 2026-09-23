@@ -265,6 +265,7 @@ export type WorkspaceAgent = {
   managedBy?: string;
   customImageSrc?: string;
   fresh?: boolean;
+  skillIds?: string[];
 };
 
 /** Story roster (before Otto is invited into #service-status). */
@@ -471,6 +472,16 @@ export type ConnectedMcp = {
   enabledToolIds: string[];
 };
 
+export type AgentSkill = {
+  id: string;
+  name: string;
+  description: string;
+  /** Slash command name (kebab-case, no leading slash). DM-only in this prototype. */
+  command: string;
+  /** One-line hint shown in the slash command menu. */
+  commandHint: string;
+};
+
 export type AgentAdvancedConfig = {
   dynamicToolLoading: boolean;
   maxToolTurns: string;
@@ -628,6 +639,48 @@ export function allToolIdsForServer(id: string): string[] {
   return getMcpServer(id)?.tools.map((tool) => tool.id) ?? [];
 }
 
+export const SKILL_CATALOG: AgentSkill[] = [
+  {
+    id: 'draft-docs-page',
+    name: 'Draft docs page',
+    description: 'Drafts or rewrites a documentation page from a brief or source findings.',
+    command: 'draft-page',
+    commandHint: 'Draft or rewrite a docs page from a brief',
+  },
+  {
+    id: 'review-content',
+    name: 'Review content',
+    description: 'Checks a draft for grammar, tone, style compliance, and factual accuracy.',
+    command: 'review',
+    commandHint: 'Review content for grammar, tone, and accuracy',
+  },
+  {
+    id: 'summarize-thread',
+    name: 'Summarize thread',
+    description: 'Reads a recent or linked thread and produces a concise summary.',
+    command: 'summarize',
+    commandHint: 'Summarize a thread or conversation',
+  },
+  {
+    id: 'create-runbook',
+    name: 'Create runbook',
+    description: 'Generates a step-by-step runbook from a description of a process.',
+    command: 'runbook',
+    commandHint: 'Generate a runbook from a process description',
+  },
+  {
+    id: 'weekly-digest',
+    name: 'Weekly digest',
+    description: 'Compiles a weekly summary of activity across linked channels and docs.',
+    command: 'digest',
+    commandHint: 'Compile a weekly activity digest',
+  },
+];
+
+export function getSkill(id: string): AgentSkill | undefined {
+  return SKILL_CATALOG.find((skill) => skill.id === id);
+}
+
 export const SENTINEL_CONNECTED_MCPS: ConnectedMcp[] = [
   'github',
   'jira',
@@ -669,6 +722,7 @@ export type CreatedAgent = {
   scheduledJobs: ScheduledJob[];
   connectedMcps: ConnectedMcp[];
   advancedConfig: AgentAdvancedConfig;
+  skillIds: string[];
 };
 
 /** Display profile for Matty or a created agent. */
@@ -687,6 +741,7 @@ export type AgentProfile = {
   scheduledJobs?: ScheduledJob[];
   connectedMcps?: ConnectedMcp[];
   advancedConfig?: AgentAdvancedConfig;
+  skillIds?: string[];
   /** Member agent ids when this profile is a multi-agent group chat. */
   memberIds?: string[];
 };
@@ -1059,7 +1114,7 @@ export const MATTY_TOOL_CONNECT_OPTIONS: AgentToolConnectOption[] = [
 export const MATTY_TOOL_CONNECT_MESSAGE: AgentChatMessage = {
   id: 'matty-tool-connect',
   timestamp: '10:43 AM',
-  title: 'What I should I connect to first?',
+  title: 'What should I connect to first?',
   paragraphs: [
     'Your organization allows connections with the following:',
   ],
@@ -1238,6 +1293,7 @@ export function emptyKnowledgeAndJobs(): Pick<
   | 'scheduledJobs'
   | 'connectedMcps'
   | 'advancedConfig'
+  | 'skillIds'
 > {
   return {
     knowledgeChannelIds: [],
@@ -1245,6 +1301,7 @@ export function emptyKnowledgeAndJobs(): Pick<
     scheduledJobs: [],
     connectedMcps: [],
     advancedConfig: cloneAdvancedConfig(),
+    skillIds: [],
   };
 }
 
@@ -1255,6 +1312,7 @@ export function sentinelKnowledgeAndJobs(): Pick<
   | 'scheduledJobs'
   | 'connectedMcps'
   | 'advancedConfig'
+  | 'skillIds'
 > {
   return {
     knowledgeChannelIds: [...SENTINEL_KNOWLEDGE_CHANNEL_IDS],
@@ -1262,6 +1320,7 @@ export function sentinelKnowledgeAndJobs(): Pick<
     scheduledJobs: SENTINEL_SCHEDULED_JOBS.map((job) => ({ ...job })),
     connectedMcps: cloneConnectedMcps(SENTINEL_CONNECTED_MCPS),
     advancedConfig: cloneAdvancedConfig(),
+    skillIds: [],
   };
 }
 
@@ -1316,6 +1375,7 @@ export function buildCreatedAgent(input: {
   scheduledJobs?: ScheduledJob[];
   connectedMcps?: ConnectedMcp[];
   advancedConfig?: AgentAdvancedConfig;
+  skillIds?: string[];
   /** Keep an existing id when updating (avoids breaking the chat route). */
   id?: string;
 }): CreatedAgent {
@@ -1345,6 +1405,7 @@ export function buildCreatedAgent(input: {
     advancedConfig: cloneAdvancedConfig(
       input.advancedConfig ?? seeded.advancedConfig,
     ),
+    skillIds: input.skillIds ?? seeded.skillIds,
   };
 }
 
@@ -1430,6 +1491,7 @@ export function resolveSingleAgentProfile(
       visibility: DEFAULT_AGENT_VISIBILITY,
       customImageSrc: org.customImageSrc,
       ...emptyKnowledgeAndJobs(),
+      skillIds: org.skillIds ?? [],
     };
   }
   return {
@@ -2857,6 +2919,12 @@ export function buildAgentsChannelsSidebarModel(
             leadingVisual: 'public',
             status: activeName === 'INC-4471' ? 'read' : 'unread',
             active: activeName === 'INC-4471',
+          },
+          {
+            name: 'INC-4472',
+            leadingVisual: 'public',
+            status: activeName === 'INC-4472' ? 'read' : 'unread',
+            active: activeName === 'INC-4472',
           },
         ],
       },

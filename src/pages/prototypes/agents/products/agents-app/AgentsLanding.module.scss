@@ -411,7 +411,7 @@
     transition: background-color var(--duration-quick) var(--ease-transition);
 
     &:hover {
-      background: rgba(var(--center-channel-color-rgb), 0.08);
+      background: rgba(var(--center-channel-color-rgb), 0.04);
     }
 
     &:focus-visible {

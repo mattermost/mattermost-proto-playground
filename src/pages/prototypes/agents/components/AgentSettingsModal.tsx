@@ -62,6 +62,7 @@ import type { AgentUpdates } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import AgentSettingsAdvancedPanel from './AgentSettingsAdvancedPanel';
 import AgentSettingsKnowledgePanel from './AgentSettingsKnowledgePanel';
+import AgentSettingsSkillsPanel from './AgentSettingsSkillsPanel';
 import AgentSettingsTasksPanel from './AgentSettingsTasksPanel';
 import AgentSettingsToolsPanel from './AgentSettingsToolsPanel';
 import styles from './AgentSettingsModal.module.scss';
@@ -82,6 +83,7 @@ export const AGENT_SETTINGS_TABS = [
   'knowledge',
   'tasks',
   'tools',
+  'skills',
   'access',
   'advanced',
 ] as const;
@@ -105,6 +107,7 @@ const TABS: TabDef[] = [
   { id: 'knowledge', label: 'Knowledge sources', IconGlyph: BookOutlineIcon },
   { id: 'tasks', label: 'Automated tasks', IconGlyph: ClockOutlineIcon },
   { id: 'tools', label: 'Tools', IconGlyph: HammerIcon },
+  { id: 'skills', label: 'Skills', IconGlyph: FileTextOutlineIcon },
   {
     id: 'access',
     label: 'Access & sharing',
@@ -154,6 +157,7 @@ type DraftState = {
   scheduledJobs: ScheduledJob[];
   connectedMcps: ConnectedMcp[];
   advancedConfig: AgentAdvancedConfig;
+  skillIds: string[];
 };
 
 function profileToDraft(agent: AgentProfile): DraftState {
@@ -171,6 +175,7 @@ function profileToDraft(agent: AgentProfile): DraftState {
     scheduledJobs: (agent.scheduledJobs ?? []).map((job) => ({ ...job })),
     connectedMcps: cloneConnectedMcps(agent.connectedMcps),
     advancedConfig: cloneAdvancedConfig(agent.advancedConfig),
+    skillIds: agent.skillIds ?? [],
   };
 }
 
@@ -201,7 +206,8 @@ function draftsEqual(a: DraftState, b: DraftState): boolean {
     a.knowledgeDocIds.join() === b.knowledgeDocIds.join() &&
     jobsEqual(a.scheduledJobs, b.scheduledJobs) &&
     JSON.stringify(a.connectedMcps) === JSON.stringify(b.connectedMcps) &&
-    JSON.stringify(a.advancedConfig) === JSON.stringify(b.advancedConfig)
+    JSON.stringify(a.advancedConfig) === JSON.stringify(b.advancedConfig) &&
+    a.skillIds.join() === b.skillIds.join()
   );
 }
 
@@ -327,6 +333,7 @@ export default function AgentSettingsModal({
       scheduledJobs: draft.scheduledJobs.filter((job) => job.title.trim()),
       connectedMcps: draft.connectedMcps,
       advancedConfig: draft.advancedConfig,
+      skillIds: draft.skillIds,
     });
     onClose();
   };
@@ -374,6 +381,7 @@ export default function AgentSettingsModal({
           size="large"
           title="Agent Settings"
           subtitle={agent.name}
+          subtitlePlacement="beside"
           headerDivider
           footerDivider={false}
           onClose={onClose}
@@ -792,6 +800,15 @@ export default function AgentSettingsModal({
                         connectedMcps={draft.connectedMcps}
                         onChange={(connectedMcps) =>
                           setDraft((prev) => ({ ...prev, connectedMcps }))
+                        }
+                      />
+                    ) : null}
+
+                    {activeTab === 'skills' ? (
+                      <AgentSettingsSkillsPanel
+                        skillIds={draft.skillIds}
+                        onChange={(skillIds) =>
+                          setDraft((prev) => ({ ...prev, skillIds }))
                         }
                       />
                     ) : null}

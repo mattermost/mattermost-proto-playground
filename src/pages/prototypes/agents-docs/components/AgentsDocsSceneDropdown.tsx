@@ -21,16 +21,19 @@ function resolveScene(
     pathname.length > 1 && pathname.endsWith('/')
       ? pathname.slice(0, -1)
       : pathname;
+  if (normalized === `${AGENTS_DOCS_BASE}/dm/matty`) return 'matty-chat';
   if (normalized.startsWith(`${AGENTS_DOCS_BASE}/dm/`)) return 'channels';
   if (normalized.startsWith(`${AGENTS_DOCS_BASE}/agents/`)) return 'matty-chat';
   if (normalized === `${AGENTS_DOCS_BASE}/agents`) {
     if (search.includes('fte=1')) return 'group-chat';
+    if (search.includes('view=all')) return 'all-agents-list';
     return 'all-agents';
   }
   if (search.includes('scene=grounding')) return 'grounding';
   if (search.includes('scene=review')) return 'review';
   if (search.includes('scene=approval')) return 'approval';
   if (search.includes('scene=later-that-week')) return 'later-that-week';
+  if (search.includes('scene=docs-outage')) return 'docs-outage';
   return 'channels';
 }
 
@@ -40,6 +43,7 @@ type AgentsDocsSceneDropdownProps = {
   newAgentOpen: boolean;
   openNewAgent: () => void;
   closeNewAgent: () => void;
+  openNewGroupChat: () => void;
   mattyPanelOpen: boolean;
   setMattyPanelOpen: (open: boolean) => void;
 };
@@ -50,6 +54,7 @@ export default function AgentsDocsSceneDropdown({
   newAgentOpen,
   openNewAgent,
   closeNewAgent,
+  openNewGroupChat,
   setMattyPanelOpen,
 }: AgentsDocsSceneDropdownProps) {
   const navigate = useNavigate();
@@ -86,24 +91,32 @@ export default function AgentsDocsSceneDropdown({
           closeNewAgent();
           navigate(`${AGENTS_DOCS_BASE}?scene=later-that-week`);
           return;
+        case 'docs-outage':
+          closeNewAgent();
+          navigate(`${AGENTS_DOCS_BASE}?scene=docs-outage`);
+          return;
         case 'matty-chat':
           closeNewAgent();
-          navigate(`${AGENTS_DOCS_BASE}/agents/matty`);
+          navigate(`${AGENTS_DOCS_BASE}/dm/matty`);
           return;
         case 'all-agents':
           closeNewAgent();
           navigate(`${AGENTS_DOCS_BASE}/agents`);
+          return;
+        case 'all-agents-list':
+          closeNewAgent();
+          navigate(`${AGENTS_DOCS_BASE}/agents?view=all`);
           return;
         case 'new-agent':
           openNewAgent();
           return;
         case 'group-chat':
           closeNewAgent();
-          navigate(`${AGENTS_DOCS_BASE}/agents?fte=1`);
+          openNewGroupChat();
           return;
       }
     },
-    [navigate, closeNewAgent, openNewAgent, onOpenChange],
+    [navigate, closeNewAgent, openNewAgent, openNewGroupChat, onOpenChange],
   );
 
   return (
