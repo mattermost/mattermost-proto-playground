@@ -586,7 +586,6 @@ export default function DocsIncidentChannel() {
                         <AgentArtifactCard
                           title="INC-4472: Root Cause Analysis"
                           meta="Markdown · 280 words"
-                          compact
                           onOpen={() => setArtifactOpen(true)}
                         />
                       </div>
