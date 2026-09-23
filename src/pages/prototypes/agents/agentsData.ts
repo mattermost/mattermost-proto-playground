@@ -2855,11 +2855,11 @@ export function buildAgentsChannelsSidebarModel(
         key: 'favorites',
         category: { label: 'Favorites', showChevron: true },
         items: [
-          ...(activeName === 'docs-site' ? [{
+          ...(activeName === 'docs-site' || activeName === 'INC-4472' ? [{
             name: 'docs-site',
             leadingVisual: 'public' as const,
             status: 'read' as const,
-            active: true,
+            active: activeName === 'docs-site',
           }] : []),
           {
             name: 'service-status',

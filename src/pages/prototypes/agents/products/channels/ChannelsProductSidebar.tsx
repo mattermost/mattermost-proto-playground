@@ -69,7 +69,7 @@ export default function ChannelsProductSidebar({
   };
 
   const onItemClick = (name: string) => {
-    if (name === 'service-status') {
+    if (name === 'service-status' || name === 'docs-site') {
       navigate(basePath);
     } else if (name.startsWith('INC-')) {
       navigate(`${basePath}/channel/${name}`);
@@ -279,7 +279,7 @@ export default function ChannelsProductSidebar({
                     key={`${group.key}-${item.name}`}
                     {...item}
                     onClick={
-                      item.name === 'service-status' || item.name.startsWith('INC-')
+                      item.name === 'service-status' || item.name === 'docs-site' || item.name.startsWith('INC-')
                         ? () => onItemClick(item.name)
                         : undefined
                     }

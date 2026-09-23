@@ -37,6 +37,7 @@ function resolveDocsScene(
   if (search.includes('scene=approval')) return 'approval';
   if (search.includes('scene=later-that-week')) return 'later-that-week';
   if (search.includes('scene=docs-outage')) return 'docs-outage';
+  if (normalized.startsWith(`${AGENTS_DOCS_BASE}/channel/INC-`)) return 'docs-outage';
   return 'channels';
 }
 

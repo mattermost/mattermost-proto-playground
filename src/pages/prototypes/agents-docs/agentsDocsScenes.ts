@@ -13,7 +13,7 @@ export type AgentsDocsSceneId =
   | 'dm';
 
 export const AGENTS_DOCS_SCENES: Array<{ id: AgentsDocsSceneId; label: string }> = [
-  { id: 'channels', label: '#docs-site — Trigger & Ask' },
+  { id: 'channels', label: 'Docs Site Channel — Trigger & Ask' },
   { id: 'grounding', label: 'Grounding & Informed Rewrite' },
   { id: 'review', label: 'Review & Component Build' },
   { id: 'approval', label: 'Approval & Publish' },
