@@ -6,6 +6,7 @@
 
 $sidebar-bg: #f5f6f7;
 $sidebar-text: #374151;
+$sidebar-text-dark: #222933;
 $sidebar-muted: #9ca3af;
 $sidebar-active-color: #166de0;
 $sidebar-active-bg: rgba(22, 109, 224, 0.08);
@@ -219,7 +220,7 @@ $plan-bg: #f0f4ff;
 
     &--parent {
       font-weight: 500;
-      color: darken($sidebar-text, 10%);
+      color: $sidebar-text-dark;
     }
   }
 
