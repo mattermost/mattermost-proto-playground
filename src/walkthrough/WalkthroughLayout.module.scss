@@ -16,17 +16,32 @@
     height: 100%;
   }
 
+  // Width-collapsing column so the stage flexes smoothly with enter/exit.
   &__narrative-slot {
     flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: 0fr;
+    min-height: 0;
+    height: 100%;
+    transition: grid-template-columns var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+  }
+
+  &__narrative-slot--expanded {
+    grid-template-columns: 1fr;
+  }
+
+  &__narrative-clip {
+    overflow: hidden;
+    min-width: 0;
     min-height: 0;
     height: 100%;
     padding: var(--spacing-m);
-    animation: wt-narrative-in var(--duration-moderate, 300ms) var(--ease-entrance, ease-out);
+    opacity: 0;
+    transition: opacity var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
   }
 
-  &__narrative-slot--exiting {
-    pointer-events: none;
-    animation: wt-narrative-out var(--duration-moderate, 300ms) var(--ease-exit, ease-in) forwards;
+  &__narrative-slot--expanded &__narrative-clip {
+    opacity: 1;
   }
 
   &__stage {
@@ -74,30 +89,6 @@
     padding: var(--spacing-xs) var(--spacing-xs) 0;
     background: var(--center-channel-bg);
     border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  }
-}
-
-@keyframes wt-narrative-in {
-  from {
-    opacity: 0;
-    transform: translateX(-12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes wt-narrative-out {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateX(-12px);
   }
 }
 
