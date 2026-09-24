@@ -29,9 +29,10 @@ type WalkthroughFocusLayerProps = {
 
 const TOUR_POINT_WIDTH = 320;
 
-function resolveEmphasis(focus: WalkthroughFocus): Set<'ring' | 'lightbox'> {
+/** Ring and lightbox are mutually exclusive; lightbox wins if both are listed. */
+function resolveEmphasis(focus: WalkthroughFocus): 'ring' | 'lightbox' {
   const list = focus.emphasis?.length ? focus.emphasis : (['ring'] as const);
-  return new Set(list);
+  return list.includes('lightbox') ? 'lightbox' : 'ring';
 }
 
 function pointerFor(
@@ -101,7 +102,7 @@ export default function WalkthroughFocusLayer({
   const noteRef = useRef<HTMLDivElement>(null);
 
   const emphasis = useMemo(
-    () => (focus ? resolveEmphasis(focus) : new Set<'ring' | 'lightbox'>()),
+    () => (focus ? resolveEmphasis(focus) : null),
     [focus],
   );
 
@@ -133,7 +134,7 @@ export default function WalkthroughFocusLayer({
         setTargetLocal(null);
         return;
       }
-      if (emphasis.has('ring')) {
+      if (emphasis === 'ring') {
         el.setAttribute('data-wt-highlight', 'true');
       }
       const stageRect = stage.getBoundingClientRect();
@@ -191,7 +192,7 @@ export default function WalkthroughFocusLayer({
 
   if (!focus) return null;
 
-  const showLightbox = emphasis.has('lightbox') && targetLocal;
+  const showLightbox = emphasis === 'lightbox' && targetLocal;
   const showNote =
     focus.note &&
     noteMode !== 'dismissed' &&

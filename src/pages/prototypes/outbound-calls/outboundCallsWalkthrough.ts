@@ -49,7 +49,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       sceneState: { dialpad: true },
       focus: {
         id: 'call-pip',
-        emphasis: ['ring', 'lightbox'],
+        emphasis: ['lightbox'],
         note: {
           title: 'Always within reach',
           points: [
@@ -118,7 +118,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       },
       focus: {
         id: 'call-pip',
-        emphasis: ['ring', 'lightbox'],
+        emphasis: ['lightbox'],
       },
     },
   ],

@@ -31,8 +31,8 @@ export type WalkthroughFocus = {
   /** Matches `data-tour-focus` on a prototype element. */
   id: string;
   /**
-   * Visual callouts. When omitted, defaults to `['ring']`.
-   * Authors may combine ring and lightbox.
+   * Visual callout. When omitted, defaults to `['ring']`.
+   * Ring and lightbox are mutually exclusive — if both are listed, lightbox wins.
    */
   emphasis?: WalkthroughFocusEmphasis[];
   note?: WalkthroughFocusNote;

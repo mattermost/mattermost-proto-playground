@@ -39,9 +39,6 @@ export default function WalkthroughNarrative({
   return (
     <aside className={styles['wt-narrative']} aria-label="Walkthrough step">
       <div className={styles['wt-narrative__toolbar']}>
-        <span className={styles['wt-narrative__progress']}>
-          Step {stepIndex + 1} of {document.steps.length}
-        </span>
         <Button
           emphasis="tertiary"
           size="small"
@@ -51,6 +48,9 @@ export default function WalkthroughNarrative({
         >
           Jump to
         </Button>
+        <span className={styles['wt-narrative__progress']}>
+          Step {stepIndex + 1} of {document.steps.length}
+        </span>
       </div>
 
       <div className={styles['wt-narrative__body']}>
