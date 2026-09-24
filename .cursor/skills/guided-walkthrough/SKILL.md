@@ -108,7 +108,7 @@ Other prototypes define their own keys and apply them in the same `onScene` call
 
 - Mode is **in-place** on the same route (`?walkthrough=1&step=`), not a sibling page or iframe
 - Register via `useRegisterWalkthrough` from `@/walkthrough`
-- Top-right nav shows Walkthrough / Exit toggle only
+- Top-right nav shows Start walkthrough / Exit walkthrough toggle only
 - Narrative sidebar owns Jump to + Step N of M, plus Back/Next/Exit; jump list is an overlay (does not permanently steal width)
 - Drive scenes with the `onScene` callback when the active step changes
 - Drive UI state with `step.sceneState` via the same callback (menus, widgets, seeded data)
