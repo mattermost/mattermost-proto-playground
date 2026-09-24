@@ -5,17 +5,18 @@
   pointer-events: none;
   overflow: hidden;
 
+  // Positioned over [data-wt-shell] (product app shell), not the full stage.
   &__lightbox {
     position: absolute;
-    inset: 0;
     overflow: hidden;
     pointer-events: none;
+    border-radius: var(--radius-xl);
   }
 
   &__cutout {
     position: absolute;
     border-radius: var(--radius-s);
-    box-shadow: 0 0 0 9999px rgba(var(--center-channel-color-rgb), 0.5);
+    box-shadow: 0 0 0 9999px rgba(0,0,0), 0.64);
     background: transparent;
   }
 

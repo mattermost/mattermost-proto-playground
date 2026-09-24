@@ -138,6 +138,8 @@ export default function WalkthroughFocusLayer({
   stageRef,
 }: WalkthroughFocusLayerProps) {
   const [targetLocal, setTargetLocal] = useState<StageRect | null>(null);
+  /** Stage-local bounds of `[data-wt-shell]`, or full stage when absent. */
+  const [shellLocal, setShellLocal] = useState<StageRect | null>(null);
   const [notePos, setNotePos] = useState<NotePos | null>(null);
   const [noteMode, setNoteMode] = useState<'anchored' | 'docked' | 'dismissed'>(
     'anchored',
@@ -156,6 +158,7 @@ export default function WalkthroughFocusLayer({
     setNoteMode('anchored');
     setNotePos(null);
     setTargetLocal(null);
+    setShellLocal(null);
     setEntered(false);
     placedForFocusRef.current = null;
   }, [focus?.id]);
@@ -179,8 +182,26 @@ export default function WalkthroughFocusLayer({
 
     const measure = (opts?: { forcePlace?: boolean }) => {
       const stage = stageRef.current;
+      if (!stage) {
+        setTargetLocal(null);
+        setShellLocal(null);
+        return;
+      }
+      const stageRect = stage.getBoundingClientRect();
+      const shellEl = stage.querySelector('[data-wt-shell]') as HTMLElement | null;
+      setShellLocal(
+        shellEl
+          ? toStageLocal(shellEl.getBoundingClientRect(), stageRect)
+          : {
+              top: 0,
+              left: 0,
+              width: stageRect.width,
+              height: stageRect.height,
+            },
+      );
+
       const els = findAll();
-      if (!stage || !els.length) {
+      if (!els.length) {
         setTargetLocal(null);
         return;
       }
@@ -188,7 +209,6 @@ export default function WalkthroughFocusLayer({
       if (emphasis === 'ring') {
         els.forEach((el) => el.setAttribute('data-wt-highlight', 'true'));
       }
-      const stageRect = stage.getBoundingClientRect();
       const bounds = unionClientRects(els.map((el) => el.getBoundingClientRect()));
       const local = toStageLocal(bounds, stageRect);
       setTargetLocal(local);
@@ -296,17 +316,20 @@ export default function WalkthroughFocusLayer({
 
   if (!focus && !noteRendered) return null;
 
-  const showLightbox = focus && emphasis === 'lightbox' && targetLocal;
+  const showLightbox =
+    focus && emphasis === 'lightbox' && targetLocal && shellLocal;
 
   const pad = 4;
-  const cutout = targetLocal
-    ? {
-        top: targetLocal.top - pad,
-        left: targetLocal.left - pad,
-        width: targetLocal.width + pad * 2,
-        height: targetLocal.height + pad * 2,
-      }
-    : null;
+  // Cutout is positioned inside the shell-scoped lightbox.
+  const cutout =
+    targetLocal && shellLocal
+      ? {
+          top: targetLocal.top - shellLocal.top - pad,
+          left: targetLocal.left - shellLocal.left - pad,
+          width: targetLocal.width + pad * 2,
+          height: targetLocal.height + pad * 2,
+        }
+      : null;
 
   const display = snapshot;
   const pointerPosition = display
@@ -315,8 +338,16 @@ export default function WalkthroughFocusLayer({
 
   return (
     <div className={styles['wt-focus']} aria-hidden={!noteRendered || noteExiting}>
-      {showLightbox && cutout && (
-        <div className={styles['wt-focus__lightbox']}>
+      {showLightbox && cutout && shellLocal && (
+        <div
+          className={styles['wt-focus__lightbox']}
+          style={{
+            top: shellLocal.top,
+            left: shellLocal.left,
+            width: shellLocal.width,
+            height: shellLocal.height,
+          }}
+        >
           <div
             className={styles['wt-focus__cutout']}
             style={{

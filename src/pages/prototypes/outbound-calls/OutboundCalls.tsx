@@ -491,7 +491,7 @@ export default function OutboundCalls() {
 
   return (
     <div className={styles['calls']}>
-      <div className={styles['calls__shell']}>
+      <div className={styles['calls__shell']} data-wt-shell>
         <div className={styles['calls__global-header']}>
           <GlobalHeader
             product="channels"
