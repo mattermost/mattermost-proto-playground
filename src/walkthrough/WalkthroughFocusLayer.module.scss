@@ -1,13 +1,19 @@
 .wt-focus {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  overflow: hidden;
+
   &__lightbox {
-    position: fixed;
+    position: absolute;
     inset: 0;
-    z-index: 25;
+    overflow: hidden;
     pointer-events: none;
   }
 
   &__cutout {
-    position: fixed;
+    position: absolute;
     border-radius: var(--radius-s);
     box-shadow: 0 0 0 9999px rgba(var(--center-channel-color-rgb), 0.5);
     background: transparent;
@@ -16,11 +22,11 @@
   }
 
   &__note {
-    position: fixed;
-    z-index: 30;
+    position: absolute;
+    z-index: 2;
     width: 300px;
-    max-width: calc(100vw - 24px);
-    max-height: calc(100vh - 24px);
+    max-width: calc(100% - 24px);
+    max-height: calc(100% - 24px);
     overflow-y: auto;
     padding: var(--spacing-s) var(--spacing-m);
     border-radius: var(--radius-m);
@@ -28,12 +34,13 @@
     background: var(--center-channel-bg);
     box-shadow: var(--elevation-4);
     color: var(--center-channel-color);
+    pointer-events: auto;
   }
 
   &__note--docked {
     top: auto;
-    bottom: var(--spacing-xl);
-    right: var(--spacing-xl);
+    bottom: var(--spacing-m);
+    right: var(--spacing-m);
     left: auto;
   }
 
@@ -71,6 +78,18 @@
     li + li {
       margin-top: var(--spacing-xxs);
     }
+  }
+
+  &__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 }
 

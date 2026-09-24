@@ -75,7 +75,7 @@ export default function WalkthroughLayout({
         </div>
 
         <div className={styles['wt__stage']} ref={stageRef}>
-          {children}
+          <div className={styles['wt__stage-scroll']}>{children}</div>
           <WalkthroughFocusLayer focus={step.focus ?? null} stageRef={stageRef} />
         </div>
       </div>

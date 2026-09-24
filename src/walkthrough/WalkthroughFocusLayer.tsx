@@ -7,6 +7,13 @@ import styles from './WalkthroughFocusLayer.module.scss';
 
 type Placement = 'below' | 'above' | 'beside';
 
+type StageRect = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
+
 type NotePos = {
   top: number;
   left: number;
@@ -15,7 +22,7 @@ type NotePos = {
 
 type WalkthroughFocusLayerProps = {
   focus: WalkthroughFocus | null;
-  /** Scope queries to the prototype stage root. */
+  /** Scope queries and overlays to the prototype stage root. */
   stageRef: React.RefObject<HTMLElement | null>;
 };
 
@@ -24,19 +31,20 @@ function resolveEmphasis(focus: WalkthroughFocus): Set<'ring' | 'lightbox'> {
   return new Set(list);
 }
 
+/** Place note in stage-local coordinates. */
 function placeNote(
-  target: DOMRect,
+  target: StageRect,
   noteHeight: number,
-  viewportW: number,
-  viewportH: number,
+  stageW: number,
+  stageH: number,
 ): NotePos | 'dock' {
   const gap = 12;
-  const width = Math.min(300, viewportW - 24);
-  const belowTop = target.bottom + gap;
-  if (belowTop + noteHeight < viewportH - 12) {
+  const width = Math.min(300, stageW - 24);
+  const belowTop = target.top + target.height + gap;
+  if (belowTop + noteHeight < stageH - 12) {
     return {
       top: belowTop,
-      left: Math.min(Math.max(12, target.left), viewportW - width - 12),
+      left: Math.min(Math.max(12, target.left), stageW - width - 12),
       placement: 'below',
     };
   }
@@ -44,14 +52,14 @@ function placeNote(
   if (aboveTop > 12) {
     return {
       top: aboveTop,
-      left: Math.min(Math.max(12, target.left), viewportW - width - 12),
+      left: Math.min(Math.max(12, target.left), stageW - width - 12),
       placement: 'above',
     };
   }
-  const besideLeft = target.right + gap;
-  if (besideLeft + width < viewportW - 12) {
+  const besideLeft = target.left + target.width + gap;
+  if (besideLeft + width < stageW - 12) {
     return {
-      top: Math.min(Math.max(12, target.top), viewportH - noteHeight - 12),
+      top: Math.min(Math.max(12, target.top), stageH - noteHeight - 12),
       left: besideLeft,
       placement: 'beside',
     };
@@ -59,11 +67,21 @@ function placeNote(
   return 'dock';
 }
 
+function toStageLocal(target: DOMRect, stage: DOMRect): StageRect {
+  return {
+    top: target.top - stage.top,
+    left: target.left - stage.left,
+    width: target.width,
+    height: target.height,
+  };
+}
+
 export default function WalkthroughFocusLayer({
   focus,
   stageRef,
 }: WalkthroughFocusLayerProps) {
-  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const [targetLocal, setTargetLocal] = useState<StageRect | null>(null);
+  const [stageSize, setStageSize] = useState({ width: 0, height: 0 });
   const [notePos, setNotePos] = useState<NotePos | null>(null);
   const [noteMode, setNoteMode] = useState<'anchored' | 'docked' | 'dismissed'>(
     'anchored',
@@ -78,7 +96,7 @@ export default function WalkthroughFocusLayer({
   useEffect(() => {
     setNoteMode('anchored');
     setNotePos(null);
-    setTargetRect(null);
+    setTargetLocal(null);
   }, [focus?.id]);
 
   useEffect(() => {
@@ -91,25 +109,28 @@ export default function WalkthroughFocusLayer({
       ) as HTMLElement | null;
 
     const clearHighlight = () => {
-      document
+      (stageRef.current ?? document)
         .querySelectorAll('[data-tour-highlight="true"]')
         .forEach((el) => el.removeAttribute('data-tour-highlight'));
     };
 
     const measure = () => {
+      const stage = stageRef.current;
       const el = find();
-      if (!el) {
-        setTargetRect(null);
+      if (!stage || !el) {
+        setTargetLocal(null);
         return;
       }
       if (emphasis.has('ring')) {
         el.setAttribute('data-tour-highlight', 'true');
       }
-      const rect = el.getBoundingClientRect();
-      setTargetRect(rect);
+      const stageRect = stage.getBoundingClientRect();
+      setStageSize({ width: stageRect.width, height: stageRect.height });
+      const local = toStageLocal(el.getBoundingClientRect(), stageRect);
+      setTargetLocal(local);
       if (focus.note && noteMode === 'anchored') {
         const h = noteRef.current?.offsetHeight ?? 160;
-        const placed = placeNote(rect, h, window.innerWidth, window.innerHeight);
+        const placed = placeNote(local, h, stageRect.width, stageRect.height);
         if (placed === 'dock') setNoteMode('docked');
         else setNotePos(placed);
       }
@@ -145,6 +166,10 @@ export default function WalkthroughFocusLayer({
     const onInteract = (event: Event) => {
       const target = event.target as Node | null;
       if (target && noteRef.current?.contains(target)) return;
+      // Ignore interactions in the narrative / jump chrome — only dock when
+      // the user engages the prototype stage itself.
+      const stage = stageRef.current;
+      if (stage && target && !stage.contains(target)) return;
       setNoteMode('docked');
     };
     document.addEventListener('mousedown', onInteract, true);
@@ -153,27 +178,37 @@ export default function WalkthroughFocusLayer({
       document.removeEventListener('mousedown', onInteract, true);
       document.removeEventListener('focusin', onInteract, true);
     };
-  }, [focus?.note, noteMode]);
+  }, [focus?.note, noteMode, stageRef]);
 
   if (!focus) return null;
 
-  const showLightbox = emphasis.has('lightbox') && targetRect;
+  const showLightbox = emphasis.has('lightbox') && targetLocal;
   const showNote =
     focus.note &&
     noteMode !== 'dismissed' &&
     (noteMode === 'docked' || notePos != null);
 
+  const pad = 4;
+  const cutout = targetLocal
+    ? {
+        top: targetLocal.top - pad,
+        left: targetLocal.left - pad,
+        width: targetLocal.width + pad * 2,
+        height: targetLocal.height + pad * 2,
+      }
+    : null;
+
   return (
-    <>
-      {showLightbox && targetRect && (
-        <div className={styles['wt-focus__lightbox']} aria-hidden>
+    <div className={styles['wt-focus']} aria-hidden={!showNote}>
+      {showLightbox && cutout && (
+        <div className={styles['wt-focus__lightbox']}>
           <div
             className={styles['wt-focus__cutout']}
             style={{
-              top: targetRect.top - 4,
-              left: targetRect.left - 4,
-              width: targetRect.width + 8,
-              height: targetRect.height + 8,
+              top: cutout.top,
+              left: cutout.left,
+              width: cutout.width,
+              height: cutout.height,
             }}
           />
         </div>
@@ -214,6 +249,11 @@ export default function WalkthroughFocusLayer({
           </ul>
         </div>
       )}
-    </>
+
+      {/* Keep stageSize referenced so measure updates stay intentional */}
+      <span className={styles['wt-focus__sr']} aria-hidden>
+        {stageSize.width}x{stageSize.height}
+      </span>
+    </div>
   );
 }
