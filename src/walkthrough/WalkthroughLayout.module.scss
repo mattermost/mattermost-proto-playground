@@ -37,11 +37,15 @@
     height: 100%;
     padding: var(--spacing-m);
     opacity: 0;
-    transition: opacity var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+    transform: translateX(-16px);
+    transition:
+      opacity var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      transform var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
   }
 
   &__narrative-slot--expanded &__narrative-clip {
     opacity: 1;
+    transform: translateX(0);
   }
 
   &__stage {

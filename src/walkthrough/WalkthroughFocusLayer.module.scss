@@ -76,8 +76,8 @@
 }
 
 :global([data-wt-highlight='true']) {
-  outline: 2px solid var(--button-bg) !important;
+  outline: 2px solid var(--color-yellow-500) !important;
   outline-offset: 3px;
   border-radius: var(--radius-s);
-  box-shadow: 0 0 0 4px rgba(var(--button-bg-rgb), 0.16);
+  box-shadow: 0 0 0 4px rgba(var(--color-yellow-500-rgb), 0.24);
 }
