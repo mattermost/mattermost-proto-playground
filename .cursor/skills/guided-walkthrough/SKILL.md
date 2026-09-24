@@ -52,10 +52,17 @@ export const exampleWalkthrough: WalkthroughDocument = {
       lookFor: ['…'],
       bullets: ['…', { text: '…', sub: ['…'] }],
       scene: 'existing-scene-id',
+      // Prototype-owned state applied when the step becomes active
+      sceneState: {
+        dialpad: true, // example — keys are per-prototype
+        // call: { contactId: 'aiko', status: 'connected' },
+        // popover: { contactId: 'aiko' },
+        // startCallMenu: true,
+      },
       focus: {
         id: 'anchor-id',
         emphasis: ['ring', 'lightbox'], // omit → ['ring']
-        note: { title: '…', points: ['…'] },
+        note: { title: '…', points: ['…'] }, // → Compass TourPoint
       },
     },
   ],
@@ -63,6 +70,21 @@ export const exampleWalkthrough: WalkthroughDocument = {
 ```
 
 **No** `useCase` field. **No** focus banner. Badges are optional freeform labels (`appearance` → Compass `Tag` type).
+
+### sceneState (state triggers)
+
+Each step can declare `sceneState` — a freeform bag the prototype applies in `onScene(scene, sceneState)`. Treat it as a **declarative snapshot** for that step (open menus, seed call status, show popovers), not a patch on the previous step.
+
+Outbound Calls keys (`outboundWalkthroughApply.ts`):
+
+| Key | Effect |
+| --- | --- |
+| `dialpad: true` | Open composing softphone PIP |
+| `call: { contactId, status?, keypad?, … }` | Seed PIP (`connected` preferred for stable demos) |
+| `popover: { contactId }` | Open profile popover (anchor: `data-wt-popover-anchor`) |
+| `startCallMenu: true` | Open channel/DM Start call menu |
+
+Other prototypes define their own keys and apply them in the same `onScene` callback.
 
 ## Process
 
@@ -73,8 +95,8 @@ export const exampleWalkthrough: WalkthroughDocument = {
 3. Suggest `data-tour-focus` ids on major regions; add attributes in JSX
 4. Emit thin leads / lookFor / bullets — cite UI, do not invent long prose
 5. Pause for author to reorder, merge/split steps, deepen copy, pick ring vs lightbox
-6. Wire `useRegisterWalkthrough(doc, { onScene })` in the orchestrator
-7. Validate: every `scene` resolves; every `focus.id` has a matching `data-tour-focus`; `?walkthrough=1&step=<id>` works
+6. Wire `useRegisterWalkthrough(doc, { onScene })` — apply `scene` **and** `sceneState` (reset overlays when keys are absent)
+7. Validate: every `scene` resolves; every `focus.id` has a matching `data-wt-focus`; `sceneState` keys are handled; `?walkthrough=1&step=<id>` works
 
 ### B. Guided refine
 
@@ -89,12 +111,14 @@ export const exampleWalkthrough: WalkthroughDocument = {
 - Top-right nav shows Walkthrough / Exit toggle only
 - Narrative sidebar owns Jump to + Step N of M, plus Back/Next/Exit; jump list is an overlay (does not permanently steal width)
 - Drive scenes with the `onScene` callback when the active step changes
+- Drive UI state with `step.sceneState` via the same callback (menus, widgets, seeded data)
 
 ## Validation checklist
 
 - [ ] `prototypeId` matches manifest
 - [ ] All `step.scene` values are real scene ids
 - [ ] Focus targets exist in the DOM for steps that declare `focus`
+- [ ] `sceneState` triggers the intended overlays when jumping between steps
 - [ ] Build passes (`npm run build`)
 - [ ] Enter / Exit / Back / Next / Jump work; Exit clears query params
 

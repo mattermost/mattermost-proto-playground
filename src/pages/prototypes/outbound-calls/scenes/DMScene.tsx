@@ -11,10 +11,14 @@ export function DMScene({
   onOpenProfile,
   onStartCall,
   onOpenDialer,
+  startCallMenuOpen,
+  onStartCallMenuOpenChange,
 }: {
   onOpenProfile: (contactId: string, rect: DOMRect) => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
   onOpenDialer: () => void;
+  startCallMenuOpen?: boolean;
+  onStartCallMenuOpenChange?: (open: boolean) => void;
 }) {
   const contact = CONTACT_MAP['aiko'];
   const primaryIndex = contact.phones.findIndex((p) => p.kind === 'standard');
@@ -58,6 +62,8 @@ export function DMScene({
             actions={actions}
             onSelect={handleSelect}
             audioLabel={`Start audio call with ${contact.name}`}
+            open={startCallMenuOpen}
+            onOpenChange={onStartCallMenuOpenChange}
           />
         }
       />

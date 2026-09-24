@@ -40,14 +40,15 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Team sidebar',
       title: 'Dial pad on the team sidebar',
       lead: 'The dial pad control lives on the team rail so it is available from any channel view.',
-      lookFor: ['Phone glyph on the team sidebar', 'Active state when the dialer widget is open'],
+      lookFor: ['Phone glyph on the team sidebar', 'Composing softphone PIP'],
       bullets: [
         'Opening the dial pad starts a composing softphone session.',
         'Operators can type or tap digits, then place the call.',
       ],
       scene: 'team-sidebar',
+      sceneState: { dialpad: true },
       focus: {
-        id: 'team-dialpad',
+        id: 'call-pip',
         emphasis: ['ring', 'lightbox'],
         note: {
           title: 'Always within reach',
@@ -64,14 +65,15 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Direct message',
       title: 'Call from a DM',
       lead: 'From a direct message, start a call to the person you are already talking to.',
-      lookFor: ['DM with Aiko Tan', 'Call actions in the header or profile'],
+      lookFor: ['DM with Aiko Tan', 'Start call menu in the header'],
       bullets: [
         'DM context carries the contact, so the call targets the right person.',
         'The same softphone PIP handles dialing and connected states.',
       ],
       scene: 'dm',
+      sceneState: { startCallMenu: true },
       focus: {
-        id: 'dm-shell',
+        id: 'start-call-menu',
         emphasis: ['ring'],
       },
     },
@@ -81,12 +83,13 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Channel',
       title: 'Call from a channel',
       lead: 'Channel views expose call and conference actions without leaving the thread of work.',
-      lookFor: ['op-nightingale channel', 'Start call / conference actions'],
+      lookFor: ['op-nightingale channel', 'Profile popover with call actions'],
       bullets: [
         'Conference bridge entry is available for multi-party ops calls.',
         'Profile popovers on people also offer call actions.',
       ],
       scene: 'channel',
+      sceneState: { popover: { contactId: 'aiko' } },
       focus: {
         id: 'channel-shell',
         emphasis: ['ring'],
@@ -104,21 +107,18 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       section: 'in-call',
       title: 'Softphone PIP',
       lead: 'Once a call is active, the PIP is the control surface for mute, keypad, devices, and hang up.',
-      lookFor: ['Floating call widget', 'Mute and keypad controls'],
+      lookFor: ['Floating call widget', 'Connected call with Aiko Tan'],
       bullets: [
-        {
-          text: 'Open the dial pad from the team rail, place a call, then return here to inspect the PIP.',
-          sub: [
-            'In free mode you can drive the full interaction yourself.',
-            'This step parks on the channel scene so the PIP has room to sit over the shell.',
-          ],
-        },
+        'Mute, keypad, device picker, and hang up all live on the PIP.',
+        'The channel stays visible underneath so coordination can continue.',
       ],
-      callout: 'Start a call from the dial pad to see the PIP; it is interactive in the live prototype.',
       scene: 'channel',
+      sceneState: {
+        call: { contactId: 'aiko', status: 'connected' },
+      },
       focus: {
-        id: 'channel-shell',
-        emphasis: ['lightbox'],
+        id: 'call-pip',
+        emphasis: ['ring', 'lightbox'],
       },
     },
   ],

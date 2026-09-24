@@ -5,6 +5,7 @@ export type {
   WalkthroughFocusEmphasis,
   WalkthroughFocusNote,
   WalkthroughSceneHandler,
+  WalkthroughSceneState,
   WalkthroughSection,
   WalkthroughSectionBadge,
   WalkthroughStep,

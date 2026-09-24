@@ -7,6 +7,7 @@ import { TeamSidebar } from '@mattermost/compass-ui/components/team-sidebar';
 import { buildDefaultChannelsSidebarModel } from '@mattermost/compass-proto';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
+import type { WalkthroughSceneState } from '@/walkthrough';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
 import { CallPip } from '@/pages/prototypes/outbound-calls/CallPip/CallPip';
 import { OutboundCallSceneSwitcher } from '@/pages/prototypes/outbound-calls/OutboundCallSceneSwitcher';
@@ -15,6 +16,10 @@ import { PositionedProfilePopover } from '@/pages/prototypes/outbound-calls/Posi
 import { RhsDialer } from '@/pages/prototypes/outbound-calls/RhsDialer';
 import { sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import { outboundCallsWalkthrough } from '@/pages/prototypes/outbound-calls/outboundCallsWalkthrough';
+import {
+  parseOutboundWalkthroughApply,
+  resolvePopoverAnchorRect,
+} from '@/pages/prototypes/outbound-calls/outboundWalkthroughApply';
 import {
   avatarAikoTan,
   avatarArjunPatel,
@@ -47,23 +52,102 @@ export default function OutboundCalls() {
   const [scene, setScene] = useState<SceneId>('channel');
   const [call, setCall] = useState<ActiveCall | null>(null);
 
-  const onWalkthroughScene = useCallback((next: string) => {
-    if (isSceneId(next)) setScene(next);
-  }, []);
-
-  useRegisterWalkthrough(outboundCallsWalkthrough, { onScene: onWalkthroughScene });
-
   const [keypadOpen, setKeypadOpen] = useState(false);
   const [popover, setPopover] = useState<{ contactId: string; rect: DOMRect } | null>(null);
   const [recents, setRecents] = useState<Recent[]>(INITIAL_RECENTS);
   const [callExiting, setCallExiting] = useState(false);
   const [rhsOpen, setRhsOpen] = useState(false);
+  const [startCallMenuOpen, setStartCallMenuOpen] = useState(false);
 
   const [addingParticipant, setAddingParticipant] = useState(false);
   const [addMode, setAddMode] = useState<AddMode>('dialpad');
   const [participantListOpen, setParticipantListOpen] = useState(false);
 
   const [nowTick, setNowTick] = useState(Date.now());
+
+  const clearSoftphoneQuietly = useCallback(() => {
+    stopRingback();
+    setCall(null);
+    setKeypadOpen(false);
+    setCallExiting(false);
+    setAddingParticipant(false);
+    setParticipantListOpen(false);
+  }, []);
+
+  const applyWalkthroughState = useCallback(
+    (state?: WalkthroughSceneState) => {
+      const apply = parseOutboundWalkthroughApply(state);
+      setStartCallMenuOpen(Boolean(apply.startCallMenu));
+
+      if (apply.dialpad) {
+        stopRingback();
+        setCallExiting(false);
+        setAddingParticipant(false);
+        setParticipantListOpen(false);
+        setKeypadOpen(true);
+        setCall({
+          contactId: '',
+          phoneIndex: 0,
+          status: 'composing',
+          startedAt: null,
+          endedAt: null,
+          muted: false,
+          deviceId: AUDIO_DEVICES[0].id,
+          dtmf: '',
+          bridgedParticipants: [],
+          fromDialpad: true,
+        });
+      } else if (apply.call) {
+        stopRingback();
+        setCallExiting(false);
+        setAddingParticipant(false);
+        setParticipantListOpen(false);
+        const status = apply.call.status ?? 'connected';
+        const startedAt = status === 'connected' ? Date.now() - 75_000 : null;
+        setKeypadOpen(Boolean(apply.call.keypad));
+        setCall({
+          contactId: apply.call.contactId,
+          phoneIndex: apply.call.phoneIndex ?? 0,
+          status,
+          startedAt,
+          endedAt: null,
+          muted: Boolean(apply.call.muted),
+          deviceId: AUDIO_DEVICES[0].id,
+          dtmf: '',
+          bridgedParticipants: [],
+          fromDialpad: Boolean(apply.call.fromDialpad),
+        });
+        if (status === 'connected') setNowTick(Date.now());
+      } else {
+        clearSoftphoneQuietly();
+      }
+
+      if (apply.popover) {
+        const contactId = apply.popover.contactId;
+        // Wait for the scene to paint so popover anchors exist.
+        window.setTimeout(() => {
+          setPopover({
+            contactId,
+            rect: resolvePopoverAnchorRect(contactId),
+          });
+        }, 50);
+      } else {
+        setPopover(null);
+      }
+    },
+    [clearSoftphoneQuietly],
+  );
+
+  const onWalkthroughScene = useCallback(
+    (next: string, state?: WalkthroughSceneState) => {
+      if (!isSceneId(next)) return;
+      setScene(next);
+      applyWalkthroughState(state);
+    },
+    [applyWalkthroughState],
+  );
+
+  useRegisterWalkthrough(outboundCallsWalkthrough, { onScene: onWalkthroughScene });
 
   useEffect(() => {
     if (walkthroughActive) {
@@ -477,6 +561,8 @@ export default function OutboundCalls() {
                       onOpenDialer={openDialpadWidget}
                       onStartConferenceCall={startConferenceCall}
                       onStartCall={startCall}
+                      startCallMenuOpen={startCallMenuOpen}
+                      onStartCallMenuOpenChange={setStartCallMenuOpen}
                     />
                   </div>
                 )}
@@ -486,6 +572,8 @@ export default function OutboundCalls() {
                       onOpenProfile={openProfile}
                       onStartCall={startCall}
                       onOpenDialer={openDialpadWidget}
+                      startCallMenuOpen={startCallMenuOpen}
+                      onStartCallMenuOpenChange={setStartCallMenuOpen}
                     />
                   </div>
                 )}
@@ -505,6 +593,8 @@ export default function OutboundCalls() {
                     onOpenDialer={openDialpadWidget}
                     onStartConferenceCall={startConferenceCall}
                     onStartCall={startCall}
+                    startCallMenuOpen={startCallMenuOpen}
+                    onStartCallMenuOpenChange={setStartCallMenuOpen}
                   />
                 )}
                 {scene === 'team-sidebar' && (
@@ -513,6 +603,8 @@ export default function OutboundCalls() {
                     onOpenDialer={openDialpadWidget}
                     onStartConferenceCall={startConferenceCall}
                     onStartCall={startCall}
+                    startCallMenuOpen={startCallMenuOpen}
+                    onStartCallMenuOpenChange={setStartCallMenuOpen}
                   />
                 )}
               </div>

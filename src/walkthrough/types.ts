@@ -38,6 +38,9 @@ export type WalkthroughFocus = {
   note?: WalkthroughFocusNote;
 };
 
+/** Freeform JSON-like bag; each prototype documents its own keys. */
+export type WalkthroughSceneState = Record<string, unknown>;
+
 export type WalkthroughStep = {
   id: string;
   section: string;
@@ -50,8 +53,12 @@ export type WalkthroughStep = {
   callout?: string;
   /** Existing prototype scene id (e.g. SceneSwitcher id). */
   scene: string;
-  /** Extra state the prototype already understands. */
-  sceneState?: Record<string, string | number | boolean | null | undefined>;
+  /**
+   * Prototype-owned state applied when this step becomes active.
+   * Shape is per-prototype (menus open, call status, popovers, etc.).
+   * Handled in `useRegisterWalkthrough(..., { onScene })`.
+   */
+  sceneState?: WalkthroughSceneState;
   focus?: WalkthroughFocus;
 };
 
@@ -67,5 +74,5 @@ export type WalkthroughDocument = {
 
 export type WalkthroughSceneHandler = (
   scene: string,
-  sceneState?: WalkthroughStep['sceneState'],
+  sceneState?: WalkthroughSceneState,
 ) => void;

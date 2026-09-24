@@ -81,23 +81,34 @@ export function SegmentedCallButton({
   actions,
   onSelect,
   audioLabel,
+  open: openProp,
+  onOpenChange,
 }: {
   actions: StartCallAction[];
   onSelect: (action: StartCallAction) => void;
   audioLabel?: string;
+  /** Controlled menu open (e.g. walkthrough sceneState.startCallMenu). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const controlled = openProp !== undefined;
+  const open = controlled ? openProp : uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (!controlled) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
   const wrapRef = useRef<HTMLDivElement>(null);
   useOutsideClose(wrapRef, open, () => setOpen(false));
 
-  const toggle = () => setOpen((o) => !o);
+  const toggle = () => setOpen(!open);
   const pick = (action: StartCallAction) => {
     setOpen(false);
     onSelect(action);
   };
 
   return (
-    <div className={styles['seg-call']} ref={wrapRef}>
+    <div className={styles['seg-call']} ref={wrapRef} data-wt-focus="start-call-menu">
       <button
         type="button"
         className={styles['seg-call__primary']}

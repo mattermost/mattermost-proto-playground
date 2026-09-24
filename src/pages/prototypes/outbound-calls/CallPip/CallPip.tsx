@@ -197,6 +197,7 @@ export function CallPip({
       className={`${styles['pip']}${exiting ? ` ${styles['pip--exiting']}` : ''}`}
       role="dialog"
       aria-label={isComposing ? 'Start a new call' : 'Active call'}
+      data-wt-focus="call-pip"
     >
       <div className={styles['pip__widget']}>
         <div className={styles['pip__header']}>

@@ -29,7 +29,12 @@ function ProfileClickable({
   };
 
   return (
-    <div className={styles['profile-clickable']} onClick={handleClick} role="presentation">
+    <div
+      className={styles['profile-clickable']}
+      onClick={handleClick}
+      role="presentation"
+      data-wt-popover-anchor={contactId}
+    >
       {children}
     </div>
   );
@@ -40,11 +45,15 @@ export function ChannelScene({
   onOpenDialer,
   onStartConferenceCall,
   onStartCall,
+  startCallMenuOpen,
+  onStartCallMenuOpenChange,
 }: {
   onOpenProfile: (contactId: string, rect: DOMRect) => void;
   onOpenDialer: () => void;
   onStartConferenceCall: () => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
+  startCallMenuOpen?: boolean;
+  onStartCallMenuOpenChange?: (open: boolean) => void;
 }) {
   const actions: StartCallAction[] = [
     { id: 'audio', type: 'audio' },
@@ -64,7 +73,14 @@ export function ChannelScene({
         description="Tasking + coordination channel for the Nightingale working group."
         memberCount={8}
         pinnedCount={1}
-        callButton={<SegmentedCallButton actions={actions} onSelect={handleSelect} />}
+        callButton={
+          <SegmentedCallButton
+            actions={actions}
+            onSelect={handleSelect}
+            open={startCallMenuOpen}
+            onOpenChange={onStartCallMenuOpenChange}
+          />
+        }
       />
       <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="date" label="Today" />
