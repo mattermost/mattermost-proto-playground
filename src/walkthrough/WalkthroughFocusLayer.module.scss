@@ -33,12 +33,24 @@
     left: auto;
   }
 
+  // TourPoint body inherits a reset that strips list chrome — restore discs.
   &__note-list {
     margin: 0;
     padding-left: 1.25rem;
+    list-style-type: disc;
+    list-style-position: outside;
+    color: inherit;
+
+    li {
+      display: list-item;
+    }
 
     li + li {
       margin-top: var(--spacing-xxs);
+    }
+
+    ::marker {
+      color: color-mix(in srgb, var(--neutral-0) 92%, transparent);
     }
   }
 }

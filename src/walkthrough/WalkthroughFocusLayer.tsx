@@ -250,7 +250,7 @@ export default function WalkthroughFocusLayer({
           <TourPoint
             title={focus.note.title}
             pointerPosition={pointerPosition}
-            showPulsingDot={noteMode === 'anchored'}
+            showPulsingDot={false}
             onClose={() => setNoteMode('dismissed')}
           >
             <ul className={styles['wt-focus__note-list']}>
