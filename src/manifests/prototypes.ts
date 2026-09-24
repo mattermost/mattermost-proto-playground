@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
-import Automations from '@/pages/prototypes/automations/Automations';
+import Agents from '@/pages/prototypes/agents/Agents';
+import AgentsDocs from '@/pages/prototypes/agents-docs/AgentsDocs';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -15,10 +16,17 @@ export type PrototypeEntry = {
 
 export const PROTOTYPES: PrototypeEntry[] = [
   {
-    id: 'automations',
-    label: 'Automations',
-    path: '/prototypes/automations',
-    component: Automations,
+    id: 'agents',
+    label: 'Agents',
+    path: '/prototypes/agents',
+    component: Agents,
+    nested: true,
+  },
+  {
+    id: 'agents-docs',
+    label: 'Agents — Docs Site',
+    path: '/prototypes/agents-docs',
+    component: AgentsDocs,
     nested: true,
   },
   {

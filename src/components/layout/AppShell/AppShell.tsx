@@ -12,6 +12,7 @@ export default function AppShell() {
   const { pathname } = useLocation();
   const prototypeEntry = getPrototypeByPath(pathname);
   const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
+  const [prototypeStartSlot, setPrototypeStartSlot] = useState<ReactNode>(null);
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
 
   return (
@@ -20,6 +21,7 @@ export default function AppShell() {
         <PrototypeTopNav
           title={prototypeEntry.label}
           centerSlot={prototypeCenterSlot}
+          startSlot={prototypeStartSlot}
         />
       )}
       {!isEmbedded && !prototypeEntry && (
@@ -29,7 +31,10 @@ export default function AppShell() {
         <QuickSwitcher open={quickSwitcherOpen} onOpenChange={setQuickSwitcherOpen} />
       )}
       <div className={styles['app-shell__content']}>
-        <PrototypeChromeProvider setCenterSlot={setPrototypeCenterSlot}>
+        <PrototypeChromeProvider
+          setCenterSlot={setPrototypeCenterSlot}
+          setStartSlot={setPrototypeStartSlot}
+        >
           <Outlet />
         </PrototypeChromeProvider>
       </div>
