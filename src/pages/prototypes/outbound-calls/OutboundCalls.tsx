@@ -514,7 +514,7 @@ export default function OutboundCalls() {
         </div>
 
         <div className={styles['calls__body']}>
-          <div className={styles['calls__team-sidebar']} data-tour-focus="team-dialpad">
+          <div className={styles['calls__team-sidebar']} ref={teamSidebarRef}>
             <TeamSidebar
               activeTeamId="contributors"
               teams={[
