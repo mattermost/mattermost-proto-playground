@@ -2,11 +2,22 @@ import { useRef } from 'react';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useWalkthrough } from '@/walkthrough/useWalkthrough';
 import WalkthroughFocusLayer from '@/walkthrough/WalkthroughFocusLayer';
 import WalkthroughJumpList from '@/walkthrough/WalkthroughJumpList';
 import WalkthroughNarrative from '@/walkthrough/WalkthroughNarrative';
+import type { WalkthroughDocument, WalkthroughStep } from '@/walkthrough/types';
 import styles from './WalkthroughLayout.module.scss';
+
+/** Match `--duration-moderate` used by wt-narrative-out. */
+const NARRATIVE_EXIT_MS = 300;
+
+type ShellSnapshot = {
+  document: WalkthroughDocument;
+  step: WalkthroughStep;
+  stepIndex: number;
+};
 
 export default function WalkthroughLayout({
   children,
@@ -26,14 +37,25 @@ export default function WalkthroughLayout({
     exit,
   } = useWalkthrough();
   const stageRef = useRef<HTMLDivElement>(null);
+  const snapshotRef = useRef<ShellSnapshot | null>(null);
 
-  if (!active || !document || !step) {
+  const shellOpen = Boolean(active && document && step);
+  if (shellOpen && document && step) {
+    snapshotRef.current = { document, step, stepIndex };
+  }
+
+  const { rendered, exiting } = useExitAnimation(shellOpen, NARRATIVE_EXIT_MS);
+  const snapshot = snapshotRef.current;
+
+  if (!rendered || !snapshot) {
     return <>{children}</>;
   }
 
+  const { document: doc, step: currentStep, stepIndex: currentIndex } = snapshot;
+
   return (
     <div className={styles['wt']}>
-      {jumpOpen && (
+      {!exiting && jumpOpen && (
         <div className={styles['wt__jump-layer']}>
           <div className={styles['wt__jump-panel']}>
             <div className={styles['wt__jump-panel-head']}>
@@ -45,8 +67,8 @@ export default function WalkthroughLayout({
               />
             </div>
             <WalkthroughJumpList
-              document={document}
-              activeStepId={step.id}
+              document={doc}
+              activeStepId={currentStep.id}
               onSelect={(id) => {
                 goToStep(id);
                 setJumpOpen(false);
@@ -63,11 +85,18 @@ export default function WalkthroughLayout({
       )}
 
       <div className={styles['wt__main']}>
-        <div className={styles['wt__narrative-slot']}>
+        <div
+          className={[
+            styles['wt__narrative-slot'],
+            exiting ? styles['wt__narrative-slot--exiting'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <WalkthroughNarrative
-            document={document}
-            step={step}
-            stepIndex={stepIndex}
+            document={doc}
+            step={currentStep}
+            stepIndex={currentIndex}
             onBack={goBack}
             onNext={goNext}
             onExit={exit}
@@ -76,7 +105,12 @@ export default function WalkthroughLayout({
 
         <div className={styles['wt__stage']} ref={stageRef}>
           <div className={styles['wt__stage-scroll']}>{children}</div>
-          <WalkthroughFocusLayer focus={step.focus ?? null} stageRef={stageRef} />
+          {!exiting && (
+            <WalkthroughFocusLayer
+              focus={currentStep.focus ?? null}
+              stageRef={stageRef}
+            />
+          )}
         </div>
       </div>
     </div>
