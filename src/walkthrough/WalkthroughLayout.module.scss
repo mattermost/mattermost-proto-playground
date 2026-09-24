@@ -20,6 +20,7 @@
     flex: 0 0 auto;
     min-height: 0;
     height: 100%;
+    padding: var(--spacing-m);
     animation: wt-narrative-in var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
   }
 
@@ -29,7 +30,6 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-    background: var(--center-channel-bg);
   }
 
   &__stage-scroll {

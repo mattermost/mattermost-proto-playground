@@ -6,7 +6,9 @@
   min-width: 260px;
   min-height: 0;
   height: 100%;
-  border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.1);
+  border-radius: var(--radius-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: var(--elevation-4);
   background: var(--center-channel-bg);
   color: var(--center-channel-color);
 
