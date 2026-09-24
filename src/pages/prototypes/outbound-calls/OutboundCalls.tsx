@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { ChannelsSidebar } from '@mattermost/compass-ui/components/channels-sidebar';
@@ -64,6 +64,19 @@ export default function OutboundCalls() {
   const [participantListOpen, setParticipantListOpen] = useState(false);
 
   const [nowTick, setNowTick] = useState(Date.now());
+  const teamSidebarRef = useRef<HTMLDivElement>(null);
+
+  // Stamp walkthrough focus on the TeamSidebar dial-pad control (Compass has no data attrs).
+  useLayoutEffect(() => {
+    const root = teamSidebarRef.current;
+    if (!root) return;
+    const btn = root.querySelector<HTMLElement>(
+      '[class*="team-sidebar__dial-pad"]',
+    );
+    if (!btn) return;
+    btn.setAttribute('data-wt-focus', 'team-dialpad');
+    return () => btn.removeAttribute('data-wt-focus');
+  }, [scene, call, keypadOpen]);
 
   const clearSoftphoneQuietly = useCallback(() => {
     stopRingback();

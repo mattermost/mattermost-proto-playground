@@ -40,10 +40,34 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Team sidebar',
       title: 'Dial pad on the team sidebar',
       lead: 'The dial pad control lives on the team rail so it is available from any channel view.',
-      lookFor: ['Phone glyph on the team sidebar', 'Composing softphone PIP'],
+      lookFor: ['Phone glyph at the bottom of the team sidebar'],
       bullets: [
-        'Opening the dial pad starts a composing softphone session.',
+        'The control stays on the rail while you move between channels.',
+        'Opening it starts a composing softphone session.',
+      ],
+      scene: 'team-sidebar',
+      focus: {
+        id: 'team-dialpad',
+        emphasis: 'ring',
+        note: {
+          title: 'Always within reach',
+          points: [
+            'The dial pad sits on the team rail, not buried in a channel menu.',
+            'It stays available while you move between channels.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'team-dialpad-open',
+      section: 'entry-points',
+      railGroup: 'Team sidebar',
+      title: 'Compose from the dial pad',
+      lead: 'Opening the dial pad brings up the softphone PIP in a composing state.',
+      lookFor: ['Composing softphone PIP', 'Keypad ready for digits'],
+      bullets: [
         'Operators can type or tap digits, then place the call.',
+        'The channel stays visible underneath the PIP.',
       ],
       scene: 'team-sidebar',
       sceneState: { dialpad: true },
@@ -51,10 +75,10 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
         id: 'call-pip',
         emphasis: 'lightbox',
         note: {
-          title: 'Always within reach',
+          title: 'Ready to dial',
           points: [
-            'The dial pad sits on the team rail, not buried in a channel menu.',
-            'It stays available while you move between channels.',
+            'The PIP opens in a composing state from the team rail.',
+            'Enter a number here, then start the call without leaving the channel.',
           ],
         },
       },
