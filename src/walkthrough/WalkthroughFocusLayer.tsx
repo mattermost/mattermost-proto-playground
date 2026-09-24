@@ -3,7 +3,8 @@ import {
   TourPoint,
   type TourPointPointerPosition,
 } from '@mattermost/compass-ui/components/tour-point';
-import type { WalkthroughFocus } from '@/walkthrough/types';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
+import type { WalkthroughFocus, WalkthroughFocusNote } from '@/walkthrough/types';
 import styles from './WalkthroughFocusLayer.module.scss';
 
 type Placement = 'below' | 'above' | 'beside';
@@ -28,6 +29,8 @@ type WalkthroughFocusLayerProps = {
 };
 
 const TOUR_POINT_WIDTH = 320;
+/** Match TourPoint panel-in / `--duration-quick`. */
+const NOTE_EXIT_MS = 150;
 
 /** One callout style only — lightbox and ring never combine. */
 function resolveEmphasis(focus: WalkthroughFocus): 'ring' | 'lightbox' {
@@ -52,11 +55,12 @@ function pointerFor(
 function placeNote(
   target: StageRect,
   noteHeight: number,
+  noteWidth: number,
   stageW: number,
   stageH: number,
 ): NotePos | 'dock' {
   const gap = 16;
-  const width = Math.min(TOUR_POINT_WIDTH, stageW - 24);
+  const width = Math.min(noteWidth, stageW - 24);
   const belowTop = target.top + target.height + gap;
   if (belowTop + noteHeight < stageH - 12) {
     return {
@@ -84,6 +88,21 @@ function placeNote(
   return 'dock';
 }
 
+function dockedPos(
+  noteWidth: number,
+  noteHeight: number,
+  stageW: number,
+  stageH: number,
+): NotePos {
+  const margin = 16;
+  const width = Math.min(noteWidth, stageW - margin * 2);
+  return {
+    top: Math.max(margin, stageH - noteHeight - margin),
+    left: Math.max(margin, stageW - width - margin),
+    placement: 'beside',
+  };
+}
+
 function toStageLocal(target: DOMRect, stage: DOMRect): StageRect {
   return {
     top: target.top - stage.top,
@@ -92,6 +111,13 @@ function toStageLocal(target: DOMRect, stage: DOMRect): StageRect {
     height: target.height,
   };
 }
+
+type NoteSnapshot = {
+  id: string;
+  note: WalkthroughFocusNote;
+  pos: NotePos;
+  mode: 'anchored' | 'docked';
+};
 
 export default function WalkthroughFocusLayer({
   focus,
@@ -102,7 +128,10 @@ export default function WalkthroughFocusLayer({
   const [noteMode, setNoteMode] = useState<'anchored' | 'docked' | 'dismissed'>(
     'anchored',
   );
+  const [entered, setEntered] = useState(false);
   const noteRef = useRef<HTMLDivElement>(null);
+  const snapshotRef = useRef<NoteSnapshot | null>(null);
+  const placedForFocusRef = useRef<string | null>(null);
 
   const emphasis = useMemo(
     () => (focus ? resolveEmphasis(focus) : null),
@@ -113,6 +142,8 @@ export default function WalkthroughFocusLayer({
     setNoteMode('anchored');
     setNotePos(null);
     setTargetLocal(null);
+    setEntered(false);
+    placedForFocusRef.current = null;
   }, [focus?.id]);
 
   useEffect(() => {
@@ -130,7 +161,7 @@ export default function WalkthroughFocusLayer({
         .forEach((el) => el.removeAttribute('data-wt-highlight'));
     };
 
-    const measure = () => {
+    const measure = (opts?: { forcePlace?: boolean }) => {
       const stage = stageRef.current;
       const el = find();
       if (!stage || !el) {
@@ -143,24 +174,42 @@ export default function WalkthroughFocusLayer({
       const stageRect = stage.getBoundingClientRect();
       const local = toStageLocal(el.getBoundingClientRect(), stageRect);
       setTargetLocal(local);
-      if (focus.note && noteMode === 'anchored') {
-        const h = noteRef.current?.offsetHeight ?? 180;
-        const placed = placeNote(local, h, stageRect.width, stageRect.height);
-        if (placed === 'dock') setNoteMode('docked');
-        else setNotePos(placed);
+
+      if (!focus.note || noteMode === 'dismissed') return;
+
+      const noteW = noteRef.current?.offsetWidth || TOUR_POINT_WIDTH;
+      const noteH = noteRef.current?.offsetHeight || 180;
+      const alreadyPlaced = placedForFocusRef.current === focus.id;
+
+      if (noteMode === 'docked') {
+        setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+        return;
       }
+
+      // Avoid mid-entrance jumps from the second measure pass.
+      if (alreadyPlaced && !opts?.forcePlace) return;
+
+      const placed = placeNote(local, noteH, noteW, stageRect.width, stageRect.height);
+      if (placed === 'dock') {
+        setNoteMode('docked');
+        setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+      } else {
+        setNotePos(placed);
+      }
+      placedForFocusRef.current = focus.id;
     };
 
     const t1 = window.setTimeout(() => {
       const el = find();
       el?.scrollIntoView({ block: 'center', behavior: 'instant' });
-      measure();
+      measure({ forcePlace: true });
     }, 80);
-    const t2 = window.setTimeout(measure, 200);
+    // One refine after layout settles (TourPoint height known).
+    const t2 = window.setTimeout(() => measure({ forcePlace: true }), 220);
 
     const onScroll = () => {
       window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(measure);
+      frame = window.requestAnimationFrame(() => measure({ forcePlace: true }));
     };
 
     window.addEventListener('scroll', onScroll, true);
@@ -193,13 +242,42 @@ export default function WalkthroughFocusLayer({
     };
   }, [focus?.note, noteMode, stageRef]);
 
-  if (!focus) return null;
+  const noteOpen = Boolean(
+    focus?.note &&
+      noteMode !== 'dismissed' &&
+      notePos != null &&
+      (noteMode === 'docked' || noteMode === 'anchored'),
+  );
 
-  const showLightbox = emphasis === 'lightbox' && targetLocal;
-  const showNote =
-    focus.note &&
-    noteMode !== 'dismissed' &&
-    (noteMode === 'docked' || notePos != null);
+  if (noteOpen && focus?.note && notePos) {
+    snapshotRef.current = {
+      id: focus.id,
+      note: focus.note,
+      pos: notePos,
+      mode: noteMode === 'docked' ? 'docked' : 'anchored',
+    };
+  }
+
+  const { rendered: noteRendered, exiting: noteExiting } = useExitAnimation(
+    noteOpen,
+    NOTE_EXIT_MS,
+  );
+  const snapshot = snapshotRef.current;
+
+  useEffect(() => {
+    if (!noteRendered || noteExiting) {
+      setEntered(false);
+      return;
+    }
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setEntered(true));
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [noteRendered, noteExiting, snapshot?.id]);
+
+  if (!focus && !noteRendered) return null;
+
+  const showLightbox = focus && emphasis === 'lightbox' && targetLocal;
 
   const pad = 4;
   const cutout = targetLocal
@@ -211,13 +289,13 @@ export default function WalkthroughFocusLayer({
       }
     : null;
 
-  const pointerPosition = pointerFor(
-    noteMode === 'docked' ? 'docked' : 'anchored',
-    notePos?.placement ?? null,
-  );
+  const display = snapshot;
+  const pointerPosition = display
+    ? pointerFor(display.mode, display.pos.placement)
+    : 'none';
 
   return (
-    <div className={styles['wt-focus']} aria-hidden={!showNote}>
+    <div className={styles['wt-focus']} aria-hidden={!noteRendered || noteExiting}>
       {showLightbox && cutout && (
         <div className={styles['wt-focus__lightbox']}>
           <div
@@ -232,29 +310,26 @@ export default function WalkthroughFocusLayer({
         </div>
       )}
 
-      {showNote && focus.note && (
+      {noteRendered && display && (
         <div
           ref={noteRef}
           className={[
             styles['wt-focus__note'],
-            noteMode === 'docked' ? styles['wt-focus__note--docked'] : '',
+            entered && !noteExiting ? styles['wt-focus__note--entered'] : '',
+            noteExiting ? styles['wt-focus__note--exiting'] : '',
           ]
             .filter(Boolean)
             .join(' ')}
-          style={
-            noteMode === 'docked'
-              ? undefined
-              : { top: notePos?.top, left: notePos?.left }
-          }
+          style={{ top: display.pos.top, left: display.pos.left }}
         >
           <TourPoint
-            title={focus.note.title}
+            title={display.note.title}
             pointerPosition={pointerPosition}
             showPulsingDot={false}
             onClose={() => setNoteMode('dismissed')}
           >
             <ul className={styles['wt-focus__note-list']}>
-              {focus.note.points.map((point) => (
+              {display.note.points.map((point) => (
                 <li key={point}>{point}</li>
               ))}
             </ul>

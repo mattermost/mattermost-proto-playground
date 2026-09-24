@@ -24,13 +24,33 @@
     z-index: 2;
     max-width: calc(100% - 24px);
     pointer-events: auto;
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: top left;
+    transition:
+      top var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      left var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      opacity var(--duration-quick, 150ms) var(--ease-entrance, ease-out),
+      transform var(--duration-quick, 150ms) var(--ease-entrance, ease-out);
+
+    // Suppress TourPoint's own panel-in — host owns enter/exit timing.
+    :global([class*='tour-point__panel']) {
+      animation: none;
+    }
   }
 
-  &__note--docked {
-    top: auto;
-    bottom: var(--spacing-m);
-    right: var(--spacing-m);
-    left: auto;
+  &__note--entered {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &__note--exiting {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+    transition:
+      opacity var(--duration-quick, 150ms) var(--ease-exit, ease-in),
+      transform var(--duration-quick, 150ms) var(--ease-exit, ease-in);
   }
 
   // TourPoint body inherits a reset that strips list chrome — restore discs.
