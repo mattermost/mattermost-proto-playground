@@ -97,6 +97,7 @@ Other prototypes define their own keys and apply them in the same `onScene` call
 5. Pause for author to reorder, merge/split steps, deepen copy, pick ring vs lightbox
 6. Wire `useRegisterWalkthrough(doc, { onScene })` — apply `scene` **and** `sceneState` (reset overlays when keys are absent)
 7. Validate: every `scene` resolves; every `focus.id` has a matching `data-wt-focus`; `sceneState` keys are handled; `?walkthrough=1&step=<id>` works
+8. For lightbox, mark the product chrome root with `data-wt-shell` so the dim overlays the app shell (not the full stage padding)
 
 ### B. Guided refine
 
