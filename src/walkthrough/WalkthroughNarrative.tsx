@@ -1,9 +1,11 @@
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import type { WalkthroughDocument, WalkthroughStep } from '@/walkthrough/types';
+import { useWalkthrough } from '@/walkthrough/useWalkthrough';
 import styles from './WalkthroughNarrative.module.scss';
 
 type WalkthroughNarrativeProps = {
@@ -28,6 +30,7 @@ export default function WalkthroughNarrative({
   onNext,
   onExit,
 }: WalkthroughNarrativeProps) {
+  const { jumpOpen, setJumpOpen } = useWalkthrough();
   const isFirst = stepIndex <= 0;
   const isLast = stepIndex >= document.steps.length - 1;
   const lookFor = step.lookFor ?? [];
@@ -35,6 +38,21 @@ export default function WalkthroughNarrative({
 
   return (
     <aside className={styles['wt-narrative']} aria-label="Walkthrough step">
+      <div className={styles['wt-narrative__toolbar']}>
+        <span className={styles['wt-narrative__progress']}>
+          Step {stepIndex + 1} of {document.steps.length}
+        </span>
+        <Button
+          emphasis="tertiary"
+          size="small"
+          leadingIcon={<Icon glyph={<FormatListBulletedIcon />} />}
+          onClick={() => setJumpOpen(!jumpOpen)}
+          aria-pressed={jumpOpen}
+        >
+          Jump to
+        </Button>
+      </div>
+
       <div className={styles['wt-narrative__body']}>
         <Scrollbar className={styles['wt-narrative__scroll']}>
           <p className={styles['wt-narrative__tag']}>{sectionLabel(document, step)}</p>

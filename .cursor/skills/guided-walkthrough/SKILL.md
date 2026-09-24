@@ -86,8 +86,8 @@ export const exampleWalkthrough: WalkthroughDocument = {
 
 - Mode is **in-place** on the same route (`?walkthrough=1&step=`), not a sibling page or iframe
 - Register via `useRegisterWalkthrough` from `@/walkthrough`
-- Top nav shows Walkthrough / Jump to / Exit + Step N of M (slim chrome)
-- Narrative slides left of the prototype; jump list is an overlay (does not permanently steal width)
+- Top-right nav shows Walkthrough / Exit toggle only
+- Narrative sidebar owns Jump to + Step N of M, plus Back/Next/Exit; jump list is an overlay (does not permanently steal width)
 - Drive scenes with the `onScene` callback when the active step changes
 
 ## Validation checklist

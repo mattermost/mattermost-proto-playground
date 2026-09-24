@@ -10,6 +10,23 @@
   background: var(--center-channel-bg);
   color: var(--center-channel-color);
 
+  &__toolbar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__progress {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    white-space: nowrap;
+  }
+
   &__body {
     flex: 1 1 auto;
     min-height: 0;
