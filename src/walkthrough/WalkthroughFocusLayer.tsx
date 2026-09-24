@@ -31,7 +31,7 @@ const TOUR_POINT_WIDTH = 320;
 
 /** Ring and lightbox are mutually exclusive; lightbox wins if both are listed. */
 function resolveEmphasis(focus: WalkthroughFocus): 'ring' | 'lightbox' {
-  const list = focus.emphasis?.length ? focus.emphasis : (['ring'] as const);
+  const list = focus.emphasis?.length ? focus.emphasis : ['ring'];
   return list.includes('lightbox') ? 'lightbox' : 'ring';
 }
 
