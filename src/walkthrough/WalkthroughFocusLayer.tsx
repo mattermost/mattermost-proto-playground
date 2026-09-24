@@ -112,6 +112,20 @@ function toStageLocal(target: DOMRect, stage: DOMRect): StageRect {
   };
 }
 
+function unionClientRects(rects: DOMRectReadOnly[]): DOMRect {
+  let top = Infinity;
+  let left = Infinity;
+  let bottom = -Infinity;
+  let right = -Infinity;
+  for (const r of rects) {
+    top = Math.min(top, r.top);
+    left = Math.min(left, r.left);
+    bottom = Math.max(bottom, r.bottom);
+    right = Math.max(right, r.right);
+  }
+  return new DOMRect(left, top, right - left, bottom - top);
+}
+
 type NoteSnapshot = {
   id: string;
   note: WalkthroughFocusNote;
@@ -150,10 +164,12 @@ export default function WalkthroughFocusLayer({
     if (!focus) return;
 
     let frame = 0;
-    const find = () =>
-      (stageRef.current ?? document).querySelector(
-        `[data-wt-focus="${CSS.escape(focus.id)}"]`,
-      ) as HTMLElement | null;
+    const findAll = () =>
+      Array.from(
+        (stageRef.current ?? document).querySelectorAll(
+          `[data-wt-focus="${CSS.escape(focus.id)}"]`,
+        ),
+      ) as HTMLElement[];
 
     const clearHighlight = () => {
       (stageRef.current ?? document)
@@ -163,16 +179,18 @@ export default function WalkthroughFocusLayer({
 
     const measure = (opts?: { forcePlace?: boolean }) => {
       const stage = stageRef.current;
-      const el = find();
-      if (!stage || !el) {
+      const els = findAll();
+      if (!stage || !els.length) {
         setTargetLocal(null);
         return;
       }
+      clearHighlight();
       if (emphasis === 'ring') {
-        el.setAttribute('data-wt-highlight', 'true');
+        els.forEach((el) => el.setAttribute('data-wt-highlight', 'true'));
       }
       const stageRect = stage.getBoundingClientRect();
-      const local = toStageLocal(el.getBoundingClientRect(), stageRect);
+      const bounds = unionClientRects(els.map((el) => el.getBoundingClientRect()));
+      const local = toStageLocal(bounds, stageRect);
       setTargetLocal(local);
 
       if (!focus.note || noteMode === 'dismissed') return;
@@ -200,12 +218,12 @@ export default function WalkthroughFocusLayer({
     };
 
     const t1 = window.setTimeout(() => {
-      const el = find();
-      el?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      findAll()[0]?.scrollIntoView({ block: 'center', behavior: 'instant' });
       measure({ forcePlace: true });
     }, 80);
-    // One refine after layout settles (TourPoint height known).
+    // Refine after layout / delayed overlays (e.g. profile popover phones).
     const t2 = window.setTimeout(() => measure({ forcePlace: true }), 220);
+    const t3 = window.setTimeout(() => measure({ forcePlace: true }), 400);
 
     const onScroll = () => {
       window.cancelAnimationFrame(frame);
@@ -218,6 +236,7 @@ export default function WalkthroughFocusLayer({
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
+      window.clearTimeout(t3);
       window.cancelAnimationFrame(frame);
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onScroll);

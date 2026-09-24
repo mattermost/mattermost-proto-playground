@@ -91,13 +91,13 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       scene: 'channel',
       sceneState: { popover: { contactId: 'aiko' } },
       focus: {
-        id: 'channel-shell',
+        id: 'profile-phones',
         emphasis: 'ring',
         note: {
-          title: 'Stay in context',
+          title: 'Call from a profile',
           points: [
-            'Calling does not navigate away from the channel.',
-            'The PIP overlays the workspace so coordination can continue.',
+            'Phone numbers in the popover start an outbound call.',
+            'The channel stays underneath so you never leave context.',
           ],
         },
       },
