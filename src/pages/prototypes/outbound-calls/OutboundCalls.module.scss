@@ -134,6 +134,14 @@
     min-height: 0;
     background: var(--center-channel-bg);
   }
+
+  &__focus-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
 }
 
 // ---------------------------------------------------------------------------

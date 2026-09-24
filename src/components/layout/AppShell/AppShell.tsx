@@ -5,25 +5,38 @@ import PrototypeTopNav from '@/components/layout/PrototypeTopNav/PrototypeTopNav
 import QuickSwitcher from '@/components/layout/QuickSwitcher';
 import { PrototypeChromeProvider } from '@/contexts/PrototypeChromeContext';
 import { getPrototypeByPath } from '@/manifests/prototypes';
+import {
+  WalkthroughLayout,
+  WalkthroughModeControl,
+  WalkthroughProvider,
+  useWalkthrough,
+} from '@/walkthrough';
 import styles from './AppShell.module.scss';
 
-export default function AppShell() {
-  const isEmbedded = window.self !== window.top;
+function PrototypeChrome() {
   const { pathname } = useLocation();
   const prototypeEntry = getPrototypeByPath(pathname);
+  const { document, active } = useWalkthrough();
   const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
+  const isEmbedded = window.self !== window.top;
 
   useEffect(() => {
     setPrototypeCenterSlot(null);
   }, [pathname]);
 
+  const title =
+    active && document
+      ? `${document.title} · Walkthrough`
+      : (prototypeEntry?.label ?? '');
+
   return (
-    <div className={styles['app-shell']}>
+    <>
       {!isEmbedded && prototypeEntry && (
         <PrototypeTopNav
-          title={prototypeEntry.label}
-          centerSlot={prototypeCenterSlot}
+          title={title}
+          centerSlot={active ? null : prototypeCenterSlot}
+          endSlot={<WalkthroughModeControl />}
         />
       )}
       {!isEmbedded && !prototypeEntry && (
@@ -34,9 +47,21 @@ export default function AppShell() {
       )}
       <div className={styles['app-shell__content']}>
         <PrototypeChromeProvider setCenterSlot={setPrototypeCenterSlot}>
-          <Outlet />
+          <WalkthroughLayout>
+            <Outlet />
+          </WalkthroughLayout>
         </PrototypeChromeProvider>
       </div>
+    </>
+  );
+}
+
+export default function AppShell() {
+  return (
+    <div className={styles['app-shell']}>
+      <WalkthroughProvider>
+        <PrototypeChrome />
+      </WalkthroughProvider>
     </div>
   );
 }

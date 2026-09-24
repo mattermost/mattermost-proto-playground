@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { ChannelsSidebar } from '@mattermost/compass-ui/components/channels-sidebar';
@@ -6,6 +6,7 @@ import { GlobalHeader } from '@mattermost/compass-ui/components/global-header';
 import { TeamSidebar } from '@mattermost/compass-ui/components/team-sidebar';
 import { buildDefaultChannelsSidebarModel } from '@mattermost/compass-proto';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
+import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
 import { CallPip } from '@/pages/prototypes/outbound-calls/CallPip/CallPip';
 import { OutboundCallSceneSwitcher } from '@/pages/prototypes/outbound-calls/OutboundCallSceneSwitcher';
@@ -13,6 +14,7 @@ import { AUDIO_DEVICES } from '@/pages/prototypes/outbound-calls/OutboundCallAud
 import { PositionedProfilePopover } from '@/pages/prototypes/outbound-calls/PositionedProfilePopover';
 import { RhsDialer } from '@/pages/prototypes/outbound-calls/RhsDialer';
 import { sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
+import { outboundCallsWalkthrough } from '@/pages/prototypes/outbound-calls/outboundCallsWalkthrough';
 import {
   avatarAikoTan,
   avatarArjunPatel,
@@ -33,10 +35,24 @@ import { DMScene } from '@/pages/prototypes/outbound-calls/scenes/DMScene';
 import type { ActiveCall, AddMode, Recent, SceneId } from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 
+const SCENE_IDS: SceneId[] = ['channel', 'dm', 'dialer', 'rhs', 'team-sidebar'];
+
+function isSceneId(value: string): value is SceneId {
+  return (SCENE_IDS as string[]).includes(value);
+}
+
 export default function OutboundCalls() {
   const { setCenterSlot } = usePrototypeChrome();
+  const { active: walkthroughActive } = useWalkthrough();
   const [scene, setScene] = useState<SceneId>('channel');
   const [call, setCall] = useState<ActiveCall | null>(null);
+
+  const onWalkthroughScene = useCallback((next: string) => {
+    if (isSceneId(next)) setScene(next);
+  }, []);
+
+  useRegisterWalkthrough(outboundCallsWalkthrough, { onScene: onWalkthroughScene });
+
   const [keypadOpen, setKeypadOpen] = useState(false);
   const [popover, setPopover] = useState<{ contactId: string; rect: DOMRect } | null>(null);
   const [recents, setRecents] = useState<Recent[]>(INITIAL_RECENTS);
@@ -50,11 +66,15 @@ export default function OutboundCalls() {
   const [nowTick, setNowTick] = useState(Date.now());
 
   useEffect(() => {
+    if (walkthroughActive) {
+      setCenterSlot(null);
+      return () => setCenterSlot(null);
+    }
     setCenterSlot(
       <OutboundCallSceneSwitcher active={scene} onChange={setScene} />,
     );
     return () => setCenterSlot(null);
-  }, [scene, setCenterSlot]);
+  }, [scene, setCenterSlot, walkthroughActive]);
 
   useEffect(() => {
     setRhsOpen(scene === 'rhs');
@@ -397,7 +417,7 @@ export default function OutboundCalls() {
         </div>
 
         <div className={styles['calls__body']}>
-          <div className={styles['calls__team-sidebar']}>
+          <div className={styles['calls__team-sidebar']} data-tour-focus="team-dialpad">
             <TeamSidebar
               activeTeamId="contributors"
               teams={[
@@ -451,19 +471,23 @@ export default function OutboundCalls() {
             <div className={styles['calls__inner-panel']}>
               <div className={styles['calls__center']}>
                 {scene === 'channel' && (
-                  <ChannelScene
-                    onOpenProfile={openProfile}
-                    onOpenDialer={openDialpadWidget}
-                    onStartConferenceCall={startConferenceCall}
-                    onStartCall={startCall}
-                  />
+                  <div data-tour-focus="channel-shell" className={styles['calls__focus-wrap']}>
+                    <ChannelScene
+                      onOpenProfile={openProfile}
+                      onOpenDialer={openDialpadWidget}
+                      onStartConferenceCall={startConferenceCall}
+                      onStartCall={startCall}
+                    />
+                  </div>
                 )}
                 {scene === 'dm' && (
-                  <DMScene
-                    onOpenProfile={openProfile}
-                    onStartCall={startCall}
-                    onOpenDialer={openDialpadWidget}
-                  />
+                  <div data-tour-focus="dm-shell" className={styles['calls__focus-wrap']}>
+                    <DMScene
+                      onOpenProfile={openProfile}
+                      onStartCall={startCall}
+                      onOpenDialer={openDialpadWidget}
+                    />
+                  </div>
                 )}
                 {scene === 'dialer' && (
                   <DialerScene

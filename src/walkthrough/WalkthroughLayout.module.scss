@@ -1,0 +1,91 @@
+.wt {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+
+  &__main {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+  }
+
+  &__narrative-slot {
+    flex: 0 0 auto;
+    min-height: 0;
+    height: 100%;
+    animation: wt-narrative-in var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+  }
+
+  &__stage {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    background: var(--center-channel-bg);
+  }
+
+  &__jump-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    pointer-events: none;
+  }
+
+  &__jump-backdrop {
+    flex: 1 1 auto;
+    border: 0;
+    padding: 0;
+    background: rgba(var(--center-channel-color-rgb), 0.24);
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  &__jump-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    pointer-events: auto;
+    animation: wt-jump-in var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+  }
+
+  &__jump-panel-head {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--spacing-xs) var(--spacing-xs) 0;
+    background: var(--center-channel-bg);
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}
+
+@keyframes wt-narrative-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes wt-jump-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
