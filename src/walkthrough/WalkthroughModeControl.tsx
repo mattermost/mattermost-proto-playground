@@ -10,14 +10,14 @@ export default function WalkthroughModeControl() {
   if (!active) {
     return (
       <Button emphasis="tertiary" size="small" onClick={enter}>
-        Walkthrough
+        Start walkthrough
       </Button>
     );
   }
 
   return (
     <Button emphasis="secondary" size="small" onClick={exit} aria-pressed>
-      Exit
+      Exit walkthrough
     </Button>
   );
 }
