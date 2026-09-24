@@ -122,6 +122,7 @@ export function ChannelScene({
               <OutboundCallPhoneNumberLink
                 number={CONTACT_MAP['leonard'].phones[0].number}
                 onClick={() => onStartCall('leonard', 0)}
+                focusId="message-phone"
               />{' '}
               — I'm at my desk for the next hour.
             </p>

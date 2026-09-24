@@ -8,7 +8,7 @@
   height: 100%;
   border-radius: var(--radius-m);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  box-shadow: var(--elevation-4);
+  box-shadow: var(--elevation-3);
   background: var(--center-channel-bg);
   color: var(--center-channel-color);
 
@@ -22,11 +22,40 @@
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
+  &__jump {
+    position: relative;
+  }
+
+  // Combobox/Select menu motion: scale 0.9 ↔ 1, opacity, top-center origin.
+  &__jump-menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    z-index: 10;
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: top left;
+    pointer-events: none;
+    transition:
+      opacity var(--duration-quick, 150ms) var(--ease-exit, ease-in),
+      transform var(--duration-quick, 150ms) var(--ease-exit, ease-in);
+  }
+
+  &__jump-menu--entered {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    transition:
+      opacity var(--duration-quick, 150ms) var(--ease-entrance, ease-out),
+      transform var(--duration-quick, 150ms) var(--ease-entrance, ease-out);
+  }
+
   &__progress {
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-semibold);
     color: rgba(var(--center-channel-color-rgb), 0.72);
     white-space: nowrap;
+    padding: var(--spacing-xxs);
   }
 
   &__body {

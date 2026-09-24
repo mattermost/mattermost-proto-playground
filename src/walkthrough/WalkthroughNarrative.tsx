@@ -1,12 +1,19 @@
+import { useEffect, useRef, useState } from 'react';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import WalkthroughJumpList from '@/walkthrough/WalkthroughJumpList';
 import type { WalkthroughDocument, WalkthroughStep } from '@/walkthrough/types';
 import { useWalkthrough } from '@/walkthrough/useWalkthrough';
 import styles from './WalkthroughNarrative.module.scss';
+
+/** Match Combobox/Select menu — `--duration-quick`. */
+const JUMP_EXIT_MS = 150;
 
 type WalkthroughNarrativeProps = {
   document: WalkthroughDocument;
@@ -23,39 +30,92 @@ function sectionLabel(doc: WalkthroughDocument, step: WalkthroughStep): string {
 }
 
 export default function WalkthroughNarrative({
-  document,
+  document: walkthrough,
   step,
   stepIndex,
   onBack,
   onNext,
   onExit,
 }: WalkthroughNarrativeProps) {
-  const { jumpOpen, setJumpOpen } = useWalkthrough();
+  const { goToStep } = useWalkthrough();
+  const [jumpOpen, setJumpOpen] = useState(false);
+  const [jumpEntered, setJumpEntered] = useState(false);
+  const jumpRef = useRef<HTMLDivElement>(null);
+  const { rendered: jumpRendered, exiting: jumpExiting } = useExitAnimation(
+    jumpOpen,
+    JUMP_EXIT_MS,
+  );
+  useOutsideClose(jumpRef, jumpOpen, () => setJumpOpen(false));
+
+  useEffect(() => {
+    if (!jumpOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setJumpOpen(false);
+    };
+    window.document.addEventListener('keydown', onKey);
+    return () => window.document.removeEventListener('keydown', onKey);
+  }, [jumpOpen]);
+
+  useEffect(() => {
+    if (!jumpRendered || jumpExiting) {
+      setJumpEntered(false);
+      return;
+    }
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setJumpEntered(true));
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [jumpRendered, jumpExiting]);
+
   const isFirst = stepIndex <= 0;
-  const isLast = stepIndex >= document.steps.length - 1;
+  const isLast = stepIndex >= walkthrough.steps.length - 1;
   const lookFor = step.lookFor ?? [];
   const bullets = step.bullets ?? [];
 
   return (
     <aside className={styles['wt-narrative']} aria-label="Walkthrough step">
       <div className={styles['wt-narrative__toolbar']}>
-        <Button
-          emphasis="tertiary"
-          size="small"
-          leadingIcon={<Icon glyph={<FormatListBulletedIcon />} />}
-          onClick={() => setJumpOpen(!jumpOpen)}
-          aria-pressed={jumpOpen}
-        >
-          Jump to
-        </Button>
+        <div className={styles['wt-narrative__jump']} ref={jumpRef}>
+          <Button
+            emphasis="quaternary"
+            size="small"
+            leadingIcon={<Icon glyph={<FormatListBulletedIcon />} />}
+            onClick={() => setJumpOpen((open) => !open)}
+            aria-haspopup="menu"
+            aria-expanded={jumpOpen}
+          >
+            Jump to
+          </Button>
+          {jumpRendered && (
+            <div
+              className={[
+                styles['wt-narrative__jump-menu'],
+                jumpEntered && !jumpExiting
+                  ? styles['wt-narrative__jump-menu--entered']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <WalkthroughJumpList
+                document={walkthrough}
+                activeStepId={step.id}
+                onSelect={(id) => {
+                  goToStep(id);
+                  setJumpOpen(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
         <span className={styles['wt-narrative__progress']}>
-          Step {stepIndex + 1} of {document.steps.length}
+          Step {stepIndex + 1} of {walkthrough.steps.length}
         </span>
       </div>
 
       <div className={styles['wt-narrative__body']}>
         <Scrollbar className={styles['wt-narrative__scroll']}>
-          <p className={styles['wt-narrative__tag']}>{sectionLabel(document, step)}</p>
+          <p className={styles['wt-narrative__tag']}>{sectionLabel(walkthrough, step)}</p>
           <h2 className={styles['wt-narrative__title']}>{step.title}</h2>
           {step.lead != null && (
             <p className={styles['wt-narrative__lead']}>{step.lead}</p>

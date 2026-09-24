@@ -1,6 +1,11 @@
+import { Fragment } from 'react';
+import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
-import { Tag } from '@mattermost/compass-ui/components/tag';
-import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import {
+  PopoverMenu,
+  PopoverMenuDivider,
+  PopoverMenuScroll,
+} from '@mattermost/compass-ui/components/popover-menu';
 import type { WalkthroughDocument, WalkthroughStep } from '@/walkthrough/types';
 import styles from './WalkthroughJumpList.module.scss';
 
@@ -22,42 +27,37 @@ export default function WalkthroughJumpList({
   activeStepId,
   onSelect,
 }: WalkthroughJumpListProps) {
+  const groups = document.sections
+    .map((section) => ({
+      section,
+      steps: stepsForSection(document.steps, section.id),
+    }))
+    .filter((group) => group.steps.length > 0);
+
   return (
-    <nav className={styles['wt-jump']} aria-label="Jump to a step">
-      <p className={styles['wt-jump__label']}>Jump to</p>
-      <Scrollbar className={styles['wt-jump__scroll']}>
-        {document.sections.map((section) => {
-          const sectionSteps = stepsForSection(document.steps, section.id);
-          if (!sectionSteps.length) return null;
-          return (
-            <div key={section.id} className={styles['wt-jump__section']}>
-              <div className={styles['wt-jump__section-head']}>
-                <p className={styles['wt-jump__section-title']}>{section.label}</p>
-                {section.badge && (
-                  <Tag
-                    label={section.badge.label}
-                    type={section.badge.appearance ?? 'default'}
-                    size="x-small"
-                    casing="all-caps"
-                  />
-                )}
-              </div>
-              <ul className={styles['wt-jump__list']}>
-                {sectionSteps.map((step) => (
-                  <li key={step.id}>
-                    <MenuItem
-                      label={step.title}
-                      leadingElement={false}
-                      active={step.id === activeStepId}
-                      onClick={() => onSelect(step.id)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </Scrollbar>
-    </nav>
+    <PopoverMenu
+      className={styles['wt-jump']}
+      role="menu"
+      aria-label="Jump to a step"
+    >
+      <PopoverMenuScroll maxHeight={360}>
+        {groups.map((group, index) => (
+          <Fragment key={group.section.id}>
+            {index > 0 && <PopoverMenuDivider />}
+            <MenuGroupHeading label={group.section.label} />
+            {group.steps.map((step) => (
+              <MenuItem
+                key={step.id}
+                role="menuitem"
+                label={step.title}
+                leadingElement={false}
+                active={step.id === activeStepId}
+                onClick={() => onSelect(step.id)}
+              />
+            ))}
+          </Fragment>
+        ))}
+      </PopoverMenuScroll>
+    </PopoverMenu>
   );
 }

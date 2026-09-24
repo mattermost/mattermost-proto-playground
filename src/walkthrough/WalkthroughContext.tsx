@@ -18,8 +18,6 @@ export type WalkthroughContextValue = {
   active: boolean;
   stepIndex: number;
   step: WalkthroughStep | null;
-  jumpOpen: boolean;
-  setJumpOpen: (open: boolean) => void;
   enter: () => void;
   exit: () => void;
   goToStep: (stepIdOrIndex: string | number) => void;
@@ -46,7 +44,6 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [document, setDocument] = useState<WalkthroughDocument | null>(null);
   const [onScene, setOnScene] = useState<WalkthroughSceneHandler | null>(null);
-  const [jumpOpen, setJumpOpen] = useState(false);
 
   const active = Boolean(document) && readMode(searchParams);
   const stepParam = searchParams.get(QUERY_STEP);
@@ -87,12 +84,10 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
 
   const enter = useCallback(() => {
     if (!document?.steps.length) return;
-    setJumpOpen(false);
     setModeParams(true, document.steps[0].id);
   }, [document, setModeParams]);
 
   const exit = useCallback(() => {
-    setJumpOpen(false);
     setModeParams(false);
   }, [setModeParams]);
 
@@ -157,8 +152,6 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       active,
       stepIndex,
       step,
-      jumpOpen,
-      setJumpOpen,
       enter,
       exit,
       goToStep,
@@ -172,7 +165,6 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
       active,
       stepIndex,
       step,
-      jumpOpen,
       enter,
       exit,
       goToStep,

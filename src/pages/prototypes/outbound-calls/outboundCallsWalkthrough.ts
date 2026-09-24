@@ -13,7 +13,6 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
     {
       id: 'entry-points',
       label: 'Entry points',
-      badge: { label: 'Prototype', appearance: 'info' },
     },
     {
       id: 'in-call',
@@ -97,7 +96,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       scene: 'dm',
       sceneState: { startCallMenu: true },
       focus: {
-        id: 'start-call-menu',
+        id: 'call-nipr',
         emphasis: 'ring',
       },
     },
@@ -143,6 +142,30 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       focus: {
         id: 'call-pip',
         emphasis: 'lightbox',
+      },
+    },
+    {
+      id: 'message-phone',
+      section: 'entry-points',
+      railGroup: 'Channel',
+      title: 'Call a number from a message',
+      lead: 'Phone numbers posted in channel messages are clickable — tap to start an outbound call without copying the digits.',
+      lookFor: ['Leonard Riley’s message in op-nightingale', 'Clickable 555-0174 link'],
+      bullets: [
+        'Inline numbers stay in the thread so teammates can share lines as they coordinate.',
+        'One click opens the softphone to that number.',
+      ],
+      scene: 'channel',
+      focus: {
+        id: 'message-phone',
+        emphasis: 'ring',
+        note: {
+          title: 'Numbers in-message',
+          points: [
+            'Click a phone number in a message to dial it.',
+            'You stay in the channel while the call starts.',
+          ],
+        },
       },
     },
   ],

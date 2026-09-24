@@ -65,17 +65,16 @@ export function PositionedProfilePopover({
     setMeasured(true);
   }, [anchorRect]);
 
-  // Stamp walkthrough focus anchors on clickable phone numbers (Compass has no data attrs).
+  // Stamp walkthrough focus on the first phone number (Compass has no data attrs).
   useLayoutEffect(() => {
     const root = ref.current;
     if (!root || !measured) return;
-    const buttons = root.querySelectorAll<HTMLElement>(
+    const first = root.querySelector<HTMLElement>(
       'button[class*="profile-popover__meta-link"]',
     );
-    buttons.forEach((btn) => btn.setAttribute('data-wt-focus', 'profile-phones'));
-    return () => {
-      buttons.forEach((btn) => btn.removeAttribute('data-wt-focus'));
-    };
+    if (!first) return;
+    first.setAttribute('data-wt-focus', 'profile-phones');
+    return () => first.removeAttribute('data-wt-focus');
   }, [contact.id, contact.phones, measured]);
 
   const beginClose = useCallback(() => setClosing(true), []);

@@ -1,7 +1,8 @@
 .wt-focus {
   position: absolute;
   inset: 0;
-  z-index: 25;
+  // Above prototype overlays (menus ~30, popovers ~40, PIP ~50).
+  z-index: 60;
   pointer-events: none;
   overflow: hidden;
 
@@ -15,19 +16,30 @@
 
   &__cutout {
     position: absolute;
-    border-radius: var(--radius-s);
     box-shadow: 0 0 0 9999px rgba(0,0,0, 0.64);
     background: transparent;
   }
 
-  &__note {
+  // Drawn here (not on the target) so overflow:hidden ancestors cannot clip it.
+  // Sits above the lightbox dim so the cutout target stays outlined.
+  // border-radius is set inline from the target's computed radius.
+  &__ring {
     position: absolute;
     z-index: 2;
+    box-sizing: border-box;
+    border: 2px solid var(--color-yellow-500);
+    box-shadow: 0 0 0 4px rgba(var(--color-yellow-500-rgb), 0.24);
+    pointer-events: none;
+  }
+
+  &__note {
+    position: absolute;
+    // Above lightbox dim/cutout within this layer.
+    z-index: 3;
     max-width: calc(100% - 24px);
     pointer-events: auto;
     opacity: 0;
     transform: scale(0.9);
-    transform-origin: top left;
     transition:
       top var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
       left var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
@@ -74,11 +86,4 @@
       color: color-mix(in srgb, var(--neutral-0) 92%, transparent);
     }
   }
-}
-
-:global([data-wt-highlight='true']) {
-  outline: 2px solid var(--color-yellow-500) !important;
-  outline-offset: 3px;
-  border-radius: var(--radius-s);
-  box-shadow: 0 0 0 4px rgba(var(--color-yellow-500-rgb), 0.24);
 }

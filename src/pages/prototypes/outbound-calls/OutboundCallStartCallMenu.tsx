@@ -52,7 +52,12 @@ function StartCallMenu({
         const showDividerAfter = action.type === 'audio' && next && next.type !== 'audio';
         return (
           <Fragment key={action.id}>
-            <li className={styles['start-call-menu__item']}>
+            <li
+              className={styles['start-call-menu__item']}
+              {...(action.type === 'phone' && action.kind === 'standard'
+                ? { 'data-wt-focus': 'call-nipr' }
+                : {})}
+            >
               <MenuItem
                 role="menuitem"
                 label={label}
@@ -108,7 +113,7 @@ export function SegmentedCallButton({
   };
 
   return (
-    <div className={styles['seg-call']} ref={wrapRef} data-wt-focus="start-call-menu">
+    <div className={styles['seg-call']} ref={wrapRef}>
       <button
         type="button"
         className={styles['seg-call__primary']}

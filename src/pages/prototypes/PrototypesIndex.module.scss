@@ -1,7 +1,20 @@
 .prototypes-index {
-  max-width: 960px;
-  margin: 0 auto;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
   padding: var(--spacing-xl) var(--spacing-l) var(--spacing-xxxxxl);
+  background-color: var(--center-channel-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > * {
+    width: 100%;
+    max-width: 960px;
+  }
 }
 
 .prototypes-index__body {

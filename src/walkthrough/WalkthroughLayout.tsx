@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import CloseIcon from '@mattermost/compass-icons/components/close';
-import { Icon } from '@mattermost/compass-ui/components/icon';
-import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useWalkthrough } from '@/walkthrough/useWalkthrough';
 import WalkthroughFocusLayer from '@/walkthrough/WalkthroughFocusLayer';
-import WalkthroughJumpList from '@/walkthrough/WalkthroughJumpList';
 import WalkthroughNarrative from '@/walkthrough/WalkthroughNarrative';
 import type { WalkthroughDocument, WalkthroughStep } from '@/walkthrough/types';
 import styles from './WalkthroughLayout.module.scss';
@@ -29,9 +25,6 @@ export default function WalkthroughLayout({
     active,
     step,
     stepIndex,
-    jumpOpen,
-    setJumpOpen,
-    goToStep,
     goNext,
     goBack,
     exit,
@@ -60,43 +53,10 @@ export default function WalkthroughLayout({
     return () => window.cancelAnimationFrame(id);
   }, [rendered, exiting]);
 
-  if (!rendered || !snapshot) {
-    return <>{children}</>;
-  }
-
-  const { document: doc, step: currentStep, stepIndex: currentIndex } = snapshot;
+  const showNarrative = Boolean(rendered && snapshot);
 
   return (
     <div className={styles['wt']}>
-      {!exiting && jumpOpen && (
-        <div className={styles['wt__jump-layer']}>
-          <div className={styles['wt__jump-panel']}>
-            <div className={styles['wt__jump-panel-head']}>
-              <IconButton
-                size="small"
-                aria-label="Close jump list"
-                icon={<Icon glyph={<CloseIcon />} />}
-                onClick={() => setJumpOpen(false)}
-              />
-            </div>
-            <WalkthroughJumpList
-              document={doc}
-              activeStepId={currentStep.id}
-              onSelect={(id) => {
-                goToStep(id);
-                setJumpOpen(false);
-              }}
-            />
-          </div>
-          <button
-            type="button"
-            className={styles['wt__jump-backdrop']}
-            aria-label="Close jump list"
-            onClick={() => setJumpOpen(false)}
-          />
-        </div>
-      )}
-
       <div className={styles['wt__main']}>
         <div
           className={[
@@ -107,22 +67,24 @@ export default function WalkthroughLayout({
             .join(' ')}
         >
           <div className={styles['wt__narrative-clip']}>
-            <WalkthroughNarrative
-              document={doc}
-              step={currentStep}
-              stepIndex={currentIndex}
-              onBack={goBack}
-              onNext={goNext}
-              onExit={exit}
-            />
+            {showNarrative && snapshot && (
+              <WalkthroughNarrative
+                document={snapshot.document}
+                step={snapshot.step}
+                stepIndex={snapshot.stepIndex}
+                onBack={goBack}
+                onNext={goNext}
+                onExit={exit}
+              />
+            )}
           </div>
         </div>
 
         <div className={styles['wt__stage']} ref={stageRef}>
           <div className={styles['wt__stage-scroll']}>{children}</div>
-          {expanded && !exiting && (
+          {expanded && !exiting && snapshot && (
             <WalkthroughFocusLayer
-              focus={currentStep.focus ?? null}
+              focus={snapshot.step.focus ?? null}
               stageRef={stageRef}
             />
           )}

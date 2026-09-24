@@ -7,8 +7,6 @@ import { useExitAnimation } from '@/hooks/useExitAnimation';
 import type { WalkthroughFocus, WalkthroughFocusNote } from '@/walkthrough/types';
 import styles from './WalkthroughFocusLayer.module.scss';
 
-type Placement = 'below' | 'above' | 'beside';
-
 type StageRect = {
   top: number;
   left: number;
@@ -16,10 +14,15 @@ type StageRect = {
   height: number;
 };
 
+type RingRect = StageRect & {
+  /** CSS border-radius matched to the target, outset by the ring pad. */
+  borderRadius: string;
+};
+
 type NotePos = {
   top: number;
   left: number;
-  placement: Placement;
+  pointer: TourPointPointerPosition | 'none';
 };
 
 type WalkthroughFocusLayerProps = {
@@ -29,29 +32,111 @@ type WalkthroughFocusLayerProps = {
 };
 
 const TOUR_POINT_WIDTH = 320;
+/** Match TourPoint `--spacing-xl` tip inset for left/right pointer variants. */
+const POINTER_EDGE_INSET = 24;
 /** Match TourPoint panel-in / `--duration-quick`. */
 const NOTE_EXIT_MS = 150;
+const GAP = 16;
+const MARGIN = 12;
+/** Match former outline-offset so the overlay ring sits just outside the target. */
+const RING_PAD = 3;
+const DEFAULT_RING_RADIUS = 'var(--radius-s)';
 
-/** One callout style only — lightbox and ring never combine. */
-function resolveEmphasis(focus: WalkthroughFocus): 'ring' | 'lightbox' {
+/** Grow each px corner radius by `pad` so an outset ring stays concentric. */
+function outsetBorderRadius(radius: string, pad: number): string {
+  if (!radius || radius === '0px') {
+    return pad > 0 ? `${pad}px` : '0';
+  }
+  return radius
+    .split('/')
+    .map((axis) =>
+      axis
+        .trim()
+        .split(/\s+/)
+        .map((token) => {
+          const match = /^(-?[\d.]+)(px|rem|em|%)$/.exec(token);
+          if (!match) return token;
+          const value = parseFloat(match[1]);
+          const unit = match[2];
+          // Percent radii (e.g. pills) stay as-is — they already follow the box.
+          if (unit === '%') return token;
+          return `${Math.max(0, value + pad)}${unit}`;
+        })
+        .join(' '),
+    )
+    .join(' / ');
+}
+
+function readBorderRadius(el: HTMLElement): string {
+  const radius = getComputedStyle(el).borderRadius;
+  if (!radius || radius === '0px') return DEFAULT_RING_RADIUS;
+  return radius;
+}
+
+type EmphasisFlags = { ring: boolean; lightbox: boolean };
+
+/** Lightbox can combine with ring; omit → ring only. */
+function resolveEmphasis(focus: WalkthroughFocus): EmphasisFlags {
   const raw = focus.emphasis;
-  if (raw == null) return 'ring';
+  if (raw == null) return { ring: true, lightbox: false };
   const list = Array.isArray(raw) ? raw : [raw];
-  if (list.includes('lightbox')) return 'lightbox';
-  return 'ring';
+  const lightbox = list.includes('lightbox');
+  const ring = list.includes('ring') || lightbox;
+  return { ring, lightbox };
 }
 
-function pointerFor(
-  mode: 'anchored' | 'docked',
-  placement: Placement | null,
-): TourPointPointerPosition | 'none' {
-  if (mode === 'docked' || !placement) return 'none';
-  if (placement === 'below') return 'top-center';
-  if (placement === 'above') return 'bottom-center';
-  return 'left-center';
+function clamp(n: number, min: number, max: number): number {
+  return Math.min(Math.max(n, min), max);
 }
 
-/** Place TourPoint in stage-local coordinates. */
+/**
+ * Pick top/bottom-* pointer and card left so the tip aims at `targetCx`.
+ * Prefers center, then left/right edge variants when the card is clamped.
+ */
+function alignHorizontal(
+  targetCx: number,
+  noteW: number,
+  stageW: number,
+  edge: 'top' | 'bottom',
+): { left: number; pointer: TourPointPointerPosition } {
+  const minLeft = MARGIN;
+  const maxLeft = Math.max(minLeft, stageW - noteW - MARGIN);
+
+  const options: { left: number; pointer: TourPointPointerPosition; tip: number }[] = [
+    {
+      left: clamp(targetCx - noteW / 2, minLeft, maxLeft),
+      pointer: `${edge}-center`,
+      tip: 0,
+    },
+    {
+      left: clamp(targetCx - POINTER_EDGE_INSET, minLeft, maxLeft),
+      pointer: `${edge}-left`,
+      tip: 0,
+    },
+    {
+      left: clamp(targetCx - (noteW - POINTER_EDGE_INSET), minLeft, maxLeft),
+      pointer: `${edge}-right`,
+      tip: 0,
+    },
+  ];
+
+  for (const opt of options) {
+    const tipOffset =
+      opt.pointer.endsWith('-center')
+        ? noteW / 2
+        : opt.pointer.endsWith('-left')
+          ? POINTER_EDGE_INSET
+          : noteW - POINTER_EDGE_INSET;
+    opt.tip = opt.left + tipOffset;
+  }
+
+  options.sort((a, b) => Math.abs(a.tip - targetCx) - Math.abs(b.tip - targetCx));
+  return { left: options[0].left, pointer: options[0].pointer };
+}
+
+type Candidate = NotePos & { score: number };
+
+/** Place TourPoint in stage-local coordinates, aiming the pointer at the target. */
 function placeNote(
   target: StageRect,
   noteHeight: number,
@@ -59,33 +144,66 @@ function placeNote(
   stageW: number,
   stageH: number,
 ): NotePos | 'dock' {
-  const gap = 16;
-  const width = Math.min(noteWidth, stageW - 24);
-  const belowTop = target.top + target.height + gap;
-  if (belowTop + noteHeight < stageH - 12) {
-    return {
-      top: belowTop,
-      left: Math.min(Math.max(12, target.left), stageW - width - 12),
-      placement: 'below',
-    };
+  const width = Math.min(noteWidth, stageW - MARGIN * 2);
+  const height = noteHeight;
+  const targetCx = target.left + target.width / 2;
+  const targetCy = target.top + target.height / 2;
+  const candidates: Candidate[] = [];
+
+  const spaceBelow = stageH - (target.top + target.height) - MARGIN;
+  if (spaceBelow >= height + GAP) {
+    const { left, pointer } = alignHorizontal(targetCx, width, stageW, 'top');
+    candidates.push({
+      top: target.top + target.height + GAP,
+      left,
+      pointer,
+      score: spaceBelow,
+    });
   }
-  const aboveTop = target.top - gap - noteHeight;
-  if (aboveTop > 12) {
-    return {
-      top: aboveTop,
-      left: Math.min(Math.max(12, target.left), stageW - width - 12),
-      placement: 'above',
-    };
+
+  const spaceAbove = target.top - MARGIN;
+  if (spaceAbove >= height + GAP) {
+    const { left, pointer } = alignHorizontal(targetCx, width, stageW, 'bottom');
+    candidates.push({
+      top: target.top - GAP - height,
+      left,
+      pointer,
+      score: spaceAbove,
+    });
   }
-  const besideLeft = target.left + target.width + gap;
-  if (besideLeft + width < stageW - 12) {
-    return {
-      top: Math.min(Math.max(12, target.top), stageH - noteHeight - 12),
-      left: besideLeft,
-      placement: 'beside',
-    };
+
+  const spaceRight = stageW - (target.left + target.width) - MARGIN;
+  if (spaceRight >= width + GAP) {
+    candidates.push({
+      top: clamp(targetCy - height / 2, MARGIN, Math.max(MARGIN, stageH - height - MARGIN)),
+      left: target.left + target.width + GAP,
+      pointer: 'left-center',
+      score: spaceRight,
+    });
   }
-  return 'dock';
+
+  const spaceLeft = target.left - MARGIN;
+  if (spaceLeft >= width + GAP) {
+    candidates.push({
+      top: clamp(targetCy - height / 2, MARGIN, Math.max(MARGIN, stageH - height - MARGIN)),
+      left: target.left - GAP - width,
+      pointer: 'right-center',
+      score: spaceLeft,
+    });
+  }
+
+  if (!candidates.length) return 'dock';
+
+  // Prefer the roomiest side; below wins ties so the first look reads naturally.
+  candidates.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const rank = (p: TourPointPointerPosition | 'none') =>
+      p.startsWith('top') ? 0 : p.startsWith('bottom') ? 1 : p.startsWith('left') ? 2 : 3;
+    return rank(a.pointer) - rank(b.pointer);
+  });
+
+  const best = candidates[0];
+  return { top: best.top, left: best.left, pointer: best.pointer };
 }
 
 function dockedPos(
@@ -99,8 +217,31 @@ function dockedPos(
   return {
     top: Math.max(margin, stageH - noteHeight - margin),
     left: Math.max(margin, stageW - width - margin),
-    placement: 'beside',
+    pointer: 'none',
   };
+}
+
+function transformOriginFor(pointer: TourPointPointerPosition | 'none'): string {
+  switch (pointer) {
+    case 'top-center':
+      return 'top center';
+    case 'top-left':
+      return 'top left';
+    case 'top-right':
+      return 'top right';
+    case 'bottom-center':
+      return 'bottom center';
+    case 'bottom-left':
+      return 'bottom left';
+    case 'bottom-right':
+      return 'bottom right';
+    case 'left-center':
+      return 'center left';
+    case 'right-center':
+      return 'center right';
+    default:
+      return 'center center';
+  }
 }
 
 function toStageLocal(target: DOMRect, stage: DOMRect): StageRect {
@@ -138,12 +279,16 @@ export default function WalkthroughFocusLayer({
   stageRef,
 }: WalkthroughFocusLayerProps) {
   const [targetLocal, setTargetLocal] = useState<StageRect | null>(null);
+  /** Per-target rings drawn in this layer (avoids overflow clipping on the element). */
+  const [ringLocals, setRingLocals] = useState<RingRect[]>([]);
   /** Stage-local bounds of `[data-wt-shell]`, or full stage when absent. */
   const [shellLocal, setShellLocal] = useState<StageRect | null>(null);
   const [notePos, setNotePos] = useState<NotePos | null>(null);
   const [noteMode, setNoteMode] = useState<'anchored' | 'docked' | 'dismissed'>(
     'anchored',
   );
+  /** Ring/lightbox stay until the user interacts with a focus target. */
+  const [calloutActive, setCalloutActive] = useState(true);
   const [entered, setEntered] = useState(false);
   const noteRef = useRef<HTMLDivElement>(null);
   const snapshotRef = useRef<NoteSnapshot | null>(null);
@@ -158,7 +303,9 @@ export default function WalkthroughFocusLayer({
     setNoteMode('anchored');
     setNotePos(null);
     setTargetLocal(null);
+    setRingLocals([]);
     setShellLocal(null);
+    setCalloutActive(true);
     setEntered(false);
     placedForFocusRef.current = null;
   }, [focus?.id]);
@@ -174,16 +321,11 @@ export default function WalkthroughFocusLayer({
         ),
       ) as HTMLElement[];
 
-    const clearHighlight = () => {
-      (stageRef.current ?? document)
-        .querySelectorAll('[data-wt-highlight="true"]')
-        .forEach((el) => el.removeAttribute('data-wt-highlight'));
-    };
-
     const measure = (opts?: { forcePlace?: boolean }) => {
       const stage = stageRef.current;
       if (!stage) {
         setTargetLocal(null);
+        setRingLocals([]);
         setShellLocal(null);
         return;
       }
@@ -203,15 +345,20 @@ export default function WalkthroughFocusLayer({
       const els = findAll();
       if (!els.length) {
         setTargetLocal(null);
+        setRingLocals([]);
         return;
       }
-      clearHighlight();
-      if (emphasis === 'ring') {
-        els.forEach((el) => el.setAttribute('data-wt-highlight', 'true'));
-      }
-      const bounds = unionClientRects(els.map((el) => el.getBoundingClientRect()));
-      const local = toStageLocal(bounds, stageRect);
+      const clientRects = els.map((el) => el.getBoundingClientRect());
+      const local = toStageLocal(unionClientRects(clientRects), stageRect);
       setTargetLocal(local);
+      setRingLocals(
+        emphasis?.ring
+          ? els.map((el, i) => ({
+              ...toStageLocal(clientRects[i], stageRect),
+              borderRadius: readBorderRadius(el),
+            }))
+          : [],
+      );
 
       if (!focus.note || noteMode === 'dismissed') return;
 
@@ -260,26 +407,45 @@ export default function WalkthroughFocusLayer({
       window.cancelAnimationFrame(frame);
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onScroll);
-      clearHighlight();
     };
   }, [focus, emphasis, noteMode, stageRef]);
 
   useEffect(() => {
-    if (!focus?.note || noteMode !== 'anchored') return;
+    if (!focus) return;
+
+    const focusTargets = () =>
+      Array.from(
+        (stageRef.current ?? window.document).querySelectorAll(
+          `[data-wt-focus="${CSS.escape(focus.id)}"]`,
+        ),
+      ) as HTMLElement[];
+
     const onInteract = (event: Event) => {
       const target = event.target as Node | null;
-      if (target && noteRef.current?.contains(target)) return;
+      if (!target) return;
+      if (noteRef.current?.contains(target)) return;
+
+      const hitFocusTarget = focusTargets().some((el) => el.contains(target));
+      if (hitFocusTarget) {
+        setCalloutActive(false);
+        if (focus.note && noteMode === 'anchored') setNoteMode('docked');
+        return;
+      }
+
+      // Other stage interaction: dock the TourPoint, keep ring/lightbox.
+      if (!focus.note || noteMode !== 'anchored') return;
       const stage = stageRef.current;
-      if (stage && target && !stage.contains(target)) return;
+      if (stage && !stage.contains(target)) return;
       setNoteMode('docked');
     };
-    document.addEventListener('mousedown', onInteract, true);
-    document.addEventListener('focusin', onInteract, true);
+
+    window.document.addEventListener('mousedown', onInteract, true);
+    window.document.addEventListener('focusin', onInteract, true);
     return () => {
-      document.removeEventListener('mousedown', onInteract, true);
-      document.removeEventListener('focusin', onInteract, true);
+      window.document.removeEventListener('mousedown', onInteract, true);
+      window.document.removeEventListener('focusin', onInteract, true);
     };
-  }, [focus?.note, noteMode, stageRef]);
+  }, [focus, noteMode, stageRef]);
 
   const noteOpen = Boolean(
     focus?.note &&
@@ -316,8 +482,12 @@ export default function WalkthroughFocusLayer({
 
   if (!focus && !noteRendered) return null;
 
-  const showLightbox =
-    focus && emphasis === 'lightbox' && targetLocal && shellLocal;
+  const showLightbox = Boolean(
+    focus && calloutActive && emphasis?.lightbox && targetLocal && shellLocal,
+  );
+  const showRings = Boolean(
+    focus && calloutActive && emphasis?.ring && ringLocals.length,
+  );
 
   const pad = 4;
   // Cutout is positioned inside the shell-scoped lightbox.
@@ -328,13 +498,15 @@ export default function WalkthroughFocusLayer({
           left: targetLocal.left - shellLocal.left - pad,
           width: targetLocal.width + pad * 2,
           height: targetLocal.height + pad * 2,
+          borderRadius: outsetBorderRadius(
+            ringLocals[0]?.borderRadius ?? DEFAULT_RING_RADIUS,
+            pad,
+          ),
         }
       : null;
 
   const display = snapshot;
-  const pointerPosition = display
-    ? pointerFor(display.mode, display.pos.placement)
-    : 'none';
+  const pointerPosition = display?.pos.pointer ?? 'none';
 
   return (
     <div className={styles['wt-focus']} aria-hidden={!noteRendered || noteExiting}>
@@ -355,10 +527,26 @@ export default function WalkthroughFocusLayer({
               left: cutout.left,
               width: cutout.width,
               height: cutout.height,
+              borderRadius: cutout.borderRadius,
             }}
           />
         </div>
       )}
+
+      {showRings &&
+        ringLocals.map((rect, i) => (
+          <div
+            key={`${rect.top}-${rect.left}-${i}`}
+            className={styles['wt-focus__ring']}
+            style={{
+              top: rect.top - RING_PAD,
+              left: rect.left - RING_PAD,
+              width: rect.width + RING_PAD * 2,
+              height: rect.height + RING_PAD * 2,
+              borderRadius: outsetBorderRadius(rect.borderRadius, RING_PAD),
+            }}
+          />
+        ))}
 
       {noteRendered && display && (
         <div
@@ -370,7 +558,11 @@ export default function WalkthroughFocusLayer({
           ]
             .filter(Boolean)
             .join(' ')}
-          style={{ top: display.pos.top, left: display.pos.left }}
+          style={{
+            top: display.pos.top,
+            left: display.pos.left,
+            transformOrigin: transformOriginFor(display.pos.pointer),
+          }}
         >
           <TourPoint
             title={display.note.title}
