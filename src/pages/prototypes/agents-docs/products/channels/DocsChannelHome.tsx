@@ -61,7 +61,6 @@ import {
   MATTY_CODER_STAGING_DM_MESSAGES,
   MATTY_CODER_SSO_STAGING_DM_MESSAGES,
   MATTY_CODER_WRITER_GROUP_DM_MESSAGES,
-  MONITOR,
   REVIEWER,
   THREAD_COLLAPSIBLE_POST_DELEGATION,
   WRITER,
@@ -1069,6 +1068,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                 <div className={styles['docs-channel__thread-header']}>
                   <div className={styles['docs-channel__thread-header-title-group']}>
                     <span className={styles['docs-channel__thread-header-title']}>Thread</span>
+                    <span className={styles['docs-channel__thread-header-subtitle']}>docs-site</span>
                     {activeThreadResolved && (
                       <Tag label="Resolved" size="x-small" leadingIcon={RESOLVED_LEADING_ICON} />
                     )}
@@ -1258,7 +1258,6 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                 {/* Collapsible thread: PR review + staging delegation, gated on Coder2 delegation settling.
                     postDelegationPhase sequences reveals so messages appear one at a time. */}
                 {delegationSettled && activePostId === DOCS_MSG_COLLAPSIBLE_ROOT && (() => {
-                  const stagingDef = DM_DELEGATION_MAP[DOCS_MSG_MATTY_CODER_STAGING_SYSTEM];
                   return (
                     <>
                       {THREAD_COLLAPSIBLE_POST_DELEGATION.slice(0, postDelegationPhase).map((reply, i) => {
@@ -1358,7 +1357,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                       <StreamingAgentPost
                         body="Jordan — the revised SSO setup page is ready for your approval. Reviewer checked it for tone, spelling, grammar, and accuracy."
                         parts={[
-                          { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'user' as const },
+                          { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'person' as const },
                           { type: 'text', text: ' — the revised SSO setup page is ready for your approval. Reviewer checked it for tone, spelling, grammar, and accuracy.' },
                         ]}
                         onAgentProfile={openAgentProfile}
@@ -1397,7 +1396,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                         body="Staging is live. Jordan — here's a preview of the SSO setup page with the CollapsibleStep component in place."
                         parts={[
                           { type: 'text', text: 'Staging is live. ' },
-                          { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'user' as const },
+                          { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'person' as const },
                           { type: 'text', text: ' — here\'s a preview of the SSO setup page with the CollapsibleStep component in place.' },
                         ]}
                         onAgentProfile={openAgentProfile}
@@ -1590,7 +1589,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                         body="Staging is live. Jordan — here's the updated SSO setup page for your final review."
                         parts={[
                           { type: 'text', text: 'Staging is live. ' },
-                          { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'user' as const },
+                          { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'person' as const },
                           { type: 'text', text: ' — here\'s the updated SSO setup page for your final review.' },
                         ]}
                         onAgentProfile={openAgentProfile}

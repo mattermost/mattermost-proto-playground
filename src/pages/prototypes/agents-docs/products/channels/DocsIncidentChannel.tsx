@@ -20,6 +20,7 @@ import {
   RightSidebar,
 } from '@mattermost/compass-proto';
 import AgentAvatar from '../../../agents/components/AgentAvatar';
+import AgentTypingDots from '../../../agents/components/AgentTypingDots';
 import { agentAvatarChipSrc } from '../../../agents/components/agentAvatarShapes';
 import MentionMessageInput from '../../../agents/components/MentionMessageInput';
 import mentionStyles from '../../../agents/components/MentionMessageInput.module.scss';
@@ -293,11 +294,12 @@ export default function DocsIncidentChannel() {
   const [coderSettled, setCoderSettled] = useState(false);
   const [followupSettled, setFollowupSettled] = useState(false);
   const [artifactOpen, setArtifactOpen] = useState(false);
+  const [delegationStarted, setDelegationStarted] = useState(false);
   const [rhsExpanded, setRhsExpanded] = useState(false);
   const [playbookExpanded, setPlaybookExpanded] = useState(false);
   const { rendered: threadRendered, exiting: threadExiting } = useExitAnimation(!!activePostId, 220);
   const { rendered: artifactRendered, exiting: artifactExiting } = useExitAnimation(artifactOpen, 220);
-  const closeThread = () => { setActivePostId(null); setRhsExpanded(false); setArtifactOpen(false); };
+  const closeThread = () => { setActivePostId(null); setRhsExpanded(false); setArtifactOpen(false); setDelegationStarted(false); };
 
   return (
     <div className={styles['docs-incident-channel']}>
@@ -404,7 +406,7 @@ export default function DocsIncidentChannel() {
             </Scrollbar>
           </div>
           <div className={styles['docs-incident-channel__composer']}>
-            <MentionMessageInput placeholder="Message INC-4472" />
+            <MentionMessageInput placeholder="Message INC-4472" onSend={() => false} />
           </div>
         </div>
         <div className={styles['docs-incident-channel__rhs']}>
@@ -623,6 +625,11 @@ export default function DocsIncidentChannel() {
                       </p>
                     </div>
                   </div>
+                  {!delegationStarted && (
+                    <div className={styles['docs-incident-channel__thread-typing']}>
+                      <AgentTypingDots label="Coder is investigating…" />
+                    </div>
+                  )}
                   <DocsInlineDelegation
                     label="Coder investigated root cause"
                     fromAgent={MONITOR_DELEGATION_AGENT}
@@ -630,6 +637,7 @@ export default function DocsIncidentChannel() {
                     messages={CODER_DM_MESSAGES}
                     tasks={CODER_INVESTIGATION_TASKS}
                     thinkingSteps={CODER_THINKING_STEPS}
+                    onStart={() => setDelegationStarted(true)}
                     onSettled={() => setCoderSettled(true)}
                     onArtifactOpen={() => setArtifactOpen(true)}
                   />

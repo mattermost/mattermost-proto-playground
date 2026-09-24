@@ -545,9 +545,9 @@ export const THREAD_COLLAPSIBLE_REPLIES: DocThreadReply[] = [
       { type: 'text', text: 'Good idea. ' },
       { type: 'mention', id: 'matty', label: 'Matty', avatarSrc: '', kind: 'agent' as const, agentShape: MATTY.shape as AgentShape, agentColor: MATTY.color as AgentColor },
       { type: 'text', text: ' can you handle this? Tag ' },
-      { type: 'mention', id: 'alex', label: 'Alex Rivera', avatarSrc: ALEX.avatarSrc, kind: 'user' as const },
+      { type: 'mention', id: 'alex', label: 'Alex Rivera', avatarSrc: ALEX.avatarSrc, kind: 'person' as const },
       { type: 'text', text: ' for code review and ' },
-      { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'user' as const },
+      { type: 'mention', id: 'jordan', label: 'Jordan Lee', avatarSrc: JORDAN.avatarSrc, kind: 'person' as const },
       { type: 'text', text: ' for a final review once it\'s on staging.' },
     ],
   },
@@ -600,7 +600,7 @@ export const THREAD_COLLAPSIBLE_POST_DELEGATION: DocThreadReply[] = [
     body: 'CollapsibleStep component is built and wired into the SAML section — PR is open. @Alex Rivera, can you take a look when you get a chance?',
     parts: [
       { type: 'text', text: 'CollapsibleStep component is built and wired into the SAML section — PR is open. ' },
-      { type: 'mention', id: 'alex', label: 'Alex Rivera', avatarSrc: ALEX.avatarSrc, kind: 'user' as const },
+      { type: 'mention', id: 'alex', label: 'Alex Rivera', avatarSrc: ALEX.avatarSrc, kind: 'person' as const },
       { type: 'text', text: ', can you take a look when you get a chance?' },
     ],
     artifact: {

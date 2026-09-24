@@ -74,7 +74,6 @@ export default function AgentsDocsShell() {
     setMattyPanelOpen,
   } = useAgents();
 
-  const activeScene = resolveDocsScene(pathname, search, newAgentOpen);
   const activeProduct = resolveProduct(pathname);
   // Derive channel-view visibility from the URL only — opening the new-agent modal
   // should not hide the channel content that sits behind it.
