@@ -39,6 +39,7 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
 | Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
 | Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
+| Walkthrough / product tour card | `TourPoint` | `@mattermost/compass-ui/components/tour-point` |
 | Chat message | `Message` | `@mattermost/compass-proto` |
 | Composer | `MessageInput` | `@mattermost/compass-proto` |
 | Channel header | `ChannelHeader` | `@mattermost/compass-proto` |

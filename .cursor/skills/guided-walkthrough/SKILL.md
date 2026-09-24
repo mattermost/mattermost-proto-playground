@@ -10,7 +10,7 @@ description: >-
 
 ## Purpose
 
-Turn an existing playground prototype into a **walkthrough viewing mode**: hideable jump list, sliding step narrative, fixed Back/Next + Exit, and optional ring/lightbox focus notes. Replaces much of a prose UX-spec screen tour for stakeholder handoff.
+Turn an existing playground prototype into a **walkthrough viewing mode**: hideable jump list, sliding step narrative, fixed Back/Next + Exit, and optional ring/lightbox focus with Compass `TourPoint` design notes. Replaces much of a prose UX-spec screen tour for stakeholder handoff.
 
 ## When to use
 
