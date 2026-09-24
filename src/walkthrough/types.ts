@@ -20,6 +20,7 @@ export type WalkthroughBullet =
       sub?: string[];
     };
 
+/** Visual callout style — pick one per focus target. */
 export type WalkthroughFocusEmphasis = 'ring' | 'lightbox';
 
 export type WalkthroughFocusNote = {
@@ -31,10 +32,10 @@ export type WalkthroughFocus = {
   /** Matches `data-tour-focus` on a prototype element. */
   id: string;
   /**
-   * Visual callout. When omitted, defaults to `['ring']`.
-   * Ring and lightbox are mutually exclusive — if both are listed, lightbox wins.
+   * Visual callout. Omit → `'ring'`.
+   * Prefer a single value. Arrays are accepted for compat; lightbox wins if both appear.
    */
-  emphasis?: WalkthroughFocusEmphasis[];
+  emphasis?: WalkthroughFocusEmphasis | WalkthroughFocusEmphasis[];
   note?: WalkthroughFocusNote;
 };
 
