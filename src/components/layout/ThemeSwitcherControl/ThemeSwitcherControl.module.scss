@@ -6,13 +6,12 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  // Match Compass Button size="small" (same as Walkthrough control).
-  padding: var(--spacing-xs) var(--spacing-l);
+  padding: var(--spacing-xs) var(--spacing-s);
   border-radius: var(--radius-s);
-  font-size: var(--font-size-75);
-  line-height: var(--line-height-75);
-  font-family: var(--font-family-body);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-200);
+  line-height: 24px;
+  font-family: inherit;
+  font-weight: var(--font-weight-regular);
   color: rgba(var(--center-channel-color-rgb), 0.75);
   background: none;
   border: none;
