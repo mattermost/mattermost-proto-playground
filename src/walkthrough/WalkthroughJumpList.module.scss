@@ -44,17 +44,9 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  &__group {
-    margin-top: var(--spacing-xs);
-  }
-
   &__list {
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-
-  &__item--nested {
-    padding-left: var(--spacing-m);
   }
 }

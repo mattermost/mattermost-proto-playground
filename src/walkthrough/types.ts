@@ -44,7 +44,7 @@ export type WalkthroughSceneState = Record<string, unknown>;
 export type WalkthroughStep = {
   id: string;
   section: string;
-  /** Optional group under a section — rendered as MenuGroupHeading. */
+  /** Optional narrative eyebrow (overrides section label in the step panel). Not used in Jump to. */
   railGroup?: string;
   title: string;
   lead?: string;
