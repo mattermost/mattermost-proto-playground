@@ -17,8 +17,6 @@
     border-radius: var(--radius-s);
     box-shadow: 0 0 0 9999px rgba(var(--center-channel-color-rgb), 0.5);
     background: transparent;
-    outline: 2px solid var(--button-bg);
-    outline-offset: 0;
   }
 
   &__note {

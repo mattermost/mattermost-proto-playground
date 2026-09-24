@@ -61,7 +61,7 @@ export const exampleWalkthrough: WalkthroughDocument = {
       },
       focus: {
         id: 'anchor-id',
-        emphasis: ['lightbox'], // 'ring' | 'lightbox' — mutually exclusive; omit → ring
+        emphasis: 'lightbox', // 'ring' | 'lightbox' — one only; omit → ring
         note: { title: '…', points: ['…'] }, // → Compass TourPoint
       },
     },

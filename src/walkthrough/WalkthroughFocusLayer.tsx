@@ -29,10 +29,13 @@ type WalkthroughFocusLayerProps = {
 
 const TOUR_POINT_WIDTH = 320;
 
-/** Ring and lightbox are mutually exclusive; lightbox wins if both are listed. */
+/** One callout style only — lightbox and ring never combine. */
 function resolveEmphasis(focus: WalkthroughFocus): 'ring' | 'lightbox' {
-  const list = focus.emphasis?.length ? focus.emphasis : ['ring'];
-  return list.includes('lightbox') ? 'lightbox' : 'ring';
+  const raw = focus.emphasis;
+  if (raw == null) return 'ring';
+  const list = Array.isArray(raw) ? raw : [raw];
+  if (list.includes('lightbox')) return 'lightbox';
+  return 'ring';
 }
 
 function pointerFor(

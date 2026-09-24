@@ -49,7 +49,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       sceneState: { dialpad: true },
       focus: {
         id: 'call-pip',
-        emphasis: ['lightbox'],
+        emphasis: 'lightbox',
         note: {
           title: 'Always within reach',
           points: [
@@ -74,7 +74,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       sceneState: { startCallMenu: true },
       focus: {
         id: 'start-call-menu',
-        emphasis: ['ring'],
+        emphasis: 'ring',
       },
     },
     {
@@ -92,7 +92,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       sceneState: { popover: { contactId: 'aiko' } },
       focus: {
         id: 'channel-shell',
-        emphasis: ['ring'],
+        emphasis: 'ring',
         note: {
           title: 'Stay in context',
           points: [
@@ -118,7 +118,7 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       },
       focus: {
         id: 'call-pip',
-        emphasis: ['lightbox'],
+        emphasis: 'lightbox',
       },
     },
   ],
