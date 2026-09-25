@@ -72,15 +72,6 @@ export default function WalkthroughLayout({
     if (!shellOpen) setJumpOpen(false);
   }, [shellOpen, jumpDocked]);
 
-  useEffect(() => {
-    if (!jumpDocked || !jumpOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setJumpOpen(false);
-    };
-    window.document.addEventListener('keydown', onKey);
-    return () => window.document.removeEventListener('keydown', onKey);
-  }, [jumpDocked, jumpOpen]);
-
   // Jump panel enter: double-rAF so the exit styles paint before --entered.
   useEffect(() => {
     if (!jumpPanelRendered || jumpPanelExiting) {
