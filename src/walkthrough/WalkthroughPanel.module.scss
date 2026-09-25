@@ -5,7 +5,7 @@
   height: 100%;
   border-radius: var(--radius-m);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  // Do not set overflow:hidden here — it clips box-shadow.
+  /* Do not set overflow:hidden here — it clips box-shadow. */
   box-shadow: var(--elevation-3);
   background: var(--center-channel-bg);
   color: var(--center-channel-color);
