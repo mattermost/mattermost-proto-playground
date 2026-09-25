@@ -12,6 +12,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
 
   @include minimal-scrollbar;
 }

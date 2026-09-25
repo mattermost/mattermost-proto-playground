@@ -11,10 +11,16 @@ export function DMScene({
   onOpenProfile,
   onStartCall,
   onOpenDialer,
+  startCallMenuOpen,
+  onStartCallMenuOpenChange,
+  telAutocompleteOpen,
 }: {
   onOpenProfile: (contactId: string, rect: DOMRect) => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
   onOpenDialer: () => void;
+  startCallMenuOpen?: boolean;
+  onStartCallMenuOpenChange?: (open: boolean) => void;
+  telAutocompleteOpen?: boolean;
 }) {
   const contact = CONTACT_MAP['aiko'];
   const primaryIndex = contact.phones.findIndex((p) => p.kind === 'standard');
@@ -52,12 +58,14 @@ export function DMScene({
         description={contact.title}
         avatarSrc={contact.avatar}
         avatarStatus={contact.online}
-        onNameClick={(e: MouseEvent<HTMLElement>) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
+        onNameClick={(e: MouseEvent) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
         callButton={
           <SegmentedCallButton
             actions={actions}
             onSelect={handleSelect}
             audioLabel={`Start audio call with ${contact.name}`}
+            open={startCallMenuOpen}
+            onOpenChange={onStartCallMenuOpenChange}
           />
         }
       />
@@ -104,7 +112,10 @@ export function DMScene({
         </Message>
       </div>
       <div className={layoutStyles['channel-shell__message-input']}>
-        <TelAutocompleteMessageInput placeholder={`Message ${contact.name}`} />
+        <TelAutocompleteMessageInput
+          placeholder={`Message ${contact.name}`}
+          forceOpen={telAutocompleteOpen}
+        />
       </div>
     </>
   );
