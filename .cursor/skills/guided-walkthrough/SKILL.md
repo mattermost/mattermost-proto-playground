@@ -154,7 +154,7 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
   - Trigger: `Button` `emphasis="quaternary"` `size="small"`
   - Host owns open/close, `useOutsideClose`, Escape, and **enter/exit motion** (`useExitAnimation` @ 150ms + Combobox-style scale 0.9↔1 / opacity)
   - Give the menu a content-friendly `min-width` (~300px): PopoverMenu’s `width: max-content` collapses to 212px under `MenuItem`/`Scrollbar` `width: 100%`
-- Wide viewport (`min-width: 1920px`): Jump to docks as a **panel** to the left of the narrative card (same chrome: border, elevation, radius); the narrative **Jump to** button still toggles it open/closed (defaults open on enter); step selection does not dismiss the panel
+- Wide viewport (`min-width: 1920px`): Jump to docks as a **panel** to the left of the narrative card; both use shared `WalkthroughPanel` chrome (border, elevation, radius, bg); the narrative **Jump to** button still toggles it open/closed (defaults open on enter); step selection does not dismiss the panel
 - Narrower viewports: popover under the button; step selection closes the menu
 - Sections: `MenuGroupHeading` + `MenuItem` rows; dividers between groups
 - No section status badges

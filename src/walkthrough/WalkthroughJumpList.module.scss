@@ -26,24 +26,16 @@
 }
 
 .wt-jump-panel {
+  composes: wt-panel from './WalkthroughPanel.module.scss';
   display: flex;
   flex-direction: column;
   width: 240px;
   flex: 0 0 auto;
-  min-height: 0;
-  height: 100%;
-  padding: var(--spacing-xs) var(--spacing-xxxs);
-  box-sizing: border-box;
-  border-radius: var(--radius-m);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  box-shadow: var(--elevation-3);
-  background: var(--center-channel-bg);
-  color: var(--center-channel-color);
-  overflow: hidden;
 
   &__body {
     flex: 1 1 auto;
     min-height: 0;
+    padding: var(--spacing-xs) var(--spacing-xxxs);
   }
 
   &__list {

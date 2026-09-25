@@ -29,6 +29,8 @@
 
   &__narrative-slot--expanded {
     // Narrative card (340) + clip padding (spacing-m × 2).
+    // Visible overflow so panel elevation isn’t clipped by the slot.
+    overflow: visible;
     width: calc(340px + 2 * var(--spacing-m));
   }
 
@@ -81,6 +83,8 @@
   }
 
   &__jump-slot--entered {
+    // Let elevation paint past the slot; width clip only while collapsing.
+    overflow: visible;
     width: 240px;
     margin-right: var(--spacing-m);
     opacity: 1;
