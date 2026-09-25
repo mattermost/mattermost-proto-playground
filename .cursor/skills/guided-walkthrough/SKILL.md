@@ -112,7 +112,7 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
 
 - Mode is **in-place** on the same route (`?walkthrough=1&step=`), not a sibling page or iframe
 - Register via `useRegisterWalkthrough` from `@/walkthrough`
-- Top-right nav: **Start walkthrough** / **Exit walkthrough** only (SceneSwitcher hidden while active)
+- Top-right nav: **Start walkthrough** (`map-legend` leading icon) / **Exit walkthrough** (`exit-to-app` leading icon), both `emphasis="tertiary"` `size="small"` (SceneSwitcher hidden while active)
 - Narrative card (left): Jump to + Step N of M in the toolbar; body copy; Back / Next / Exit in the footer
 - Drive scenes + UI state with `onScene(scene, sceneState)` when the active step changes
 

@@ -1,4 +1,7 @@
+import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
 import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import MapLegendIcon from '@/walkthrough/MapLegendIcon';
 import { useWalkthrough } from '@/walkthrough/useWalkthrough';
 
 /** Top-right playground chrome: enter / exit walkthrough mode. */
@@ -9,14 +12,25 @@ export default function WalkthroughModeControl() {
 
   if (!active) {
     return (
-      <Button emphasis="tertiary" size="small" onClick={enter}>
+      <Button
+        emphasis="tertiary"
+        size="small"
+        leadingIcon={<Icon size="16" glyph={<MapLegendIcon />} />}
+        onClick={enter}
+      >
         Start walkthrough
       </Button>
     );
   }
 
   return (
-    <Button emphasis="secondary" size="small" onClick={exit} aria-pressed>
+    <Button
+      emphasis="tertiary"
+      size="small"
+      leadingIcon={<Icon size="16" glyph={<ExitToAppIcon />} />}
+      onClick={exit}
+      aria-pressed
+    >
       Exit walkthrough
     </Button>
   );
