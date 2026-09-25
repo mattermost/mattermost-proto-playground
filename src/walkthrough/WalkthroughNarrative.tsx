@@ -22,6 +22,10 @@ type WalkthroughNarrativeProps = {
   onBack: () => void;
   onNext: () => void;
   onExit: () => void;
+  /** Wide viewport: Jump to toggles a docked panel instead of a popover. */
+  jumpDocked?: boolean;
+  jumpOpen: boolean;
+  onJumpOpenChange: (open: boolean) => void;
 };
 
 function sectionLabel(doc: WalkthroughDocument, step: WalkthroughStep): string {
@@ -36,25 +40,28 @@ export default function WalkthroughNarrative({
   onBack,
   onNext,
   onExit,
+  jumpDocked = false,
+  jumpOpen,
+  onJumpOpenChange,
 }: WalkthroughNarrativeProps) {
   const { goToStep } = useWalkthrough();
-  const [jumpOpen, setJumpOpen] = useState(false);
   const [jumpEntered, setJumpEntered] = useState(false);
   const jumpRef = useRef<HTMLDivElement>(null);
+  const popoverOpen = jumpOpen && !jumpDocked;
   const { rendered: jumpRendered, exiting: jumpExiting } = useExitAnimation(
-    jumpOpen,
+    popoverOpen,
     JUMP_EXIT_MS,
   );
-  useOutsideClose(jumpRef, jumpOpen, () => setJumpOpen(false));
+  useOutsideClose(jumpRef, popoverOpen, () => onJumpOpenChange(false));
 
   useEffect(() => {
-    if (!jumpOpen) return;
+    if (!popoverOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setJumpOpen(false);
+      if (e.key === 'Escape') onJumpOpenChange(false);
     };
     window.document.addEventListener('keydown', onKey);
     return () => window.document.removeEventListener('keydown', onKey);
-  }, [jumpOpen]);
+  }, [popoverOpen, onJumpOpenChange]);
 
   useEffect(() => {
     if (!jumpRendered || jumpExiting) {
@@ -80,8 +87,8 @@ export default function WalkthroughNarrative({
             emphasis="quaternary"
             size="small"
             leadingIcon={<Icon glyph={<FormatListBulletedIcon />} />}
-            onClick={() => setJumpOpen((open) => !open)}
-            aria-haspopup="menu"
+            onClick={() => onJumpOpenChange(!jumpOpen)}
+            aria-haspopup={jumpDocked ? undefined : 'menu'}
             aria-expanded={jumpOpen}
           >
             Jump to
@@ -102,7 +109,7 @@ export default function WalkthroughNarrative({
                 activeStepId={step.id}
                 onSelect={(id) => {
                   goToStep(id);
-                  setJumpOpen(false);
+                  onJumpOpenChange(false);
                 }}
               />
             </div>

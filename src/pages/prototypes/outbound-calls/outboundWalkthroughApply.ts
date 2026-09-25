@@ -21,6 +21,10 @@ export type OutboundWalkthroughApply = {
   popover?: { contactId: string } | null;
   /** Open the channel/DM header Start call menu. */
   startCallMenu?: boolean;
+  /** Composing PIP tab (requires dialpad / composing call). */
+  composeTab?: 'dialpad' | 'recent' | 'conference';
+  /** Seed DM composer with `tel:` and open autocomplete. */
+  telAutocomplete?: boolean;
 };
 
 export function parseOutboundWalkthroughApply(
@@ -29,6 +33,16 @@ export function parseOutboundWalkthroughApply(
   if (!state) return {};
   const dialpad = state.dialpad === true;
   const startCallMenu = state.startCallMenu === true;
+  const telAutocomplete = state.telAutocomplete === true;
+
+  let composeTab: OutboundWalkthroughApply['composeTab'];
+  if (
+    state.composeTab === 'dialpad' ||
+    state.composeTab === 'recent' ||
+    state.composeTab === 'conference'
+  ) {
+    composeTab = state.composeTab;
+  }
 
   let popover: OutboundWalkthroughApply['popover'];
   if (state.popover === null) popover = null;
@@ -62,7 +76,14 @@ export function parseOutboundWalkthroughApply(
     }
   }
 
-  return { dialpad, call, popover, startCallMenu };
+  return {
+    dialpad,
+    call,
+    popover,
+    startCallMenu,
+    composeTab,
+    telAutocomplete,
+  };
 }
 
 export function resolvePopoverAnchorRect(contactId: string): DOMRect {

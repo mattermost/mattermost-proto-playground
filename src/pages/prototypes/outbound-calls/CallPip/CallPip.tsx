@@ -62,6 +62,7 @@ export function CallPip({
   recents,
   onStartCall,
   onStartConferenceCall,
+  composeTab: composeTabProp,
 }: {
   call: ActiveCall;
   contact: Contact | null;
@@ -92,12 +93,20 @@ export function CallPip({
   recents: Recent[];
   onStartCall: (contactId: string, phoneIndex: number) => void;
   onStartConferenceCall: () => void;
+  /** Walkthrough: force composing tab (dialpad / recent / conference). */
+  composeTab?: 'dialpad' | 'recent' | 'conference';
 }) {
   const [devicePickerOpen, setDevicePickerOpen] = useState(false);
   const deviceRef = useRef<HTMLDivElement>(null);
 
   const [addDtmf, setAddDtmf] = useState('');
-  const [composeTab, setComposeTab] = useState<'dialpad' | 'recent' | 'conference'>('dialpad');
+  const [composeTabLocal, setComposeTabLocal] = useState<'dialpad' | 'recent' | 'conference'>(
+    'dialpad',
+  );
+  const composeTab = composeTabProp ?? composeTabLocal;
+  const setComposeTab = (tab: 'dialpad' | 'recent' | 'conference') => {
+    if (composeTabProp === undefined) setComposeTabLocal(tab);
+  };
 
   useEffect(() => {
     if (!addingParticipant) {
@@ -106,8 +115,8 @@ export function CallPip({
   }, [addingParticipant]);
 
   useEffect(() => {
-    if (call.status !== 'composing') setComposeTab('dialpad');
-  }, [call.status]);
+    setComposeTabLocal(composeTabProp ?? 'dialpad');
+  }, [composeTabProp, call.status]);
 
   useEffect(() => {
     if (!devicePickerOpen) return;
@@ -566,6 +575,7 @@ export function CallPip({
           className={`${styles['pip__dtmf']}${
             dtmfAnim.exiting ? ` ${styles['pip__dtmf--exiting']}` : ''
           }`}
+          {...(!isComposing ? { 'data-wt-focus': 'pip-dtmf' } : {})}
         >
           {isComposing ? (
             <div className={styles['pip__tabs-header']}>
@@ -593,6 +603,7 @@ export function CallPip({
                     composeTab === 'recent' ? ` ${styles['pip__tab--active']}` : ''
                   }`}
                   onClick={() => setComposeTab('recent')}
+                  data-wt-focus="dialpad-recent"
                 >
                   <span>Recent</span>
                 </button>

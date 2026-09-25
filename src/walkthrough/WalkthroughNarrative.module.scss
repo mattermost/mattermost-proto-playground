@@ -1,5 +1,6 @@
 .wt-narrative {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   width: 340px;
   max-width: min(340px, 42vw);

@@ -23,6 +23,9 @@ export type WalkthroughBullet =
 /** Visual callout style. Lightbox also draws a ring around the target. */
 export type WalkthroughFocusEmphasis = 'ring' | 'lightbox';
 
+/** Preferred TourPoint side relative to the focus target. Omit → auto. */
+export type WalkthroughNotePlacement = 'above' | 'below' | 'left' | 'right';
+
 export type WalkthroughFocusNote = {
   title: string;
   points: string[];
@@ -37,6 +40,8 @@ export type WalkthroughFocus = {
    */
   emphasis?: WalkthroughFocusEmphasis | WalkthroughFocusEmphasis[];
   note?: WalkthroughFocusNote;
+  /** Prefer TourPoint on this side of the target (falls back if it does not fit). */
+  notePlacement?: WalkthroughNotePlacement;
 };
 
 /** Freeform JSON-like bag; each prototype documents its own keys. */

@@ -533,6 +533,12 @@
       background-color: rgba(var(--center-channel-color-rgb), 0.08);
     }
   }
+
+  // Open above the Call ▾ trigger so the menu clears the profile footer.
+  .start-call-menu {
+    top: auto;
+    bottom: calc(100% + var(--spacing-xxs));
+  }
 }
 
 // ---------------------------------------------------------------------------

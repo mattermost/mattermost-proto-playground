@@ -4,7 +4,11 @@ import {
   type TourPointPointerPosition,
 } from '@mattermost/compass-ui/components/tour-point';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
-import type { WalkthroughFocus, WalkthroughFocusNote } from '@/walkthrough/types';
+import type {
+  WalkthroughFocus,
+  WalkthroughFocusNote,
+  WalkthroughNotePlacement,
+} from '@/walkthrough/types';
 import styles from './WalkthroughFocusLayer.module.scss';
 
 type StageRect = {
@@ -134,7 +138,7 @@ function alignHorizontal(
   return { left: options[0].left, pointer: options[0].pointer };
 }
 
-type Candidate = NotePos & { score: number };
+type Candidate = NotePos & { score: number; side: WalkthroughNotePlacement };
 
 /** Place TourPoint in stage-local coordinates, aiming the pointer at the target. */
 function placeNote(
@@ -143,6 +147,7 @@ function placeNote(
   noteWidth: number,
   stageW: number,
   stageH: number,
+  preferred?: WalkthroughNotePlacement,
 ): NotePos | 'dock' {
   const width = Math.min(noteWidth, stageW - MARGIN * 2);
   const height = noteHeight;
@@ -158,6 +163,7 @@ function placeNote(
       left,
       pointer,
       score: spaceBelow,
+      side: 'below',
     });
   }
 
@@ -169,6 +175,7 @@ function placeNote(
       left,
       pointer,
       score: spaceAbove,
+      side: 'above',
     });
   }
 
@@ -179,6 +186,7 @@ function placeNote(
       left: target.left + target.width + GAP,
       pointer: 'left-center',
       score: spaceRight,
+      side: 'right',
     });
   }
 
@@ -189,10 +197,18 @@ function placeNote(
       left: target.left - GAP - width,
       pointer: 'right-center',
       score: spaceLeft,
+      side: 'left',
     });
   }
 
   if (!candidates.length) return 'dock';
+
+  if (preferred) {
+    const preferredHit = candidates.find((c) => c.side === preferred);
+    if (preferredHit) {
+      return { top: preferredHit.top, left: preferredHit.left, pointer: preferredHit.pointer };
+    }
+  }
 
   // Prefer the roomiest side; below wins ties so the first look reads naturally.
   candidates.sort((a, b) => {
@@ -346,6 +362,12 @@ export default function WalkthroughFocusLayer({
       if (!els.length) {
         setTargetLocal(null);
         setRingLocals([]);
+        // Menu/overlay focus targets often unmount on click — still dock the note.
+        if (focus.note && noteMode === 'docked') {
+          const noteW = noteRef.current?.offsetWidth || TOUR_POINT_WIDTH;
+          const noteH = noteRef.current?.offsetHeight || 180;
+          setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+        }
         return;
       }
       const clientRects = els.map((el) => el.getBoundingClientRect());
@@ -374,7 +396,14 @@ export default function WalkthroughFocusLayer({
       // Avoid mid-entrance jumps from the second measure pass.
       if (alreadyPlaced && !opts?.forcePlace) return;
 
-      const placed = placeNote(local, noteH, noteW, stageRect.width, stageRect.height);
+      const placed = placeNote(
+        local,
+        noteH,
+        noteW,
+        stageRect.width,
+        stageRect.height,
+        focus.notePlacement,
+      );
       if (placed === 'dock') {
         setNoteMode('docked');
         setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
@@ -425,18 +454,28 @@ export default function WalkthroughFocusLayer({
       if (!target) return;
       if (noteRef.current?.contains(target)) return;
 
+      const dockNote = () => {
+        if (!focus.note || noteMode !== 'anchored') return;
+        setNoteMode('docked');
+        const stage = stageRef.current;
+        if (!stage) return;
+        const stageRect = stage.getBoundingClientRect();
+        const noteW = noteRef.current?.offsetWidth || TOUR_POINT_WIDTH;
+        const noteH = noteRef.current?.offsetHeight || 180;
+        setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+      };
+
       const hitFocusTarget = focusTargets().some((el) => el.contains(target));
       if (hitFocusTarget) {
         setCalloutActive(false);
-        if (focus.note && noteMode === 'anchored') setNoteMode('docked');
+        dockNote();
         return;
       }
 
       // Other stage interaction: dock the TourPoint, keep ring/lightbox.
-      if (!focus.note || noteMode !== 'anchored') return;
       const stage = stageRef.current;
       if (stage && !stage.contains(target)) return;
-      setNoteMode('docked');
+      dockNote();
     };
 
     window.document.addEventListener('mousedown', onInteract, true);

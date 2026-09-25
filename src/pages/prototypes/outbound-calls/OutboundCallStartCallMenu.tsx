@@ -50,13 +50,17 @@ function StartCallMenu({
         }
         const next = actions[i + 1];
         const showDividerAfter = action.type === 'audio' && next && next.type !== 'audio';
+        const focusId =
+          action.type === 'phone' && action.kind === 'standard'
+            ? 'call-label'
+            : action.type === 'dialpad'
+              ? 'dm-use-dialpad'
+              : undefined;
         return (
           <Fragment key={action.id}>
             <li
               className={styles['start-call-menu__item']}
-              {...(action.type === 'phone' && action.kind === 'standard'
-                ? { 'data-wt-focus': 'call-nipr' }
-                : {})}
+              {...(focusId ? { 'data-wt-focus': focusId } : {})}
             >
               <MenuItem
                 role="menuitem"
@@ -167,6 +171,7 @@ export function PopoverCallButton({
         aria-label="Call"
         aria-haspopup="menu"
         aria-expanded={open}
+        data-wt-focus="profile-call-menu"
       >
         <Icon glyph={<PhoneIcon />} size="16" />
         <Icon glyph={<ChevronDownIcon />} size="12" />

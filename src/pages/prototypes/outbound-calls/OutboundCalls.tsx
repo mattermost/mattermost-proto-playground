@@ -58,6 +58,8 @@ export default function OutboundCalls() {
   const [callExiting, setCallExiting] = useState(false);
   const [rhsOpen, setRhsOpen] = useState(false);
   const [startCallMenuOpen, setStartCallMenuOpen] = useState(false);
+  const [composeTab, setComposeTab] = useState<'dialpad' | 'recent' | 'conference' | undefined>();
+  const [telAutocompleteOpen, setTelAutocompleteOpen] = useState(false);
 
   const [addingParticipant, setAddingParticipant] = useState(false);
   const [addMode, setAddMode] = useState<AddMode>('dialpad');
@@ -65,6 +67,7 @@ export default function OutboundCalls() {
 
   const [nowTick, setNowTick] = useState(Date.now());
   const teamSidebarRef = useRef<HTMLDivElement>(null);
+  const popoverOpenTokenRef = useRef(0);
 
   // Stamp walkthrough focus on the TeamSidebar dial-pad control (Compass has no data attrs).
   useLayoutEffect(() => {
@@ -91,6 +94,8 @@ export default function OutboundCalls() {
     (state?: WalkthroughSceneState) => {
       const apply = parseOutboundWalkthroughApply(state);
       setStartCallMenuOpen(Boolean(apply.startCallMenu));
+      setTelAutocompleteOpen(Boolean(apply.telAutocomplete));
+      setComposeTab(apply.composeTab);
 
       if (apply.dialpad) {
         stopRingback();
@@ -137,14 +142,25 @@ export default function OutboundCalls() {
 
       if (apply.popover) {
         const contactId = apply.popover.contactId;
-        // Wait for the scene to paint so popover anchors exist.
-        window.setTimeout(() => {
-          setPopover({
-            contactId,
-            rect: resolvePopoverAnchorRect(contactId),
-          });
-        }, 50);
+        const token = ++popoverOpenTokenRef.current;
+        // Wait for the scene (and popover anchors) to paint; cancel stale opens.
+        const openWhenReady = (attempt: number) => {
+          if (token !== popoverOpenTokenRef.current) return;
+          const el = document.querySelector(
+            `[data-wt-popover-anchor="${CSS.escape(contactId)}"]`,
+          );
+          if (el || attempt >= 12) {
+            setPopover({
+              contactId,
+              rect: resolvePopoverAnchorRect(contactId),
+            });
+            return;
+          }
+          window.requestAnimationFrame(() => openWhenReady(attempt + 1));
+        };
+        window.requestAnimationFrame(() => openWhenReady(0));
       } else {
+        popoverOpenTokenRef.current += 1;
         setPopover(null);
       }
     },
@@ -587,6 +603,7 @@ export default function OutboundCalls() {
                       onOpenDialer={openDialpadWidget}
                       startCallMenuOpen={startCallMenuOpen}
                       onStartCallMenuOpenChange={setStartCallMenuOpen}
+                      telAutocompleteOpen={telAutocompleteOpen}
                     />
                   </div>
                 )}
@@ -676,17 +693,20 @@ export default function OutboundCalls() {
             recents={recents}
             onStartCall={startCall}
             onStartConferenceCall={startConferenceCall}
+            composeTab={composeTab}
           />
         )}
       </div>
 
       {popover && (
         <PositionedProfilePopover
+          key={`${popover.contactId}-${walkthroughActive ? 'wt' : 'free'}`}
           contact={CONTACT_MAP[popover.contactId]}
           anchorRect={popover.rect}
           onClose={() => setPopover(null)}
           onStartCall={startCall}
           onOpenDialer={openDialpadWidget}
+          dismissOnOutside={!walkthroughActive}
         />
       )}
     </div>

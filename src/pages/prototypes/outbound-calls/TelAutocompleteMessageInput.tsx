@@ -2,7 +2,7 @@
  * Outbound-only (not for `main`): wraps MessageInput with a `tel:` autocomplete
  * that lists all contacts × phones and inserts `tel:<number>` on click.
  */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { MessageInput } from '@mattermost/compass-proto';
@@ -22,6 +22,7 @@ type Suggestion = {
 };
 
 const TEL_REGEX = /(?<=^|\s)tel:([^\s]*)$/;
+const TEL_SEED = 'tel:';
 
 function detectTelToken(value: string, cursor: number): TelToken | null {
   const before = value.slice(0, cursor);
@@ -59,13 +60,18 @@ function buildSuggestions(query: string): Suggestion[] {
 
 export interface TelAutocompleteMessageInputProps {
   placeholder?: string;
+  /** Seed composer with `tel:` and keep autocomplete open (walkthrough). */
+  forceOpen?: boolean;
 }
 
 export default function TelAutocompleteMessageInput({
   placeholder,
+  forceOpen = false,
 }: TelAutocompleteMessageInputProps) {
-  const [value, setValue] = useState('');
-  const [token, setToken] = useState<TelToken | null>(null);
+  const [value, setValue] = useState(forceOpen ? TEL_SEED : '');
+  const [token, setToken] = useState<TelToken | null>(
+    forceOpen ? { start: 0, end: TEL_SEED.length, query: '' } : null,
+  );
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -80,6 +86,22 @@ export default function TelAutocompleteMessageInput({
     setToken(collapsed ? detectTelToken(nextValue, cursor) : null);
   }, []);
 
+  useEffect(() => {
+    if (forceOpen) {
+      setValue(TEL_SEED);
+      setToken({ start: 0, end: TEL_SEED.length, query: '' });
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        if (!el) return;
+        el.focus();
+        el.setSelectionRange(TEL_SEED.length, TEL_SEED.length);
+      });
+      return;
+    }
+    setValue('');
+    setToken(null);
+  }, [forceOpen]);
+
   const handleChange = (next: string) => {
     setValue(next);
     recompute(next);
@@ -89,16 +111,18 @@ export default function TelAutocompleteMessageInput({
     recompute(value);
   };
 
-  useOutsideClose(wrapRef, token != null, () => setToken(null));
+  useOutsideClose(wrapRef, token != null && !forceOpen, () => setToken(null));
 
-  const suggestions = token ? buildSuggestions(token.query) : [];
-  const open = token != null && suggestions.length > 0;
+  const suggestions = token || forceOpen ? buildSuggestions(token?.query ?? '') : [];
+  const open = (token != null || forceOpen) && suggestions.length > 0;
 
   const insert = (phone: Phone) => {
-    if (!token) return;
+    if (!token && !forceOpen) return;
+    const start = token?.start ?? 0;
+    const end = token?.end ?? value.length;
     const inserted = `tel:${phone.number}`;
-    const next = value.slice(0, token.start) + inserted + value.slice(token.end);
-    const cursor = token.start + inserted.length;
+    const next = value.slice(0, start) + inserted + value.slice(end);
+    const cursor = start + inserted.length;
     setValue(next);
     setToken(null);
     requestAnimationFrame(() => {
@@ -116,6 +140,7 @@ export default function TelAutocompleteMessageInput({
           className={styles['tel-autocomplete__menu']}
           role="listbox"
           aria-label="Phone number suggestions"
+          data-wt-focus="tel-autocomplete"
         >
           {suggestions.map((s) => (
             <li

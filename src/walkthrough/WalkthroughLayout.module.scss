@@ -32,8 +32,19 @@
     width: calc(340px + 2 * var(--spacing-m));
   }
 
+  // Jump panel (240) + gap + narrative (340) + clip padding.
+  // Applied while open so column width tracks the jump-slot width animation.
+  #{&}__narrative-slot--expanded#{&}__narrative-slot--with-jump {
+    width: calc(240px + var(--spacing-m) + 340px + 2 * var(--spacing-m));
+  }
+
   &__narrative-clip {
-    width: calc(340px + 2 * var(--spacing-m));
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+    // Size to children — never shrink the narrative while the jump slot width animates.
+    width: max-content;
     min-height: 0;
     height: 100%;
     padding: var(--spacing-m);
@@ -48,6 +59,33 @@
   &__narrative-slot--expanded &__narrative-clip {
     opacity: 1;
     transform: translateX(0);
+  }
+
+  // Docked Jump panel: width + fade + slide in parallel (clips itself, not the narrative).
+  &__jump-slot {
+    flex: 0 0 auto;
+    width: 0;
+    margin-right: 0;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-12px);
+    pointer-events: none;
+    transition:
+      width var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      margin-right var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      opacity var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      transform var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+  }
+
+  &__jump-slot--entered {
+    width: 240px;
+    margin-right: var(--spacing-m);
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
   }
 
   &__stage {
