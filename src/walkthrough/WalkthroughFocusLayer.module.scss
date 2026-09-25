@@ -7,10 +7,12 @@
   overflow: hidden;
 
   // Positioned over [data-wt-shell] (product app shell), not the full stage.
+  // Dim area is clickable; cutout stays pointer-events none so the target remains interactive.
   &__lightbox {
     position: absolute;
     overflow: hidden;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: default;
     border-radius: var(--radius-xl);
   }
 
@@ -18,6 +20,7 @@
     position: absolute;
     box-shadow: 0 0 0 9999px rgba(0,0,0, 0.64);
     background: transparent;
+    pointer-events: none;
   }
 
   // Drawn here (not on the target) so overflow:hidden ancestors cannot clip it.

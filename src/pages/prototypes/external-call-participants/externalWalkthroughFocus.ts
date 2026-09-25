@@ -63,6 +63,17 @@ export function stampExternalWalkthroughFocus(): () => void {
   stamp(byLabel('Call - UX Design'), 'guest-popout');
   stamp(byLabel('Call info'), 'call-info-panel');
 
+  // Widget ••• menu → Call info row (MenuItem is a <button>; match by label text).
+  const widgetMenu = document.querySelector(
+    '[aria-label="Active call"] [role="menu"]',
+  );
+  if (widgetMenu) {
+    const callInfoItem = Array.from(
+      widgetMenu.querySelectorAll('button'),
+    ).find((el) => el.textContent?.includes('Call info'));
+    stamp(callInfoItem, 'widget-call-info-menu');
+  }
+
   const callInfo = byLabel('Call info');
   if (callInfo) {
     stamp(

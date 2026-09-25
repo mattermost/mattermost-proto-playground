@@ -34,9 +34,9 @@ export const externalCallParticipantsWalkthrough: WalkthroughDocument = {
       railGroup: 'Call widget',
       title: 'In-channel call widget',
       lead: 'While the call is active, the docked widget stays on the channel so coordination continues underneath.',
-      lookFor: ['Floating call widget', 'Participant count on the widget'],
+      lookFor: ['Floating call widget', 'Participant count on the widget', 'More (•••) control'],
       bullets: [
-        'Expand opens the full popout; the menu reaches Call info.',
+        'Expand opens the full popout.',
         'The participant count opens the roster, including external guests.',
       ],
       scene: 'widget',
@@ -48,6 +48,32 @@ export const externalCallParticipantsWalkthrough: WalkthroughDocument = {
           points: [
             'The widget floats over the thread while the call runs.',
             'Open Call info or Participants from here.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'open-call-info',
+      section: 'host',
+      railGroup: 'Call widget',
+      title: 'Open Call info from the widget',
+      lead: 'The more menu (•••) on the widget is how hosts reach Call info without leaving the channel.',
+      lookFor: ['Widget more menu open', 'Call info menu item'],
+      bullets: [
+        'Call info holds guest access, links, and dial-in details.',
+        'Other menu rows (devices, record, chat) stay available from the same control.',
+      ],
+      scene: 'widget',
+      sceneState: { widgetOverlay: 'menu' },
+      focus: {
+        id: 'widget-call-info-menu',
+        emphasis: 'ring',
+        notePlacement: 'right',
+        note: {
+          title: 'Call info entry',
+          points: [
+            'Choose Call info to open the panel on this widget.',
+            'Hosts use it to enable external participants for the call.',
           ],
         },
       },

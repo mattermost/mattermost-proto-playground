@@ -164,7 +164,7 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
 
 - Runtime: `WalkthroughFocusLayer` over the stage (`z-index` above typical prototype overlays — menus, popovers, floating widgets)
 - **Ring** is drawn as an overlay rect in the focus layer (not `outline` on the target) so `overflow: hidden` ancestors cannot clip it; `border-radius` is copied from the target’s computed style
-- **Lightbox** dims `[data-wt-shell]` (fallback: full stage) with a cutout over the target; `emphasis: 'lightbox'` **includes** the ring
+- **Lightbox** dims `[data-wt-shell]` (fallback: full stage) with a cutout over the target; `emphasis: 'lightbox'` **includes** the ring. The dimmed overlay is **clickable** — mousedown on the dim hides ring + lightbox and docks any TourPoint; the cutout stays pass-through so the focus target remains interactive
 - **Target size:** ring and lightbox are for a **sub-region** of the stage only. Do **not** set `focus` on:
   - Scene / page roots (welcome full-bleed, fullscreen guest call, whole `ChannelShell`)
   - `[data-wt-shell]` itself
@@ -172,6 +172,7 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
   - “Overview” steps that only orient the viewer — omit `focus` instead
 - Prefer: a button, menu row, toggle, list **group container**, floating widget, or info panel — not the full stage that contains them
 - **One ring per step callout:** stamp `data-wt-focus="<id>"` on a single parent. Nested or per-child stamps with the same id cause overlapping rings (runtime draws one ring per match)
+- **Scroll before ring:** focus targets inside overflow/SimpleBar lists (e.g. participants roster) are scrolled into the nested scrollport before measure. Prefer group containers at the **start** of a clipped section; the layer re-scrolls on delayed place passes so restamped overlays (~180ms) do not leave the ring on clipped rows.
 - **TourPoint** (`focus.note`): placed by `WalkthroughFocusLayer`; host owns enter/exit scale (suppress TourPoint’s own panel-in); restore list discs on note bullets
 - **TourPoint placement + pointer** — decide with these rules (do not guess ad hoc):
 
@@ -197,7 +198,8 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
 
 - **Interaction → dock (bottom-right):**
   - Click/focus a **focus target** → hide ring + lightbox; dock TourPoint (pointer `none`)
-  - Other stage interaction → dock TourPoint only; keep ring/lightbox until the focus target is hit
+  - Click the **lightbox dim** (anywhere outside the cutout) → hide ring + lightbox; dock TourPoint
+  - Other stage interaction → dock TourPoint only; keep ring/lightbox until the focus target or dim is hit
   - TourPoint close → dismiss note; callouts reset on step change
   - **Menus / ephemeral overlays:** if the focus stamp lives on a row that **unmounts on click** (Start call menu item, combobox option, etc.), the focus layer must still dock — do not rely on re-measuring a missing target. Runtime applies docked position on interact and when `noteMode === 'docked'` even if `[data-wt-focus]` is gone. When authoring: prefer stamping a **stable** control when the lesson is the entry (e.g. Call ▾ button) rather than opening the menu; stamp a **row** only when the open menu is the teaching surface.
 
@@ -232,6 +234,7 @@ When Compass components lack data-attribute props, stamp `data-wt-focus` in a `u
 - [ ] No `focus` rings/lightboxes the entire view (scene root, shell, fullscreen surface, or near-full-stage target)
 - [ ] Each `focus.id` resolves to one parent box (no parent+child or per-row same-id stamps → no overlapping rings)
 - [ ] TourPoint notes: omit `notePlacement` unless auto would cover the taught control or its parent overlay; side matches the table above
+- [ ] Lightbox dim click dismisses ring/lightbox (cutout still clickable through to the target)
 - [ ] Interacting with the stage docks TourPoint to the bottom-right (including steps whose focus target unmounts on click)
 - [ ] Walkthrough-owned overlays survive Next/Back (outside-dismiss gated; open requests not racing close animations)
 - [ ] Compass surfaces that need `onClose` for chrome (e.g. ProfilePopover close button) still receive it

@@ -93,6 +93,47 @@ function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);
 }
 
+function isVerticallyScrollable(el: HTMLElement): boolean {
+  // Compass Scrollbar (SimpleBar) scrolls on this node, not overflow CSS alone.
+  if (el.classList.contains('simplebar-content-wrapper')) {
+    return el.scrollHeight > el.clientHeight + 1;
+  }
+  const oy = getComputedStyle(el).overflowY;
+  return (
+    (oy === 'auto' || oy === 'scroll' || oy === 'overlay') &&
+    el.scrollHeight > el.clientHeight + 1
+  );
+}
+
+/**
+ * Scroll nested overflow/SimpleBar ancestors so `el` is visible, then the
+ * nearest window scroll. Returns true if any scroll position changed.
+ * Tall targets align to the top of the scrollport so clipped tails come into view.
+ */
+function scrollFocusTargetIntoView(el: HTMLElement): boolean {
+  let moved = false;
+  let node: HTMLElement | null = el.parentElement;
+  while (node && node !== document.documentElement) {
+    if (isVerticallyScrollable(node)) {
+      const port = node.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
+      const pad = 12;
+      const clipped =
+        box.top < port.top + pad || box.bottom > port.bottom - pad;
+      if (clipped) {
+        const next = node.scrollTop + (box.top - port.top) - pad;
+        if (Math.abs(next - node.scrollTop) > 1) {
+          node.scrollTop = next;
+          moved = true;
+        }
+      }
+    }
+    node = node.parentElement;
+  }
+  el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+  return moved;
+}
+
 /**
  * Pick top/bottom-* pointer and card left so the tip aims at `targetCx`.
  * Prefers center, then left/right edge variants when the card is clamped.
@@ -337,7 +378,7 @@ export default function WalkthroughFocusLayer({
         ),
       ) as HTMLElement[];
 
-    const measure = (opts?: { forcePlace?: boolean }) => {
+    const measure = (opts?: { forcePlace?: boolean; bringIntoView?: boolean }) => {
       const stage = stageRef.current;
       if (!stage) {
         setTargetLocal(null);
@@ -370,6 +411,13 @@ export default function WalkthroughFocusLayer({
         }
         return;
       }
+
+      // Nested Scrollbar/SimpleBar: scroll the target into the scrollport before
+      // measuring (native scrollIntoView alone often leaves clipped roster rows).
+      if (opts?.bringIntoView && noteMode === 'anchored') {
+        scrollFocusTargetIntoView(els[0]);
+      }
+
       const clientRects = els.map((el) => el.getBoundingClientRect());
       const local = toStageLocal(unionClientRects(clientRects), stageRect);
       setTargetLocal(local);
@@ -413,13 +461,19 @@ export default function WalkthroughFocusLayer({
       placedForFocusRef.current = focus.id;
     };
 
-    const t1 = window.setTimeout(() => {
-      findAll()[0]?.scrollIntoView({ block: 'center', behavior: 'instant' });
-      measure({ forcePlace: true });
-    }, 80);
-    // Refine after layout / delayed overlays (e.g. profile popover phones).
-    const t2 = window.setTimeout(() => measure({ forcePlace: true }), 220);
-    const t3 = window.setTimeout(() => measure({ forcePlace: true }), 400);
+    // Staggered place: overlays/stamps often remount after ~150–180ms (resets scroll).
+    const t1 = window.setTimeout(
+      () => measure({ forcePlace: true, bringIntoView: true }),
+      80,
+    );
+    const t2 = window.setTimeout(
+      () => measure({ forcePlace: true, bringIntoView: true }),
+      220,
+    );
+    const t3 = window.setTimeout(
+      () => measure({ forcePlace: true, bringIntoView: true }),
+      400,
+    );
 
     const onScroll = () => {
       window.cancelAnimationFrame(frame);
@@ -472,7 +526,8 @@ export default function WalkthroughFocusLayer({
         return;
       }
 
-      // Other stage interaction: dock the TourPoint, keep ring/lightbox.
+      // Other stage interaction: dock the TourPoint, keep ring/lightbox
+      // (lightbox dim dismiss is handled on the overlay itself).
       const stage = stageRef.current;
       if (stage && !stage.contains(target)) return;
       dockNote();
@@ -552,6 +607,24 @@ export default function WalkthroughFocusLayer({
       {showLightbox && cutout && shellLocal && (
         <div
           className={styles['wt-focus__lightbox']}
+          role="presentation"
+          aria-hidden
+          onMouseDown={(e) => {
+            // Dim only — cutout has pointer-events: none so target stays clickable.
+            e.preventDefault();
+            e.stopPropagation();
+            setCalloutActive(false);
+            if (focus?.note && noteMode === 'anchored') {
+              setNoteMode('docked');
+              const stage = stageRef.current;
+              if (stage) {
+                const stageRect = stage.getBoundingClientRect();
+                const noteW = noteRef.current?.offsetWidth || TOUR_POINT_WIDTH;
+                const noteH = noteRef.current?.offsetHeight || 180;
+                setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+              }
+            }
+          }}
           style={{
             top: shellLocal.top,
             left: shellLocal.left,
