@@ -350,6 +350,8 @@ export default function WalkthroughFocusLayer({
   const noteRef = useRef<HTMLDivElement>(null);
   const snapshotRef = useRef<NoteSnapshot | null>(null);
   const placedForFocusRef = useRef<string | null>(null);
+  /** Scroll-into-view once per focus id (noteMode reruns must not re-scroll). */
+  const scrolledForFocusRef = useRef<string | null>(null);
 
   const emphasis = useMemo(
     () => (focus ? resolveEmphasis(focus) : null),
@@ -365,6 +367,7 @@ export default function WalkthroughFocusLayer({
     setCalloutActive(true);
     setEntered(false);
     placedForFocusRef.current = null;
+    scrolledForFocusRef.current = null;
   }, [focus?.id]);
 
   useEffect(() => {
@@ -378,7 +381,12 @@ export default function WalkthroughFocusLayer({
         ),
       ) as HTMLElement[];
 
-    const measure = (opts?: { forcePlace?: boolean; bringIntoView?: boolean }) => {
+    const measure = (opts?: {
+      forcePlace?: boolean;
+      bringIntoView?: boolean;
+      /** Mark this focus id as scrolled (use on the last staggered pass). */
+      commitScroll?: boolean;
+    }) => {
       const stage = stageRef.current;
       if (!stage) {
         setTargetLocal(null);
@@ -412,10 +420,16 @@ export default function WalkthroughFocusLayer({
         return;
       }
 
-      // Nested Scrollbar/SimpleBar: scroll the target into the scrollport before
-      // measuring (native scrollIntoView alone often leaves clipped roster rows).
-      if (opts?.bringIntoView && noteMode === 'anchored') {
+      // Nested Scrollbar/SimpleBar: scroll once per focus id before measuring.
+      // Staggered timers may call this again; remounts need early passes, but
+      // noteMode-driven effect reruns must not yank the scrollport.
+      if (
+        opts?.bringIntoView &&
+        noteMode === 'anchored' &&
+        scrolledForFocusRef.current !== focus.id
+      ) {
         scrollFocusTargetIntoView(els[0]);
+        if (opts.commitScroll) scrolledForFocusRef.current = focus.id;
       }
 
       const clientRects = els.map((el) => el.getBoundingClientRect());
@@ -462,6 +476,7 @@ export default function WalkthroughFocusLayer({
     };
 
     // Staggered place: overlays/stamps often remount after ~150–180ms (resets scroll).
+    // Scroll on each pass until commitScroll on the last one locks this focus id.
     const t1 = window.setTimeout(
       () => measure({ forcePlace: true, bringIntoView: true }),
       80,
@@ -471,7 +486,7 @@ export default function WalkthroughFocusLayer({
       220,
     );
     const t3 = window.setTimeout(
-      () => measure({ forcePlace: true, bringIntoView: true }),
+      () => measure({ forcePlace: true, bringIntoView: true, commitScroll: true }),
       400,
     );
 

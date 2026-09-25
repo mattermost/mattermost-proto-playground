@@ -164,3 +164,15 @@
     gap: var(--spacing-s);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-narrative__jump-menu,
+  .wt-narrative__jump-menu--entered {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .wt-narrative__jump-menu--entered {
+    opacity: 1;
+  }
+}

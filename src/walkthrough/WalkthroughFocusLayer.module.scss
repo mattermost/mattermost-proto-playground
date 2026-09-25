@@ -90,3 +90,20 @@
     }
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-focus__note,
+  .wt-focus__note--entered,
+  .wt-focus__note--exiting {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .wt-focus__note--entered {
+    opacity: 1;
+  }
+
+  .wt-focus__note--exiting {
+    opacity: 0;
+  }
+}

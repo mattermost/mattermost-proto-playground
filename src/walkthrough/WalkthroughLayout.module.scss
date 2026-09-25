@@ -106,3 +106,12 @@
     overflow: auto;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .wt__narrative-slot,
+  .wt__narrative-clip,
+  .wt__jump-slot {
+    transition: none !important;
+    transform: none !important;
+  }
+}
