@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import ExitToAppIcon from '@mattermost/compass-icons/components/exit-to-app';
 import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -164,7 +165,12 @@ export default function WalkthroughNarrative({
       </div>
 
       <div className={styles['wt-narrative__footer']}>
-        <Button emphasis="tertiary" size="small" onClick={onExit}>
+        <Button
+          emphasis="tertiary"
+          size="small"
+          leadingIcon={<Icon glyph={<ExitToAppIcon />} />}
+          onClick={onExit}
+        >
           Exit
         </Button>
         <div className={styles['wt-narrative__stepper']}>

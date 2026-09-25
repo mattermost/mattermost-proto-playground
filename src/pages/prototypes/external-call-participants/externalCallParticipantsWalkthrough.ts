@@ -213,7 +213,6 @@ export const externalCallParticipantsWalkthrough: WalkthroughDocument = {
       scene: 'welcome',
       focus: {
         id: 'welcome-card',
-        emphasis: 'lightbox',
         note: {
           title: 'Name before join',
           points: [
