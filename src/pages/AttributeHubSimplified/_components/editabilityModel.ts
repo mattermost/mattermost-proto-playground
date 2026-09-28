@@ -223,7 +223,7 @@ export function editabilityLabel(
 export function editabilityResources(attribute: HubAttribute): ResourceKind[] {
   return attribute.appliesTo
     .map((c) => c.resource)
-    .filter((r) => r !== 'Users');
+    .filter((r) => r !== 'Users' && r !== 'Bots');
 }
 
 /** The external system that owns user values, when this attribute has a Users binding. */

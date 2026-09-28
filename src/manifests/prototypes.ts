@@ -74,6 +74,7 @@ import AttributeHubSimplified from '@/pages/AttributeHubSimplified/AttributeHubS
 import AttributeHubSimplifiedInlineSummary from '@/pages/AttributeHubSimplifiedInlineSummary/AttributeHubSimplifiedInlineSummary';
 import AttributeHubChannelAligned from '@/pages/AttributeHubChannelAligned/AttributeHubChannelAligned';
 import AttributeHubChannelAlignedPerResource from '@/pages/AttributeHubChannelAlignedPerResource/AttributeHubChannelAlignedPerResource';
+import BotAttributes from '@/pages/BotAttributes/BotAttributes';
 import AttributeDeletionRenameDecisions from '@/pages/AttributeDeletionRenameDecisions/AttributeDeletionRenameDecisions';
 import AttributeHubMVP from '@/pages/AttributeHubMVP/AttributeHubMVP';
 import AttributeHubMVPNext from '@/pages/AttributeHubMVPNext/AttributeHubMVPNext';
@@ -261,6 +262,7 @@ const INITIATIVE_OF: Record<string, Initiative> = {
   'channel-attributes-channel-view': 'attribute-management',
   'attribute-hub-channel-aligned': 'attribute-management',
   'attribute-hub-channel-aligned-per-resource': 'attribute-management',
+  'bot-attributes': 'attribute-management',
   'attribute-deletion-rename-decisions': 'attribute-management',
   'attribute-hub-basics-advanced': 'attribute-management',
   'attribute-hub-streamlined': 'attribute-management',
@@ -365,6 +367,14 @@ const INITIATIVE_OF: Record<string, Initiative> = {
 
 export type PrototypeCollection = 'attribute-management';
 
+/** Inner page / scene deep-linked from the prototypes tree sidebar. */
+export type PrototypePage = {
+  id: string;
+  label: string;
+  /** Query string without `?` (e.g. `scene=bot-account` or `view=channel-thread`). */
+  search?: string;
+};
+
 export type PrototypeEntry = {
   id: string;
   label: string;
@@ -380,6 +390,10 @@ export type PrototypeEntry = {
    * card from /prototypes so it can't be mistaken for current work.
    */
   unlisted?: boolean;
+  /** Shorter label for the prototypes tree sidebar. */
+  navLabel?: string;
+  /** Inner pages / scenes listed under this prototype in the tree. */
+  pages?: PrototypePage[];
 };
 
 /**
@@ -389,6 +403,7 @@ export type PrototypeEntry = {
  */
 export const BRANCH_FOCUS_PROTOTYPE_IDS = new Set<string>([
   'attribute-hub-channel-aligned-per-resource',
+  'bot-attributes',
   'post-attributes-channel-settings',
   'attribute-deletion-rename-decisions',
   'channel-attributes-channel-view',
@@ -622,6 +637,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
   {
     id: 'post-attributes-channel-settings',
     label: 'Post Attributes · Channel settings',
+    navLabel: 'Post Attributes',
     path: '/prototypes/post-attributes-channel-settings',
     component: PostAttributesChannelSettings,
     group: 'zero-trust-abac',
@@ -630,10 +646,16 @@ export const PROTOTYPES: PrototypeEntry[] = [
     addedAt: '2026-08-04',
     isPrimary: true,
     collections: ['attribute-management'],
+    pages: [
+      { id: 'channel', label: 'Channel settings' },
+      { id: 'channel-thread', label: 'Channel · thread', search: 'view=channel-thread' },
+      { id: 'attrs-modal', label: 'Edit · modal', search: 'view=attrs-modal' },
+    ],
   },
   {
     id: 'channel-attributes-channel-view',
     label: 'Channel Attributes · Channel view',
+    navLabel: 'Channel Attributes',
     path: '/prototypes/channel-attributes-channel-view',
     component: ChannelAttributesChannelView,
     group: 'zero-trust-abac',
@@ -641,6 +663,11 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Channel view with system attribute chips in the header (Classification, Program, Caveat, Engagement tempo) and configurable banners — global (workspace), channel, and reply (thread RHS). Prototype tabs: Channel view, Bot message (admin notify DM listing channels missing Classification), and Unarchive modal (required attributes before restore). Display settings toggle banners and Info/Thread RHS. Matches Figma Channel Attributes — System Attributes (4863:33132). Deep-links: ?view=channel-view|bot-message|unarchive-modal.',
     addedAt: '2026-08-26',
     collections: ['attribute-management'],
+    pages: [
+      { id: 'channel-view', label: 'Channel view' },
+      { id: 'bot-message', label: 'Bot message', search: 'view=bot-message' },
+      { id: 'unarchive-modal', label: 'Unarchive modal', search: 'view=unarchive-modal' },
+    ],
   },
   {
     id: 'attribute-hub-simplified-inline-summary',
@@ -670,6 +697,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
   {
     id: 'attribute-hub-channel-aligned-per-resource',
     label: 'Attribute Management \u00b7 Channel-attributes aligned (per-resource rule)',
+    navLabel: 'Channel-aligned hub',
     path: '/prototypes/attribute-hub-channel-aligned-per-resource',
     component: AttributeHubChannelAlignedPerResource,
     group: 'zero-trust-abac',
@@ -677,10 +705,45 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Same channel-attributes alignment, with the "Changing the value" rule moved out of Definition and onto each resource inside Applies to \u2014 it sits directly under "Who can set the value", so who sets it and whether they can change it later read as one thought. Because the rule is scoped to the binding, the attribute-level version\u0027s "Applies to Channels, Posts, Teams" explainer and its Users reflection line both disappear; Users simply has no such control, since its values come from the source system. Copy is shortened to a self-describing option list \u2014 Can be changed / Can only be raised / Can only be narrowed / Values can be added, not removed / Values can be removed, not added / Cannot be changed \u2014 with a supporting line only where the label needs one (raise-only shows the concrete allowed direction, locked says to create a new channel instead). Options still derive from attribute type, and each resource can now carry a different rule. Deep-links: ?attr=<id>, ?flow=new.',
     addedAt: '2026-08-10',
     collections: ['attribute-management'],
+    pages: [
+      { id: 'hub', label: 'Attribute hub' },
+      {
+        id: 'channel-settings',
+        label: 'Channel settings',
+        search: 'screen=channel-settings',
+      },
+    ],
+  },
+  {
+    id: 'bot-attributes',
+    label: 'Bot attributes',
+    path: '/prototypes/bot-attributes',
+    component: BotAttributes,
+    group: 'zero-trust-abac',
+    description:
+      'Apply attributes to Bots in the channel-aligned hub, assign values on the bot account page under Role, see those values on the bot profile from a channel message, and target Bot accounts in permission policies — with isbot removed and bot-specific attributes in Values.',
+    addedAt: '2026-09-25',
+    isPrimary: true,
+    collections: ['attribute-management'],
+    pages: [
+      { id: 'attribute-hub', label: 'Apply to Bots' },
+      { id: 'bot-account', label: 'Bot account', search: 'scene=bot-account' },
+      {
+        id: 'bot-channel',
+        label: 'Bot in channel',
+        search: 'scene=bot-channel',
+      },
+      {
+        id: 'permission-policy',
+        label: 'Permission policy',
+        search: 'scene=permission-policy',
+      },
+    ],
   },
   {
     id: 'attribute-deletion-rename-decisions',
     label: 'Attribute Management \u00b7 Deletion & rename decisions',
+    navLabel: 'Deletion & rename',
     path: '/prototypes/attribute-deletion-rename-decisions',
     component: AttributeDeletionRenameDecisions,
     group: 'zero-trust-abac',
@@ -688,6 +751,7 @@ export const PROTOTYPES: PrototypeEntry[] = [
       'Decision table for deleting and renaming global attributes, changing type when unused, managing individual Select/Multiselect values, and deleting resource-level attributes \u2014 Classification values are controlled separately.',
     addedAt: '2026-08-25',
     collections: ['attribute-management'],
+    pages: [{ id: 'decisions', label: 'Decisions' }],
   },
   // Drill-in re-ideation after "kitchen sink" feedback — A/B comparison (2026-07-06)
   {
@@ -1621,6 +1685,56 @@ export function getPrototypeByPath(pathname: string): PrototypeEntry | undefined
   const normalized =
     pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
   return PROTOTYPES.find((p) => p.path === normalized);
+}
+
+/** Href for a prototype root or one of its declared inner pages. */
+export function prototypePageHref(
+  entry: PrototypeEntry,
+  page?: PrototypePage,
+): string {
+  if (!page?.search) return entry.path;
+  return `${entry.path}?${page.search}`;
+}
+
+/**
+ * Whether a declared page is active for the current location.
+ * Pages without `search` match when none of the prototype's page-query keys are set
+ * (or the URL is empty) — the default/landing scene.
+ */
+export function isPrototypePageActive(
+  entry: PrototypeEntry,
+  page: PrototypePage,
+  pathname: string,
+  locationSearch: string,
+): boolean {
+  const normalized =
+    pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  if (normalized !== entry.path) return false;
+
+  const current = locationSearch.startsWith('?')
+    ? locationSearch.slice(1)
+    : locationSearch;
+  const currentParams = new URLSearchParams(current);
+
+  if (!page.search) {
+    const pageKeys = new Set<string>();
+    for (const sibling of entry.pages ?? []) {
+      if (!sibling.search) continue;
+      for (const key of new URLSearchParams(sibling.search).keys()) {
+        pageKeys.add(key);
+      }
+    }
+    for (const key of pageKeys) {
+      if (currentParams.has(key)) return false;
+    }
+    return true;
+  }
+
+  const targetParams = new URLSearchParams(page.search);
+  for (const [key, value] of targetParams.entries()) {
+    if (currentParams.get(key) !== value) return false;
+  }
+  return true;
 }
 
 export function getCollectionPrototypes(

@@ -1,0 +1,14 @@
+.bot-channel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.bot-channel__popover {
+  position: fixed;
+  z-index: 50;
+  width: 272px;
+}

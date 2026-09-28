@@ -28,6 +28,7 @@ const SYNC_SYSTEMS: WhoSets[] = ['UAS', 'LDAP', 'SAML', 'SCIM'];
 
 const DEFAULT_OPTIONS: Record<ResourceKind, WhoSets[]> = {
   Users: ['System admin', 'Members'],
+  Bots: ['System admin'],
   Channels: ['Channel admin', 'Team admin', 'System admin', 'Members'],
   Teams: ['Team admin', 'System admin', 'Members'],
   Posts: ['Post author', 'Channel admin', 'System admin'],
@@ -35,6 +36,7 @@ const DEFAULT_OPTIONS: Record<ResourceKind, WhoSets[]> = {
 
 const PARENT_OWNER: Record<ResourceKind, string> = {
   Users: 'the user',
+  Bots: 'the bot',
   Channels: 'the channel',
   Teams: 'the team',
   Posts: 'the post',

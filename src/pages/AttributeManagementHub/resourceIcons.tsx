@@ -5,9 +5,11 @@ import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message
 import LayersOutlineIcon from '@mattermost/compass-icons/components/layers-outline';
 import Icon from '@/components/ui/Icon/Icon';
 import type { ResourceKind } from './hubData';
+import RobotOutlineIcon from './RobotOutlineIcon';
 
 const RESOURCE_ICONS: Record<ResourceKind, typeof AccountOutlineIcon> = {
   Users: AccountOutlineIcon,
+  Bots: RobotOutlineIcon,
   Channels: ProductChannelsIcon,
   Posts: MessageTextOutlineIcon,
   Teams: LayersOutlineIcon,

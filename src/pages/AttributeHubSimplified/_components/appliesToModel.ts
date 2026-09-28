@@ -26,6 +26,7 @@ import { ceilingSummaryLabel, resolveCeiling } from './simplifiedModel';
  */
 export const RELATIONAL_DEFAULTS: Record<ResourceKind, WhoSets[]> = {
   Users: ['System admin', 'Members'],
+  Bots: ['System admin'],
   Channels: ['Channel admin', 'Team admin', 'System admin', 'Members'],
   Teams: ['Team admin', 'System admin', 'Members'],
   Posts: ['Post author', 'Channel admin', 'System admin'],
@@ -190,17 +191,19 @@ export function summaryChips(
       : 'Requirement: Optional',
   ];
 
-  if (cfg.resource === 'Users') {
+  if (cfg.resource === 'Users' || cfg.resource === 'Bots') {
     chips.push(
       cfg.userProfileDisplay === 'always'
         ? 'Profile: Always show'
         : 'Profile: Hide when empty',
     );
-    chips.push(
-      readIntoActive(attribute)
-        ? 'Visibility: Own values only'
-        : 'Visibility: Show all values',
-    );
+    if (cfg.resource === 'Users') {
+      chips.push(
+        readIntoActive(attribute)
+          ? 'Visibility: Own values only'
+          : 'Visibility: Show all values',
+      );
+    }
   }
 
   if (cfg.resource === 'Channels') {
@@ -256,17 +259,19 @@ export function summaryLine(
       : 'Optional',
   ];
 
-  if (cfg.resource === 'Users') {
+  if (cfg.resource === 'Users' || cfg.resource === 'Bots') {
     segments.push(
       cfg.userProfileDisplay === 'always'
         ? 'Profile: always show'
         : 'Profile: hide when empty',
     );
-    segments.push(
-      readIntoActive(attribute)
-        ? 'Visibility: own values only'
-        : 'Visibility: show all',
-    );
+    if (cfg.resource === 'Users') {
+      segments.push(
+        readIntoActive(attribute)
+          ? 'Visibility: own values only'
+          : 'Visibility: show all',
+      );
+    }
   }
 
   if (cfg.resource === 'Channels') {

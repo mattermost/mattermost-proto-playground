@@ -10,7 +10,6 @@ import WhoCanSetEditor from './WhoCanSetEditor';
 import UnmarkedChannelsModal from './UnmarkedChannelsModal';
 import NotifyChannelAdminsModal from './NotifyChannelAdminsModal';
 import {
-  assignableValuesForResource,
   channelDisplayIncludes,
   defaultValueHint,
   hasInheritanceParent,
@@ -18,6 +17,7 @@ import {
   isChannelDisplayHidden,
   isInheritFromChannelDefault,
   isLockedToChannelDefault,
+  listValuesForOverlay,
   postDefaultSelectPatch,
   postDefaultSelectValue,
   readIntoActive,
@@ -430,16 +430,22 @@ export default function ResourceConfigPanel({
     setAdminsPrompted(false);
   }, [attribute.id]);
   const isUsers = config.resource === 'Users';
+  const isBots = config.resource === 'Bots';
+  const isSubjectResource = isUsers || isBots;
   const isChannels = config.resource === 'Channels';
   const isPosts = config.resource === 'Posts';
   const readIntoSourceControlled = readIntoForced(attribute);
   const sourceControlledLabel =
     managedByPluginNameProp ?? attribute.source.system ?? 'the source';
-  const showReadIntoReflection = !isUsers && readIntoActive(attribute);
+  const showReadIntoReflection = !isSubjectResource && readIntoActive(attribute);
   const showInheritFromTeam =
     isChannels && hasInheritanceParent(attribute, 'Channels');
-  const assignableValues = takesValueList(attribute)
-    ? assignableValuesForResource(attribute, config)
+  // Admin default picker should list the attribute’s options, not the
+  // acting-admin read-into filter (that hides Clearance tiers with no held set).
+  const defaultOptionValues = takesValueList(attribute)
+    ? listValuesForOverlay(attribute).filter(
+        (value) => !(config.disabledValueIds ?? []).includes(value.id),
+      )
     : [];
   // Required Channels/Posts still need a default even when who-can-set is
   // locked by inheritance — otherwise Classification hides it.
@@ -450,26 +456,31 @@ export default function ResourceConfigPanel({
       resolveInheritMode(config) === 'inherit');
   const showDefaultValue =
     isPosts ||
-    (assignableValues.length > 0 &&
-      (whoCanSetIsEditable(attribute, config) || config.required));
+    (defaultOptionValues.length > 0 &&
+      (isBots ||
+        whoCanSetIsEditable(attribute, config) ||
+        config.required));
   const currentDefaultId = isPosts
     ? (() => {
         const selected = postDefaultSelectValue(config);
         if (selected === INHERIT_FROM_CHANNEL_VALUE_ID) {
           return selected;
         }
-        return assignableValues.some((v) => v.id === selected) ? selected : '';
+        return defaultOptionValues.some((v) => v.id === selected) ? selected : '';
       })()
-    : assignableValues.some((v) => v.id === config.defaultValueId)
+    : defaultOptionValues.some((v) => v.id === config.defaultValueId)
       ? (config.defaultValueId ?? '')
       : '';
+  // Channels/Posts can force a default when Required is on. Bots keep an
+  // explicit “No default” so creators set the value at bot account creation.
   const defaultValueRequired =
+    !isBots &&
     (requireDefaultWhenRequired || channelAlignment) &&
     config.required &&
     showDefaultValue;
   const defaultValueMissing = defaultValueRequired && !currentDefaultId;
-  // Keep Required → Default together on Channels/Posts.
-  const groupRequiredWithDefault = isChannels || isPosts;
+  // Keep Required → Default together on Channels/Posts/Bots.
+  const groupRequiredWithDefault = isChannels || isPosts || isBots;
 
   const requiredHint = channelScope ? (
     isChannels ? (
@@ -496,6 +507,12 @@ export default function ResourceConfigPanel({
       required={config.required}
       enabledText="this attribute will be required on all new posts. Existing posts are not changed."
       disabledText="it can be added to a post optionally after it is created."
+    />
+  ) : isBots ? (
+    <RequiredStateHint
+      required={config.required}
+      enabledText="this attribute will be required on all bots and at the time of bot account creation."
+      disabledText="it can be added to a bot account optionally after it is created."
     />
   ) : (
     <RequiredStateHint
@@ -560,6 +577,7 @@ export default function ResourceConfigPanel({
       </div>
     ) : null;
 
+  // Users stay without Required (actors). Bots match Channels — required at create.
   const requiredField = !isUsers ? (
     <Field
       layout={layout}
@@ -603,7 +621,9 @@ export default function ResourceConfigPanel({
         ? 'Applies to newly created posts only. Existing posts are not changed.'
         : isChannels
           ? 'Applies to newly created channels only. Existing channels must be set manually.'
-          : defaultValueHint(config.resource);
+          : isBots
+            ? 'Pre-fills new bot accounts. Choose No default to require the creator to set a value.'
+            : defaultValueHint(config.resource);
 
   const showPostInheritOptions =
     isPosts && hasInheritanceParent(attribute, 'Posts');
@@ -638,7 +658,9 @@ export default function ResourceConfigPanel({
             )
           }
         >
-          {!defaultValueRequired && <option value="">None</option>}
+          {!defaultValueRequired && (
+            <option value="">{isBots ? 'No default' : 'None'}</option>
+          )}
           {defaultValueRequired && !currentDefaultId && (
             <option value="" disabled>
               Select a value…
@@ -649,7 +671,7 @@ export default function ResourceConfigPanel({
               Inherit from channel
             </option>
           )}
-          {assignableValues.map((value) => (
+          {defaultOptionValues.map((value) => (
             <option key={value.id} value={value.id}>
               {value.tier != null
                 ? `${value.label} (Tier ${value.tier})`
@@ -740,11 +762,11 @@ export default function ResourceConfigPanel({
         </>
       )}
 
-      {isUsers && (
+      {isSubjectResource && (
         <Field
           layout={layout}
           label="Profile display"
-          focusId="users-profile-display"
+          focusId={isBots ? 'bots-profile-display' : 'users-profile-display'}
         >
           <Segmented<UserProfileDisplay>
             value={config.userProfileDisplay ?? 'hide-empty'}
@@ -848,7 +870,7 @@ export default function ResourceConfigPanel({
         </Field>
       )}
 
-      {inheritanceSlot && !isUsers && !isPosts && (
+      {inheritanceSlot && !isSubjectResource && !isPosts && (
         <Field
           layout={layout}
           label={`Inherit from ${
@@ -862,7 +884,7 @@ export default function ResourceConfigPanel({
 
       {whoCanSetField}
 
-      {valueEditabilitySlot && !isUsers && (
+      {valueEditabilitySlot && !isSubjectResource && (
         <Field
           layout={layout}
           label="Changing the value"

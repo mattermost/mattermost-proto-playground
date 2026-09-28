@@ -420,7 +420,7 @@ export default function SimplifiedDetailView({
               channelScope
                 ? (['Channels', 'Posts'] as ResourceKind[])
                 : channelAlignment
-                  ? (['Users', 'Channels', 'Posts'] as ResourceKind[])
+                  ? (['Users', 'Bots', 'Channels', 'Posts'] as ResourceKind[])
                   : undefined
             }
           />

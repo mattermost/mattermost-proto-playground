@@ -22,6 +22,8 @@ export type MessageProps = {
    * anchor so a picker popover can open from it.
    */
   onAddAttribute?: (anchor: HTMLElement) => void;
+  /** Opens the profile popover — avatar and username are clickable. */
+  onProfileClick?: () => void;
   /** When true, Pinned + Saved row appears at the top of the message container. */
   showPinnedSavedIndicators?: boolean;
   /** Merged onto the root element (e.g. documentation modifiers). */
@@ -51,6 +53,7 @@ export default function Message({
   messageActionsType = 'Center Channel',
   showMessageActions = true,
   onAddAttribute,
+  onProfileClick,
   showPinnedSavedIndicators = false,
   className = '',
   children,
@@ -69,7 +72,18 @@ export default function Message({
       )}
       <div className={styles['message__layout']}>
         <div className={styles['message__avatar-col']}>
-          <UserAvatar src={avatarSrc} alt={avatarAlt} size="32" />
+          {onProfileClick ? (
+            <button
+              type="button"
+              className={styles['message__avatar-btn']}
+              aria-label={`Open profile for ${username}`}
+              onClick={onProfileClick}
+            >
+              <UserAvatar src={avatarSrc} alt={avatarAlt} size="32" />
+            </button>
+          ) : (
+            <UserAvatar src={avatarSrc} alt={avatarAlt} size="32" />
+          )}
         </div>
         <div className={styles['message__content']}>
           <div className={styles['message__header-row']}>
@@ -79,6 +93,7 @@ export default function Message({
                 timestamp={timestamp}
                 isBot={isBot}
                 botLabel={botLabel}
+                onProfileClick={onProfileClick}
               />
             </div>
             {showMessageActions && (

@@ -40,6 +40,7 @@ export const MVP_RESOURCES: ResourceKind[] = ['Users', 'Channels', 'Posts'];
 
 export const RELATIONAL_DEFAULTS: Record<ResourceKind, WhoSets[]> = {
   Users: ['System admin', 'Members'],
+  Bots: ['System admin'],
   Channels: ['Channel admin', 'Team admin', 'System admin', 'Members'],
   Teams: ['Team admin', 'System admin', 'Members'],
   Posts: ['Post author', 'Channel admin', 'System admin'],

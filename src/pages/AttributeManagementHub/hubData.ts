@@ -45,7 +45,7 @@ export function takesValueListForType(type: AttrType): boolean {
   );
 }
 
-export type ResourceKind = 'Users' | 'Channels' | 'Posts' | 'Teams';
+export type ResourceKind = 'Users' | 'Bots' | 'Channels' | 'Posts' | 'Teams';
 
 /** External-sync state. Text + color, never color alone. */
 export type SyncState = 'Synced' | 'Stale' | 'Failed' | 'Unreachable';
@@ -596,6 +596,8 @@ export function defaultValueHint(resource: ResourceKind): string {
   switch (resource) {
     case 'Users':
       return 'Pre-filled on new user profiles when no value is set.';
+    case 'Bots':
+      return 'Pre-fills new bot accounts. Choose No default to require the creator to set a value.';
     case 'Channels':
       return 'Pre-filled when a new channel is created without a value.';
     case 'Posts':
@@ -1073,7 +1075,7 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
     name: 'Clearance',
     type: 'Ranked',
     description:
-      'User clearance level, synced from UAS. Owns the tier scale that Classification mirrors.',
+      'Clearance level for users and bots. User values sync from UAS; bot values are set in Integrations when creating or editing a bot.',
     values: CLEARANCE_SCALE,
     source: {
       kind: 'synced',
@@ -1090,6 +1092,12 @@ export const HUB_ATTRIBUTES: HubAttribute[] = [
         resource: 'Users',
         required: true,
         whoCanSet: whoCanSet('UAS'),
+        userProfileDisplay: 'hide-empty',
+      },
+      {
+        resource: 'Bots',
+        required: true,
+        whoCanSet: whoCanSet('System admin'),
         userProfileDisplay: 'hide-empty',
       },
     ],
@@ -1294,6 +1302,13 @@ export function newAttributeId(): string {
 export function defaultResourceConfig(resource: ResourceKind): ResourceConfig {
   switch (resource) {
     case 'Users':
+      return {
+        resource,
+        required: false,
+        whoCanSet: whoCanSet('System admin'),
+        userProfileDisplay: 'hide-empty',
+      };
+    case 'Bots':
       return {
         resource,
         required: false,

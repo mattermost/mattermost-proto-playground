@@ -47,6 +47,13 @@ export interface ProfilePopoverPhone {
   onClick?: () => void;
 }
 
+export interface ProfilePopoverAttribute {
+  /** Attribute display name, e.g. "Department". */
+  label: string;
+  /** Attribute value (text or rich content). */
+  value: ReactNode;
+}
+
 export interface ProfilePopoverProps {
   /** Whose profile is shown. Default: 'Others'. */
   user?: ProfilePopoverUser;
@@ -80,6 +87,11 @@ export interface ProfilePopoverProps {
   coreCommitter?: boolean;
   /** GitHub handle — shows the GitHub profile row. */
   githubHandle?: string;
+  /**
+   * Custom profile attributes (label above value), same pattern as CPA fields
+   * on user/bot profiles in product.
+   */
+  attributes?: ProfilePopoverAttribute[];
   onClose?: () => void;
   onPrimaryAction?: () => void;
   /** Inserts an @mention for this user in the active channel message input. */
@@ -144,6 +156,7 @@ export default function ProfilePopover({
   staff = false,
   coreCommitter = false,
   githubHandle,
+  attributes,
   onClose,
   onPrimaryAction,
   onMention,
@@ -167,6 +180,7 @@ export default function ProfilePopover({
     .join(' ');
 
   const hasPhones = Boolean(phones && phones.length > 0);
+  const hasAttributes = Boolean(attributes && attributes.length > 0);
   const hasTitlesBlock =
     Boolean(email) ||
     hasPhones ||
@@ -175,7 +189,10 @@ export default function ProfilePopover({
     coreCommitter ||
     Boolean(githubHandle);
   const hasSecondary =
-    hasTitlesBlock || Boolean(localTime) || Boolean(customStatus);
+    hasTitlesBlock ||
+    hasAttributes ||
+    Boolean(localTime) ||
+    Boolean(customStatus);
 
   return (
     <div className={rootClass} onAnimationEnd={onAnimationEnd}>
@@ -284,6 +301,24 @@ export default function ProfilePopover({
                   {githubHandle}
                 </MetaRow>
               )}
+            </div>
+          )}
+
+          {hasAttributes && (
+            <div className={styles['profile-popover__attributes']}>
+              {attributes!.map((attr) => (
+                <div
+                  key={attr.label}
+                  className={styles['profile-popover__attribute']}
+                >
+                  <p className={styles['profile-popover__section-label']}>
+                    {attr.label}
+                  </p>
+                  <div className={styles['profile-popover__attribute-value']}>
+                    {attr.value}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 

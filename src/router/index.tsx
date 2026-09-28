@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import AppShell from '@/components/layout/AppShell/AppShell';
 import DocsLayout from '@/components/layout/DocsLayout/DocsLayout';
+import PrototypesLayout from '@/components/layout/PrototypesLayout/PrototypesLayout';
 import Home from '@/pages/home/Home';
 import CategoryRoute from '@/pages/topics/CategoryRoute';
 import TopicRoute from '@/pages/topics/TopicRoute';
@@ -26,11 +27,12 @@ export default function AppRouter() {
           />
         </Route>
 
-        <Route path="/prototypes" element={<PrototypesIndex />} />
-
-        {PROTOTYPES.map(({ id, path, component: Component }) => (
-          <Route key={id} path={path} element={<Component />} />
-        ))}
+        <Route element={<PrototypesLayout />}>
+          <Route path="/prototypes" element={<PrototypesIndex />} />
+          {PROTOTYPES.map(({ id, path, component: Component }) => (
+            <Route key={id} path={path} element={<Component />} />
+          ))}
+        </Route>
       </Route>
     </Routes>
   );

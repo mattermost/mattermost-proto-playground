@@ -1,4 +1,5 @@
-import { useCallback, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ChannelHeader from '@/components/ui/ChannelHeader/ChannelHeader';
 import ChannelShell from '@/components/ui/ChannelShell/ChannelShell';
 import Message from '@/components/ui/Message/Message';
@@ -29,24 +30,9 @@ const VIEW_SCENES = [
   { id: 'attrs-modal', label: 'Edit · modal' },
 ] as const;
 
-function readView(): PostAttributesView {
-  if (typeof window === 'undefined') return 'channel';
-  const view = new URLSearchParams(window.location.search).get('view');
-  if (view === 'channel-thread') return 'channel-thread';
-  if (view === 'attrs-modal' || view === 'attrs-above') return 'attrs-modal';
-  return 'channel';
-}
-
-function syncViewParam(view: PostAttributesView) {
-  if (typeof window === 'undefined') return;
-  const url = new URL(window.location.href);
-  url.searchParams.set('view', view);
-  window.history.replaceState(null, '', url);
-}
-
-function parseViewId(id: string): PostAttributesView {
+function parseViewId(id: string | null): PostAttributesView {
   if (id === 'channel-thread') return 'channel-thread';
-  if (id === 'attrs-modal') return 'attrs-modal';
+  if (id === 'attrs-modal' || id === 'attrs-above') return 'attrs-modal';
   return 'channel';
 }
 
@@ -56,19 +42,41 @@ function parseViewId(id: string): PostAttributesView {
  */
 export default function PostAttributesChannelSettings() {
   const { setCenterSlot } = usePrototypeChrome();
-  const [view, setView] = useState<PostAttributesView>(readView);
-  const [modalOpen, setModalOpen] = useState(() => readView() === 'channel');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [view, setView] = useState<PostAttributesView>(() =>
+    parseViewId(searchParams.get('view')),
+  );
+  const [modalOpen, setModalOpen] = useState(
+    () => parseViewId(searchParams.get('view')) === 'channel',
+  );
   const [channelSettingsFromThreadOpen, setChannelSettingsFromThreadOpen] =
     useState(false);
   const [channelSettingsSession, setChannelSettingsSession] = useState(0);
 
-  const handleViewChange = useCallback((id: string) => {
-    const next = parseViewId(id);
+  useEffect(() => {
+    const next = parseViewId(searchParams.get('view'));
     setView(next);
-    syncViewParam(next);
     setModalOpen(next === 'channel');
-    setChannelSettingsFromThreadOpen(false);
-  }, []);
+  }, [searchParams]);
+
+  const handleViewChange = useCallback(
+    (id: string) => {
+      const next = parseViewId(id);
+      setView(next);
+      setSearchParams(
+        (prev) => {
+          const nextParams = new URLSearchParams(prev);
+          if (next === 'channel') nextParams.delete('view');
+          else nextParams.set('view', next);
+          return nextParams;
+        },
+        { replace: true },
+      );
+      setModalOpen(next === 'channel');
+      setChannelSettingsFromThreadOpen(false);
+    },
+    [setSearchParams],
+  );
 
   useLayoutEffect(() => {
     setCenterSlot(

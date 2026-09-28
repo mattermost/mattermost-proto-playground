@@ -57,23 +57,26 @@ export default function AppliesToSection({
   const [highlighted, setHighlighted] = useState<ResourceKind | null>(null);
   const rowRefs = useRef<Partial<Record<ResourceKind, HTMLDivElement>>>({});
 
-  // Required channel/post bindings open by default so Required + default
-  // are visible without an extra click (e.g. Classification → Channels).
-  // Channel-aligned hub always opens Channels first — Posts may be Required
-  // but Channels is the primary surface in that prototype.
+  // Required channel/post/bot bindings open by default so Required is visible
+  // without an extra click. Channel-aligned hub always opens Channels first.
   useEffect(() => {
     const next: Record<string, boolean> = {};
     for (const cfg of attribute.appliesTo) {
-      if (cfg.resource !== 'Channels' && cfg.resource !== 'Posts') {
-        continue;
-      }
       if (channelAlignment) {
         if (cfg.resource === 'Channels') {
           next[cfg.resource] = true;
         }
+        if (cfg.resource === 'Bots' && cfg.required) {
+          next[cfg.resource] = true;
+        }
         continue;
       }
-      if (cfg.required) {
+      if (
+        (cfg.resource === 'Channels' ||
+          cfg.resource === 'Posts' ||
+          cfg.resource === 'Bots') &&
+        cfg.required
+      ) {
         next[cfg.resource] = true;
       }
     }
@@ -110,7 +113,7 @@ export default function AppliesToSection({
   const addMenuAllowed = channelScope
     ? (['Channels', 'Posts'] as ResourceKind[])
     : channelAlignment
-      ? (['Users', 'Channels', 'Posts'] as ResourceKind[])
+      ? (['Users', 'Bots', 'Channels', 'Posts'] as ResourceKind[])
       : undefined;
 
   return (

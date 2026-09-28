@@ -103,6 +103,26 @@
     gap: var(--spacing-xxs);
   }
 
+  &__attributes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__attribute {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__attribute-value {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+    overflow-wrap: anywhere;
+  }
+
   &__meta-item {
     display: flex;
     align-items: center;

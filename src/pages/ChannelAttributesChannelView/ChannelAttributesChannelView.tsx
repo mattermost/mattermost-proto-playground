@@ -1,4 +1,5 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import Checkbox from '@/components/ui/Checkbox/Checkbox';
 import FixedPopoverMenu from '@/components/ui/FixedPopoverMenu/FixedPopoverMenu';
@@ -64,22 +65,7 @@ const FIGMA_LEONARD_POST: ThreadDemoPost = {
   ],
 };
 
-function readScene(): ChannelViewScene {
-  if (typeof window === 'undefined') return 'channel-view';
-  const view = new URLSearchParams(window.location.search).get('view');
-  if (view === 'bot-message') return 'bot-message';
-  if (view === 'unarchive-modal') return 'unarchive-modal';
-  return 'channel-view';
-}
-
-function syncSceneParam(scene: ChannelViewScene) {
-  if (typeof window === 'undefined') return;
-  const url = new URL(window.location.href);
-  url.searchParams.set('view', scene);
-  window.history.replaceState(null, '', url);
-}
-
-function parseSceneId(id: string): ChannelViewScene {
+function parseSceneId(id: string | null): ChannelViewScene {
   if (id === 'bot-message') return 'bot-message';
   if (id === 'unarchive-modal') return 'unarchive-modal';
   return 'channel-view';
@@ -92,8 +78,11 @@ function parseSceneId(id: string): ChannelViewScene {
  */
 export default function ChannelAttributesChannelView() {
   const { setCenterSlot } = usePrototypeChrome();
+  const [searchParams, setSearchParams] = useSearchParams();
   const settingsTriggerRef = useRef<HTMLDivElement>(null);
-  const [scene, setScene] = useState<ChannelViewScene>(readScene);
+  const [scene, setScene] = useState<ChannelViewScene>(() =>
+    parseSceneId(searchParams.get('view')),
+  );
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showGlobalBanner, setShowGlobalBanner] = useState(true);
   const [showChannelBanner, setShowChannelBanner] = useState(true);
@@ -106,11 +95,26 @@ export default function ChannelAttributesChannelView() {
   const [channelSettingsOpen, setChannelSettingsOpen] = useState(false);
   const [channelSettingsSession, setChannelSettingsSession] = useState(0);
 
-  const handleSceneChange = useCallback((id: string) => {
-    const next = parseSceneId(id);
-    setScene(next);
-    syncSceneParam(next);
-  }, []);
+  useEffect(() => {
+    setScene(parseSceneId(searchParams.get('view')));
+  }, [searchParams]);
+
+  const handleSceneChange = useCallback(
+    (id: string) => {
+      const next = parseSceneId(id);
+      setScene(next);
+      setSearchParams(
+        (prev) => {
+          const nextParams = new URLSearchParams(prev);
+          if (next === 'channel-view') nextParams.delete('view');
+          else nextParams.set('view', next);
+          return nextParams;
+        },
+        { replace: true },
+      );
+    },
+    [setSearchParams],
+  );
 
   useLayoutEffect(() => {
     setCenterSlot(

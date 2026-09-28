@@ -44,7 +44,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-m);
-  margin-bottom: var(--spacing-l);
+  margin-bottom: var(--spacing-s);
 }
 
 .prototypes-index__filters {
@@ -128,6 +128,19 @@
   gap: var(--spacing-s);
 }
 
+.prototypes-index__toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.prototypes-index__hint {
+  margin: 0 0 var(--spacing-m);
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
 .prototypes-index__init {
   --proto-accent: rgba(var(--center-channel-color-rgb), 0.32);
 
@@ -135,6 +148,14 @@
   border-radius: var(--radius-l);
   overflow: hidden;
   background-color: var(--center-channel-bg);
+  transition:
+    border-color var(--duration-quick) var(--ease-transition),
+    box-shadow var(--duration-quick) var(--ease-transition);
+
+  &--drop-target {
+    border-color: var(--proto-accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--proto-accent) 35%, transparent);
+  }
 }
 
 .prototypes-index__init-header {
@@ -238,6 +259,16 @@
   animation: prototypes-index-fade var(--duration-quick) var(--ease-entrance);
 }
 
+.prototypes-index__init-empty {
+  margin: 0;
+  padding: var(--spacing-l);
+  border: 1px dashed rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-m);
+  font-size: var(--font-size-100);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  text-align: center;
+}
+
 @keyframes prototypes-index-fade {
   from {
     opacity: 0;
@@ -275,18 +306,20 @@
 .prototypes-index__card {
   --proto-accent: rgba(var(--center-channel-color-rgb), 0.32);
 
+  position: relative;
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.10);
   border-radius: var(--radius-m);
   background-color: var(--center-channel-bg);
   color: var(--center-channel-color);
-  text-decoration: none;
-  overflow: hidden;
+  overflow: visible;
+  cursor: grab;
   transition:
     border-color var(--duration-quick) var(--ease-transition),
     box-shadow var(--duration-quick) var(--ease-transition),
-    background-color var(--duration-quick) var(--ease-transition);
+    background-color var(--duration-quick) var(--ease-transition),
+    opacity var(--duration-quick) var(--ease-transition);
 
   &:hover {
     border-color: rgba(var(--center-channel-color-rgb), 0.18);
@@ -294,10 +327,95 @@
     background-color: rgba(var(--center-channel-color-rgb), 0.02);
   }
 
+  &--dragging {
+    opacity: 0.55;
+    cursor: grabbing;
+  }
+}
+
+.prototypes-index__card-link {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  border-radius: inherit;
+
   &:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px var(--center-channel-bg), 0 0 0 5px var(--link-color);
   }
+}
+
+.prototypes-index__card-menu {
+  position: absolute;
+  top: var(--spacing-s);
+  right: var(--spacing-s);
+  z-index: 2;
+}
+
+.prototypes-index__move-menu {
+  position: absolute;
+  top: calc(100% + var(--spacing-xxs));
+  right: 0;
+  z-index: 5;
+  min-width: 240px;
+}
+
+.prototypes-index__move-empty {
+  margin: 0;
+  padding: var(--spacing-s) var(--spacing-m) var(--spacing-m);
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+.prototypes-index__modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.prototypes-index__add-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  padding: var(--spacing-l) 0 var(--spacing-m);
+}
+
+.prototypes-index__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.prototypes-index__field-label {
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+}
+
+.prototypes-index__select {
+  width: 100%;
+  padding: 10px var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  font-size: var(--font-size-100);
+  color: var(--center-channel-color);
+}
+
+.prototypes-index__add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-s);
+  margin-top: var(--spacing-xs);
 }
 
 // ── Shared card internals ─────────────────────────────────────────────────────
@@ -314,6 +432,7 @@
   flex-direction: column;
   gap: var(--spacing-xxs);
   padding: var(--spacing-m);
+  padding-right: calc(var(--spacing-m) + 36px);
   flex: 1;
 }
 

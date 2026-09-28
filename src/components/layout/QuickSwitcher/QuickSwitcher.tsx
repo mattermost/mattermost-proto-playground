@@ -33,6 +33,18 @@ const EXIT_MS = 150;
 export interface QuickSwitcherProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Override destinations; defaults to the full docs + prototypes list. */
+  destinations?: QuickSwitcherDestination[];
+  /** Search field placeholder. Default: Go to page… */
+  placeholder?: string;
+  /** Dialog aria-label. Default: Go to page */
+  dialogLabel?: string;
+  /** Empty-state copy. Default: No matching pages */
+  emptyLabel?: string;
+  /** Listbox aria-label. Default: Pages */
+  listLabel?: string;
+  /** When false, ⌘K / Ctrl+K is ignored (another switcher owns the shortcut). Default: true. */
+  enableKeyboardShortcut?: boolean;
 }
 
 function useIsMac() {
@@ -77,7 +89,16 @@ function BreadcrumbSecondary({ crumbs }: { crumbs: string[] }): ReactNode {
   );
 }
 
-export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps) {
+export default function QuickSwitcher({
+  open,
+  onOpenChange,
+  destinations: destinationsProp,
+  placeholder = 'Go to page…',
+  dialogLabel = 'Go to page',
+  emptyLabel = 'No matching pages',
+  listLabel = 'Pages',
+  enableKeyboardShortcut = true,
+}: QuickSwitcherProps) {
   const navigate = useNavigate();
   const isMac = useIsMac();
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
@@ -87,7 +108,8 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const destinations = useMemo(() => buildQuickSwitcherDestinations(), []);
+  const defaultDestinations = useMemo(() => buildQuickSwitcherDestinations(), []);
+  const destinations = destinationsProp ?? defaultDestinations;
   const filtered = useMemo(
     () => filterDestinations(destinations, query),
     [destinations, query],
@@ -121,6 +143,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
     function onKeyDown(e: KeyboardEvent) {
       const isModK = e.key === 'k' && (e.metaKey || e.ctrlKey);
       if (isModK) {
+        if (!enableKeyboardShortcut) return;
         e.preventDefault();
         onOpenChange(!open);
         return;
@@ -135,7 +158,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
     }
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [open, rendered, onOpenChange]);
+  }, [open, rendered, onOpenChange, enableKeyboardShortcut]);
 
   useEffect(() => {
     if (!rendered) return undefined;
@@ -208,7 +231,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
           className={styles['quick-switcher__panel']}
           role="dialog"
           aria-modal="true"
-          aria-label="Go to page"
+          aria-label={dialogLabel}
         >
           <div className={styles['quick-switcher__header']}>
             <div className={styles['quick-switcher__search']}>
@@ -216,7 +239,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
                 ref={inputRef}
                 className={styles['quick-switcher__search-input']}
                 size="Large"
-                placeholder="Go to page…"
+                placeholder={placeholder}
                 aria-autocomplete="list"
                 aria-controls="quick-switcher-listbox"
                 aria-activedescendant={
@@ -248,7 +271,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
 
           <div className={styles['quick-switcher__body']}>
             {filtered.length === 0 ? (
-              <p className={styles['quick-switcher__empty']}>No matching pages</p>
+              <p className={styles['quick-switcher__empty']}>{emptyLabel}</p>
             ) : (
               <Scrollbar className={styles['quick-switcher__scroll']}>
                 <ul
@@ -256,7 +279,7 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
                   id="quick-switcher-listbox"
                   className={styles['quick-switcher__list']}
                   role="listbox"
-                  aria-label="Pages"
+                  aria-label={listLabel}
                 >
                   {filtered.map((dest, idx) => (
                     <li key={dest.id} role="presentation">
