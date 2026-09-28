@@ -91,13 +91,31 @@ function PopoverJumpList({
     activeItem?.scrollIntoView({ block: 'nearest' });
   }, [activeStepId]);
 
+  function handleArrowNav(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const items = Array.from(
+      container.querySelectorAll<HTMLElement>('[role="menuitem"]'),
+    );
+    if (items.length === 0) return;
+    const currentIndex = items.indexOf(window.document.activeElement as HTMLElement);
+    const next =
+      e.key === 'ArrowDown'
+        ? items[(currentIndex + 1) % items.length]
+        : items[(currentIndex - 1 + items.length) % items.length];
+    next.focus();
+    next.scrollIntoView({ block: 'nearest' });
+  }
+
   return (
     <PopoverMenu
       className={styles['wt-jump']}
       role="menu"
       aria-label="Jump to a step"
     >
-      <div ref={scrollContainerRef}>
+      <div ref={scrollContainerRef} onKeyDown={handleArrowNav}>
         <PopoverMenuScroll maxHeight={360}>
           <JumpListGroups
             document={document}
