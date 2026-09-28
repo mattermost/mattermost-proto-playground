@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import {
@@ -69,6 +69,40 @@ function JumpListGroups({
   );
 }
 
+function PopoverJumpList({
+  document,
+  activeStepId,
+  onSelect,
+}: Omit<WalkthroughJumpListProps, 'variant'>) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const activeItem = container.querySelector<HTMLElement>('[class*="menu-item--active"]');
+    activeItem?.scrollIntoView({ block: 'nearest' });
+  }, [activeStepId]);
+
+  return (
+    <PopoverMenu
+      className={styles['wt-jump']}
+      role="menu"
+      aria-label="Jump to a step"
+    >
+      <div ref={scrollContainerRef}>
+        <PopoverMenuScroll maxHeight={360}>
+          <JumpListGroups
+            document={document}
+            activeStepId={activeStepId}
+            onSelect={onSelect}
+            withDividers
+          />
+        </PopoverMenuScroll>
+      </div>
+    </PopoverMenu>
+  );
+}
+
 export default function WalkthroughJumpList({
   document,
   activeStepId,
@@ -95,19 +129,10 @@ export default function WalkthroughJumpList({
   }
 
   return (
-    <PopoverMenu
-      className={styles['wt-jump']}
-      role="menu"
-      aria-label="Jump to a step"
-    >
-      <PopoverMenuScroll maxHeight={360}>
-        <JumpListGroups
-          document={document}
-          activeStepId={activeStepId}
-          onSelect={onSelect}
-          withDividers
-        />
-      </PopoverMenuScroll>
-    </PopoverMenu>
+    <PopoverJumpList
+      document={document}
+      activeStepId={activeStepId}
+      onSelect={onSelect}
+    />
   );
 }

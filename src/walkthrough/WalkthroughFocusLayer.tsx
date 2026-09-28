@@ -495,6 +495,11 @@ export default function WalkthroughFocusLayer({
       frame = window.requestAnimationFrame(() => measure({ forcePlace: true }));
     };
 
+    // ResizeObserver catches stage resize from Jump-panel expand/collapse (not a
+    // window resize — the narrative slot CSS-transitions and the stage flexes).
+    const ro = new ResizeObserver(onScroll);
+    if (stageRef.current) ro.observe(stageRef.current);
+
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onScroll);
 
@@ -503,6 +508,7 @@ export default function WalkthroughFocusLayer({
       window.clearTimeout(t2);
       window.clearTimeout(t3);
       window.cancelAnimationFrame(frame);
+      ro.disconnect();
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onScroll);
     };
