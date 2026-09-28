@@ -76,6 +76,14 @@ function PopoverJumpList({
 }: Omit<WalkthroughJumpListProps, 'variant'>) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Focus the active item when the popover first opens.
+  useEffect(() => {
+    scrollContainerRef.current
+      ?.querySelector<HTMLElement>('[class*="menu-item--active"]')
+      ?.focus();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Scroll the active item into view when the step changes while the popover is open.
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;

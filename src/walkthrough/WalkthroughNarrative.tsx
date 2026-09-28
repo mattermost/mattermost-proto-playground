@@ -49,6 +49,7 @@ export default function WalkthroughNarrative({
   const [jumpEntered, setJumpEntered] = useState(false);
   const jumpRef = useRef<HTMLDivElement>(null);
   const popoverOpen = jumpOpen && !jumpDocked;
+  const wasPopoverOpen = useRef(false);
   const { rendered: jumpRendered, exiting: jumpExiting } = useExitAnimation(
     popoverOpen,
     JUMP_EXIT_MS,
@@ -74,6 +75,14 @@ export default function WalkthroughNarrative({
     });
     return () => window.cancelAnimationFrame(id);
   }, [jumpRendered, jumpExiting]);
+
+  // Return focus to the Jump to button whenever the popover closes.
+  useEffect(() => {
+    if (wasPopoverOpen.current && !popoverOpen) {
+      jumpRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    }
+    wasPopoverOpen.current = popoverOpen;
+  }, [popoverOpen]);
 
   const isFirst = stepIndex <= 0;
   const isLast = stepIndex >= walkthrough.steps.length - 1;
