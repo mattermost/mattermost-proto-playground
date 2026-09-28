@@ -171,6 +171,10 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
   - Any node whose box is effectively the full stage (≈ full width and height)
   - “Overview” steps that only orient the viewer — omit `focus` instead
 - Prefer: a button, menu row, toggle, list **group container**, floating widget, or info panel — not the full stage that contains them
+- **Ring vs lightbox — one question: does the viewer need context to understand this target?**
+  - **Ring** — Yes, context matters. Use for specific interactive controls (button, toggle, tab, row, input) within a surface that's already visible; any target whose purpose only makes sense when you can see what surrounds it; sequential callouts on the same surface.
+  - **Lightbox** — No, the target stands alone. Use for a floating, docked, or overlaid surface the step is *introducing as a whole* (a popover, panel, sheet, or widget that appears over content); a content section inside a panel where new information just appeared and dimming isolates what changed.
+  - When in doubt, prefer ring and promote to lightbox only if the target is hard to find or the surrounding layout actively competes with it.
 - **One ring per step callout:** stamp `data-wt-focus="<id>"` on a single parent. Nested or per-child stamps with the same id cause overlapping rings (runtime draws one ring per match)
 - **Scroll before ring:** focus targets inside overflow/SimpleBar lists (e.g. participants roster) are scrolled into the nested scrollport before measure. Prefer group containers at the **start** of a clipped section; the layer re-scrolls on delayed place passes so restamped overlays (~180ms) do not leave the ring on clipped rows.
 - **TourPoint** (`focus.note`): placed by `WalkthroughFocusLayer`; host owns enter/exit scale (suppress TourPoint’s own panel-in); restore list discs on note bullets
