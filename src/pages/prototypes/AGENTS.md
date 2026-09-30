@@ -4,6 +4,8 @@ Follow this when working under `src/pages/prototypes/`.
 
 For scaffolding a new multi-scene prototype end-to-end, use [.cursor/skills/scaffold-prototype/SKILL.md](../../../.cursor/skills/scaffold-prototype/SKILL.md).
 
+For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.cursor/skills/guided-walkthrough/SKILL.md](../../../.cursor/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
+
 ## Imports
 
 Use `@mattermost/compass-ui` **subpath** imports only — never the root barrel:
@@ -37,6 +39,7 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
 | Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
 | Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
+| Walkthrough / product tour card | `TourPoint` | `@mattermost/compass-ui/components/tour-point` |
 | Chat message | `Message` | `@mattermost/compass-proto` |
 | Composer | `MessageInput` | `@mattermost/compass-proto` |
 | Channel header | `ChannelHeader` | `@mattermost/compass-proto` |

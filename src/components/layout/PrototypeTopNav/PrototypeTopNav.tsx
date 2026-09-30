@@ -8,12 +8,15 @@ export interface PrototypeTopNavProps {
   title: string;
   centerSlot?: ReactNode;
   startSlot?: ReactNode;
+  /** Extra controls before Theme (e.g. walkthrough mode). */
+  endSlot?: ReactNode;
 }
 
 export default function PrototypeTopNav({
   title,
   centerSlot,
   startSlot,
+  endSlot,
 }: PrototypeTopNavProps) {
   return (
     <header className={styles['prototype-top-nav']}>
@@ -37,6 +40,7 @@ export default function PrototypeTopNav({
       <div className={styles['prototype-top-nav__center']}>{centerSlot}</div>
 
       <div className={styles['prototype-top-nav__end']}>
+        {endSlot}
         <ThemeSwitcherControl />
       </div>
     </header>

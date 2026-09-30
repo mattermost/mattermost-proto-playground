@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { CallPopout, CallWidget, Message, MessageInput } from '@mattermost/compass-proto';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
@@ -19,9 +19,22 @@ import { SCENES, type SceneId } from './externalCallParticipants.scenes';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import ExternalCallChannelsShell from './ExternalCallChannelsShell';
 import WelcomeScene from './WelcomeScene';
+import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
+import type { WalkthroughSceneState } from '@/walkthrough';
+import { externalCallParticipantsWalkthrough } from './externalCallParticipantsWalkthrough';
+import { parseExternalWalkthroughApply } from './externalWalkthroughApply';
+import { stampExternalWalkthroughFocus } from './externalWalkthroughFocus';
+import layoutStyles from './ExternalCallParticipantsLayout.module.scss';
+
+const SCENE_IDS: SceneId[] = ['welcome', 'widget', 'popout', 'guest'];
+
+function isSceneId(value: string): value is SceneId {
+  return (SCENE_IDS as string[]).includes(value);
+}
 
 export default function ExternalCallParticipants() {
   const { setCenterSlot } = usePrototypeChrome();
+  const { active: walkthroughActive } = useWalkthrough();
   const [externalEnabled, setExternalEnabled] = useState(false);
   const [scene, setScene] = useState<SceneId>('widget');
   const [callInfoOpen, setCallInfoOpen] = useState(false);
@@ -35,7 +48,39 @@ export default function ExternalCallParticipants() {
 
   const popoutOpen = scene === 'popout';
 
+  const applyWalkthroughState = useCallback((state?: WalkthroughSceneState) => {
+    const apply = parseExternalWalkthroughApply(state);
+
+    if (apply.widgetOverlay === null || apply.widgetOverlay === undefined) {
+      setWidgetOverlay(null);
+    } else {
+      setWidgetOverlay(apply.widgetOverlay);
+    }
+
+    setCallInfoOpen(Boolean(apply.callInfoOpen));
+    setExternalEnabled(Boolean(apply.externalEnabled));
+
+    if (apply.guestName) setGuestName(apply.guestName);
+  }, []);
+
+  const onWalkthroughScene = useCallback(
+    (next: string, state?: WalkthroughSceneState) => {
+      if (!isSceneId(next)) return;
+      setScene(next);
+      applyWalkthroughState(state);
+    },
+    [applyWalkthroughState],
+  );
+
+  useRegisterWalkthrough(externalCallParticipantsWalkthrough, {
+    onScene: onWalkthroughScene,
+  });
+
   useEffect(() => {
+    if (walkthroughActive) {
+      setCenterSlot(null);
+      return () => setCenterSlot(null);
+    }
     setCenterSlot(
       <SceneSwitcher
         scenes={SCENES}
@@ -45,7 +90,20 @@ export default function ExternalCallParticipants() {
       />,
     );
     return () => setCenterSlot(null);
-  }, [scene, setCenterSlot]);
+  }, [scene, setCenterSlot, walkthroughActive]);
+
+  useLayoutEffect(() => {
+    let cleanup = stampExternalWalkthroughFocus();
+    // CallWidget / CallPopout popovers animate in (~150ms).
+    const t = window.setTimeout(() => {
+      cleanup();
+      cleanup = stampExternalWalkthroughFocus();
+    }, 180);
+    return () => {
+      window.clearTimeout(t);
+      cleanup();
+    };
+  }, [scene, widgetOverlay, callInfoOpen, externalEnabled, guestName]);
 
   const guestParticipants: Participant[] = CALL_PARTICIPANTS.map((p) =>
     p.id === 'external-james' && guestName.trim()
@@ -74,20 +132,24 @@ export default function ExternalCallParticipants() {
 
   if (scene === 'guest') {
     return (
-      <CallPopout
-        variant="fullscreen"
-        guestView
-        participants={guestParticipants}
-        currentUserId="external-james"
-        muted={muted}
-        onToggleMute={() => setMuted((m) => !m)}
-        onLeave={() => setScene('welcome')}
-        infoOpen={callInfoOpen}
-        onInfoToggle={() => setCallInfoOpen((v) => !v)}
-        externalEnabled={externalEnabled}
-        onExternalEnabledChange={setExternalEnabled}
-        {...callLinkProps}
-      />
+      <div className={layoutStyles.stage}>
+        <div className={layoutStyles['stage__frame']}>
+          <CallPopout
+            variant="fullscreen"
+            guestView
+            participants={guestParticipants}
+            currentUserId="external-james"
+            muted={muted}
+            onToggleMute={() => setMuted((m) => !m)}
+            onLeave={() => setScene('welcome')}
+            infoOpen={callInfoOpen}
+            onInfoToggle={() => setCallInfoOpen((v) => !v)}
+            externalEnabled={externalEnabled}
+            onExternalEnabledChange={setExternalEnabled}
+            {...callLinkProps}
+          />
+        </div>
+      </div>
     );
   }
 

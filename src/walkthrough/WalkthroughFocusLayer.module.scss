@@ -1,0 +1,109 @@
+.wt-focus {
+  position: absolute;
+  inset: 0;
+  // Above prototype overlays (menus ~30, popovers ~40, PIP ~50).
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+
+  // Positioned over [data-wt-shell] (product app shell), not the full stage.
+  // Dim area is clickable; cutout stays pointer-events none so the target remains interactive.
+  &__lightbox {
+    position: absolute;
+    overflow: hidden;
+    pointer-events: auto;
+    cursor: default;
+    border-radius: var(--radius-xl);
+  }
+
+  &__cutout {
+    position: absolute;
+    box-shadow: 0 0 0 9999px rgba(0,0,0, 0.64);
+    background: transparent;
+    pointer-events: none;
+  }
+
+  // Drawn here (not on the target) so overflow:hidden ancestors cannot clip it.
+  // Sits above the lightbox dim so the cutout target stays outlined.
+  // border-radius is set inline from the target's computed radius.
+  &__ring {
+    position: absolute;
+    z-index: 2;
+    box-sizing: border-box;
+    border: 2px solid var(--color-yellow-500);
+    box-shadow: 0 0 0 4px rgba(var(--color-yellow-500-rgb), 0.24);
+    pointer-events: none;
+  }
+
+  &__note {
+    position: absolute;
+    // Above lightbox dim/cutout within this layer.
+    z-index: 3;
+    max-width: calc(100% - 24px);
+    pointer-events: auto;
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      top var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      left var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
+      opacity var(--duration-quick, 150ms) var(--ease-entrance, ease-out),
+      transform var(--duration-quick, 150ms) var(--ease-entrance, ease-out);
+
+    // Suppress TourPoint's own panel-in — host owns enter/exit timing.
+    :global([class*='tour-point__panel']) {
+      animation: none;
+    }
+  }
+
+  &__note--entered {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &__note--exiting {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+    transition:
+      opacity var(--duration-quick, 150ms) var(--ease-exit, ease-in),
+      transform var(--duration-quick, 150ms) var(--ease-exit, ease-in);
+  }
+
+  // TourPoint body inherits a reset that strips list chrome — restore discs.
+  &__note-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    list-style-type: disc;
+    list-style-position: outside;
+    color: inherit;
+
+    li {
+      display: list-item;
+    }
+
+    li + li {
+      margin-top: var(--spacing-xxs);
+    }
+
+    ::marker {
+      color: color-mix(in srgb, var(--neutral-0) 92%, transparent);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wt-focus__note,
+  .wt-focus__note--entered,
+  .wt-focus__note--exiting {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .wt-focus__note--entered {
+    opacity: 1;
+  }
+
+  .wt-focus__note--exiting {
+    opacity: 0;
+  }
+}

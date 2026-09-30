@@ -50,9 +50,18 @@ function StartCallMenu({
         }
         const next = actions[i + 1];
         const showDividerAfter = action.type === 'audio' && next && next.type !== 'audio';
+        const focusId =
+          action.type === 'phone' && action.kind === 'standard'
+            ? 'call-label'
+            : action.type === 'dialpad'
+              ? 'dm-use-dialpad'
+              : undefined;
         return (
           <Fragment key={action.id}>
-            <li className={styles['start-call-menu__item']}>
+            <li
+              className={styles['start-call-menu__item']}
+              {...(focusId ? { 'data-wt-focus': focusId } : {})}
+            >
               <MenuItem
                 role="menuitem"
                 label={label}
@@ -81,16 +90,27 @@ export function SegmentedCallButton({
   actions,
   onSelect,
   audioLabel,
+  open: openProp,
+  onOpenChange,
 }: {
   actions: StartCallAction[];
   onSelect: (action: StartCallAction) => void;
   audioLabel?: string;
+  /** Controlled menu open (e.g. walkthrough sceneState.startCallMenu). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const controlled = openProp !== undefined;
+  const open = controlled ? openProp : uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (!controlled) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
   const wrapRef = useRef<HTMLDivElement>(null);
   useOutsideClose(wrapRef, open, () => setOpen(false));
 
-  const toggle = () => setOpen((o) => !o);
+  const toggle = () => setOpen(!open);
   const pick = (action: StartCallAction) => {
     setOpen(false);
     onSelect(action);
@@ -151,6 +171,7 @@ export function PopoverCallButton({
         aria-label="Call"
         aria-haspopup="menu"
         aria-expanded={open}
+        data-wt-focus="profile-call-menu"
       >
         <Icon glyph={<PhoneIcon />} size="16" />
         <Icon glyph={<ChevronDownIcon />} size="12" />
