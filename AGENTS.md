@@ -63,6 +63,7 @@ Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--spacing-*`
 - [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) — Prototypes
 - [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md) — Split plan
 - [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype
+- [.cursor/skills/guided-walkthrough/SKILL.md](.cursor/skills/guided-walkthrough/SKILL.md) — Guided walkthrough mode for a prototype
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
 
 For guidelines, Storybook, and package work, use the **compass-design** repo.

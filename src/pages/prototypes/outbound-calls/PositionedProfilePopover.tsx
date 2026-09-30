@@ -18,12 +18,15 @@ export function PositionedProfilePopover({
   onClose,
   onStartCall,
   onOpenDialer,
+  dismissOnOutside = true,
 }: {
   contact: Contact;
   anchorRect: DOMRect;
   onClose: () => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
   onOpenDialer: () => void;
+  /** When false, ignore outside mousedown (walkthrough owns open/close). */
+  dismissOnOutside?: boolean;
 }) {
   const actions: StartCallAction[] = [
     { id: 'audio', type: 'audio' },
@@ -65,15 +68,33 @@ export function PositionedProfilePopover({
     setMeasured(true);
   }, [anchorRect]);
 
+  // Stamp walkthrough focus on the phone-rows group (Compass has no data attrs).
+  useLayoutEffect(() => {
+    const root = ref.current;
+    if (!root || !measured) return;
+    const links = root.querySelectorAll<HTMLElement>(
+      'button[class*="profile-popover__meta-link"]',
+    );
+    if (links.length === 0) return;
+    const first = links[0];
+    const group =
+      first.closest<HTMLElement>('[class*="profile-popover__meta"]') ??
+      first.parentElement;
+    if (!group) return;
+    group.setAttribute('data-wt-focus', 'profile-phones');
+    return () => group.removeAttribute('data-wt-focus');
+  }, [contact.id, contact.phones, measured]);
+
   const beginClose = useCallback(() => setClosing(true), []);
 
   useEffect(() => {
+    if (!dismissOnOutside) return;
     function handler(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) beginClose();
     }
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [beginClose]);
+  }, [beginClose, dismissOnOutside]);
 
   const handleAnimationEnd = (e: React.AnimationEvent<HTMLDivElement>) => {
     if (closing && e.target === e.currentTarget) onClose();
