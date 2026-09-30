@@ -1043,7 +1043,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
               </div>
             </Scrollbar>
           </div>
-          <div className={styles['docs-channel__composer']}>
+          <div className={styles['docs-channel__composer']} data-wt-focus="docs-composer">
             <MentionMessageInput
               placeholder="Write to docs-site"
               onSend={() => undefined}
@@ -1057,7 +1057,9 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
             styles['docs-channel__rhs'],
             rhsExiting ? styles['docs-channel__rhs--exiting'] : '',
           ].filter(Boolean).join(' ')}>
-            <div className={[
+            <div
+              data-wt-focus="docs-thread"
+              className={[
               styles['docs-channel__rhs-thread'],
               rhsExpanded ? styles['docs-channel__rhs-thread--expanded'] : '',
             ].filter(Boolean).join(' ')}>

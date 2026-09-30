@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
+import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import AgentsGlobalHeader from '../agents/components/AgentsGlobalHeader';
 import MattyPanel from '../agents/components/MattyPanel';
 import NewAgentGroupChatModal from '../agents/components/NewAgentGroupChatModal';
@@ -10,6 +11,7 @@ import { MATTY, resolveSingleAgentProfile } from '../agents/agentsData';
 import { useAgents, type AgentsProduct } from '../agents/context/AgentsContext';
 import { STAFF_TEAM_LOGO } from './agentsDocsData';
 import { AGENTS_DOCS_BASE, type AgentsDocsSceneId } from './agentsDocsScenes';
+import { agentsDocsWalkthrough } from './agentsDocsWalkthrough';
 import AgentsDocsSceneDropdown from './components/AgentsDocsSceneDropdown';
 import DocsChannelHome from './products/channels/DocsChannelHome';
 import DocsIncidentChannel from './products/channels/DocsIncidentChannel';
@@ -40,6 +42,20 @@ function resolveDocsScene(
   if (normalized.startsWith(`${AGENTS_DOCS_BASE}/channel/INC-`)) return 'docs-outage';
   return 'channels';
 }
+
+const WALKTHROUGH_SCENE_LOCATIONS: Partial<
+  Record<AgentsDocsSceneId, { path: string; query?: string }>
+> = {
+  channels: { path: AGENTS_DOCS_BASE },
+  grounding: { path: AGENTS_DOCS_BASE, query: 'scene=grounding' },
+  review: { path: AGENTS_DOCS_BASE, query: 'scene=review' },
+  approval: { path: AGENTS_DOCS_BASE, query: 'scene=approval' },
+  'later-that-week': { path: AGENTS_DOCS_BASE, query: 'scene=later-that-week' },
+  'docs-outage': { path: AGENTS_DOCS_BASE, query: 'scene=docs-outage' },
+  'matty-chat': { path: `${AGENTS_DOCS_BASE}/dm/matty` },
+  'all-agents': { path: `${AGENTS_DOCS_BASE}/agents` },
+  'all-agents-list': { path: `${AGENTS_DOCS_BASE}/agents`, query: 'view=all' },
+};
 
 function resolveProduct(pathname: string): AgentsProduct {
   const normalized =
@@ -74,6 +90,36 @@ export default function AgentsDocsShell() {
     setMattyPanelOpen,
   } = useAgents();
 
+  const { active: walkthroughActive } = useWalkthrough();
+
+  const navigateRef = useRef(navigate);
+  const searchRef = useRef(search);
+  const closeModalsRef = useRef(() => {});
+  navigateRef.current = navigate;
+  searchRef.current = search;
+  closeModalsRef.current = () => {
+    closeNewAgent();
+    closeNewGroupChat();
+  };
+
+  const onWalkthroughScene = useCallback((next: string) => {
+    const target = WALKTHROUGH_SCENE_LOCATIONS[next as AgentsDocsSceneId];
+    if (!target) return;
+    closeModalsRef.current();
+    const params = new URLSearchParams(target.query);
+    const current = new URLSearchParams(searchRef.current);
+    ['walkthrough', 'step'].forEach((key) => {
+      const value = current.get(key);
+      if (value) params.set(key, value);
+    });
+    navigateRef.current(
+      { pathname: target.path, search: `?${params.toString()}` },
+      { replace: true },
+    );
+  }, []);
+
+  useRegisterWalkthrough(agentsDocsWalkthrough, { onScene: onWalkthroughScene });
+
   const activeProduct = resolveProduct(pathname);
   // Derive channel-view visibility from the URL only — opening the new-agent modal
   // should not hide the channel content that sits behind it.
@@ -92,6 +138,10 @@ export default function AgentsDocsShell() {
   );
 
   useEffect(() => {
+    if (walkthroughActive) {
+      setStartSlot(null);
+      return () => setStartSlot(null);
+    }
     setStartSlot(
       <AgentsDocsSceneDropdown
         open={dropdownOpen}
@@ -107,6 +157,7 @@ export default function AgentsDocsShell() {
     return () => setStartSlot(null);
   }, [
     setStartSlot,
+    walkthroughActive,
     dropdownOpen,
     handleDropdownOpenChange,
     newAgentOpen,
@@ -121,7 +172,7 @@ export default function AgentsDocsShell() {
 
   return (
     <div className={styles['agents-shell']}>
-      <div className={styles['agents-shell__frame']}>
+      <div className={styles['agents-shell__frame']} data-wt-shell>
         <AgentsGlobalHeader
           className={styles['agents-shell__header']}
           teamName="Staff"
