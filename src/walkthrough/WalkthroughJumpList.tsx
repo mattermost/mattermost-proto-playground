@@ -114,8 +114,9 @@ function PopoverJumpList({
       className={styles['wt-jump']}
       role="menu"
       aria-label="Jump to a step"
+      onKeyDown={handleArrowNav}
     >
-      <div ref={scrollContainerRef} onKeyDown={handleArrowNav}>
+      <div ref={scrollContainerRef}>
         <PopoverMenuScroll maxHeight={360}>
           <JumpListGroups
             document={document}
