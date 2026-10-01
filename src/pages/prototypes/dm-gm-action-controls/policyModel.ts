@@ -277,12 +277,14 @@ export function generateStartingRules(
       contractor.attribute,
     );
     if (lead?.value) {
-      const leads = plural(lead.value);
+      // Attribute values are proper nouns only at the start of a sentence.
+      const leads = plural(lead.value).toLowerCase();
+      const Leads = leads.charAt(0).toUpperCase() + leads.slice(1);
       const leadName = `${who} can't start DMs with ${leads}`;
       rules.push({
         id: 'contractors-no-leads',
         name: leadName,
-        description: `${who} can't start a conversation with ${leads}. ${leads} can still start one with them.`,
+        description: `${who} can't start a conversation with ${leads}. ${Leads} can still start one with them.`,
         tags: ['Start', SUMMARY.tagOneWay],
         uses: [contractor, lead],
         build: () => ({

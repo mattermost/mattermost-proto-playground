@@ -203,7 +203,7 @@ const BLOCKED_TITLE = `File and channel permissions are blocked while the policy
 function oneWayNote(direction: DirectionId) {
   return (
     <p>
-      &ldquo;Contractors can&apos;t start DMs with Program leads&rdquo; allows a
+      &ldquo;Contractors can&apos;t start DMs with program leads&rdquo; allows a
       start when the {ACTING_NOUN} is not a contractor <em>or</em> the{' '}
       {TARGET_NOUN} is not a program lead. It is written in Simple mode as two
       rows joined with <strong>{MATCH.any}</strong>.{' '}
