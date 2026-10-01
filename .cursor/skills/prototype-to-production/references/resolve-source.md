@@ -45,19 +45,20 @@ scenes/                 # one file per scene
 *Walkthrough.ts         # ignore for production translation
 ```
 
-**Otherwise fetch from GitHub** (default branch `main`):
+**Otherwise fetch from GitHub.** Prototypes often live on **feature branches**, not `main` — resolve the ref before reading files.
+
+1. Prefer an explicit branch, PR URL, or commit from the user (or from the published deploy if it exposes one).
+2. If only a slug/URL is given, search the playground repo (e.g. `gh` PRs/branches, or check whether `src/pages/prototypes/<slug>/` exists on `main`).
+3. If the slug is missing on `main` or the branch is unclear, **ask once** for the branch or PR — do not guess a random feature branch.
+
+Tree / raw patterns (substitute `<ref>` = branch, tag, or SHA):
 
 ```text
-https://github.com/mattermost/mattermost-proto-playground/tree/main/src/pages/prototypes/<slug>/
+https://github.com/mattermost/mattermost-proto-playground/tree/<ref>/src/pages/prototypes/<slug>/
+https://raw.githubusercontent.com/mattermost/mattermost-proto-playground/<ref>/src/pages/prototypes/<slug>/<file>
 ```
 
-Raw file pattern:
-
-```text
-https://raw.githubusercontent.com/mattermost/mattermost-proto-playground/main/src/pages/prototypes/<slug>/<file>
-```
-
-Use `gh` / git sparse checkout / HTTP as available. If the slug is missing on `main`, ask whether the prototype lives on a feature branch and use that ref.
+Use `gh` / git sparse checkout / HTTP as available. Record the ref used for the session so later reads stay on the same prototype revision.
 
 ## What to read
 

@@ -74,7 +74,7 @@ Do not re-ask every turn; keep the answer for the session.
 Follow [references/resolve-source.md](references/resolve-source.md).
 
 - Prefer local `src/pages/prototypes/<slug>/` when available.
-- Else GitHub: `mattermost/mattermost-proto-playground` → `src/pages/prototypes/<slug>/`.
+- Else GitHub: `mattermost/mattermost-proto-playground` → `src/pages/prototypes/<slug>/` on the correct **branch/PR/ref** (prototypes often are not on `main` — ask if unclear).
 - Published URL is visual context only; hashed CSS classes are not component IDs.
 
 ### 3. Inventory imports
