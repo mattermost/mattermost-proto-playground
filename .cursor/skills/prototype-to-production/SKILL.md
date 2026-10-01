@@ -152,10 +152,18 @@ Desktop overlays: Compass ships `Modal`, `Tooltip`, `PopoverMenu`, `TourPoint`, 
 
 Large chrome often lives in **proto** (never a product dependency) — e.g. `ChannelsSidebar`, `TeamSidebar`, `GlobalHeader`, `AdminConsoleSidebar`, hardcoded `*Menu` recipes, `ChannelShell`, `Mobile*`, Call*. Decompose to ui leaves (`ChannelSidebarItem`, `MenuItem`, `PopoverMenu`, …) + host layout. Always `ls` the consumer’s installed ui; alphas differ.
 
-## Example prompt shape
+## Example prompt shapes
 
-> Create a System Console page under \<category\> named \<name\>. Access: \<rules\>. Prototype: \<URL\>. Use prototype-to-production / Compass ui.
+Include **consumer**, **surface/intent**, and a **prototype ref** (URL, slug, branch, or PR). The skill still gates on consumer if omitted.
 
-Or in a plugin repo:
+**Webapp feature (branch):**
 
-> Implement this prototype in the Playbooks RHS: \<URL\>.
+> Implement the changes from this prototype in the Mattermost webapp. Focus: a new and improved threads viewing experience. Prototype branch: `<branch>` in mattermost-proto-playground. Use prototype-to-production.
+
+**System Console page:**
+
+> Create a System Console page under `<category>` named `<name>`. Access: `<rules>`. Prototype: `<URL or branch>`. Use prototype-to-production.
+
+**Plugin surface:**
+
+> Implement this prototype in the Playbooks RHS: `<URL or branch>`. Use prototype-to-production.
