@@ -26,6 +26,7 @@ Turn a **mattermost-proto-playground** prototype into product code in a consumer
 
 - Scaffolding or editing prototypes inside the playground → `scaffold-prototype` / `guided-walkthrough`
 - Adding design-system components → work in **compass-design**
+- **Mobile app** (native iOS / Android) — not supported yet; this skill targets web consumers (webapp, desktop, plugins) that can depend on `@mattermost/compass-ui`
 - Consumer has no `@mattermost/compass-ui` and the user refuses to add it → stop; do not hand-roll CSS replacements for Compass
 
 ## Install
