@@ -121,7 +121,7 @@ Plugins: same order; grep the **plugin** repo, not webapp System Console paths. 
 - Do not copy playground scene/orchestrator structure wholesale.
 - Compass = look; product = behavior.
 - Subpath imports only for compass-ui; kebab-case variant strings.
-- Overlay host ownership (portal, focus, escape) stays in product code.
+- Overlay host ownership (portal, focus, escape) stays in product code. Compass `Modal` / `Tooltip` / `PopoverMenu` are **not adopted in consumers yet** — prefer host overlay patterns unless the task explicitly adopts them (see [references/boundaries.md](references/boundaries.md)).
 
 ### 6. Validation checklist
 
@@ -141,15 +141,14 @@ Hints only — always verify against the consumer’s installed package.
 
 | Role | Likely export | Import subpath |
 | --- | --- | --- |
-| Desktop dialog | `Modal` | `@mattermost/compass-ui/components/modal` |
-| Button | `Button` | `…/button` |
+| Button | `Button` | `@mattermost/compass-ui/components/button` |
 | Text | `TextInput` | `…/text-input` |
 | Search | `SearchInput` | `…/search-input` |
 | Menu row | `MenuItem` | `…/menu-item` |
 | Empty view | `EmptyState` | `…/empty-state` |
 | Tabs | `Tabs` | `…/tabs` |
 
-There is no `Dialog` — use `Modal`. Proto shells (`ChannelShell`, `Mobile*`, Call*) are never product dependencies.
+Desktop dialog / tooltip / popover menu: Compass ships `Modal`, `Tooltip`, `PopoverMenu`, but **consumers do not use them yet** — keep host overlays unless explicitly adopting. Proto shells (`ChannelShell`, `Mobile*`, Call*) are never product dependencies.
 
 ## Example prompt shape
 

@@ -6,7 +6,7 @@ Stable rules for translating a Compass prototype into product code. Not a full c
 
 | Bucket | Examples | Product action |
 | --- | --- | --- |
-| `@mattermost/compass-ui` | `Button`, `Modal`, `TextInput`, `ChannelsSidebar`, … | Keep. Import from **subpaths**. Confirm export exists in **consumer** `node_modules`. |
+| `@mattermost/compass-ui` | `Button`, `TextInput`, `ChannelsSidebar`, … | Keep when the consumer already adopts that leaf (or the task is adopting it). Import from **subpaths**. Confirm export exists in **consumer** `node_modules`. See overlay adoption note below for `Modal` / `Tooltip` / `PopoverMenu`. |
 | `@mattermost/compass-proto` | `ChannelShell`, `Mobile*`, `CallWidget`, `CallPopout`, message/composer/header composites when imported from proto, `buildDefaultChannelsSidebarModel`, demo RHS fixtures | **Never** add as a product dependency. Decompose to ui leaves + host layout/behavior. |
 | Playground chrome | `PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileModalStage`, walkthrough runtime (`data-wt-*`, `src/walkthrough/`) | **Drop.** Wire into the consumer’s nav/shell. |
 | Prototype-local | `src/pages/prototypes/<slug>/components/*` | Rebuild with ui primitives/tokens, or reuse a host surface pattern with Compass leaves. |
@@ -18,7 +18,7 @@ Stable rules for translating a Compass prototype into product code. Not a full c
 2. **Never** ship `@mattermost/compass-proto` into webapp, desktop, or plugins.
 3. Compass owns **look** (props/slots). The consumer owns **behavior** (permissions, data, routing, optimistic UI).
 4. Variant prop strings are **lowercase kebab-case** (`'primary'`, `'x-small'`).
-5. Overlays from Compass (`Modal`, `Tooltip`, `PopoverMenu`, …) are visual chrome only — host owns open/close, portal, position, focus (exceptions: form widgets that own their menus).
+5. Overlays from Compass (`Modal`, `Tooltip`, `PopoverMenu`, …) are visual chrome only — host owns open/close, portal, position, focus (exceptions: form widgets that own their menus). **Adoption note (current):** no Mattermost consumer (webapp / desktop / plugins) uses Compass `Modal`, `Tooltip`, or `PopoverMenu` yet. If the prototype uses them, map to the **host’s existing overlay patterns** for that surface; do not introduce these Compass overlays into product unless the task explicitly adopts them. Re-check consumer code / installed usage before assuming this still holds.
 
 ## Version skew
 
