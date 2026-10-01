@@ -1,0 +1,33 @@
+.blocked-start {
+  &__ephemeral {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  /* Anchored beside Isabella Cruz's post in Ashgrove Integration. */
+  &__popover {
+    position: absolute;
+    top: 176px;
+    left: 420px;
+    z-index: 15;
+
+    &--blocked {
+      :global([class*='profile-popover__primary-button']) {
+        background-color: rgba(var(--center-channel-color-rgb), 0.08);
+        color: rgba(var(--center-channel-color-rgb), 0.32);
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__tooltip {
+    position: absolute;
+    left: 16px;
+    bottom: -40px;
+    display: none;
+
+    &--open {
+      display: block;
+    }
+  }
+}

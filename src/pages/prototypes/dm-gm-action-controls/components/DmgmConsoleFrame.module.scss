@@ -1,0 +1,38 @@
+.dmgm-console-frame {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  background: var(--center-channel-bg);
+  isolation: isolate;
+
+  &__sidebar {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__main {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    background: rgba(0, 0, 0, 0.5);
+
+    /* Keep tall dialogs inside the 768px frame; the Compass body scrolls. */
+    > * {
+      max-height: 100%;
+    }
+  }
+}

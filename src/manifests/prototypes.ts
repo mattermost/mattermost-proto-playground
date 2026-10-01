@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import ActionControlsViewChannel from '@/pages/prototypes/action-controls-view-channel/ActionControlsViewChannel';
+import DmGmActionControls from '@/pages/prototypes/dm-gm-action-controls/DmGmActionControls';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -18,6 +19,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Action Controls – Read and Write to Channels',
     path: '/prototypes/action-controls-view-channel',
     component: ActionControlsViewChannel,
+  },
+  {
+    id: 'dm-gm-action-controls',
+    label: 'Action Controls – Direct and Group Messages',
+    path: '/prototypes/dm-gm-action-controls',
+    component: DmGmActionControls,
   },
   {
     id: 'external-call-participants',

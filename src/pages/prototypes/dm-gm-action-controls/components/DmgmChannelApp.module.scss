@@ -1,0 +1,119 @@
+@keyframes dmgm-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dmgm-app {
+  position: relative;
+  height: 100%;
+  isolation: isolate;
+
+  &__sidebar {
+    display: flex;
+    height: 100%;
+    animation: dmgm-fade-in var(--duration-moderate) var(--ease-transition);
+  }
+
+  &__center {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    animation: dmgm-fade-in var(--duration-moderate) var(--ease-transition);
+  }
+
+  /* Adds no box: carries the author handle for click delegation only. */
+  &__message {
+    display: contents;
+  }
+
+  &__denied {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xxl);
+    text-align: center;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__denied-redirect {
+    margin: 0;
+    max-width: 420px;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__readonly {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    width: 100%;
+    min-height: 52px;
+    padding: 12px var(--spacing-l);
+    border: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__readonly-draft {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    resize: none;
+    background: transparent;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    cursor: not-allowed;
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    background: rgba(0, 0, 0, 0.5);
+
+    /* Keep tall dialogs inside the 768px frame; the Compass body scrolls. */
+    > * {
+      max-height: 100%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dmgm-app {
+    &__sidebar,
+    &__center {
+      animation: none;
+    }
+  }
+}
