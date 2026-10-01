@@ -82,7 +82,7 @@ export default function DmgmSessionControls({
               {conversation.name}
             </span>
             <Verdict label="View" allowed={session.canView} />
-            <Verdict label="Post" allowed={session.canPost} />
+            <Verdict label="Write" allowed={session.canPost} />
           </>
         ) : (
           <span className={styles['dmgm-session-controls__context']}>

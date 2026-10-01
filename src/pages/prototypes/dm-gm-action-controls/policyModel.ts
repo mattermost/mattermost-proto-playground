@@ -30,9 +30,9 @@ export const DM_PERMISSIONS: Record<
     description: 'Allow users to start new direct and group messages',
   },
   post: {
-    label: 'Post in Direct and Group Messages',
+    label: 'Write to Direct and Group Messages',
     description:
-      'Allow users to post in direct and group messages. Requires View Direct and Group Messages.',
+      'Allow users to post in direct and group messages and change their content. Requires View Direct and Group Messages.',
   },
   view: {
     label: 'View Direct and Group Messages',
@@ -221,7 +221,7 @@ export function generateStartingRules(
       id: `same-${slug(a.name)}`,
       name,
       description: `People can start and post in direct messages only with people who have the same ${a.name}.`,
-      tags: ['Start', 'Post', SUMMARY.tagBothWays],
+      tags: ['Start', 'Write', SUMMARY.tagBothWays],
       uses: [{ attribute: a.name }],
       build: () => ({
         name,
@@ -325,7 +325,7 @@ export function generateStartingRules(
       name,
       description:
         "On an untrusted network, people can read direct messages but can't post.",
-      tags: ['Post', 'Session rule'],
+      tags: ['Write', 'Session rule'],
       uses: [network],
       build: () => ({
         name,
@@ -586,7 +586,7 @@ export function layerLabel(layer: DecidingLayer): string {
     case 'missing-target':
       return SIMULATE.layerMissingTarget(layer.name);
     case 'requires-view':
-      return `Post requires View · ${layer.name}`;
+      return `Write requires View · ${layer.name}`;
     default: {
       const exhaustive: never = layer;
       return exhaustive;
