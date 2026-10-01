@@ -6,6 +6,8 @@ For scaffolding a new multi-scene prototype end-to-end, use [.cursor/skills/scaf
 
 For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.cursor/skills/guided-walkthrough/SKILL.md](../../../.cursor/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
 
+To **ship a prototype into product** (webapp, desktop, or a plugin), use [.cursor/skills/prototype-to-production/SKILL.md](../../../.cursor/skills/prototype-to-production/SKILL.md) (portable install for Cursor and Claude Code).
+
 ## Imports
 
 Use `@mattermost/compass-ui` **subpath** imports only — never the root barrel:
