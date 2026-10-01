@@ -121,7 +121,7 @@ Plugins: same order; grep the **plugin** repo, not webapp System Console paths. 
 - Do not copy playground scene/orchestrator structure wholesale.
 - Compass = look; product = behavior.
 - Subpath imports only for compass-ui; kebab-case variant strings.
-- Overlay host ownership (portal, focus, escape) stays in product code. Compass `Modal` / `Tooltip` / `PopoverMenu` are **not adopted in consumers yet** — prefer host overlay patterns unless the task explicitly adopts them (see [references/boundaries.md](references/boundaries.md)).
+- Overlay host ownership (portal, focus, escape) stays in product code. Compass `Modal` / `Tooltip` / `PopoverMenu` / `TourPoint` / `ProfilePopover` are **not adopted in consumers yet** — prefer host overlay patterns unless the task explicitly adopts them (see [references/boundaries.md](references/boundaries.md)).
 
 ### 6. Validation checklist
 
@@ -148,7 +148,7 @@ Hints only — always verify against the consumer’s installed package.
 | Empty view | `EmptyState` | `…/empty-state` |
 | Tabs | `Tabs` | `…/tabs` |
 
-Desktop dialog / tooltip / popover menu: Compass ships `Modal`, `Tooltip`, `PopoverMenu`, but **consumers do not use them yet** — keep host overlays unless explicitly adopting. Proto shells (`ChannelShell`, `Mobile*`, Call*) are never product dependencies.
+Desktop overlays: Compass ships `Modal`, `Tooltip`, `PopoverMenu`, `TourPoint`, `ProfilePopover`, but **consumers do not use them yet** — keep host overlays unless explicitly adopting. Proto shells (`ChannelShell`, `Mobile*`, Call*) are never product dependencies.
 
 ## Example prompt shape
 
