@@ -48,8 +48,8 @@ Use [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototy
 
 ## Dependencies
 
-- `@mattermost/compass-ui` — published core from npm (`@alpha` / `0.1.0-alpha.11+`; tokens, primitives, leaf chrome). Import via **subpaths** (`@mattermost/compass-ui/components/button`), not the root barrel.
-- `@mattermost/compass-proto` — unpublished composites and fixtures (`ChannelShell`, `ChannelsSidebar`, `GlobalHeader`, Mobile*, Call*, menu recipes, demo sidebar models). **Not on npm** — linked from `compass-design` via `file:`. See [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what) for how layouts split across ui vs proto.
+- `@mattermost/compass-ui` — published core from npm (`@alpha` / `0.1.0-alpha.12+`; tokens, primitives, leaf chrome). Import via **subpaths** (`@mattermost/compass-ui/components/button`), not the root barrel.
+- `@mattermost/compass-proto` — unpublished composites and fixtures (`ChannelShell`, `TeamSidebar`, `ChannelsSidebar`, `GlobalHeader`, Mobile*, Call*, menu recipes, demo sidebar models). **Not on npm** — linked from `compass-design` via `file:`. See [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what) for how layouts split across ui vs proto.
 
 `npm run predev` / `prebuild` runs `scripts/ensure-compass-packages.mjs`, which verifies the installed npm `compass-ui` package (including subpath layout) and builds `compass-proto` `dist/` in `compass-design` when stale.
 

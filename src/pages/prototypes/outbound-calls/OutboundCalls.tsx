@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import { TeamSidebar } from '@mattermost/compass-ui/components/team-sidebar';
 import {
   buildDefaultChannelsSidebarModel,
   ChannelsSidebar,
   GlobalHeader,
+  TeamSidebar,
 } from '@mattermost/compass-proto';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';

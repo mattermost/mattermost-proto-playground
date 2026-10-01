@@ -76,6 +76,7 @@ Sidebar rows use `ChannelSidebarItem` with `leadingVisual` (`'public'` \| `'priv
 | Use for | Export | Import |
 | --- | --- | --- |
 | Desktop channel layout | `ChannelShell` | `@mattermost/compass-proto` |
+| Team sidebar | `TeamSidebar` | `@mattermost/compass-proto` |
 | Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-proto` |
 | Global header | `GlobalHeader` | `@mattermost/compass-proto` |
 | Admin console sidebar | `AdminConsoleSidebar` | `@mattermost/compass-proto` |
