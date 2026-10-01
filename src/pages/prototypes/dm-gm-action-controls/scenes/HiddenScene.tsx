@@ -12,7 +12,7 @@ const UNMANAGED = { Network: 'Trusted', Device: 'Unmanaged' };
 const COPY: Record<string, { title: string; note: string }> = {
   active: {
     title: 'On an unmanaged device, the open DM is hidden silently',
-    note: 'Device is set to Unmanaged, so “Untrusted sessions can’t see DMs” denies View. Using the same treatment as Channel Read Access, the stream stops, the centre shows the permission message, and the conversations stay in the sidebar for now so nothing is pulled away mid-read. After the countdown, or the next click, every DM and GM leaves the sidebar. Set Device to Managed to bring them back.',
+    note: 'Device is set to Unmanaged, so “Unmanaged devices can’t see DMs” denies View. Using the same treatment as Channel Read Access, the stream stops, the centre shows the permission message, and the conversations stay in the sidebar for now so nothing is pulled away mid-read. After the countdown, or the next click, every DM and GM leaves the sidebar. Set Device to Managed to bring them back.',
   },
   after: {
     title: 'After navigating away, DMs and GMs are gone from this session',

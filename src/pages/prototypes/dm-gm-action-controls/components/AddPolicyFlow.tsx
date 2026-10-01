@@ -159,7 +159,7 @@ export function StartingRuleChooser({
     <Modal
       size="medium"
       title="Add policy"
-      subtitle="Start from a rule for direct and group messages, or start from a blank policy."
+      subtitle="Pick a starting rule for direct and group messages, or begin with a blank policy."
       footer={
         <>
           <Button emphasis="tertiary">Cancel</Button>
@@ -235,7 +235,7 @@ export function MappingStep({
     <Modal
       size="medium"
       title="Map attributes"
-      subtitle={`“${rule.name}” refers to the attributes below. Choose the attribute and value on this server that each one means.`}
+      subtitle={`Match each attribute in “${rule.name}” to the one this server uses.`}
       showBackButton
       onBack={onBack}
       footerLeading={

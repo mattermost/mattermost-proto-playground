@@ -22,7 +22,7 @@ const COPY: Record<string, { title: string; note: string }> = {
   },
   session: {
     title: 'A session change mid-typing keeps the draft',
-    note: 'Darius was typing to David Liang when his Network changed to Public, so “Untrusted sessions can’t post” now denies the post. The typed text stays in the composer, neither sent nor discarded, and the composer is read-only. Set Network back to Trusted and the draft is editable again, then set it to Public to watch the switch happen.',
+    note: 'Darius was typing to David Liang when his Network changed to Public, so “No posting from untrusted networks” now denies the post. The typed text stays in the composer, neither sent nor discarded, and the composer is read-only. Set Network back to Trusted and the draft is editable again, then set it to Public to watch the switch happen.',
   },
 };
 

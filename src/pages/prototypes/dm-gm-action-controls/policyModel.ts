@@ -30,7 +30,7 @@ export const DM_PERMISSIONS: Record<
   post: {
     label: 'Post in Direct and Group Messages',
     description:
-      'Allow users to post in direct and group messages. Has no effect without View Direct and Group Messages.',
+      'Allow users to post in direct and group messages. Requires View Direct and Group Messages.',
   },
   view: {
     label: 'View Direct and Group Messages',
@@ -278,9 +278,9 @@ export const STARTING_RULES: StartingRule[] = [
   },
   {
     id: 'untrusted-no-post',
-    name: "Untrusted sessions can't post",
+    name: 'No posting from untrusted networks',
     description:
-      'Sessions on an untrusted network can read direct messages but cannot post in them.',
+      "On an untrusted network, people can read direct messages but can't post.",
     tags: ['Post', 'Session rule'],
     placeholders: [
       {
@@ -299,7 +299,7 @@ export const STARTING_RULES: StartingRule[] = [
     ],
     canonical: { network: 'Network', trusted: 'Trusted' },
     build: (m) => ({
-      name: "Untrusted sessions can't post",
+      name: 'No posting from untrusted networks',
       role: 'Members',
       permissions: ['post'],
       acting: [
@@ -316,9 +316,9 @@ export const STARTING_RULES: StartingRule[] = [
   },
   {
     id: 'untrusted-no-view',
-    name: "Untrusted sessions can't see DMs",
+    name: "Unmanaged devices can't see DMs",
     description:
-      'Direct and group messages are hidden on sessions from unmanaged devices, on every surface.',
+      'Direct and group messages are hidden on unmanaged devices.',
     tags: ['View', 'Session rule'],
     placeholders: [
       {
@@ -337,7 +337,7 @@ export const STARTING_RULES: StartingRule[] = [
     ],
     canonical: { device: 'Device', managed: 'Managed' },
     build: (m) => ({
-      name: "Untrusted sessions can't see DMs",
+      name: "Unmanaged devices can't see DMs",
       role: 'Members',
       permissions: ['view'],
       acting: [
@@ -632,7 +632,7 @@ export function summarize(policy: DmPolicy): PolicySummary {
   if (onlySameMatch && policy.match === 'all') {
     const attrs = policy.other.map((c) => c.attribute).join(' and ');
     return {
-      sentence: `${SUMMARY.onlyWithMatching(who, perm, attrs)} ${SUMMARY.tailBothWays}`,
+      sentence: SUMMARY.onlyWithMatching(who, perm, attrs),
       direction: 'both',
     };
   }
@@ -681,7 +681,7 @@ export function summarize(policy: DmPolicy): PolicySummary {
   return {
     sentence: oneWay
       ? `${SUMMARY.onlyWhen(who, perm, clauses)} ${SUMMARY.tailOneWay}${sessionNote}`
-      : `${SUMMARY.onlyWhen(who, perm, clauses)} ${SUMMARY.tailBothWays}${sessionNote}`,
+      : `${SUMMARY.onlyWhen(who, perm, clauses)}${sessionNote}`,
     direction: oneWay ? 'one-way' : 'both',
   };
 }

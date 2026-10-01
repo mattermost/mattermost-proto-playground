@@ -10,21 +10,21 @@
 /* Subject labels                                                      */
 /* ------------------------------------------------------------------ */
 
-/** The policy target: the other member of the DM or GM. */
-export const TARGET_LABEL = 'Other person';
+/** The policy target: the other member(s) of the DM or GM. Was "Other person" (renamed after copy review, 2026-10-01). */
+export const TARGET_LABEL = 'Recipient';
 
-/** The policy subject: the person starting, posting in, or viewing. */
-export const ACTING_LABEL = 'Acting user';
+/** The policy subject: the person starting, posting in, or viewing. Was "Acting user". */
+export const ACTING_LABEL = 'User';
 
 function lowerFirst(s: string): string {
   return s.charAt(0).toLowerCase() + s.slice(1);
 }
 
-/** Mid-sentence forms: "other person", "acting user". */
+/** Mid-sentence forms: "recipient", "user". */
 export const TARGET_NOUN = lowerFirst(TARGET_LABEL);
 export const ACTING_NOUN = lowerFirst(ACTING_LABEL);
 
-/** "acting user's Program" */
+/** "user's Program" */
 export function actingAttr(attribute: string): string {
   return `${ACTING_NOUN}'s ${attribute}`;
 }
@@ -42,13 +42,13 @@ export const EDITOR = {
   targetHint: 'User attributes only',
   /** Card variation only. */
   targetCardTitle: 'Who they can message',
-  targetCardSubtitle: `Conditions on the ${TARGET_NOUN} in the conversation. In a group message, every member is checked.`,
+  targetCardSubtitle: `Conditions on the ${TARGET_NOUN}. In a group message, every ${TARGET_NOUN} is checked.`,
   targetEmpty: 'Add an attribute to limit who they can message',
   combinedNote: (match: string) =>
     `Combined with the ${ACTING_NOUN} conditions: ${match}`,
   missingAttribute: (attrs: string[]) =>
-    `People and bots without ${attrs.join(' or ')} are denied, including users on connected servers.`,
-  pickerBlocked: `Can't be added while this policy has conditions on the ${TARGET_NOUN}.`,
+    `Anyone without a ${attrs.join(' or ')} value is blocked, including bots and users on connected servers.`,
+  pickerBlocked: `Can't be added while this policy has ${TARGET_NOUN} conditions.`,
   /** aria-labels: "<Subject> <attribute> operator" etc. */
   rowAria: (subject: string, attribute: string, part: 'operator' | 'value') =>
     `${subject} ${attribute} ${part}`,
@@ -78,9 +78,9 @@ export const SUMMARY = {
   edited: 'Edited',
   tagBothWays: 'Applies both ways',
   tagOneWay: 'One way',
-  tagActingOnly: `${ACTING_LABEL} only`,
+  tagActingOnly: `${ACTING_LABEL} conditions only`,
   noPermission:
-    'Add a direct and group message permission to describe this rule.',
+    'Add a direct or group message permission to see a summary.',
   noConditions: (who: string) =>
     `Add conditions to restrict who ${who} can message.`,
   targetMatches: (attribute: string) =>
@@ -98,8 +98,8 @@ export const SUMMARY = {
   cantWith: (who: string, subject: string, perm: string, target: string) =>
     `${who} whose ${subject} can't ${perm} with people whose ${target}.`,
   tailBothWays: 'Applies both ways.',
-  tailOneWay: `One way: this doesn't limit what the ${TARGET_NOUN} can do.`,
-  tailOneWayTheyCan: 'One way: those people can still message them.',
+  tailOneWay: `The ${TARGET_NOUN} can still message them.`,
+  tailOneWayTheyCan: 'Those people can still message them.',
   tailSession: 'Checked on every session.',
 };
 
@@ -115,14 +115,14 @@ export const SIMULATE = {
   actingField: ACTING_LABEL,
   targetField: TARGET_LABEL,
   suggestion:
-    'Suggested by the starting rule: pick a contractor and a program lead.',
+    'To test this rule, try a contractor and a program lead.',
   oneWayTag: 'One-way',
   oneWaySentence: 'One-way.',
   sameBothWays: 'Same both ways.',
-  layerMissingTargetLabel: `Missing attribute on ${TARGET_NOUN}`,
+  layerMissingTargetLabel: `${TARGET_LABEL} missing attribute`,
   layerMissingTarget: (policy: string) =>
-    `Missing attribute on ${TARGET_NOUN} · ${policy}`,
-  notEvaluatedAsActing: `Not evaluated as ${ACTING_NOUN}`,
+    `${TARGET_LABEL} missing attribute · ${policy}`,
+  notEvaluatedAsActing: `Not evaluated as the ${ACTING_NOUN}`,
 };
 
 /* ------------------------------------------------------------------ */
