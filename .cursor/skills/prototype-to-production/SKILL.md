@@ -148,7 +148,9 @@ Hints only — always verify against the consumer’s installed package.
 | Empty view | `EmptyState` | `…/empty-state` |
 | Tabs | `Tabs` | `…/tabs` |
 
-Desktop overlays: Compass ships `Modal`, `Tooltip`, `PopoverMenu`, `TourPoint`, `ProfilePopover`, but **consumers do not use them yet** — keep host overlays unless explicitly adopting. Proto shells (`ChannelShell`, `Mobile*`, Call*) are never product dependencies.
+Desktop overlays: Compass ships `Modal`, `Tooltip`, `PopoverMenu`, `TourPoint`, `ProfilePopover`, but **consumers do not use them yet** — keep host overlays unless explicitly adopting.
+
+Large chrome often lives in **proto** (never a product dependency) — e.g. `ChannelsSidebar`, `TeamSidebar`, `GlobalHeader`, `AdminConsoleSidebar`, hardcoded `*Menu` recipes, `ChannelShell`, `Mobile*`, Call*. Decompose to ui leaves (`ChannelSidebarItem`, `MenuItem`, `PopoverMenu`, …) + host layout. Always `ls` the consumer’s installed ui; alphas differ.
 
 ## Example prompt shape
 

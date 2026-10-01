@@ -6,8 +6,8 @@ Stable rules for translating a Compass prototype into product code. Not a full c
 
 | Bucket | Examples | Product action |
 | --- | --- | --- |
-| `@mattermost/compass-ui` | `Button`, `TextInput`, `ChannelsSidebar`, … | Keep when the consumer already adopts that leaf (or the task is adopting it). Import from **subpaths**. Confirm export exists in **consumer** `node_modules`. See overlay adoption note below for `Modal` / `Tooltip` / `PopoverMenu` / `TourPoint` / `ProfilePopover`. |
-| `@mattermost/compass-proto` | `ChannelShell`, `Mobile*`, `CallWidget`, `CallPopout`, message/composer/header composites when imported from proto, `buildDefaultChannelsSidebarModel`, demo RHS fixtures | **Never** add as a product dependency. Decompose to ui leaves + host layout/behavior. |
+| `@mattermost/compass-ui` | `Button`, `TextInput`, `ChannelSidebarItem`, `MenuItem`, `PopoverMenu`, … | Keep when the consumer already adopts that leaf (or the task is adopting it). Import from **subpaths**. Confirm export exists in **consumer** `node_modules` (package contents drift across alphas). See overlay adoption note below. |
+| `@mattermost/compass-proto` | `ChannelShell`, `ChannelsSidebar`, `TeamSidebar`, `GlobalHeader`, `AdminConsoleSidebar`, hardcoded menu recipes (`PlusMenu`, `HelpMenu`, `ChannelMenu`, …), `Mobile*`, `CallWidget`, `CallPopout`, message/composer/`ChannelHeader` composites, `buildDefaultChannelsSidebarModel`, demo RHS fixtures | **Never** add as a product dependency. Decompose to ui leaves + host layout/behavior. |
 | Playground chrome | `PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileModalStage`, walkthrough runtime (`data-wt-*`, `src/walkthrough/`) | **Drop.** Wire into the consumer’s nav/shell. |
 | Prototype-local | `src/pages/prototypes/<slug>/components/*` | Rebuild with ui primitives/tokens, or reuse a host surface pattern with Compass leaves. |
 | Tokens / CSS vars | `--spacing-*`, `--center-channel-color`, `--duration-*`, … | Keep. Load styles per consumer kind (see INTEGRATION.md). |
@@ -53,11 +53,15 @@ When the consumer already depends on compass-ui and the role is a leaf control (
 
 ## Proto decompose categories (illustrative)
 
-These names drift as packages evolve — always verify against prototype imports and consumer ui:
+These names drift as packages evolve — always verify against prototype imports and **consumer** `ls node_modules/@mattermost/compass-ui/dist/components/` (e.g. as of `0.1.0-alpha.12` the items below are proto, not ui):
 
-- **Shells / mobile suites:** `ChannelShell`, `MobileHome`, `MobileTabBar`, `MobileModal`, …
+- **Desktop shells / chrome composites:** `ChannelShell`, `ChannelsSidebar`, `TeamSidebar`, `GlobalHeader`, `AdminConsoleSidebar`, …
+- **Hardcoded menu recipes:** `PlusMenu`, `HelpMenu`, `ChannelMenu`, `TeamMenu`, `ChannelCategoryMenu`, `ChannelHeaderMenu`, `ThreadActionsMenu`, `MessageMoreOptionsMenu`, `ProductSwitcherMenu`, … — prefer composing `PopoverMenu` + `MenuItem` from ui, or host menus
+- **Mobile suites:** `MobileHome`, `MobileTabBar`, `MobileModal`, …
 - **Calls composites:** `CallWidget`, `CallPopout`, participants panels, …
+- **Message stack / channel header** (when imported from proto): `Message`, `MessageInput`, `ChannelHeader`, …
 - **Fixtures:** `buildDefaultChannelsSidebarModel`, demo trees
-- **Desktop composites still on proto** (if imported from proto in the prototype): replace with ui leaves when available in the consumer; otherwise host layout + ui controls
+
+Leaves that often stay in ui while shells moved to proto: `ChannelSidebarItem`, `AdminConsoleHeader`, `RightSidebarHeader`, `MenuItem`, `PopoverMenu`, message leaf pieces (`MessageHeader`, `MessageActions`, `MessageSeparator`, …) — **confirm in the consumer’s installed package**.
 
 Optional intent check (never a product dependency): compass-design `packages/compass-proto` source on GitHub.
