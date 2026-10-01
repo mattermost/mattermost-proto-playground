@@ -36,6 +36,7 @@ import {
 } from '../conversations';
 import { VIEWER } from '../dmgmData';
 import type { DirectionId } from '../dmgmScenes';
+import { HIDDEN_COPY } from '../copy';
 import DeniedReason from './DeniedReason';
 import type { DmSession } from './useDmSession';
 import styles from './DmgmChannelApp.module.scss';
@@ -150,13 +151,11 @@ function HiddenState({ onRedirect }: { onRedirect: () => void }) {
           width: '200px',
           'aria-label': '',
         }}
-        title="You do not have permission to view this content"
-        description="Contact your system administrator if you believe this is an error."
+        title={HIDDEN_COPY.title}
+        description={HIDDEN_COPY.description}
       />
       <p className={styles['dmgm-app__denied-redirect']} aria-live="polite">
-        {secondsLeft === 1
-          ? 'Redirecting in 1 second…'
-          : `Redirecting in ${secondsLeft} seconds…`}
+        {HIDDEN_COPY.redirect(secondsLeft)}
       </p>
     </div>
   );

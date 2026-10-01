@@ -28,6 +28,7 @@ import {
   type DmPolicy,
   type Verdict,
 } from '../policyModel';
+import { SIMULATE } from '../copy';
 import styles from './PairSimulateModal.module.scss';
 
 export interface PairSimulateModalProps {
@@ -171,7 +172,11 @@ function PairCard({
       {arrow(reverse)}
       <p className={styles['pair-sim__sentence']}>
         {line(forward)} {line(reverse)}{' '}
-        {oneWay ? <strong>One-way.</strong> : <strong>Same both ways.</strong>}
+        {oneWay ? (
+          <strong>{SIMULATE.oneWaySentence}</strong>
+        ) : (
+          <strong>{SIMULATE.sameBothWays}</strong>
+        )}
       </p>
     </section>
   );
@@ -224,8 +229,8 @@ export default function PairSimulateModal({
     <Modal
       size="large"
       className={styles['pair-sim__modal']}
-      title="Simulate access"
-      subtitle="Pick two people to check every direct and group message permission in both directions."
+      title={SIMULATE.title}
+      subtitle={SIMULATE.subtitle}
       headerDivider={false}
       onClose={onClose}
       footer={
@@ -237,15 +242,14 @@ export default function PairSimulateModal({
       <div className={styles['pair-sim']}>
         {direction === 'b' ? (
           <p className={styles['pair-sim__suggestion']}>
-            Suggested by the starting rule: pick a contractor and a program
-            lead.
+            {SIMULATE.suggestion}
           </p>
         ) : null}
 
         <div className={styles['pair-sim__pickers']}>
           <Select
-            label="Acting user"
-            aria-label="Acting user"
+            label={SIMULATE.actingField}
+            aria-label={SIMULATE.actingField}
             className={styles['pair-sim__picker']}
             options={actingOptions}
             value={actingId}
@@ -255,8 +259,8 @@ export default function PairSimulateModal({
             <Icon glyph={<ArrowRightIcon />} size="20" />
           </span>
           <Select
-            label="Other person"
-            aria-label="Other person"
+            label={SIMULATE.targetField}
+            aria-label={SIMULATE.targetField}
             className={styles['pair-sim__picker']}
             options={otherOptions}
             value={otherId}
@@ -276,7 +280,11 @@ export default function PairSimulateModal({
                   <span className={styles['pair-sim__th-direction']}>
                     Direction
                     {oneWay ? (
-                      <Tag label="One-way" type="warning" size="small" />
+                      <Tag
+                        label={SIMULATE.oneWayTag}
+                        type="warning"
+                        size="small"
+                      />
                     ) : null}
                   </span>
                 </th>
@@ -385,7 +393,7 @@ export default function PairSimulateModal({
                             </>
                           ) : (
                             <span className={styles['pair-sim__na']}>
-                              Not evaluated as acting user
+                              {SIMULATE.notEvaluatedAsActing}
                             </span>
                           )}
                         </span>

@@ -34,23 +34,26 @@ import {
   type DmPolicy,
   type Operator,
 } from '../policyModel';
+import { ACTING_LABEL, COMPARISON, EDITOR, TARGET_LABEL } from '../copy';
 import styles from './PolicyEditor.module.scss';
 
-type InlineOperator = 'is' | 'is not' | 'is same as' | 'is not same as';
+type InlineOperator = 'is' | 'is not' | 'same' | 'not-same';
+
+const OPERATOR_LABEL: Record<InlineOperator, string> = {
+  is: 'is',
+  'is not': 'is not',
+  same: COMPARISON.isSameAs,
+  'not-same': COMPARISON.isNotSameAs,
+};
 
 const ACTING_OPERATORS: InlineOperator[] = ['is', 'is not'];
-const OTHER_OPERATORS: InlineOperator[] = [
-  'is',
-  'is not',
-  'is same as',
-  'is not same as',
-];
+const OTHER_OPERATORS: InlineOperator[] = ['is', 'is not', 'same', 'not-same'];
 
 function SubjectTag({ subject }: { subject: 'acting' | 'other' }) {
   return subject === 'acting' ? (
-    <Tag label="Acting user" size="small" />
+    <Tag label={ACTING_LABEL} size="small" />
   ) : (
-    <Tag label="Other person" type="info" size="small" />
+    <Tag label={TARGET_LABEL} type="info" size="small" />
   );
 }
 
@@ -80,7 +83,7 @@ function AddConditionButton({
       </Button>
       {open ? (
         <PopoverMenu className={styles['policy-editor__add-menu']}>
-          <MenuGroupHeading label="Acting user" />
+          <MenuGroupHeading label={ACTING_LABEL} />
           {userKeys.map((k) => (
             <MenuItem
               key={`a-${k}`}
@@ -89,7 +92,7 @@ function AddConditionButton({
               onClick={() => pick('acting', k)}
             />
           ))}
-          <MenuGroupHeading label="Acting user's session" />
+          <MenuGroupHeading label={EDITOR.actingSessionGroup} />
           {sessionKeys.map((k) => (
             <MenuItem
               key={`s-${k}`}
@@ -98,7 +101,7 @@ function AddConditionButton({
               onClick={() => pick('acting', k)}
             />
           ))}
-          <MenuGroupHeading label="Other person" />
+          <MenuGroupHeading label={TARGET_LABEL} />
           {userKeys.map((k) => (
             <MenuItem
               key={`o-${k}`}
@@ -161,9 +164,9 @@ export default function InlineConditions({
       ...policy,
       other: policy.other.map((c) => {
         if (c.id !== id) return c;
-        const same = op === 'is same as' || op === 'is not same as';
+        const same = op === 'same' || op === 'not-same';
         const operator: Operator =
-          op === 'is' || op === 'is same as' ? 'is' : 'is not';
+          op === 'is' || op === 'same' ? 'is' : 'is not';
         const fixed =
           value ??
           (c.value.kind === 'fixed'
@@ -280,10 +283,14 @@ export default function InlineConditions({
                     <Select
                       size="small"
                       className={styles['policy-editor__cell-select--narrow']}
-                      aria-label={`Acting user ${row.attribute} operator`}
+                      aria-label={EDITOR.rowAria(
+                        ACTING_LABEL,
+                        row.attribute,
+                        'operator',
+                      )}
                       options={ACTING_OPERATORS.map((o) => ({
                         value: o,
-                        label: o,
+                        label: OPERATOR_LABEL[o],
                       }))}
                       value={row.operator}
                       onChange={(v) => setActing(row.id, v as InlineOperator)}
@@ -293,7 +300,11 @@ export default function InlineConditions({
                     <Select
                       size="small"
                       className={styles['policy-editor__cell-select']}
-                      aria-label={`Acting user ${row.attribute} value`}
+                      aria-label={EDITOR.rowAria(
+                        ACTING_LABEL,
+                        row.attribute,
+                        'value',
+                      )}
                       options={valuesFor(row.attribute).map((v) => ({
                         value: v,
                         label: v,
@@ -304,7 +315,7 @@ export default function InlineConditions({
                   </td>
                   <td className={styles['policy-editor__table-right']}>
                     <DeleteRow
-                      label={`Remove acting user ${row.attribute} condition`}
+                      label={EDITOR.removeRowAria(ACTING_LABEL, row.attribute)}
                       onClick={() =>
                         onChange({
                           ...policy,
@@ -319,8 +330,8 @@ export default function InlineConditions({
                 const same = row.value.kind === 'same';
                 const op: InlineOperator = same
                   ? row.operator === 'is'
-                    ? 'is same as'
-                    : 'is not same as'
+                    ? 'same'
+                    : 'not-same'
                   : row.operator;
                 return (
                   <tr key={row.id}>
@@ -335,10 +346,14 @@ export default function InlineConditions({
                       <Select
                         size="small"
                         className={styles['policy-editor__cell-select--narrow']}
-                        aria-label={`Other person ${row.attribute} operator`}
+                        aria-label={EDITOR.rowAria(
+                          TARGET_LABEL,
+                          row.attribute,
+                          'operator',
+                        )}
                         options={OTHER_OPERATORS.map((o) => ({
                           value: o,
-                          label: o,
+                          label: OPERATOR_LABEL[o],
                         }))}
                         value={op}
                         onChange={(v) => setOther(row.id, v as InlineOperator)}
@@ -356,7 +371,11 @@ export default function InlineConditions({
                         <Select
                           size="small"
                           className={styles['policy-editor__cell-select']}
-                          aria-label={`Other person ${row.attribute} value`}
+                          aria-label={EDITOR.rowAria(
+                            TARGET_LABEL,
+                            row.attribute,
+                            'value',
+                          )}
                           options={USER_ATTRIBUTES[row.attribute].map((v) => ({
                             value: v,
                             label: v,
@@ -370,7 +389,10 @@ export default function InlineConditions({
                     </td>
                     <td className={styles['policy-editor__table-right']}>
                       <DeleteRow
-                        label={`Remove other person ${row.attribute} condition`}
+                        label={EDITOR.removeRowAria(
+                          TARGET_LABEL,
+                          row.attribute,
+                        )}
                         onClick={() =>
                           onChange({
                             ...policy,
@@ -422,7 +444,7 @@ export default function InlineConditions({
         <div className={styles['policy-editor__missing-note']}>
           <SectionNotice
             type="info"
-            title={`People and bots without ${missingAttrs.join(' or ')} are denied, including users on connected servers.`}
+            title={EDITOR.missingAttribute(missingAttrs)}
           />
         </div>
       ) : null}

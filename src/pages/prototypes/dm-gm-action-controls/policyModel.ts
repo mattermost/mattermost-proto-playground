@@ -1,5 +1,6 @@
 // [AI DRAFT] DM/GM policy model: permissions, starting rules, evaluation, and the
 // plain-language summary used by Direction B's summary strip.
+import { SIMULATE, SUMMARY } from './copy';
 import {
   ISABELLA,
   isSessionAttribute,
@@ -148,7 +149,7 @@ export const STARTING_RULES: StartingRule[] = [
     name: 'Same program only',
     description:
       'People can start and post in direct messages only with people in their own program.',
-    tags: ['Start', 'Post', 'Applies both ways'],
+    tags: ['Start', 'Post', SUMMARY.tagBothWays],
     placeholders: [
       {
         id: 'program',
@@ -179,7 +180,7 @@ export const STARTING_RULES: StartingRule[] = [
     name: "Contractors can't start DMs",
     description:
       'Contractors can reply in existing conversations but cannot start new ones.',
-    tags: ['Start', 'Acting user only'],
+    tags: ['Start', SUMMARY.tagActingOnly],
     placeholders: [
       {
         id: 'employment',
@@ -217,7 +218,7 @@ export const STARTING_RULES: StartingRule[] = [
     name: "Contractors can't start DMs with program leads",
     description:
       'Contractors cannot start a conversation with a program lead. Program leads can still start one with them.',
-    tags: ['Start', 'One way'],
+    tags: ['Start', SUMMARY.tagOneWay],
     placeholders: [
       {
         id: 'employment',
@@ -546,7 +547,7 @@ export function layerLabel(layer: DecidingLayer): string {
     case 'policy':
       return `Policy: ${layer.name}`;
     case 'missing-target':
-      return `Missing attribute on other person · ${layer.name}`;
+      return SIMULATE.layerMissingTarget(layer.name);
     case 'requires-view':
       return `Post requires View · ${layer.name}`;
     default: {
@@ -579,16 +580,16 @@ function permissionPhrase(perms: DmPermission[]): string {
 }
 
 function actingClause(c: ActingCondition): string {
-  return `their ${c.attribute} ${c.operator} ${c.value}`;
+  return SUMMARY.actingIs(c.attribute, c.operator, c.value);
 }
 
 function otherClause(c: OtherCondition): string {
   if (c.value.kind === 'same') {
     return c.operator === 'is'
-      ? `the other person's ${c.attribute} matches theirs`
-      : `the other person's ${c.attribute} differs from theirs`;
+      ? SUMMARY.targetMatches(c.attribute)
+      : SUMMARY.targetDiffers(c.attribute);
   }
-  return `the other person's ${c.attribute} ${c.operator} ${c.value.value}`;
+  return SUMMARY.targetIs(c.attribute, c.operator, c.value.value);
 }
 
 function roleNoun(role: string): string {
@@ -611,15 +612,14 @@ export function summarize(policy: DmPolicy): PolicySummary {
   const who = roleNoun(policy.role);
   if (!perm) {
     return {
-      sentence:
-        'Add a direct and group message permission to describe this rule.',
+      sentence: SUMMARY.noPermission,
       direction: 'none',
     };
   }
   const conditions = policy.acting.length + policy.other.length;
   if (conditions === 0) {
     return {
-      sentence: `Add conditions to restrict who ${who.toLowerCase()} can message.`,
+      sentence: SUMMARY.noConditions(who.toLowerCase()),
       direction: 'none',
     };
   }
@@ -632,7 +632,7 @@ export function summarize(policy: DmPolicy): PolicySummary {
   if (onlySameMatch && policy.match === 'all') {
     const attrs = policy.other.map((c) => c.attribute).join(' and ');
     return {
-      sentence: `${who} can ${perm} only with people whose ${attrs} matches theirs. Applies both ways.`,
+      sentence: `${SUMMARY.onlyWithMatching(who, perm, attrs)} ${SUMMARY.tailBothWays}`,
       direction: 'both',
     };
   }
@@ -657,7 +657,7 @@ export function summarize(policy: DmPolicy): PolicySummary {
       )
       .join(' and ');
     return {
-      sentence: `${who} whose ${subject} can't ${perm} with people whose ${target}. One way: those people can still message them.`,
+      sentence: `${SUMMARY.cantWith(who, subject, perm, target)} ${SUMMARY.tailOneWayTheyCan}`,
       direction: 'one-way',
     };
   }
@@ -668,10 +668,10 @@ export function summarize(policy: DmPolicy): PolicySummary {
     ...policy.other.map(otherClause),
   ].join(joiner);
   const session = policy.acting.some((c) => isSessionAttribute(c.attribute));
-  const sessionNote = session ? ' Checked on every session.' : '';
+  const sessionNote = session ? ` ${SUMMARY.tailSession}` : '';
   if (policy.other.length === 0) {
     return {
-      sentence: `${who} can ${perm} only when ${clauses}.${sessionNote}`,
+      sentence: `${SUMMARY.onlyWhen(who, perm, clauses)}${sessionNote}`,
       direction: 'acting',
     };
   }
@@ -680,8 +680,8 @@ export function summarize(policy: DmPolicy): PolicySummary {
     policy.acting.some((c) => !isSessionAttribute(c.attribute));
   return {
     sentence: oneWay
-      ? `${who} can ${perm} only when ${clauses}. One way: this doesn't limit what the other person can do.${sessionNote}`
-      : `${who} can ${perm} only when ${clauses}. Applies both ways.${sessionNote}`,
+      ? `${SUMMARY.onlyWhen(who, perm, clauses)} ${SUMMARY.tailOneWay}${sessionNote}`
+      : `${SUMMARY.onlyWhen(who, perm, clauses)} ${SUMMARY.tailBothWays}${sessionNote}`,
     direction: oneWay ? 'one-way' : 'both',
   };
 }

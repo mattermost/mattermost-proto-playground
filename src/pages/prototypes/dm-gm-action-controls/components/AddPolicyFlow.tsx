@@ -18,6 +18,7 @@ import {
   type Mapping,
   type StartingRule,
 } from '../policyModel';
+import { SUMMARY } from '../copy';
 import styles from './AddPolicyFlow.module.scss';
 
 /* ------------------------------------------------------------------ */
@@ -130,7 +131,7 @@ function ChoiceCard({
                   <Tag
                     key={t}
                     label={t}
-                    type={t === 'One way' ? 'warning' : 'default'}
+                    type={t === SUMMARY.tagOneWay ? 'warning' : 'default'}
                   />
                 ))}
               </span>

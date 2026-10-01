@@ -8,13 +8,14 @@ import SummaryStrip from '../components/SummaryStrip';
 import { ISABELLA, DARIUS, DAVID, READINESS_BOT } from '../dmgmData';
 import { FEATURED_RULE_ID, ruleById } from '../policyModel';
 import type { SceneProps } from './AuthoringScene';
+import { SIMULATE, TARGET_NOUN } from '../copy';
 import { ENGINE_NOTE } from './sceneNotes';
 
 const COPY: Record<string, { title: string; b: string; a: string }> = {
   pair: {
     title: 'Simulate shows both directions and labels the one-way result',
     b: 'The pair card leads: Darius Cole, a contractor, can’t start a DM with Isabella Cruz, a program lead, but Isabella can start one with him. The directional rows sit underneath, one per direction, with a verdict for each permission and the deciding layer. Change either person to try other pairs.',
-    a: 'The shipped Simulate access modal with an Other person field added. Each pair gives two directional rows, each with Start, Post and View verdicts, a One-way tag when the rows differ, and a Deciding layer column. There is no sentence, so the admin has to read the asymmetry from the pills.',
+    a: `The shipped Simulate access modal with the ${SIMULATE.targetField} field added. Each pair gives two directional rows, each with Start, Post and View verdicts, a One-way tag when the rows differ, and a Deciding layer column. There is no sentence, so the admin has to read the asymmetry from the pills.`,
   },
   group: {
     title:
@@ -24,8 +25,8 @@ const COPY: Record<string, { title: string; b: string; a: string }> = {
   },
   bot: {
     title: 'A bot without the attribute is denied, and Simulate says why',
-    b: 'The other person is the Readiness Alerts integration bot, which has no Position attribute. Darius → bot is denied, and the deciding layer is “Missing attribute on other person”. The editor states the same consequence before save, in the note under the other-person conditions.',
-    a: 'The other person is the Readiness Alerts integration bot, which has no Position attribute. Darius → bot is denied, and the deciding layer is “Missing attribute on other person”. The editor states the same consequence before save, in the note under the other-person conditions.',
+    b: `The ${TARGET_NOUN} is the Readiness Alerts integration bot, which has no Position attribute. Darius → bot is denied, and the deciding layer is “${SIMULATE.layerMissingTargetLabel}”. The editor states the same consequence before save, in the note under the ${TARGET_NOUN} conditions.`,
+    a: `The ${TARGET_NOUN} is the Readiness Alerts integration bot, which has no Position attribute. Darius → bot is denied, and the deciding layer is “${SIMULATE.layerMissingTargetLabel}”. The editor states the same consequence before save, in the note under the ${TARGET_NOUN} conditions.`,
   },
 };
 

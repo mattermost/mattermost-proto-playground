@@ -5,7 +5,7 @@ import { ProfilePopover } from '@mattermost/compass-ui/components/profile-popove
 import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
 import { shellStyles } from '@mattermost/compass-proto';
 import DeniedReason from '../components/DeniedReason';
-import { DENIED_COPY } from '../deniedCopy';
+import { DENIED_COPY, EPHEMERAL_SUFFIX } from '../copy';
 import DirectMessagesModal from '../components/DirectMessagesModal';
 import DmgmChannelApp from '../components/DmgmChannelApp';
 import DmgmSessionControls from '../components/DmgmSessionControls';
@@ -59,7 +59,7 @@ function ephemeralBody(direction: SceneProps['direction'], group: boolean) {
         direction={direction}
       />{' '}
       <span className={styles['blocked-start__ephemeral']}>
-        (Only visible to you)
+        {EPHEMERAL_SUFFIX}
       </span>
     </p>
   );

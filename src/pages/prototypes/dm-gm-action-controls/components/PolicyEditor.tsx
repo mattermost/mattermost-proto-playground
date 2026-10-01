@@ -56,6 +56,7 @@ import {
   type Operator,
   type OtherCondition,
 } from '../policyModel';
+import { ACTING_LABEL, COMPARISON, EDITOR, TARGET_LABEL } from '../copy';
 import InlineConditions from './InlineConditions';
 import styles from './PolicyEditor.module.scss';
 
@@ -325,9 +326,11 @@ function ActingTable({
         data-dmgm-section="acting"
       >
         <div className={styles['policy-editor__subhead-row']}>
-          <h3 className={styles['policy-editor__subhead']}>Acting user</h3>
+          <h3 className={styles['policy-editor__subhead']}>
+            {EDITOR.actingHeading}
+          </h3>
           <span className={styles['policy-editor__subhead-hint']}>
-            The person starting, posting in, or viewing the conversation
+            {EDITOR.actingHint}
           </span>
         </div>
         <Button emphasis="secondary" size="small">
@@ -357,7 +360,7 @@ function ActingTable({
                   colSpan={4}
                   className={styles['policy-editor__empty-other']}
                 >
-                  No conditions on the acting user
+                  {EDITOR.actingEmpty}
                 </td>
               </tr>
             ) : (
@@ -370,7 +373,11 @@ function ActingTable({
                     <Select
                       size="small"
                       className={styles['policy-editor__cell-select--narrow']}
-                      aria-label={`${row.attribute} operator`}
+                      aria-label={EDITOR.rowAria(
+                        ACTING_LABEL,
+                        row.attribute,
+                        'operator',
+                      )}
                       options={OPERATORS.map((o) => ({ value: o, label: o }))}
                       value={row.operator}
                       onChange={(v) =>
@@ -382,7 +389,11 @@ function ActingTable({
                     <Select
                       size="small"
                       className={styles['policy-editor__cell-select']}
-                      aria-label={`${row.attribute} value`}
+                      aria-label={EDITOR.rowAria(
+                        ACTING_LABEL,
+                        row.attribute,
+                        'value',
+                      )}
                       options={valuesFor(row.attribute).map((v) => ({
                         value: v,
                         label: v,
@@ -393,7 +404,7 @@ function ActingTable({
                   </td>
                   <td className={styles['policy-editor__table-right']}>
                     <DeleteRowButton
-                      label={`Remove ${row.attribute} requirement`}
+                      label={EDITOR.removeRowAria(ACTING_LABEL, row.attribute)}
                       onClick={() =>
                         onChange({
                           ...policy,
@@ -510,8 +521,7 @@ function PermissionPickerMenu({
           id="dmgm-picker-block"
         >
           <Icon glyph={<InformationOutlineIcon />} size="16" />
-          Can&apos;t be added while this policy has conditions on the other
-          person.
+          {EDITOR.pickerBlocked}
         </p>
       ) : null}
       {OTHER_PERMISSIONS.map((item) => (
@@ -667,21 +677,22 @@ function OtherPersonCard({
   return (
     <Card
       section="other"
-      title="Who they can message"
-      subtitle="Conditions on the other person in the conversation. In a group message, every member is checked."
+      title={EDITOR.targetCardTitle}
+      subtitle={EDITOR.targetCardSubtitle}
     >
       <div className={styles['policy-editor__table-head-row']}>
         <div className={styles['policy-editor__subhead-row']}>
-          <h3 className={styles['policy-editor__subhead']}>Other person</h3>
+          <h3 className={styles['policy-editor__subhead']}>
+            {EDITOR.targetHeading}
+          </h3>
           <span className={styles['policy-editor__subhead-hint']}>
-            User attributes only
+            {EDITOR.targetHint}
           </span>
         </div>
       </div>
       {policy.other.length > 0 && policy.acting.length > 0 ? (
         <p className={styles['policy-editor__join-note']}>
-          Combined with the acting user conditions:{' '}
-          {MATCH_LABEL[policy.match].toLowerCase()}
+          {EDITOR.combinedNote(MATCH_LABEL[policy.match].toLowerCase())}
         </p>
       ) : null}
 
@@ -702,7 +713,7 @@ function OtherPersonCard({
                   colSpan={4}
                   className={styles['policy-editor__empty-other']}
                 >
-                  Add an attribute to limit who they can message
+                  {EDITOR.targetEmpty}
                 </td>
               </tr>
             ) : (
@@ -718,7 +729,11 @@ function OtherPersonCard({
                     <Select
                       size="small"
                       className={styles['policy-editor__cell-select--narrow']}
-                      aria-label={`Other person ${row.attribute} operator`}
+                      aria-label={EDITOR.rowAria(
+                        TARGET_LABEL,
+                        row.attribute,
+                        'operator',
+                      )}
                       options={OPERATORS.map((o) => ({ value: o, label: o }))}
                       value={row.operator}
                       onChange={(v) =>
@@ -730,11 +745,15 @@ function OtherPersonCard({
                     <Select
                       size="small"
                       className={styles['policy-editor__cell-select']}
-                      aria-label={`Other person ${row.attribute} value`}
+                      aria-label={EDITOR.rowAria(
+                        TARGET_LABEL,
+                        row.attribute,
+                        'value',
+                      )}
                       options={[
                         {
                           value: SAME_VALUE,
-                          label: `Same as acting user's ${row.attribute}`,
+                          label: COMPARISON.sameAsOption(row.attribute),
                         },
                         ...USER_ATTRIBUTES[row.attribute].map((v) => ({
                           value: v,
@@ -756,7 +775,7 @@ function OtherPersonCard({
                   </td>
                   <td className={styles['policy-editor__table-right']}>
                     <DeleteRowButton
-                      label={`Remove other person ${row.attribute} condition`}
+                      label={EDITOR.removeRowAria(TARGET_LABEL, row.attribute)}
                       onClick={() =>
                         onChange({
                           ...policy,
@@ -795,7 +814,7 @@ function OtherPersonCard({
         <div className={styles['policy-editor__missing-note']}>
           <SectionNotice
             type="info"
-            title={`People and bots without ${missingAttrs.join(' or ')} are denied, including users on connected servers.`}
+            title={EDITOR.missingAttribute(missingAttrs)}
           />
         </div>
       ) : null}

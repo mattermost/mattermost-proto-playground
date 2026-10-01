@@ -3,7 +3,12 @@
 // (Site Configuration > Customization). It is the same link for every policy.
 // Copy is draft for the first pass.
 import type { DirectionId } from '../dmgmScenes';
-import { DENIED_COPY, HELP_LINK_URL, type DeniedKind } from '../deniedCopy';
+import {
+  DENIED_COPY,
+  HELP_LINK_URL,
+  SUPPORT_LINK_TEXT,
+  type DeniedKind,
+} from '../copy';
 import styles from './DeniedReason.module.scss';
 
 export interface DeniedReasonProps {
@@ -23,7 +28,7 @@ export function SupportLink() {
       rel="noreferrer"
       onClick={(e) => e.preventDefault()}
     >
-      Contact support
+      {SUPPORT_LINK_TEXT}
     </a>
   );
 }

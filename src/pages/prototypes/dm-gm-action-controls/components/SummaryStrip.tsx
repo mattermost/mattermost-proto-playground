@@ -3,6 +3,7 @@ import TextShortIcon from '@mattermost/compass-icons/components/text-short';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { summarize, type DmPolicy } from '../policyModel';
+import { SUMMARY } from '../copy';
 import styles from './SummaryStrip.module.scss';
 
 export interface SummaryStripProps {
@@ -13,9 +14,9 @@ export interface SummaryStripProps {
 }
 
 const DIRECTION_TAG = {
-  both: { label: 'Applies both ways', type: 'default' },
-  'one-way': { label: 'One way', type: 'warning' },
-  acting: { label: 'Acting user only', type: 'default' },
+  both: { label: SUMMARY.tagBothWays, type: 'default' },
+  'one-way': { label: SUMMARY.tagOneWay, type: 'warning' },
+  acting: { label: SUMMARY.tagActingOnly, type: 'default' },
   none: null,
 } as const;
 
@@ -27,18 +28,20 @@ export default function SummaryStrip({
   const { sentence, direction } = summarize(policy);
   const tag = DIRECTION_TAG[direction];
   return (
-    <section className={styles['summary-strip']} aria-label="Rule summary">
+    <section className={styles['summary-strip']} aria-label={SUMMARY.label}>
       <span className={styles['summary-strip__icon']}>
         <Icon glyph={<TextShortIcon />} size="20" />
       </span>
       <div className={styles['summary-strip__body']}>
         <div className={styles['summary-strip__meta']}>
-          <span className={styles['summary-strip__label']}>Rule summary</span>
+          <span className={styles['summary-strip__label']}>
+            {SUMMARY.label}
+          </span>
           {tag ? <Tag label={tag.label} type={tag.type} size="small" /> : null}
           {edited ? (
-            <Tag label="Edited" size="small" />
+            <Tag label={SUMMARY.edited} size="small" />
           ) : startedFrom ? (
-            <Tag label={`Started from: ${startedFrom}`} size="small" />
+            <Tag label={SUMMARY.startedFrom(startedFrom)} size="small" />
           ) : null}
         </div>
         {/* Announced on change so screen-reader users hear the regenerated sentence. */}

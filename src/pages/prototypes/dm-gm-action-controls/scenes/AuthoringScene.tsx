@@ -23,6 +23,15 @@ import {
   type DmPolicy,
   type Mapping,
 } from '../policyModel';
+import {
+  ACTING_LABEL,
+  ACTING_NOUN,
+  COMPARISON,
+  EDITOR,
+  TARGET_LABEL,
+  TARGET_NOUN,
+  actingAttr,
+} from '../copy';
 import { ENGINE_NOTE } from './sceneNotes';
 
 export interface SceneProps {
@@ -179,9 +188,8 @@ function EditorWithSimulate({
 }
 
 const VARIANT_NOTE: Record<VariantId, string> = {
-  inline:
-    'Variation: inline conditions (primary). Conditions on the other person are rows in the same requirements table as the acting user. Each row names its subject. Rows are joined with AND, as shipped.',
-  card: 'Variation: separate card (secondary). Conditions on the other person sit in their own “Who they can message” card, which appears once a direct or group message permission is added.',
+  inline: `Variation: inline conditions (primary). Conditions on the ${TARGET_NOUN} are rows in the same requirements table as the ${ACTING_NOUN}. Each row names its subject. Rows are joined with AND, as shipped.`,
+  card: `Variation: separate card (secondary). Conditions on the ${TARGET_NOUN} sit in their own “${EDITOR.targetCardTitle}” card, which appears once a direct or group message permission is added.`,
 };
 
 function Note({
@@ -204,18 +212,17 @@ function BlockedNote({ variant }: { variant: VariantId }) {
   return (
     <Note variant={variant}>
       <p>
-        The <strong>+ Add permission</strong> menu is open. Conditions on the
-        other person mean nothing to channel and file permissions, so those rows
-        are disabled and a line in the menu says why. Direct and group message
-        permissions can still be added. This inline block is draft behaviour for
-        the first pass.
+        The <strong>+ Add permission</strong> menu is open. Conditions on the{' '}
+        {TARGET_NOUN} mean nothing to channel and file permissions, so those
+        rows are disabled and a line in the menu says why. Direct and group
+        message permissions can still be added. This inline block is draft
+        behaviour for the first pass.
       </p>
     </Note>
   );
 }
 
-const BLOCKED_TITLE =
-  'Channel and file permissions are blocked while the policy has conditions on the other person';
+const BLOCKED_TITLE = `Channel and file permissions are blocked while the policy has conditions on the ${TARGET_NOUN}`;
 
 function BAuthoring({ screen, variant, onScreenChange }: SceneProps) {
   const memory = bMemory[variant];
@@ -308,8 +315,8 @@ function BAuthoring({ screen, variant, onScreenChange }: SceneProps) {
           <Note variant={variant}>
             <p>
               &ldquo;Contractors can&apos;t start DMs with program leads&rdquo;
-              allows a start when the acting user is not a contractor{' '}
-              <em>or</em> the other person is not a program lead. Inline rows
+              allows a start when the {ACTING_NOUN} is not a contractor{' '}
+              <em>or</em> the {TARGET_NOUN} is not a program lead. Inline rows
               are joined with AND, so this rule opens as one expression over{' '}
               <code>user.</code> and <code>target.</code>, and Simple mode is
               unavailable. The Rule summary still says what it means in words,
@@ -441,7 +448,7 @@ function AAuthoring({ screen, variant }: SceneProps) {
         blocked
           ? BLOCKED_TITLE
           : inline
-            ? 'Other-person rows sit in the same table, joined with AND'
+            ? `${TARGET_LABEL} rows sit in the same table, joined with AND`
             : 'The admin builds the one-way rule by hand in two tables'
       }
       note={
@@ -450,12 +457,12 @@ function AAuthoring({ screen, variant }: SceneProps) {
         ) : inline ? (
           <Note variant={variant}>
             <p>
-              Two rows, one per subject. Acting user: Network is Trusted. Other
-              person: Program is same as the acting user&apos;s Program. Add
-              attribute groups the attributes under Acting user, Acting
-              user&apos;s session, and Other person. Session attributes are
-              never offered for the other person. Switch to Advanced Mode shows
-              the same rule as{' '}
+              Two rows, one per subject. {ACTING_LABEL}: Network is Trusted.{' '}
+              {TARGET_LABEL}: Program {COMPARISON.isSameAs}{' '}
+              {actingAttr('Program')}. Add attribute groups the attributes under{' '}
+              {ACTING_LABEL}, {EDITOR.actingSessionGroup}, and {TARGET_LABEL}.
+              Session attributes are never offered for the {TARGET_NOUN}. Switch
+              to Advanced Mode shows the same rule as{' '}
               <code>
                 user.session.network == &quot;Trusted&quot; &amp;&amp;
                 target.attributes.program == user.attributes.program
@@ -467,11 +474,12 @@ function AAuthoring({ screen, variant }: SceneProps) {
           <Note variant={variant}>
             <p>
               &ldquo;Contractors can&apos;t start DMs with program leads&rdquo;,
-              built from blank. Acting user: Employment type is not Contractor.
-              Other person: Position is not Program lead. The two are joined by{' '}
-              <strong>Any condition required</strong>. Nothing restates what
-              this means in words or that it applies one way. The admin finds
-              that out only by opening <strong>Simulate rules</strong>.
+              built from blank. {ACTING_LABEL}: Employment type is not
+              Contractor. {TARGET_LABEL}: Position is not Program lead. The two
+              are joined by <strong>Any condition required</strong>. Nothing
+              restates what this means in words or that it applies one way. The
+              admin finds that out only by opening{' '}
+              <strong>Simulate rules</strong>.
             </p>
           </Note>
         )

@@ -1,3 +1,4 @@
+import { TARGET_NOUN } from './copy';
 // [AI DRAFT] Scene and direction configuration for the DM/GM prototype.
 
 export type DirectionId = 'b' | 'a';
@@ -79,11 +80,11 @@ export const SIMULATE_SCREENS: Record<DirectionId, ScreenDef[]> = {
   b: [
     { id: 'pair', label: 'One-way pair' },
     { id: 'group', label: 'Third person (group)' },
-    { id: 'bot', label: 'Bot as other person' },
+    { id: 'bot', label: `Bot as ${TARGET_NOUN}` },
   ],
   a: [
     { id: 'pair', label: 'One-way pair' },
-    { id: 'bot', label: 'Bot as other person' },
+    { id: 'bot', label: `Bot as ${TARGET_NOUN}` },
   ],
 };
 
