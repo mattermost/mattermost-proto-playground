@@ -115,15 +115,30 @@ When host and Compass both have a control: for leaf controls, **prefer Compass u
 
 Plugins: same order; grep the **plugin** repo, not webapp System Console paths. Use the plugin’s own installed compass-ui version.
 
-### 5. Implement in the consumer
+### 5. Capture behavior intent; implement with product patterns
+
+Do **not** port prototype logic verbatim. Do **capture the intent** of what the prototype demonstrates, then implement that intent with the **target product’s** existing patterns.
+
+| From the prototype (intent) | In the product (implementation) |
+| --- | --- |
+| User flows between scenes / panels | Host routing, deep links, RHS/modal entry points — not `SceneSwitcher` or walkthrough `sceneState` |
+| Clicks, toggles, “happy path” stubs | Host actions, thunks/selectors, plugin APIs — not copied `useState` demos |
+| Fixture users, channels, threads (`*Data.ts`, proto builders) | Real data loading, store shape, and empty/error states the host already uses |
+| Apparent permissions / who can see what | Host license, roles, and feature flags — never invent policy from fixtures |
+| Loading / success / error that the UX shows | Host async/optimistic patterns for that surface |
+
+**How to extract intent:** read orchestrator + scenes for what happens on interaction and what states are shown (empty, selected, error, multi-step). Treat fixtures and stubs as **examples of outcomes**, not as production code to copy.
+
+**How to implement:** grep the consumer for the same surface (threads, System Console page, plugin RHS, …) and follow that repo’s folder, state, and API conventions. Compass supplies look (props/slots); the product owns behavior.
+
+### 6. Implement in the consumer
 
 - Follow that repo’s folder, routing, and data patterns.
 - Do not copy playground scene/orchestrator structure wholesale.
-- Compass = look; product = behavior.
 - Subpath imports only for compass-ui; kebab-case variant strings.
 - Overlay host ownership (portal, focus, escape) stays in product code. Compass `Modal` / `Tooltip` / `PopoverMenu` / `TourPoint` / `ProfilePopover` are **not adopted in consumers yet** — prefer host overlay patterns unless the task explicitly adopts them (see [references/boundaries.md](references/boundaries.md)).
 
-### 6. Validation checklist
+### 7. Validation checklist
 
 - [ ] Consumer kind and surface recorded for the session
 - [ ] `@mattermost/compass-ui` present; no `@mattermost/compass-proto` in product deps or imports
@@ -133,6 +148,7 @@ Plugins: same order; grep the **plugin** repo, not webapp System Console paths. 
 - [ ] Style entry correct for consumer kind (webapp: no `styles/standalone`)
 - [ ] Tokens / CSS variables used instead of magic spacing pixels where Compass vars apply
 - [ ] Primary `emphasis="primary"` at most once per view when using Compass `Button`
+- [ ] Prototype **behavior intent** preserved; implementation uses **host** patterns (no ported playground state/fixtures as production logic)
 - [ ] Gaps from version skew noted briefly for the developer
 
 ## Thin illustrative cheat sheet

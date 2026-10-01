@@ -16,7 +16,7 @@ Stable rules for translating a Compass prototype into product code. Not a full c
 
 1. Product may depend on **`@mattermost/compass-ui` only** (plus peers such as `@mattermost/compass-icons`).
 2. **Never** ship `@mattermost/compass-proto` into webapp, desktop, or plugins.
-3. Compass owns **look** (props/slots). The consumer owns **behavior** (permissions, data, routing, optimistic UI).
+3. Compass owns **look** (props/slots). Capture **behavior intent** from the prototype (flows, outcomes, states shown); implement with the **consumer’s** patterns (permissions, data, routing, optimistic UI) — do not copy playground state, fixtures, or stubs as production logic.
 4. Variant prop strings are **lowercase kebab-case** (`'primary'`, `'x-small'`).
 5. Overlays from Compass are visual chrome only — host owns open/close, portal, position, focus (exceptions: form widgets that own their menus). **Adoption note (current):** no Mattermost consumer (webapp / desktop / plugins) uses Compass `Modal`, `Tooltip`, `PopoverMenu`, `TourPoint`, or `ProfilePopover` yet. If the prototype uses them, map to the **host’s existing overlay / tour / profile-popover patterns** for that surface; do not introduce these Compass overlays into product unless the task explicitly adopts them. Re-check consumer code / installed usage before assuming this still holds.
 
