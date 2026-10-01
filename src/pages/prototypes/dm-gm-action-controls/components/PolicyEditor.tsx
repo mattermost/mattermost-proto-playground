@@ -12,6 +12,7 @@
 //     conditions exist;
 //   - the missing-attribute note under the other-person table.
 import {
+  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -21,7 +22,6 @@ import {
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
-import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import InformationOutlineIcon from '@mattermost/compass-icons/components/information-outline';
 import LaptopIcon from '@mattermost/compass-icons/components/laptop';
 import TextShortIcon from '@mattermost/compass-icons/components/text-short';
@@ -47,16 +47,24 @@ import {
 import {
   DM_PERMISSIONS,
   DM_PERMISSION_ORDER,
-  OTHER_PERMISSIONS,
+  CHANNEL_PERMISSIONS,
+  FILE_PERMISSIONS,
   nextConditionId,
   type ActingCondition,
   type DmPermission,
   type DmPolicy,
-  type MatchMode,
   type Operator,
   type OtherCondition,
 } from '../policyModel';
-import { ACTING_LABEL, COMPARISON, EDITOR, TARGET_LABEL } from '../copy';
+import {
+  ACTING_LABEL,
+  COMPARISON,
+  EDITOR,
+  MATCH,
+  PICKER,
+  TARGET_LABEL,
+} from '../copy';
+import MatchControl from './MatchControl';
 import InlineConditions from './InlineConditions';
 import styles from './PolicyEditor.module.scss';
 
@@ -252,52 +260,6 @@ function AddAttributeButton({
               ))}
             </>
           ) : null}
-        </PopoverMenu>
-      ) : null}
-    </div>
-  );
-}
-
-const MATCH_LABEL: Record<MatchMode, string> = {
-  all: 'All conditions required',
-  any: 'Any condition required',
-};
-
-function MatchControl({
-  value,
-  onChange,
-}: {
-  value: MatchMode;
-  onChange: (m: MatchMode) => void;
-}) {
-  const menu = useMenu();
-  return (
-    <div className={styles['policy-editor__anchor']} ref={menu.ref}>
-      <button
-        type="button"
-        className={styles['policy-editor__head-control']}
-        aria-haspopup="menu"
-        aria-expanded={menu.open}
-        onClick={() => menu.setOpen((o) => !o)}
-      >
-        <Icon glyph={<FilterVariantIcon />} size="16" />
-        {MATCH_LABEL[value]}
-        <Icon glyph={<ChevronDownIcon />} size="16" />
-      </button>
-      {menu.open ? (
-        <PopoverMenu className={styles['policy-editor__match-menu']}>
-          {(Object.keys(MATCH_LABEL) as MatchMode[]).map((mode) => (
-            <MenuItem
-              key={mode}
-              label={MATCH_LABEL[mode]}
-              leadingElement={false}
-              trailingElement={mode === value}
-              onClick={() => {
-                onChange(mode);
-                menu.close();
-              }}
-            />
-          ))}
         </PopoverMenu>
       ) : null}
     </div>
@@ -514,29 +476,40 @@ function PermissionPickerMenu({
       ].join(' ')}
       aria-label="Add permission menu"
     >
-      <MenuGroupHeading label="Channels and files" />
-      {hasOther ? (
-        <p
-          className={styles['policy-editor__menu-notice']}
-          id="dmgm-picker-block"
-        >
-          <Icon glyph={<InformationOutlineIcon />} size="16" />
-          {EDITOR.pickerBlocked}
-        </p>
-      ) : null}
-      {OTHER_PERMISSIONS.map((item) => (
-        <MenuItem
-          key={item.label}
-          label={item.label}
-          disabled={hasOther}
-          aria-describedby={hasOther ? 'dmgm-picker-block' : undefined}
-          secondaryLabel={item.description}
-          leadingElement={false}
-        />
+      {[
+        { key: 'files', heading: PICKER.files, items: FILE_PERMISSIONS },
+        {
+          key: 'channels',
+          heading: PICKER.channels,
+          items: CHANNEL_PERMISSIONS,
+        },
+      ].map((group) => (
+        <Fragment key={group.key}>
+          <MenuGroupHeading label={group.heading} />
+          {hasOther ? (
+            <p
+              className={styles['policy-editor__menu-notice']}
+              id={`dmgm-picker-block-${group.key}`}
+            >
+              <Icon glyph={<InformationOutlineIcon />} size="16" />
+              {EDITOR.pickerBlocked}
+            </p>
+          ) : null}
+          {group.items.map((item) => (
+            <MenuItem
+              key={item.label}
+              label={item.label}
+              disabled={hasOther}
+              aria-describedby={
+                hasOther ? `dmgm-picker-block-${group.key}` : undefined
+              }
+              secondaryLabel={item.description}
+              leadingElement={false}
+            />
+          ))}
+        </Fragment>
       ))}
-      {available.length > 0 ? (
-        <MenuGroupHeading label="Direct and group messages" />
-      ) : null}
+      {available.length > 0 ? <MenuGroupHeading label={PICKER.dms} /> : null}
       {available.map((p) => (
         <MenuItem
           key={p}
@@ -692,7 +665,7 @@ function OtherPersonCard({
       </div>
       {policy.other.length > 0 && policy.acting.length > 0 ? (
         <p className={styles['policy-editor__join-note']}>
-          {EDITOR.combinedNote(MATCH_LABEL[policy.match].toLowerCase())}
+          {EDITOR.combinedNote(MATCH[policy.match].toLowerCase())}
         </p>
       ) : null}
 

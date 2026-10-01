@@ -53,6 +53,96 @@ export function valuesFor(key: AttributeKey): string[] {
 }
 
 /* ------------------------------------------------------------------ */
+/* Per-server attribute inventories (Direction B rule generation)      */
+/* ------------------------------------------------------------------ */
+
+export type AttributeFieldType = 'select' | 'multiselect' | 'text';
+
+export interface InventoryAttribute {
+  name: string;
+  source: 'user' | 'session';
+  type: AttributeFieldType;
+  values: string[];
+  /** Marks a user attribute that groups people (a program, an organization). */
+  groupsPeople?: boolean;
+}
+
+export type InventoryId = 'full' | 'user' | 'program' | 'none';
+
+function userAttr(
+  name: UserAttributeKey,
+  groupsPeople = false,
+): InventoryAttribute {
+  return {
+    name,
+    source: 'user',
+    type: 'select',
+    values: USER_ATTRIBUTES[name],
+    groupsPeople,
+  };
+}
+
+function sessionAttr(name: SessionAttributeKey): InventoryAttribute {
+  return {
+    name,
+    source: 'session',
+    type: 'select',
+    values: SESSION_ATTRIBUTES[name],
+  };
+}
+
+/**
+ * Demo stand-ins for "this server's attributes at this moment". The reviewer
+ * switches between them above the frame to see the starting rules change.
+ */
+export const ATTRIBUTE_INVENTORIES: Record<
+  InventoryId,
+  { label: string; attributes: InventoryAttribute[] }
+> = {
+  full: {
+    label: 'Fully set up',
+    attributes: [
+      userAttr('Program', true),
+      userAttr('Organization', true),
+      userAttr('Employment type'),
+      userAttr('Position'),
+      sessionAttr('Network'),
+      sessionAttr('Device'),
+    ],
+  },
+  user: {
+    label: 'User attributes only',
+    attributes: [
+      userAttr('Program', true),
+      userAttr('Organization', true),
+      userAttr('Employment type'),
+      userAttr('Position'),
+    ],
+  },
+  program: {
+    label: 'Program only',
+    attributes: [userAttr('Program', true)],
+  },
+  none: {
+    label: 'No matching attributes',
+    attributes: [
+      { name: 'Building', source: 'user', type: 'text', values: [] },
+    ],
+  },
+};
+
+export const DEFAULT_INVENTORY: InventoryId = 'full';
+
+export function inventoryFromParam(value: string | null): InventoryId {
+  return value === 'full' ||
+    value === 'user' ||
+    value === 'program' ||
+    value === 'none'
+    ? value
+    : DEFAULT_INVENTORY;
+}
+
+/* ------------------------------------------------------------------ */
 /* People                                                              */
 /* ------------------------------------------------------------------ */
 

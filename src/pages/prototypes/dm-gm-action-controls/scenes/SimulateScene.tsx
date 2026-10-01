@@ -37,7 +37,7 @@ export default function SimulateScene({
 }: SceneProps) {
   const rule = ruleById(FEATURED_RULE_ID);
   const [policy, setPolicy] = useState(() => {
-    const built = rule.build(rule.canonical);
+    const built = rule.build();
     return direction === 'a'
       ? { ...built, name: 'Contractor messaging limits' }
       : built;

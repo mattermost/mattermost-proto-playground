@@ -1,24 +1,13 @@
-// [AI DRAFT] Direction B: the Permission Policies list, the "Add policy"
-// chooser (starting rules or blank), and the mandatory attribute-mapping step.
+// [AI DRAFT] Direction B: the Permission Policies list and the "Add policy"
+// chooser. Starting rules are generated from this server's attributes, so no
+// mapping step is needed; rules the server can't support are not listed.
 import { Button } from '@mattermost/compass-ui/components/button';
 import { AdminConsoleHeader } from '@mattermost/compass-ui/components/admin-console-header';
 import { Modal } from '@mattermost/compass-ui/components/modal';
 import { Radio } from '@mattermost/compass-ui/components/radio';
-import { Select } from '@mattermost/compass-ui/components/select';
 import { Tag } from '@mattermost/compass-ui/components/tag';
-import {
-  SESSION_ATTRIBUTES,
-  USER_ATTRIBUTES,
-  valuesFor,
-  type AttributeKey,
-} from '../dmgmData';
-import {
-  STARTING_RULES,
-  isMappingComplete,
-  type Mapping,
-  type StartingRule,
-} from '../policyModel';
-import { SUMMARY } from '../copy';
+import type { RuleUse, StartingRule } from '../policyModel';
+import { CHOOSER, SUMMARY } from '../copy';
 import styles from './AddPolicyFlow.module.scss';
 
 /* ------------------------------------------------------------------ */
@@ -97,6 +86,7 @@ function ChoiceCard({
   title,
   description,
   tags,
+  uses,
 }: {
   id: string;
   checked: boolean;
@@ -104,6 +94,7 @@ function ChoiceCard({
   title: string;
   description: string;
   tags?: string[];
+  uses?: RuleUse[];
 }) {
   return (
     <div
@@ -140,6 +131,20 @@ function ChoiceCard({
           <span className={styles['add-policy__choice-description']}>
             {description}
           </span>
+          {uses && uses.length > 0 ? (
+            <span className={styles['add-policy__choice-uses']}>
+              <span className={styles['add-policy__choice-uses-label']}>
+                {CHOOSER.usesLabel}
+              </span>
+              {uses.map((u) => (
+                <Tag
+                  key={`${u.attribute}-${u.value ?? ''}`}
+                  label={CHOOSER.usesTag(u.attribute, u.value)}
+                  size="x-small"
+                />
+              ))}
+            </span>
+          ) : null}
         </span>
       </Radio>
     </div>
@@ -147,10 +152,12 @@ function ChoiceCard({
 }
 
 export function StartingRuleChooser({
+  rules,
   selected,
   onSelect,
   onContinue,
 }: {
+  rules: StartingRule[];
   selected: string;
   onSelect: (id: string) => void;
   onContinue: () => void;
@@ -158,6 +165,7 @@ export function StartingRuleChooser({
   return (
     <Modal
       size="medium"
+      className={styles['add-policy__modal']}
       title="Add policy"
       subtitle="Pick a starting rule for direct and group messages, or begin with a blank policy."
       footer={
@@ -170,26 +178,31 @@ export function StartingRuleChooser({
       }
     >
       <div className={styles['add-policy__chooser']}>
-        <h3 className={styles['add-policy__section-label']}>
-          Direct and group message rules
-        </h3>
-        <div
-          className={styles['add-policy__choices']}
-          role="radiogroup"
-          aria-label="Starting rule"
-        >
-          {STARTING_RULES.map((rule) => (
-            <ChoiceCard
-              key={rule.id}
-              id={rule.id}
-              checked={selected === rule.id}
-              onSelect={() => onSelect(rule.id)}
-              title={rule.name}
-              description={rule.description}
-              tags={rule.tags}
-            />
-          ))}
-        </div>
+        {rules.length > 0 ? (
+          <>
+            <h3 className={styles['add-policy__section-label']}>
+              {CHOOSER.rulesHeading}
+            </h3>
+            <div
+              className={styles['add-policy__choices']}
+              role="radiogroup"
+              aria-label="Starting rule"
+            >
+              {rules.map((rule) => (
+                <ChoiceCard
+                  key={rule.id}
+                  id={rule.id}
+                  checked={selected === rule.id}
+                  onSelect={() => onSelect(rule.id)}
+                  title={rule.name}
+                  description={rule.description}
+                  tags={rule.tags}
+                  uses={rule.uses}
+                />
+              ))}
+            </div>
+          </>
+        ) : null}
         <h3 className={styles['add-policy__section-label']}>Other</h3>
         <ChoiceCard
           id={BLANK_ID}
@@ -198,134 +211,6 @@ export function StartingRuleChooser({
           title="Blank policy"
           description="Choose the permissions and conditions yourself."
         />
-      </div>
-    </Modal>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Mapping step                                                        */
-/* ------------------------------------------------------------------ */
-
-function attributeOptions(kind: 'user-attribute' | 'session-attribute') {
-  const keys =
-    kind === 'user-attribute'
-      ? Object.keys(USER_ATTRIBUTES)
-      : Object.keys(SESSION_ATTRIBUTES);
-  return keys.map((k) => ({ value: k, label: k }));
-}
-
-export function MappingStep({
-  rule,
-  mapping,
-  onChange,
-  onBack,
-  onContinue,
-}: {
-  rule: StartingRule;
-  mapping: Mapping;
-  onChange: (next: Mapping) => void;
-  onBack: () => void;
-  onContinue: () => void;
-}) {
-  const complete = isMappingComplete(rule, mapping);
-  const mappedCount = rule.placeholders.filter((p) => mapping[p.id]).length;
-
-  return (
-    <Modal
-      size="medium"
-      title="Map attributes"
-      subtitle={`Match each attribute in “${rule.name}” to the one this server uses.`}
-      showBackButton
-      onBack={onBack}
-      footerLeading={
-        <span
-          className={styles['add-policy__progress']}
-          id="dmgm-mapping-status"
-          role="status"
-        >
-          {complete
-            ? 'All attributes mapped'
-            : `${mappedCount} of ${rule.placeholders.length} mapped. Map every attribute to continue.`}
-        </span>
-      }
-      footer={
-        <>
-          <Button emphasis="tertiary">Cancel</Button>
-          <Button
-            emphasis="primary"
-            disabled={!complete}
-            aria-describedby="dmgm-mapping-status"
-            onClick={complete ? onContinue : undefined}
-          >
-            Open in editor
-          </Button>
-        </>
-      }
-    >
-      <div className={styles['add-policy__mapping']}>
-        {rule.placeholders.map((p) => {
-          const isValue = p.kind === 'value';
-          const parent =
-            isValue && p.of
-              ? (mapping[p.of] as AttributeKey | undefined)
-              : undefined;
-          const options = isValue
-            ? parent
-              ? valuesFor(parent).map((v) => ({ value: v, label: v }))
-              : []
-            : attributeOptions(
-                p.kind as 'user-attribute' | 'session-attribute',
-              );
-          return (
-            <div
-              key={p.id}
-              className={[
-                styles['add-policy__map-row'],
-                isValue ? styles['add-policy__map-row--value'] : '',
-              ]
-                .join(' ')
-                .trim()}
-            >
-              <div className={styles['add-policy__map-text']}>
-                <span className={styles['add-policy__map-label']}>
-                  {isValue ? `Value: ${p.label}` : p.label}
-                  {p.kind === 'session-attribute' ? (
-                    <Tag label="Session" type="default" />
-                  ) : null}
-                </span>
-                <span className={styles['add-policy__map-hint']}>{p.hint}</span>
-              </div>
-              <Select
-                className={styles['add-policy__map-select']}
-                aria-label={
-                  isValue ? `Value for ${p.label}` : `Attribute for ${p.label}`
-                }
-                placeholder={
-                  isValue
-                    ? parent
-                      ? 'Select a value'
-                      : 'Map the attribute first'
-                    : 'Select an attribute'
-                }
-                disabled={isValue && !parent}
-                invalid={false}
-                options={options}
-                value={mapping[p.id] ?? ''}
-                onChange={(v) => {
-                  const next: Mapping = { ...mapping, [p.id]: v };
-                  // A new attribute invalidates any value chosen for the old one.
-                  for (const child of rule.placeholders) {
-                    if (child.of === p.id) {
-                      delete next[child.id];
-                    }
-                  }
-                  onChange(next);
-                }}
-              />
-            </div>
-          );
-        })}
       </div>
     </Modal>
   );

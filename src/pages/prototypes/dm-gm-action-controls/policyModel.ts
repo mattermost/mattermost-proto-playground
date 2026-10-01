@@ -2,8 +2,10 @@
 // plain-language summary used by Direction B's summary strip.
 import { SIMULATE, SUMMARY } from './copy';
 import {
+  ATTRIBUTE_INVENTORIES,
   ISABELLA,
   isSessionAttribute,
+  type InventoryAttribute,
   type AttributeKey,
   type Person,
   type SessionAttributeKey,
@@ -40,10 +42,11 @@ export const DM_PERMISSIONS: Record<
 };
 
 /**
- * Permissions that are not DM/GM permissions. Labels and descriptions are the
- * shipped `admin.permission_policies.permission.*` strings.
+ * Permissions that are not DM/GM permissions, grouped as in the picker. Labels
+ * and descriptions are the shipped `admin.permission_policies.permission.*`
+ * strings. Files affect both channels and DMs/GMs.
  */
-export const OTHER_PERMISSIONS = [
+export const FILE_PERMISSIONS = [
   {
     label: 'Download Files',
     description: 'Allow users to download files to their device',
@@ -52,6 +55,9 @@ export const OTHER_PERMISSIONS = [
     label: 'Upload Files',
     description: 'Allow users to upload files while sending a message',
   },
+];
+
+export const CHANNEL_PERMISSIONS = [
   {
     label: 'Channel Read Access',
     description: 'Allow users to read the channel and its content',
@@ -73,10 +79,23 @@ export interface ActingCondition {
   id: string;
   attribute: AttributeKey;
   operator: Operator;
+  /** Fixed value. Ignored when `compareTo` is set. */
   value: string;
+  /**
+   * User-subject comparison: compare this user attribute with the recipient's
+   * `compareTo` attribute (user.attributes.x == target.attributes.y). Never set
+   * on session attributes: a recipient has no evaluable session.
+   */
+  compareTo?: UserAttributeKey;
 }
 
-export type OtherValue = { kind: 'fixed'; value: string } | { kind: 'same' };
+/**
+ * `same`: compare with the user's attribute — `attribute` when set, otherwise
+ * the same-named one (target.attributes.x == user.attributes.y).
+ */
+export type OtherValue =
+  | { kind: 'fixed'; value: string }
+  | { kind: 'same'; attribute?: UserAttributeKey };
 
 export interface OtherCondition {
   id: string;
@@ -112,257 +131,255 @@ export function blankPolicy(): DmPolicy {
 }
 
 /* ------------------------------------------------------------------ */
-/* Starting rules (Direction B catalogue)                              */
+/* Starting rules (Direction B): generated from this server's attributes */
 /* ------------------------------------------------------------------ */
 
-export interface Placeholder {
-  id: string;
-  /** What the starting rule calls this attribute or value. */
-  label: string;
-  /** One line explaining what to map it to. */
-  hint: string;
-  kind: 'user-attribute' | 'session-attribute' | 'value';
-  /** For values: the attribute placeholder whose values are offered. */
-  of?: string;
+/** One attribute (and value, where relevant) a generated rule relies on. */
+export interface RuleUse {
+  attribute: string;
+  value?: string;
 }
-
-export type Mapping = Record<string, string>;
 
 export interface StartingRule {
   id: string;
   name: string;
   description: string;
   tags: string[];
-  placeholders: Placeholder[];
-  /** The mapping a deployment like this one would choose. Used for the end-user scenes. */
-  canonical: Mapping;
-  build: (m: Mapping) => DmPolicy;
+  /** Shown on the card as "Uses: …" so the admin can check the match in place. */
+  uses: RuleUse[];
+  build: () => DmPolicy;
 }
 
-function attr<T extends AttributeKey>(m: Mapping, key: string): T {
-  return m[key] as T;
+/**
+ * How templates recognise attributes. A deliberately small, explicit table for
+ * the prototype; engineering must define the real matching. A rule appears
+ * only when every attribute and value it needs is found. Rules that can't be
+ * fully matched are hidden: no hint, no disabled row, no mapping step.
+ */
+export const TEMPLATE_MATCHING = {
+  /** A user attribute value meaning "contractor". */
+  contractorValue: /^contractor$/i,
+  /** A user attribute value meaning "lead". */
+  leadValue: /\blead$/i,
+  /** Session attribute and value meaning a trusted network. */
+  trustedNetwork: { attribute: 'Network', value: 'Trusted' },
+  /** Session attribute and value meaning a managed device. */
+  managedDevice: { attribute: 'Device', value: 'Managed' },
+};
+
+function slug(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
-export const STARTING_RULES: StartingRule[] = [
-  {
-    id: 'same-program',
-    name: 'Same program only',
-    description:
-      'People can start and post in direct messages only with people in their own program.',
-    tags: ['Start', 'Post', SUMMARY.tagBothWays],
-    placeholders: [
-      {
-        id: 'program',
-        label: 'Program',
-        hint: 'The user attribute that records which program someone belongs to.',
-        kind: 'user-attribute',
-      },
-    ],
-    canonical: { program: 'Program' },
-    build: (m) => ({
-      name: 'Same program only',
-      role: 'Members',
-      permissions: ['start', 'post'],
-      acting: [],
-      other: [
-        {
-          id: nextConditionId(),
-          attribute: attr<UserAttributeKey>(m, 'program'),
-          operator: 'is',
-          value: { kind: 'same' },
-        },
-      ],
-      match: 'all',
-    }),
-  },
-  {
-    id: 'contractors-no-start',
-    name: "Contractors can't start DMs",
-    description:
-      'Contractors can reply in existing conversations but cannot start new ones.',
-    tags: ['Start', SUMMARY.tagActingOnly],
-    placeholders: [
-      {
-        id: 'employment',
-        label: 'Employment type',
-        hint: 'The user attribute that records whether someone is a contractor.',
-        kind: 'user-attribute',
-      },
-      {
-        id: 'contractor',
-        label: 'Contractor',
-        hint: 'The value of that attribute that means "contractor".',
-        kind: 'value',
-        of: 'employment',
-      },
-    ],
-    canonical: { employment: 'Employment type', contractor: 'Contractor' },
-    build: (m) => ({
-      name: "Contractors can't start DMs",
-      role: 'Members',
-      permissions: ['start'],
-      acting: [
-        {
-          id: nextConditionId(),
-          attribute: attr<UserAttributeKey>(m, 'employment'),
-          operator: 'is not',
-          value: m.contractor,
-        },
-      ],
-      other: [],
-      match: 'all',
-    }),
-  },
-  {
-    id: 'contractors-no-leads',
-    name: "Contractors can't start DMs with program leads",
-    description:
-      'Contractors cannot start a conversation with a program lead. Program leads can still start one with them.',
-    tags: ['Start', SUMMARY.tagOneWay],
-    placeholders: [
-      {
-        id: 'employment',
-        label: 'Employment type',
-        hint: 'The user attribute that records whether someone is a contractor.',
-        kind: 'user-attribute',
-      },
-      {
-        id: 'contractor',
-        label: 'Contractor',
-        hint: 'The value of that attribute that means "contractor".',
-        kind: 'value',
-        of: 'employment',
-      },
-      {
-        id: 'position',
-        label: 'Position',
-        hint: 'The user attribute that records whether someone is a program lead.',
-        kind: 'user-attribute',
-      },
-      {
-        id: 'lead',
-        label: 'Program lead',
-        hint: 'The value of that attribute that means "program lead".',
-        kind: 'value',
-        of: 'position',
-      },
-    ],
-    canonical: {
-      employment: 'Employment type',
-      contractor: 'Contractor',
-      position: 'Position',
-      lead: 'Program lead',
-    },
-    build: (m) => ({
-      name: "Contractors can't start DMs with program leads",
-      role: 'Members',
-      permissions: ['start'],
-      acting: [
-        {
-          id: nextConditionId(),
-          attribute: attr<UserAttributeKey>(m, 'employment'),
-          operator: 'is not',
-          value: m.contractor,
-        },
-      ],
-      other: [
-        {
-          id: nextConditionId(),
-          attribute: attr<UserAttributeKey>(m, 'position'),
-          operator: 'is not',
-          value: { kind: 'fixed', value: m.lead },
-        },
-      ],
-      match: 'any',
-    }),
-  },
-  {
-    id: 'untrusted-no-post',
-    name: 'No posting from untrusted networks',
-    description:
-      "On an untrusted network, people can read direct messages but can't post.",
-    tags: ['Post', 'Session rule'],
-    placeholders: [
-      {
-        id: 'network',
-        label: 'Network',
-        hint: 'The session attribute that records which network a session is on.',
-        kind: 'session-attribute',
-      },
-      {
-        id: 'trusted',
-        label: 'Trusted',
-        hint: 'The value of that attribute that means "trusted network".',
-        kind: 'value',
-        of: 'network',
-      },
-    ],
-    canonical: { network: 'Network', trusted: 'Trusted' },
-    build: (m) => ({
-      name: 'No posting from untrusted networks',
-      role: 'Members',
-      permissions: ['post'],
-      acting: [
-        {
-          id: nextConditionId(),
-          attribute: attr<SessionAttributeKey>(m, 'network'),
-          operator: 'is',
-          value: m.trusted,
-        },
-      ],
-      other: [],
-      match: 'all',
-    }),
-  },
-  {
-    id: 'untrusted-no-view',
-    name: "Unmanaged devices can't see DMs",
-    description:
-      'Direct and group messages are hidden on unmanaged devices.',
-    tags: ['View', 'Session rule'],
-    placeholders: [
-      {
-        id: 'device',
-        label: 'Device',
-        hint: 'The session attribute that records whether a device is managed.',
-        kind: 'session-attribute',
-      },
-      {
-        id: 'managed',
-        label: 'Managed',
-        hint: 'The value of that attribute that means "managed device".',
-        kind: 'value',
-        of: 'device',
-      },
-    ],
-    canonical: { device: 'Device', managed: 'Managed' },
-    build: (m) => ({
-      name: "Unmanaged devices can't see DMs",
-      role: 'Members',
-      permissions: ['view'],
-      acting: [
-        {
-          id: nextConditionId(),
-          attribute: attr<SessionAttributeKey>(m, 'device'),
-          operator: 'is',
-          value: m.managed,
-        },
-      ],
-      other: [],
-      match: 'all',
-    }),
-  },
-];
-
-export function isMappingComplete(
-  rule: StartingRule,
-  mapping: Mapping,
-): boolean {
-  return rule.placeholders.every((p) => Boolean(mapping[p.id]));
+function plural(value: string): string {
+  return value.endsWith('s') ? value : `${value}s`;
 }
+
+function findUserValue(
+  attributes: InventoryAttribute[],
+  pattern: RegExp,
+  exclude?: string,
+): RuleUse | null {
+  for (const a of attributes) {
+    if (a.source !== 'user' || a.type === 'text' || a.name === exclude)
+      continue;
+    const value = a.values.find((v) => pattern.test(v));
+    if (value) return { attribute: a.name, value };
+  }
+  return null;
+}
+
+function findSessionValue(
+  attributes: InventoryAttribute[],
+  match: { attribute: string; value: string },
+): RuleUse | null {
+  const a = attributes.find(
+    (x) => x.source === 'session' && x.name === match.attribute,
+  );
+  return a && a.values.includes(match.value)
+    ? { attribute: a.name, value: match.value }
+    : null;
+}
+
+const MEMBERS = 'Members';
+
+/** Every starting rule this server's attributes can fully support, in display order. */
+export function generateStartingRules(
+  attributes: InventoryAttribute[],
+): StartingRule[] {
+  const rules: StartingRule[] = [];
+
+  // "Same <Attribute> only" for each select / multiselect attribute that groups people.
+  for (const a of attributes) {
+    if (a.source !== 'user' || !a.groupsPeople || a.type === 'text') continue;
+    const attribute = a.name as UserAttributeKey;
+    const name = `Same ${a.name} only`;
+    rules.push({
+      id: `same-${slug(a.name)}`,
+      name,
+      description: `People can start and post in direct messages only with people who have the same ${a.name}.`,
+      tags: ['Start', 'Post', SUMMARY.tagBothWays],
+      uses: [{ attribute: a.name }],
+      build: () => ({
+        name,
+        role: MEMBERS,
+        permissions: ['start', 'post'],
+        acting: [],
+        other: [
+          {
+            id: nextConditionId(),
+            attribute,
+            operator: 'is',
+            value: { kind: 'same' },
+          },
+        ],
+        match: 'all',
+      }),
+    });
+  }
+
+  const contractor = findUserValue(
+    attributes,
+    TEMPLATE_MATCHING.contractorValue,
+  );
+  if (contractor?.value) {
+    const who = plural(contractor.value);
+    const name = `${who} can't start DMs`;
+    rules.push({
+      id: 'contractors-no-start',
+      name,
+      description: `${who} can reply in existing conversations but can't start new ones.`,
+      tags: ['Start', SUMMARY.tagActingOnly],
+      uses: [contractor],
+      build: () => ({
+        name,
+        role: MEMBERS,
+        permissions: ['start'],
+        acting: [
+          {
+            id: nextConditionId(),
+            attribute: contractor.attribute as UserAttributeKey,
+            operator: 'is not',
+            value: contractor.value as string,
+          },
+        ],
+        other: [],
+        match: 'all',
+      }),
+    });
+
+    const lead = findUserValue(
+      attributes,
+      TEMPLATE_MATCHING.leadValue,
+      contractor.attribute,
+    );
+    if (lead?.value) {
+      const leads = plural(lead.value);
+      const leadName = `${who} can't start DMs with ${leads}`;
+      rules.push({
+        id: 'contractors-no-leads',
+        name: leadName,
+        description: `${who} can't start a conversation with ${leads}. ${leads} can still start one with them.`,
+        tags: ['Start', SUMMARY.tagOneWay],
+        uses: [contractor, lead],
+        build: () => ({
+          name: leadName,
+          role: MEMBERS,
+          permissions: ['start'],
+          acting: [
+            {
+              id: nextConditionId(),
+              attribute: contractor.attribute as UserAttributeKey,
+              operator: 'is not',
+              value: contractor.value as string,
+            },
+          ],
+          other: [
+            {
+              id: nextConditionId(),
+              attribute: lead.attribute as UserAttributeKey,
+              operator: 'is not',
+              value: { kind: 'fixed', value: lead.value as string },
+            },
+          ],
+          // One join for the table: allowed when either side passes.
+          match: 'any',
+        }),
+      });
+    }
+  }
+
+  const network = findSessionValue(
+    attributes,
+    TEMPLATE_MATCHING.trustedNetwork,
+  );
+  if (network) {
+    const name = 'No posting from untrusted networks';
+    rules.push({
+      id: 'untrusted-no-post',
+      name,
+      description:
+        "On an untrusted network, people can read direct messages but can't post.",
+      tags: ['Post', 'Session rule'],
+      uses: [network],
+      build: () => ({
+        name,
+        role: MEMBERS,
+        permissions: ['post'],
+        acting: [
+          {
+            id: nextConditionId(),
+            attribute: network.attribute as SessionAttributeKey,
+            operator: 'is',
+            value: network.value as string,
+          },
+        ],
+        other: [],
+        match: 'all',
+      }),
+    });
+  }
+
+  const device = findSessionValue(attributes, TEMPLATE_MATCHING.managedDevice);
+  if (device) {
+    const name = "Unmanaged devices can't see DMs";
+    rules.push({
+      id: 'untrusted-no-view',
+      name,
+      description: 'Direct and group messages are hidden on unmanaged devices.',
+      tags: ['View', 'Session rule'],
+      uses: [device],
+      build: () => ({
+        name,
+        role: MEMBERS,
+        permissions: ['view'],
+        acting: [
+          {
+            id: nextConditionId(),
+            attribute: device.attribute as SessionAttributeKey,
+            operator: 'is',
+            value: device.value as string,
+          },
+        ],
+        other: [],
+        match: 'all',
+      }),
+    });
+  }
+
+  return rules;
+}
+
+/** Rules for the fully set-up demo server: the end-user scenes and Simulate use these. */
+export const FULL_SERVER_RULES = generateStartingRules(
+  ATTRIBUTE_INVENTORIES.full.attributes,
+);
 
 export function ruleById(id: string): StartingRule {
-  const rule = STARTING_RULES.find((r) => r.id === id);
+  const rule = FULL_SERVER_RULES.find((r) => r.id === id);
   if (!rule) {
     throw new Error(`Unknown starting rule: ${id}`);
   }
@@ -382,10 +399,7 @@ export const ACTIVE_POLICIES: DmPolicy[] = [
   'contractors-no-leads',
   'untrusted-no-post',
   'untrusted-no-view',
-].map((id) => {
-  const rule = ruleById(id);
-  return rule.build(rule.canonical);
-});
+].map((id) => ruleById(id).build());
 
 /* ------------------------------------------------------------------ */
 /* Evaluation                                                          */
@@ -419,7 +433,16 @@ function actingResult(
   c: ActingCondition,
   acting: Person,
   ctx: SessionContext,
+  other: Person | null,
 ): ConditionResult {
+  if (c.compareTo) {
+    const mine = acting.attributes[c.attribute as UserAttributeKey];
+    const theirs = other?.attributes[c.compareTo];
+    if (mine === undefined || theirs === undefined) {
+      return 'missing';
+    }
+    return compare(mine, c.operator, theirs);
+  }
   const actual = isSessionAttribute(c.attribute)
     ? ctx[c.attribute]
     : acting.attributes[c.attribute];
@@ -433,7 +456,7 @@ function otherResult(
 ): ConditionResult {
   const actual = other.attributes[c.attribute];
   if (c.value.kind === 'same') {
-    const mine = acting.attributes[c.attribute];
+    const mine = acting.attributes[c.value.attribute ?? c.attribute];
     if (mine === undefined || actual === undefined) {
       return 'missing';
     }
@@ -455,10 +478,22 @@ export function evaluatePolicy(
   ctx: SessionContext,
   other: Person | null,
 ): PolicyOutcome {
-  const actingResults = policy.acting.map((c) => actingResult(c, acting, ctx));
+  // A user row compared with the recipient is a recipient condition too.
+  const actingRows = other
+    ? policy.acting
+    : policy.acting.filter((c) => !c.compareTo);
+  const actingResults = actingRows.map((c) =>
+    actingResult(c, acting, ctx, other),
+  );
   const otherResults = other
     ? policy.other.map((c) => otherResult(c, acting, other))
     : [];
+  const targetResults = [
+    ...otherResults,
+    ...actingRows
+      .filter((c) => c.compareTo)
+      .map((c) => actingResult(c, acting, ctx, other)),
+  ];
   const all = [...actingResults, ...otherResults];
   if (all.length === 0) {
     return { allowed: true, missingTarget: false };
@@ -467,7 +502,7 @@ export function evaluatePolicy(
     policy.match === 'all'
       ? all.every((r) => r === 'pass')
       : all.some((r) => r === 'pass');
-  const missingTarget = !allowed && otherResults.includes('missing');
+  const missingTarget = !allowed && targetResults.includes('missing');
   return { allowed, missingTarget };
 }
 
@@ -579,15 +614,36 @@ function permissionPhrase(perms: DmPermission[]): string {
   return `${joined} direct and group messages`;
 }
 
+/** Equality is symmetric: either row direction reads the same. */
+function comparisonClause(
+  userAttr: string,
+  targetAttr: string,
+  operator: Operator,
+): string {
+  if (userAttr === targetAttr) {
+    return operator === 'is'
+      ? SUMMARY.targetMatches(targetAttr)
+      : SUMMARY.targetDiffers(targetAttr);
+  }
+  return operator === 'is'
+    ? SUMMARY.crossMatches(userAttr, targetAttr)
+    : SUMMARY.crossDiffers(userAttr, targetAttr);
+}
+
 function actingClause(c: ActingCondition): string {
+  if (c.compareTo) {
+    return comparisonClause(c.attribute, c.compareTo, c.operator);
+  }
   return SUMMARY.actingIs(c.attribute, c.operator, c.value);
 }
 
 function otherClause(c: OtherCondition): string {
   if (c.value.kind === 'same') {
-    return c.operator === 'is'
-      ? SUMMARY.targetMatches(c.attribute)
-      : SUMMARY.targetDiffers(c.attribute);
+    return comparisonClause(
+      c.value.attribute ?? c.attribute,
+      c.attribute,
+      c.operator,
+    );
   }
   return SUMMARY.targetIs(c.attribute, c.operator, c.value.value);
 }
@@ -624,13 +680,26 @@ export function summarize(policy: DmPolicy): PolicySummary {
     };
   }
 
+  // Same-named "is same as" comparisons, from either side, read as "matches theirs".
+  const sameNamedMatch = [
+    ...policy.other.map((c) =>
+      c.value.kind === 'same' &&
+      c.operator === 'is' &&
+      (c.value.attribute ?? c.attribute) === c.attribute
+        ? c.attribute
+        : null,
+    ),
+    ...policy.acting.map((c) =>
+      c.compareTo && c.operator === 'is' && c.compareTo === c.attribute
+        ? c.attribute
+        : null,
+    ),
+  ];
   const onlySameMatch =
-    policy.acting.length === 0 &&
-    policy.other.length > 0 &&
-    policy.other.every((c) => c.value.kind === 'same' && c.operator === 'is');
+    sameNamedMatch.length > 0 && sameNamedMatch.every(Boolean);
 
   if (onlySameMatch && policy.match === 'all') {
-    const attrs = policy.other.map((c) => c.attribute).join(' and ');
+    const attrs = Array.from(new Set(sameNamedMatch)).join(' and ');
     return {
       sentence: SUMMARY.onlyWithMatching(who, perm, attrs),
       direction: 'both',
@@ -641,7 +710,7 @@ export function summarize(policy: DmPolicy): PolicySummary {
     policy.match === 'any' &&
     policy.acting.length > 0 &&
     policy.other.length > 0 &&
-    policy.acting.every((c) => c.operator === 'is not') &&
+    policy.acting.every((c) => c.operator === 'is not' && !c.compareTo) &&
     policy.other.every(
       (c) => c.operator === 'is not' && c.value.kind === 'fixed',
     );
@@ -669,15 +738,25 @@ export function summarize(policy: DmPolicy): PolicySummary {
   ].join(joiner);
   const session = policy.acting.some((c) => isSessionAttribute(c.attribute));
   const sessionNote = session ? ` ${SUMMARY.tailSession}` : '';
-  if (policy.other.length === 0) {
+  const hasTarget =
+    policy.other.length > 0 || policy.acting.some((c) => c.compareTo);
+  if (!hasTarget) {
     return {
       sentence: `${SUMMARY.onlyWhen(who, perm, clauses)}${sessionNote}`,
       direction: 'acting',
     };
   }
   const oneWay =
-    policy.other.some((c) => c.value.kind === 'fixed') ||
-    policy.acting.some((c) => !isSessionAttribute(c.attribute));
+    policy.other.some(
+      (c) =>
+        c.value.kind === 'fixed' ||
+        (c.value.attribute ?? c.attribute) !== c.attribute,
+    ) ||
+    policy.acting.some(
+      (c) =>
+        (!isSessionAttribute(c.attribute) && !c.compareTo) ||
+        (c.compareTo && c.compareTo !== c.attribute),
+    );
   return {
     sentence: oneWay
       ? `${SUMMARY.onlyWhen(who, perm, clauses)} ${SUMMARY.tailOneWay}${sessionNote}`
@@ -699,6 +778,9 @@ function celName(attribute: AttributeKey): string {
 }
 
 function actingCel(c: ActingCondition): string {
+  if (c.compareTo) {
+    return `user.attributes.${celName(c.attribute)} ${c.operator === 'is' ? '==' : '!='} target.attributes.${celName(c.compareTo)}`;
+  }
   const ref = isSessionAttribute(c.attribute)
     ? `user.session.${celName(c.attribute)}`
     : `user.attributes.${celName(c.attribute)}`;
@@ -709,7 +791,7 @@ function otherCel(c: OtherCondition): string {
   const op = c.operator === 'is' ? '==' : '!=';
   const target = `target.attributes.${celName(c.attribute)}`;
   return c.value.kind === 'same'
-    ? `${target} ${op} user.attributes.${celName(c.attribute)}`
+    ? `${target} ${op} user.attributes.${celName(c.value.attribute ?? c.attribute)}`
     : `${target} ${op} "${c.value.value}"`;
 }
 
@@ -726,11 +808,14 @@ export function toCel(policy: DmPolicy): string {
 }
 
 /**
- * Simple mode joins every row with AND (shipped
- * admin.access_control.table_editor.help_text). Anything else is Advanced only.
+ * Shipped Simple mode joins every row with AND
+ * (admin.access_control.table_editor.help_text). This prototype adds one
+ * All / Any join for the whole table (draft).
  */
 export function isSimpleExpressible(policy: DmPolicy): boolean {
-  return (
-    policy.match === 'all' || policy.acting.length + policy.other.length <= 1
-  );
+  // Simple mode now offers one All / Any join for the whole table (draft), so
+  // every policy this model can hold is expressible. Mixed AND/OR grouping is
+  // out of scope; such an expression would get the shipped "Complex expression
+  // detected" treatment in InlineConditions.
+  return policy.match === 'all' || policy.match === 'any';
 }

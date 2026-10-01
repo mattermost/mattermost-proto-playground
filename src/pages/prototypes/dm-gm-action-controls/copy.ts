@@ -47,14 +47,37 @@ export const EDITOR = {
   combinedNote: (match: string) =>
     `Combined with the ${ACTING_NOUN} conditions: ${match}`,
   missingAttribute: (attrs: string[]) =>
-    `Anyone without a ${attrs.join(' or ')} value is blocked, including bots and users on connected servers.`,
+    `Anyone with no ${attrs.join(' or ')} value is blocked, including bots and users on connected servers.`,
   pickerBlocked: `Can't be added while this policy has ${TARGET_NOUN} conditions.`,
   /** aria-labels: "<Subject> <attribute> operator" etc. */
   rowAria: (subject: string, attribute: string, part: 'operator' | 'value') =>
     `${subject} ${attribute} ${part}`,
+  compareAria: (subject: string, attribute: string) =>
+    `${subject} ${attribute} compared attribute`,
   removeRowAria: (subject: string, attribute: string) =>
     `Remove ${lowerFirst(subject)} ${attribute} condition`,
 };
+
+/** "+ Add permission" group headings (the shipped menu has none). */
+export const PICKER = {
+  files: 'Files',
+  channels: 'Channels',
+  dms: 'Direct and Group Messages',
+};
+
+/** Direction B's "Add policy" chooser. */
+export const CHOOSER = {
+  rulesHeading: 'Direct and group message rules',
+  usesLabel: 'Uses',
+  usesTag: (attribute: string, value?: string) =>
+    value ? `${attribute}: ${value}` : attribute,
+};
+
+/** Requirements-table join. Not shipped: draft in both variations. */
+export const MATCH = {
+  all: 'All conditions required',
+  any: 'Any condition required',
+} as const;
 
 /* ------------------------------------------------------------------ */
 /* "Same as" comparison                                                */
@@ -79,8 +102,7 @@ export const SUMMARY = {
   tagBothWays: 'Applies both ways',
   tagOneWay: 'One way',
   tagActingOnly: `${ACTING_LABEL} conditions only`,
-  noPermission:
-    'Add a direct or group message permission to see a summary.',
+  noPermission: 'Add a direct or group message permission to see a summary.',
   noConditions: (who: string) =>
     `Add conditions to restrict who ${who} can message.`,
   targetMatches: (attribute: string) =>
@@ -89,6 +111,10 @@ export const SUMMARY = {
     `the ${TARGET_NOUN}'s ${attribute} differs from theirs`,
   targetIs: (attribute: string, operator: string, value: string) =>
     `the ${TARGET_NOUN}'s ${attribute} ${operator} ${value}`,
+  crossMatches: (userAttr: string, targetAttr: string) =>
+    `their ${userAttr} matches the ${TARGET_NOUN}'s ${targetAttr}`,
+  crossDiffers: (userAttr: string, targetAttr: string) =>
+    `their ${userAttr} differs from the ${TARGET_NOUN}'s ${targetAttr}`,
   actingIs: (attribute: string, operator: string, value: string) =>
     `their ${attribute} ${operator} ${value}`,
   onlyWithMatching: (who: string, perm: string, attrs: string) =>
@@ -114,8 +140,7 @@ export const SIMULATE = {
     'Pick two people to check every direct and group message permission in both directions.',
   actingField: ACTING_LABEL,
   targetField: TARGET_LABEL,
-  suggestion:
-    'To test this rule, try a contractor and a program lead.',
+  suggestion: 'To test this rule, try a contractor and a program lead.',
   oneWayTag: 'One-way',
   oneWaySentence: 'One-way.',
   sameBothWays: 'Same both ways.',

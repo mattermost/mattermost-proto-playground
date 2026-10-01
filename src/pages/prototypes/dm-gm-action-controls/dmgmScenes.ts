@@ -50,30 +50,25 @@ export interface ScreenDef {
   label: string;
 }
 
-/** Authoring differs per direction and variation; every other scene is shared. */
+/** Authoring differs per direction; both variations share the same screens. */
 export function authoringScreens(
   direction: DirectionId,
-  variant: VariantId,
+  _variant: VariantId,
 ): ScreenDef[] {
-  if (direction === 'b') {
-    return [
-      { id: 'gallery', label: 'Start from a rule' },
-      { id: 'mapping', label: 'Map attributes' },
-      { id: 'editor', label: 'Editor with summary' },
-      ...(variant === 'inline'
-        ? [{ id: 'advanced', label: 'One-way rule (Advanced)' }]
-        : []),
-      { id: 'blocked', label: 'Add permission blocked' },
-    ];
-  }
-  return [
-    { id: 'picker', label: 'Add permission' },
-    { id: 'configured', label: 'Policy configured' },
-    ...(variant === 'inline'
-      ? [{ id: 'advanced', label: 'One-way rule (Advanced)' }]
-      : []),
-    { id: 'blocked', label: 'Add permission blocked' },
-  ];
+  void _variant;
+  return direction === 'b'
+    ? [
+        { id: 'gallery', label: 'Start from a rule' },
+        { id: 'editor', label: 'Editor with summary' },
+        { id: 'one-way', label: 'One-way rule' },
+        { id: 'blocked', label: 'Add permission blocked' },
+      ]
+    : [
+        { id: 'picker', label: 'Add permission' },
+        { id: 'configured', label: 'Policy configured' },
+        { id: 'one-way', label: 'One-way rule' },
+        { id: 'blocked', label: 'Add permission blocked' },
+      ];
 }
 
 export const SIMULATE_SCREENS: Record<DirectionId, ScreenDef[]> = {

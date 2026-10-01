@@ -1,9 +1,11 @@
-// [AI DRAFT] PRIMARY variation, "Inline conditions": other-person conditions are
-// rows in the shipped "User attribute requirements" table, next to the
-// acting-user rows. Each row names its subject (Acting user / Other person).
-// Rows are joined with AND, as shipped. Advanced mode shows one CEL expression
-// over `user.` and `target.`. Session attributes are offered for the acting
-// user only, because the other person's session can't be evaluated.
+// [AI DRAFT] PRIMARY variation, "Inline conditions": recipient conditions are
+// rows in the shipped "User attribute requirements" table, next to the user
+// rows. Each row names its subject (User / Recipient). Comparisons work in
+// both directions: whichever subject a row has, "is same as" compares it with
+// an attribute of the OTHER subject. One All / Any join covers the table
+// (draft). Advanced mode shows one CEL expression over `user.` and `target.`.
+// Session attributes are user-only and never compared: a recipient has no
+// evaluable session.
 import { useCallback, useRef, useState } from 'react';
 import LaptopIcon from '@mattermost/compass-icons/components/laptop';
 import TextShortIcon from '@mattermost/compass-icons/components/text-short';
@@ -35,6 +37,7 @@ import {
   type Operator,
 } from '../policyModel';
 import { ACTING_LABEL, COMPARISON, EDITOR, TARGET_LABEL } from '../copy';
+import MatchControl from './MatchControl';
 import styles from './PolicyEditor.module.scss';
 
 type InlineOperator = 'is' | 'is not' | 'same' | 'not-same';
@@ -46,8 +49,13 @@ const OPERATOR_LABEL: Record<InlineOperator, string> = {
   'not-same': COMPARISON.isNotSameAs,
 };
 
-const ACTING_OPERATORS: InlineOperator[] = ['is', 'is not'];
-const OTHER_OPERATORS: InlineOperator[] = ['is', 'is not', 'same', 'not-same'];
+const FIXED_OPERATORS: InlineOperator[] = ['is', 'is not'];
+const COMPARE_OPERATORS: InlineOperator[] = [
+  'is',
+  'is not',
+  'same',
+  'not-same',
+];
 
 function SubjectTag({ subject }: { subject: 'acting' | 'other' }) {
   return subject === 'acting' ? (
@@ -128,6 +136,100 @@ function DeleteRow({ label, onClick }: { label: string; onClick: () => void }) {
   );
 }
 
+/**
+ * One requirements row. For "is same as", the value side is an attribute of
+ * the OTHER subject: a User row compares with the Recipient and vice versa.
+ * It defaults to the same-named attribute and can be changed to any user
+ * attribute (all demo attributes are select type, so all are compatible).
+ */
+function ConditionRow({
+  subject,
+  attribute,
+  session,
+  operators,
+  operator,
+  fixedValues,
+  fixedValue,
+  compareAttrs,
+  compareAttr,
+  onOperator,
+  onValue,
+  onRemove,
+}: {
+  subject: 'acting' | 'other';
+  attribute: AttributeKey;
+  session: boolean;
+  operators: InlineOperator[];
+  operator: InlineOperator;
+  fixedValues: string[];
+  fixedValue: string;
+  compareAttrs: UserAttributeKey[];
+  compareAttr?: UserAttributeKey;
+  onOperator: (op: InlineOperator) => void;
+  onValue: (value: string) => void;
+  onRemove: () => void;
+}) {
+  const label = subject === 'acting' ? ACTING_LABEL : TARGET_LABEL;
+  const compare = operator === 'same' || operator === 'not-same';
+  return (
+    <tr>
+      <td>
+        <span className={styles['policy-editor__cell-icon-text']}>
+          <SubjectTag subject={subject} />
+          <Icon
+            glyph={session ? <LaptopIcon /> : <TextShortIcon />}
+            size="16"
+          />
+          {attribute}
+        </span>
+      </td>
+      <td>
+        <Select
+          size="small"
+          className={styles['policy-editor__cell-select--narrow']}
+          aria-label={EDITOR.rowAria(label, attribute, 'operator')}
+          options={operators.map((o) => ({
+            value: o,
+            label: OPERATOR_LABEL[o],
+          }))}
+          value={operator}
+          onChange={(v) => onOperator(v as InlineOperator)}
+        />
+      </td>
+      <td>
+        {compare ? (
+          <span className={styles['policy-editor__cell-icon-text']}>
+            <SubjectTag subject={subject === 'acting' ? 'other' : 'acting'} />
+            <Select
+              size="small"
+              className={styles['policy-editor__cell-select--narrow']}
+              aria-label={EDITOR.compareAria(label, attribute)}
+              options={compareAttrs.map((a) => ({ value: a, label: a }))}
+              value={compareAttr ?? (attribute as UserAttributeKey)}
+              onChange={onValue}
+            />
+          </span>
+        ) : (
+          <Select
+            size="small"
+            className={styles['policy-editor__cell-select']}
+            aria-label={EDITOR.rowAria(label, attribute, 'value')}
+            options={fixedValues.map((v) => ({ value: v, label: v }))}
+            value={fixedValue}
+            onChange={onValue}
+          />
+        )}
+      </td>
+      <td className={styles['policy-editor__table-right']}>
+        <DeleteRow
+          label={EDITOR.removeRowAria(label, attribute)}
+          onClick={onRemove}
+        />
+      </td>
+    </tr>
+  );
+}
+
 export interface InlineConditionsProps {
   policy: DmPolicy;
   onChange: (next: DmPolicy) => void;
@@ -146,17 +248,33 @@ export default function InlineConditions({
   const [advanced, setAdvanced] = useState(initialAdvanced || !simple);
   const showAdvanced = advanced || !simple;
   const missingAttrs = Array.from(
-    new Set(policy.other.map((c) => c.attribute)),
+    new Set([
+      ...policy.other.map((c) => c.attribute),
+      ...policy.acting.flatMap((c) => (c.compareTo ? [c.compareTo] : [])),
+    ]),
   );
+
+  const userAttrs = Object.keys(USER_ATTRIBUTES) as UserAttributeKey[];
 
   const setActing = (id: string, op: InlineOperator, value?: string) =>
     onChange({
       ...policy,
-      acting: policy.acting.map((c) =>
-        c.id === id
-          ? { ...c, operator: op as Operator, value: value ?? c.value }
-          : c,
-      ),
+      acting: policy.acting.map((c) => {
+        if (c.id !== id) return c;
+        const compare = op === 'same' || op === 'not-same';
+        const operator: Operator =
+          op === 'is' || op === 'same' ? 'is' : 'is not';
+        if (compare) {
+          const target =
+            (value as UserAttributeKey | undefined) ??
+            c.compareTo ??
+            (c.attribute as UserAttributeKey);
+          return { ...c, operator, compareTo: target };
+        }
+        const fixed =
+          value ?? (c.compareTo ? valuesFor(c.attribute)[0] : c.value);
+        return { ...c, operator, value: fixed, compareTo: undefined };
+      }),
     });
 
   const setOther = (id: string, op: InlineOperator, value?: string) =>
@@ -164,9 +282,21 @@ export default function InlineConditions({
       ...policy,
       other: policy.other.map((c) => {
         if (c.id !== id) return c;
-        const same = op === 'same' || op === 'not-same';
+        const compare = op === 'same' || op === 'not-same';
         const operator: Operator =
           op === 'is' || op === 'same' ? 'is' : 'is not';
+        if (compare) {
+          const userAttr =
+            (value as UserAttributeKey | undefined) ??
+            (c.value.kind === 'same'
+              ? (c.value.attribute ?? c.attribute)
+              : c.attribute);
+          return {
+            ...c,
+            operator,
+            value: { kind: 'same' as const, attribute: userAttr },
+          };
+        }
         const fixed =
           value ??
           (c.value.kind === 'fixed'
@@ -175,12 +305,15 @@ export default function InlineConditions({
         return {
           ...c,
           operator,
-          value: same
-            ? { kind: 'same' as const }
-            : { kind: 'fixed' as const, value: fixed },
+          value: { kind: 'fixed' as const, value: fixed },
         };
       }),
     });
+
+  const removeActing = (id: string) =>
+    onChange({ ...policy, acting: policy.acting.filter((c) => c.id !== id) });
+  const removeOther = (id: string) =>
+    onChange({ ...policy, other: policy.other.filter((c) => c.id !== id) });
 
   return (
     <>
@@ -246,7 +379,12 @@ export default function InlineConditions({
                 <th>Attribute</th>
                 <th>Operator</th>
                 <th>Values</th>
-                <th className={styles['policy-editor__table-right']} />
+                <th className={styles['policy-editor__table-right']}>
+                  <MatchControl
+                    value={policy.match}
+                    onChange={(match) => onChange({ ...policy, match })}
+                  />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -261,147 +399,61 @@ export default function InlineConditions({
                   </td>
                 </tr>
               ) : null}
-              {policy.acting.map((row) => (
-                <tr key={row.id}>
-                  <td>
-                    <span className={styles['policy-editor__cell-icon-text']}>
-                      <SubjectTag subject="acting" />
-                      <Icon
-                        glyph={
-                          isSessionAttribute(row.attribute) ? (
-                            <LaptopIcon />
-                          ) : (
-                            <TextShortIcon />
-                          )
-                        }
-                        size="16"
-                      />
-                      {row.attribute}
-                    </span>
-                  </td>
-                  <td>
-                    <Select
-                      size="small"
-                      className={styles['policy-editor__cell-select--narrow']}
-                      aria-label={EDITOR.rowAria(
-                        ACTING_LABEL,
-                        row.attribute,
-                        'operator',
-                      )}
-                      options={ACTING_OPERATORS.map((o) => ({
-                        value: o,
-                        label: OPERATOR_LABEL[o],
-                      }))}
-                      value={row.operator}
-                      onChange={(v) => setActing(row.id, v as InlineOperator)}
-                    />
-                  </td>
-                  <td>
-                    <Select
-                      size="small"
-                      className={styles['policy-editor__cell-select']}
-                      aria-label={EDITOR.rowAria(
-                        ACTING_LABEL,
-                        row.attribute,
-                        'value',
-                      )}
-                      options={valuesFor(row.attribute).map((v) => ({
-                        value: v,
-                        label: v,
-                      }))}
-                      value={row.value}
-                      onChange={(v) => setActing(row.id, row.operator, v)}
-                    />
-                  </td>
-                  <td className={styles['policy-editor__table-right']}>
-                    <DeleteRow
-                      label={EDITOR.removeRowAria(ACTING_LABEL, row.attribute)}
-                      onClick={() =>
-                        onChange({
-                          ...policy,
-                          acting: policy.acting.filter((c) => c.id !== row.id),
-                        })
-                      }
-                    />
-                  </td>
-                </tr>
-              ))}
-              {policy.other.map((row) => {
-                const same = row.value.kind === 'same';
-                const op: InlineOperator = same
+              {policy.acting.map((row) => {
+                const session = isSessionAttribute(row.attribute);
+                const op: InlineOperator = row.compareTo
                   ? row.operator === 'is'
                     ? 'same'
                     : 'not-same'
                   : row.operator;
                 return (
-                  <tr key={row.id}>
-                    <td>
-                      <span className={styles['policy-editor__cell-icon-text']}>
-                        <SubjectTag subject="other" />
-                        <Icon glyph={<TextShortIcon />} size="16" />
-                        {row.attribute}
-                      </span>
-                    </td>
-                    <td>
-                      <Select
-                        size="small"
-                        className={styles['policy-editor__cell-select--narrow']}
-                        aria-label={EDITOR.rowAria(
-                          TARGET_LABEL,
-                          row.attribute,
-                          'operator',
-                        )}
-                        options={OTHER_OPERATORS.map((o) => ({
-                          value: o,
-                          label: OPERATOR_LABEL[o],
-                        }))}
-                        value={op}
-                        onChange={(v) => setOther(row.id, v as InlineOperator)}
-                      />
-                    </td>
-                    <td>
-                      {same ? (
-                        <span
-                          className={styles['policy-editor__cell-icon-text']}
-                        >
-                          <SubjectTag subject="acting" />
-                          {row.attribute}
-                        </span>
-                      ) : (
-                        <Select
-                          size="small"
-                          className={styles['policy-editor__cell-select']}
-                          aria-label={EDITOR.rowAria(
-                            TARGET_LABEL,
-                            row.attribute,
-                            'value',
-                          )}
-                          options={USER_ATTRIBUTES[row.attribute].map((v) => ({
-                            value: v,
-                            label: v,
-                          }))}
-                          value={
-                            row.value.kind === 'fixed' ? row.value.value : ''
-                          }
-                          onChange={(v) => setOther(row.id, op, v)}
-                        />
-                      )}
-                    </td>
-                    <td className={styles['policy-editor__table-right']}>
-                      <DeleteRow
-                        label={EDITOR.removeRowAria(
-                          TARGET_LABEL,
-                          row.attribute,
-                        )}
-                        onClick={() =>
-                          onChange({
-                            ...policy,
-                            other: policy.other.filter((c) => c.id !== row.id),
-                          })
-                        }
-                      />
-                    </td>
-                  </tr>
+                  <ConditionRow
+                    key={row.id}
+                    subject="acting"
+                    attribute={row.attribute}
+                    session={session}
+                    // A session attribute can't be compared with a recipient.
+                    operators={session ? FIXED_OPERATORS : COMPARE_OPERATORS}
+                    operator={op}
+                    fixedValues={valuesFor(row.attribute)}
+                    fixedValue={row.value}
+                    compareAttrs={userAttrs}
+                    compareAttr={row.compareTo}
+                    onOperator={(v) => setActing(row.id, v)}
+                    onValue={(v) => setActing(row.id, op, v)}
+                    onRemove={() => removeActing(row.id)}
+                  />
+                );
+              })}
+              {policy.other.map((row) => {
+                const compare = row.value.kind === 'same';
+                const op: InlineOperator = compare
+                  ? row.operator === 'is'
+                    ? 'same'
+                    : 'not-same'
+                  : row.operator;
+                return (
+                  <ConditionRow
+                    key={row.id}
+                    subject="other"
+                    attribute={row.attribute}
+                    session={false}
+                    operators={COMPARE_OPERATORS}
+                    operator={op}
+                    fixedValues={USER_ATTRIBUTES[row.attribute]}
+                    fixedValue={
+                      row.value.kind === 'fixed' ? row.value.value : ''
+                    }
+                    compareAttrs={userAttrs}
+                    compareAttr={
+                      row.value.kind === 'same'
+                        ? (row.value.attribute ?? row.attribute)
+                        : undefined
+                    }
+                    onOperator={(v) => setOther(row.id, v)}
+                    onValue={(v) => setOther(row.id, op, v)}
+                    onRemove={() => removeOther(row.id)}
+                  />
                 );
               })}
             </tbody>
