@@ -31,28 +31,9 @@ Turn a **mattermost-proto-playground** prototype into product code in a consumer
 
 ## Install
 
-Same folder contents; destination depends on the tool:
+Copy this entire folder (`.cursor/skills/prototype-to-production/`, including `references/`) into your agent’s skills directory — Cursor: `.cursor/skills/`; Claude Code: `.claude/skills/` (or the personal equivalent). Omitting `references/` breaks relative links in this playbook.
 
-| Tool | Project install | Personal install |
-| --- | --- | --- |
-| **Cursor** | `<repo>/.cursor/skills/prototype-to-production/` | Cursor personal skills directory |
-| **Claude Code** | `<repo>/.claude/skills/prototype-to-production/` | `~/.claude/skills/prototype-to-production/` |
-
-```bash
-# From a clone of mattermost-proto-playground
-SRC=.cursor/skills/prototype-to-production
-
-# Cursor (project)
-cp -R "$SRC" /path/to/consumer-repo/.cursor/skills/prototype-to-production
-
-# Claude Code (project)
-cp -R "$SRC" /path/to/consumer-repo/.claude/skills/prototype-to-production
-
-# Claude Code (personal — all projects)
-cp -R "$SRC" ~/.claude/skills/prototype-to-production
-```
-
-Copy the whole directory (`SKILL.md` + `references/`). After install, the playground need not be open: fetch prototype source from GitHub; use the consumer’s `node_modules/@mattermost/compass-ui`.
+Once installed, the playground need not be open: fetch prototype source from GitHub; use the consumer’s `node_modules/@mattermost/compass-ui`.
 
 ## References (read as needed)
 
