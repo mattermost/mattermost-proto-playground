@@ -15,7 +15,7 @@ const COPY: Record<string, { title: string; b: string; a: string }> = {
   pair: {
     title: 'Simulate shows both directions and labels the one-way result',
     b: 'The pair card leads: Darius Cole, a contractor, can’t start a DM with Isabella Cruz, a program lead, but Isabella can start one with him. The directional rows sit underneath, one per direction, with a verdict for each permission and the deciding layer. Change either person to try other pairs.',
-    a: `The shipped Simulate access modal with the ${SIMULATE.targetField} field added. Each pair gives two directional rows, each with Start, Post and View verdicts, a One-way tag when the rows differ, and a Deciding layer column. There is no sentence, so the admin has to read the asymmetry from the pills.`,
+    a: `The shipped Simulate access modal with the ${SIMULATE.targetField} field added. Each pair gives two directional rows, each with Start, Write and Read verdicts, a One-way tag when the rows differ, and a Deciding layer column. There is no sentence, so the admin has to read the asymmetry from the pills.`,
   },
   group: {
     title:

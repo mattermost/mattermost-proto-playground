@@ -32,12 +32,12 @@ export const DM_PERMISSIONS: Record<
   post: {
     label: 'Write to Direct and Group Messages',
     description:
-      'Allow users to post in direct and group messages and change their content. Requires View Direct and Group Messages.',
+      'Allow users to post in direct and group messages and change their content. Requires Read Direct and Group Messages.',
   },
   view: {
-    label: 'View Direct and Group Messages',
+    label: 'Read Direct and Group Messages',
     description:
-      'Allow users to see direct and group messages and their content',
+      'Allow users to read direct and group messages and their content',
   },
 };
 
@@ -352,7 +352,7 @@ export function generateStartingRules(
       id: 'untrusted-no-view',
       name,
       description: 'Direct and group messages are hidden on unmanaged devices.',
-      tags: ['View', 'Session rule'],
+      tags: ['Read', 'Session rule'],
       uses: [device],
       build: () => ({
         name,
@@ -586,7 +586,7 @@ export function layerLabel(layer: DecidingLayer): string {
     case 'missing-target':
       return SIMULATE.layerMissingTarget(layer.name);
     case 'requires-view':
-      return `Write requires View · ${layer.name}`;
+      return `Write requires Read · ${layer.name}`;
     default: {
       const exhaustive: never = layer;
       return exhaustive;

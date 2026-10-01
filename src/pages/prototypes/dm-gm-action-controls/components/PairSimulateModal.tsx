@@ -43,7 +43,7 @@ export interface PairSimulateModalProps {
 const SHORT_LABEL: Record<DmPermission, string> = {
   start: 'Start',
   post: 'Write',
-  view: 'View',
+  view: 'Read',
 };
 
 function personOption(p: Person) {
