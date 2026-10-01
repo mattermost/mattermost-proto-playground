@@ -1,0 +1,38 @@
+.acvc-session-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__caption {
+    max-width: 900px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__note {
+    margin: var(--spacing-xxs) 0 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  /* Clips the frame; the frame itself never reflows, so the app always lays out
+     at a true 1366px viewport regardless of the page width. */
+  &__viewport {
+    overflow: hidden;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-2);
+    background: var(--center-channel-bg);
+  }
+
+  &__frame {
+    flex: 0 0 auto;
+  }
+}

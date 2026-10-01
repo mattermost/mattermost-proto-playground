@@ -1,0 +1,43 @@
+.acvc-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+
+  &__caption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    max-width: 720px;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__frame {
+    overflow: hidden;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-2);
+    background: var(--center-channel-bg);
+
+    &--app {
+      height: 640px;
+    }
+
+    &--console {
+      height: 720px;
+    }
+  }
+}

@@ -1,0 +1,132 @@
+@keyframes acvc-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes acvc-denied-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.acvc-channel-app {
+  position: relative;
+  height: 100%;
+  isolation: isolate;
+
+  &__sidebar {
+    display: flex;
+    height: 100%;
+    animation: acvc-fade-in var(--duration-moderate) var(--ease-transition);
+  }
+
+  /* Re-keyed when the verdict flips, so content and the denied state
+     cross-fade rather than snapping. */
+  &__center {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    animation: acvc-denied-in var(--duration-moderate) var(--ease-transition);
+  }
+
+  &__denied {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-xxl);
+    text-align: center;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__denied-title {
+    margin: 0;
+    max-width: 420px;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__denied-body {
+    margin: 0;
+    max-width: 420px;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__denied-redirect {
+    margin: 0;
+    max-width: 420px;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__readonly {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 52px;
+    padding: 14px var(--spacing-l);
+    border: 2px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+  }
+
+  &__readonly-text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: var(--spacing-xxxl);
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__header-menu {
+    position: absolute;
+    top: 108px;
+    left: 348px;
+    z-index: 8;
+  }
+
+  &__message-menu {
+    position: absolute;
+    top: 176px;
+    right: 96px;
+    z-index: 8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acvc-channel-app {
+    &__sidebar,
+    &__center {
+      animation: none;
+    }
+  }
+}

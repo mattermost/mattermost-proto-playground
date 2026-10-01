@@ -1,0 +1,23 @@
+.acvc-message {
+  display: contents;
+
+  /* Write to Channels denied: the hover toolbar keeps Save + More actions and
+     drops every write entry point (quick reactions, AI, plugins, reply). */
+  &--write-denied {
+    :global([role='toolbar'][aria-label='Message actions']) {
+      > :global([aria-label^='React with']),
+      > :global([aria-label='Add reaction']),
+      > :global([aria-label='AI actions']),
+      > :global([aria-label='Plugin actions']),
+      > :global([aria-label='Reply in thread']) {
+        display: none;
+      }
+    }
+
+    /* Existing reaction pills stay readable but are display-only. */
+    :global([class*='reaction-button']) {
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+}

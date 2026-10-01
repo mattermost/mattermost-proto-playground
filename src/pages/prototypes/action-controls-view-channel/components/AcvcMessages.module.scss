@@ -1,0 +1,12 @@
+.acvc-messages {
+  &__menu-anchor {
+    position: relative;
+  }
+
+  &__more-menu {
+    position: absolute;
+    top: 36px;
+    right: var(--spacing-xxl);
+    z-index: 4;
+  }
+}

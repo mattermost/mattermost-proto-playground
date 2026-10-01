@@ -1,0 +1,11 @@
+.acvc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxl);
+  padding: var(--spacing-xl);
+  /* Wide enough for a true 1366px product frame plus page padding, so screens
+     are never scaled down just to fit the page. */
+  min-width: 0;
+  max-width: 1480px;
+  margin: 0 auto;
+}

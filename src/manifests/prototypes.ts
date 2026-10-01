@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import ActionControlsViewChannel from '@/pages/prototypes/action-controls-view-channel/ActionControlsViewChannel';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -11,6 +12,12 @@ export type PrototypeEntry = {
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
+  {
+    id: 'action-controls-view-channel',
+    label: 'Action Controls – Read and Write to Channels',
+    path: '/prototypes/action-controls-view-channel',
+    component: ActionControlsViewChannel,
+  },
   {
     id: 'external-call-participants',
     label: 'External Call Participants',

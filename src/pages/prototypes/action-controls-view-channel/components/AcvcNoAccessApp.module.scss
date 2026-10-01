@@ -1,0 +1,18 @@
+.acvc-no-access-app {
+  height: 100%;
+
+  &__centre {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: var(--spacing-xxl);
+    text-align: center;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
