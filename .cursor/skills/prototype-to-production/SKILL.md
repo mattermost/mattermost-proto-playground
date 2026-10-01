@@ -1,7 +1,7 @@
 ---
 name: prototype-to-production
 description: >-
-  Translate a Compass playground prototype into production UI in the Mattermost
+  Translate a mattermost-proto-playground prototype into production UI in the Mattermost
   webapp, desktop app, or a plugin (Playbooks, Boards, Agents, …). Use when the
   user asks to implement a prototype, translate prototype to production, build
   from a prototype URL/slug into product code, or apply Compass UI from a
