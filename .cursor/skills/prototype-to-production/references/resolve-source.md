@@ -4,13 +4,16 @@ Component mapping comes from **source**, not from scraping a published DOM. CSS 
 
 ## Inputs
 
-Accept any of:
+Accept:
 
-- Published URL (GitHub Pages, Vercel, etc.) containing `/prototypes/<slug>`
-- Path or slug: `/prototypes/<slug>` or `<slug>`
-- Local path to a playground clone: `…/src/pages/prototypes/<slug>/`
+- **Required:** a git **ref** for the playground — branch name, PR URL/number, or commit SHA (prototypes usually are not on `main`)
+- **Plus** one of: published URL containing `/prototypes/<slug>`, path/slug `/prototypes/<slug>` or `<slug>`, or a local playground path `…/src/pages/prototypes/<slug>/`
 
-Use the live URL for visual context only after source is resolved.
+If the user gives only a published URL or slug **without** a branch/PR/commit, **ask once** for the ref before reading source. Do not assume `main` and do not invent a feature branch from the URL hostname.
+
+**Exception:** a **local playground path** is OK without a separate ref string if you record the clone’s current branch/SHA (`git rev-parse --abbrev-ref HEAD` / `git rev-parse HEAD`) and use that tree — still do not silently read a different remote ref.
+
+Use the live URL for visual context only after source is resolved on the correct ref.
 
 ## Extract the slug
 
@@ -45,20 +48,18 @@ scenes/                 # one file per scene
 *Walkthrough.ts         # ignore for production translation
 ```
 
-**Otherwise fetch from GitHub.** Prototypes often live on **feature branches**, not `main` — resolve the ref before reading files.
-
-1. Prefer an explicit branch, PR URL, or commit from the user (or from the published deploy if it exposes one).
-2. If only a slug/URL is given, search the playground repo (e.g. `gh` PRs/branches, or check whether `src/pages/prototypes/<slug>/` exists on `main`).
-3. If the slug is missing on `main` or the branch is unclear, **ask once** for the branch or PR — do not guess a random feature branch.
-
-Tree / raw patterns (substitute `<ref>` = branch, tag, or SHA):
+**Otherwise fetch from GitHub** using the **required ref** (branch, PR head, or commit):
 
 ```text
 https://github.com/mattermost/mattermost-proto-playground/tree/<ref>/src/pages/prototypes/<slug>/
 https://raw.githubusercontent.com/mattermost/mattermost-proto-playground/<ref>/src/pages/prototypes/<slug>/<file>
 ```
 
-Use `gh` / git sparse checkout / HTTP as available. Record the ref used for the session so later reads stay on the same prototype revision.
+For a PR number, resolve the head SHA/branch via `gh` then fetch that ref. Use git sparse checkout / HTTP as available. Record the ref for the session so later reads stay on the same revision.
+
+Do **not** fall back to `main` when the ref was omitted — ask for it.
+
+**If the ref cannot be read** (private repo, 404, missing `gh`/auth, network): **stop**. Ask the user for a local playground path, access, or the relevant source files. Do **not** invent UI by scraping the published demo URL alone (hashed classes are not component IDs).
 
 ## What to read
 
