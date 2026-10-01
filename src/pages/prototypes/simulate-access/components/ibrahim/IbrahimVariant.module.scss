@@ -1,0 +1,561 @@
+// Ibrahim variant — captures meeting decisions:
+// - "+ Add users" button instead of full-width search input
+// - Two-column USER/RESULT table with click-through to Decision details
+// - Decision details modal with per-permission attribution + collapsible evaluation trace
+// - Renamed terminology: system policy / channel rule / another rule
+
+.iv-modal-shell {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+// Controls row between the modal subtitle and the user table.
+// Layout: "Evaluate against [toggle]" left · "Check for [dropdown]" right.
+// The "+ Add users" primary action lives in the Modal header (via headerAction prop).
+.iv-controls {
+  padding: var(--spacing-s) var(--spacing-xxxl) var(--spacing-m);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-s);
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-size: var(--font-size-75);
+
+  &__left,
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
+  &__label {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+}
+
+// Permission dropdown trigger.
+.iv-perm-dropdown {
+  position: relative;
+}
+
+.iv-perm-dropdown__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  padding: var(--spacing-xxs) var(--spacing-s);
+  color: var(--center-channel-color);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    border-color: rgba(var(--center-channel-color-rgb), 0.32);
+  }
+}
+
+.iv-perm-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+  border-radius: var(--radius-s);
+  z-index: 20;
+  min-width: 200px;
+  padding: var(--spacing-xxs);
+}
+
+.iv-perm-dropdown__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xs) var(--spacing-s);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-75);
+  color: var(--center-channel-color);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+
+  &:hover { background: rgba(var(--center-channel-color-rgb), 0.04); }
+  &--active {
+    color: var(--button-bg);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+// Evaluate-against segmented toggle.
+.iv-toggle {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__btn {
+    background: transparent;
+    border: none;
+    padding: var(--spacing-xxs) var(--spacing-s);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    font-family: inherit;
+
+    & + & { border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12); }
+    &:hover { color: var(--center-channel-color); }
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
+  }
+}
+
+// Divider between header controls and table.
+.iv-divider {
+  height: 1px;
+  background: rgba(var(--center-channel-color-rgb), 0.12);
+  margin: 0;
+}
+
+// USER / RESULT column headers (small caps).
+.iv-table-head {
+  display: grid;
+  grid-template-columns: 1fr auto 24px;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-s) var(--spacing-xl) var(--spacing-xxs);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  font-weight: var(--font-weight-semibold);
+}
+
+// Row.
+.iv-row {
+  display: grid;
+  grid-template-columns: 1fr auto 24px;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-s) var(--spacing-xl);
+  border-radius: var(--radius-s);
+
+  &:hover { background: rgba(var(--center-channel-color-rgb), 0.04); }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__name-stack {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__handle {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    line-height: 1.4;
+  }
+
+  &__result {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: 999px;
+    padding: 2px 6px 2px 2px;
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition),
+      border-color var(--duration-quick) var(--ease-transition);
+    font-family: inherit;
+
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.24);
+      background: var(--center-channel-bg);
+    }
+  }
+
+  &__count {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    padding: 0 4px;
+  }
+
+  &__chev {
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    display: inline-flex;
+    align-items: center;
+    padding-right: 2px;
+  }
+
+  &__remove {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+    font-family: inherit;
+    padding: 0;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+  }
+}
+
+// Footer summary line on the left of the modal footer.
+.iv-summary {
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}
+
+// "+ Add users" search popover (anchored under the button).
+.iv-add-popover {
+  position: fixed;
+  z-index: 9999;
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-s);
+  width: 360px;
+  max-height: 380px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: iv-pop-in var(--duration-quick) var(--ease-entrance);
+
+  &__input-wrap {
+    padding: var(--spacing-s);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__input {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: var(--center-channel-bg);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    padding: 6px var(--spacing-s);
+
+    input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: var(--font-size-100);
+      background: transparent;
+      color: var(--center-channel-color);
+
+      &::placeholder { color: rgba(var(--center-channel-color-rgb), 0.4); }
+    }
+  }
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+
+    @include minimal-scrollbar;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: 6px var(--spacing-s);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover { background: rgba(var(--center-channel-color-rgb), 0.04); }
+  }
+
+  &__item-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__item-meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
+
+  &__empty {
+    padding: var(--spacing-m);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-size: var(--font-size-75);
+    text-align: center;
+  }
+}
+
+@keyframes iv-pop-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: none; }
+}
+
+// Decision details modal shell — overlays the simulate modal.
+.iv-dd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-l);
+  animation: iv-pop-in var(--duration-quick) var(--ease-entrance);
+}
+
+.iv-dd-card {
+  width: 560px;
+  max-width: 100%;
+  background: var(--center-channel-bg);
+  border-radius: var(--radius-l);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.iv-dd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-l) var(--spacing-xxl);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    margin: 0;
+  }
+
+  &__close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.06);
+      color: var(--center-channel-color);
+    }
+  }
+}
+
+.iv-dd-body {
+  padding: var(--spacing-l) var(--spacing-xxl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+  max-height: 60vh;
+  overflow-y: auto;
+
+  @include minimal-scrollbar;
+}
+
+.iv-dd-user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.iv-dd-user__name {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-100);
+}
+
+.iv-dd-user__handle {
+  font-size: var(--font-size-75);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+}
+
+.iv-dd-perm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-s) 0;
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &:first-of-type { border-top: none; padding-top: 0; }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+  }
+
+  &__name {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px 2px 8px;
+    border-radius: 999px;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.5;
+    white-space: nowrap;
+
+    &--allow {
+      background: rgba(61, 184, 135, 0.16);
+      color: #3db887;
+    }
+
+    &--deny {
+      background: rgba(210, 75, 78, 0.12);
+      color: #d24b4e;
+    }
+
+    &--mixed {
+      background: rgba(255, 212, 112, 0.40);
+      color: #cc8f00;
+    }
+  }
+
+  &__attribution {
+    font-weight: 400;
+    opacity: 0.85;
+  }
+
+  &__trace-toggle {
+    background: transparent;
+    border: none;
+    color: var(--button-bg);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    align-self: flex-start;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// Evaluation trace tree.
+.iv-trace {
+  background: rgba(var(--color-danger-rgb), 0.04);
+  border: 1px solid rgba(var(--color-danger-rgb), 0.16);
+  border-radius: var(--radius-s);
+  padding: var(--spacing-s);
+  margin-top: 4px;
+
+  &__header {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    margin-bottom: var(--spacing-xs);
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+.iv-trace-node {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 4px var(--spacing-xs);
+    border-radius: 4px;
+    font-size: var(--font-size-75);
+    font-family: 'SF Mono', Menlo, monospace;
+  }
+
+  &__indicator {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+  }
+
+  &__label {
+    flex: 1;
+    color: var(--center-channel-color);
+  }
+
+  &__actual {
+    font-size: 11px;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    font-style: italic;
+    margin-left: var(--spacing-xs);
+  }
+
+  &--pass &__indicator { background: #3db887; }
+  &--fail &__indicator { background: #d24b4e; }
+
+  &--pass &__row { background: rgba(61, 184, 135, 0.06); }
+  &--fail &__row { background: rgba(210, 75, 78, 0.10); }
+
+  &__children {
+    margin-left: var(--spacing-l);
+    padding-left: var(--spacing-s);
+    border-left: 1px dashed rgba(var(--center-channel-color-rgb), 0.16);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}

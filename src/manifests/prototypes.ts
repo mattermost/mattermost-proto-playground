@@ -3,6 +3,7 @@ import ActionControlsViewChannel from '@/pages/prototypes/action-controls-view-c
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
+import SimulateAccess from '@/pages/prototypes/simulate-access/SimulateAccess';
 
 export type PrototypeEntry = {
   id: string;
@@ -35,6 +36,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'simulate-access',
+    label: 'Simulate access',
+    path: '/prototypes/simulate-access',
+    component: SimulateAccess,
   },
 ];
 
