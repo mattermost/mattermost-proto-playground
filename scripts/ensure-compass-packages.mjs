@@ -53,7 +53,6 @@ function assertNpmCompassUi() {
     path.join(distDir, 'index.js'),
     path.join(distDir, 'compass-ui.css'),
     path.join(distDir, 'compass-ui-standalone.css'),
-    path.join(distDir, 'index.css'),
     // Subpath layout (0.1.0-alpha.3+) — consumers import components/* not the root barrel
     path.join(distDir, 'components/button/index.js'),
   ];

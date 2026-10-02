@@ -15,7 +15,7 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 ```
 
-PascalCase folders map to kebab-case segments (`AdminConsoleSidebar` → `components/admin-console-sidebar`). Style sub-exports (`btnStyles`, `messageStyles`) come from the owning component subpath. Split multi-component imports into separate subpath lines.
+PascalCase folders map to kebab-case segments (`ChannelSidebarItem` → `components/channel-sidebar-item`). Style sub-exports (`btnStyles`, `messageStyles`) come from the owning component subpath. Split multi-component imports into separate subpath lines.
 
 `@mattermost/compass-proto` has **no subpath exports** — import named exports from the package root. Glyphs come from `@mattermost/compass-icons/components/<kebab>` and wrap in `Icon`.
 
@@ -55,7 +55,6 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Tabs | `Tabs` | `@mattermost/compass-ui/components/tabs` |
 | Transient confirmation | `Toast` | `@mattermost/compass-ui/components/toast` |
 | Menu surface | `PopoverMenu` | `@mattermost/compass-ui/components/popover-menu` |
-| Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-ui/components/channels-sidebar` |
 | Date / unread rule in a message list | `MessageSeparator` | `@mattermost/compass-ui/components/message-separator` |
 
 There is no `Dialog` — use `Modal`. Overlay open/close, portal, and focus stay with the host.
@@ -77,6 +76,11 @@ Sidebar rows use `ChannelSidebarItem` with `leadingVisual` (`'public'` \| `'priv
 | Use for | Export | Import |
 | --- | --- | --- |
 | Desktop channel layout | `ChannelShell` | `@mattermost/compass-proto` |
+| Team sidebar | `TeamSidebar` | `@mattermost/compass-proto` |
+| Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-proto` |
+| Global header | `GlobalHeader` | `@mattermost/compass-proto` |
+| Admin console sidebar | `AdminConsoleSidebar` | `@mattermost/compass-proto` |
+| Hardcoded menu recipes | `PlusMenu`, `HelpMenu`, `ChannelMenu`, `TeamMenu`, … | `@mattermost/compass-proto` |
 | Default sidebar fixture | `buildDefaultChannelsSidebarModel` | `@mattermost/compass-proto` |
 | Mobile home | `MobileHome` | `@mattermost/compass-proto` |
 | Mobile tab bar | `MobileTabBar` | `@mattermost/compass-proto` |
