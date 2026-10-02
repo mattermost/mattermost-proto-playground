@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
-import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
+import { StartCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
@@ -60,7 +60,7 @@ export function DMScene({
         avatarStatus={contact.online}
         onNameClick={(e: MouseEvent) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
         callButton={
-          <SegmentedCallButton
+          <StartCallButton
             actions={actions}
             onSelect={handleSelect}
             audioLabel={`Start audio call with ${contact.name}`}
