@@ -1,7 +1,7 @@
 import type { MouseEvent, ReactNode } from 'react';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
-import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
+import { StartCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
 import { layoutStyles, ChannelHeader, MessageInput, Message } from '@mattermost/compass-proto';
@@ -74,7 +74,7 @@ export function ChannelScene({
         memberCount={8}
         pinnedCount={1}
         callButton={
-          <SegmentedCallButton
+          <StartCallButton
             actions={actions}
             onSelect={handleSelect}
             open={startCallMenuOpen}

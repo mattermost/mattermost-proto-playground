@@ -51,7 +51,7 @@ Do not write `&--destructive&--emphasis-primary`. Keyframes may stay at file top
 | Font size | `--font-size-25` (10px) … `--font-size-1000` (40px) |
 | Font weight | `--font-weight-regular` / `--font-weight-semibold` (prefer semibold over bold/`700` unless Figma requires 700) |
 | Line height | `--line-height-*` |
-| Radius | `--radius-xs` … `--radius-xl`; pills → `--radius-full` |
+| Radius | `--radius-xs` … `--radius-xl`; pills → `--radius-pill` (not `--radius-full`) |
 | Shadow | `--elevation-1` … `--elevation-6` |
 | Icon boxes | `--icon-size-10` … `--icon-size-104` |
 

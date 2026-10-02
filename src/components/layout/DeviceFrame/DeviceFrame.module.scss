@@ -145,7 +145,7 @@
     width: var(--device-island-width);
     height: var(--device-island-height);
     transform: translateX(-50%);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: #000;
     pointer-events: none;
   }
@@ -173,7 +173,7 @@
     width: 134px;
     height: 5px;
     transform: translateX(-50%);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: var(--center-channel-color);
     opacity: 0.9;
     pointer-events: none;

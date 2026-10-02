@@ -393,7 +393,7 @@
     width: 32px;
     height: 32px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -455,57 +455,12 @@
 }
 
 // ---------------------------------------------------------------------------
-// Segmented call button (prototype-only) — channel header
+// Start call button (prototype-only) — channel header
 // Figma MM-56584 Outbound Calling, node 5402:29828
 // ---------------------------------------------------------------------------
-.seg-call {
+.start-call-btn {
   position: relative;
   display: inline-flex;
-  align-items: stretch;
-  background: rgba(var(--button-bg-rgb), 0.08);
-  border-radius: var(--radius-s);
-  color: var(--button-bg);
-  height: 32px;
-
-  &__primary,
-  &__trigger {
-    appearance: none;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    color: var(--button-bg);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color var(--duration-quick) var(--ease-transition);
-
-    &:hover {
-      background: rgba(var(--button-bg-rgb), 0.08);
-    }
-  }
-
-  &__primary {
-    gap: var(--spacing-xxxs);
-    padding: var(--spacing-xs) 13px;
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-75);
-    border-top-left-radius: var(--radius-s);
-    border-bottom-left-radius: var(--radius-s);
-  }
-
-  &__trigger {
-    padding: 0 var(--spacing-xxxs);
-    border-top-right-radius: var(--radius-s);
-    border-bottom-right-radius: var(--radius-s);
-  }
-
-  &__divider {
-    width: 1px;
-    align-self: stretch;
-    background: rgba(var(--button-bg-rgb), 0.24);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -542,7 +497,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// Start call menu (SegmentedCallButton — MenuItem-based)
+// Start call menu (StartCallButton — Compass Button + MenuItem)
 // ---------------------------------------------------------------------------
 .start-call-menu {
   position: absolute;
@@ -778,7 +733,7 @@
     width: 32px;
     height: 32px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -903,7 +858,7 @@
     width: 32px;
     height: 32px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -1198,7 +1153,7 @@
   &__recent-avatar-fallback {
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -1434,7 +1389,7 @@
     width: 24px;
     height: 24px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
