@@ -1,0 +1,152 @@
+import type { WalkthroughDocument } from '@/walkthrough/types';
+
+/** Guided walkthrough for Agents — Docs Site. */
+export const agentsDocsWalkthrough: WalkthroughDocument = {
+  prototypeId: 'agents-docs',
+  title: 'Agents — Docs Site',
+  intent:
+    'A docs team works with Matty and specialist agents inside a channel — from a flagged page to a published fix.',
+  sections: [
+    { id: 'overview', label: 'Overview' },
+    { id: 'publish', label: 'Update the docs' },
+    { id: 'incident', label: 'Incident response' },
+    { id: 'agents', label: 'Agents beyond the channel' },
+  ],
+  steps: [
+    {
+      id: 'intro',
+      section: 'overview',
+      title: 'Agents in the docs-site channel',
+      lead: 'The team works in one channel. Matty coordinates Coder, Writer, and Reviewer while people stay in the conversation.',
+      lookFor: ['docs-site channel', 'Emma’s post about the SSO setup page', 'Agent tags on Matty’s messages'],
+      bullets: [
+        'This walkthrough follows one docs update from flag to publish, then a later outage.',
+        'Use Jump to skip around; Back and Next step in order.',
+        'Exit returns you to free exploration with the scene dropdown.',
+      ],
+      scene: 'channels',
+    },
+    {
+      id: 'ask',
+      section: 'publish',
+      railGroup: 'Trigger & ask',
+      title: 'Ask for help in the channel',
+      lead: 'Anyone can @mention an agent in the composer, the same way they would mention a teammate.',
+      lookFor: ['Composer at the bottom of the channel', 'Emma’s flag that the SSO page is out of date'],
+      bullets: [
+        'No separate app is needed to hand work to an agent.',
+        'Replies and follow-up happen in a thread under the post.',
+      ],
+      scene: 'channels',
+      focus: {
+        id: 'docs-composer',
+        emphasis: 'ring',
+        notePlacement: 'above',
+        note: {
+          title: 'Mention to delegate',
+          points: ['Type @ to pick an agent.', 'Agents appear alongside people in the list.'],
+        },
+      },
+    },
+    {
+      id: 'grounding',
+      section: 'publish',
+      railGroup: 'Grounding & rewrite',
+      title: 'Matty delegates and reports back',
+      lead: 'In the thread, Matty splits the work: Coder checks how sign-in actually works, Writer rewrites the page, Reviewer checks it.',
+      lookFor: ['Thread panel on the right', 'Delegation summary with tasks per agent', 'Revised page ready for approval'],
+      bullets: [
+        'Delegation is shown inline so the team can see who is doing what.',
+        'The rewrite is grounded in the findings, not just the old page.',
+      ],
+      scene: 'grounding',
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Work stays in the thread',
+          points: ['Progress and results are visible to everyone in the channel.'],
+        },
+      },
+    },
+    {
+      id: 'review',
+      section: 'publish',
+      railGroup: 'Review & build',
+      title: 'A new component is requested',
+      lead: 'A follow-up request asks for a collapsible component on the docs site.',
+      lookFor: ['“New collapsible component needed” post'],
+      bullets: [
+        'Coder builds the component and opens a pull request.',
+        'Open the thread to watch the build play out.',
+      ],
+      scene: 'review',
+    },
+    {
+      id: 'approval',
+      section: 'publish',
+      railGroup: 'Approval & publish',
+      title: 'Humans approve before publishing',
+      lead: 'Checks run in parallel, a teammate reviews the code, and Jordan approves the staging preview before anything goes live.',
+      lookFor: ['Staging preview card with approval actions', 'Parallel checks tracker', 'Production deploy delegation'],
+      bullets: [
+        'Agents do the work; people keep the final say.',
+        'Once approved, Matty confirms the page is live.',
+      ],
+      scene: 'approval',
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Approval gate',
+          points: ['Approve the preview to trigger the production deploy.'],
+        },
+      },
+    },
+    {
+      id: 'later-that-week',
+      section: 'publish',
+      railGroup: 'Later that week',
+      title: 'Ongoing visibility',
+      lead: 'Later in the week the tracker shows the parallel checks finished, and a monitoring alert arrives in the same channel.',
+      lookFor: ['Completed tracker card', 'Uptime alert from the monitor'],
+      bullets: ['The channel keeps a running record of what agents did.'],
+      scene: 'later-that-week',
+    },
+    {
+      id: 'outage',
+      section: 'incident',
+      title: 'Docs site outage',
+      lead: 'The alert leads to an incident channel where agents run the outage playbook and people stay informed.',
+      lookFor: ['Incident channel', 'Playbook stages', 'Coder investigating root cause'],
+      bullets: ['Start from the alert thread by approving the playbook.'],
+      scene: 'docs-outage',
+    },
+    {
+      id: 'matty-dm',
+      section: 'agents',
+      title: 'Direct message with Matty',
+      lead: 'For private or longer requests, people can talk to Matty one-on-one.',
+      lookFor: ['Direct message with Matty'],
+      scene: 'matty-chat',
+    },
+    {
+      id: 'all-agents',
+      section: 'agents',
+      title: 'All agents',
+      lead: 'The agents area lists every agent on the team in one place.',
+      lookFor: ['Agent cards for Matty, Writer, Coder, and Reviewer'],
+      scene: 'all-agents',
+    },
+    {
+      id: 'all-agents-list',
+      section: 'agents',
+      title: 'All agents — list view',
+      lead: 'The same agents as a compact list for scanning.',
+      lookFor: ['List of agents'],
+      scene: 'all-agents-list',
+    },
+  ],
+};

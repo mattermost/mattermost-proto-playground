@@ -4,6 +4,7 @@ import HeadphonesIcon from '@mattermost/compass-icons/components/headphones';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { OutboundCallIcon } from '@mattermost/compass-proto';
+import { Button } from '@mattermost/compass-ui/components/button';
 import { Divider } from '@mattermost/compass-ui/components/divider';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
@@ -50,9 +51,18 @@ function StartCallMenu({
         }
         const next = actions[i + 1];
         const showDividerAfter = action.type === 'audio' && next && next.type !== 'audio';
+        const focusId =
+          action.type === 'phone' && action.kind === 'standard'
+            ? 'call-label'
+            : action.type === 'dialpad'
+              ? 'dm-use-dialpad'
+              : undefined;
         return (
           <Fragment key={action.id}>
-            <li className={styles['start-call-menu__item']}>
+            <li
+              className={styles['start-call-menu__item']}
+              {...(focusId ? { 'data-wt-focus': focusId } : {})}
+            >
               <MenuItem
                 role="menuitem"
                 label={label}
@@ -77,48 +87,49 @@ function StartCallMenu({
   );
 }
 
-export function SegmentedCallButton({
+export function StartCallButton({
   actions,
   onSelect,
   audioLabel,
+  open: openProp,
+  onOpenChange,
 }: {
   actions: StartCallAction[];
   onSelect: (action: StartCallAction) => void;
   audioLabel?: string;
+  /** Controlled menu open (e.g. walkthrough sceneState.startCallMenu). */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const controlled = openProp !== undefined;
+  const open = controlled ? openProp : uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (!controlled) setUncontrolledOpen(next);
+    onOpenChange?.(next);
+  };
   const wrapRef = useRef<HTMLDivElement>(null);
   useOutsideClose(wrapRef, open, () => setOpen(false));
 
-  const toggle = () => setOpen((o) => !o);
+  const toggle = () => setOpen(!open);
   const pick = (action: StartCallAction) => {
     setOpen(false);
     onSelect(action);
   };
 
   return (
-    <div className={styles['seg-call']} ref={wrapRef}>
-      <button
-        type="button"
-        className={styles['seg-call__primary']}
+    <div className={styles['start-call-btn']} ref={wrapRef}>
+      <Button
+        emphasis="quaternary"
+        size="small"
+        leadingIcon={<Icon glyph={<PhoneIcon />} />}
+        trailingIcon={<Icon glyph={<ChevronDownIcon />} />}
         onClick={toggle}
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <Icon glyph={<PhoneIcon />} size="12" />
-        <span>Start call</span>
-      </button>
-      <span className={styles['seg-call__divider']} aria-hidden />
-      <button
-        type="button"
-        className={styles['seg-call__trigger']}
-        onClick={toggle}
-        aria-label="Choose call option"
-        aria-haspopup="menu"
-        aria-expanded={open}
-      >
-        <Icon glyph={<ChevronDownIcon />} size="12" />
-      </button>
+        Start call
+      </Button>
       {open && <StartCallMenu actions={actions} onSelect={pick} audioLabel={audioLabel} />}
     </div>
   );
@@ -151,6 +162,7 @@ export function PopoverCallButton({
         aria-label="Call"
         aria-haspopup="menu"
         aria-expanded={open}
+        data-wt-focus="profile-call-menu"
       >
         <Icon glyph={<PhoneIcon />} size="16" />
         <Icon glyph={<ChevronDownIcon />} size="12" />
