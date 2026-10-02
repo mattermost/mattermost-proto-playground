@@ -393,7 +393,7 @@
     width: 32px;
     height: 32px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -778,7 +778,7 @@
     width: 32px;
     height: 32px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -903,7 +903,7 @@
     width: 32px;
     height: 32px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -1198,7 +1198,7 @@
   &__recent-avatar-fallback {
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
@@ -1434,7 +1434,7 @@
     width: 24px;
     height: 24px;
     flex: 0 0 auto;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.64);
     display: inline-flex;
