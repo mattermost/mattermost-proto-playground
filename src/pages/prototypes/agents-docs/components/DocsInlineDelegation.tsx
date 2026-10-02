@@ -197,6 +197,7 @@ type DocsInlineDelegationProps = {
   messages: DocsAgentDmMessage[];
   tasks?: InlineDelegationTask[];
   thinkingSteps?: readonly string[];
+  onStart?: () => void;
   onSettled?: () => void;
   onArtifactOpen?: (title: string) => void;
 };
@@ -208,6 +209,7 @@ export default function DocsInlineDelegation({
   messages,
   tasks,
   thinkingSteps,
+  onStart,
   onSettled,
   onArtifactOpen,
 }: DocsInlineDelegationProps) {
@@ -220,6 +222,11 @@ export default function DocsInlineDelegation({
   const [expanded, setExpanded] = useState(false);
 
   const settled = !hasThinking || thinkingIndex >= thinkingSteps!.length;
+
+  useEffect(() => {
+    if (ready) onStart?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready]);
 
   // Fire onSettled once when the thinking sequence completes.
   const firedSettled = useRef(false);

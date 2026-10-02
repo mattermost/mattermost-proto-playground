@@ -5,7 +5,7 @@ import avatarDarius from '@/assets/avatars/Darius Cole.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarStaffTeam from '@/assets/avatars/Staff Team.png';
 import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
-import type { ChannelsSidebarModel } from '@mattermost/compass-ui/components/channels-sidebar';
+import type { ChannelsSidebarModel } from '@mattermost/compass-proto';
 
 export const VIEWER = {
   name: 'Priya Shah',

@@ -4,7 +4,7 @@ import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
-import { ChannelsSidebarCategory } from '@mattermost/compass-ui/components/channels-sidebar';
+import { ChannelsSidebarCategory } from '@mattermost/compass-proto';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
