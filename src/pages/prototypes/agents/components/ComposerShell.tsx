@@ -9,6 +9,8 @@ type Props = {
   canSend: boolean;
   onSend: () => void;
   onAttachClick?: () => void;
+  /** Replaces the default plus button; pass null to hide it. */
+  leading?: ReactNode;
   disabled?: boolean;
   className?: string;
 };
@@ -18,20 +20,23 @@ export default function ComposerShell({
   canSend,
   onSend,
   onAttachClick,
+  leading,
   disabled,
   className,
 }: Props) {
   return (
     <div className={[styles['composer-shell'], disabled ? styles['composer-shell--disabled'] : '', className].filter(Boolean).join(' ')}>
-      <button
-        type="button"
-        className={styles['composer-shell__plus']}
-        aria-label="Add attachment"
-        disabled={disabled}
-        onClick={onAttachClick}
-      >
-        <Icon glyph={<PlusIcon />} size="16" />
-      </button>
+      {leading !== undefined ? leading : (
+        <button
+          type="button"
+          className={styles['composer-shell__plus']}
+          aria-label="Add attachment"
+          disabled={disabled}
+          onClick={onAttachClick}
+        >
+          <Icon glyph={<PlusIcon />} size="16" />
+        </button>
+      )}
       <div className={styles['composer-shell__body']}>{children}</div>
       <button
         type="button"

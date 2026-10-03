@@ -93,6 +93,22 @@ function clamp(n: number, min: number, max: number): number {
   return Math.min(Math.max(n, min), max);
 }
 
+/** True while the element or an ancestor is mid CSS animation (e.g. a panel sliding in). */
+function isInsideRunningAnimation(el: HTMLElement): boolean {
+  for (let n: HTMLElement | null = el; n; n = n.parentElement) {
+    if (
+      n.getAnimations().some(
+        (anim) =>
+          anim.playState === 'running' &&
+          Number.isFinite(anim.effect?.getComputedTiming().iterations),
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function isVerticallyScrollable(el: HTMLElement): boolean {
   // Compass Scrollbar (SimpleBar) scrolls on this node, not overflow CSS alone.
   if (el.classList.contains('simplebar-content-wrapper')) {
@@ -130,7 +146,14 @@ function scrollFocusTargetIntoView(el: HTMLElement): boolean {
     }
     node = node.parentElement;
   }
+  // scrollIntoView also scrolls overflow:hidden ancestors sideways when the target is
+  // mid slide-in, which shifts the whole layout left. Keep horizontal positions fixed.
+  const horizontal: [HTMLElement, number][] = [];
+  for (let n = el.parentElement; n; n = n.parentElement) horizontal.push([n, n.scrollLeft]);
   el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+  horizontal.forEach(([n, left]) => {
+    if (n.scrollLeft !== left) n.scrollLeft = left;
+  });
   return moved;
 }
 
@@ -374,12 +397,15 @@ export default function WalkthroughFocusLayer({
     if (!focus) return;
 
     let frame = 0;
-    const findAll = () =>
-      Array.from(
-        (stageRef.current ?? document).querySelectorAll(
-          `[data-wt-focus="${CSS.escape(focus.id)}"]`,
-        ),
+    let settleTimer = 0;
+    const findAll = () => {
+      const selector = `[data-wt-focus="${CSS.escape(focus.id)}"]`;
+      const inStage = Array.from(
+        (stageRef.current ?? document).querySelectorAll(selector),
       ) as HTMLElement[];
+      // Portaled overlays (popovers) live outside the stage.
+      return inStage.length ? inStage : (Array.from(document.querySelectorAll(selector)) as HTMLElement[]);
+    };
 
     const measure = (opts?: {
       forcePlace?: boolean;
@@ -417,6 +443,13 @@ export default function WalkthroughFocusLayer({
           const noteH = noteRef.current?.offsetHeight || 180;
           setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
         }
+        return;
+      }
+
+      // Measuring a target mid slide-in places the callout on a moving box. Wait it out.
+      if (isInsideRunningAnimation(els[0])) {
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(() => measure(opts), 40);
         return;
       }
 
@@ -490,6 +523,24 @@ export default function WalkthroughFocusLayer({
       400,
     );
 
+    // Targets that mount or move after the staggered passes (portaled popovers, delayed
+    // overlays) are picked up by watching their box for a few seconds.
+    let lastKey = '';
+    const watch = window.setInterval(() => {
+      const els = findAll();
+      const key = els
+        .map((el) => {
+          const r = el.getBoundingClientRect();
+          return `${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.width)},${Math.round(r.height)}`;
+        })
+        .join('|');
+      if (key !== lastKey) {
+        lastKey = key;
+        if (els.length) measure({ forcePlace: true });
+      }
+    }, 100);
+    const stopWatch = window.setTimeout(() => window.clearInterval(watch), 5000);
+
     const onScroll = () => {
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => measure({ forcePlace: true }));
@@ -507,6 +558,9 @@ export default function WalkthroughFocusLayer({
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.clearTimeout(t3);
+      window.clearTimeout(settleTimer);
+      window.clearInterval(watch);
+      window.clearTimeout(stopWatch);
       window.cancelAnimationFrame(frame);
       ro.disconnect();
       window.removeEventListener('scroll', onScroll, true);

@@ -4,7 +4,6 @@ import ForumOutlineIcon from '@mattermost/compass-icons/components/forum-outline
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import {
   PopoverMenu,
@@ -82,10 +81,9 @@ export default function ContextChipMenu({ options, selectedIds, onAdd }: Context
           if (open) skipOutsideCloseRef.current = true;
         }}
       >
-        <IconButton
-          size="small"
-          padding="compact"
-          icon={<Icon glyph={<PlusIcon />} size="16" />}
+        <button
+          type="button"
+          className={styles['context-chip-menu__plus']}
           aria-label="Add context"
           aria-haspopup="menu"
           aria-expanded={open}
@@ -93,7 +91,9 @@ export default function ContextChipMenu({ options, selectedIds, onAdd }: Context
             setAnchor(triggerRef.current?.getBoundingClientRect() ?? null);
             setOpen((prev) => !prev);
           }}
-        />
+        >
+          <Icon glyph={<PlusIcon />} size="16" />
+        </button>
       </span>
       {rendered && anchor
         ? createPortal(

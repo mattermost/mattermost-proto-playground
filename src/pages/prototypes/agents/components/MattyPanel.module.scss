@@ -327,30 +327,11 @@
   padding: 0 var(--spacing-l) var(--spacing-l);
 }
 
-.matty-panel__input {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  width: 100%;
-  padding: var(--spacing-xs);
-  background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-  border-radius: var(--radius-m);
-  transition: border-color var(--duration-quick) var(--ease-transition);
-
-  &:focus-within {
-    border-color: rgba(var(--center-channel-color-rgb), 0.32);
-  }
-}
-
 .matty-panel__chips {
   display: flex;
-  flex: 1 0 100%;
   flex-wrap: wrap;
   gap: var(--spacing-xs);
-  min-width: 0;
-  padding: var(--spacing-xxs) var(--spacing-xxs) 0;
+  padding: 0 var(--spacing-xs) var(--spacing-s);
 }
 
 .matty-panel__msg-chips {
@@ -364,7 +345,8 @@
   flex: 1 1 auto;
   min-width: 0;
   padding-block: var(--spacing-xs);
-  padding-inline: var(--spacing-xs) var(--spacing-l);
+  width: 100%;
+  padding-inline: var(--spacing-xs);
   border: none;
   background: transparent;
   font-family: var(--font-family-body);
@@ -376,42 +358,6 @@
 
   &::placeholder {
     color: rgba(var(--center-channel-color-rgb), 0.64);
-  }
-}
-
-.matty-panel__input-send {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  padding: calc(var(--spacing-xs) + var(--spacing-xxxxs));
-  border: none;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: rgba(var(--center-channel-color-rgb), 0.56);
-  cursor: pointer;
-  transition:
-    background-color var(--duration-quick) var(--ease-transition),
-    color var(--duration-quick) var(--ease-transition);
-
-  &:hover:not(:disabled) {
-    background: rgba(var(--center-channel-color-rgb), 0.08);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.4;
-  }
-
-  &:not(:disabled) {
-    background: var(--button-bg);
-    color: var(--button-color);
-
-    &:hover {
-      background: var(--button-bg);
-      color: var(--button-color);
-    }
   }
 }
 

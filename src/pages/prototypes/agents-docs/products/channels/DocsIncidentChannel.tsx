@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ArrowCollapseIcon from '@mattermost/compass-icons/components/arrow-collapse';
 import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
@@ -289,7 +289,24 @@ const CODER_FOLLOWUP_DM_MESSAGES: DocsAgentDmMessage[] = [
   },
 ];
 
-export default function DocsIncidentChannel() {
+type DocsIncidentChannelProps = {
+  /** Whether this channel is the visible scene. */
+  active?: boolean;
+};
+
+export default function DocsIncidentChannel({ active = false }: DocsIncidentChannelProps) {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // The channel stays mounted while hidden, so jump to the latest message whenever it is shown.
+  useEffect(() => {
+    if (!active) return;
+    const raf = requestAnimationFrame(() => {
+      const viewport = listRef.current?.closest('.simplebar-content-wrapper') as HTMLElement | null;
+      if (viewport) viewport.scrollTop = viewport.scrollHeight;
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [active]);
+
   const [activePostId, setActivePostId] = useState<string | null>(null);
   const [coderSettled, setCoderSettled] = useState(false);
   const [followupSettled, setFollowupSettled] = useState(false);
@@ -315,7 +332,7 @@ export default function DocsIncidentChannel() {
           />
           <div className={styles['docs-incident-channel__messages']}>
             <Scrollbar>
-              <div className={styles['docs-incident-channel__messages-list']}>
+              <div ref={listRef} className={styles['docs-incident-channel__messages-list']}>
                 <ChannelIntro
                   name="INC-4472"
                   createdBy="Monitor"

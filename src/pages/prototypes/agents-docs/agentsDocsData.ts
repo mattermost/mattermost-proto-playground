@@ -390,6 +390,7 @@ export const DOCS_MSG_MONITOR_WEBHOOK = 'docs-monitor-webhook';
 export const DOCS_SCENE_CUTOFFS: Record<string, string> = {
   channels: DOCS_MSG_EMMA_FLAG,
   grounding: DOCS_MSG_EMMA_FLAG,
+  'agent-profile': DOCS_MSG_EMMA_FLAG,
   review: DOCS_MSG_COLLAPSIBLE_ROOT,
   approval: DOCS_MSG_COLLAPSIBLE_ROOT,
   'later-that-week': DOCS_MSG_MONITOR_WEBHOOK,

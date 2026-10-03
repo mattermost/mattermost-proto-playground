@@ -3,6 +3,27 @@
     display: inline-flex;
   }
 
+  &__plus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding: calc(var(--spacing-xs) + var(--spacing-xxxxs));
+    border: none;
+    border-radius: var(--radius-full);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.12);
+      color: rgba(var(--center-channel-color-rgb), 0.72);
+    }
+  }
+
   &__list {
     max-height: 200px;
     overflow-y: auto;

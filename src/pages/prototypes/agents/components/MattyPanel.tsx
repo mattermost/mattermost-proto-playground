@@ -7,7 +7,6 @@ import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import MessagePlusOutlineIcon from '@mattermost/compass-icons/components/message-plus-outline';
 import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
-import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Chip } from '@mattermost/compass-ui/components/chip';
@@ -29,6 +28,7 @@ import { useAgents } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import ChannelLinkCard from './ChannelLinkCard';
 import ChatActionsMenu from './ChatActionsMenu';
+import ComposerShell from './ComposerShell';
 import ContextChipMenu, { contextChipIcon } from './ContextChipMenu';
 import type { MattyComposerChip, MattyContextChip } from './mattyContext';
 import {
@@ -606,28 +606,33 @@ export default function MattyPanel({
       )}
 
       <div className={styles['matty-panel__composer']}>
-        <div className={styles['matty-panel__input']}>
-          {chips.length ? (
-            <div className={styles['matty-panel__chips']}>
-              {chips.map((chip) => (
-                <Chip
-                  key={chip.id}
-                  size="small"
-                  leadingIcon={contextChipIcon(chip.kind)}
-                  onRemove={() => removeChip(chip.id)}
-                >
-                  {chip.label}
-                </Chip>
-              ))}
-            </div>
-          ) : null}
-          {contextOptions ? (
-            <ContextChipMenu
-              options={contextOptions}
-              selectedIds={chips.map((chip) => chip.id)}
-              onAdd={addChip}
-            />
-          ) : null}
+        {chips.length ? (
+          <div className={styles['matty-panel__chips']}>
+            {chips.map((chip) => (
+              <Chip
+                key={chip.id}
+                size="small"
+                leadingIcon={contextChipIcon(chip.kind)}
+                onRemove={() => removeChip(chip.id)}
+              >
+                {chip.label}
+              </Chip>
+            ))}
+          </div>
+        ) : null}
+        <ComposerShell
+          canSend={Boolean(draft.trim())}
+          onSend={() => send(draft)}
+          leading={
+            contextOptions ? (
+              <ContextChipMenu
+                options={contextOptions}
+                selectedIds={chips.map((chip) => chip.id)}
+                onAdd={addChip}
+              />
+            ) : null
+          }
+        >
           <input
             className={styles['matty-panel__input-field']}
             type="text"
@@ -642,16 +647,7 @@ export default function MattyPanel({
             }}
             aria-label="Message Matty"
           />
-          <button
-            type="button"
-            className={styles['matty-panel__input-send']}
-            aria-label="Send message"
-            disabled={!draft.trim()}
-            onClick={() => send(draft)}
-          >
-            <Icon glyph={<SendOutlineIcon />} size="16" />
-          </button>
-        </div>
+        </ComposerShell>
       </div>
     </aside>
   );

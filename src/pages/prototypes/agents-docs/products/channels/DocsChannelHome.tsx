@@ -1129,10 +1129,12 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
                 <div className={styles['docs-channel__thread-header']}>
                   <div className={styles['docs-channel__thread-header-title-group']}>
                     <span className={styles['docs-channel__thread-header-title']}>Thread</span>
-                    <span className={styles['docs-channel__thread-header-subtitle']}>docs-site</span>
-                    {activeThreadResolved && (
-                      <Tag label="Resolved" size="x-small" leadingIcon={RESOLVED_LEADING_ICON} />
-                    )}
+                    <div className={styles['docs-channel__thread-header-secondary']}>
+                      <span className={styles['docs-channel__thread-header-subtitle']}>docs-site</span>
+                      {activeThreadResolved && (
+                        <Tag label="Resolved" size="x-small" leadingIcon={RESOLVED_LEADING_ICON} />
+                      )}
+                    </div>
                   </div>
                   <div className={styles['docs-channel__thread-header-actions']}>
                     <IconButton

@@ -15,6 +15,7 @@ import styles from './AgentProfilePopover.module.scss';
 
 const POPOVER_WIDTH = 272;
 const POPOVER_GAP = 8;
+const VIEWPORT_MARGIN = 16;
 
 export type AgentProfileAnchor = {
   agent: WorkspaceAgent;
@@ -28,6 +29,10 @@ type AgentProfilePopoverProps = {
   onMessage?: (agent: WorkspaceAgent) => void;
   onMention?: (agent: WorkspaceAgent) => void;
   onAddToChannel?: (agent: WorkspaceAgent) => void;
+  /** Ignore outside clicks (Escape and the close button still work). */
+  persistent?: boolean;
+  /** Stamps `data-wt-focus` on the popover. */
+  focusId?: string;
 };
 
 function agentHandle(agent: WorkspaceAgent) {
@@ -47,6 +52,8 @@ export default function AgentProfilePopover({
   onMessage,
   onMention,
   onAddToChannel,
+  persistent = false,
+  focusId,
 }: AgentProfilePopoverProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(0);
@@ -57,7 +64,7 @@ export default function AgentProfilePopover({
 
   const beginClose = useCallback(() => setClosing(true), []);
 
-  useOutsideClose(ref, target != null && !closing, beginClose);
+  useOutsideClose(ref, target != null && !closing && !persistent, beginClose);
 
   useEffect(() => {
     if (!target || closing) return;
@@ -115,19 +122,19 @@ export default function AgentProfilePopover({
   }, [target]);
 
   useLayoutEffect(() => {
-    if (!target || !ref.current || measured) return;
+    if (!target || !ref.current) return;
     const h = ref.current.offsetHeight;
     const { anchorRect } = target;
     const spaceBelow = window.innerHeight - anchorRect.bottom - POPOVER_GAP - 16;
     const spaceAbove = anchorRect.top - POPOVER_GAP - 16;
     const placeAbove = h > spaceBelow && spaceAbove >= h;
-    setTop(
-      placeAbove
-        ? anchorRect.top - h - POPOVER_GAP
-        : anchorRect.bottom + POPOVER_GAP,
-    );
+    const preferred = placeAbove
+      ? anchorRect.top - h - POPOVER_GAP
+      : anchorRect.bottom + POPOVER_GAP;
+    const maxTop = Math.max(VIEWPORT_MARGIN, window.innerHeight - h - VIEWPORT_MARGIN);
+    setTop(Math.min(Math.max(VIEWPORT_MARGIN, preferred), maxTop));
     setMeasured(true);
-  }, [target, measured, detailsHost]);
+  }, [target, detailsHost]);
 
   const handleAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
     if (closing && event.target === event.currentTarget) {
@@ -148,6 +155,7 @@ export default function AgentProfilePopover({
   return createPortal(
     <div
       ref={ref}
+      data-wt-focus={focusId}
       className={styles['agent-profile-popover']}
       style={{
         top,

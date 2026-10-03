@@ -214,9 +214,12 @@
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
     background: var(--center-channel-bg);
     box-shadow: var(--elevation-4);
-    transition: box-shadow var(--duration-quick) var(--ease-transition);
+    transition:
+      box-shadow var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition);
 
     &:hover {
+      transform: scale(1.05);
       box-shadow: var(--elevation-5);
     }
 

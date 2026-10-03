@@ -1,6 +1,7 @@
 export type AgentsDocsSceneId =
   | 'channels'
   | 'grounding'
+  | 'agent-profile'
   | 'review'
   | 'approval'
   | 'later-that-week'
@@ -15,6 +16,7 @@ export type AgentsDocsSceneId =
 export const AGENTS_DOCS_SCENES: Array<{ id: AgentsDocsSceneId; label: string }> = [
   { id: 'channels', label: 'Docs Site Channel — Trigger & Ask' },
   { id: 'grounding', label: 'Grounding & Informed Rewrite' },
+  { id: 'agent-profile', label: 'Agent Profile Popover' },
   { id: 'review', label: 'Review & Component Build' },
   { id: 'approval', label: 'Approval & Publish' },
   { id: 'later-that-week', label: 'Later That Week' },

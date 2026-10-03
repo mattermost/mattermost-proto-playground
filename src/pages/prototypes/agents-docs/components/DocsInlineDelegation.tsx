@@ -200,6 +200,10 @@ type DocsInlineDelegationProps = {
   onStart?: () => void;
   onSettled?: () => void;
   onArtifactOpen?: (title: string) => void;
+  /** Opens the transcript; used by the guided walkthrough. */
+  forceExpanded?: boolean;
+  /** Stamps `data-wt-focus` on the root. */
+  focusId?: string;
 };
 
 export default function DocsInlineDelegation({
@@ -212,6 +216,8 @@ export default function DocsInlineDelegation({
   onStart,
   onSettled,
   onArtifactOpen,
+  forceExpanded = false,
+  focusId,
 }: DocsInlineDelegationProps) {
   const hasThinking = Boolean(thinkingSteps?.length);
 
@@ -219,7 +225,11 @@ export default function DocsInlineDelegation({
   const [ready, setReady] = useState(!hasThinking);
   // -1 = no thinking; 0..n-1 = in progress; n = settled
   const [thinkingIndex, setThinkingIndex] = useState(hasThinking ? 0 : -1);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(forceExpanded);
+
+  useEffect(() => {
+    setExpanded(forceExpanded);
+  }, [forceExpanded]);
 
   const settled = !hasThinking || thinkingIndex >= thinkingSteps!.length;
 
@@ -305,7 +315,7 @@ export default function DocsInlineDelegation({
     : undefined;
 
   return (
-    <div className={styles['inline-delegation']}>
+    <div className={styles['inline-delegation']} data-wt-focus={focusId}>
       <button
         type="button"
         className={styles['inline-delegation__trigger']}
@@ -328,7 +338,7 @@ export default function DocsInlineDelegation({
           styles['inline-delegation__avatars--trigger'],
         ].join(' ')}>
           {allAgents.map((a) => (
-            <span key={a.id} className={styles['inline-delegation__avatar-wrap']}>
+            <span key={a.id} className={styles['inline-delegation__avatar-wrap']} data-agent-id={a.id}>
               <AgentAvatar shape={a.shape} color={a.color} size="xs" eyes shadow={false} outlined />
             </span>
           ))}

@@ -29,6 +29,7 @@ function resolveScene(
     if (search.includes('view=all')) return 'all-agents-list';
     return 'all-agents';
   }
+  if (search.includes('scene=agent-profile')) return 'agent-profile';
   if (search.includes('scene=grounding')) return 'grounding';
   if (search.includes('scene=review')) return 'review';
   if (search.includes('scene=approval')) return 'approval';
@@ -79,6 +80,10 @@ export default function AgentsDocsSceneDropdown({
         case 'grounding':
           closeNewAgent();
           navigate(`${AGENTS_DOCS_BASE}?scene=grounding`);
+          return;
+        case 'agent-profile':
+          closeNewAgent();
+          navigate(`${AGENTS_DOCS_BASE}?scene=agent-profile`);
           return;
         case 'review':
           closeNewAgent();
