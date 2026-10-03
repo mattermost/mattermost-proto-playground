@@ -91,7 +91,7 @@ export default function ChannelsProductSidebar({
   const [collapsedByAgentId, setCollapsedByAgentId] = useState<Record<string, boolean>>({});
   const plusRef = useRef<HTMLDivElement>(null);
   const activeName = activeChannelName ?? resolveActiveName(pathname, basePath);
-  const baseModel = buildAgentsChannelsSidebarModel(activeName);
+  const baseModel = buildAgentsChannelsSidebarModel(activeName, basePath !== AGENTS_BASE);
   const model = withCreatedChannels(baseModel, createdChannels, activeName);
 
   const togglePlus = () => {

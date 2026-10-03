@@ -2836,6 +2836,7 @@ export const INCIDENT_CHANNEL_MESSAGES: ChannelMessage[] = [
 /** Storyline channel tree for the Agents vision demo. */
 export function buildAgentsChannelsSidebarModel(
   activeName = 'service-status',
+  includeDocsSite = false,
 ): ChannelsSidebarModel {
   return {
     topGroupItems: [
@@ -2855,7 +2856,7 @@ export function buildAgentsChannelsSidebarModel(
         key: 'favorites',
         category: { label: 'Favorites', showChevron: true },
         items: [
-          ...(activeName === 'docs-site' || activeName === 'INC-4472' ? [{
+          ...(includeDocsSite || activeName === 'docs-site' || activeName === 'INC-4472' ? [{
             name: 'docs-site',
             leadingVisual: 'public' as const,
             status: 'read' as const,
