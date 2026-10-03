@@ -330,6 +330,7 @@
 .matty-panel__input {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--spacing-xs);
   width: 100%;
   padding: var(--spacing-xs);
@@ -341,6 +342,22 @@
   &:focus-within {
     border-color: rgba(var(--center-channel-color-rgb), 0.32);
   }
+}
+
+.matty-panel__chips {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: var(--spacing-xxs) var(--spacing-xxs) 0;
+}
+
+.matty-panel__msg-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  padding-top: var(--spacing-xs);
 }
 
 .matty-panel__input-field {

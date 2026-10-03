@@ -236,6 +236,8 @@ type DocsChannelHomeProps = {
   activeScene: AgentsDocsSceneId;
   onPlaybookApprove?: () => void;
   walkthroughState?: DocsWalkthroughState;
+  /** Reports the post whose thread is open in the RHS (null when closed). */
+  onActiveThreadChange?: (postId: string | null) => void;
 };
 
 // ---------------------------------------------------------------------------
@@ -470,7 +472,7 @@ function renderHistoryEntry(
 // Component
 // ---------------------------------------------------------------------------
 
-export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkthroughState }: DocsChannelHomeProps) {
+export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkthroughState, onActiveThreadChange }: DocsChannelHomeProps) {
   const isGroundingScene = activeScene === 'grounding' || activeScene === 'agent-profile';
   const settleThread =
     activeScene === 'agent-profile' || (activeScene === 'grounding' && Boolean(walkthroughState?.settleThread));
@@ -524,6 +526,10 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
     const agent = DOCS_WORKSPACE_AGENTS.find((a) => a.shape === shape && a.color === color);
     if (agent) setProfileTarget(profileAnchorFromEvent(agent, e));
   };
+
+  useEffect(() => {
+    onActiveThreadChange?.(activePostId);
+  }, [activePostId, onActiveThreadChange]);
 
   const openThread = (postId: string) => setActivePostId(postId);
   const closeThread = () => { setActivePostId(null); setRhsExpanded(false); };

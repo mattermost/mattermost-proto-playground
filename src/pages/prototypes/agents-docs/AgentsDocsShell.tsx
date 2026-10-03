@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
@@ -12,6 +12,13 @@ import { useAgents, type AgentsProduct } from '../agents/context/AgentsContext';
 import { STAFF_TEAM_LOGO } from './agentsDocsData';
 import { AGENTS_DOCS_BASE, type AgentsDocsSceneId } from './agentsDocsScenes';
 import { agentsDocsWalkthrough } from './agentsDocsWalkthrough';
+import {
+  DOCS_CONTEXT_OPTIONS,
+  DOCS_INCIDENT_CONTEXT,
+  DOCS_SITE_CONTEXT,
+  docsThreadContext,
+} from './docsMattyContext';
+import type { MattyContextChip } from '../agents/components/mattyContext';
 import AgentsDocsSceneDropdown from './components/AgentsDocsSceneDropdown';
 import DocsChannelHome, { type DocsWalkthroughState } from './products/channels/DocsChannelHome';
 import DocsIncidentChannel from './products/channels/DocsIncidentChannel';
@@ -104,6 +111,7 @@ export default function AgentsDocsShell() {
     closeNewGroupChat();
   };
 
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [docsWalkthroughState, setDocsWalkthroughState] = useState<DocsWalkthroughState>({});
 
   const onWalkthroughScene = useCallback((next: string, sceneState?: Record<string, unknown>) => {
@@ -147,6 +155,32 @@ export default function AgentsDocsShell() {
     baseScene === 'approval' ||
     baseScene === 'later-that-week');
   const isOutageScene = baseScene === 'docs-outage' && !isCreatedChannel;
+
+  const createdChannelId = createdChannels.find(
+    (channel) => pathname.replace(/\/$/, '') === `${AGENTS_DOCS_BASE}/channel/${channel.id}`,
+  )?.id;
+
+  // The channel or thread the user is looking at, offered to Matty as context.
+  let mattyDefaultContext: MattyContextChip | null = null;
+  if (createdChannelId) {
+    mattyDefaultContext = { id: `channel:${createdChannelId}`, kind: 'channel', label: createdChannelId };
+  } else if (isOutageScene) {
+    mattyDefaultContext = DOCS_INCIDENT_CONTEXT;
+  } else if (isChannelScene) {
+    mattyDefaultContext =
+      (activeThreadId && docsThreadContext(activeThreadId)) || DOCS_SITE_CONTEXT;
+  }
+
+  const mattyContextOptions = useMemo(() => {
+    const created = createdChannels.map<MattyContextChip>((channel) => ({
+      id: `channel:${channel.id}`,
+      kind: 'channel',
+      label: channel.name,
+    }));
+    const channelOptions = DOCS_CONTEXT_OPTIONS.filter((option) => option.kind === 'channel');
+    const threadOptions = DOCS_CONTEXT_OPTIONS.filter((option) => option.kind === 'thread');
+    return [...channelOptions, ...created, ...threadOptions];
+  }, [createdChannels]);
 
   const handleDropdownOpenChange = useCallback(
     (open: boolean) => setDropdownOpen(open),
@@ -205,7 +239,12 @@ export default function AgentsDocsShell() {
               );
             }}
           />
-          <MattyPanel basePath={AGENTS_DOCS_BASE} focusId="docs-matty-panel" />
+          <MattyPanel
+            basePath={AGENTS_DOCS_BASE}
+            focusId="docs-matty-panel"
+            defaultContext={mattyDefaultContext}
+            contextOptions={mattyContextOptions}
+          />
           <MattyFab focusId="docs-matty-fab" />
           <div className={styles['agents-shell__product']}>
             <div
@@ -220,6 +259,7 @@ export default function AgentsDocsShell() {
                 activeScene={baseScene}
                 onPlaybookApprove={() => navigate(`${AGENTS_DOCS_BASE}?scene=docs-outage`)}
                 walkthroughState={walkthroughActive ? docsWalkthroughState : undefined}
+                onActiveThreadChange={setActiveThreadId}
               />
             </div>
             <div

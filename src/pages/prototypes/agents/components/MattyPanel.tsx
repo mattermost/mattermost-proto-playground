@@ -10,6 +10,7 @@ import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-p
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Chip } from '@mattermost/compass-ui/components/chip';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Spinner } from '@mattermost/compass-ui/components/spinner';
@@ -28,6 +29,8 @@ import { useAgents } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import ChannelLinkCard from './ChannelLinkCard';
 import ChatActionsMenu from './ChatActionsMenu';
+import ContextChipMenu, { contextChipIcon } from './ContextChipMenu';
+import type { MattyComposerChip, MattyContextChip } from './mattyContext';
 import {
   CHANNEL_FLOW_START,
   CHANNEL_FLOW_TRIGGER,
@@ -161,6 +164,7 @@ function nowLabel() {
 }
 
 type MessageExtras = {
+  contextChips?: MattyContextChip[];
   quickReplies?: string[];
   card?: ChannelLinkCardData;
 };
@@ -192,10 +196,21 @@ function nextMessageId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+type MattyPanelProps = {
+  basePath?: string;
+  focusId?: string;
+  /** Chip seeded when the panel opens (the channel or thread in view). */
+  defaultContext?: MattyContextChip | null;
+  /** Items offered by the composer "+" menu. Context chips are off when omitted. */
+  contextOptions?: MattyContextChip[];
+};
+
 export default function MattyPanel({
   basePath = AGENTS_BASE,
   focusId,
-}: { basePath?: string; focusId?: string } = {}) {
+  defaultContext = null,
+  contextOptions,
+}: MattyPanelProps = {}) {
   const {
     mattyPanelOpen,
     setMattyPanelOpen,
@@ -225,6 +240,9 @@ export default function MattyPanel({
   const [extras, setExtras] = useState<Record<string, MessageExtras>>({});
   const [toolRun, setToolRun] = useState<ToolRun | null>(null);
   const [toolsExpanded, setToolsExpanded] = useState(false);
+  const [chips, setChips] = useState<MattyComposerChip[]>([]);
+  const chipsEnabled = Boolean(contextOptions);
+  const defaultChip = chipsEnabled ? defaultContext : null;
 
   const session = sessionId
     ? sessionsByAgentId[MATTY.id]?.find((item) => item.id === sessionId)
@@ -329,11 +347,27 @@ export default function MattyPanel({
       setDraft('');
       setEmptyTitle(randomTitle());
       resetChannelFlow();
+      setChips(defaultChip ? [{ ...defaultChip, auto: true }] : []);
     } else if (prevPathname !== pathname && sessionId) {
       addMattyMessage(sessionId, ctx.greeting);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mattyPanelOpen, pathname, ctx]);
+
+  // Follow the user's navigation: swap the seeded chip, keep chips they added.
+  useEffect(() => {
+    if (!mattyPanelOpen || !chipsEnabled) return;
+    setChips((prev) => {
+      const kept = prev.filter((chip) => !chip.auto);
+      if (!defaultChip || kept.some((chip) => chip.id === defaultChip.id)) return kept;
+      return [{ ...defaultChip, auto: true }, ...kept];
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultChip?.id]);
+
+  const addChip = (chip: MattyContextChip) =>
+    setChips((prev) => (prev.some((item) => item.id === chip.id) ? prev : [...prev, chip]));
+  const removeChip = (id: string) => setChips((prev) => prev.filter((chip) => chip.id !== id));
 
   // Scroll to bottom when a new message is added.
   useEffect(() => {
@@ -370,6 +404,11 @@ export default function MattyPanel({
       timestamp: nowLabel(),
       paragraphs: [trimmed],
     };
+
+    if (chips.length) {
+      const attached = chips.map(({ id, kind, label }) => ({ id, kind, label }));
+      setExtras((prev) => ({ ...prev, [userMessage.id]: { contextChips: attached } }));
+    }
 
     let targetId = sessionId;
     if (targetId) {
@@ -481,6 +520,15 @@ export default function MattyPanel({
                   message={m}
                   stream={m.role === 'matty' && m.id === streamingId}
                 >
+                  {messageExtras?.contextChips?.length ? (
+                    <div className={styles['matty-panel__msg-chips']}>
+                      {messageExtras.contextChips.map((chip) => (
+                        <Chip key={chip.id} size="small" leadingIcon={contextChipIcon(chip.kind)}>
+                          {chip.label}
+                        </Chip>
+                      ))}
+                    </div>
+                  ) : null}
                   {showTools ? (
                     <div className={styles['matty-panel__tools']}>
                       <button
@@ -559,6 +607,27 @@ export default function MattyPanel({
 
       <div className={styles['matty-panel__composer']}>
         <div className={styles['matty-panel__input']}>
+          {chips.length ? (
+            <div className={styles['matty-panel__chips']}>
+              {chips.map((chip) => (
+                <Chip
+                  key={chip.id}
+                  size="small"
+                  leadingIcon={contextChipIcon(chip.kind)}
+                  onRemove={() => removeChip(chip.id)}
+                >
+                  {chip.label}
+                </Chip>
+              ))}
+            </div>
+          ) : null}
+          {contextOptions ? (
+            <ContextChipMenu
+              options={contextOptions}
+              selectedIds={chips.map((chip) => chip.id)}
+              onAdd={addChip}
+            />
+          ) : null}
           <input
             className={styles['matty-panel__input-field']}
             type="text"
