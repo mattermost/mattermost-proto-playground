@@ -196,14 +196,17 @@ function StreamingAgentPost({
   body,
   parts,
   onAgentProfile,
+  instant = false,
   children,
 }: {
   body: string;
   parts?: ChannelMessagePart[];
   onAgentProfile?: (id: string, e: React.MouseEvent<HTMLElement>) => void;
+  /** Show the full text immediately instead of streaming it in. */
+  instant?: boolean;
   children?: React.ReactNode;
 }) {
-  const { visible, complete } = useStreamedText(body, true);
+  const { visible, complete } = useStreamedText(body, !instant);
   return (
     <>
       {complete
@@ -218,9 +221,21 @@ function StreamingAgentPost({
 // Types
 // ---------------------------------------------------------------------------
 
+export type DocsWalkthroughState = {
+  /** Skip the thread animation and show it fully played out. */
+  settleThread?: boolean;
+  /** Open the Matty / Coder / Writer delegation transcript. */
+  expandDelegation?: boolean;
+  /** Agent id whose profile popover to open. */
+  profileAgent?: string;
+  /** Open the Monitor alert thread. */
+  openMonitorThread?: boolean;
+};
+
 type DocsChannelHomeProps = {
   activeScene: AgentsDocsSceneId;
   onPlaybookApprove?: () => void;
+  walkthroughState?: DocsWalkthroughState;
 };
 
 // ---------------------------------------------------------------------------
@@ -455,7 +470,12 @@ function renderHistoryEntry(
 // Component
 // ---------------------------------------------------------------------------
 
-export default function DocsChannelHome({ activeScene, onPlaybookApprove }: DocsChannelHomeProps) {
+export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkthroughState }: DocsChannelHomeProps) {
+  const isGroundingScene = activeScene === 'grounding' || activeScene === 'agent-profile';
+  const settleThread =
+    activeScene === 'agent-profile' || (activeScene === 'grounding' && Boolean(walkthroughState?.settleThread));
+  const profileAgentId =
+    activeScene === 'agent-profile' ? 'coder' : activeScene === 'grounding' ? walkthroughState?.profileAgent : undefined;
   const scrollRef = useRef<HTMLDivElement>(null);
   const threadBodyRef = useRef<HTMLDivElement>(null);
   const [previewApproved, setPreviewApproved] = useState(false);
@@ -572,17 +592,43 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
     };
   }, [activePostId, rhsRendered]);
 
-  // Open/close thread on scene change. Grounding fast-forwards the Emma thread; approval fast-forwards the collapsible thread.
+  // Open/close thread on scene change. Grounding opens the Emma thread at its start; approval fast-forwards the collapsible thread.
   useEffect(() => {
-    if (activeScene === 'grounding') {
+    if (isGroundingScene) {
       setActivePostId(DOCS_MSG_EMMA_FLAG);
     } else if (activeScene === 'approval') {
       setActivePostId(DOCS_MSG_COLLAPSIBLE_ROOT);
+    } else if (activeScene === 'later-that-week' && walkthroughState?.openMonitorThread) {
+      setActivePostId(DOCS_MSG_MONITOR_WEBHOOK);
     } else {
       setActivePostId(null);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeScene]);
+  }, [activeScene, walkthroughState?.openMonitorThread]);
+
+  // Open the requested agent's profile once its avatar in the thread has painted.
+  useEffect(() => {
+    if (!profileAgentId) {
+      setProfileTarget(null);
+      return;
+    }
+    const agent = DOCS_WORKSPACE_AGENTS.find((a) => a.id === profileAgentId);
+    if (!agent) return;
+    let tries = 0;
+    let timer = 0;
+    const open = () => {
+      const anchor = document.querySelector(
+        `[data-wt-focus="docs-thread"] [data-agent-id="${profileAgentId}"]`,
+      );
+      if (anchor) {
+        setProfileTarget({ agent, anchorRect: anchor.getBoundingClientRect() });
+      } else if (tries++ < 20) {
+        timer = window.setTimeout(open, 100);
+      }
+    };
+    timer = window.setTimeout(open, 500);
+    return () => window.clearTimeout(timer);
+  }, [profileAgentId, settleThread]);
 
   // Typing animation sequence — step through each DocsTypingStep in the thread.
   // Also resets delegation settled state and handles grounding fast-forward.
@@ -595,9 +641,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
     setApprovalThreadApproved(false);
     if (!activePostId) return;
 
-    // Grounding scene: skip all animations, jump straight to settled state.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    if (activeScene === 'grounding') {
+    if (settleThread) {
       const steps = DOCS_THREADS[activePostId]?.typing;
       if (steps?.length) setThreadPhase(steps.length * 2);
       setDelegationSettled(true);
@@ -617,10 +661,11 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
     const steps = DOCS_THREADS[activePostId]?.typing;
     if (!steps?.length) return;
     const timers: ReturnType<typeof setTimeout>[] = [];
+    const RHS_OPEN_DELAY = 300; // matches --duration-moderate on the RHS enter animation
     const FIRST_DELAY = 800;
     const TYPING_DURATION = 1500;
     const BETWEEN_DELAY = 1200;
-    let t = FIRST_DELAY;
+    let t = RHS_OPEN_DELAY + FIRST_DELAY;
     steps.forEach((_, i) => {
       timers.push(setTimeout(() => setThreadPhase(i * 2 + 1), t)); // show typing i
       t += TYPING_DURATION;
@@ -629,7 +674,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
     });
     return () => timers.forEach(clearTimeout);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePostId]);
+  }, [activePostId, settleThread]);
 
   // After the Coder2 delegation settles, reveal post-delegation replies one by one.
   // Delays are chosen so each agent message finishes streaming before the next appears.
@@ -756,6 +801,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                     return (
                       <div
                         key={message.id}
+                        data-wt-focus="docs-alert"
                         className={[
                           styles['docs-channel__message-row'],
                           webhookThread ? styles['docs-channel__message-row--threaded'] : '',
@@ -830,7 +876,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                               />
                             </div>
                           ) : message.agentReviewCard ? (
-                            <StreamingAgentPost body={message.body} parts={message.parts} onAgentProfile={openAgentProfile}>
+                            <StreamingAgentPost body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} instant>
                               <div className={styles['docs-channel__card']}>
                                 <AgentApprovalCard
                                   title={message.agentReviewCard.name}
@@ -845,7 +891,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                               </div>
                             </StreamingAgentPost>
                           ) : (
-                            <StreamingAgentPost body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} />
+                            <StreamingAgentPost body={message.body} parts={message.parts} onAgentProfile={openAgentProfile} instant />
                           )}
                           {(() => {
                             const t = DOCS_THREADS[message.id];
@@ -907,6 +953,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                         ].join(' ')}
                         role="button"
                         tabIndex={0}
+                        data-wt-focus="docs-jordan-post"
                         onClick={() => openThread(message.id)}
                         onKeyDown={(e) => { if (e.key === 'Enter') openThread(message.id); }}
                       >
@@ -956,6 +1003,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                         ].join(' ')}
                         role="button"
                         tabIndex={0}
+                        data-wt-focus="docs-emma-flag"
                         onClick={() => openThread(message.id)}
                         onKeyDown={(e) => { if (e.key === 'Enter') openThread(message.id); }}
                       >
@@ -1043,7 +1091,12 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
               </div>
             </Scrollbar>
           </div>
-          <div className={styles['docs-channel__composer']} data-wt-focus="docs-composer">
+          <div
+            className={[
+              styles['docs-channel__composer'],
+              rhsRendered ? '' : styles['docs-channel__composer--fab-inset'],
+            ].filter(Boolean).join(' ')}
+          >
             <MentionMessageInput
               placeholder="Write to docs-site"
               onSend={() => undefined}
@@ -1171,15 +1224,19 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
                       if (dmDef) {
                         return (
                           <DocsInlineDelegation
-                            key={i}
+                            key={settleThread ? `${i}-settled` : i}
                             label={reply.body}
                             fromAgent={dmDef.fromAgent}
                             toAgents={dmDef.toAgents}
                             messages={dmDef.messages}
                             tasks={dmDef.tasks}
-                            thinkingSteps={activeScene === 'grounding' ? undefined : dmDef.thinkingSteps}
+                            thinkingSteps={settleThread ? undefined : dmDef.thinkingSteps}
+                            forceExpanded={
+                              reply.id === DOCS_MSG_MATTY_CODER_SYSTEM && Boolean(walkthroughState?.expandDelegation)
+                            }
+                            focusId={reply.id === DOCS_MSG_MATTY_CODER_SYSTEM ? 'docs-delegation' : undefined}
                             onSettled={
-                              dmDef.thinkingSteps && activeScene !== 'grounding'
+                              dmDef.thinkingSteps && !settleThread
                                 ? reply.id === DOCS_MSG_MATTY_CODER_STAGING_SYSTEM
                                   ? () => setCollapsibleSettled(true)
                                   : () => setDelegationSettled(true)
@@ -1710,6 +1767,8 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove }: Docs
         <AgentProfilePopover
           target={profileTarget}
           onClose={() => setProfileTarget(null)}
+          persistent={Boolean(walkthroughState)}
+          focusId="docs-agent-profile"
         />
       )}
 

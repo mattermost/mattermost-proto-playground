@@ -177,28 +177,6 @@
     flex-shrink: 0;
   }
 
-  &__matty {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-xxxs);
-    background: transparent;
-    border: 0;
-    border-radius: var(--radius-s);
-    cursor: pointer;
-    transition:
-      background-color var(--duration-quick) var(--ease-transition),
-      opacity var(--duration-quick) var(--ease-exit);
-
-    &:hover {
-      background: rgba(var(--sidebar-text-rgb), 0.08);
-    }
-
-    &--open {
-      opacity: 0.6;
-    }
-  }
-
   &__account {
     --status-badge-bg: var(--sidebar-header-bg);
 

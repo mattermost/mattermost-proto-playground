@@ -7,7 +7,7 @@ import React, {
   type DragEvent,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ArchiveOutlineIcon from '@mattermost/compass-icons/components/archive-outline';
 import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -17,7 +17,6 @@ import LockIcon from '@mattermost/compass-icons/components/lock';
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
 import MonitorIcon from '@mattermost/compass-icons/components/monitor';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
-import PlusIcon from '@mattermost/compass-icons/components/plus';
 import SettingsOutlineIcon from '@mattermost/compass-icons/components/settings-outline';
 import { AttachmentCard } from '@mattermost/compass-ui/components/attachment-card';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -70,6 +69,7 @@ import {
   type LiveAgentSession,
   type LiveSessionMessage,
   type WorkspaceAgent,
+  EMPTY_CHAT_TITLES,
 } from '../../agentsData';
 import AgentAvatar from '../../components/AgentAvatar';
 import AgentComputerPip from '../../components/AgentComputerPip';
@@ -88,6 +88,7 @@ import AgentSettingsModal, {
 import AgentToolAuthCard from '../../components/AgentToolAuthCard';
 import AgentToolConnectCard from '../../components/AgentToolConnectCard';
 import AgentTypingDots from '../../components/AgentTypingDots';
+import ChatActionsMenu from '../../components/ChatActionsMenu';
 import ComposerShell from '../../components/ComposerShell';
 import { useAgents } from '../../context/AgentsContext';
 import AgentsProductSidebar from './AgentsProductSidebar';
@@ -173,14 +174,6 @@ function nextAttachmentId() {
   return `file-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-const EMPTY_CHAT_TITLES = [
-  'How can I help today?',
-  "Let's get some work done",
-  'What should we tackle?',
-  'Ready when you are',
-  'Where should we start?',
-  'Got something on your mind?',
-];
 
 /** Turn a directory blurb into a first-person empty-state subtitle. */
 function toFirstPersonAgentBlurb(description: string): string {
@@ -393,6 +386,7 @@ export default function AgentChat({
 } = {}) {
   const { agentId: agentIdParam } = useParams<{ agentId: string }>();
   const agentId = agentIdProp ?? agentIdParam;
+  const navigate = useNavigate();
   const {
     customAgents,
     groupChats,
@@ -1419,12 +1413,22 @@ export default function AgentChat({
                   />
                 )
               ) : null}
-              <IconButton
-                size="small"
-                padding="compact"
-                icon={<Icon glyph={<PlusIcon />} size="16" />}
-                aria-label="New chat"
-                onClick={startNewChat}
+              <ChatActionsMenu
+                chats={sessions.map((session) => ({
+                  id: session.id,
+                  label: session.preview,
+                  active: session.id === activeSessionId,
+                }))}
+                onSelectChat={(sessionId) => {
+                  setWelcomePlayed(true);
+                  setAutomationIntroActive(false);
+                  setDraft('');
+                  setActiveSessionForAgent(agent.id, sessionId);
+                }}
+                onNewChat={startNewChat}
+                onDeleteChat={() => archiveSession(activeSessionId)}
+                onViewAllAgents={() => navigate(`${basePath}/agents?view=all`)}
+                deleteDisabled={!activeSessionId || isEmptyChat}
               />
             </div>
           </header>

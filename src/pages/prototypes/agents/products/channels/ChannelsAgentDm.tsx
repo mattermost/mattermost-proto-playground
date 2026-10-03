@@ -14,7 +14,7 @@ export default function ChannelsAgentDm({ basePath }: { basePath?: string } = {}
       <ChannelsProductSidebar basePath={basePath} />
       <div className={styles['channels-home__inner']}>
         <div className={styles['channels-home__center']}>
-          <AgentChat agentId={agentId} embedded />
+          <AgentChat agentId={agentId} embedded basePath={basePath} />
         </div>
       </div>
     </div>

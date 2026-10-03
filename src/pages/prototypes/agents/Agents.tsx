@@ -3,6 +3,7 @@ import AgentsShell from './AgentsShell';
 import { AgentsProvider } from './context/AgentsContext';
 import AgentChat from './products/agents-app/AgentChat';
 import AgentsLanding from './products/agents-app/AgentsLanding';
+import CreatedChannelView from './products/channels/CreatedChannelView';
 import ChannelsAgentDm from './products/channels/ChannelsAgentDm';
 
 /**
@@ -17,7 +18,7 @@ export default function Agents() {
         <Route element={<AgentsShell />}>
           <Route index element={null} />
           <Route path="dm/:agentId" element={<ChannelsAgentDm />} />
-          <Route path="channel/:channelId" element={null} />
+          <Route path="channel/:channelId" element={<CreatedChannelView />} />
           <Route path="agents/:agentId" element={<AgentChat />} />
           <Route path="agents" element={<AgentsLanding />} />
           <Route path="*" element={<Navigate to="." replace />} />

@@ -13,7 +13,7 @@ import { AGENTS_BASE } from '../../agentsScenes';
 import AgentAvatar from '../../components/AgentAvatar';
 import LhsSidebarHeader from '../../components/LhsSidebarHeader';
 import PlusMenu from '../../components/PlusMenu';
-import { useAgents } from '../../context/AgentsContext';
+import { useAgents, type CreatedChannel } from '../../context/AgentsContext';
 import styles from './ChannelsProductSidebar.module.scss';
 
 function resolveActiveName(pathname: string, basePath: string): string {
@@ -28,6 +28,38 @@ function resolveActiveName(pathname: string, basePath: string): string {
   return 'service-status';
 }
 
+
+type SidebarModel = ReturnType<typeof buildAgentsChannelsSidebarModel>;
+
+/** Adds channels created from Matty to their category, creating the category if needed. */
+function withCreatedChannels(
+  model: SidebarModel,
+  channels: CreatedChannel[],
+  activeName: string,
+): SidebarModel {
+  if (channels.length === 0) return model;
+  const groups = model.groups.map((group) => ({ ...group, items: [...group.items] }));
+  for (const channel of channels) {
+    const label = channel.category ?? 'Channels';
+    let group = groups.find((item) => item.category.label === label);
+    if (!group) {
+      group = {
+        key: `created-${label}`,
+        category: { label, showChevron: true },
+        items: [],
+      } as (typeof groups)[number];
+      const agentsIndex = groups.findIndex((item) => item.key === 'agents');
+      groups.splice(agentsIndex === -1 ? groups.length : agentsIndex, 0, group);
+    }
+    group.items.push({
+      name: channel.name,
+      leadingVisual: channel.type,
+      status: 'read',
+      active: activeName === channel.name,
+    });
+  }
+  return { ...model, groups };
+}
 
 /**
  * Channels LHS matching ChannelsSidebar chrome (product title + find), with a
@@ -45,6 +77,7 @@ export default function ChannelsProductSidebar({
   const {
     openNewAgent,
     customAgents,
+    createdChannels,
     groupChats,
     openedAgentIds,
     sessionsByAgentId,
@@ -58,7 +91,8 @@ export default function ChannelsProductSidebar({
   const [collapsedByAgentId, setCollapsedByAgentId] = useState<Record<string, boolean>>({});
   const plusRef = useRef<HTMLDivElement>(null);
   const activeName = activeChannelName ?? resolveActiveName(pathname, basePath);
-  const model = buildAgentsChannelsSidebarModel(activeName);
+  const baseModel = buildAgentsChannelsSidebarModel(activeName);
+  const model = withCreatedChannels(baseModel, createdChannels, activeName);
 
   const togglePlus = () => {
     const next = !plusOpen;
@@ -71,7 +105,7 @@ export default function ChannelsProductSidebar({
   const onItemClick = (name: string) => {
     if (name === 'service-status' || name === 'docs-site') {
       navigate(basePath);
-    } else if (name.startsWith('INC-')) {
+    } else if (name.startsWith('INC-') || createdChannels.some((channel) => channel.id === name)) {
       navigate(`${basePath}/channel/${name}`);
     }
   };
@@ -279,7 +313,10 @@ export default function ChannelsProductSidebar({
                     key={`${group.key}-${item.name}`}
                     {...item}
                     onClick={
-                      item.name === 'service-status' || item.name === 'docs-site' || item.name.startsWith('INC-')
+                      item.name === 'service-status' ||
+                      item.name === 'docs-site' ||
+                      item.name.startsWith('INC-') ||
+                      createdChannels.some((channel) => channel.id === item.name)
                         ? () => onItemClick(item.name)
                         : undefined
                     }

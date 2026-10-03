@@ -1,3 +1,4 @@
+import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockIcon from '@mattermost/compass-icons/components/lock';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -15,11 +16,7 @@ export default function ChannelLinkCard({ card, onOpen }: ChannelLinkCardProps) 
       <div className={styles['channel-link-card__body']}>
         <div className={styles['channel-link-card__identity']}>
           <span className={styles['channel-link-card__icon']}>
-            {card.channelType === 'private' ? (
-              <Icon glyph={<LockIcon />} size="16" />
-            ) : (
-              <span className={styles['channel-link-card__hash']}>#</span>
-            )}
+            <Icon glyph={card.channelType === 'private' ? <LockIcon /> : <GlobeIcon />} size="16" />
           </span>
           <div className={styles['channel-link-card__copy']}>
             <p className={styles['channel-link-card__name']}>{card.channelName}</p>

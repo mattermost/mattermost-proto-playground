@@ -2970,3 +2970,12 @@ export function buildAgentsChannelsSidebarModel(
     ],
   };
 }
+
+export const EMPTY_CHAT_TITLES = [
+  'How can I help today?',
+  "Let's get some work done",
+  'What should we tackle?',
+  'Ready when you are',
+  'Where should we start?',
+  'Got something on your mind?',
+];

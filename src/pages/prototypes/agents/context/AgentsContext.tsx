@@ -45,6 +45,16 @@ export type NewAgentDraft = {
   skillIds?: string[];
 };
 
+export type CreatedChannel = {
+  /** Same as `name`; used as the route segment. */
+  id: string;
+  name: string;
+  type: 'public' | 'private';
+  purpose: string;
+  category: string | null;
+  board: boolean;
+};
+
 export type AgentUpdates = Partial<NewAgentDraft>;
 
 function nextSessionId(prefix: string) {
@@ -61,6 +71,8 @@ type AgentsContextValue = {
   openNewGroupChat: () => void;
   closeNewGroupChat: () => void;
   customAgents: CreatedAgent[];
+  createdChannels: CreatedChannel[];
+  addCreatedChannel: (channel: Omit<CreatedChannel, 'id'>) => CreatedChannel;
   groupChats: AgentGroupChat[];
   openedAgentIds: string[];
   rememberOpenedAgent: (id: string) => void;
@@ -110,6 +122,7 @@ export function AgentsProvider({
       }),
     ),
   );
+  const [createdChannels, setCreatedChannels] = useState<CreatedChannel[]>([]);
   const [groupChats, setGroupChats] = useState<AgentGroupChat[]>([]);
   const [openedAgentIds, setOpenedAgentIds] = useState<string[]>([]);
   // Sessions seed on first open of an agent chat (LHS / Chat with Matty / route).
@@ -137,6 +150,12 @@ export function AgentsProvider({
       return [...withoutDup, agent];
     });
     return agent;
+  }, []);
+
+  const addCreatedChannel = useCallback((channel: Omit<CreatedChannel, 'id'>) => {
+    const created: CreatedChannel = { ...channel, id: channel.name };
+    setCreatedChannels((prev) => [...prev.filter((item) => item.id !== created.id), created]);
+    return created;
   }, []);
 
   const addGroupChat = useCallback(
@@ -331,6 +350,8 @@ export function AgentsProvider({
       openNewGroupChat,
       closeNewGroupChat,
       customAgents,
+      createdChannels,
+      addCreatedChannel,
       groupChats,
       openedAgentIds,
       rememberOpenedAgent,
@@ -358,6 +379,8 @@ export function AgentsProvider({
       openNewGroupChat,
       closeNewGroupChat,
       customAgents,
+      createdChannels,
+      addCreatedChannel,
       groupChats,
       openedAgentIds,
       rememberOpenedAgent,

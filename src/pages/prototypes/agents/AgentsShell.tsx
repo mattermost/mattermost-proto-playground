@@ -56,6 +56,7 @@ export default function AgentsShell() {
     closeNewGroupChat,
     addGroupChat,
     customAgents,
+    createdChannels,
     mattyPanelOpen,
     setMattyPanelOpen,
   } = useAgents();
@@ -66,8 +67,11 @@ export default function AgentsShell() {
   const isChannelsHome =
     normalized === AGENTS_BASE || normalized === `${AGENTS_BASE}/`;
   const isServiceStatusAlert = normalized === `${AGENTS_BASE}/channel/service-status-alert`;
+  const isCreatedChannel = createdChannels.some(
+    (channel) => normalized === `${AGENTS_BASE}/channel/${channel.id}`,
+  );
   const isIncidentChannel =
-    normalized.startsWith(`${AGENTS_BASE}/channel/`) && !isServiceStatusAlert;
+    normalized.startsWith(`${AGENTS_BASE}/channel/`) && !isServiceStatusAlert && !isCreatedChannel;
   const isChannelView = isChannelsHome || isServiceStatusAlert || isIncidentChannel;
 
   const handleDropdownOpenChange = useCallback((open: boolean) => setDropdownOpen(open), []);

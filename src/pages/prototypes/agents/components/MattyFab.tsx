@@ -3,7 +3,7 @@ import { useAgents } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
 import styles from './MattyFab.module.scss';
 
-export default function MattyFab() {
+export default function MattyFab({ focusId }: { focusId?: string } = {}) {
   const { mattyPanelOpen, setMattyPanelOpen, customAgents } = useAgents();
   const mattyProfile = resolveSingleAgentProfile(MATTY.id, customAgents);
 
@@ -18,6 +18,7 @@ export default function MattyFab() {
         .join(' ')}
       aria-label={mattyPanelOpen ? 'Close Matty' : 'Ask Matty'}
       aria-pressed={mattyPanelOpen}
+      data-wt-focus={focusId}
       onClick={() => setMattyPanelOpen(!mattyPanelOpen)}
     >
       <span className={styles['matty-fab__label']}>Ask Matty</span>

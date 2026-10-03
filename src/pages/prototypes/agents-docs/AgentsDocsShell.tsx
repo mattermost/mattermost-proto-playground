@@ -3,17 +3,17 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import AgentsGlobalHeader from '../agents/components/AgentsGlobalHeader';
+import MattyFab from '../agents/components/MattyFab';
 import MattyPanel from '../agents/components/MattyPanel';
 import NewAgentGroupChatModal from '../agents/components/NewAgentGroupChatModal';
 import NewAgentModal from '../agents/components/NewAgentModal';
 import ProductSidebar from '../agents/components/ProductSidebar';
-import { MATTY, resolveSingleAgentProfile } from '../agents/agentsData';
 import { useAgents, type AgentsProduct } from '../agents/context/AgentsContext';
 import { STAFF_TEAM_LOGO } from './agentsDocsData';
 import { AGENTS_DOCS_BASE, type AgentsDocsSceneId } from './agentsDocsScenes';
 import { agentsDocsWalkthrough } from './agentsDocsWalkthrough';
 import AgentsDocsSceneDropdown from './components/AgentsDocsSceneDropdown';
-import DocsChannelHome from './products/channels/DocsChannelHome';
+import DocsChannelHome, { type DocsWalkthroughState } from './products/channels/DocsChannelHome';
 import DocsIncidentChannel from './products/channels/DocsIncidentChannel';
 import styles from './AgentsDocsShell.module.scss';
 
@@ -34,6 +34,7 @@ function resolveDocsScene(
     if (search.includes('view=all')) return 'all-agents-list';
     return 'all-agents';
   }
+  if (search.includes('scene=agent-profile')) return 'agent-profile';
   if (search.includes('scene=grounding')) return 'grounding';
   if (search.includes('scene=review')) return 'review';
   if (search.includes('scene=approval')) return 'approval';
@@ -86,6 +87,7 @@ export default function AgentsDocsShell() {
     closeNewGroupChat,
     addGroupChat,
     customAgents,
+    createdChannels,
     mattyPanelOpen,
     setMattyPanelOpen,
   } = useAgents();
@@ -102,7 +104,16 @@ export default function AgentsDocsShell() {
     closeNewGroupChat();
   };
 
-  const onWalkthroughScene = useCallback((next: string) => {
+  const [docsWalkthroughState, setDocsWalkthroughState] = useState<DocsWalkthroughState>({});
+
+  const onWalkthroughScene = useCallback((next: string, sceneState?: Record<string, unknown>) => {
+    setMattyPanelOpen(sceneState?.mattyPanel === true);
+    setDocsWalkthroughState({
+      settleThread: sceneState?.settleThread === true,
+      expandDelegation: sceneState?.expandDelegation === true,
+      openMonitorThread: sceneState?.openMonitorThread === true,
+      profileAgent: typeof sceneState?.profileAgent === 'string' ? sceneState.profileAgent : undefined,
+    });
     const target = WALKTHROUGH_SCENE_LOCATIONS[next as AgentsDocsSceneId];
     if (!target) return;
     closeModalsRef.current();
@@ -116,7 +127,7 @@ export default function AgentsDocsShell() {
       { pathname: target.path, search: `?${params.toString()}` },
       { replace: true },
     );
-  }, []);
+  }, [setMattyPanelOpen]);
 
   useRegisterWalkthrough(agentsDocsWalkthrough, { onScene: onWalkthroughScene });
 
@@ -124,13 +135,18 @@ export default function AgentsDocsShell() {
   // Derive channel-view visibility from the URL only — opening the new-agent modal
   // should not hide the channel content that sits behind it.
   const baseScene = resolveDocsScene(pathname, search, false);
+  const isCreatedChannel = createdChannels.some(
+    (channel) => pathname.replace(/\/$/, '') === `${AGENTS_DOCS_BASE}/channel/${channel.id}`,
+  );
   const isChannelScene =
+    !isCreatedChannel && (
     baseScene === 'channels' ||
     baseScene === 'grounding' ||
+    baseScene === 'agent-profile' ||
     baseScene === 'review' ||
     baseScene === 'approval' ||
-    baseScene === 'later-that-week';
-  const isOutageScene = baseScene === 'docs-outage';
+    baseScene === 'later-that-week');
+  const isOutageScene = baseScene === 'docs-outage' && !isCreatedChannel;
 
   const handleDropdownOpenChange = useCallback(
     (open: boolean) => setDropdownOpen(open),
@@ -168,8 +184,6 @@ export default function AgentsDocsShell() {
     setMattyPanelOpen,
   ]);
 
-  const mattyProfile = resolveSingleAgentProfile(MATTY.id, customAgents);
-
   return (
     <div className={styles['agents-shell']}>
       <div className={styles['agents-shell__frame']} data-wt-shell>
@@ -177,9 +191,6 @@ export default function AgentsDocsShell() {
           className={styles['agents-shell__header']}
           teamName="Staff"
           teamLogoSrc={STAFF_TEAM_LOGO}
-          mattyPanelOpen={mattyPanelOpen}
-          onMattyToggle={() => setMattyPanelOpen(!mattyPanelOpen)}
-          mattyProfile={mattyProfile}
         />
         <div className={styles['agents-shell__body']}>
           <ProductSidebar
@@ -194,7 +205,8 @@ export default function AgentsDocsShell() {
               );
             }}
           />
-          <MattyPanel basePath={AGENTS_DOCS_BASE} />
+          <MattyPanel basePath={AGENTS_DOCS_BASE} focusId="docs-matty-panel" />
+          <MattyFab focusId="docs-matty-fab" />
           <div className={styles['agents-shell__product']}>
             <div
               className={[
@@ -207,6 +219,7 @@ export default function AgentsDocsShell() {
               <DocsChannelHome
                 activeScene={baseScene}
                 onPlaybookApprove={() => navigate(`${AGENTS_DOCS_BASE}?scene=docs-outage`)}
+                walkthroughState={walkthroughActive ? docsWalkthroughState : undefined}
               />
             </div>
             <div
@@ -217,7 +230,7 @@ export default function AgentsDocsShell() {
                 .filter(Boolean)
                 .join(' ')}
             >
-              <DocsIncidentChannel />
+              <DocsIncidentChannel active={isOutageScene} />
             </div>
             {!isChannelScene && !isOutageScene && <Outlet />}
           </div>

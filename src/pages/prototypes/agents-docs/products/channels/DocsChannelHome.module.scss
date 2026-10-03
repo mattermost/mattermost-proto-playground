@@ -1,3 +1,4 @@
+$fab-inset: 80px; // clears the Matty FAB
 @keyframes docs-rhs-enter {
   from {
     transform: translateX(100%);
@@ -187,6 +188,11 @@
   &__composer {
     flex: 0 0 auto;
     padding: 0 var(--spacing-xl) var(--spacing-xl);
+
+    // Leave room for the floating Matty button when no RHS is open.
+    &--fab-inset {
+      padding-right: $fab-inset;
+    }
   }
 
   &__post {
@@ -390,7 +396,7 @@
   }
 
   &__rhs-composer {
-    padding: 0 var(--spacing-xl) var(--spacing-xl);
+    padding: 0 $fab-inset var(--spacing-xl) var(--spacing-xl);
   }
 
   &__artifact-footer {
