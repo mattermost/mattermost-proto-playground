@@ -279,7 +279,7 @@ export default function ChannelsProductSidebar({
       >
         <div className={styles['channels-nav__top']}>
           {model.topGroupItems.map((item) => (
-            <ChannelSidebarItem key={item.name} {...item} />
+            <ChannelSidebarItem key={String(item.name)} {...item} />
           ))}
         </div>
 
@@ -308,20 +308,21 @@ export default function ChannelsProductSidebar({
             )}
             {group.key === 'agents'
               ? yourAgents.map((agent) => renderAgentBlock(agent, group.key))
-              : group.items.map((item) => (
-                  <ChannelSidebarItem
-                    key={`${group.key}-${item.name}`}
-                    {...item}
-                    onClick={
-                      item.name === 'service-status' ||
-                      item.name === 'docs-site' ||
-                      item.name.startsWith('INC-') ||
-                      createdChannels.some((channel) => channel.id === item.name)
-                        ? () => onItemClick(item.name)
-                        : undefined
-                    }
-                  />
-                ))}
+              : group.items.map((item) => {
+                  const itemName = String(item.name);
+                  const navigable =
+                    itemName === 'service-status' ||
+                    itemName === 'docs-site' ||
+                    itemName.startsWith('INC-') ||
+                    createdChannels.some((channel) => channel.id === itemName);
+                  return (
+                    <ChannelSidebarItem
+                      key={`${group.key}-${itemName}`}
+                      {...item}
+                      onClick={navigable ? () => onItemClick(itemName) : undefined}
+                    />
+                  );
+                })}
           </div>
         ))}
       </Scrollbar>
