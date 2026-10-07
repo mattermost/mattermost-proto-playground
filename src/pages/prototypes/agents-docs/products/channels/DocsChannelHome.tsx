@@ -23,6 +23,8 @@ import {
 import AgentApprovalCard from '../../../agents/components/AgentApprovalCard';
 import AgentArtifactCard from '../../../agents/components/AgentArtifactCard';
 import { AgentPlaybookRhsHeader } from '../../../agents/components/AgentPlaybookPreview';
+import PlaybookPreviewPanel from '../../../agents/components/PlaybookPreviewPanel';
+import { useAgents } from '../../../agents/context/AgentsContext';
 import DocsArtifactRhs from '../../components/DocsArtifactRhs';
 import AgentAvatar from '../../../agents/components/AgentAvatar';
 import AgentTypingDots from '../../../agents/components/AgentTypingDots';
@@ -38,7 +40,6 @@ import type { AgentColor, AgentShape, ChannelMessagePart } from '../../../agents
 import ChannelIntro from '../../../agents/products/channels/ChannelIntro';
 import ChannelsProductSidebar from '../../../agents/products/channels/ChannelsProductSidebar';
 import {
-  ALEX,
   CODER,
   DOCS_CHANNEL_MESSAGES,
   DOCS_WORKSPACE_AGENTS,
@@ -224,6 +225,16 @@ function StreamingAgentPost({
 export type DocsWalkthroughState = {
   /** Skip the thread animation and show it fully played out. */
   settleThread?: boolean;
+  /** Hold the thread replies until the RHS highlight has appeared. */
+  highlightFirst?: boolean;
+  /** Open Jordan's collapsible-component thread in the review scene. */
+  openCollapsibleThread?: boolean;
+  /** Approve the staging preview automatically so the publish sequence plays. */
+  autoApprove?: boolean;
+  /** Stop the thread after the first human reply. */
+  holdAtHuman?: boolean;
+  /** Continue the thread from where holdAtHuman stopped. */
+  resumeThread?: boolean;
   /** Open the Matty / Coder / Writer delegation transcript. */
   expandDelegation?: boolean;
   /** Agent id whose profile popover to open. */
@@ -498,6 +509,11 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
   const [prOpen, setPrOpen] = useState(false);
   const [prApproved, setPrApproved] = useState(false);
   const { rendered: prRendered, exiting: prExiting } = useExitAnimation(prOpen, 220);
+  const { playbookPreview } = useAgents();
+  const { rendered: playbookRendered, exiting: playbookExiting } = useExitAnimation(
+    Boolean(playbookPreview),
+    220,
+  );
   const [profileTarget, setProfileTarget] = useState<AgentProfileAnchor | null>(null);
   // Numeric phase: even = showing messages, odd = showing typing indicator for step floor(phase/2)
   const [rhsExpanded, setRhsExpanded] = useState(false);
@@ -604,13 +620,15 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
       setActivePostId(DOCS_MSG_EMMA_FLAG);
     } else if (activeScene === 'approval') {
       setActivePostId(DOCS_MSG_COLLAPSIBLE_ROOT);
+    } else if (activeScene === 'review' && walkthroughState?.openCollapsibleThread) {
+      setActivePostId(DOCS_MSG_COLLAPSIBLE_ROOT);
     } else if (activeScene === 'later-that-week' && walkthroughState?.openMonitorThread) {
       setActivePostId(DOCS_MSG_MONITOR_WEBHOOK);
     } else {
       setActivePostId(null);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeScene, walkthroughState?.openMonitorThread]);
+  }, [activeScene, walkthroughState?.openMonitorThread, walkthroughState?.openCollapsibleThread]);
 
   // Open the requested agent's profile once its avatar in the thread has painted.
   useEffect(() => {
@@ -639,7 +657,8 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
   // Typing animation sequence — step through each DocsTypingStep in the thread.
   // Also resets delegation settled state and handles grounding fast-forward.
   useEffect(() => {
-    setThreadPhase(0);
+    const resumeFrom = walkthroughState?.resumeThread ? 1 : 0;
+    setThreadPhase(resumeFrom * 2);
     setDelegationSettled(false);
     setCollapsibleSettled(false);
     setChecksSettled(false);
@@ -664,15 +683,21 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
       return;
     }
 
-    const steps = DOCS_THREADS[activePostId]?.typing;
-    if (!steps?.length) return;
+    const allSteps = DOCS_THREADS[activePostId]?.typing;
+    if (!allSteps?.length) return;
+    // holdAtHuman stops after the first (human) reply so the agents stay quiet.
+    const steps = walkthroughState?.holdAtHuman ? allSteps.slice(0, 1) : allSteps;
     const timers: ReturnType<typeof setTimeout>[] = [];
     const RHS_OPEN_DELAY = 300; // matches --duration-moderate on the RHS enter animation
     const FIRST_DELAY = 800;
+    const HIGHLIGHT_DELAY = 1500;
     const TYPING_DURATION = 1500;
     const BETWEEN_DELAY = 1200;
-    let t = RHS_OPEN_DELAY + FIRST_DELAY;
+    let t = walkthroughState?.resumeThread
+      ? FIRST_DELAY
+      : RHS_OPEN_DELAY + (walkthroughState?.highlightFirst ? HIGHLIGHT_DELAY : 0) + FIRST_DELAY;
     steps.forEach((_, i) => {
+      if (i < resumeFrom) return;
       timers.push(setTimeout(() => setThreadPhase(i * 2 + 1), t)); // show typing i
       t += TYPING_DURATION;
       timers.push(setTimeout(() => setThreadPhase(i * 2 + 2), t)); // advance messages
@@ -680,7 +705,20 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
     });
     return () => timers.forEach(clearTimeout);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activePostId, settleThread]);
+  }, [activePostId, settleThread, walkthroughState?.holdAtHuman, walkthroughState?.resumeThread]);
+
+  // Walkthrough: approve the staging preview on Jordan's behalf once the checks have passed.
+  const autoApprove = Boolean(walkthroughState?.autoApprove);
+  useEffect(() => {
+    if (!autoApprove) {
+      setApprovalThreadApproved(false);
+      setDeploySettled(false);
+      return;
+    }
+    if (activeScene !== 'approval' || !checksSettled) return;
+    const timer = setTimeout(() => setApprovalThreadApproved(true), 1200);
+    return () => clearTimeout(timer);
+  }, [autoApprove, activeScene, checksSettled]);
 
   // After the Coder2 delegation settles, reveal post-delegation replies one by one.
   // Delays are chosen so each agent message finishes streaming before the next appears.
@@ -736,7 +774,6 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
       if (collapsibleSettled) n += 1; // Matty's staging-preview post
       if (activeScene === 'approval' && collapsibleSettled) {
         n += 1; // parallel checks delegation
-        if (checksSettled) n += 1; // Alex code review
         if (approvalThreadApproved) n += 2; // Jordan confirmation + deploy delegation
         if (deploySettled) n += 1; // Matty completion
       }
@@ -1097,12 +1134,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
               </div>
             </Scrollbar>
           </div>
-          <div
-            className={[
-              styles['docs-channel__composer'],
-              rhsRendered ? '' : styles['docs-channel__composer--fab-inset'],
-            ].filter(Boolean).join(' ')}
-          >
+          <div className={styles['docs-channel__composer']}>
             <MentionMessageInput
               placeholder="Write to docs-site"
               onSend={() => undefined}
@@ -1481,7 +1513,7 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
                   </div>
                 )}
 
-                {/* Approval scene: parallel checks delegation, Alex code review, Jordan confirmation, deploy delegation, Matty completion */}
+                {/* Approval scene: parallel checks delegation, Jordan confirmation, deploy delegation, Matty completion */}
                 {activeScene === 'approval' && activePostId === DOCS_MSG_COLLAPSIBLE_ROOT && collapsibleSettled && (
                   <>
                     {/* Parallel checks delegation (Matty → Coder + Reviewer) */}
@@ -1500,21 +1532,6 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
                       thinkingSteps={PARALLEL_CHECKS_THINKING}
                       onSettled={() => setChecksSettled(true)}
                     />
-
-                    {/* After checks pass: Alex's code review message */}
-                    {checksSettled && (
-                      <div className={styles['docs-channel__message-row']}>
-                        <Message
-                          avatarSrc={ALEX.avatarSrc}
-                          avatarAlt={ALEX.avatarAlt}
-                          username={ALEX.name}
-                          timestamp="12:10 PM"
-                          showMessageActions={false}
-                        >
-                          <p className={styles['docs-channel__post']}>Code looks good — approved the PR. The CollapsibleStep component is clean.</p>
-                        </Message>
-                      </div>
-                    )}
 
                     {/* After Jordan approves via card above: her confirmation reply */}
                     {approvalThreadApproved && (
@@ -1766,6 +1783,31 @@ export default function DocsChannelHome({ activeScene, onPlaybookApprove, walkth
                 </RightSidebar>
               </div>
             )}
+
+            {/* Playbook opened from Matty */}
+            {playbookRendered && (
+              <div className={[
+                styles['docs-channel__rhs-artifact'],
+                rhsExpanded ? styles['docs-channel__rhs-artifact--expanded'] : '',
+                playbookExiting ? styles['docs-channel__rhs-artifact--exiting'] : '',
+              ].filter(Boolean).join(' ')}>
+                <PlaybookPreviewPanel />
+              </div>
+            )}
+          </div>
+        )}
+
+        {!rhsRendered && playbookRendered && (
+          <div className={[
+            styles['docs-channel__rhs'],
+            playbookExiting ? styles['docs-channel__rhs--exiting'] : '',
+          ].filter(Boolean).join(' ')}>
+            <div className={[
+              styles['docs-channel__rhs-artifact'],
+              styles['docs-channel__rhs-artifact--static'],
+            ].join(' ')}>
+              <PlaybookPreviewPanel />
+            </div>
           </div>
         )}
       </div>

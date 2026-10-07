@@ -116,6 +116,13 @@
     }
   }
 
+  &__body {
+    margin: 0 0 var(--spacing-m);
+    font-size: var(--font-size-100);
+    line-height: 1.45;
+    color: rgba(var(--center-channel-color-rgb), 0.84);
+  }
+
   &__bullets {
     margin: 0 0 var(--spacing-m);
     padding-left: 1.25rem;

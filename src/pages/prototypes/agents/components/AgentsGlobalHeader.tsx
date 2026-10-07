@@ -29,9 +29,16 @@ type AgentsGlobalHeaderProps = {
   className?: string;
   teamName?: string;
   teamLogoSrc?: string;
+  /** Rendered inside a pill-shaped search box, replacing the Help button. */
+  trailingAction?: React.ReactNode;
 };
 
-export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc }: AgentsGlobalHeaderProps) {
+export default function AgentsGlobalHeader({
+  className,
+  teamName,
+  teamLogoSrc,
+  trailingAction,
+}: AgentsGlobalHeaderProps) {
   const displayName = teamName ?? 'Acme Co';
   return (
     <header className={[styles['agents-header'], className].filter(Boolean).join(' ')}>
@@ -68,7 +75,14 @@ export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc }:
           <NavIconButton ariaLabel="Back" glyph={<ArrowLeftIcon />} />
           <NavIconButton ariaLabel="Forward" glyph={<ArrowRightIcon />} />
         </div>
-        <div className={styles['agents-header__search']}>
+        <div
+          className={[
+            styles['agents-header__search'],
+            trailingAction ? styles['agents-header__search--pill'] : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <span className={styles['agents-header__search-icon']} aria-hidden>
             <Icon size="12" glyph={<MagnifyIcon />} />
           </span>
@@ -78,8 +92,9 @@ export default function AgentsGlobalHeader({ className, teamName, teamLogoSrc }:
             placeholder="Search"
             aria-label="Search"
           />
+          {trailingAction}
         </div>
-        <NavIconButton ariaLabel="Help" glyph={<HelpCircleOutlineIcon />} />
+        {!trailingAction && <NavIconButton ariaLabel="Help" glyph={<HelpCircleOutlineIcon />} />}
       </div>
 
       <div className={styles['agents-header__right']}>

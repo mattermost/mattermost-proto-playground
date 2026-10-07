@@ -6,6 +6,7 @@ import { AGENTS_BASE } from './agentsScenes';
 import AgentsSceneDropdown from './components/AgentsSceneDropdown';
 import MattyFab from './components/MattyFab';
 import MattyPanel from './components/MattyPanel';
+import PlaybookPreviewRhs from './components/PlaybookPreviewRhs';
 import NewAgentGroupChatModal from './components/NewAgentGroupChatModal';
 import NewAgentModal from './components/NewAgentModal';
 import ProductSidebar from './components/ProductSidebar';
@@ -140,6 +141,7 @@ export default function AgentsShell() {
             </div>
             {!isChannelView && <Outlet />}
           </div>
+          <PlaybookPreviewRhs />
         </div>
       </div>
 

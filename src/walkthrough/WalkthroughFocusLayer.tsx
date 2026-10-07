@@ -757,11 +757,15 @@ export default function WalkthroughFocusLayer({
             showPulsingDot={false}
             onClose={() => setNoteMode('dismissed')}
           >
-            <ul className={styles['wt-focus__note-list']}>
-              {display.note.points.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
+            {display.note.points.length === 1 ? (
+              <p className={styles['wt-focus__note-text']}>{display.note.points[0]}</p>
+            ) : (
+              <ul className={styles['wt-focus__note-list']}>
+                {display.note.points.map((point) => (
+                  <li key={point}>{point}</li>
+                ))}
+              </ul>
+            )}
           </TourPoint>
         </div>
       )}

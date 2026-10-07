@@ -3,8 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import AgentsGlobalHeader from '../agents/components/AgentsGlobalHeader';
-import MattyFab from '../agents/components/MattyFab';
 import MattyPanel from '../agents/components/MattyPanel';
+import PlaybookPreviewRhs from '../agents/components/PlaybookPreviewRhs';
 import NewAgentGroupChatModal from '../agents/components/NewAgentGroupChatModal';
 import NewAgentModal from '../agents/components/NewAgentModal';
 import ProductSidebar from '../agents/components/ProductSidebar';
@@ -19,6 +19,7 @@ import {
   docsThreadContext,
 } from './docsMattyContext';
 import type { MattyContextChip } from '../agents/components/mattyContext';
+import MattyHeaderButton from './components/MattyHeaderButton';
 import AgentsDocsSceneDropdown from './components/AgentsDocsSceneDropdown';
 import DocsChannelHome, { type DocsWalkthroughState } from './products/channels/DocsChannelHome';
 import DocsIncidentChannel from './products/channels/DocsIncidentChannel';
@@ -118,6 +119,11 @@ export default function AgentsDocsShell() {
     setMattyPanelOpen(sceneState?.mattyPanel === true);
     setDocsWalkthroughState({
       settleThread: sceneState?.settleThread === true,
+      highlightFirst: sceneState?.highlightFirst === true,
+      openCollapsibleThread: sceneState?.openCollapsibleThread === true,
+      autoApprove: sceneState?.autoApprove === true,
+      holdAtHuman: sceneState?.holdAtHuman === true,
+      resumeThread: sceneState?.resumeThread === true,
       expandDelegation: sceneState?.expandDelegation === true,
       openMonitorThread: sceneState?.openMonitorThread === true,
       profileAgent: typeof sceneState?.profileAgent === 'string' ? sceneState.profileAgent : undefined,
@@ -225,6 +231,7 @@ export default function AgentsDocsShell() {
           className={styles['agents-shell__header']}
           teamName="Staff"
           teamLogoSrc={STAFF_TEAM_LOGO}
+          trailingAction={<MattyHeaderButton focusId="docs-matty-fab" />}
         />
         <div className={styles['agents-shell__body']}>
           <ProductSidebar
@@ -241,11 +248,11 @@ export default function AgentsDocsShell() {
           />
           <MattyPanel
             basePath={AGENTS_DOCS_BASE}
+            placement="top-center"
             focusId="docs-matty-panel"
             defaultContext={mattyDefaultContext}
             contextOptions={mattyContextOptions}
           />
-          <MattyFab focusId="docs-matty-fab" />
           <div className={styles['agents-shell__product']}>
             <div
               className={[
@@ -274,6 +281,7 @@ export default function AgentsDocsShell() {
             </div>
             {!isChannelScene && !isOutageScene && <Outlet />}
           </div>
+          {!isChannelScene && !isOutageScene && <PlaybookPreviewRhs />}
         </div>
       </div>
 

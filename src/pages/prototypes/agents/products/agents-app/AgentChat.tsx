@@ -400,6 +400,7 @@ export default function AgentChat({
     archiveSession: archiveSessionForAgent,
     updateSessionsForAgent,
     setActiveSessionForAgent,
+    mattyPanelOpen,
   } = useAgents();
   const agent = useMemo(
     () => resolveAgentProfile(agentId, customAgents, groupChats),
@@ -1011,6 +1012,7 @@ export default function AgentChat({
   const onCanvasDragEnter = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
+    if (mattyPanelOpen) return;
     dragDepthRef.current += 1;
     if (event.dataTransfer.types.includes('Files')) {
       setDragActive(true);
@@ -1029,6 +1031,10 @@ export default function AgentChat({
   const onCanvasDragOver = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.stopPropagation();
+    if (mattyPanelOpen) {
+      event.dataTransfer.dropEffect = 'none';
+      return;
+    }
     if (event.dataTransfer.types.includes('Files')) {
       event.dataTransfer.dropEffect = 'copy';
     }
@@ -1039,6 +1045,7 @@ export default function AgentChat({
     event.stopPropagation();
     dragDepthRef.current = 0;
     setDragActive(false);
+    if (mattyPanelOpen) return;
     if (event.dataTransfer.files?.length) {
       queueFilesForUpload(event.dataTransfer.files);
     }

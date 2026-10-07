@@ -32,6 +32,8 @@ import { CODER, MATTY, MONITOR, PRIYA } from '../../agentsDocsData';
 import { AGENTS_DOCS_BASE } from '../../agentsDocsScenes';
 import AgentArtifactCard from '../../../agents/components/AgentArtifactCard';
 import { AgentPlaybookRhsHeader } from '../../../agents/components/AgentPlaybookPreview';
+import PlaybookPreviewPanel from '../../../agents/components/PlaybookPreviewPanel';
+import { useAgents } from '../../../agents/context/AgentsContext';
 import DocsInlineDelegation, { type InlineDelegationAgent, type InlineDelegationTask } from '../../components/DocsInlineDelegation';
 import DocsRootCauseRhs from '../../components/DocsRootCauseRhs';
 import styles from './DocsIncidentChannel.module.scss';
@@ -316,6 +318,11 @@ export default function DocsIncidentChannel({ active = false }: DocsIncidentChan
   const [playbookExpanded, setPlaybookExpanded] = useState(false);
   const { rendered: threadRendered, exiting: threadExiting } = useExitAnimation(!!activePostId, 220);
   const { rendered: artifactRendered, exiting: artifactExiting } = useExitAnimation(artifactOpen, 220);
+  const { playbookPreview } = useAgents();
+  const { rendered: playbookRendered, exiting: playbookExiting } = useExitAnimation(
+    Boolean(playbookPreview),
+    220,
+  );
   const closeThread = () => { setActivePostId(null); setRhsExpanded(false); setArtifactOpen(false); setDelegationStarted(false); };
 
   return (
@@ -370,7 +377,7 @@ export default function DocsIncidentChannel({ active = false }: DocsIncidentChan
                       avatarSrc=""
                       timestamp="3:14 AM"
                       messageText="Uptime failure: docs.mattermost.com — Health check failed at 3:14 AM. Status 503 Service Unavailable. Duration: 4 min 12 s and counting."
-                      originalChannel="#docs-site"
+                      originalChannel="docs-site"
                     />
                   </div>
                 </div>
@@ -738,6 +745,14 @@ export default function DocsIncidentChannel({ active = false }: DocsIncidentChan
               >
                 <DocsRootCauseRhs />
               </RightSidebar>
+            </div>
+          )}
+          {playbookRendered && (
+            <div className={[
+              styles['docs-incident-channel__artifact-panel'],
+              playbookExiting ? styles['docs-incident-channel__artifact-panel--exiting'] : '',
+            ].filter(Boolean).join(' ')}>
+              <PlaybookPreviewPanel />
             </div>
           )}
         </div>

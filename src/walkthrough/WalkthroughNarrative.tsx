@@ -147,7 +147,10 @@ export default function WalkthroughNarrative({
               </ul>
             </div>
           )}
-          {bullets.length > 0 && (
+          {bullets.length === 1 && typeof bullets[0] === 'string' && (
+            <p className={styles['wt-narrative__body']}>{bullets[0]}</p>
+          )}
+          {bullets.length > 0 && !(bullets.length === 1 && typeof bullets[0] === 'string') && (
             <ul className={styles['wt-narrative__bullets']}>
               {bullets.map((bullet) =>
                 typeof bullet === 'string' ? (

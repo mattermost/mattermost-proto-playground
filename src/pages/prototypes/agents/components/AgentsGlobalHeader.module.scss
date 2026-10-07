@@ -134,6 +134,12 @@
     &:hover {
       background: rgba(var(--sidebar-text-rgb), 0.12);
     }
+
+    &--pill {
+      width: 360px;
+      padding: 0 var(--spacing-xxxs) 0 var(--spacing-m);
+      border-radius: var(--radius-pill);
+    }
   }
 
   &__search-icon {

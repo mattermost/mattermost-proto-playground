@@ -17,13 +17,12 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
     {
       id: 'intro',
       section: 'overview',
-      title: 'The team, updating the site',
-      lead: 'The docs team works in #docs-site. Matty coordinates the specialist agents Coder, Writer, and Reviewer while people stay in the conversation.',
-      lookFor: ['#docs-site channel', 'Agent tags on Matty’s messages'],
+      title: 'The scenario: a team updating their docs website',
+      lead: 'The docs team works in the docs-site channel. Matty coordinates the specialist agents Coder, Writer, and Reviewer while people stay in the conversation.',
+      lookFor: ['docs-site channel', 'Emma’s call to update the SSO page'],
       bullets: [
         'The scenario: the SSO setup page is out of date, and the team fixes it together.',
         'Along the way they build a reusable page component, then publish.',
-        'Use Jump to skip around; Back and Next step in order. Exit returns you to free exploration.',
       ],
       scene: 'channels',
     },
@@ -32,11 +31,10 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
       section: 'publish',
       railGroup: 'Trigger & ask',
       title: 'Emma flags the problem',
-      lead: 'Emma, who leads support, notices a steady trickle of tickets about the SSO setup steps. The problem arrives as someone on the team noticing, not as an alert.',
+      lead: 'Emma, who leads support, notices a steady trickle of tickets about the SSO setup steps.',
       lookFor: ['Emma’s post about the SSO setup page', 'Priya and Jordan replying in the thread'],
       bullets: [
-        'This is a normal message from a person, not an automated alert.',
-        'Priya and Jordan agree it’s worth doing before any agent is involved. That makes it a team decision, not one person’s.',
+        'Click Next to view the thread.',
       ],
       scene: 'channels',
       focus: {
@@ -46,7 +44,6 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
           title: 'It starts with a person',
           points: [
             'Emma, on support, spots a steady trickle of tickets about the SSO setup steps.',
-            'The problem arrives as a teammate noticing, not as an alert.',
           ],
         },
       },
@@ -191,12 +188,10 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
       railGroup: 'Review & build',
       title: 'Jordan spots a gap only a person would',
       lead: 'Reviewer’s pass came back clean, but Jordan sees further: the new steps need a reusable collapsible section, and the site will want it elsewhere too.',
-      lookFor: ['“New collapsible component needed” post', 'Coder’s code preview and pull request', 'Jordan and Alex discussing the component'],
+      lookFor: ['“New collapsible component needed” post'],
       bullets: [
         'Judging page structure is a human call, so a person raises it.',
-        'Same agent, different job: Coder did research earlier, now it builds and opens a pull request.',
-        'Jordan asks Alex whether the component affects how the content reads. Two people talk, with an agent’s work as the reference.',
-        'Open the thread to watch the build play out.',
+        'Click Next to open the thread.',
       ],
       scene: 'review',
       focus: {
@@ -212,15 +207,61 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
       },
     },
     {
+      id: 'review-people',
+      section: 'publish',
+      railGroup: 'Review & build',
+      title: 'The people agree on the next move',
+      lead: 'In the thread, Priya picks up Jordan’s idea and tags Matty, asking it to build the component and pulling in Alex and Jordan for review.',
+      lookFor: ['Thread opened on Jordan’s post', 'Priya’s reply tagging Matty, Alex, and Jordan'],
+      bullets: [
+        'The people settle what to do and who reviews it before any agent acts.',
+        'Click Next to see Matty take it from here.',
+      ],
+      scene: 'review',
+      sceneState: { openCollapsibleThread: true, holdAtHuman: true, highlightFirst: true },
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'People decide first',
+          points: ['Priya asks Matty to handle it and names Alex and Jordan as reviewers.'],
+        },
+      },
+    },
+    {
+      id: 'review-build',
+      section: 'publish',
+      railGroup: 'Review & build',
+      title: 'Matty hands the build to Coder',
+      lead: 'Matty confirms the plan and sends Coder to build the component and open a pull request, then asks Alex to review it.',
+      lookFor: ['Matty’s reply', 'Coder’s build and code preview', 'The pull request'],
+      bullets: [
+        'Same agent, different job: Coder did research earlier, now it builds and opens a pull request.',
+        'Alex reviews the pull request as a person, with the agent’s work as the reference.',
+      ],
+      scene: 'review',
+      sceneState: { openCollapsibleThread: true, resumeThread: true },
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'The agents do the build',
+          points: ['Matty delegates to Coder, which builds the component and opens a pull request for Alex.'],
+        },
+      },
+    },
+    {
       id: 'checks',
       section: 'publish',
       railGroup: 'Approval & publish',
       title: 'Checks run, then people approve',
-      lead: 'Before anyone is asked to sign off, the agents check their own work at the same time: Coder’s build check and Reviewer’s page check. Alex then approves the pull request.',
-      lookFor: ['Parallel checks tracker', 'Alex’s approval on the pull request'],
+      lead: 'Before anyone is asked to sign off, the agents check their own work at the same time: Coder’s build check and Reviewer’s page check. Alex has already approved the code, so Jordan is the last person to sign off.',
+      lookFor: ['Parallel checks tracker', 'Staging preview waiting for Jordan'],
       bullets: [
         'The tracker rolls up to “2 of 2 passed” when both checks finish.',
-        'Alex’s approval is required. The pull request can’t merge without it.',
+        'Jordan’s approval of the staging preview is required before anything is published.',
       ],
       scene: 'approval',
       focus: {
@@ -231,7 +272,7 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
           title: 'Agents check their own work first',
           points: [
             'Coder’s build check and Reviewer’s page check run side by side.',
-            'Alex then reviews the pull request. It can’t merge without his approval.',
+            'With the code already approved by Alex, Jordan reviews staging and gives the final approval.',
           ],
         },
       },
@@ -249,6 +290,7 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
         'Emma, who raised the problem, is the last to hear it’s done.',
       ],
       scene: 'approval',
+      sceneState: { autoApprove: true },
       focus: {
         id: 'docs-thread',
         emphasis: 'lightbox',
@@ -267,7 +309,7 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
       section: 'publish',
       railGroup: 'Later that week',
       title: 'An alert arrives in the channel',
-      lead: 'Later that week a different kind of problem arrives: an automated alert in #docs-site says docs.mattermost.com is returning errors.',
+      lead: 'Later that week a different kind of problem arrives: an automated alert in the docs-site channel says docs.mattermost.com is returning errors.',
       lookFor: ['Uptime alert from Monitor', 'Completed checks tracker from earlier'],
       bullets: [
         'This is the first automated post in the story. Emma’s flag earlier was a person.',
@@ -361,6 +403,7 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
         'The greeting changes each time, the same as in a direct message with an agent.',
         'Suggestions: search, summarize this channel, create a new channel, start a playbook, draft a message.',
         'The three-dot menu starts a new chat, deletes this one, or opens all agents.',
+        'Click “Create a new channel” to continue.',
       ],
       scene: 'channels',
       sceneState: { mattyPanel: true },
@@ -372,7 +415,7 @@ export const agentsDocsWalkthrough: WalkthroughDocument = {
           title: 'Not a chat yet',
           points: [
             'Nothing is saved until you send your first message.',
-            'Pick a suggestion or just type.',
+            'Click “Create a new channel” to try it.',
           ],
         },
       },

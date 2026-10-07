@@ -89,8 +89,8 @@ export function agentAvatarChipSrc(
       ? `<circle cx="0.5" cy="0.5" r="0.5" fill="url(#g)"/>`
       : `<path d="${AGENT_AVATAR_SHAPE_PATHS[shape]}" fill="url(#g)"${scale}/>`;
   const eyes = shape === 'sphere'
-    ? '<circle cx="0.35" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/><circle cx="0.65" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/>'
-    : `<g transform="translate(0.5 0.5) scale(${s}) translate(-0.5 -0.5)"><circle cx="0.35" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/><circle cx="0.65" cy="0.5" r="0.06" fill="rgba(255,255,255,0.92)"/></g>`;
+    ? '<circle cx="0.35" cy="0.5" r="0.06" fill="#ffffff"/><circle cx="0.65" cy="0.5" r="0.06" fill="#ffffff"/>'
+    : `<g transform="translate(0.5 0.5) scale(${s}) translate(-0.5 -0.5)"><circle cx="0.35" cy="0.5" r="0.06" fill="#ffffff"/><circle cx="0.65" cy="0.5" r="0.06" fill="#ffffff"/></g>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1">${grad}${body}${eyes}</svg>`;
   const src = `data:image/svg+xml,${encodeURIComponent(svg)}`;
   chipSrcCache.set(key, src);

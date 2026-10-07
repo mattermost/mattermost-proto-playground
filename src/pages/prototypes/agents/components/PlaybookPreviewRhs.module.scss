@@ -1,0 +1,23 @@
+.playbook-rhs {
+  flex: 0 0 auto;
+  width: 0;
+  min-height: 0;
+  overflow: hidden;
+  transition: width var(--duration-moderate) var(--ease-transition);
+
+  &--open {
+    width: 400px;
+  }
+
+  &__inner {
+    display: flex;
+    width: 400px;
+    height: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playbook-rhs {
+    transition: none;
+  }
+}

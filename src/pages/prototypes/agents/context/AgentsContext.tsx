@@ -22,6 +22,7 @@ import {
   type ConnectedMcp,
   type CreatedAgent,
   type LiveAgentSession,
+  type PlaybookDraft,
   type ScheduledJob,
   type WorkspaceAgent,
 } from '../agentsData';
@@ -61,7 +62,15 @@ function nextSessionId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
+export type PlaybookPreview = {
+  draft: PlaybookDraft;
+  onSave?: () => void;
+};
+
 type AgentsContextValue = {
+  /** Playbook artifact shown in the shell's right sidebar. */
+  playbookPreview: PlaybookPreview | null;
+  setPlaybookPreview: (preview: PlaybookPreview | null) => void;
   newAgentOpen: boolean;
   openNewAgent: () => void;
   closeNewAgent: () => void;
@@ -107,6 +116,7 @@ export function AgentsProvider({
   const [newAgentOpen, setNewAgentOpen] = useState(false);
   const [newGroupChatOpen, setNewGroupChatOpen] = useState(false);
   const [mattyPanelOpen, setMattyPanelOpen] = useState(false);
+  const [playbookPreview, setPlaybookPreview] = useState<PlaybookPreview | null>(null);
   const [customAgents, setCustomAgents] = useState<CreatedAgent[]>(() =>
     (initialAgents ?? []).map((a) =>
       buildCreatedAgent({
@@ -341,6 +351,8 @@ export function AgentsProvider({
 
   const value = useMemo(
     () => ({
+      playbookPreview,
+      setPlaybookPreview,
       newAgentOpen,
       openNewAgent,
       closeNewAgent,
@@ -370,6 +382,7 @@ export function AgentsProvider({
       setActiveSessionForAgent,
     }),
     [
+      playbookPreview,
       newAgentOpen,
       openNewAgent,
       closeNewAgent,

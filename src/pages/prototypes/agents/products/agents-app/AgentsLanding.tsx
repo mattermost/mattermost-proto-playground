@@ -17,6 +17,7 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { SearchInput } from '@mattermost/compass-ui/components/search-input';
+import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Tabs } from '@mattermost/compass-ui/components/tabs';
 import { AGENTS_BASE } from '../../agentsScenes';
@@ -28,6 +29,11 @@ import {
   formatChannelList,
   type WorkspaceAgent,
 } from '../../agentsData';
+import {
+  AGENT_STATUS_LABEL,
+  AGENT_STATUS_TAG,
+  getAgentActivity,
+} from '../../agentActivity';
 import AgentAvatar from '../../components/AgentAvatar';
 import { useAgents } from '../../context/AgentsContext';
 import AgentsProductSidebar from './AgentsProductSidebar';
@@ -36,6 +42,8 @@ import styles from './AgentsLanding.module.scss';
 const FTE_CARD_WIDTH = 320;
 const FTE_CARD_GAP = 16; // --spacing-l
 const FTE_CARD_STRIDE = FTE_CARD_WIDTH + FTE_CARD_GAP;
+
+const MAX_ACTIVE_CARDS = 3;
 
 const DEFAULT_FTE_SHELF_AGENTS: readonly WorkspaceAgent[] = [MATTY, ...FTE_PRECONFIGURED_AGENTS];
 
@@ -333,6 +341,15 @@ function DirectoryHome({
     });
   }, [tabAgents, query]);
 
+  const activeAgents = useMemo(
+    () =>
+      tabAgents
+        .map((agent) => ({ agent, activity: getAgentActivity(agent.id) }))
+        .filter(({ activity }) => activity.status !== 'idle')
+        .slice(0, MAX_ACTIVE_CARDS),
+    [tabAgents],
+  );
+
   const tabs = useMemo(
     () => [
       { key: 'your-agents', label: 'Your agents' },
@@ -375,9 +392,94 @@ function DirectoryHome({
         aria-label="Find agents"
       />
 
+      {activeAgents.length > 0 ? (
+        <section
+          className={styles['agents-landing__active']}
+          aria-label="Active agents"
+        >
+          <h2 className={styles['agents-landing__section-title']}>
+            Active now
+            <span className={styles['agents-landing__section-count']}>
+              {activeAgents.length}
+            </span>
+          </h2>
+          <div className={styles['agents-landing__active-grid']}>
+            {activeAgents.map(({ agent, activity }) => (
+              <article
+                key={agent.id}
+                className={styles['agents-landing__active-card']}
+              >
+                <button
+                  type="button"
+                  className={styles['agents-landing__card-hit']}
+                  aria-label={`Open ${agent.name}`}
+                  onClick={() => onOpenAgent(agent.id)}
+                />
+                <div className={styles['agents-landing__active-head']}>
+                  <AgentAvatar
+                    shape={agent.shape}
+                    color={agent.color}
+                    size="xs"
+                    eyes
+                    imageSrc={agent.customImageSrc}
+                  />
+                  <span className={styles['agents-landing__row-name']}>
+                    {agent.name}
+                  </span>
+                  <Tag
+                    label={AGENT_STATUS_LABEL[activity.status]}
+                    type={AGENT_STATUS_TAG[activity.status]}
+                    size="x-small"
+                    leadingIcon={
+                      activity.status === 'working' ? (
+                        <Spinner size="10" inverted aria-label="Working" />
+                      ) : undefined
+                    }
+                    className={styles['agents-landing__active-status']}
+                  />
+                </div>
+                <p className={styles['agents-landing__active-task']}>
+                  {activity.task}
+                </p>
+                <div
+                  className={styles['agents-landing__progress']}
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={activity.progress ?? 0}
+                  aria-label={`${agent.name} progress`}
+                >
+                  <div
+                    className={[
+                      styles['agents-landing__progress-bar'],
+                      activity.status === 'needs-input'
+                        ? styles['agents-landing__progress-bar--paused']
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    style={{ width: `${activity.progress ?? 0}%` }}
+                  />
+                </div>
+                <div className={styles['agents-landing__active-meta']}>
+                  <span>{activity.channel}</span>
+                  <span>{`Started ${activity.startedAgo} ago`}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <div className={styles['agents-landing__dir-list']}>
+        {activeAgents.length > 0 ? (
+          <h2 className={styles['agents-landing__section-title']}>
+            {activeTab === 'all-agents' ? 'All agents' : 'Your agents'}
+          </h2>
+        ) : null}
         <div className={styles['agents-landing__dir-cols']} aria-hidden>
           <span>Agent</span>
+          <span>Status</span>
           <span>Role</span>
           <span>Created by</span>
           <span>Channels</span>
@@ -405,6 +507,18 @@ function DirectoryHome({
                   {agent.fresh ? (
                     <Tag label="New" type="info" size="x-small" />
                   ) : null}
+                </span>
+                <span className={styles['agents-landing__row-status']}>
+                  <span
+                    className={[
+                      styles['agents-landing__status-dot'],
+                      styles[
+                        `agents-landing__status-dot--${getAgentActivity(agent.id).status}`
+                      ],
+                    ].join(' ')}
+                    aria-hidden
+                  />
+                  {AGENT_STATUS_LABEL[getAgentActivity(agent.id).status]}
                 </span>
                 <span className={styles['agents-landing__row-role']}>
                   <Tag label={agent.role} size="x-small" />

@@ -2,30 +2,36 @@ import AiSummarizeIcon from '@mattermost/compass-icons/components/ai-summarize';
 import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import CloseIcon from '@mattermost/compass-icons/components/close';
+import UploadOutlineIcon from '@mattermost/compass-icons/components/upload-outline';
 import LockIcon from '@mattermost/compass-icons/components/lock';
 import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
 import MessagePlusOutlineIcon from '@mattermost/compass-icons/components/message-plus-outline';
 import ProductPlaybooksIcon from '@mattermost/compass-icons/components/product-playbooks';
+import { AttachmentCard } from '@mattermost/compass-ui/components/attachment-card';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Chip } from '@mattermost/compass-ui/components/chip';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Spinner } from '@mattermost/compass-ui/components/spinner';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AGENTS_BASE } from '../agentsScenes';
 import {
   EMPTY_CHAT_TITLES,
   MATTY,
+  buildSentinelPlaybookCard,
   resolveSingleAgentProfile,
   type LiveAgentSession,
   type ChannelLinkCardData,
+  type ChatPlaybookCard,
   type LiveSessionMessage,
+  type PlaybookDraft,
 } from '../agentsData';
 import { useAgents } from '../context/AgentsContext';
 import AgentAvatar from './AgentAvatar';
+import AgentPlaybookCard from './AgentPlaybookCard';
 import ChannelLinkCard from './ChannelLinkCard';
 import ChatActionsMenu from './ChatActionsMenu';
 import ComposerShell from './ComposerShell';
@@ -40,6 +46,15 @@ import {
   type ChannelDraft,
   type ChannelFlowState,
 } from './mattyChannelFlow';
+import {
+  PLAYBOOK_FLOW_INTRO,
+  PLAYBOOK_FLOW_TRIGGER,
+  PLAYBOOK_NOT_PDF_REPLY,
+  buildPlaybookDraft,
+  buildPlaybookToolSteps,
+  formatFileMeta,
+  isPdf,
+} from './mattyPlaybookFlow';
 import styles from './MattyPanel.module.scss';
 
 const STREAM_MS_PER_WORD = 50;
@@ -103,7 +118,7 @@ function MattyMessage({
           <time className={styles['matty-panel__msg-time']}>{message.timestamp}</time>
         </div>
         <div className={styles['matty-panel__msg-body']}>
-          <p>{displayText}</p>
+          {displayText ? <p>{displayText}</p> : null}
         </div>
         {children}
       </div>
@@ -164,15 +179,18 @@ function nowLabel() {
 }
 
 type MessageExtras = {
-  contextChips?: MattyContextChip[];
   quickReplies?: string[];
   card?: ChannelLinkCardData;
+  dropzone?: boolean;
+  attachment?: { fileName: string; fileMeta: string };
+  playbook?: { card: ChatPlaybookCard; draft: PlaybookDraft };
 };
 
 type ToolRun = {
   messageId: string;
   sessionId: string;
-  draft: ChannelDraft;
+  channel?: ChannelDraft;
+  playbook?: PlaybookDraft;
   steps: string[];
   progress: number;
   finished: boolean;
@@ -203,10 +221,13 @@ type MattyPanelProps = {
   defaultContext?: MattyContextChip | null;
   /** Items offered by the composer "+" menu. Context chips are off when omitted. */
   contextOptions?: MattyContextChip[];
+  /** `top-center` drops the panel from the header, centered over the product. */
+  placement?: 'bottom-right' | 'top-center';
 };
 
 export default function MattyPanel({
   basePath = AGENTS_BASE,
+  placement = 'bottom-right',
   focusId,
   defaultContext = null,
   contextOptions,
@@ -222,6 +243,7 @@ export default function MattyPanel({
     rememberOpenedAgent,
     addCreatedChannel,
     archiveSession,
+    setPlaybookPreview,
   } = useAgents();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -240,6 +262,9 @@ export default function MattyPanel({
   const [extras, setExtras] = useState<Record<string, MessageExtras>>({});
   const [toolRun, setToolRun] = useState<ToolRun | null>(null);
   const [toolsExpanded, setToolsExpanded] = useState(false);
+  const [awaitingFile, setAwaitingFile] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [chips, setChips] = useState<MattyComposerChip[]>([]);
   const chipsEnabled = Boolean(contextOptions);
   const defaultChip = chipsEnabled ? defaultContext : null;
@@ -275,10 +300,100 @@ export default function MattyPanel({
     setExtras({});
     setToolRun(null);
     setToolsExpanded(false);
+    setAwaitingFile(false);
+    setDragging(false);
+  };
+
+  const addUserMessage = (targetSessionId: string, userExtras: MessageExtras) => {
+    const id = nextMessageId('user');
+    const message: LiveSessionMessage = {
+      id,
+      role: 'user',
+      timestamp: nowLabel(),
+      paragraphs: [],
+    };
+    updateSessionsForAgent(MATTY.id, (prev) =>
+      prev.map((item) =>
+        item.id === targetSessionId
+          ? { ...item, messages: [...item.messages, message] }
+          : item,
+      ),
+    );
+    setExtras((prev) => ({ ...prev, [id]: userExtras }));
+  };
+
+  const receiveFile = (file: File) => {
+    if (!sessionId) return;
+    if (!isPdf(file)) {
+      addMattyMessage(sessionId, PLAYBOOK_NOT_PDF_REPLY, { dropzone: true });
+      return;
+    }
+    setAwaitingFile(false);
+    setDragging(false);
+    addUserMessage(sessionId, {
+      attachment: { fileName: file.name, fileMeta: formatFileMeta(file) },
+    });
+    const targetSessionId = sessionId;
+    window.setTimeout(() => {
+      const messageId = addMattyMessage(
+        targetSessionId,
+        `Thanks — I'll turn ${file.name} into a playbook.`,
+      );
+      setToolRun({
+        messageId,
+        sessionId: targetSessionId,
+        playbook: buildPlaybookDraft(file.name),
+        steps: buildPlaybookToolSteps(file.name),
+        progress: 0,
+        finished: false,
+      });
+    }, 420);
+  };
+
+  const openPlaybookPreview = (draft: PlaybookDraft) => {
+    const targetSessionId = sessionId;
+    setMattyPanelOpen(false);
+    setPlaybookPreview({
+      draft,
+      onSave: () => {
+        if (targetSessionId) addMattyMessage(targetSessionId, `Saved as ${draft.title}`);
+      },
+    });
+  };
+
+  const hasFiles = (event: DragEvent) => event.dataTransfer.types.includes('Files');
+
+  const dropHandlers = {
+    onDragEnter: (event: DragEvent) => {
+      if (!awaitingFile || !hasFiles(event)) return;
+      event.preventDefault();
+      setDragging(true);
+    },
+    onDragOver: (event: DragEvent) => {
+      if (!awaitingFile || !hasFiles(event)) return;
+      event.preventDefault();
+    },
+    onDragLeave: (event: DragEvent) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
+    },
+    onDrop: (event: DragEvent) => {
+      if (!awaitingFile) return;
+      event.preventDefault();
+      const file = event.dataTransfer.files[0];
+      if (file) receiveFile(file);
+      else setDragging(false);
+    },
   };
 
   const respond = (targetSessionId: string, text: string) => {
     const current = flowRef.current;
+
+    if (!current && PLAYBOOK_FLOW_TRIGGER.test(text)) {
+      setAwaitingFile(true);
+      addMattyMessage(targetSessionId, PLAYBOOK_FLOW_INTRO, { dropzone: true });
+      return;
+    }
+
     const result = current
       ? advanceChannelFlow(current, text)
       : CHANNEL_FLOW_TRIGGER.test(text)
@@ -301,7 +416,7 @@ export default function MattyPanel({
     setToolRun({
       messageId,
       sessionId: targetSessionId,
-      draft: result.draft,
+      channel: result.draft,
       steps: buildChannelToolSteps(result.draft),
       progress: 0,
       finished: false,
@@ -315,15 +430,28 @@ export default function MattyPanel({
     const id = window.setTimeout(
       () => {
         if (!done) {
-          if (toolRun.progress + 1 === CHANNEL_CREATED_AT_STEP) {
-            addCreatedChannel({ ...toolRun.draft });
+          if (toolRun.channel && toolRun.progress + 1 === CHANNEL_CREATED_AT_STEP) {
+            addCreatedChannel({ ...toolRun.channel });
           }
           setToolRun({ ...toolRun, progress: toolRun.progress + 1 });
           return;
         }
-        addMattyMessage(toolRun.sessionId, `Done — ${toolRun.draft.name} is ready.`, {
-          card: buildChannelCard(toolRun.draft),
-        });
+        if (toolRun.channel) {
+          addMattyMessage(toolRun.sessionId, `Done — ${toolRun.channel.name} is ready.`, {
+            card: buildChannelCard(toolRun.channel),
+          });
+        } else if (toolRun.playbook) {
+          addMattyMessage(
+            toolRun.sessionId,
+            "Here's your draft playbook. Open the preview to review it before saving.",
+            {
+              playbook: {
+                card: buildSentinelPlaybookCard(toolRun.playbook),
+                draft: toolRun.playbook,
+              },
+            },
+          );
+        }
         setToolRun({ ...toolRun, finished: true });
       },
       done ? TOOL_FINISH_MS : TOOL_STEP_MS,
@@ -405,11 +533,6 @@ export default function MattyPanel({
       paragraphs: [trimmed],
     };
 
-    if (chips.length) {
-      const attached = chips.map(({ id, kind, label }) => ({ id, kind, label }));
-      setExtras((prev) => ({ ...prev, [userMessage.id]: { contextChips: attached } }));
-    }
-
     let targetId = sessionId;
     if (targetId) {
       updateSessionsForAgent(MATTY.id, (prev) =>
@@ -442,6 +565,7 @@ export default function MattyPanel({
     <aside
       className={[
         styles['matty-panel'],
+        placement === 'top-center' ? styles['matty-panel--top-center'] : '',
         mattyPanelOpen ? styles['matty-panel--open'] : '',
       ]
         .filter(Boolean)
@@ -449,7 +573,14 @@ export default function MattyPanel({
       aria-label="Chat with Matty"
       aria-hidden={!mattyPanelOpen}
       data-wt-focus={focusId}
+      {...dropHandlers}
     >
+      {dragging ? (
+        <div className={styles['matty-panel__drop-overlay']}>
+          <Icon glyph={<UploadOutlineIcon />} size="32" />
+          <p>Drop your PDF to create a playbook</p>
+        </div>
+      ) : null}
       <div className={styles['matty-panel__header']}>
         <div className={styles['matty-panel__title-block']}>
           <h2 className={styles['matty-panel__title']}>Matty</h2>
@@ -520,15 +651,6 @@ export default function MattyPanel({
                   message={m}
                   stream={m.role === 'matty' && m.id === streamingId}
                 >
-                  {messageExtras?.contextChips?.length ? (
-                    <div className={styles['matty-panel__msg-chips']}>
-                      {messageExtras.contextChips.map((chip) => (
-                        <Chip key={chip.id} size="small" leadingIcon={contextChipIcon(chip.kind)}>
-                          {chip.label}
-                        </Chip>
-                      ))}
-                    </div>
-                  ) : null}
                   {showTools ? (
                     <div className={styles['matty-panel__tools']}>
                       <button
@@ -581,8 +703,35 @@ export default function MattyPanel({
                   ) : null}
                   {messageExtras?.card ? <ChannelLinkCard
                       card={messageExtras.card}
-                      onOpen={() => navigate(`${basePath}/channel/${messageExtras.card!.channelName}`)}
+                      onOpen={() => {
+                        setMattyPanelOpen(false);
+                        navigate(`${basePath}/channel/${messageExtras.card!.channelName}`);
+                      }}
                     /> : null}
+                  {messageExtras?.attachment ? (
+                    <AttachmentCard
+                      fileName={messageExtras.attachment.fileName}
+                      fileMeta={messageExtras.attachment.fileMeta}
+                      fileType="pdf"
+                      state="default"
+                    />
+                  ) : null}
+                  {messageExtras?.playbook ? (
+                    <AgentPlaybookCard
+                      card={messageExtras.playbook.card}
+                      onOpen={() => openPlaybookPreview(messageExtras.playbook!.draft)}
+                    />
+                  ) : null}
+                  {isLast && awaitingFile && messageExtras?.dropzone ? (
+                    <button
+                      type="button"
+                      className={styles['matty-panel__dropzone']}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Icon glyph={<UploadOutlineIcon />} size="24" />
+                      <span>Drop a PDF here, or browse files</span>
+                    </button>
+                  ) : null}
                   {isLast && messageExtras?.quickReplies ? (
                     <div className={styles['matty-panel__quick-replies']}>
                       {messageExtras.quickReplies.map((label) => (
@@ -604,6 +753,18 @@ export default function MattyPanel({
           </div>
         </Scrollbar>
       )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/pdf,.pdf"
+        hidden
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) receiveFile(file);
+          event.target.value = '';
+        }}
+      />
 
       <div className={styles['matty-panel__composer']}>
         {chips.length ? (
