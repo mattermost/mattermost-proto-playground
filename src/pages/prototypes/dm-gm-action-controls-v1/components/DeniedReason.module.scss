@@ -1,0 +1,18 @@
+.denied-reason {
+  margin: 0;
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
+  /* Reason text keeps 4.5:1 against the composer background (NFR-10). */
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+
+  &__link {
+    color: var(--link-color);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+}

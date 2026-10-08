@@ -1,0 +1,70 @@
+.dm-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-s) var(--spacing-xxl) var(--spacing-l);
+
+  &__bar {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
+  &__field {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+    min-height: 40px;
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+  }
+
+  &__search {
+    flex: 1 1 160px;
+    min-width: 160px;
+
+    /* Sits inside the multiselect field, so it drops its own border. */
+    :global([class*='search-input__container']),
+    :global([class*='search-input__field']) {
+      border-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  /* aria-disabled rather than disabled, so the button stays focusable and can
+     carry its reason. Mirrors Compass primary :disabled. */
+  & &__go--blocked {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.32);
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__reason {
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.32);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    max-height: 340px;
+    margin: var(--spacing-xxs) calc(var(--spacing-xxl) * -1) 0;
+    padding: 0 var(--spacing-s);
+    overflow-y: auto;
+  }
+}
