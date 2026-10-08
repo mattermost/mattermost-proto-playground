@@ -18,7 +18,7 @@ import {
 
 export type DmPermission = 'start' | 'post' | 'view';
 
-export const DM_PERMISSION_ORDER: DmPermission[] = ['start', 'post', 'view'];
+export const DM_PERMISSION_ORDER: DmPermission[] = ['start', 'view', 'post'];
 
 /** Picker labels and descriptions. Draft copy, written in the shipped Title Case style. */
 export const DM_PERMISSIONS: Record<
@@ -30,7 +30,7 @@ export const DM_PERMISSIONS: Record<
     description: 'Allow users to start new direct and group messages',
   },
   post: {
-    label: 'Write to Direct and Group Messages',
+    label: 'Write Direct and Group Messages',
     description:
       'Allow users to post in direct and group messages and change their content. Requires Read Direct and Group Messages.',
   },
@@ -42,9 +42,12 @@ export const DM_PERMISSIONS: Record<
 };
 
 /**
- * Permissions that are not DM/GM permissions, grouped as in the picker. Labels
- * and descriptions are the shipped `admin.permission_policies.permission.*`
- * strings. Files affect both channels and DMs/GMs.
+ * Permissions that are not DM/GM permissions, grouped as in the picker. File
+ * labels are the shipped `admin.permission_policies.permission.*` strings.
+ * Channel permissions are DRAFT (designer, 2026-10-08): Channel Read Access is
+ * renamed, and Channel Write Access is split into Write Channel Messages (the
+ * user's own messages) and Manage Channel (channel settings, members and
+ * moderation). Files affect both channels and DMs/GMs.
  */
 export const FILE_PERMISSIONS = [
   {
@@ -59,12 +62,18 @@ export const FILE_PERMISSIONS = [
 
 export const CHANNEL_PERMISSIONS = [
   {
-    label: 'Channel Read Access',
-    description: 'Allow users to read the channel and its content',
+    label: 'Read Channel Messages',
+    description: 'Allow users to see the channel and read its messages',
   },
   {
-    label: 'Channel Write Access',
-    description: 'Allow users to post in the channel and change its content',
+    label: 'Write Channel Messages',
+    description:
+      'Allow users to post, reply, react, and edit or delete their own messages. Requires Read Channel Messages.',
+  },
+  {
+    label: 'Manage Channel',
+    description:
+      "Allow users to change the channel's settings, bookmarks, and members, and moderate others' messages. Requires Read Channel Messages.",
   },
 ];
 
