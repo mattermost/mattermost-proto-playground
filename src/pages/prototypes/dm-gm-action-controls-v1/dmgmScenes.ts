@@ -1,4 +1,3 @@
-import { TARGET_NOUN } from './copy';
 // [AI DRAFT] Scene and direction configuration for the DM/GM prototype.
 
 export type DirectionId = 'b' | 'a';
@@ -29,16 +28,15 @@ export function variantFromParam(value: string | null): VariantId | null {
 }
 
 export type SceneId =
-  'authoring' | 'simulate' | 'start' | 'readonly' | 'hidden';
+  'authoring' | 'start' | 'readonly' | 'hidden';
 
 export const DEFAULT_SCENE: SceneId = 'authoring';
 
 export const SCENES: { id: SceneId; label: string }[] = [
   { id: 'authoring', label: '1 · Authoring' },
-  { id: 'simulate', label: '2 · Simulate' },
-  { id: 'start', label: '3 · Blocked start' },
-  { id: 'readonly', label: '4 · Read-only' },
-  { id: 'hidden', label: '5 · Hidden' },
+  { id: 'start', label: '2 · Blocked start' },
+  { id: 'readonly', label: '3 · Read-only' },
+  { id: 'hidden', label: '4 · Hidden' },
 ];
 
 export function sceneFromParam(value: string | null): SceneId | null {
@@ -71,18 +69,6 @@ export function authoringScreens(
       ];
 }
 
-export const SIMULATE_SCREENS: Record<DirectionId, ScreenDef[]> = {
-  b: [
-    { id: 'pair', label: 'One-way pair' },
-    { id: 'group', label: 'Third person (group)' },
-    { id: 'bot', label: `Bot as ${TARGET_NOUN}` },
-  ],
-  a: [
-    { id: 'pair', label: 'One-way pair' },
-    { id: 'bot', label: `Bot as ${TARGET_NOUN}` },
-  ],
-};
-
 export const START_SCREENS: ScreenDef[] = [
   { id: 'dm-modal', label: 'Direct Messages modal' },
   { id: 'gm-modal', label: 'Group message' },
@@ -109,8 +95,6 @@ export function screensFor(
   switch (scene) {
     case 'authoring':
       return authoringScreens(direction, variant);
-    case 'simulate':
-      return SIMULATE_SCREENS[direction];
     case 'start':
       return START_SCREENS;
     case 'readonly':

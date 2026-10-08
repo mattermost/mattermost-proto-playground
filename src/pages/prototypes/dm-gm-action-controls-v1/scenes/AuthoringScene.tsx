@@ -9,7 +9,6 @@ import {
 } from '../components/AddPolicyFlow';
 import DmgmConsoleFrame from '../components/DmgmConsoleFrame';
 import DmgmStage from '../components/DmgmStage';
-import PairSimulateModal from '../components/PairSimulateModal';
 import PolicyEditor from '../components/PolicyEditor';
 import ServerAttributesControl from '../components/ServerAttributesControl';
 import SummaryStrip from '../components/SummaryStrip';
@@ -25,8 +24,6 @@ import {
 } from '../copy';
 import {
   ATTRIBUTE_INVENTORIES,
-  DARIUS,
-  ISABELLA,
   inventoryFromParam,
   type InventoryId,
 } from '../dmgmData';
@@ -127,26 +124,13 @@ function EditorWithSimulate({
 }) {
   const [policy, setPolicy] = useState(initialPolicy);
   const [edited, setEdited] = useState(false);
-  const [simulating, setSimulating] = useState(false);
   const summary: ReactNode =
     direction === 'b' ? (
       <SummaryStrip policy={policy} startedFrom={startedFrom} edited={edited} />
     ) : undefined;
 
   return (
-    <DmgmConsoleFrame
-      overlay={
-        simulating ? (
-          <PairSimulateModal
-            direction={direction}
-            policy={policy}
-            initialActingId={DARIUS.id}
-            initialOtherId={ISABELLA.id}
-            onClose={() => setSimulating(false)}
-          />
-        ) : undefined
-      }
-    >
+    <DmgmConsoleFrame>
       <PolicyEditor
         policy={policy}
         onChange={(next) => {
@@ -156,7 +140,6 @@ function EditorWithSimulate({
         summary={summary}
         variant={variant}
         initialPickerOpen={initialPickerOpen}
-        onSimulate={() => setSimulating(true)}
         scrollTo={scrollTo}
       />
     </DmgmConsoleFrame>
@@ -215,7 +198,7 @@ function oneWayNote(direction: DirectionId) {
       .{' '}
       {direction === 'b'
         ? 'The Rule summary says what it means in words and tags it One way.'
-        : 'Nothing on the page restates the rule in words or says it applies one way; the admin finds that out in Simulate rules.'}
+        : 'Nothing on the page restates the rule in words or says it applies one way.'}
     </p>
   );
 }

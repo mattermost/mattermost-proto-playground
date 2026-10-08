@@ -21,7 +21,6 @@ import AuthoringScene from './scenes/AuthoringScene';
 import BlockedStartScene from './scenes/BlockedStartScene';
 import HiddenScene from './scenes/HiddenScene';
 import ReadOnlyScene from './scenes/ReadOnlyScene';
-import SimulateScene from './scenes/SimulateScene';
 import styles from './DmGmActionControls.module.scss';
 
 /** Fixed for the handoff copy: A "Extend in place", inline recipient conditions. */
@@ -79,7 +78,6 @@ export default function DmGmActionControlsV1() {
       {scene === 'authoring' && (
         <AuthoringScene key={sceneKey} {...sceneProps} />
       )}
-      {scene === 'simulate' && <SimulateScene key={sceneKey} {...sceneProps} />}
       {scene === 'start' && (
         <BlockedStartScene key={sceneKey} {...sceneProps} />
       )}
