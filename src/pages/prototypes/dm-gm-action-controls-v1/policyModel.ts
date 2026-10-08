@@ -27,7 +27,8 @@ export const DM_PERMISSIONS: Record<
 > = {
   start: {
     label: 'Create New Direct and Group Messages',
-    description: 'Allow users to create new direct and group messages',
+    description:
+      'Allow users to create new direct and group messages. Requires Read Direct and Group Messages.',
   },
   post: {
     label: 'Write to Direct and Group Messages',
@@ -551,7 +552,9 @@ export function evaluate(
 ): Verdict {
   const selfOnly = others.length === 0;
 
-  if (permission === 'post') {
+  // Create and Write both require Read (designer, 2026-10-08): a denied Read
+  // also denies creating a conversation and writing in one.
+  if (permission === 'post' || permission === 'start') {
     const view = evaluate(policies, 'view', acting, ctx, others);
     if (!view.allowed) {
       const name = view.layer.kind === 'allowed' ? '' : view.layer.name;
@@ -603,7 +606,7 @@ export function layerLabel(layer: DecidingLayer): string {
     case 'missing-target':
       return SIMULATE.layerMissingTarget(layer.name);
     case 'requires-view':
-      return `Write requires Read · ${layer.name}`;
+      return `Requires Read · ${layer.name}`;
     default: {
       const exhaustive: never = layer;
       return exhaustive;
