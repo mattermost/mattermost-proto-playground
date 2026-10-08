@@ -128,6 +128,14 @@ export function nextConditionId(): string {
   return `c${conditionSeq}`;
 }
 
+/**
+ * True when any condition refers to the recipient: a Recipient row, or a User
+ * row that compares with a recipient attribute (user.x == target.y).
+ */
+export function hasRecipientConditions(policy: DmPolicy): boolean {
+  return policy.other.length > 0 || policy.acting.some((c) => c.compareTo);
+}
+
 export function blankPolicy(): DmPolicy {
   return {
     name: '',
@@ -749,8 +757,7 @@ export function summarize(policy: DmPolicy): PolicySummary {
   ].join(joiner);
   const session = policy.acting.some((c) => isSessionAttribute(c.attribute));
   const sessionNote = session ? ` ${SUMMARY.tailSession}` : '';
-  const hasTarget =
-    policy.other.length > 0 || policy.acting.some((c) => c.compareTo);
+  const hasTarget = hasRecipientConditions(policy);
   if (!hasTarget) {
     return {
       sentence: `${SUMMARY.onlyWhen(who, perm, clauses)}${sessionNote}`,

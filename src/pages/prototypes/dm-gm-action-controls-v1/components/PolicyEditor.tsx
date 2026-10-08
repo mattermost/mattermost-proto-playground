@@ -49,6 +49,7 @@ import {
 import {
   DM_PERMISSIONS,
   DM_PERMISSION_ORDER,
+  hasRecipientConditions,
   CHANNEL_PERMISSIONS,
   FILE_PERMISSIONS,
   nextConditionId,
@@ -534,7 +535,7 @@ function PermissionPickerMenu({
   anchorRef: RefObject<HTMLDivElement | null>;
 }) {
   const { up, maxHeight } = useMenuPlacement(anchorRef);
-  const hasOther = policy.other.length > 0;
+  const hasOther = hasRecipientConditions(policy);
   const available = DM_PERMISSION_ORDER.filter(
     (p) => !policy.permissions.includes(p),
   );
@@ -891,13 +892,22 @@ export default function PolicyEditor({
     );
     const scroller = root?.closest<HTMLElement>('[data-dmgm-scroll]');
     if (!target || !scroller) return;
+    const t = target.getBoundingClientRect();
+    const sc = scroller.getBoundingClientRect();
+    if (scrollTo === 'permissions') {
+      // The permissions card (and its "+ Add permission" button) is the last
+      // section: align its bottom with the bottom of the frame so the policy
+      // shows above it, the menu opens upward into that space, and no empty
+      // space is scrolled into view.
+      scroller.scrollTop = Math.max(
+        0,
+        t.bottom - sc.bottom + scroller.scrollTop + 24,
+      );
+      return;
+    }
     const strip = root?.querySelector<HTMLElement>('[data-dmgm-summary]');
     const offset = (strip?.offsetHeight ?? 0) + 24;
-    scroller.scrollTop =
-      target.getBoundingClientRect().top -
-      scroller.getBoundingClientRect().top +
-      scroller.scrollTop -
-      offset;
+    scroller.scrollTop = t.top - sc.top + scroller.scrollTop - offset;
   }, [scrollTo, hasSummary]);
 
   return (
