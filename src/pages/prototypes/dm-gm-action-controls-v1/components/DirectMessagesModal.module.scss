@@ -21,6 +21,29 @@
     padding: var(--spacing-xxs) var(--spacing-xs);
     border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
     border-radius: var(--radius-s);
+    transition: border-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    /* One box only: the outer field is the input. The Compass SearchInput
+       inside it drops its own border (an inset box-shadow in every state). */
+    :global([class*='search-input__wrapper']) {
+      box-shadow: none !important;
+      background: transparent;
+    }
+
+    :global([class*='search-input__inner']) {
+      padding-left: var(--spacing-xxs);
+    }
+
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.24);
+    }
+
+    /* The focus ring moves to the outer field. */
+    &:focus-within {
+      border-color: var(--button-bg);
+      box-shadow: 0 0 0 1px var(--button-bg);
+    }
   }
 
   &__search {

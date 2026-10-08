@@ -17,8 +17,6 @@ import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-h
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
 import { SectionNotice } from '@mattermost/compass-ui/components/section-notice';
-import { Select } from '@mattermost/compass-ui/components/select';
-import { Tag } from '@mattermost/compass-ui/components/tag';
 import { TextArea } from '@mattermost/compass-ui/components/text-area';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import {
@@ -37,6 +35,7 @@ import {
   type Operator,
 } from '../policyModel';
 import { ACTING_LABEL, COMPARISON, EDITOR, TARGET_LABEL } from '../copy';
+import { AttributeChip, CellMenu } from './CellMenu';
 import MatchControl from './MatchControl';
 import styles from './PolicyEditor.module.scss';
 
@@ -56,14 +55,6 @@ const COMPARE_OPERATORS: InlineOperator[] = [
   'same',
   'not-same',
 ];
-
-function SubjectTag({ subject }: { subject: 'acting' | 'other' }) {
-  return subject === 'acting' ? (
-    <Tag label={ACTING_LABEL} size="small" />
-  ) : (
-    <Tag label={TARGET_LABEL} type="info" size="small" />
-  );
-}
 
 function AddConditionButton({
   onAdd,
@@ -170,54 +161,52 @@ function ConditionRow({
   onRemove: () => void;
 }) {
   const label = subject === 'acting' ? ACTING_LABEL : TARGET_LABEL;
+  const otherLabel = subject === 'acting' ? TARGET_LABEL : ACTING_LABEL;
   const compare = operator === 'same' || operator === 'not-same';
+  const compared = compareAttr ?? (attribute as UserAttributeKey);
+  // "User: Program", or "User's session: Network" for session attributes.
+  const subjectPrefix =
+    session && subject === 'acting' ? EDITOR.actingSessionGroup : label;
   return (
     <tr>
       <td>
-        <span className={styles['policy-editor__cell-icon-text']}>
-          <SubjectTag subject={subject} />
-          <Icon
-            glyph={session ? <LaptopIcon /> : <TextShortIcon />}
-            size="16"
-          />
-          {attribute}
-        </span>
+        {/* The attribute is a variable too, so it uses the same chip. */}
+        <AttributeChip label={`${subjectPrefix}: ${attribute}`} />
       </td>
-      <td>
-        <Select
-          size="small"
-          className={styles['policy-editor__cell-select--narrow']}
-          aria-label={EDITOR.rowAria(label, attribute, 'operator')}
-          options={operators.map((o) => ({
-            value: o,
-            label: OPERATOR_LABEL[o],
-          }))}
+      <td className={styles['policy-editor__cell--trigger']}>
+        <CellMenu
+          ariaLabel={EDITOR.rowAria(label, attribute, 'operator')}
+          options={operators.map((o) => ({ value: o, label: OPERATOR_LABEL[o] }))}
           value={operator}
           onChange={(v) => onOperator(v as InlineOperator)}
-        />
+        >
+          {OPERATOR_LABEL[operator]}
+        </CellMenu>
       </td>
-      <td>
+      <td className={styles['policy-editor__cell--trigger']}>
         {compare ? (
-          <span className={styles['policy-editor__cell-icon-text']}>
-            <SubjectTag subject={subject === 'acting' ? 'other' : 'acting'} />
-            <Select
-              size="small"
-              className={styles['policy-editor__cell-select--narrow']}
-              aria-label={EDITOR.compareAria(label, attribute)}
-              options={compareAttrs.map((a) => ({ value: a, label: a }))}
-              value={compareAttr ?? (attribute as UserAttributeKey)}
-              onChange={onValue}
-            />
-          </span>
+          <CellMenu
+            ariaLabel={EDITOR.compareAria(label, attribute)}
+            options={compareAttrs.map((a) => ({
+              value: a,
+              label: `${otherLabel}: ${a}`,
+            }))}
+            value={compared}
+            onChange={onValue}
+            chevron
+          >
+            <AttributeChip label={`${otherLabel}: ${compared}`} />
+          </CellMenu>
         ) : (
-          <Select
-            size="small"
-            className={styles['policy-editor__cell-select']}
-            aria-label={EDITOR.rowAria(label, attribute, 'value')}
+          <CellMenu
+            ariaLabel={EDITOR.rowAria(label, attribute, 'value')}
             options={fixedValues.map((v) => ({ value: v, label: v }))}
             value={fixedValue}
             onChange={onValue}
-          />
+            chevron
+          >
+            {fixedValue}
+          </CellMenu>
         )}
       </td>
       <td className={styles['policy-editor__table-right']}>
