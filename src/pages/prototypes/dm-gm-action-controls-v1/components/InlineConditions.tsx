@@ -48,6 +48,31 @@ const OPERATOR_LABEL: Record<InlineOperator, string> = {
   'not-same': COMPARISON.isNotSameAs,
 };
 
+/** Left-side choices, grouped by subject. Session attributes are user-only. */
+const ATTRIBUTE_GROUPS = [
+  {
+    heading: ACTING_LABEL,
+    options: (Object.keys(USER_ATTRIBUTES) as UserAttributeKey[]).map((a) => ({
+      value: `acting:${a}`,
+      label: `${ACTING_LABEL}: ${a}`,
+    })),
+  },
+  {
+    heading: EDITOR.actingSessionGroup,
+    options: (Object.keys(SESSION_ATTRIBUTES) as AttributeKey[]).map((a) => ({
+      value: `acting:${a}`,
+      label: `${EDITOR.actingSessionGroup}: ${a}`,
+    })),
+  },
+  {
+    heading: TARGET_LABEL,
+    options: (Object.keys(USER_ATTRIBUTES) as UserAttributeKey[]).map((a) => ({
+      value: `other:${a}`,
+      label: `${TARGET_LABEL}: ${a}`,
+    })),
+  },
+];
+
 const FIXED_OPERATORS: InlineOperator[] = ['is', 'is not'];
 const COMPARE_OPERATORS: InlineOperator[] = [
   'is',
@@ -146,6 +171,7 @@ function ConditionRow({
   onOperator,
   onValue,
   onRemove,
+  onAttribute,
 }: {
   subject: 'acting' | 'other';
   attribute: AttributeKey;
@@ -159,6 +185,8 @@ function ConditionRow({
   onOperator: (op: InlineOperator) => void;
   onValue: (value: string) => void;
   onRemove: () => void;
+  /** Change the left side: "acting:Program", "acting:Network" or "other:Program". */
+  onAttribute: (key: string) => void;
 }) {
   const label = subject === 'acting' ? ACTING_LABEL : TARGET_LABEL;
   const otherLabel = subject === 'acting' ? TARGET_LABEL : ACTING_LABEL;
@@ -169,14 +197,25 @@ function ConditionRow({
     session && subject === 'acting' ? EDITOR.actingSessionGroup : label;
   return (
     <tr>
-      <td>
-        {/* The attribute is a variable too, so it uses the same chip. */}
-        <AttributeChip label={`${subjectPrefix}: ${attribute}`} />
+      <td className={styles['policy-editor__cell--trigger']}>
+        {/* The attribute is a variable too: a chip, and editable like the
+            other cells. Picking one can also switch the row's subject. */}
+        <CellMenu
+          ariaLabel={EDITOR.rowAria(label, attribute, 'attribute')}
+          groups={ATTRIBUTE_GROUPS}
+          value={`${subject}:${attribute}`}
+          onChange={onAttribute}
+        >
+          <AttributeChip label={`${subjectPrefix}: ${attribute}`} />
+        </CellMenu>
       </td>
       <td className={styles['policy-editor__cell--trigger']}>
         <CellMenu
           ariaLabel={EDITOR.rowAria(label, attribute, 'operator')}
-          options={operators.map((o) => ({ value: o, label: OPERATOR_LABEL[o] }))}
+          options={operators.map((o) => ({
+            value: o,
+            label: OPERATOR_LABEL[o],
+          }))}
           value={operator}
           onChange={(v) => onOperator(v as InlineOperator)}
         >
@@ -299,6 +338,60 @@ export default function InlineConditions({
       }),
     });
 
+  /**
+   * Change a row's left side. The row keeps its id and position in its list;
+   * a subject change moves it between the User and Recipient lists. A
+   * comparison survives when the new attribute can be compared (not session);
+   * otherwise the row resets to "is" and the attribute's first value.
+   */
+  const retarget = (from: 'acting' | 'other', id: string, key: string) => {
+    const [to, attr] = key.split(':') as ['acting' | 'other', AttributeKey];
+    const current =
+      from === 'acting'
+        ? policy.acting.find((c) => c.id === id)
+        : policy.other.find((c) => c.id === id);
+    if (!current) return;
+    if (from === to && current.attribute === attr) return;
+    const wasCompare =
+      from === 'acting'
+        ? Boolean((current as (typeof policy.acting)[number]).compareTo)
+        : (current as (typeof policy.other)[number]).value.kind === 'same';
+    const keepCompare = wasCompare && !isSessionAttribute(attr);
+    const operator = current.operator;
+    const acting = policy.acting.filter((c) => c.id !== id);
+    const other = policy.other.filter((c) => c.id !== id);
+    if (to === 'acting') {
+      const row = {
+        id,
+        attribute: attr,
+        operator: keepCompare ? operator : ('is' as Operator),
+        value: valuesFor(attr)[0],
+        compareTo: keepCompare ? (attr as UserAttributeKey) : undefined,
+      };
+      const at =
+        from === 'acting'
+          ? policy.acting.findIndex((c) => c.id === id)
+          : acting.length;
+      acting.splice(at, 0, row);
+    } else {
+      const userAttr = attr as UserAttributeKey;
+      const row = {
+        id,
+        attribute: userAttr,
+        operator: keepCompare ? operator : ('is' as Operator),
+        value: keepCompare
+          ? { kind: 'same' as const, attribute: userAttr }
+          : { kind: 'fixed' as const, value: USER_ATTRIBUTES[userAttr][0] },
+      };
+      const at =
+        from === 'other'
+          ? policy.other.findIndex((c) => c.id === id)
+          : other.length;
+      other.splice(at, 0, row);
+    }
+    onChange({ ...policy, acting, other });
+  };
+
   const removeActing = (id: string) =>
     onChange({ ...policy, acting: policy.acting.filter((c) => c.id !== id) });
   const removeOther = (id: string) =>
@@ -411,6 +504,7 @@ export default function InlineConditions({
                     onOperator={(v) => setActing(row.id, v)}
                     onValue={(v) => setActing(row.id, op, v)}
                     onRemove={() => removeActing(row.id)}
+                    onAttribute={(key) => retarget('acting', row.id, key)}
                   />
                 );
               })}
@@ -442,6 +536,7 @@ export default function InlineConditions({
                     onOperator={(v) => setOther(row.id, v)}
                     onValue={(v) => setOther(row.id, op, v)}
                     onRemove={() => removeOther(row.id)}
+                    onAttribute={(key) => retarget('other', row.id, key)}
                   />
                 );
               })}

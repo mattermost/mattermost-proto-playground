@@ -277,6 +277,13 @@
     td.policy-editor__cell--trigger {
       padding: 0;
     }
+
+    /* Rows are as tall as the 40px cell triggers, so the hover wash fills the
+       full row height; the delete cell must not add vertical padding. */
+    tbody td.policy-editor__table-right {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
   }
 
   &__table-right {

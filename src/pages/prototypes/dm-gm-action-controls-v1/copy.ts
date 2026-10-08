@@ -50,7 +50,7 @@ export const EDITOR = {
     `Anyone with no ${attrs.join(' or ')} value is blocked, including bots and users on connected servers.`,
   pickerBlocked: `Can't be added while this policy has ${TARGET_NOUN} conditions.`,
   /** aria-labels: "<Subject> <attribute> operator" etc. */
-  rowAria: (subject: string, attribute: string, part: 'operator' | 'value') =>
+  rowAria: (subject: string, attribute: string, part: 'attribute' | 'operator' | 'value') =>
     `${subject} ${attribute} ${part}`,
   compareAria: (subject: string, attribute: string) =>
     `${subject} ${attribute} compared attribute`,

@@ -8,6 +8,7 @@ import { useCallback, useRef, useState, type ReactNode } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
@@ -18,16 +19,24 @@ export interface CellMenuOption {
   label: string;
 }
 
+export interface CellMenuGroup {
+  heading: string;
+  options: CellMenuOption[];
+}
+
 export function CellMenu({
   ariaLabel,
-  options,
+  options = [],
+  groups,
   value,
   onChange,
   children,
   chevron = false,
 }: {
   ariaLabel: string;
-  options: CellMenuOption[];
+  /** Flat options, or `groups` for a menu with headings. */
+  options?: CellMenuOption[];
+  groups?: CellMenuGroup[];
   value: string;
   onChange: (value: string) => void;
   /** What the cell shows: plain text, or an AttributeChip. */
@@ -59,17 +68,22 @@ export function CellMenu({
           className={styles['policy-editor__cell-menu']}
           aria-label={ariaLabel}
         >
-          {options.map((o) => (
-            <MenuItem
-              key={o.value}
-              label={o.label}
-              leadingElement={false}
-              trailingElement={o.value === value}
-              onClick={() => {
-                onChange(o.value);
-                close();
-              }}
-            />
+          {(groups ?? [{ heading: '', options }]).map((g) => (
+            <div key={g.heading || 'options'}>
+              {g.heading ? <MenuGroupHeading label={g.heading} /> : null}
+              {g.options.map((o) => (
+                <MenuItem
+                  key={o.value}
+                  label={o.label}
+                  leadingElement={false}
+                  trailingElement={o.value === value}
+                  onClick={() => {
+                    onChange(o.value);
+                    close();
+                  }}
+                />
+              ))}
+            </div>
           ))}
         </PopoverMenu>
       ) : null}
