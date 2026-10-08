@@ -468,9 +468,13 @@
       var(--ease-entrance);
   }
 
+  /* The permission picker sits at the bottom of the page, so it opens upward. */
   &__picker-menu--tall {
+    top: auto;
+    bottom: calc(100% + var(--spacing-xs));
     max-height: 420px;
     overflow-y: auto;
+    transform-origin: bottom left;
   }
 
   &__cel {
