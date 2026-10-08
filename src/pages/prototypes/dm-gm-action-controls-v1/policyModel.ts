@@ -26,8 +26,8 @@ export const DM_PERMISSIONS: Record<
   { label: string; description: string }
 > = {
   start: {
-    label: 'Start Direct and Group Messages',
-    description: 'Allow users to start new direct and group messages',
+    label: 'Create Direct and Group Messages',
+    description: 'Allow users to create new direct and group messages',
   },
   post: {
     label: 'Write Direct and Group Messages',
@@ -238,7 +238,7 @@ export function generateStartingRules(
       id: `same-${slug(a.name)}`,
       name,
       description: `People can start and post in direct messages only with people who have the same ${a.name}.`,
-      tags: ['Start', 'Write', SUMMARY.tagBothWays],
+      tags: ['Create', 'Write', SUMMARY.tagBothWays],
       uses: [{ attribute: a.name }],
       build: () => ({
         name,
@@ -269,7 +269,7 @@ export function generateStartingRules(
       id: 'contractors-no-start',
       name,
       description: `${who} can reply in existing conversations but can't start new ones.`,
-      tags: ['Start', SUMMARY.tagActingOnly],
+      tags: ['Create', SUMMARY.tagActingOnly],
       uses: [contractor],
       build: () => ({
         name,
@@ -302,7 +302,7 @@ export function generateStartingRules(
         id: 'contractors-no-leads',
         name: leadName,
         description: `${who} can't start a conversation with ${leads}. ${Leads} can still start one with them.`,
-        tags: ['Start', SUMMARY.tagOneWay],
+        tags: ['Create', SUMMARY.tagOneWay],
         uses: [contractor, lead],
         build: () => ({
           name: leadName,
