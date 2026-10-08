@@ -9,9 +9,11 @@
 // Once selected, "Go" is aria-disabled (still focusable) and the neutral reason
 // appears inline, linked through aria-describedby.
 import { useId, useState } from 'react';
+import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Chip } from '@mattermost/compass-ui/components/chip';
 import { ErrorMessage } from '@mattermost/compass-ui/components/error-message';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { Modal } from '@mattermost/compass-ui/components/modal';
 import { SearchInput } from '@mattermost/compass-ui/components/search-input';
@@ -66,6 +68,10 @@ export default function DirectMessagesModal({
       <div className={styles['dm-modal']}>
         <div className={styles['dm-modal__bar']}>
           <div className={styles['dm-modal__field']}>
+            {/* Anchored to the field's start, before any chips. */}
+            <span className={styles['dm-modal__search-icon']} aria-hidden>
+              <Icon glyph={<MagnifyIcon />} size="12" />
+            </span>
             {chosen.map((p) => (
               <Chip
                 key={p.id}

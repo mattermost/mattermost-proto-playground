@@ -10,6 +10,14 @@
     gap: var(--spacing-s);
   }
 
+  &__search-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    padding-left: var(--spacing-xxs);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
   &__field {
     display: flex;
     flex: 1 1 auto;
@@ -33,6 +41,12 @@
 
     :global([class*='search-input__inner']) {
       padding-left: var(--spacing-xxs);
+    }
+
+    /* The field shows one search icon at its start (see __search-icon); the
+       SearchInput's own icon would otherwise sit after the chips. */
+    :global([class*='search-input__leading-icon']) {
+      display: none;
     }
 
     &:hover {
