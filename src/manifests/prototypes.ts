@@ -16,6 +16,12 @@ export type PrototypeEntry = {
 
 export const PROTOTYPES: PrototypeEntry[] = [
   {
+    id: 'dm-gm-action-controls-v1',
+    label: 'DM/GM Action Controls v1 (Latest)',
+    path: '/prototypes/dm-gm-action-controls-v1',
+    component: DmGmActionControlsV1,
+  },
+  {
     id: 'action-controls-view-channel',
     label: 'Action Controls – Read and Write to Channels',
     path: '/prototypes/action-controls-view-channel',
@@ -23,15 +29,9 @@ export const PROTOTYPES: PrototypeEntry[] = [
   },
   {
     id: 'dm-gm-action-controls',
-    label: 'Action Controls – Direct and Group Messages',
+    label: 'Action Controls – Direct and Group Messages (Exploration)',
     path: '/prototypes/dm-gm-action-controls',
     component: DmGmActionControls,
-  },
-  {
-    id: 'dm-gm-action-controls-v1',
-    label: 'DM/GM Action Controls v1',
-    path: '/prototypes/dm-gm-action-controls-v1',
-    component: DmGmActionControlsV1,
   },
   {
     id: 'external-call-participants',
