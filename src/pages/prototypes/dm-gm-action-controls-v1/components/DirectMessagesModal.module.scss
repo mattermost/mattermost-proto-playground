@@ -47,10 +47,9 @@
     }
   }
 
+  /* Holds the Compass ErrorMessage; spacing comes from the modal's gap. */
   &__reason {
-    padding: var(--spacing-xs) var(--spacing-s);
-    border-left: 3px solid rgba(var(--center-channel-color-rgb), 0.32);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
+    margin-top: 0;
   }
 
   &__hint {

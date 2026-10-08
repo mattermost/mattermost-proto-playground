@@ -15,9 +15,11 @@ import {
   Fragment,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from 'react';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
@@ -457,13 +459,81 @@ function AudienceCard(props: {
   );
 }
 
+/** Gap between the anchor button and the menu, and the menu's tallest size. */
+const MENU_GAP = 8;
+const MENU_MAX_HEIGHT = 420;
+
+function scrollParent(el: HTMLElement | null): HTMLElement | null {
+  for (let node = el?.parentElement ?? null; node; node = node.parentElement) {
+    const { overflowY } = getComputedStyle(node);
+    if (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'hidden') {
+      return node;
+    }
+  }
+  return null;
+}
+
+/**
+ * Opens upward by default (the button sits at the bottom of the policy page),
+ * flips down only when there is clearly more room below, and caps the height
+ * to the space available so the menu is never clipped by the scroll area.
+ */
+function useMenuPlacement(anchorRef: RefObject<HTMLDivElement | null>) {
+  const [placement, setPlacement] = useState<{ up: boolean; maxHeight: number }>(
+    { up: true, maxHeight: MENU_MAX_HEIGHT },
+  );
+  useLayoutEffect(() => {
+    // Read the anchor on every pass: when the menu mounts already open, its
+    // layout effect runs before the parent's ref is attached.
+    const measure = () => {
+      const anchor = anchorRef.current;
+      if (!anchor) return;
+      const container = scrollParent(anchor);
+      const a = anchor.getBoundingClientRect();
+      const c = container
+        ? container.getBoundingClientRect()
+        : { top: 0, bottom: window.innerHeight };
+      const above = a.top - c.top - MENU_GAP * 2;
+      const below = c.bottom - a.bottom - MENU_GAP * 2;
+      const up = above >= Math.min(MENU_MAX_HEIGHT, 240) || above >= below;
+      const maxHeight = Math.max(
+        160,
+        Math.min(MENU_MAX_HEIGHT, up ? above : below),
+      );
+      setPlacement((prev) =>
+        prev.up === up && prev.maxHeight === maxHeight ? prev : { up, maxHeight },
+      );
+    };
+    measure();
+    // The scene scrolls the editor and fonts settle after the menu mounts, so
+    // re-measure on the next frame, shortly after, and on any scroll or resize.
+    const frame = requestAnimationFrame(measure);
+    const settle = window.setTimeout(measure, 300);
+    document.addEventListener('scroll', measure, { capture: true, passive: true });
+    window.addEventListener('resize', measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.body);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(settle);
+      document.removeEventListener('scroll', measure, { capture: true });
+      window.removeEventListener('resize', measure);
+      observer.disconnect();
+    };
+  }, [anchorRef]);
+  return placement;
+}
+
 function PermissionPickerMenu({
   policy,
   onAdd,
+  anchorRef,
 }: {
   policy: DmPolicy;
   onAdd: (p: DmPermission) => void;
+  anchorRef: RefObject<HTMLDivElement | null>;
 }) {
+  const { up, maxHeight } = useMenuPlacement(anchorRef);
   const hasOther = policy.other.length > 0;
   const available = DM_PERMISSION_ORDER.filter(
     (p) => !policy.permissions.includes(p),
@@ -473,7 +543,9 @@ function PermissionPickerMenu({
       className={[
         styles['policy-editor__picker-menu'],
         styles['policy-editor__picker-menu--tall'],
+        up ? styles['policy-editor__picker-menu--up'] : '',
       ].join(' ')}
+      style={{ maxHeight }}
       aria-label="Add permission menu"
     >
       {[
@@ -609,6 +681,7 @@ function PermissionsCard({
               </Button>
               {open ? (
                 <PermissionPickerMenu
+                  anchorRef={ref}
                   policy={policy}
                   onAdd={(p) => {
                     onChange({

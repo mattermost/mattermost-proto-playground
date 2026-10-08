@@ -468,12 +468,15 @@
       var(--ease-entrance);
   }
 
-  /* The permission picker sits at the bottom of the page, so it opens upward. */
+  /* Height is capped inline to the space available (see useMenuPlacement). */
   &__picker-menu--tall {
+    overflow-y: auto;
+  }
+
+  /* The permission picker sits at the bottom of the page, so it opens upward. */
+  &__picker-menu--up {
     top: auto;
     bottom: calc(100% + var(--spacing-xs));
-    max-height: 420px;
-    overflow-y: auto;
     transform-origin: bottom left;
   }
 

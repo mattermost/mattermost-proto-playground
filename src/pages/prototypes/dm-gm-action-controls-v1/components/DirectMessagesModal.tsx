@@ -11,6 +11,7 @@
 import { useId, useState } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Chip } from '@mattermost/compass-ui/components/chip';
+import { ErrorMessage } from '@mattermost/compass-ui/components/error-message';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { Modal } from '@mattermost/compass-ui/components/modal';
 import { SearchInput } from '@mattermost/compass-ui/components/search-input';
@@ -19,7 +20,7 @@ import { canStartWith } from '../conversations';
 import { PEOPLE, VIEWER, personById } from '../dmgmData';
 import type { DirectionId } from '../dmgmScenes';
 import type { SessionContext } from '../policyModel';
-import DeniedReason from './DeniedReason';
+import { DENIED_COPY } from '../copy';
 import styles from './DirectMessagesModal.module.scss';
 
 const MAX_MEMBERS = 7;
@@ -33,7 +34,6 @@ export interface DirectMessagesModalProps {
 }
 
 export default function DirectMessagesModal({
-  direction,
   ctx,
   initialSelected,
   onClose,
@@ -107,11 +107,10 @@ export default function DirectMessagesModal({
         </div>
 
         {blocked ? (
-          <div className={styles['dm-modal__reason']} role="status">
-            <DeniedReason
-              id={reasonId}
-              kind={chosen.length > 1 ? 'start-gm' : 'start-dm'}
-              direction={direction}
+          // Compass ErrorMessage (inline line under the field, role="alert").
+          <div id={reasonId} className={styles['dm-modal__reason']}>
+            <ErrorMessage
+              message={DENIED_COPY[chosen.length > 1 ? 'start-gm' : 'start-dm']}
             />
           </div>
         ) : null}
