@@ -26,11 +26,11 @@ export const DM_PERMISSIONS: Record<
   { label: string; description: string }
 > = {
   start: {
-    label: 'Create Direct and Group Messages',
+    label: 'Create New Direct and Group Messages',
     description: 'Allow users to create new direct and group messages',
   },
   post: {
-    label: 'Write Direct and Group Messages',
+    label: 'Write to Direct and Group Messages',
     description:
       'Allow users to post in direct and group messages and change their content. Requires Read Direct and Group Messages.',
   },
