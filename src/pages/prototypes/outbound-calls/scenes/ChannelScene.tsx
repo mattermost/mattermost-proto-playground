@@ -1,13 +1,10 @@
 import type { MouseEvent, ReactNode } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
-import { MessageInput } from '@mattermost/compass-ui/components/message-input';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { Message } from '@mattermost/compass-ui/components/message';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
-import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
+import { StartCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-proto';
+import { layoutStyles, ChannelHeader, MessageInput, Message } from '@mattermost/compass-proto';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({
@@ -32,7 +29,12 @@ function ProfileClickable({
   };
 
   return (
-    <div className={styles['profile-clickable']} onClick={handleClick} role="presentation">
+    <div
+      className={styles['profile-clickable']}
+      onClick={handleClick}
+      role="presentation"
+      data-wt-popover-anchor={contactId}
+    >
       {children}
     </div>
   );
@@ -43,11 +45,15 @@ export function ChannelScene({
   onOpenDialer,
   onStartConferenceCall,
   onStartCall,
+  startCallMenuOpen,
+  onStartCallMenuOpenChange,
 }: {
   onOpenProfile: (contactId: string, rect: DOMRect) => void;
   onOpenDialer: () => void;
   onStartConferenceCall: () => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
+  startCallMenuOpen?: boolean;
+  onStartCallMenuOpenChange?: (open: boolean) => void;
 }) {
   const actions: StartCallAction[] = [
     { id: 'audio', type: 'audio' },
@@ -67,7 +73,14 @@ export function ChannelScene({
         description="Tasking + coordination channel for the Nightingale working group."
         memberCount={8}
         pinnedCount={1}
-        callButton={<SegmentedCallButton actions={actions} onSelect={handleSelect} />}
+        callButton={
+          <StartCallButton
+            actions={actions}
+            onSelect={handleSelect}
+            open={startCallMenuOpen}
+            onOpenChange={onStartCallMenuOpenChange}
+          />
+        }
       />
       <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="date" label="Today" />
@@ -109,6 +122,7 @@ export function ChannelScene({
               <OutboundCallPhoneNumberLink
                 number={CONTACT_MAP['leonard'].phones[0].number}
                 onClick={() => onStartCall('leonard', 0)}
+                focusId="message-phone"
               />{' '}
               — I'm at my desk for the next hour.
             </p>

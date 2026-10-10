@@ -1,0 +1,91 @@
+.preview-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
+  overflow: hidden;
+  max-width: 480px;
+
+  &--approved {
+    border-color: rgba(var(--color-success-rgb), 0.32);
+  }
+
+  // ── iframe preview ───────────────────────────────────────────────
+  // The popout page (960×700) is scaled 0.5 so it fills the 480px card width.
+  // Container clips to 152px tall, showing the top ~304px of the docs page.
+  &__preview {
+    position: relative;
+    height: 152px;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: #f5f6f7; // light fallback while iframe loads
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: linear-gradient(to bottom, transparent, var(--center-channel-bg));
+      pointer-events: none;
+    }
+  }
+
+  &__iframe {
+    display: block;
+    width: 960px;
+    height: 700px;
+    border: none;
+    transform-origin: top left;
+    transform: scale(0.5);
+    pointer-events: none;
+  }
+
+  // ── Title + subtitle ─────────────────────────────────────────────
+  &__body {
+    padding: var(--spacing-s) var(--spacing-m) var(--spacing-xs);
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: var(--spacing-xxxxs) 0 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // ── Actions row ──────────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xs) var(--spacing-m) var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__footer-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__approved-label {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+    color: var(--color-success);
+  }
+}

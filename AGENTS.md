@@ -15,8 +15,8 @@ Vocabulary used everywhere: **Foundations** → **Components** → **Patterns** 
 
 Package split (in **compass-design**):
 
-- **`@mattermost/compass-ui`** — published core from npm (`@alpha`; tokens, primitives, desktop chrome pieces)
-- **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call*, demo fixtures (**never npm**; docs + playground link via `file:`)
+- **`@mattermost/compass-ui`** — published core from npm (`@alpha`; tokens, primitives, leaf chrome)
+- **`@mattermost/compass-proto`** — unpublished Mobile*, `ChannelShell`, Call*, composed shells (`TeamSidebar`, `ChannelsSidebar`, `GlobalHeader`, `AdminConsoleSidebar`), menu recipes, demo fixtures (**never npm**; docs + playground link via `file:`)
 
 **Layouts** (docs category) are composed specimens in compass-design — they import **both** packages. Product webapp uses **ui only**. Details: [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md#layouts-and-shells-who-uses-what).
 
@@ -63,6 +63,7 @@ Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--spacing-*`
 - [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) — Prototypes
 - [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md) — Split plan
 - [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype
+- [.cursor/skills/guided-walkthrough/SKILL.md](.cursor/skills/guided-walkthrough/SKILL.md) — Guided walkthrough mode for a prototype
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
 
 For guidelines, Storybook, and package work, use the **compass-design** repo.

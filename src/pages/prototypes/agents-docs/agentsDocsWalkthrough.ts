@@ -1,0 +1,506 @@
+import type { WalkthroughDocument } from '@/walkthrough/types';
+
+/** Guided walkthrough for Agents — Docs Site. */
+export const agentsDocsWalkthrough: WalkthroughDocument = {
+  prototypeId: 'agents-docs',
+  title: 'Agents — Docs Site',
+  intent:
+    'A support lead flags a stale docs page; people and specialist agents fix it together in one channel, and a later outage shows the same team at work.',
+  sections: [
+    { id: 'overview', label: 'Overview' },
+    { id: 'publish', label: 'Update the docs' },
+    { id: 'incident', label: 'Incident response' },
+    { id: 'matty-panel', label: 'Ask Matty anywhere' },
+    { id: 'agents', label: 'Agents beyond the channel' },
+  ],
+  steps: [
+    {
+      id: 'intro',
+      section: 'overview',
+      title: 'The scenario: a team updating their docs website',
+      lead: 'The docs team works in the docs-site channel. Matty coordinates the specialist agents Coder, Writer, and Reviewer while people stay in the conversation.',
+      lookFor: ['docs-site channel', 'Emma’s call to update the SSO page'],
+      bullets: [
+        'The scenario: the SSO setup page is out of date, and the team fixes it together.',
+        'Along the way they build a reusable page component, then publish.',
+      ],
+      scene: 'channels',
+    },
+    {
+      id: 'flag',
+      section: 'publish',
+      railGroup: 'Trigger & ask',
+      title: 'Emma flags the problem',
+      lead: 'Emma, who leads support, notices a steady trickle of tickets about the SSO setup steps.',
+      lookFor: ['Emma’s post about the SSO setup page', 'Priya and Jordan replying in the thread'],
+      bullets: [
+        'Click Next to view the thread.',
+      ],
+      scene: 'channels',
+      focus: {
+        id: 'docs-emma-flag',
+        emphasis: 'lightbox',
+        note: {
+          title: 'It starts with a person',
+          points: [
+            'Emma, on support, spots a steady trickle of tickets about the SSO setup steps.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'ask',
+      section: 'publish',
+      railGroup: 'Trigger & ask',
+      title: 'Priya asks Matty in plain language',
+      lead: 'Priya @mentions Matty the same way she would a teammate and asks it to check how SSO works today and fix the page.',
+      lookFor: ['Thread opened on Emma’s post', 'Priya’s @Matty mention in the thread', 'Matty’s reply'],
+      bullets: [
+        'No separate app is needed to hand work to an agent.',
+        'Matty replies that it will have Coder check the product, then Writer propose the text changes.',
+      ],
+      scene: 'grounding',
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'The team decides, then asks Matty',
+          points: [
+            'Priya and Jordan agree it’s worth fixing before any agent speaks.',
+            'Priya then asks Matty in plain language to check how SSO works today and fix the page.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'grounding',
+      section: 'publish',
+      railGroup: 'Grounding & rewrite',
+      title: 'Research first, then the rewrite',
+      lead: 'Before anyone rewrites a word, Coder checks what’s actually true. Then Writer drafts the new page from Coder’s findings.',
+      lookFor: [
+        'Notices that Matty sent messages to Coder and Writer',
+        'Coder’s research findings',
+        'Writer’s proposed text changes',
+        'Reviewer’s proofread notes',
+      ],
+      bullets: [
+        'The rewrite is based on how sign-in actually works, not just on the old page.',
+        'Reviewer checks with Writer directly: grammar, style, and links only. It doesn’t judge page design.',
+        'Agents coordinate with each other where the team can see it, not only through Matty.',
+      ],
+      scene: 'grounding',
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Agents hand off, the team watches',
+          points: [
+            'Matty sends Coder to check what’s actually true, then Writer to rewrite the page.',
+            'Reviewer proofreads with Writer directly, and everyone can follow along.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'delegation',
+      section: 'publish',
+      railGroup: 'Grounding & rewrite',
+      title: 'The agents talk to each other',
+      lead: 'Open the delegation to read the conversation between Matty, Coder, and Writer. This is the work happening behind the summary line.',
+      lookFor: ['Delegation summary with tasks and progress', 'Matty’s handoff to Coder', 'Coder’s findings passed on to Writer'],
+      bullets: [
+        'Anyone in the channel can expand it to see who asked for what.',
+        'Coder’s research and Writer’s draft open as their own panels.',
+      ],
+      scene: 'grounding',
+      sceneState: { settleThread: true, expandDelegation: true },
+      focus: {
+        id: 'docs-delegation',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Agent-to-agent, in the open',
+          points: [
+            'Matty hands Coder the question: how does SSO actually work today?',
+            'Coder reports back, and Writer rewrites the page from those findings.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'matty-profile',
+      section: 'publish',
+      railGroup: 'Grounding & rewrite',
+      title: 'Matty coordinates the team',
+      lead: 'Matty is the orchestrator. It knows the roster, splits the work between specialists, and checks in before acting where it matters.',
+      lookFor: ['Matty’s profile popover', 'Matty at the head of the delegation'],
+      bullets: [
+        'Matty is a standing teammate in the workspace, not something a single person runs.',
+        'The specialists (Coder, Writer, Reviewer) each do one job.',
+      ],
+      scene: 'grounding',
+      sceneState: { settleThread: true, profileAgent: 'matty' },
+      focus: {
+        id: 'docs-agent-profile',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'The orchestrator',
+          points: [
+            'Matty hears the team’s ask and decides which specialist should do what.',
+            'People talk to Matty; Matty coordinates everyone else.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'agent-profile',
+      section: 'publish',
+      railGroup: 'Grounding & rewrite',
+      title: 'Who is Coder?',
+      lead: 'Click any agent to see its identity: the model it runs on and its main purpose.',
+      lookFor: ['Agent profile popover', 'Model and description'],
+      bullets: [
+        'Agents show up by name, with their job in the name. No subtitle needed.',
+        'You can see who created an agent, even one you have never used.',
+      ],
+      scene: 'grounding',
+      sceneState: { settleThread: true, profileAgent: 'coder' },
+      focus: {
+        id: 'docs-agent-profile',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Each agent has an identity',
+          points: [
+            'Anyone can see which model an agent uses and what its main purpose is.',
+            'Coder did the research here, and later builds the component and deploys.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'review',
+      section: 'publish',
+      railGroup: 'Review & build',
+      title: 'Jordan spots a gap only a person would',
+      lead: 'Reviewer’s pass came back clean, but Jordan sees further: the new steps need a reusable collapsible section, and the site will want it elsewhere too.',
+      lookFor: ['“New collapsible component needed” post'],
+      bullets: [
+        'Judging page structure is a human call, so a person raises it.',
+        'Click Next to open the thread.',
+      ],
+      scene: 'review',
+      focus: {
+        id: 'docs-jordan-post',
+        emphasis: 'lightbox',
+        note: {
+          title: 'A person sees further',
+          points: [
+            'Reviewer’s pass was clean, but Jordan notices the new steps need a collapsible section.',
+            'Judging page structure is a human call, so the idea comes from a person, not an agent.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'review-people',
+      section: 'publish',
+      railGroup: 'Review & build',
+      title: 'The people agree on the next move',
+      lead: 'In the thread, Priya picks up Jordan’s idea and tags Matty, asking it to build the component and pulling in Alex and Jordan for review.',
+      lookFor: ['Thread opened on Jordan’s post', 'Priya’s reply tagging Matty, Alex, and Jordan'],
+      bullets: [
+        'The people settle what to do and who reviews it before any agent acts.',
+        'Click Next to see Matty take it from here.',
+      ],
+      scene: 'review',
+      sceneState: { openCollapsibleThread: true, holdAtHuman: true, highlightFirst: true },
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'People decide first',
+          points: ['Priya asks Matty to handle it and names Alex and Jordan as reviewers.'],
+        },
+      },
+    },
+    {
+      id: 'review-build',
+      section: 'publish',
+      railGroup: 'Review & build',
+      title: 'Matty hands the build to Coder',
+      lead: 'Matty confirms the plan and sends Coder to build the component and open a pull request, then asks Alex to review it.',
+      lookFor: ['Matty’s reply', 'Coder’s build and code preview', 'The pull request'],
+      bullets: [
+        'Same agent, different job: Coder did research earlier, now it builds and opens a pull request.',
+        'Alex reviews the pull request as a person, with the agent’s work as the reference.',
+      ],
+      scene: 'review',
+      sceneState: { openCollapsibleThread: true, resumeThread: true },
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'The agents do the build',
+          points: ['Matty delegates to Coder, which builds the component and opens a pull request for Alex.'],
+        },
+      },
+    },
+    {
+      id: 'checks',
+      section: 'publish',
+      railGroup: 'Approval & publish',
+      title: 'Checks run, then people approve',
+      lead: 'Before anyone is asked to sign off, the agents check their own work at the same time: Coder’s build check and Reviewer’s page check. Alex has already approved the code, so Jordan is the last person to sign off.',
+      lookFor: ['Parallel checks tracker', 'Staging preview waiting for Jordan'],
+      bullets: [
+        'The tracker rolls up to “2 of 2 passed” when both checks finish.',
+        'Jordan’s approval of the staging preview is required before anything is published.',
+      ],
+      scene: 'approval',
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Agents check their own work first',
+          points: [
+            'Coder’s build check and Reviewer’s page check run side by side.',
+            'With the code already approved by Alex, Jordan reviews staging and gives the final approval.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'approval',
+      section: 'publish',
+      railGroup: 'Approval & publish',
+      title: 'Jordan approves the staging preview',
+      lead: 'Jordan reviews the combined change, text and component together, in a preview right in the channel. She never leaves Mattermost, and her approval triggers the publish.',
+      lookFor: ['Staging preview card with Approve and Reject', 'Expand icon for the larger preview', 'Coder’s deploy to production'],
+      bullets: [
+        'Alex reviews code in a pull request; Jordan reviews content in a live preview. Same moment, two tools suited to each job.',
+        'Coder deploys, then Matty drafts an announcement. Priya posts it for the support team.',
+        'Emma, who raised the problem, is the last to hear it’s done.',
+      ],
+      scene: 'approval',
+      sceneState: { autoApprove: true },
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'People keep the final say',
+          points: [
+            'Jordan approves the combined change from a live preview without leaving Mattermost.',
+            'Her approval sends Coder to publish, then Matty drafts the announcement for Emma’s team.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'later-that-week',
+      section: 'publish',
+      railGroup: 'Later that week',
+      title: 'An alert arrives in the channel',
+      lead: 'Later that week a different kind of problem arrives: an automated alert in the docs-site channel says docs.mattermost.com is returning errors.',
+      lookFor: ['Uptime alert from Monitor', 'Completed checks tracker from earlier'],
+      bullets: [
+        'This is the first automated post in the story. Emma’s flag earlier was a person.',
+        'This coda is deliberately short and left unresolved.',
+      ],
+      scene: 'later-that-week',
+      focus: {
+        id: 'docs-alert',
+        emphasis: 'lightbox',
+        note: {
+          title: 'A different kind of problem',
+          points: [
+            'This time nobody on the team noticed first. An automated uptime check posts the alert.',
+            'It lands in the same channel where the team just finished the docs fix.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'monitor-thread',
+      section: 'publish',
+      railGroup: 'Later that week',
+      title: 'Monitor offers to start a playbook',
+      lead: 'In the alert’s thread, Monitor asks whether to start the outage playbook and says it would assign Coder to investigate.',
+      lookFor: ['Thread opened on the alert', 'Monitor’s reply with a Start playbook card'],
+      bullets: [
+        'The agent that noticed the problem proposes the process for solving it.',
+        'Approving the card starts the playbook run.',
+      ],
+      scene: 'later-that-week',
+      sceneState: { openMonitorThread: true },
+      focus: {
+        id: 'docs-thread',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'The agent that noticed proposes the fix',
+          points: [
+            'Monitor offers to start the “Docs Site Outage” playbook.',
+            'It would put Coder on the investigation, and a person approves.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'outage',
+      section: 'incident',
+      title: 'The playbook is running',
+      lead: 'Once approved, the playbook run starts in its own incident channel. The checklist assigns tasks to agents as well as people.',
+      lookFor: ['INC-4472: Docs site outage', 'Playbook stages and tasks', 'Coder’s avatar on an investigation task'],
+      bullets: [
+        'Use Next from the previous step, or approve the card in the alert thread.',
+        'The point: an agent can propose and kick off a playbook, and tasks can be assigned to agents.',
+        'Nothing is resolved here on purpose.',
+      ],
+      scene: 'docs-outage',
+    },
+    {
+      id: 'matty-fab',
+      section: 'matty-panel',
+      railGroup: 'Floating Matty',
+      title: 'Matty is always one click away',
+      lead: 'A floating button in the bottom-right corner opens Matty from any screen, so you never have to leave what you are doing to ask for help.',
+      lookFor: ['Ask Matty button, bottom-right'],
+      bullets: [
+        'Hover to expand the label.',
+        'Message boxes leave room on the right so the button never covers the send control.',
+      ],
+      scene: 'channels',
+      focus: {
+        id: 'docs-matty-fab',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Help without switching context',
+          points: [
+            'The same button works in every channel and every product.',
+            'It opens a private panel only you can see.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'matty-panel-empty',
+      section: 'matty-panel',
+      railGroup: 'Floating Matty',
+      title: 'It opens on an empty state',
+      lead: 'The panel starts fresh, like a new chat with an agent: a greeting and a short list of things Matty can do right here.',
+      lookFor: ['Matty avatar and greeting', 'Suggested actions', 'Message box at the bottom'],
+      bullets: [
+        'The greeting changes each time, the same as in a direct message with an agent.',
+        'Suggestions: search, summarize this channel, create a new channel, start a playbook, draft a message.',
+        'The three-dot menu starts a new chat, deletes this one, or opens all agents.',
+        'Click “Create a new channel” to continue.',
+      ],
+      scene: 'channels',
+      sceneState: { mattyPanel: true },
+      focus: {
+        id: 'docs-matty-panel',
+        emphasis: 'lightbox',
+        notePlacement: 'left',
+        note: {
+          title: 'Not a chat yet',
+          points: [
+            'Nothing is saved until you send your first message.',
+            'Click “Create a new channel” to try it.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'matty-create-channel',
+      section: 'matty-panel',
+      railGroup: 'Floating Matty',
+      title: 'Create a channel by talking to Matty',
+      lead: 'Try it: choose “Create a new channel” and answer Matty’s questions. Matty then does the setup and hands you the finished channel.',
+      lookFor: [
+        'Matty’s five questions, each with quick replies',
+        'One-line progress that expands to the steps',
+        'Channel card in the chat and the new entry in the sidebar',
+      ],
+      bullets: [
+        'Matty asks for a name, public or private, a purpose, an optional sidebar category, and whether to add a board.',
+        'Type your own answers or tap a quick reply. “Draft one for me” writes the purpose from the name.',
+        {
+          text: 'After the last answer Matty works through the setup:',
+          sub: [
+            'Checks the name is available',
+            'Creates the channel and sets its purpose',
+            'Adds it to the category and creates a board, if you asked for them',
+          ],
+        },
+        'The channel appears in the sidebar as soon as it is created. Open channel on the card takes you there.',
+      ],
+      scene: 'channels',
+      sceneState: { mattyPanel: true },
+      focus: {
+        id: 'docs-matty-panel',
+        emphasis: 'ring',
+        notePlacement: 'left',
+        note: {
+          title: 'Questions first, then the work',
+          points: [
+            'Matty gathers what a new channel needs before touching anything.',
+            'You see the work as a single collapsed line you can expand.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'matty-chat-saved',
+      section: 'matty-panel',
+      railGroup: 'Floating Matty',
+      title: 'The chat lives on in Matty’s direct message',
+      lead: 'A conversation started in the floating panel is saved as a chat in your direct message with Matty, so you can pick it up there later.',
+      lookFor: ['New chat under Matty in the sidebar', 'Same conversation when you open it'],
+      bullets: [
+        'The first message you send creates the chat, titled with what you asked.',
+        'Close the panel and reopen it to start fresh. Earlier chats stay in the sidebar.',
+      ],
+      scene: 'channels',
+      sceneState: { mattyPanel: true },
+      focus: {
+        id: 'docs-matty-panel',
+        emphasis: 'ring',
+        notePlacement: 'left',
+      },
+    },
+    {
+      id: 'matty-dm',
+      section: 'agents',
+      title: 'Direct message with Matty',
+      lead: 'Matty is also available one-on-one. A private chat is just between you and Matty; in a team channel it works with the whole group.',
+      lookFor: ['Direct message with Matty'],
+      scene: 'matty-chat',
+    },
+    {
+      id: 'all-agents',
+      section: 'agents',
+      title: 'All agents',
+      lead: 'Every agent is shown by name, with no subtitle needed. You can also start a one-on-one chat with any of them, like Coder, outside a channel.',
+      lookFor: ['Agent cards for Matty, Writer, Coder, and Reviewer', 'Your agents / All agents tabs'],
+      scene: 'all-agents',
+    },
+    {
+      id: 'all-agents-list',
+      section: 'agents',
+      title: 'All agents — list view',
+      lead: 'The same agents as a compact list. Click into one to see its description and owner.',
+      lookFor: ['List of agents', 'Owner and description'],
+      scene: 'all-agents-list',
+    },
+  ],
+};

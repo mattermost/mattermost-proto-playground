@@ -7,11 +7,16 @@ import styles from './PrototypeTopNav.module.scss';
 export interface PrototypeTopNavProps {
   title: string;
   centerSlot?: ReactNode;
+  startSlot?: ReactNode;
+  /** Extra controls before Theme (e.g. walkthrough mode). */
+  endSlot?: ReactNode;
 }
 
 export default function PrototypeTopNav({
   title,
   centerSlot,
+  startSlot,
+  endSlot,
 }: PrototypeTopNavProps) {
   return (
     <header className={styles['prototype-top-nav']}>
@@ -24,11 +29,18 @@ export default function PrototypeTopNav({
           <ArrowLeftIcon size={20} aria-hidden />
         </Link>
         <h1 className={styles['prototype-top-nav__title']}>{title}</h1>
+        {startSlot && (
+          <>
+            <span className={styles['prototype-top-nav__sep']} aria-hidden />
+            {startSlot}
+          </>
+        )}
       </div>
 
       <div className={styles['prototype-top-nav__center']}>{centerSlot}</div>
 
       <div className={styles['prototype-top-nav__end']}>
+        {endSlot}
         <ThemeSwitcherControl />
       </div>
     </header>

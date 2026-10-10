@@ -17,7 +17,7 @@
     display: inline-flex;
     background: rgba(var(--center-channel-color-rgb), 0.08);
     padding: 2px;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     gap: 2px;
   }
 
@@ -29,7 +29,7 @@
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-semibold);
     padding: var(--spacing-xxxs) var(--spacing-m);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-pill);
     cursor: pointer;
     transition:
       background-color var(--duration-quick) var(--ease-transition),

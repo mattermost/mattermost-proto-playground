@@ -1,0 +1,44 @@
+// PopoverMenu uses width: max-content, but MenuItem/SimpleBar are width: 100%
+// so the menu collapses to the 212px min-width. Set a content-friendly floor.
+.wt-jump {
+  min-width: 300px;
+}
+
+.wt-jump__divider {
+  height: 1px;
+  margin: var(--spacing-xs) 0;
+  background: rgba(var(--center-channel-color-rgb), 0.08);
+}
+
+.wt-jump__item {
+  border-radius: var(--radius-s);
+
+  :global([class*='menu-item__top-row']) {
+    align-items: flex-start;
+  }
+
+  :global([class*='menu-item__label']) {
+    white-space: normal;
+    overflow-wrap: break-word;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+}
+
+.wt-jump-panel {
+  composes: wt-panel from './WalkthroughPanel.module.scss';
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  flex: 0 0 auto;
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: var(--spacing-xs) var(--spacing-xxxs);
+  }
+
+  &__list {
+    min-height: 0;
+  }
+}
