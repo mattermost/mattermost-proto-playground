@@ -27,6 +27,11 @@
 
   &__header {
     flex-shrink: 0;
+
+    // Lift the header only while the Matty tooltip shows, so menus stay on top otherwise.
+    &:has([data-wt-focus='docs-matty-fab']:is(:hover, :focus-visible)) {
+      z-index: 40;
+    }
   }
 
   &__body {
