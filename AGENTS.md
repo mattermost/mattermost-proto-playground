@@ -44,7 +44,7 @@ Check `src/hooks/` before duplicating logic. Key hooks: `useExitAnimation`, `use
 
 ## Overlays
 
-Tooltips, modals, and popovers from Compass are **visual chrome only** — the host owns open/close, portals, positioning, and focus. Wiring recipe: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#overlay-wiring).
+`Tooltip`, `PopoverMenu`, and `ProfilePopover` are **visual chrome only** — the host owns open/close, portals, positioning, and focus. `Modal` additionally owns dialog focus (initial focus, Tab trap, Escape, focus restore); the host still owns portal, backdrop, scroll lock, stacking, and open state. Wiring recipe: [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md#overlay-wiring).
 
 **Exceptions:** form widgets with menus (`Combobox`, `Select`, …) and proto/mobile presenters (`MobileBottomSheet`, playground `MobileModalStage`) follow their component-specific patterns.
 
@@ -57,6 +57,10 @@ Tooltips, modals, and popovers from Compass are **visual chrome only** — the h
 ## Styling
 
 Prefer Compass CSS variables from `@mattermost/compass-ui/styles` (`--spacing-*`, `--center-channel-color`, …). Full BEM, tokens, motion, opacity rules load when editing styles — see [.cursor/rules/styling.mdc](.cursor/rules/styling.mdc).
+
+## Committed files
+
+Never put absolute local paths (a home directory, `~/.claude/...`, session memory files) in committed files. Link to repo-relative paths or public URLs; if the target isn't in the repo, use inline prose instead.
 
 ## Area-specific guidance
 
