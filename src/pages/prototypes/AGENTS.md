@@ -146,7 +146,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Selectable / removable token | `Chip` | `Tag` |
 | Metadata label (BOT, Guest) | `Tag` | `Chip` |
 | Mention count / unread / presence | `MentionBadge` / `UnreadBadge` / `StatusBadge` | a custom pill |
-| Desktop dialog | `Modal` + host portal / focus | a restyled `div`, or `MobileModal` |
+| Desktop dialog | `Modal` + host portal / backdrop | a restyled `div`, or `MobileModal` |
 | Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
 | Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
 | Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
