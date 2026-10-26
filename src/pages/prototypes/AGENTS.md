@@ -25,6 +25,10 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 
 | Use for | Export | Import |
 | --- | --- | --- |
+| System Console settings section | `AdminPanel` | `@mattermost/compass-ui/components/admin-panel` |
+| Section action rail (pass via `AdminPanel` `footer`) | `AdminPanelFooter` | `@mattermost/compass-ui/components/admin-panel-footer` |
+| System Console page title | `AdminConsoleHeader` | `@mattermost/compass-ui/components/admin-console-header` |
+| System Console page Save / Cancel bar | `AdminConsoleFooter` | `@mattermost/compass-ui/components/admin-console-footer` |
 | Dialog / modal (desktop) | `Modal` | `@mattermost/compass-ui/components/modal` |
 | Menu row | `MenuItem` | `@mattermost/compass-ui/components/menu-item` |
 | Search field | `SearchInput` | `@mattermost/compass-ui/components/search-input` |
@@ -57,7 +61,9 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Menu surface | `PopoverMenu` | `@mattermost/compass-ui/components/popover-menu` |
 | Date / unread rule in a message list | `MessageSeparator` | `@mattermost/compass-ui/components/message-separator` |
 
-There is no `Dialog` — use `Modal`. Overlay open/close, portal, and focus stay with the host.
+There is no `Dialog` — use `Modal`. Host owns open/close, portal, and backdrop; `Modal` owns dialog focus and Escape.
+
+`AdminPanel` is the bordered sheet for a single System Console settings section (header and/or body; footer optional via `AdminPanelFooter`). Prefer `title` / expand / switch props on `AdminPanel` over mounting `AdminPanelHeader` yourself. Header-only and body-only panels are valid; footer-only is not. Pair with proto `AdminConsoleSidebar` plus `AdminConsoleHeader` / `AdminConsoleFooter` for full console page chrome.
 
 There is no `ChannelIcon`. Standalone channel glyph:
 
@@ -140,7 +146,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Selectable / removable token | `Chip` | `Tag` |
 | Metadata label (BOT, Guest) | `Tag` | `Chip` |
 | Mention count / unread / presence | `MentionBadge` / `UnreadBadge` / `StatusBadge` | a custom pill |
-| Desktop dialog | `Modal` + host portal / focus | a restyled `div`, or `MobileModal` |
+| Desktop dialog | `Modal` + host portal / backdrop | a restyled `div`, or `MobileModal` |
 | Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
 | Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
 | Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
@@ -152,6 +158,9 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
 | Tab strip (mutually exclusive view switcher) | `Tabs` | custom `button[role="tab"]` / `div[role="tablist"]` |
 | Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
+| System Console settings section | `AdminPanel` | a custom bordered card, `Modal`, or `SectionNotice` |
+| Sectional actions inside a panel | `AdminPanel` `footer` + `AdminPanelFooter` | page-level `AdminConsoleFooter`, or a freeform button row |
+| System Console page Save / Cancel | `AdminConsoleFooter` | `AdminPanelFooter` or ad-hoc footer buttons |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
 
@@ -159,7 +168,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 
 ### Overlay wiring
 
-`Modal`, `Tooltip`, `PopoverMenu`, and `ProfilePopover` are **visual chrome only**. The host owns:
+`Tooltip`, `PopoverMenu`, and `ProfilePopover` are **visual chrome only**. The host owns:
 
 - Open / close state
 - `createPortal` to `document.body` (or a dedicated overlay root)
@@ -167,7 +176,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 - Focus, Escape, and outside click (`useOutsideClose`)
 - Exit animation (`useExitAnimation`) so the surface unmounts after the close motion
 
-Render `Modal` only while it should be on screen (plus the exit-animation hold). Do not wrap it in extra dialog chrome. `role="dialog"` on the surface is fine; do not add focus-trap or backdrop logic inside the Compass primitive.
+`Modal` is different: it owns dialog-level focus and keyboard behavior (initial focus, Tab trap, Escape via `onClose` / `closeOnEscape`, focus restore on unmount). The host still owns portal, overlay/backdrop, scroll lock, stacking, and open state. Prefer `open` + `onExited` for the built-in enter/exit transition, or mount/unmount with `useExitAnimation` if the host drives motion. Do not wrap `Modal` in extra dialog chrome or reimplement a focus trap.
 
 **Exceptions:** `Combobox`, `Select`, and `DateRangePicker` own their menus. Mobile sheets use `MobileModal` + playground `MobileModalStage` (see **Mobile Channel → Modal** below).
 
