@@ -1,0 +1,169 @@
+// Mirrors compass-proto CallWidget chrome at the Figma width (280px).
+.video-call-widget {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+
+  &__body {
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-3);
+    overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-height: 40px;
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+      var(--spacing-m);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__channel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__channel-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__elapsed {
+    flex: 1 1 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__expand {
+    flex: 0 0 auto;
+  }
+
+  &__thumbs {
+    display: flex;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-m) var(--spacing-xs);
+  }
+
+  &__thumb {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+
+    // VideoTile 'thumbnail' is a fixed 120x136; let it stretch to the column.
+    > * {
+      width: 100%;
+    }
+  }
+
+  &__overflow {
+    position: absolute;
+    top: var(--spacing-xxxs);
+    left: var(--spacing-xxxs);
+    z-index: 4;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--neutral-0);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xxs);
+    height: 44px;
+    padding: 0 var(--spacing-xs);
+  }
+
+  &__participants {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    padding: var(--spacing-xxs);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 1px;
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__toggle--off {
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__hangup {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    min-width: 40px;
+    padding: 0 var(--spacing-xs);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: var(--error-text, var(--color-danger));
+    color: var(--neutral-0);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: var(--color-red-600);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__popover {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + var(--spacing-xs));
+    z-index: 5;
+  }
+}

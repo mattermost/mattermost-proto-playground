@@ -1,0 +1,39 @@
+.call-banner {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-s) var(--spacing-l);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  background: rgba(var(--color-success-rgb), 0.08);
+  color: var(--center-channel-color);
+
+  &__icon {
+    display: inline-flex;
+    color: var(--online-indicator);
+  }
+
+  &__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__message {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__meta {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__join {
+    flex: 0 0 auto;
+  }
+}

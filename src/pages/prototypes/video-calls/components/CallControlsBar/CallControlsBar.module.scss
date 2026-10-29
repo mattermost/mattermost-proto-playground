@@ -1,0 +1,126 @@
+// Mirrors CallPopout controls (compass-proto): 52px inverted IconButtons on the
+// 8% white fill, red destructive Leave, 3 zones.
+.call-controls-bar {
+  position: relative;
+  z-index: 4;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-m);
+  padding: var(--spacing-m) 0;
+  transition:
+    opacity var(--duration-moderate) var(--ease-transition),
+    transform var(--duration-moderate) var(--ease-transition);
+
+  &--hidden {
+    opacity: 0;
+    transform: translateY(var(--spacing-l));
+    pointer-events: none;
+  }
+
+  &__left,
+  &__right {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  &__center {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__slot {
+    position: relative;
+    display: flex;
+  }
+
+  &__split {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+  }
+
+  &__popover {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-s));
+    left: 50%;
+    z-index: 6;
+    transform: translateX(-50%);
+  }
+
+  // Shared button chrome (copied from CallPopout so the bar reads identically).
+  button {
+    border-radius: var(--radius-m);
+  }
+
+  &__left button,
+  &__center button {
+    background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
+    color: color-mix(in srgb, var(--neutral-0) 72%, transparent);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
+    }
+
+    &:active:not(:disabled):not([data-active='true']) {
+      background-color: color-mix(in srgb, var(--neutral-0) 24%, transparent);
+    }
+
+    &[aria-pressed='true']:not(:disabled),
+    &[data-active='true']:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
+    }
+  }
+
+  // Mic / camera: green tint when on, red glyph when off.
+  #{&}__toggle#{&}__toggle--on {
+    background-color: color-mix(
+      in srgb,
+      var(--online-indicator) 24%,
+      transparent
+    );
+    color: var(--neutral-0);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(
+        in srgb,
+        var(--online-indicator) 36%,
+        transparent
+      );
+    }
+  }
+
+  #{&}__toggle#{&}__toggle--off {
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__chevron {
+    // Narrower sibling of the mic/camera button.
+    width: 28px;
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  &__right button {
+    background-color: var(--error-text, var(--color-danger));
+    color: var(--neutral-0);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-red-600);
+      color: var(--neutral-0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &--hidden {
+      transform: none;
+    }
+  }
+}

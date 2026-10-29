@@ -1,0 +1,78 @@
+.pre-join-scene {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: auto;
+  border-radius: var(--radius-l);
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+
+  &__overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxxxl) var(--spacing-l) var(--spacing-xxxl);
+    text-align: center;
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
+  &__message {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+  }
+
+  &__control {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+  }
+
+  &__menu {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-s));
+    left: 0;
+    z-index: 10;
+    min-width: 240px; // one-off layout width
+    transform-origin: bottom left;
+  }
+
+  &__who {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__who-text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__who-name {
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__check-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+  }
+
+  &__helper {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}

@@ -1,0 +1,42 @@
+@keyframes reaction-burst-rise {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(calc(var(--reaction-burst-drift) * 0.2), -10%)
+      scale(1.1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--reaction-burst-drift), -320%) scale(1);
+  }
+}
+
+.reaction-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+
+  &__particle {
+    position: absolute;
+    left: 50%;
+    bottom: var(--spacing-xl);
+    font-size: var(--font-size-700);
+    line-height: 1;
+    opacity: 0;
+    animation: reaction-burst-rise calc(var(--duration-moderate) * 7)
+      var(--ease-entrance) forwards;
+    animation-delay: calc(var(--reaction-burst-delay) * var(--duration-quick));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}

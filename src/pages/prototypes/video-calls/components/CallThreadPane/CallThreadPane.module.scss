@@ -1,0 +1,49 @@
+.call-thread-pane {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  min-height: 0;
+  color: var(--center-channel-color);
+  background: var(--center-channel-bg);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-l);
+    padding: var(--spacing-m);
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0 var(--spacing-xs);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__messages {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-xl) var(--spacing-l);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    text-align: center;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__composer {
+    padding: var(--spacing-m);
+  }
+}

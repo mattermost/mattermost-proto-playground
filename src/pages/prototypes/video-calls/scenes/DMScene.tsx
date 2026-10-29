@@ -1,8 +1,6 @@
-import styles from '../VideoCalls.module.scss';
+import DMChat from './DMChat';
 
-/** Stub — replaced by the scene package that owns this file. */
+/** 1:1 chat. Entry point for "Start video call". */
 export default function DMScene() {
-  return (
-    <div className={styles['video-calls__placeholder']}>DM scene (stub)</div>
-  );
+  return <DMChat />;
 }

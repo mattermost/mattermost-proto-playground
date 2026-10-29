@@ -1,0 +1,44 @@
+.mic-level-meter {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  min-width: 0;
+
+  &__icon {
+    flex: 0 0 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__bars {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    min-width: 0;
+  }
+
+  &__bar {
+    flex: 1 1 0;
+    min-width: 0;
+    height: var(--spacing-s);
+    border-radius: var(--radius-xs);
+    background: rgba(var(--center-channel-color-rgb), 0.12);
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    &--lit {
+      background: var(--online-indicator);
+    }
+  }
+
+  &--muted {
+    .mic-level-meter__bar {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__bar {
+      transition: none;
+    }
+  }
+}
