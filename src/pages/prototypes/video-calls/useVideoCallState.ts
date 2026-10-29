@@ -26,6 +26,8 @@ export interface VideoCallState {
   notices: CallNotice[];
   callStartedAt: number | null;
   endedDurationSec: number;
+  /** Set when an incoming call rang out; the DM shows a missed-call post. */
+  missedCall: boolean;
   soundOn: boolean;
 }
 
@@ -42,6 +44,7 @@ const INITIAL_STATE: VideoCallState = {
   notices: [],
   callStartedAt: null,
   endedDurationSec: 0,
+  missedCall: false,
   soundOn: false,
 };
 
@@ -85,7 +88,18 @@ export function useVideoCallState() {
       patch,
       /** DM/channel "Call" button → pre-join. `mode` picks the pre-join variant. */
       startPreJoin: (mode: JoinMode) =>
-        setState((s) => ({ ...s, joinMode: mode, scene: 'pre-join' })),
+        setState((s) => ({
+          ...s,
+          joinMode: mode,
+          scene: 'pre-join',
+          missedCall: false,
+        })),
+      /** Incoming card: decline → back to the DM with no missed-call post. */
+      declineIncoming: () =>
+        setState((s) => ({ ...s, scene: 'dm', missedCall: false })),
+      /** Incoming call rang out → back to the DM with a missed-call post. */
+      missIncoming: () =>
+        setState((s) => ({ ...s, scene: 'dm', missedCall: true })),
       /** Pre-join primary action: 1:1 start rings; accept/group join connect directly. */
       confirmPreJoin: () =>
         setState((s) =>
