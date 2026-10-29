@@ -1,0 +1,57 @@
+.chat-actions {
+  &__trigger {
+    display: inline-flex;
+  }
+
+  &__chats {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  &__menu {
+    position: fixed;
+    z-index: 1200;
+    box-sizing: border-box;
+    transform-origin: top right;
+    animation: chat-actions-in var(--duration-quick) var(--ease-entrance) both;
+
+    :global([class*='popover-menu']) {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    :global([class*='menu-item__label']) {
+      min-width: 0;
+      flex-shrink: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &--exiting {
+      animation: chat-actions-out var(--duration-quick) var(--ease-exit) both;
+    }
+  }
+}
+
+@keyframes chat-actions-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes chat-actions-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}

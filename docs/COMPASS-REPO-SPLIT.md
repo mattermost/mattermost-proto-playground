@@ -15,10 +15,10 @@ Icons stay in [`mattermost/compass-icons`](https://github.com/mattermost/compass
 
 | Package | Published | Contents |
 | ------- | --------- | -------- |
-| `@mattermost/compass-ui` | Yes (`alpha` until stable) | Foundations, primitives, props-driven web chrome (sidebars, headers, Message stack, …) |
-| `@mattermost/compass-proto` | No (`file:` / `npm pack` only) | Mobile*, `ChannelShell`, Call* composites, demo RHS panels, sidebar fixture builders |
+| `@mattermost/compass-ui` | Yes (`alpha` until stable) | Foundations, primitives, leaf chrome (`TeamAvatar`, `ChannelSidebarItem`, `RightSidebarHeader`, Message leaf pieces, …) |
+| `@mattermost/compass-proto` | No (`file:` / `npm pack` only) | Mobile*, `ChannelShell`, Call* composites, composed sidebars/headers (`TeamSidebar`, `ChannelsSidebar`, `GlobalHeader`, `AdminConsoleSidebar`), hardcoded menu recipes, demo RHS panels, sidebar fixture builders |
 
-**Chrome vs fixtures:** Core keeps presentational shells (`ChannelsSidebar`, `AdminConsoleSidebar`, `RightSidebar` header). Demo trees and specimen RHS screens live in proto or docs fixtures — not in the published core API.
+**Chrome vs fixtures:** Core keeps leaf presentational pieces (`TeamAvatar`, `ChannelSidebarItem`, `RightSidebarHeader`, `TourPoint`, `PopoverMenu` / `MenuItem`). Composed shells, unfinished patterns, and demo trees live in proto or docs fixtures — not in the published core API.
 
 ## Layouts and shells (who uses what)
 
@@ -26,8 +26,8 @@ Icons stay in [`mattermost/compass-icons`](https://github.com/mattermost/compass
 
 | Building block | Package | Examples |
 | -------------- | ------- | -------- |
-| Published chrome / primitives | `@mattermost/compass-ui` | `ChannelsSidebar`, `AdminConsoleSidebar`, `GlobalHeader`, `ChannelHeader`, `Message*`, `RightSidebar` header |
-| Composite shells, mobile, demo fixtures | `@mattermost/compass-proto` (never on npm) | `ChannelShell`, `MobileHome`, `MobileTabBar`, `CallWidget`, `RightSidebarChannelInfo`, `buildDefaultChannelsSidebarModel` |
+| Published chrome / primitives | `@mattermost/compass-ui` | `TeamAvatar`, `ChannelSidebarItem`, `RightSidebarHeader`, Message leaf pieces (`MessageHeader`, `MessageActions`, …), form primitives |
+| Composite shells, mobile, demo fixtures | `@mattermost/compass-proto` (never on npm) | `TeamSidebar`, `ChannelsSidebar`, `GlobalHeader`, `AdminConsoleSidebar`, `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput`, Mobile*, Call*, menu recipes, `RightSidebarChannelInfo`, `buildDefaultChannelsSidebarModel` |
 | Docs specimen framing only | `compass-design` app | `DeviceFrame`, `MobileModalStage` (guidelines; playground has its own copies for flows) |
 
 Layout specimens **stitch ui + proto together** — e.g. desktop Channel uses `ChannelShell` (proto) with headers and messages (ui); mobile Home uses `MobileHome` (proto) inside `DeviceFrame` (docs chrome).
@@ -52,14 +52,14 @@ Layout specimens **stitch ui + proto together** — e.g. desktop Channel uses `C
 | **1 — Create `compass-design`** | Done | Move packages + docs app; CI publishes core only; GitHub Pages on design repo |
 | **2 — Slim playground** | Done | Flows + chrome only; depend on compass-design packages via `file:`; README for catalog role |
 | **3 — Alpha release** | Done (playground) | Playground uses `@mattermost/compass-ui@alpha` from npm; proto stays `file:`. Webapp mergeable PR still pending. |
-| **7 — Subpath imports** | Done | Playground on `@mattermost/compass-ui@0.1.0-alpha.5+` with `@mattermost/compass-ui/components/<kebab>` imports (not root barrel). |
+| **7 — Subpath imports** | Done | Playground on `@mattermost/compass-ui@0.1.0-alpha.13+` with `@mattermost/compass-ui/components/<kebab>` imports (not root barrel). |
 
 Stop after each phase; verify before starting the next.
 
 ## Consumption
 
 - **Docs / Storybook:** guidelines in compass-design use workspace `compass-ui` + `compass-proto`; **Storybook** catalogs published `@mattermost/compass-ui` only
-- **Playground (this repo):** `@mattermost/compass-ui@alpha` from npm (`0.1.0-alpha.5+`, subpath imports) + `file:../compass-design/packages/compass-proto`
+- **Playground (this repo):** `@mattermost/compass-ui@alpha` from npm (`0.1.0-alpha.13+`, subpath imports) + `file:../compass-design/packages/compass-proto`
 - **Webapp (testing branch):** `file:` → compass-ui + watch; webpack React aliases — see compass-design INTEGRATION.md
 - **Webapp (after alpha):** `@mattermost/compass-ui@alpha` only — no Mobile*, `ChannelShell`, or Call* from proto in product code
 

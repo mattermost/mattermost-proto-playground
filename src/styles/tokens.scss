@@ -316,6 +316,9 @@
   --radius-m: 8px;
   --radius-l: 12px;
   --radius-xl: 16px;
+  --radius-pill: 9999px;
+  // Deprecated: Mattermost webapp defines --radius-full as 50%, which wins
+  // when embedded and turns pills into ellipses. Use --radius-pill.
   --radius-full: 9999px;
 
   // ============================================================

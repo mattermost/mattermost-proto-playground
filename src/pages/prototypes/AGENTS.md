@@ -4,6 +4,8 @@ Follow this when working under `src/pages/prototypes/`.
 
 For scaffolding a new multi-scene prototype end-to-end, use [.cursor/skills/scaffold-prototype/SKILL.md](../../../.cursor/skills/scaffold-prototype/SKILL.md).
 
+For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.cursor/skills/guided-walkthrough/SKILL.md](../../../.cursor/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
+
 ## Imports
 
 Use `@mattermost/compass-ui` **subpath** imports only — never the root barrel:
@@ -13,7 +15,7 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 ```
 
-PascalCase folders map to kebab-case segments (`AdminConsoleSidebar` → `components/admin-console-sidebar`). Style sub-exports (`btnStyles`, `messageStyles`) come from the owning component subpath. Split multi-component imports into separate subpath lines.
+PascalCase folders map to kebab-case segments (`ChannelSidebarItem` → `components/channel-sidebar-item`). Style sub-exports (`btnStyles`, `messageStyles`) come from the owning component subpath. Split multi-component imports into separate subpath lines.
 
 `@mattermost/compass-proto` has **no subpath exports** — import named exports from the package root. Glyphs come from `@mattermost/compass-icons/components/<kebab>` and wrap in `Icon`.
 
@@ -23,6 +25,10 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 
 | Use for | Export | Import |
 | --- | --- | --- |
+| System Console settings section | `AdminPanel` | `@mattermost/compass-ui/components/admin-panel` |
+| Section action rail (pass via `AdminPanel` `footer`) | `AdminPanelFooter` | `@mattermost/compass-ui/components/admin-panel-footer` |
+| System Console page title | `AdminConsoleHeader` | `@mattermost/compass-ui/components/admin-console-header` |
+| System Console page Save / Cancel bar | `AdminConsoleFooter` | `@mattermost/compass-ui/components/admin-console-footer` |
 | Dialog / modal (desktop) | `Modal` | `@mattermost/compass-ui/components/modal` |
 | Menu row | `MenuItem` | `@mattermost/compass-ui/components/menu-item` |
 | Search field | `SearchInput` | `@mattermost/compass-ui/components/search-input` |
@@ -37,9 +43,10 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
 | Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
 | Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
-| Chat message | `Message` | `@mattermost/compass-ui/components/message` |
-| Composer | `MessageInput` | `@mattermost/compass-ui/components/message-input` |
-| Channel header | `ChannelHeader` | `@mattermost/compass-ui/components/channel-header` |
+| Walkthrough / product tour card | `TourPoint` | `@mattermost/compass-ui/components/tour-point` |
+| Chat message | `Message` | `@mattermost/compass-proto` |
+| Composer | `MessageInput` | `@mattermost/compass-proto` |
+| Channel header | `ChannelHeader` | `@mattermost/compass-proto` |
 | Divider | `Divider` | `@mattermost/compass-ui/components/divider` |
 | Scroll container | `Scrollbar` | `@mattermost/compass-ui/components/scrollbar` |
 | Chip | `Chip` | `@mattermost/compass-ui/components/chip` |
@@ -52,10 +59,11 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 | Tabs | `Tabs` | `@mattermost/compass-ui/components/tabs` |
 | Transient confirmation | `Toast` | `@mattermost/compass-ui/components/toast` |
 | Menu surface | `PopoverMenu` | `@mattermost/compass-ui/components/popover-menu` |
-| Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-ui/components/channels-sidebar` |
 | Date / unread rule in a message list | `MessageSeparator` | `@mattermost/compass-ui/components/message-separator` |
 
-There is no `Dialog` — use `Modal`. Overlay open/close, portal, and focus stay with the host.
+There is no `Dialog` — use `Modal`. Host owns open/close, portal, and backdrop; `Modal` owns dialog focus and Escape.
+
+`AdminPanel` is the bordered sheet for a single System Console settings section (header and/or body; footer optional via `AdminPanelFooter`). Prefer `title` / expand / switch props on `AdminPanel` over mounting `AdminPanelHeader` yourself. Header-only and body-only panels are valid; footer-only is not. Pair with proto `AdminConsoleSidebar` plus `AdminConsoleHeader` / `AdminConsoleFooter` for full console page chrome.
 
 There is no `ChannelIcon`. Standalone channel glyph:
 
@@ -74,6 +82,11 @@ Sidebar rows use `ChannelSidebarItem` with `leadingVisual` (`'public'` \| `'priv
 | Use for | Export | Import |
 | --- | --- | --- |
 | Desktop channel layout | `ChannelShell` | `@mattermost/compass-proto` |
+| Team sidebar | `TeamSidebar` | `@mattermost/compass-proto` |
+| Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-proto` |
+| Global header | `GlobalHeader` | `@mattermost/compass-proto` |
+| Admin console sidebar | `AdminConsoleSidebar` | `@mattermost/compass-proto` |
+| Hardcoded menu recipes | `PlusMenu`, `HelpMenu`, `ChannelMenu`, `TeamMenu`, … | `@mattermost/compass-proto` |
 | Default sidebar fixture | `buildDefaultChannelsSidebarModel` | `@mattermost/compass-proto` |
 | Mobile home | `MobileHome` | `@mattermost/compass-proto` |
 | Mobile tab bar | `MobileTabBar` | `@mattermost/compass-proto` |
@@ -133,11 +146,11 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Selectable / removable token | `Chip` | `Tag` |
 | Metadata label (BOT, Guest) | `Tag` | `Chip` |
 | Mention count / unread / presence | `MentionBadge` / `UnreadBadge` / `StatusBadge` | a custom pill |
-| Desktop dialog | `Modal` + host portal / focus | a restyled `div`, or `MobileModal` |
+| Desktop dialog | `Modal` + host portal / backdrop | a restyled `div`, or `MobileModal` |
 | Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
 | Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
 | Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
-| Full desktop channel column | `ChannelShell` (proto) + ui `ChannelHeader` / `Message*` | rebuilding the chrome |
+| Full desktop channel column | `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput` (all proto) | rebuilding the chrome |
 | Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
 | Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
 | Scroll region | `Scrollbar` | raw `overflow` |
@@ -145,12 +158,17 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 | Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
 | Tab strip (mutually exclusive view switcher) | `Tabs` | custom `button[role="tab"]` / `div[role="tablist"]` |
 | Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
+| System Console settings section | `AdminPanel` | a custom bordered card, `Modal`, or `SectionNotice` |
+| Sectional actions inside a panel | `AdminPanel` `footer` + `AdminPanelFooter` | page-level `AdminConsoleFooter`, or a freeform button row |
+| System Console page Save / Cancel | `AdminConsoleFooter` | `AdminPanelFooter` or ad-hoc footer buttons |
 | Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
 | Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
 
+**Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
+
 ### Overlay wiring
 
-`Modal`, `Tooltip`, `PopoverMenu`, and `ProfilePopover` are **visual chrome only**. The host owns:
+`Tooltip`, `PopoverMenu`, and `ProfilePopover` are **visual chrome only**. The host owns:
 
 - Open / close state
 - `createPortal` to `document.body` (or a dedicated overlay root)
@@ -158,15 +176,26 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 - Focus, Escape, and outside click (`useOutsideClose`)
 - Exit animation (`useExitAnimation`) so the surface unmounts after the close motion
 
-Render `Modal` only while it should be on screen (plus the exit-animation hold). Do not wrap it in extra dialog chrome. `role="dialog"` on the surface is fine; do not add focus-trap or backdrop logic inside the Compass primitive.
+`Modal` is different: it owns dialog-level focus and keyboard behavior (initial focus, Tab trap, Escape via `onClose` / `closeOnEscape`, focus restore on unmount). The host still owns portal, overlay/backdrop, scroll lock, stacking, and open state. Prefer `open` + `onExited` for the built-in enter/exit transition, or mount/unmount with `useExitAnimation` if the host drives motion. Do not wrap `Modal` in extra dialog chrome or reimplement a focus trap.
 
 **Exceptions:** `Combobox`, `Select`, and `DateRangePicker` own their menus. Mobile sheets use `MobileModal` + playground `MobileModalStage` (see **Mobile Channel → Modal** below).
 
+### RHS panels
+
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
+
 ### Prototype-only UI
 
-1. Name matches a Compass export → use it. Do not restyle a cousin.
-2. Flow-specific composition (a Find Channels dialog, a call PIP) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM.
-3. Reusable design-system control → implement in **compass-design**, not under playground `src/components/` or a prototype folder.
+**Before writing any custom element, ask: does a Compass component cover this structure?**
+If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components.
+
+The threshold for "close enough to use Compass" is low. A `Chip` that needs a blue tint, a `Button` that needs `align-self: flex-start`, a `Checkbox` with an extra margin — all still use the Compass component with a className override. Only reach for custom HTML when Compass has nothing structurally close.
+
+Decision order:
+1. **Name matches a Compass export → use it.** Do not restyle a structural cousin.
+2. **Compass component + className override → use it.** Minor visual differences (color, display, margin) do not justify a custom element.
+3. **No Compass match → build from primitives.** Flow-specific composition (a Find Channels dialog, a call PIP, a card layout) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM. Be explicit about why Compass has nothing that fits.
+4. **Reusable design-system control → implement in compass-design**, not under playground `src/components/` or a prototype folder.
 
 Invented UI must:
 

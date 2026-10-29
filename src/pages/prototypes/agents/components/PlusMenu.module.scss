@@ -1,0 +1,33 @@
+.plus-menu {
+  position: fixed;
+  z-index: 1200;
+  width: 260px;
+  transform-origin: top left;
+  animation: plus-menu-in var(--duration-quick) var(--ease-entrance) both;
+
+  &--exiting {
+    animation: plus-menu-out var(--duration-quick) var(--ease-exit) both;
+  }
+}
+
+@keyframes plus-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes plus-menu-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}

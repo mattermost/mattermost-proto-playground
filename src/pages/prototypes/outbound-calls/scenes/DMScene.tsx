@@ -1,22 +1,26 @@
 import type { MouseEvent } from 'react';
-import { ChannelHeader } from '@mattermost/compass-ui/components/channel-header';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { Message } from '@mattermost/compass-ui/components/message';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
-import { SegmentedCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
+import { StartCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
 import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles } from '@mattermost/compass-proto';
+import { layoutStyles, ChannelHeader, Message } from '@mattermost/compass-proto';
 
 export function DMScene({
   onOpenProfile,
   onStartCall,
   onOpenDialer,
+  startCallMenuOpen,
+  onStartCallMenuOpenChange,
+  telAutocompleteOpen,
 }: {
   onOpenProfile: (contactId: string, rect: DOMRect) => void;
   onStartCall: (contactId: string, phoneIndex: number) => void;
   onOpenDialer: () => void;
+  startCallMenuOpen?: boolean;
+  onStartCallMenuOpenChange?: (open: boolean) => void;
+  telAutocompleteOpen?: boolean;
 }) {
   const contact = CONTACT_MAP['aiko'];
   const primaryIndex = contact.phones.findIndex((p) => p.kind === 'standard');
@@ -54,12 +58,14 @@ export function DMScene({
         description={contact.title}
         avatarSrc={contact.avatar}
         avatarStatus={contact.online}
-        onNameClick={(e: MouseEvent<HTMLElement>) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
+        onNameClick={(e: MouseEvent) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
         callButton={
-          <SegmentedCallButton
+          <StartCallButton
             actions={actions}
             onSelect={handleSelect}
             audioLabel={`Start audio call with ${contact.name}`}
+            open={startCallMenuOpen}
+            onOpenChange={onStartCallMenuOpenChange}
           />
         }
       />
@@ -106,7 +112,10 @@ export function DMScene({
         </Message>
       </div>
       <div className={layoutStyles['channel-shell__message-input']}>
-        <TelAutocompleteMessageInput placeholder={`Message ${contact.name}`} />
+        <TelAutocompleteMessageInput
+          placeholder={`Message ${contact.name}`}
+          forceOpen={telAutocompleteOpen}
+        />
       </div>
     </>
   );

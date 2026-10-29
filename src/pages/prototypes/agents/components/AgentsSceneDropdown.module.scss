@@ -1,0 +1,39 @@
+.agents-scene-dropdown {
+  position: relative;
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    left: 0;
+    z-index: 200;
+    min-width: 220px;
+    transform-origin: top left;
+    animation: scene-dropdown-enter var(--duration-quick) var(--ease-entrance) both;
+
+    &--exiting {
+      animation: scene-dropdown-exit var(--duration-quick) var(--ease-exit) both;
+    }
+  }
+}
+
+@keyframes scene-dropdown-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scene-dropdown-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}

@@ -6,6 +6,7 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import welcomeBg from '@/assets/illustrations/call-welcome-bg.svg';
 import styles from './WelcomeScene.module.scss';
+import layoutStyles from './ExternalCallParticipantsLayout.module.scss';
 
 export interface WelcomeSceneProps {
   channelName: string;
@@ -21,50 +22,55 @@ export default function WelcomeScene({ channelName, onJoin }: WelcomeSceneProps)
   };
 
   return (
-    <div className={styles.welcome}>
-      <div
-        className={styles['welcome__texture']}
-        style={{ backgroundImage: `url(${welcomeBg})` }}
-        aria-hidden
-      />
-      <div className={styles['welcome__glow']} aria-hidden />
-      <form
-        className={styles['welcome__card']}
-        onSubmit={handleSubmit}
-        aria-label={`Join call in ${channelName}`}
-      >
-        <div className={styles['welcome__icon']}>
-          <Icon size="32" glyph={<PhoneInTalkIcon />} />
-        </div>
-
-        <div className={styles['welcome__heading']}>
-          <h1 className={styles['welcome__title']}>Welcome to the call</h1>
-          <p className={styles['welcome__subtitle']}>
-            Please enter your name to join the call
-          </p>
-        </div>
-
-        <div className={styles['welcome__form']}>
-          <TextInput
-            className={styles['welcome__input']}
-            placeholder="Your name"
-            value={name}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+    <div className={layoutStyles.stage}>
+      <div className={layoutStyles['stage__frame']}>
+        <div className={styles.welcome} data-wt-shell data-wt-focus-shell>
+          <div
+            className={styles['welcome__texture']}
+            style={{ backgroundImage: `url(${welcomeBg})` }}
+            aria-hidden
           />
-          <Button
-            type="submit"
-            emphasis="primary"
-            size="medium"
-            trailingIcon={<Icon size="16" glyph={<ArrowRightIcon />} />}
+          <div className={styles['welcome__glow']} aria-hidden />
+          <form
+            className={styles['welcome__card']}
+            onSubmit={handleSubmit}
+            aria-label={`Join call in ${channelName}`}
+            data-wt-focus="welcome-card"
           >
-            Join
-          </Button>
-        </div>
+            <div className={styles['welcome__icon']}>
+              <Icon size="32" glyph={<PhoneInTalkIcon />} />
+            </div>
 
-        <p className={styles['welcome__footer']}>
-          You&rsquo;ll join as a guest
-        </p>
-      </form>
+            <div className={styles['welcome__heading']}>
+              <h1 className={styles['welcome__title']}>Welcome to the call</h1>
+              <p className={styles['welcome__subtitle']}>
+                Please enter your name to join the call
+              </p>
+            </div>
+
+            <div className={styles['welcome__form']}>
+              <TextInput
+                className={styles['welcome__input']}
+                placeholder="Your name"
+                value={name}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+              />
+              <Button
+                type="submit"
+                emphasis="primary"
+                size="medium"
+                trailingIcon={<Icon size="16" glyph={<ArrowRightIcon />} />}
+              >
+                Join
+              </Button>
+            </div>
+
+            <p className={styles['welcome__footer']}>
+              You&rsquo;ll join as a guest
+            </p>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

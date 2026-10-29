@@ -33,6 +33,10 @@ function resolveCompassDesignRoot() {
 }
 
 function assertNpmCompassUi() {
+  const declaredVersion = JSON.parse(
+    fs.readFileSync(path.join(root, 'package.json'), 'utf8'),
+  ).dependencies['@mattermost/compass-ui'];
+
   let entryPath;
   try {
     entryPath = require.resolve('@mattermost/compass-ui');
@@ -49,7 +53,6 @@ function assertNpmCompassUi() {
     path.join(distDir, 'index.js'),
     path.join(distDir, 'compass-ui.css'),
     path.join(distDir, 'compass-ui-standalone.css'),
-    path.join(distDir, 'index.css'),
     // Subpath layout (0.1.0-alpha.3+) — consumers import components/* not the root barrel
     path.join(distDir, 'components/button/index.js'),
   ];
@@ -58,7 +61,7 @@ function assertNpmCompassUi() {
     console.error(
       '[@mattermost/compass-ui] package is incomplete (missing dist files):\n' +
         missing.map((file) => `  - ${file}`).join('\n') +
-        '\n  Need 0.1.0-alpha.3+ with subpath exports. Run: npm install @mattermost/compass-ui@0.1.0-alpha.5',
+        `\n  Need 0.1.0-alpha.3+ with subpath exports. Run: npm install @mattermost/compass-ui@${declaredVersion}`,
     );
     process.exit(1);
   }

@@ -1,0 +1,115 @@
+@keyframes new-agent-group-chat-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes new-agent-group-chat-modal-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes new-agent-group-chat-modal-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes new-agent-group-chat-modal-dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+.new-agent-group-chat-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Combobox portals its menu here; stretch PopoverMenu to the popup width
+  // (which already matches the trigger via useAnchoredPopupPortal matchWidth).
+  :global([class*='combobox__menu']),
+  :global([class*='popover-menu']) {
+    width: 100%;
+    min-width: 100%;
+    max-width: none;
+  }
+
+  // Chip leadingAvatar → UserAvatar always circular-crops. Agent silhouettes
+  // (hexagon, cube, etc.) are SVG data URLs — drop the circle mask here only.
+  :global([class*='chip__avatar-slot']) {
+    :global([class*='user-avatar']),
+    :global([class*='user-avatar__image']) {
+      border-radius: 0;
+    }
+
+    :global([class*='user-avatar__image']) {
+      object-fit: contain;
+    }
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+    animation: new-agent-group-chat-modal-fade-in var(--duration-quick)
+      var(--ease-entrance) both;
+  }
+
+  &__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(600px, calc(100vw - var(--spacing-xxxxxl)));
+    max-height: calc(100vh - var(--spacing-xxxxxl));
+    overflow: auto;
+    transform-origin: center center;
+    animation: new-agent-group-chat-modal-dialog-in var(--duration-quick)
+      var(--ease-entrance) both;
+  }
+
+  &--exiting {
+    .new-agent-group-chat-modal__backdrop {
+      animation: new-agent-group-chat-modal-fade-out var(--duration-quick)
+        var(--ease-exit) both;
+    }
+
+    .new-agent-group-chat-modal__dialog {
+      animation: new-agent-group-chat-modal-dialog-out var(--duration-quick)
+        var(--ease-exit) both;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}

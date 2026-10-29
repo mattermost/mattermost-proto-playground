@@ -1,0 +1,79 @@
+.product-sidebar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 52px;
+  flex: 0 0 52px;
+  min-height: 0;
+  height: 100%;
+  background: transparent;
+  color: var(--sidebar-text);
+
+  &__top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    width: 100%;
+    padding: var(--spacing-xs);
+  }
+
+  &__button {
+    position: relative;
+    appearance: none;
+    border: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      color var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--sidebar-text-rgb), 0.08);
+      color: var(--sidebar-text);
+    }
+
+    &--active {
+      background: var(--button-bg);
+      color: var(--button-color);
+
+      &:hover {
+        background: var(--button-bg);
+        color: var(--button-color);
+      }
+    }
+  }
+
+  &__tooltip {
+    display: none;
+    position: absolute;
+    left: calc(100% + var(--spacing-xs));
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  &__button:hover &__tooltip,
+  &__button:focus-visible &__tooltip {
+    display: block;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.9);
+  }
+}
