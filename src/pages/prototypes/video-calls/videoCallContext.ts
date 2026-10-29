@@ -9,13 +9,17 @@ export interface VideoCallContextValue {
   actions: VideoCallActions;
 }
 
-export const VideoCallContext = createContext<VideoCallContextValue | null>(null);
+export const VideoCallContext = createContext<VideoCallContextValue | null>(
+  null,
+);
 
 /** Scenes and components read call state and dispatch actions through this. */
 export function useVideoCall(): VideoCallContextValue {
   const ctx = useContext(VideoCallContext);
   if (!ctx) {
-    throw new Error('useVideoCall must be used within the VideoCalls prototype');
+    throw new Error(
+      'useVideoCall must be used within the VideoCalls prototype',
+    );
   }
   return ctx;
 }

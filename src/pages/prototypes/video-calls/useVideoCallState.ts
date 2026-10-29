@@ -69,7 +69,13 @@ export function useVideoCallState() {
       }
       return merged;
     });
-  }, [state.count, state.overrides, state.media, state.handRaised, state.sharing]);
+  }, [
+    state.count,
+    state.overrides,
+    state.media,
+    state.handRaised,
+    state.sharing,
+  ]);
 
   const actions = useMemo(
     () => ({
@@ -85,7 +91,12 @@ export function useVideoCallState() {
         setState((s) =>
           s.joinMode === 'start' && s.count === 2
             ? { ...s, scene: 'ringing-out' }
-            : { ...s, scene: 'call', callStartedAt: Date.now(), sharing: false },
+            : {
+                ...s,
+                scene: 'call',
+                callStartedAt: Date.now(),
+                sharing: false,
+              },
         ),
       /** Ringing → connected. */
       connect: () =>
@@ -103,7 +114,10 @@ export function useVideoCallState() {
           callStartedAt: null,
         })),
       toggleMic: () =>
-        setState((s) => ({ ...s, media: { ...s.media, micOn: !s.media.micOn } })),
+        setState((s) => ({
+          ...s,
+          media: { ...s.media, micOn: !s.media.micOn },
+        })),
       toggleCamera: () =>
         setState((s) => ({
           ...s,
