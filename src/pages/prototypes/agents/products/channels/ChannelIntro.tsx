@@ -3,7 +3,7 @@ import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockIcon from '@mattermost/compass-icons/components/lock';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
-import { ActionButton } from '@mattermost/compass-ui/components/action-button';
+import { TileButton } from '@mattermost/compass-ui/components/tile-button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Illustration } from '@mattermost/compass-ui/components/illustration';
 import PrivateChannelIntro from '@/assets/illustrations/private-channel-intro.svg?react';
@@ -35,9 +35,9 @@ export default function ChannelIntro({ name, createdBy, createdAt, description, 
           <p className={styles['channel-intro__description']}>{description}</p>
         </div>
         <div className={styles['channel-intro__actions']}>
-          <ActionButton icon={<Icon glyph={<AccountPlusOutlineIcon />} size="20" />} label="Add people" />
-          <ActionButton icon={<Icon glyph={<PencilOutlineIcon />} size="20" />} label="Set header" />
-          <ActionButton icon={<Icon glyph={<BellOutlineIcon />} size="20" />} label="Notifications" />
+          <TileButton icon={<Icon glyph={<AccountPlusOutlineIcon />} />} label="Add people" />
+          <TileButton icon={<Icon glyph={<PencilOutlineIcon />} />} label="Set header" />
+          <TileButton icon={<Icon glyph={<BellOutlineIcon />} />} label="Notifications" />
         </div>
       </div>
     </div>
