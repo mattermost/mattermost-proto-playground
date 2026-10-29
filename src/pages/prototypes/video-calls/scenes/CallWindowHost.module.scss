@@ -1,0 +1,8 @@
+// Fills the orchestrator frame; the window inside is 100% x 100%.
+.call-window-host {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}

@@ -64,7 +64,7 @@
     display: flex;
 
     // VideoTile 'thumbnail' is a fixed 120x136; let it stretch to the column.
-    > * {
+    > :first-child {
       width: 100%;
     }
   }

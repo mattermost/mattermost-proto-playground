@@ -1,8 +1,9 @@
-import styles from '../VideoCalls.module.scss';
+import CallWindowHost from './CallWindowHost';
 
-/** Stub — replaced by the scene package that owns this file. */
+/**
+ * Connected call: `VideoCallWindow` filling the orchestrator frame. Collapse goes
+ * to `minimized`, share to `screen-share`, Leave to `ended` (all via actions).
+ */
 export default function CallScene() {
-  return (
-    <div className={styles['video-calls__placeholder']}>Call scene (stub)</div>
-  );
+  return <CallWindowHost playJoinSound />;
 }
