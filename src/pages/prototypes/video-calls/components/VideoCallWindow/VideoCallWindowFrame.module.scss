@@ -11,7 +11,11 @@
   color: var(--button-color);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: var(--radius-l);
-  box-shadow: var(--elevation-6);
+  // The window floats over a dimmed UI: a large, dark shadow lifts it off the
+  // scrim (the stock elevation alone is too soft here).
+  box-shadow:
+    var(--elevation-6),
+    0 24px 64px color-mix(in srgb, black 64%, transparent);
   overflow: hidden;
 
   &__app-header {
