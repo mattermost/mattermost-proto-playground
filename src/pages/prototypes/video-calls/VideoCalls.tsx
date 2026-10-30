@@ -86,7 +86,13 @@ export default function VideoCalls() {
       <CallPhaseEffects />
       <div className={styles['video-calls']}>
         <div className={styles['video-calls__frame']}>
-          {showWindow ? <CallWindowScene /> : <ChatScene />}
+          {/* The conversation stays visible behind the popout window. */}
+          <ChatScene widgetHidden={showWindow} />
+          {showWindow && (
+            <div className={styles['video-calls__window']}>
+              <CallWindowScene />
+            </div>
+          )}
         </div>
       </div>
     </VideoCallContext.Provider>

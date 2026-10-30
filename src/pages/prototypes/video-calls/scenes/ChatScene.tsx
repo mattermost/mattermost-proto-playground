@@ -11,10 +11,15 @@ const WIDGET_EXIT_MS = 150;
  * over the sidebar whenever a call is in progress on the widget surface. The
  * widget stays mounted through its exit animation after the call ends.
  */
-export default function ChatScene() {
+export interface ChatSceneProps {
+  /** Hide the widget (the call is in the popout window instead). */
+  widgetHidden?: boolean;
+}
+
+export default function ChatScene({ widgetHidden = false }: ChatSceneProps) {
   const { state } = useVideoCall();
   const { rendered, exiting } = useExitAnimation(
-    state.phase !== 'idle',
+    state.phase !== 'idle' && !widgetHidden,
     WIDGET_EXIT_MS,
   );
   const widget = rendered ? <CallWidgetHost exiting={exiting} /> : undefined;

@@ -2,6 +2,17 @@
 // ChannelShell / fullscreen popouts ship their own calc height + margin:auto,
 // so they are normalised to fill the frame.
 
+@keyframes video-calls-window-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .video-calls {
   height: 100%;
   box-sizing: border-box;
@@ -24,6 +35,21 @@
     max-width: 1440px;
     max-height: 800px;
     overflow: hidden;
+  }
+
+  // The popout floats over the conversation, inset so the app shows around it.
+  &__window {
+    position: absolute;
+    inset: var(--spacing-xxxxxl) var(--spacing-xxxxxl);
+    z-index: 10;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    animation: video-calls-window-in var(--duration-quick) var(--ease-entrance);
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 
   &__frame :global([class*='channel-shell']:not([class*='channel-shell__'])),
