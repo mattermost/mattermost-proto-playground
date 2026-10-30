@@ -1,7 +1,8 @@
 /**
  * Call sounds for the video-call prototype. Framework-free; no React.
  *
- * Sounds are OFF by default (setSoundsEnabled(true) to opt in). Browsers block
+* Sounds are disabled until the host calls setSoundsEnabled(true); the
+ * prototype chrome does so (default on, with a toggle). Browsers block
  * audio before a user gesture, so play() rejections (NotAllowedError) are
  * swallowed silently.
  *

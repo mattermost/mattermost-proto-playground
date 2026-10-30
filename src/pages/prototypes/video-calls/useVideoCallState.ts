@@ -74,7 +74,7 @@ const INITIAL_STATE: VideoCallState = {
   callStartedAt: null,
   endedDurationSec: 0,
   missedCall: false,
-  soundOn: false,
+  soundOn: true,
 };
 
 let noticeSeq = 0;
