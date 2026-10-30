@@ -39,7 +39,7 @@
     width: var(--icon-size-40, 40px);
     height: var(--icon-size-40, 40px);
     border-radius: var(--radius-pill);
-    background: var(--online-indicator);
+    background: var(--color-green-600);
     color: var(--button-color, var(--color-neutral-0));
   }
 
@@ -76,10 +76,11 @@
     gap: var(--spacing-m);
   }
 
-  // Join call: the online green from the design. The primary Button reads
-  // --button-bg (hover / active tints derive from it).
+  // Join call: green-600 (white text needs more contrast than the theme's
+  // online green). The primary Button reads --button-bg (hover / active tints
+  // derive from it).
   &__join {
-    --button-bg: var(--online-indicator);
+    --button-bg: var(--color-green-600);
   }
 
   // Ended: grey icon disc instead of the online green.

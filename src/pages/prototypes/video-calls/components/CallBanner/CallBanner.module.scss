@@ -9,7 +9,8 @@
   padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs)
     var(--spacing-m);
   border-radius: var(--radius-m);
-  background: var(--online-indicator);
+  // green-600, not the theme's online green: white text needs the contrast.
+  background: var(--color-green-600);
   box-shadow: var(--elevation-3);
   color: var(--button-color, var(--color-neutral-0));
 
