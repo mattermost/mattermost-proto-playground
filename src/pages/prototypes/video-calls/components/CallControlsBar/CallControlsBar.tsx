@@ -170,7 +170,7 @@ export function CallControlsBar({
       </div>
 
       <div className={styles['call-controls-bar__center']}>
-        <div className={styles['call-controls-bar__slot']}>
+        <div className={styles['call-controls-bar__slot']} data-menu-anchor>
           <SegmentedIconButton
             size="medium"
             style="inverted"
@@ -200,7 +200,7 @@ export function CallControlsBar({
           )}
         </div>
 
-        <div className={styles['call-controls-bar__slot']}>
+        <div className={styles['call-controls-bar__slot']} data-menu-anchor>
           <SegmentedIconButton
             size="medium"
             style="inverted"

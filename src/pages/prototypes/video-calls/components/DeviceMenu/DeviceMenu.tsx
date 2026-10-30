@@ -47,9 +47,9 @@ export interface DeviceMenuProps {
   /** Grouped lists, e.g. input + output devices. */
   sections?: DeviceMenuSection[];
   /**
-   * Called on outside pointerdown or Escape. Pointerdowns inside the menu's parent
-   * element (the anchor wrapper holding the trigger) count as inside, so the trigger's
-   * own toggle is not fought by this handler.
+   * Called on outside pointerdown or Escape. Pointerdowns inside the nearest
+   * `[data-menu-anchor]` ancestor (else the menu's parent element) count as inside,
+   * so the trigger's own toggle is not fought by this handler.
    */
   onClose: () => void;
   /** Called after the exit transition finishes. */
@@ -98,7 +98,9 @@ export function DeviceMenu({
       const menu = menuRef.current;
       const target = e.target as Node | null;
       if (!menu || !target) return;
-      const region = menu.parentElement ?? menu;
+      // A host can mark a wider anchor (trigger + menu wrapper) as inside.
+      const region =
+        menu.closest('[data-menu-anchor]') ?? menu.parentElement ?? menu;
       if (region.contains(target)) return;
       onCloseRef.current();
     };

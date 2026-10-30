@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
@@ -169,6 +170,7 @@ export default function WidgetPreJoin({
             segments={10}
             muted={!micOn}
             label={l.micLevel}
+            showIcon={false}
           />
         </div>
 
@@ -193,7 +195,13 @@ export default function WidgetPreJoin({
           <Button emphasis="tertiary" size="small" onClick={onCancel}>
             {l.cancel}
           </Button>
-          <Button emphasis="primary" size="small" onClick={onPrimary}>
+          <Button
+            className={styles['widget-pre-join__start']}
+            emphasis="primary"
+            size="small"
+            leadingIcon={<Icon size="12" glyph={<PhoneIcon />} />}
+            onClick={onPrimary}
+          >
             {mode === 'start' ? l.start : l.join}
           </Button>
         </div>

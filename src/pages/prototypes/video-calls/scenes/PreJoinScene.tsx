@@ -3,6 +3,7 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import VolumeHighIcon from '@mattermost/compass-icons/components/volume-high';
 import { CallNotice } from '../components/CallNotice';
 import { MicLevelMeter } from '../components/MicLevelMeter';
@@ -222,7 +223,12 @@ export default function PreJoinScene() {
             }
             actions={
               <>
-                <Button emphasis="primary" onClick={actions.confirmPreJoin}>
+                <Button
+                  className={styles['pre-join-scene__start']}
+                  emphasis="primary"
+                  leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+                  onClick={actions.confirmPreJoin}
+                >
                   {isStart ? 'Start call' : 'Join call'}
                 </Button>
                 <Button

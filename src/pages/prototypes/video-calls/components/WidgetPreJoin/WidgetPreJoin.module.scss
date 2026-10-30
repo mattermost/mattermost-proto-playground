@@ -66,4 +66,10 @@
     gap: var(--spacing-xs);
     padding-top: var(--spacing-xxs);
   }
+
+  // Start / Join call: success green. The primary Button reads --button-bg
+  // (hover and active tints derive from it), so override the variable.
+  &__start {
+    --button-bg: var(--color-success);
+  }
 }

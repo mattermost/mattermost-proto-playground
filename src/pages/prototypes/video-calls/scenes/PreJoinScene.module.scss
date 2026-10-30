@@ -65,4 +65,10 @@
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
+
+  // Start / Join call: success green. The primary Button reads --button-bg
+  // (hover and active tints derive from it), so override the variable.
+  &__start {
+    --button-bg: var(--color-success);
+  }
 }

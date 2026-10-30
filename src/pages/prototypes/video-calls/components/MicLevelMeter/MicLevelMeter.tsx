@@ -12,6 +12,8 @@ export interface MicLevelMeterProps {
   muted?: boolean;
   /** Accessible name. */
   label?: string;
+  /** Show the leading microphone glyph. Default: true. */
+  showIcon?: boolean;
   className?: string;
 }
 
@@ -21,6 +23,7 @@ export default function MicLevelMeter({
   segments = 12,
   muted = false,
   label = 'Microphone level',
+  showIcon = true,
   className,
 }: MicLevelMeterProps) {
   const clamped = Math.min(1, Math.max(0, level));
@@ -42,11 +45,13 @@ export default function MicLevelMeter({
       aria-valuemax={100}
       aria-valuenow={Math.round(muted ? 0 : clamped * 100)}
     >
-      <Icon
-        className={styles['mic-level-meter__icon']}
-        glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
-        size="16"
-      />
+      {showIcon && (
+        <Icon
+          className={styles['mic-level-meter__icon']}
+          glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
+          size="16"
+        />
+      )}
       <div className={styles['mic-level-meter__bars']} aria-hidden="true">
         {Array.from({ length: segments }, (_, i) => (
           <span
