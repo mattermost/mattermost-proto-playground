@@ -57,11 +57,18 @@
   color: var(--button-color, var(--color-neutral-0));
   isolation: isolate;
 
-  // Speaking ring is an outline drawn outside the tile (no layout shift, never
-  // covered by the media). Parents must not clip it.
-  outline: 3px solid transparent;
-  outline-offset: var(--spacing-xxxxs);
-  transition: outline-color var(--duration-quick) var(--ease-transition);
+  // Speaking ring: an inset border overlay above the media, inside the tile
+  // edge (no layout shift, follows the tile radius, nothing outside to clip).
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 3px transparent;
+    pointer-events: none;
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+  }
 
   &__media {
     position: absolute;
@@ -146,6 +153,27 @@
   }
 
   // 5 bars, 2px wide, 2px gap, heights 9 / 5 / 13 / 7 / 3.
+  // Host crown, after the name.
+  &__host {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-yellow-500);
+
+    // Thumbnails have no label chip: small dark circle, bottom-left.
+    &--thumbnail {
+      position: absolute;
+      left: var(--spacing-xxxs);
+      bottom: var(--spacing-xxxs);
+      z-index: 3;
+      width: var(--icon-size-20);
+      height: var(--icon-size-20);
+      border-radius: var(--radius-pill);
+      background: var(--video-tile-bg);
+    }
+  }
+
   &__wave {
     flex: 0 0 auto;
     display: inline-flex;
@@ -269,7 +297,9 @@
   // Modifiers
   // -------------------------------------------------------------------------
   &--speaking {
-    outline-color: var(--video-tile-ring);
+    &::after {
+      box-shadow: inset 0 0 0 3px var(--video-tile-ring);
+    }
 
     .video-tile__avatar-image {
       box-shadow: 0 0 0 3px var(--video-tile-ring);
@@ -342,7 +372,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    transition: none;
+    &::after {
+      transition: none;
+    }
 
     .video-tile__avatar-image,
     .video-tile__more {

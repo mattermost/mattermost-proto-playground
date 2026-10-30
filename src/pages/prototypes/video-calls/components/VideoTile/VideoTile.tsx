@@ -17,6 +17,7 @@ import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline
 import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
 import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
+import CrownOutlineIcon from '@mattermost/compass-icons/components/crown-outline';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import SyncIcon from '@mattermost/compass-icons/components/sync';
 import {
@@ -41,6 +42,8 @@ export interface VideoTileLabels {
   poorConnection?: string;
   reconnecting?: string;
   cameraOff?: string;
+  /** Accessible name / tooltip of the host badge. */
+  host?: string;
   /** Accessible name of the host-controls `...` button and its menu. */
   participantActions?: string;
 }
@@ -70,6 +73,8 @@ export interface VideoTileProps {
   muted?: boolean;
   speaking?: boolean;
   handRaised?: boolean;
+  /** Shows a compact host badge next to the name. */
+  host?: boolean;
   /** Emoji shown as a short pop over the tile. Change `reactionKey` to replay the same emoji. */
   reaction?: string;
   reactionKey?: string | number;
@@ -99,6 +104,7 @@ const DEFAULT_LABELS: Required<VideoTileLabels> = {
   poorConnection: 'Poor connection',
   reconnecting: 'Reconnecting…',
   cameraOff: 'Camera off',
+  host: 'Host',
   participantActions: 'Participant actions',
 };
 
@@ -120,6 +126,7 @@ function VideoTileInner({
   muted = false,
   speaking = false,
   handRaised = false,
+  host = false,
   reaction,
   reactionKey,
   connection = 'good',
@@ -189,6 +196,7 @@ function VideoTileInner({
 
   const displayName = selfLabel ? `${name} (${selfLabel})` : name;
   const status = [
+    host ? l.host : null,
     muted ? l.muted : l.unmuted,
     speaking && !muted ? l.speaking : null,
     handRaised ? l.handRaised : null,
@@ -307,11 +315,26 @@ function VideoTileInner({
       )}
 
       {size === 'thumbnail' ? (
-        muted && (
-          <span className={styles['video-tile__muted-dot']} aria-hidden="true">
-            <Icon glyph={<MicrophoneOffIcon />} size="10" />
-          </span>
-        )
+        <>
+          {host && (
+            <span
+              className={`${styles['video-tile__host']} ${styles['video-tile__host--thumbnail']}`}
+              role="img"
+              aria-label={l.host}
+              title={l.host}
+            >
+              <Icon glyph={<CrownOutlineIcon />} size="10" />
+            </span>
+          )}
+          {muted && (
+            <span
+              className={styles['video-tile__muted-dot']}
+              aria-hidden="true"
+            >
+              <Icon glyph={<MicrophoneOffIcon />} size="10" />
+            </span>
+          )}
+        </>
       ) : (
         <div className={styles['video-tile__strip']}>
           <figcaption className={styles['video-tile__label']}>
@@ -321,6 +344,16 @@ function VideoTileInner({
               size={iconSize}
             />
             <span className={styles['video-tile__name']}>{displayName}</span>
+            {host && (
+              <span
+                className={styles['video-tile__host']}
+                role="img"
+                aria-label={l.host}
+                title={l.host}
+              >
+                <Icon glyph={<CrownOutlineIcon />} size={iconSize} />
+              </span>
+            )}
             {speaking && !muted && (
               <span className={styles['video-tile__wave']} aria-hidden="true">
                 {WAVE_BARS.map((i) => (

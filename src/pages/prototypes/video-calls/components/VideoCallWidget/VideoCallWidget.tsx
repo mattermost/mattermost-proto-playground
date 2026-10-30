@@ -216,6 +216,7 @@ export function VideoCallWidget({
                   muted={p.muted}
                   speaking={!!p.talking && !p.muted}
                   handRaised={p.handRaised}
+                  host={p.host}
                   reaction={p.reaction}
                   connection={p.connection}
                   size="thumbnail"

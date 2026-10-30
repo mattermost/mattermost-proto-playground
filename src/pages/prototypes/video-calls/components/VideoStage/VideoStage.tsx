@@ -36,6 +36,8 @@ export interface VideoStageParticipant {
   muted?: boolean;
   talking?: boolean;
   handRaised?: boolean;
+  /** Shows the host badge on the tile. */
+  host?: boolean;
   reaction?: string;
   connection?: VideoTileConnection;
   self?: boolean;
@@ -112,7 +114,7 @@ const DEFAULT_LABELS: Required<VideoStageLabels> = {
 const GRID_COLUMNS = 120;
 const SHARE_CONTENT = '__share__';
 
-type CellRole = 'tile' | 'featured' | 'strip' | 'floating';
+type CellRole = 'tile' | 'grid' | 'featured' | 'strip' | 'floating';
 
 interface Placement {
   role: CellRole;
@@ -139,7 +141,7 @@ function planStage(
   const cells = new Map<string, Placement>();
 
   if (layout.kind === 'pip') {
-    cells.set(layout.mainId, { role: 'tile', column: '1 / -1', row: '1' });
+    cells.set(layout.mainId, { role: 'featured', column: '1 / -1', row: '1' });
     cells.set(layout.pipId, { role: 'floating' });
     return {
       canvas: {
@@ -157,7 +159,7 @@ function planStage(
       const offset = ((k - row.length) * span) / 2;
       row.forEach((id, i) => {
         cells.set(id, {
-          role: 'tile',
+          role: 'grid',
           column: `${1 + offset + i * span} / span ${span}`,
           row: `${r + 1}`,
         });
@@ -174,7 +176,7 @@ function planStage(
 
   if (layout.kind === 'speaker') {
     // Strip of 16:9 cells along the top (half-columns so a short second row
-    // centres exactly), featured speaker below spanning the full width.
+    // centres exactly), featured speaker below in the largest 16:9 box that fits (centred).
     const rows = layout.stripRows;
     const k = Math.max(1, ...rows.map((r) => r.length));
     rows.forEach((row, r) => {
@@ -353,6 +355,7 @@ export function VideoStage({
         muted={p.muted}
         speaking={!!p.talking && !p.muted}
         handRaised={p.handRaised}
+        host={p.host}
         reaction={p.reaction}
         connection={p.connection}
         paused={paused}

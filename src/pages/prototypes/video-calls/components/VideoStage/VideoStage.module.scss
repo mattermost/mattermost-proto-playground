@@ -4,8 +4,11 @@
 // the grid template and each cell's grid lines inline (layout values, not
 // tokens). Column gaps are cell padding (half a gap each side) so the 120-col
 // grid has no gap arithmetic; the canvas bleeds half a gap so outer tiles
-// still sit `--video-stage-edge` from the stage edge (room for the 5px
-// speaking ring, which VideoTile draws outside the tile).
+// still sit `--video-stage-edge` from the stage edge. The speaking ring is
+// drawn inside each tile by VideoTile.
+// Featured (speaker view, 1:1 remote) tiles are the largest 16:9 box that fits
+// the cell, centred; grid tiles keep the cell height but are never wider than
+// 16:9 (taller / portrait cells are left as they are).
 // ---------------------------------------------------------------------------
 
 @keyframes video-stage-fade-in {
@@ -82,6 +85,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    // Featured + grid cells are size containers so their tile can be sized
+    // from the cell (cqw / cqh) and centred.
+    &--featured,
+    &--grid {
+      container-type: size;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // Featured: largest 16:9 box in the cell.
+    &--featured#{&}--featured > * {
+      flex: 0 0 auto;
+      width: min(100cqw, calc(100cqh * 16 / 9));
+      height: min(100cqh, calc(100cqw * 9 / 16));
+    }
+
+    // Grid: never wider than 16:9, full cell height otherwise.
+    &--grid#{&}--grid > * {
+      flex: 0 0 auto;
+      width: min(100cqw, calc(100cqh * 16 / 9));
+      height: 100%;
     }
 
     // Doubled class: beats the docked SelfViewPip root's own 100% sizing.
