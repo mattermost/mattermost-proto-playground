@@ -8,6 +8,7 @@ import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER } from '../videoCallsData';
 import CallScene from './CallScene';
+import PhaseCrossfade from './PhaseCrossfade';
 import PreJoinScene from './PreJoinScene';
 import ScreenShareScene from './ScreenShareScene';
 import styles from './CallWindowScene.module.scss';
@@ -70,7 +71,19 @@ function CallingWindow() {
  */
 export default function CallWindowScene() {
   const { state } = useVideoCall();
-  if (state.phase === 'pre-join') return <PreJoinScene />;
-  if (state.phase === 'calling') return <CallingWindow />;
-  return state.sharing ? <ScreenShareScene /> : <CallScene />;
+  const scene =
+    state.phase === 'pre-join' ? (
+      <PreJoinScene />
+    ) : state.phase === 'calling' ? (
+      <CallingWindow />
+    ) : state.sharing ? (
+      <ScreenShareScene />
+    ) : (
+      <CallScene />
+    );
+  return (
+    <PhaseCrossfade phaseKey={state.phase} align="fill">
+      {scene}
+    </PhaseCrossfade>
+  );
 }

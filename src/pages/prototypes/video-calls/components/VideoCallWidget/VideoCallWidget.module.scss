@@ -6,7 +6,7 @@
     gap: var(--spacing-xxs);
     min-height: 36px;
     padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
-      var(--spacing-m);
+      var(--spacing-l);
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
@@ -40,7 +40,7 @@
   &__thumbs {
     display: flex;
     gap: var(--spacing-xs);
-    padding: 0 var(--spacing-m) var(--spacing-xs);
+    padding: 0 var(--spacing-l) var(--spacing-xs);
   }
 
   &__thumb {
@@ -77,7 +77,7 @@
     justify-content: space-between;
     gap: var(--spacing-xxxs);
     margin-top: auto;
-    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-l);
   }
 
   &__actions {

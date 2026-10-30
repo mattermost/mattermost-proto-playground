@@ -67,7 +67,7 @@
     gap: var(--spacing-m);
     // Anchored to the card bottom, same inset as the active controls row.
     margin-top: auto;
-    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xs);
+    padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-l);
   }
 
   @media (prefers-reduced-motion: reduce) {

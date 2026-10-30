@@ -71,5 +71,8 @@
   // (hover and active tints derive from it), so override the variable.
   &__start {
     --button-bg: var(--color-success);
+    // Takes the width left beside Cancel.
+    flex: 1 1 0;
+    min-width: 0;
   }
 }

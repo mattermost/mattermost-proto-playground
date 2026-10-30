@@ -30,6 +30,7 @@ import {
 } from '../videoCallsData';
 import CallMoreMenu from './CallMoreMenu';
 import ExitingPopover from './ExitingPopover';
+import PhaseCrossfade from './PhaseCrossfade';
 import { useCallSession } from './useCallSession';
 import styles from './CallWidgetHost.module.scss';
 
@@ -358,10 +359,12 @@ export default function CallWidgetHost({
         .join(' ')}
       onPointerDownCapture={ov.onPointerDownCapture}
     >
-      {phase === 'pre-join' && <PreJoinWidget ov={ov} />}
-      {phase === 'calling' && <CallingWidget ov={ov} />}
-      {phase === 'incoming' && <IncomingWidget />}
-      {phase === 'active' && <ActiveWidget ov={ov} />}
+      <PhaseCrossfade phaseKey={phase}>
+        {phase === 'pre-join' && <PreJoinWidget ov={ov} />}
+        {phase === 'calling' && <CallingWidget ov={ov} />}
+        {phase === 'incoming' && <IncomingWidget />}
+        {phase === 'active' && <ActiveWidget ov={ov} />}
+      </PhaseCrossfade>
     </div>
   );
 }
