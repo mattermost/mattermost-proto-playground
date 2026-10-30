@@ -345,7 +345,11 @@ export function SelfViewPip({
     drag.current = null;
     stop();
     if (el?.hasPointerCapture(d.id)) el.releasePointerCapture(d.id);
-    if (!d.moved || !el) return;
+    if (!d.moved || !el) {
+      // A tap interrupted an in-flight settle: finish going to the corner.
+      if (el && (offset.current.x || offset.current.y)) settle();
+      return;
+    }
     delete el.dataset.dragging;
     if (cancelled) {
       settle();

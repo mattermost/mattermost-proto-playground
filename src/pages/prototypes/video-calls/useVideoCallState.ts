@@ -90,16 +90,34 @@ function countFor(context: CallContext, current: number) {
   return current >= 3 ? current : DEFAULT_GROUP_COUNT;
 }
 
+/** Per-call state that never carries over into a new call. */
+const PER_CALL_RESET: Partial<VideoCallState> = {
+  recording: false,
+  handRaised: false,
+  removedIds: [],
+  overrides: {},
+  notices: [],
+};
+
 /** Fields that reset whenever a call ends or is abandoned. */
 const CALL_RESET: Partial<VideoCallState> = {
+  ...PER_CALL_RESET,
   phase: 'idle',
   surface: 'widget',
   sharing: false,
-  recording: false,
-  handRaised: false,
   pane: null,
   callStartedAt: null,
 };
+
+/** The webcam is released with the call; the next call starts camera-off. */
+function releaseCamera(media: MediaPrefs): MediaPrefs {
+  return { ...media, cameraOn: false, useWebcam: false };
+}
+
+/** A call ended or was abandoned: reset call fields and release the webcam. */
+function endCall(s: VideoCallState): VideoCallState {
+  return { ...s, ...CALL_RESET, media: releaseCamera(s.media) };
+}
 
 export function useVideoCallState() {
   const [state, setState] = useState<VideoCallState>(INITIAL_STATE);
@@ -148,7 +166,9 @@ export function useVideoCallState() {
             callContext: context,
             count: countFor(context, s.count),
             joinMode: joinModeFor(context),
-            ...(keepPhase ? {} : CALL_RESET),
+            ...(keepPhase
+              ? {}
+              : { ...CALL_RESET, media: releaseCamera(s.media) }),
           };
         }),
       /** Jump to a phase (chrome switcher). Sets the state a real flow would. */
@@ -160,6 +180,8 @@ export function useVideoCallState() {
             : 'widget';
           return {
             ...s,
+            ...PER_CALL_RESET,
+            media: phase === 'idle' ? releaseCamera(s.media) : s.media,
             phase,
             surface,
             joinMode: joinModeFor(s.callContext),
@@ -180,6 +202,8 @@ export function useVideoCallState() {
           if (!demo) return s;
           return {
             ...s,
+            ...PER_CALL_RESET,
+            media: demo.phase === 'idle' ? releaseCamera(s.media) : s.media,
             callContext: demo.context,
             count: countFor(demo.context, s.count),
             joinMode: joinModeFor(demo.context),
@@ -200,6 +224,7 @@ export function useVideoCallState() {
       startCall: () =>
         setState((s) => ({
           ...s,
+          ...PER_CALL_RESET,
           phase: 'pre-join',
           surface: 'widget',
           joinMode: joinModeFor(s.callContext),
@@ -217,7 +242,7 @@ export function useVideoCallState() {
       connect: () =>
         setState((s) => ({ ...s, phase: 'active', callStartedAt: Date.now() })),
       /** Cancel pre-join or an outgoing ring: back to the chat. */
-      cancelCall: () => setState((s) => ({ ...s, ...CALL_RESET })),
+      cancelCall: () => setState(endCall),
       /** Incoming card: Accept enters the live call in the same widget. */
       accept: (opts?: { audioOnly?: boolean }) =>
         setState((s) => ({
@@ -228,18 +253,17 @@ export function useVideoCallState() {
           media: opts?.audioOnly ? { ...s.media, cameraOn: false } : s.media,
         })),
       /** Incoming card: Decline returns to the chat with no missed-call post. */
-      decline: () => setState((s) => ({ ...s, ...CALL_RESET })),
+      decline: () => setState(endCall),
       /** Incoming call rang out: the chat gets a missed-call post. */
       missIncoming: () =>
-        setState((s) => ({ ...s, ...CALL_RESET, missedCall: true })),
+        setState((s) => ({ ...endCall(s), missedCall: true })),
       expand: () => setState((s) => ({ ...s, surface: 'window' })),
       collapse: () =>
         setState((s) => ({ ...s, surface: 'widget', pane: null })),
       /** Hang up: back to the chat; the chat's call post is the only end UI. */
       leave: () =>
         setState((s) => ({
-          ...s,
-          ...CALL_RESET,
+          ...endCall(s),
           endedDurationSec: s.callStartedAt
             ? Math.max(1, Math.round((Date.now() - s.callStartedAt) / 1000))
             : 0,

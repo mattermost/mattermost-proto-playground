@@ -22,23 +22,29 @@ export default function CallPhaseEffects() {
 
   useEffect(() => {
     if (phase !== 'calling') return;
-    playSound('ring-outgoing', { loop: true });
     const timer = window.setTimeout(actions.connect, CALLING_ANSWER_MS);
-    return () => {
-      window.clearTimeout(timer);
-      stopSound('ring-outgoing');
-    };
-  }, [phase, soundOn, actions]);
+    return () => window.clearTimeout(timer);
+  }, [phase, actions]);
+
+  // Toggling sounds restarts only the ring, never the lifecycle timer.
+  useEffect(() => {
+    if (phase !== 'calling') return;
+    playSound('ring-outgoing', { loop: true });
+    return () => stopSound('ring-outgoing');
+  }, [phase, soundOn]);
 
   useEffect(() => {
     if (phase !== 'incoming') return;
-    playSound('ring-incoming', { loop: true });
     const timer = window.setTimeout(actions.missIncoming, INCOMING_RING_MS);
-    return () => {
-      window.clearTimeout(timer);
-      stopSound('ring-incoming');
-    };
-  }, [phase, soundOn, actions]);
+    return () => window.clearTimeout(timer);
+  }, [phase, actions]);
+
+  // Toggling sounds restarts only the ring, never the lifecycle timer.
+  useEffect(() => {
+    if (phase !== 'incoming') return;
+    playSound('ring-incoming', { loop: true });
+    return () => stopSound('ring-incoming');
+  }, [phase, soundOn]);
 
   return null;
 }

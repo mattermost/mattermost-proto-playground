@@ -136,19 +136,24 @@ export default function CallWindowHost({
 
   // Join / leave notices when the call size changes ------------------------
   const prevParticipants = useRef(participants);
+  const removedByHost = useRef<string | null>(null);
   useEffect(() => {
     const prev = prevParticipants.current;
     prevParticipants.current = participants;
-    if (participants.length > prev.length) {
-      const added = participants.find((p) => !prev.some((q) => q.id === p.id));
-      if (added) {
-        actions.pushNotice({ kind: 'joined', text: `${added.name} joined` });
+    for (const added of participants.filter(
+      (p) => !prev.some((q) => q.id === p.id),
+    )) {
+      actions.pushNotice({ kind: 'joined', text: `${added.name} joined` });
+    }
+    for (const left of prev.filter(
+      (p) => !participants.some((q) => q.id === p.id),
+    )) {
+      // The host's own removal already posted "was removed".
+      if (left.id === removedByHost.current) {
+        removedByHost.current = null;
+        continue;
       }
-    } else if (participants.length < prev.length) {
-      const left = prev.find((p) => !participants.some((q) => q.id === p.id));
-      if (left) {
-        actions.pushNotice({ kind: 'left', text: `${left.name} left` });
-      }
+      actions.pushNotice({ kind: 'left', text: `${left.name} left` });
     }
   }, [participants, actions]);
 
@@ -161,7 +166,14 @@ export default function CallWindowHost({
   }, [playJoinSound, startedAt]);
 
   // Reactions ----------------------------------------------------------------
-  useEffect(() => () => window.clearTimeout(reactionTimer.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(reactionTimer.current);
+      // Don't leave the emoji stuck on the self tile if we remount mid-reaction.
+      actions.patchParticipant(SELF_ID, { reaction: undefined });
+    },
+    [actions],
+  );
 
   const react = useCallback(
     (emoji: string) => {
@@ -231,6 +243,7 @@ export default function CallWindowHost({
               text: `${target.name} is now a host`,
             });
           } else if (item === 'remove') {
+            removedByHost.current = id;
             actions.removeParticipant(id);
             actions.pushNotice({
               kind: 'info',

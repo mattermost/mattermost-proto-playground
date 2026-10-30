@@ -169,6 +169,13 @@ export function VideoCallWindow({
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
+      const t = e.target;
+      if (
+        t instanceof HTMLElement &&
+        (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))
+      ) {
+        return;
+      }
       const key = e.key.toLowerCase();
       if (key === 'd') {
         e.preventDefault();

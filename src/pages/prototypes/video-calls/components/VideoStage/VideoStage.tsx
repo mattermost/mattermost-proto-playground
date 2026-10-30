@@ -1,6 +1,7 @@
 import {
   Component,
   useCallback,
+  useMemo,
   useRef,
   type CSSProperties,
   type ReactNode,
@@ -303,6 +304,12 @@ export function VideoStage({
 }: VideoStageProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const byId = new Map(participants.map((p) => [p.id, p]));
+  // Stable per-tile menu objects so memoised tiles skip the timer's re-renders.
+  const tileMenus = useMemo(
+    () =>
+      new Map(participants.map((p) => [p.id, getTileMenu?.(p.id)] as const)),
+    [participants, getTileMenu],
+  );
   const plan = planStage(layout, filmstripPosition);
 
   const rootRef = useRef<HTMLElement | null>(null);
@@ -351,7 +358,7 @@ export function VideoStage({
         paused={paused}
         size={size}
         selfLabel={p.self ? l.self : undefined}
-        menu={getTileMenu?.(p.id)}
+        menu={tileMenus.get(p.id)}
       />
     );
   };
