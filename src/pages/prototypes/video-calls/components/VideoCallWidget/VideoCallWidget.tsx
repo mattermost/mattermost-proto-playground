@@ -3,8 +3,6 @@ import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/acc
 import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
-import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
-import HandRightOutlineIcon from '@mattermost/compass-icons/components/hand-right-outline';
 import MonitorOffIcon from '@mattermost/compass-icons/components/monitor-off';
 import MonitorShareIcon from '@mattermost/compass-icons/components/monitor-share';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
@@ -24,8 +22,6 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   region?: string;
   expand?: string;
   participants?: (count: number) => string;
-  raiseHand?: string;
-  lowerHand?: string;
   share?: string;
   stopShare?: string;
   more?: string;
@@ -52,19 +48,19 @@ export interface VideoCallWidgetProps {
   micOn: boolean;
   onToggleMic: () => void;
   /** Chevron next to the mic: the host toggles its device menu. */
-  onOpenMicMenu: () => void;
+  /** Omit to hide the mic chevron (the host offers the picker in the More menu). */
+  onOpenMicMenu?: () => void;
   micMenuOpen?: boolean;
   /** Host-rendered device menu, anchored above the card. */
   micMenu?: ReactNode;
   cameraOn: boolean;
   onToggleCamera: () => void;
-  onOpenCameraMenu: () => void;
+  /** Omit to hide the camera chevron. */
+  onOpenCameraMenu?: () => void;
   cameraMenuOpen?: boolean;
   cameraMenu?: ReactNode;
   /** Live webcam stream shown (mirrored) in the signed-in user's thumbnail. */
   selfStream?: MediaStream | null;
-  handRaised: boolean;
-  onToggleHand: () => void;
   sharing: boolean;
   onToggleShare: () => void;
   moreOpen?: boolean;
@@ -92,8 +88,6 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   cameraOn: 'Turn camera on',
   cameraOff: 'Turn camera off',
   cameraOptions: 'Camera options',
-  raiseHand: 'Raise hand',
-  lowerHand: 'Lower hand',
   share: 'Share screen',
   stopShare: 'Stop sharing screen',
   more: 'More options',
@@ -129,8 +123,6 @@ export function VideoCallWidget({
   cameraMenuOpen = false,
   cameraMenu,
   selfStream,
-  handRaised,
-  onToggleHand,
   sharing,
   onToggleShare,
   moreOpen = false,
@@ -261,22 +253,6 @@ export function VideoCallWidget({
             onOpenCameraMenu={onOpenCameraMenu}
             cameraMenuOpen={cameraMenuOpen}
             labels={labels}
-          />
-          <IconButton
-            size="small"
-            padding="compact"
-            toggled={handRaised}
-            aria-label={handRaised ? l.lowerHand : l.raiseHand}
-            title={handRaised ? l.lowerHand : l.raiseHand}
-            icon={
-              <Icon
-                size="16"
-                glyph={
-                  handRaised ? <HandRightIcon /> : <HandRightOutlineIcon />
-                }
-              />
-            }
-            onClick={onToggleHand}
           />
           <IconButton
             size="small"

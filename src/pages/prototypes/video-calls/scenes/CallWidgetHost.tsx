@@ -133,7 +133,13 @@ function useDeviceMenus(ov: WidgetOverlay) {
       onClose={ov.closeFromMenu}
     />
   );
-  return { micMenu, cameraMenu };
+  const micLabel =
+    mics.find((d) => d.deviceId === state.media.micDeviceId)?.label ??
+    mics[0].label;
+  const cameraLabel =
+    cameras.find((d) => d.deviceId === state.media.cameraDeviceId)?.label ??
+    cameras[0].label;
+  return { micMenu, cameraMenu, micLabel, cameraLabel };
 }
 
 /** Pre-join: self preview, mic test, device menus, Start / Join. */
@@ -215,7 +221,7 @@ function IncomingWidget() {
 function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
   const { state, participants, actions, selfCamera, elapsedLabel } =
     useCallSession();
-  const { micMenu, cameraMenu } = useDeviceMenus(ov);
+  const { micMenu, cameraMenu, micLabel, cameraLabel } = useDeviceMenus(ov);
   const { overlay, close, toggle } = ov;
   const devices = useMediaDevices({ enabled: true });
   const speakers = devices.speakers.length
@@ -246,16 +252,10 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
       }
       micOn={state.media.micOn}
       onToggleMic={actions.toggleMic}
-      onOpenMicMenu={() => toggle('mic')}
-      micMenuOpen={overlay === 'mic'}
       micMenu={micMenu}
       cameraOn={state.media.cameraOn}
       onToggleCamera={selfCamera.toggle}
-      onOpenCameraMenu={() => toggle('camera')}
-      cameraMenuOpen={overlay === 'camera'}
       cameraMenu={cameraMenu}
-      handRaised={state.handRaised}
-      onToggleHand={actions.toggleHand}
       sharing={state.sharing}
       onToggleShare={() => {
         close();
@@ -267,7 +267,16 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
         <CallMoreMenu
           open={overlay === 'more'}
           recording={state.recording}
+          handRaised={state.handRaised}
+          onToggleHand={() => {
+            actions.toggleHand();
+            close();
+          }}
           outputLabel={outputLabel}
+          micLabel={micLabel}
+          onShowMic={() => toggle('mic')}
+          cameraLabel={cameraLabel}
+          onShowCamera={() => toggle('camera')}
           onShowOutput={() => toggle('output')}
           onToggleRecording={() => {
             actions.toggleRecording();
