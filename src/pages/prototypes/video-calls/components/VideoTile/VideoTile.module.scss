@@ -57,17 +57,11 @@
   color: var(--button-color, var(--color-neutral-0));
   isolation: isolate;
 
-  // Speaking ring sits above the media so video never covers it.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 4;
-    border-radius: inherit;
-    box-shadow: inset 0 0 0 3px transparent;
-    pointer-events: none;
-    transition: box-shadow var(--duration-quick) var(--ease-transition);
-  }
+  // Speaking ring is an outline drawn outside the tile (no layout shift, never
+  // covered by the media). Parents must not clip it.
+  outline: 3px solid transparent;
+  outline-offset: var(--spacing-xxxxs);
+  transition: outline-color var(--duration-quick) var(--ease-transition);
 
   &__media {
     position: absolute;
@@ -96,11 +90,31 @@
   // -------------------------------------------------------------------------
   // Label chip — bottom-left, flush to the tile corner
   // -------------------------------------------------------------------------
+  // Bottom 24px strip: hit area for the host-controls button (hover / focus).
+  // The label chip sits inside it so hovering the chip also reveals the button.
+  &__strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    height: var(--spacing-xxl);
+    pointer-events: none;
+  }
+
+  &__more {
+    position: absolute;
+    right: var(--spacing-xxxs);
+    bottom: 0;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
   &__label {
     position: absolute;
     left: 0;
     bottom: 0;
-    z-index: 3;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xxxxs);
@@ -193,9 +207,10 @@
     background: rgba(0, 0, 0, 0.64);
     color: var(--away-indicator, var(--color-warning));
 
+    // Yellow badge with a dark glyph for contrast.
     &--hand {
-      color: var(--button-color, var(--color-neutral-0));
-      background: var(--sidebar-text-active-border, var(--color-info));
+      color: var(--color-neutral-1050);
+      background: var(--color-yellow-500);
     }
   }
 
@@ -254,13 +269,31 @@
   // Modifiers
   // -------------------------------------------------------------------------
   &--speaking {
-    &::after {
-      box-shadow: inset 0 0 0 3px var(--video-tile-ring);
-    }
+    outline-color: var(--video-tile-ring);
 
     .video-tile__avatar-image {
       box-shadow: 0 0 0 3px var(--video-tile-ring);
     }
+  }
+
+  &--has-menu {
+    .video-tile__strip {
+      pointer-events: auto;
+    }
+
+    .video-tile__label {
+      max-width: calc(100% - var(--spacing-xxl) - var(--spacing-xs));
+    }
+
+    .video-tile__strip:hover .video-tile__more,
+    .video-tile__strip:focus-within .video-tile__more,
+    .video-tile__more:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  &--menu-open .video-tile__more {
+    opacity: 1;
   }
 
   &--mirrored {
@@ -309,8 +342,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    &::after,
-    .video-tile__avatar-image {
+    transition: none;
+
+    .video-tile__avatar-image,
+    .video-tile__more {
       transition: none;
     }
 

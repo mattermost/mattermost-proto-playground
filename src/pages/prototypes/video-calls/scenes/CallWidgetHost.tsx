@@ -1,33 +1,102 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  ChannelHeader,
-  Message,
-  MessageInput,
-  ParticipantsPanel,
-  shellStyles,
-} from '@mattermost/compass-proto';
+import { ParticipantsPanel } from '@mattermost/compass-proto';
+import { Button } from '@mattermost/compass-ui/components/button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import {
   PopoverMenu,
   PopoverMenuDivider,
 } from '@mattermost/compass-ui/components/popover-menu';
-import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
-import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { VideoCallWidget } from '../components/VideoCallWidget';
-import { CHANNEL_NAME, CLIPS, SELF_ID } from '../videoCallsData';
-import VideoCallChannelShell from '../VideoCallChannelShell';
+import { useVideoCall } from '../videoCallContext';
+import {
+  CHANNEL_NAME,
+  CLIPS,
+  DM_PEER_ID,
+  ROSTER,
+  SELF_ID,
+} from '../videoCallsData';
 import { useCallSession } from './useCallSession';
+import styles from './CallWidgetHost.module.scss';
 
 type Overlay = 'participants' | 'more' | null;
 
+const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
+
 /**
- * Minimized call: the channel stays usable and the call lives in a floating
- * `VideoCallWidget` (bottom-left of the shell). Expand returns to `call`.
+ * TEMPORARY placeholder for the pre-join, calling and incoming widget states
+ * (replaced by the widget package). Keeps the whole flow clickable end to end.
  */
-export default function MinimizedScene() {
+function WidgetPhaseStub() {
+  const { state, actions } = useVideoCall();
+  const { phase } = state;
+  return (
+    <div className={styles['call-widget-host__stub']}>
+      <p className={styles['call-widget-host__stub-title']}>
+        {phase === 'pre-join' && 'Ready to start?'}
+        {phase === 'calling' && `Calling ${PEER.name}…`}
+        {phase === 'incoming' && `${PEER.name} is calling`}
+      </p>
+      <div className={styles['call-widget-host__stub-actions']}>
+        {phase === 'pre-join' && (
+          <>
+            <Button
+              emphasis="primary"
+              size="small"
+              onClick={actions.confirmPreJoin}
+            >
+              Start call
+            </Button>
+            <Button emphasis="tertiary" size="small" onClick={actions.expand}>
+              Expand
+            </Button>
+            <Button
+              emphasis="tertiary"
+              size="small"
+              onClick={actions.cancelCall}
+            >
+              Cancel
+            </Button>
+          </>
+        )}
+        {phase === 'calling' && (
+          <>
+            <Button emphasis="tertiary" size="small" onClick={actions.expand}>
+              Expand
+            </Button>
+            <Button
+              emphasis="tertiary"
+              size="small"
+              onClick={actions.cancelCall}
+            >
+              Cancel
+            </Button>
+          </>
+        )}
+        {phase === 'incoming' && (
+          <>
+            <Button
+              emphasis="primary"
+              size="small"
+              onClick={() => actions.accept()}
+            >
+              Accept
+            </Button>
+            <Button emphasis="tertiary" size="small" onClick={actions.decline}>
+              Decline
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The call widget (bottom-left over the sidebar): hosts every phase on the
+ * widget surface. The active phase is the full video widget.
+ */
+export default function CallWidgetHost() {
   const { state, participants, actions, elapsedLabel } = useCallSession();
   const [overlay, setOverlay] = useState<Overlay>(null);
   const widgetRef = useRef<HTMLDivElement>(null);
@@ -43,10 +112,12 @@ export default function MinimizedScene() {
     return () => document.removeEventListener('keydown', onKey);
   }, [overlay]);
 
+  if (state.phase !== 'active') return <WidgetPhaseStub />;
+
   const toggle = (id: Exclude<Overlay, null>) =>
     setOverlay((cur) => (cur === id ? null : id));
 
-  const widget = (
+  return (
     <div ref={widgetRef}>
       <VideoCallWidget
         channelName={CHANNEL_NAME}
@@ -89,7 +160,8 @@ export default function MinimizedScene() {
               leadingElement={false}
               onClick={() => {
                 close();
-                actions.go('call', { pane: 'chat' });
+                actions.expand();
+                actions.togglePane('chat');
               }}
             />
             <MenuItem
@@ -113,56 +185,9 @@ export default function MinimizedScene() {
             />
           </PopoverMenu>
         }
-        onExpand={() => actions.go('call')}
+        onExpand={actions.expand}
         onLeave={actions.leave}
       />
     </div>
-  );
-
-  return (
-    <VideoCallChannelShell
-      header={
-        <ChannelHeader
-          type="channel"
-          name={CHANNEL_NAME}
-          memberCount={14}
-          pinnedCount={2}
-        />
-      }
-      floating={widget}
-    >
-      <div className={shellStyles['channel-shell__messages']}>
-        <Scrollbar>
-          <div className={shellStyles['channel-shell__messages-list']}>
-            <MessageSeparator type="date" label="Today" />
-            <Message
-              avatarSrc={avatarSofia}
-              avatarAlt="Sofia Bauer"
-              username="Sofia Bauer"
-              timestamp="9:02 AM"
-            >
-              <p className={shellStyles['channel-shell__post-text']}>
-                Jumping on the design review call now. The new onboarding flow
-                is ready to walk through.
-              </p>
-            </Message>
-            <Message
-              avatarSrc={avatarMarco}
-              avatarAlt="Marco Rinaldi"
-              username="Marco Rinaldi"
-              timestamp="9:14 AM"
-            >
-              <p className={shellStyles['channel-shell__post-text']}>
-                Joining in a minute. I will keep notes in this channel so anyone
-                who misses it can catch up.
-              </p>
-            </Message>
-          </div>
-        </Scrollbar>
-      </div>
-      <div className={shellStyles['channel-shell__message-input']}>
-        <MessageInput placeholder={`Write to ${CHANNEL_NAME}`} />
-      </div>
-    </VideoCallChannelShell>
   );
 }

@@ -32,6 +32,18 @@ export type StageView = 'speaker' | 'grid';
 /** What the user is doing when they arrive at pre-join. */
 export type JoinMode = 'start' | 'accept' | 'join-group';
 
+/** Where the call lives: a 1:1 DM, a group DM, or a channel. */
+export type CallContext = 'dm' | 'gm' | 'channel';
+
+/**
+ * Where the user is in the call lifecycle. Every phase renders in whichever
+ * surface is active (widget or window); there is no separate modal.
+ */
+export type CallPhase = 'idle' | 'pre-join' | 'calling' | 'incoming' | 'active';
+
+/** `widget` = the small card over the sidebar; `window` = the expanded dark call window. */
+export type CallSurface = 'widget' | 'window';
+
 export type CallPane = 'participants' | 'chat' | null;
 
 export interface MediaPrefs {

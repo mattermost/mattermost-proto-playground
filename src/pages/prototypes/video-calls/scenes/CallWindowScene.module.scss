@@ -1,0 +1,25 @@
+// Temporary placeholder for the expanded calling state (replaced later).
+.call-window-scene {
+  &__stub {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-l);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border-radius: var(--radius-m);
+  }
+
+  &__stub-title {
+    margin: 0;
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__stub-actions {
+    display: flex;
+    gap: var(--spacing-s);
+  }
+}

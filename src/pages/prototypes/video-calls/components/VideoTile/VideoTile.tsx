@@ -1,4 +1,13 @@
-import { memo, useEffect, useRef, type CSSProperties } from 'react';
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from 'react';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import {
   UserAvatar,
@@ -8,7 +17,12 @@ import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline
 import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
 import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
+import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import SyncIcon from '@mattermost/compass-icons/components/sync';
+import {
+  ParticipantMenu,
+  type ParticipantMenuAnchor,
+} from '../ParticipantMenu';
 import styles from './VideoTile.module.scss';
 
 /**
@@ -27,6 +41,19 @@ export interface VideoTileLabels {
   poorConnection?: string;
   reconnecting?: string;
   cameraOff?: string;
+  /** Accessible name of the host-controls `...` button and its menu. */
+  participantActions?: string;
+}
+
+/** Host controls: items shown in the tile's menu; `onSelect` gets the item id. */
+export interface VideoTileMenu {
+  items: {
+    id: string;
+    label: string;
+    destructive?: boolean;
+    disabled?: boolean;
+  }[];
+  onSelect: (id: string) => void;
 }
 
 export interface VideoTileProps {
@@ -54,6 +81,11 @@ export interface VideoTileProps {
   size?: VideoTileSize;
   /** Shown after the name for the signed-in user, e.g. "You" → "Leonard Riley (You)". */
   selfLabel?: string;
+  /**
+   * Host controls. When set, hovering / focusing the bottom label strip reveals
+   * a `...` button and right-clicking the tile opens the same menu.
+   */
+  menu?: VideoTileMenu;
   labels?: VideoTileLabels;
   className?: string;
   style?: CSSProperties;
@@ -67,6 +99,7 @@ const DEFAULT_LABELS: Required<VideoTileLabels> = {
   poorConnection: 'Poor connection',
   reconnecting: 'Reconnecting…',
   cameraOff: 'Camera off',
+  participantActions: 'Participant actions',
 };
 
 const AVATAR_SIZE: Record<VideoTileSize, UserAvatarSize> = {
@@ -94,12 +127,44 @@ function VideoTileInner({
   paused = false,
   size = 'default',
   selfLabel,
+  menu,
   labels,
   className,
   style,
 }: VideoTileProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const streamRef = useRef<HTMLVideoElement>(null);
+  const moreRef = useRef<HTMLButtonElement>(null);
+  const [menuState, setMenuState] = useState<{
+    id: number;
+    anchor: ParticipantMenuAnchor;
+    fromButton: boolean;
+  } | null>(null);
+  const menuSeq = useRef(0);
+  const closeMenu = useCallback(() => setMenuState(null), []);
+
+  const openAtPointer = (e: MouseEvent) => {
+    if (!menu) return;
+    e.preventDefault();
+    setMenuState({
+      id: ++menuSeq.current,
+      anchor: { x: e.clientX, y: e.clientY },
+      fromButton: false,
+    });
+  };
+  const openFromButton = (e: MouseEvent<HTMLButtonElement>) => {
+    if (menuState) {
+      // The menu ignores pointerdown on its trigger, so toggle closed here.
+      setMenuState(null);
+      return;
+    }
+    const r = e.currentTarget.getBoundingClientRect();
+    setMenuState({
+      id: ++menuSeq.current,
+      anchor: { x: r.left, y: r.top, width: r.width, height: r.height },
+      fromButton: true,
+    });
+  };
 
   const hasStream = cameraOn && !!stream;
   const hasClip = cameraOn && !hasStream && !!videoSrc;
@@ -141,6 +206,8 @@ function VideoTileInner({
     showAvatar ? styles['video-tile--camera-off'] : '',
     reconnecting ? styles['video-tile--reconnecting'] : '',
     mirrored ? styles['video-tile--mirrored'] : '',
+    menu ? styles['video-tile--has-menu'] : '',
+    menuState ? styles['video-tile--menu-open'] : '',
     className ?? '',
   ]
     .filter(Boolean)
@@ -153,6 +220,7 @@ function VideoTileInner({
       className={rootClass}
       style={style}
       aria-label={`${displayName}: ${status}`}
+      onContextMenu={menu ? openAtPointer : undefined}
     >
       {showStream && (
         <video
@@ -245,21 +313,48 @@ function VideoTileInner({
           </span>
         )
       ) : (
-        <figcaption className={styles['video-tile__label']}>
-          <Icon
-            className={`${styles['video-tile__mic']} ${muted ? styles['video-tile__mic--muted'] : ''}`}
-            glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
-            size={iconSize}
-          />
-          <span className={styles['video-tile__name']}>{displayName}</span>
-          {speaking && !muted && (
-            <span className={styles['video-tile__wave']} aria-hidden="true">
-              {WAVE_BARS.map((i) => (
-                <span key={i} className={styles['video-tile__wave-bar']} />
-              ))}
-            </span>
+        <div className={styles['video-tile__strip']}>
+          <figcaption className={styles['video-tile__label']}>
+            <Icon
+              className={`${styles['video-tile__mic']} ${muted ? styles['video-tile__mic--muted'] : ''}`}
+              glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
+              size={iconSize}
+            />
+            <span className={styles['video-tile__name']}>{displayName}</span>
+            {speaking && !muted && (
+              <span className={styles['video-tile__wave']} aria-hidden="true">
+                {WAVE_BARS.map((i) => (
+                  <span key={i} className={styles['video-tile__wave-bar']} />
+                ))}
+              </span>
+            )}
+          </figcaption>
+          {menu && (
+            <IconButton
+              ref={moreRef}
+              className={styles['video-tile__more']}
+              icon={<DotsHorizontalIcon />}
+              size="small"
+              style="inverted"
+              aria-label={l.participantActions}
+              aria-haspopup="menu"
+              aria-expanded={!!menuState}
+              onClick={openFromButton}
+            />
           )}
-        </figcaption>
+        </div>
+      )}
+      {menu && menuState && (
+        <ParticipantMenu
+          key={menuState.id}
+          items={menu.items}
+          anchor={menuState.anchor}
+          label={l.participantActions}
+          triggerEl={menuState.fromButton ? moreRef.current : null}
+          focusOnOpen={menuState.fromButton}
+          onSelect={menu.onSelect}
+          onClose={closeMenu}
+        />
       )}
     </figure>
   );

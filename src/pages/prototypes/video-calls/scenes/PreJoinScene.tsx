@@ -228,8 +228,6 @@ export default function PreJoinScene() {
       </div>
     );
 
-  const cancelTarget = joinMode === 'join-group' ? 'channel' : 'dm';
-
   return (
     <div className={styles['pre-join-scene']}>
       <PreJoinPanel
@@ -368,10 +366,7 @@ export default function PreJoinScene() {
             <Button emphasis="primary" onClick={actions.confirmPreJoin}>
               {isStart ? 'Start call' : 'Join call'}
             </Button>
-            <Button
-              emphasis="secondary"
-              onClick={() => actions.go(cancelTarget)}
-            >
+            <Button emphasis="secondary" onClick={actions.cancelCall}>
               Cancel
             </Button>
           </>

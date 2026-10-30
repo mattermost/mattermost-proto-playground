@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { SectionNotice } from '@mattermost/compass-ui/components/section-notice';
 import { useVideoCall } from '../videoCallContext';
 import CallWindowHost from './CallWindowHost';
@@ -43,16 +42,10 @@ function MockSharedScreen() {
 
 /**
  * Call window in the share layout (content + filmstrip). The sharing banner
- * offers "Stop sharing", which returns to the `call` scene.
+ * offers "Stop sharing", which returns to the regular call layout.
  */
 export default function ScreenShareScene() {
-  const { state, actions } = useVideoCall();
-
-  // Landing here from the scene switcher: make sure we are actually sharing so
-  // the banner and the controls toggle agree.
-  useEffect(() => {
-    if (!state.sharing) actions.patch({ sharing: true });
-  }, [state.sharing, actions]);
+  const { actions } = useVideoCall();
 
   return (
     <CallWindowHost

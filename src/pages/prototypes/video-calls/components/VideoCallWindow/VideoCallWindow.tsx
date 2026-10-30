@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import ArrowCollapseIcon from '@mattermost/compass-icons/components/arrow-collapse';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
@@ -64,11 +58,7 @@ export interface VideoCallWindowProps {
   /** Pointer-down on the stage; hosts close open menus here. */
   onDismissOverlays?: () => void;
 
-  controls: Omit<CallControlsBarProps, 'hidden'>;
-  /** Keep the controls visible (a menu or pane is open). */
-  keepControlsVisible?: boolean;
-  /** Idle time before the controls hide. Default 3000. */
-  idleHideMs?: number;
+  controls: CallControlsBarProps;
 
   labels?: VideoCallWindowLabels;
   className?: string;
@@ -87,8 +77,7 @@ const cx = (...names: (string | false | undefined)[]) =>
 /**
  * Windowed call popout hosting `VideoStage` (mirrors compass-proto `CallPopout`
  * chrome: title bar, header row, dark stage, 3-zone controls). Plain props; the
- * scene wires state. Owns only the idle auto-hide timer and the Meet-style
- * shortcuts (Ctrl/Cmd+D mute, Ctrl/Cmd+E camera) while mounted.
+ * scene wires state. Owns only the Meet-style shortcuts (Ctrl/Cmd+D mute, Ctrl/Cmd+E camera) while mounted.
  */
 export function VideoCallWindow({
   variant = 'windowed',
@@ -114,50 +103,26 @@ export function VideoCallWindow({
   pane,
   onDismissOverlays,
   controls,
-  keepControlsVisible = false,
-  idleHideMs = 3000,
   labels,
   className,
 }: VideoCallWindowProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const fullscreen = variant === 'fullscreen';
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [idle, setIdle] = useState(false);
-  const timerRef = useRef<number | undefined>(undefined);
-  const keepRef = useRef(keepControlsVisible);
   const shortcutRef = useRef({
     mic: controls.onToggleMic,
     camera: controls.onToggleCamera,
   });
 
   useEffect(() => {
-    keepRef.current = keepControlsVisible;
     shortcutRef.current = {
       mic: controls.onToggleMic,
       camera: controls.onToggleCamera,
     };
   });
 
-  const wake = useCallback(() => {
-    setIdle(false);
-    window.clearTimeout(timerRef.current);
-    timerRef.current = window.setTimeout(() => {
-      const bar = rootRef.current?.querySelector('[role="toolbar"]');
-      const focusInBar = !!bar && bar.contains(document.activeElement);
-      if (!keepRef.current && !focusInBar) setIdle(true);
-    }, idleHideMs);
-  }, [idleHideMs]);
-
-  // Start the idle timer on mount; restart whenever a menu/pane closes.
-  useEffect(() => {
-    wake();
-    return () => window.clearTimeout(timerRef.current);
-  }, [wake, keepControlsVisible]);
-
-  // Document-level keyboard: wake the bar and handle the call shortcuts.
+  // Document-level call shortcuts while the window is mounted.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      wake();
       if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
       const key = e.key.toLowerCase();
       if (key === 'd') {
@@ -170,11 +135,10 @@ export function VideoCallWindow({
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [wake]);
+  }, []);
 
   return (
     <div
-      ref={rootRef}
       className={cx(
         styles['video-call-window'],
         fullscreen && styles['video-call-window--fullscreen'],
@@ -183,10 +147,6 @@ export function VideoCallWindow({
       role="dialog"
       aria-modal="false"
       aria-label={l.title}
-      onPointerMove={wake}
-      onPointerDown={wake}
-      onFocus={wake}
-      onBlur={wake}
     >
       {!fullscreen && (
         <div className={styles['video-call-window__app-header']}>
@@ -275,7 +235,7 @@ export function VideoCallWindow({
           {pane}
         </div>
 
-        <CallControlsBar {...controls} hidden={idle && !keepControlsVisible} />
+        <CallControlsBar {...controls} />
       </div>
     </div>
   );

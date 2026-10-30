@@ -1,0 +1,28 @@
+// Temporary placeholder card for non-active widget phases (replaced later).
+.call-widget-host {
+  &__stub {
+    width: 302px;
+    box-sizing: border-box;
+    padding: var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-l);
+    box-shadow: var(--elevation-4);
+  }
+
+  &__stub-title {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__stub-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+}

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
-import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import EmoticonHappyOutlineIcon from '@mattermost/compass-icons/components/emoticon-happy-outline';
 import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
@@ -8,12 +7,14 @@ import HandRightOutlineIcon from '@mattermost/compass-icons/components/hand-righ
 import MessageTextOutlineIcon from '@mattermost/compass-icons/components/message-text-outline';
 import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
+import MonitorOffIcon from '@mattermost/compass-icons/components/monitor-off';
 import MonitorShareIcon from '@mattermost/compass-icons/components/monitor-share';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
 import VideoOffOutlineIcon from '@mattermost/compass-icons/components/video-off-outline';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { SegmentedIconButton } from '../SegmentedIconButton';
 import styles from './CallControlsBar.module.scss';
 
 export interface CallControlsBarLabels {
@@ -46,6 +47,7 @@ export interface CallControlsBarProps {
   onToggleMic: () => void;
   /** Chevron next to the mic; the device menu itself goes in `micMenu`. */
   onOpenMicMenu?: () => void;
+  /** Mic menu is open: both mic segments show the `active` visual. */
   micMenuOpen?: boolean;
   /** Host-rendered menu (e.g. a `PopoverMenu`), anchored above the mic. */
   micMenu?: ReactNode;
@@ -79,8 +81,6 @@ export interface CallControlsBarProps {
   /** Right zone: red Leave. */
   onLeave: () => void;
 
-  /** Idle auto-hide (owned by the window). Hidden bars are inert. */
-  hidden?: boolean;
   labels?: CallControlsBarLabels;
   className?: string;
 }
@@ -140,7 +140,6 @@ export function CallControlsBar({
   onToggleMore,
   moreMenu,
   onLeave,
-  hidden = false,
   labels,
   className,
 }: CallControlsBarProps) {
@@ -153,20 +152,15 @@ export function CallControlsBar({
 
   return (
     <div
-      className={cx(
-        styles['call-controls-bar'],
-        hidden && styles['call-controls-bar--hidden'],
-        className,
-      )}
+      className={cx(styles['call-controls-bar'], className)}
       role="toolbar"
       aria-label={l.toolbar}
-      inert={hidden || undefined}
     >
       <div className={styles['call-controls-bar__left']}>
         <IconButton
           size="medium"
           style="inverted"
-          toggled={participantsOpen}
+          active={participantsOpen}
           count={participantCount}
           aria-label={l.participants(participantCount)}
           title={l.participants(participantCount)}
@@ -177,41 +171,28 @@ export function CallControlsBar({
 
       <div className={styles['call-controls-bar__center']}>
         <div className={styles['call-controls-bar__slot']}>
-          <div className={styles['call-controls-bar__split']}>
-            <IconButton
-              size="medium"
-              style="inverted"
-              className={cx(
-                styles['call-controls-bar__toggle'],
-                micOn
-                  ? styles['call-controls-bar__toggle--on']
-                  : styles['call-controls-bar__toggle--off'],
-              )}
-              aria-label={micLabel}
-              title={micLabel}
-              icon={
-                <Icon
-                  size="20"
-                  glyph={micOn ? <MicrophoneIcon /> : <MicrophoneOffIcon />}
-                />
-              }
-              onClick={onToggleMic}
-            />
-            {onOpenMicMenu && (
-              <IconButton
-                size="medium"
-                style="inverted"
-                padding="compact"
-                className={styles['call-controls-bar__chevron']}
-                aria-label={l.micOptions}
-                title={l.micOptions}
-                aria-haspopup="menu"
-                aria-expanded={micMenuOpen}
-                icon={<Icon size="16" glyph={<ChevronUpIcon />} />}
-                onClick={onOpenMicMenu}
-              />
+          <SegmentedIconButton
+            size="medium"
+            style="inverted"
+            className={styles['call-controls-bar__segment']}
+            mainClassName={cx(
+              styles['call-controls-bar__toggle'],
+              micOn
+                ? styles['call-controls-bar__toggle--on']
+                : styles['call-controls-bar__toggle--off'],
             )}
-          </div>
+            menuOpen={micMenuOpen}
+            label={micLabel}
+            chevronLabel={l.micOptions}
+            icon={
+              <Icon
+                size="20"
+                glyph={micOn ? <MicrophoneIcon /> : <MicrophoneOffIcon />}
+              />
+            }
+            onClick={onToggleMic}
+            onChevronClick={onOpenMicMenu}
+          />
           {micMenu && (
             <div className={styles['call-controls-bar__popover']}>
               {micMenu}
@@ -220,43 +201,30 @@ export function CallControlsBar({
         </div>
 
         <div className={styles['call-controls-bar__slot']}>
-          <div className={styles['call-controls-bar__split']}>
-            <IconButton
-              size="medium"
-              style="inverted"
-              className={cx(
-                styles['call-controls-bar__toggle'],
-                cameraOn
-                  ? styles['call-controls-bar__toggle--on']
-                  : styles['call-controls-bar__toggle--off'],
-              )}
-              aria-label={cameraLabel}
-              title={cameraLabel}
-              icon={
-                <Icon
-                  size="20"
-                  glyph={
-                    cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />
-                  }
-                />
-              }
-              onClick={onToggleCamera}
-            />
-            {onOpenCameraMenu && (
-              <IconButton
-                size="medium"
-                style="inverted"
-                padding="compact"
-                className={styles['call-controls-bar__chevron']}
-                aria-label={l.cameraOptions}
-                title={l.cameraOptions}
-                aria-haspopup="menu"
-                aria-expanded={cameraMenuOpen}
-                icon={<Icon size="16" glyph={<ChevronUpIcon />} />}
-                onClick={onOpenCameraMenu}
-              />
+          <SegmentedIconButton
+            size="medium"
+            style="inverted"
+            className={styles['call-controls-bar__segment']}
+            mainClassName={cx(
+              styles['call-controls-bar__toggle'],
+              cameraOn
+                ? styles['call-controls-bar__toggle--on']
+                : styles['call-controls-bar__toggle--off'],
             )}
-          </div>
+            menuOpen={cameraMenuOpen}
+            label={cameraLabel}
+            chevronLabel={l.cameraOptions}
+            icon={
+              <Icon
+                size="20"
+                glyph={
+                  cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />
+                }
+              />
+            }
+            onClick={onToggleCamera}
+            onChevronClick={onOpenCameraMenu}
+          />
           {cameraMenu && (
             <div className={styles['call-controls-bar__popover']}>
               {cameraMenu}
@@ -270,7 +238,12 @@ export function CallControlsBar({
           toggled={sharing}
           aria-label={shareLabel}
           title={shareLabel}
-          icon={<Icon size="20" glyph={<MonitorShareIcon />} />}
+          icon={
+            <Icon
+              size="20"
+              glyph={sharing ? <MonitorOffIcon /> : <MonitorShareIcon />}
+            />
+          }
           onClick={onToggleShare}
         />
 
@@ -278,7 +251,7 @@ export function CallControlsBar({
           <IconButton
             size="medium"
             style="inverted"
-            toggled={reactionsOpen}
+            active={reactionsOpen}
             aria-label={l.reactions}
             title={l.reactions}
             aria-haspopup="menu"
@@ -311,7 +284,7 @@ export function CallControlsBar({
         <IconButton
           size="medium"
           style="inverted"
-          toggled={chatOpen}
+          active={chatOpen}
           unreadBadge={chatUnread && !chatOpen}
           aria-label={l.chat}
           title={l.chat}
@@ -323,7 +296,7 @@ export function CallControlsBar({
           <IconButton
             size="medium"
             style="inverted"
-            toggled={moreOpen}
+            active={moreOpen}
             aria-label={l.more}
             title={l.more}
             aria-haspopup="menu"

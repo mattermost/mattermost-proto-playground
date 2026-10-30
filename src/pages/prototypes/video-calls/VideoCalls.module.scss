@@ -36,15 +36,10 @@
     margin: 0 !important;
   }
 
-  // Temporary scene stub; each scene package replaces its own stub.
-  &__placeholder {
-    flex: 1 1 auto;
+  // Prototype chrome in the top-nav centre slot: one switcher per demo axis.
+  &__chrome {
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--center-channel-color);
-    font-size: var(--font-size-200);
-    background: var(--center-channel-bg);
-    border-radius: var(--radius-m);
+    gap: var(--spacing-m);
   }
 }

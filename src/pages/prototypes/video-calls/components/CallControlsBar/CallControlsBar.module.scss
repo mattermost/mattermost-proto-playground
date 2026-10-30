@@ -9,15 +9,6 @@
   justify-content: space-between;
   gap: var(--spacing-m);
   padding: var(--spacing-m) 0;
-  transition:
-    opacity var(--duration-moderate) var(--ease-transition),
-    transform var(--duration-moderate) var(--ease-transition);
-
-  &--hidden {
-    opacity: 0;
-    transform: translateY(var(--spacing-l));
-    pointer-events: none;
-  }
 
   &__left,
   &__right {
@@ -37,12 +28,6 @@
     display: flex;
   }
 
-  &__split {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xxxxs);
-  }
-
   &__popover {
     position: absolute;
     bottom: calc(100% + var(--spacing-s));
@@ -52,12 +37,12 @@
   }
 
   // Shared button chrome (copied from CallPopout so the bar reads identically).
-  button {
-    border-radius: var(--radius-m);
-  }
-
-  &__left button,
-  &__center button {
+  // Scoped to the bar's own buttons (direct children / segment groups) so it can
+  // never leak into popover content such as menu items (the old white-on-white bug).
+  &__left > button,
+  &__center > button,
+  &__slot > button,
+  &__segment button {
     background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
     color: color-mix(in srgb, var(--neutral-0) 72%, transparent);
 
@@ -77,8 +62,26 @@
     }
   }
 
+  &__left > button,
+  &__center > button,
+  &__slot > button,
+  &__right > button {
+    border-radius: var(--radius-m);
+  }
+
+  // Segment outer corners match the other bar buttons.
+  &__segment button:first-child {
+    border-start-start-radius: var(--radius-m);
+    border-end-start-radius: var(--radius-m);
+  }
+
+  &__segment button:last-child {
+    border-start-end-radius: var(--radius-m);
+    border-end-end-radius: var(--radius-m);
+  }
+
   // Mic / camera: green tint when on, red glyph when off.
-  #{&}__toggle#{&}__toggle--on {
+  #{&}__toggle#{&}__toggle--on:not([data-active='true']) {
     background-color: color-mix(
       in srgb,
       var(--online-indicator) 24%,
@@ -99,28 +102,13 @@
     color: var(--error-text, var(--color-danger));
   }
 
-  &__chevron {
-    // Narrower sibling of the mic/camera button.
-    width: 28px;
-    min-width: 0;
-    padding-inline: 0;
-  }
-
-  &__right button {
+  &__right > button {
     background-color: var(--error-text, var(--color-danger));
     color: var(--neutral-0);
 
     &:hover:not(:disabled) {
       background-color: var(--color-red-600);
       color: var(--neutral-0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-
-    &--hidden {
-      transform: none;
     }
   }
 }

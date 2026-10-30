@@ -5,29 +5,38 @@
  * module also runs under `node --experimental-strip-types` for the check
  * script next to it.
  *
- * ── Grid sizes ──────────────────────────────────────────────────────────────
- * Cells (tiles + the overflow chip, if any) → cols x rows. Chosen to maximise
- * the area of a 16:9 tile inside a ~1200x560 stage with 12px gaps (checked by
- * hand: e.g. 10 → 4x3 gives ~291x164 tiles vs ~230x129 for 5x2):
- *   1 → 1x1, 2 → 2x1, 3-4 → 2x2, 5-6 → 3x2, 7-9 → 3x3, 10 → 4x3.
- * Tiles fill their cell (Figma two-person grid tiles are ~614x524, not 16:9);
- * the stage centers a short last row (Figma: 3 people = 2 on top + 1 centered).
+ * The model returns explicit ROWS of cell ids (participant ids plus
+ * `OVERFLOW_CELL` for the "+N" chip). The stage renders every tile in one flat
+ * keyed list and places it with CSS grid lines derived from these rows, so a
+ * layout change never reparents or remounts a tile.
+ *
+ * ── Grid view rows (cells = tiles + chip) ───────────────────────────────────
+ * Picked by screenshot in a ~1200x560 stage, favouring tiles near 16:9 and a
+ * centred short last row (Figma: 3 people = 2 on top + 1 centred):
+ *   1 → [1]        2 → [2]        3 → [2,1]      4 → [2,2]      5 → [3,2]
+ *   6 → [3,3]      7 → [4,3]      8 → [4,4]      9 → [3,3,3]   10 → [4,3,3]
+ * 10 uses three rows: 4+3+3 gives ~290x175 tiles (1.66:1) vs 5+5 at ~230x270
+ * (portrait), and keeps every tile at least as large as the 9-up grid's height.
+ *
+ * ── Speaker view, 3+ people ─────────────────────────────────────────────────
+ * One large featured tile (the active speaker) under a horizontal strip of
+ * everyone else. The strip is a single row up to `STRIP_ROW_MAX` cells and
+ * two centred rows beyond that (see `stripRowSizes`). Self stays in the strip.
+ * 2 people in speaker view = remote large + self picture-in-picture.
  *
  * ── Ordering rules (deterministic) ──────────────────────────────────────────
  * - Base order is the `participants` order (join order). Self keeps its index.
  * - Grid view always displays visible tiles in base order. Talking never
  *   reorders a grid.
- * - When there are more participants than cells (`maxVisible`, default 9),
+ * - When there are more participants than cells (`maxVisible`, default 10),
  *   `maxVisible - 1` tiles show plus a "+N" overflow chip. Self, the presenter
  *   (share) and the active speaker are required members of the visible set.
  *   Membership is sticky: with `previous`, the previous visible set is kept and
  *   the active speaker is promoted ONLY when not already visible, by replacing
  *   the last non-required tile of the previous set.
- * - Speaker view (3+ people) features the active speaker in the first cell
- *   (spanning any empty cells of the last row, so it is the largest tile).
- *   On a speaker change with `previous`, the new speaker swaps places with the
- *   previously featured tile; every other tile stays put. Without `previous`,
- *   the speaker moves to the front and the rest keep base order.
+ * - Speaker view: on a speaker change with a previous speaker layout, the old
+ *   featured tile takes the new speaker's strip slot (a swap); every other
+ *   strip tile stays put. Otherwise the strip is in base order.
  * - Self is never featured and never dropped.
  */
 import {
@@ -42,8 +51,15 @@ export type LayoutParticipant = Pick<
   'id' | 'self' | 'sharing' | 'talking'
 >;
 
-export const DEFAULT_MAX_VISIBLE = 9;
+/** Cell id of the "+N" overflow chip inside `rows` / `stripRows`. */
+export const OVERFLOW_CELL = '__overflow__';
+
+export const DEFAULT_MAX_VISIBLE = MAX_PARTICIPANTS;
 export const DEFAULT_MAX_FILMSTRIP = 6;
+/** Speaker strip cells (incl. chip) — default fits everyone at 10 people. */
+export const DEFAULT_MAX_STRIP = MAX_PARTICIPANTS - 1;
+/** Speaker strip cells per row before it wraps to two rows. */
+export const STRIP_ROW_MAX = 7;
 
 export interface StageLayoutInput {
   participants: readonly LayoutParticipant[];
@@ -52,10 +68,12 @@ export interface StageLayoutInput {
   sharing: boolean;
   /** Non-self participant to feature / keep visible. */
   activeSpeakerId?: string;
-  /** Max cells in a grid including self and the overflow chip. Default 9. */
+  /** Max cells in a grid including self and the overflow chip. Default 10. */
   maxVisible?: number;
   /** Max cells in the share filmstrip including the overflow chip. Default 6. */
   maxFilmstrip?: number;
+  /** Max cells in the speaker strip including the overflow chip. Default 9. */
+  maxStrip?: number;
   /** Layout from the previous render, for sticky membership / swap ordering. */
   previous?: StageLayout | null;
 }
@@ -70,16 +88,25 @@ export interface PipLayout {
 
 export interface GridLayout {
   kind: 'grid';
+  /** Cell ids per row, top to bottom (`OVERFLOW_CELL` = the chip, always last). */
+  rows: string[][];
+  /** Widest row (cells). */
   cols: number;
-  rows: number;
   /** Visible tiles in display order. */
   tileIds: string[];
-  /** Participants behind the "+N" chip (chip is the last cell when non-empty). */
+  /** Participants behind the "+N" chip. */
   overflowIds: string[];
-  /** Speaker view: the tile in the first, largest cell. */
-  featuredId?: string;
-  /** Columns the featured tile spans (absorbs empty last-row cells). 1 otherwise. */
-  featuredSpan: number;
+}
+
+export interface SpeakerLayout {
+  kind: 'speaker';
+  /** Large tile under the strip (active speaker, never self). */
+  featuredId: string;
+  /** Strip cell ids per row (`OVERFLOW_CELL` = the chip, always last). */
+  stripRows: string[][];
+  /** Strip tiles in display order (no chip). */
+  stripIds: string[];
+  overflowIds: string[];
 }
 
 export interface ShareLayout {
@@ -90,20 +117,52 @@ export interface ShareLayout {
   overflowIds: string[];
 }
 
-export type StageLayout = PipLayout | GridLayout | ShareLayout;
+export type StageLayout = PipLayout | GridLayout | SpeakerLayout | ShareLayout;
 
-/** Cells → [cols, rows]. See the table in the file header. */
-export function gridDimensions(cells: number): { cols: number; rows: number } {
-  if (cells <= 0) return { cols: 0, rows: 0 };
-  if (cells === 1) return { cols: 1, rows: 1 };
-  if (cells === 2) return { cols: 2, rows: 1 };
-  if (cells <= 4) return { cols: 2, rows: 2 };
-  if (cells <= 6) return { cols: 3, rows: 2 };
-  if (cells <= 9) return { cols: 3, rows: 3 };
-  if (cells <= 12) return { cols: 4, rows: 3 }; // 10 = MAX_PARTICIPANTS
-  // Beyond the cap (not reachable after clamping): roughly square-ish 4:3 cell grid.
-  const cols = Math.ceil(Math.sqrt((cells * 4) / 3));
-  return { cols, rows: Math.ceil(cells / cols) };
+const GRID_ROWS: Record<number, number[]> = {
+  1: [1],
+  2: [2],
+  3: [2, 1],
+  4: [2, 2],
+  5: [3, 2],
+  6: [3, 3],
+  7: [4, 3],
+  8: [4, 4],
+  9: [3, 3, 3],
+  10: [4, 3, 3],
+};
+
+/** Grid cells → cells per row. See the table in the file header. */
+export function gridRowSizes(cells: number): number[] {
+  if (cells <= 0) return [];
+  const known = GRID_ROWS[cells];
+  if (known) return [...known];
+  // Beyond the cap (not reachable after clamping): rows of at most 4.
+  const rows = Math.ceil(cells / 4);
+  return splitEvenly(cells, rows);
+}
+
+/** Speaker strip cells → cells per row (one row up to STRIP_ROW_MAX). */
+export function stripRowSizes(cells: number): number[] {
+  if (cells <= 0) return [];
+  return splitEvenly(cells, Math.ceil(cells / STRIP_ROW_MAX));
+}
+
+/** `n` into `rows` rows, larger rows first (e.g. 9 in 2 → [5, 4]). */
+function splitEvenly(n: number, rows: number): number[] {
+  const base = Math.floor(n / rows);
+  const extra = n % rows;
+  return Array.from({ length: rows }, (_, i) => base + (i < extra ? 1 : 0));
+}
+
+function chunk(ids: string[], sizes: number[]): string[][] {
+  const out: string[][] = [];
+  let at = 0;
+  for (const size of sizes) {
+    out.push(ids.slice(at, at + size));
+    at += size;
+  }
+  return out;
 }
 
 function clampInt(
@@ -125,7 +184,7 @@ function normalize(
 ): LayoutParticipant[] {
   const seen = new Set<string>();
   const unique = participants.filter((p) => {
-    if (!p || !p.id || seen.has(p.id)) return false;
+    if (!p || !p.id || p.id === OVERFLOW_CELL || seen.has(p.id)) return false;
     seen.add(p.id);
     return true;
   });
@@ -142,15 +201,18 @@ function normalize(
   return kept;
 }
 
-function previousIds(previous: StageLayout | null | undefined): string[] {
-  if (!previous) return [];
-  switch (previous.kind) {
+/** Visible participant ids of a layout, in display order. */
+export function visibleIds(layout: StageLayout | null | undefined): string[] {
+  if (!layout) return [];
+  switch (layout.kind) {
     case 'pip':
-      return [previous.mainId, previous.pipId];
+      return [layout.mainId, layout.pipId];
     case 'grid':
-      return previous.tileIds;
+      return layout.tileIds;
+    case 'speaker':
+      return [layout.featuredId, ...layout.stripIds];
     case 'share':
-      return previous.filmstripIds;
+      return layout.filmstripIds;
   }
 }
 
@@ -223,7 +285,14 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
     2,
     MAX_PARTICIPANTS,
   );
-  const prev = previousIds(input.previous);
+  const maxStrip = clampInt(
+    input.maxStrip,
+    DEFAULT_MAX_STRIP,
+    2,
+    MAX_PARTICIPANTS - 1,
+  );
+  const prevLayout = input.previous ?? null;
+  const prev = visibleIds(prevLayout);
   const speakerId =
     input.activeSpeakerId &&
     input.activeSpeakerId !== selfId &&
@@ -234,14 +303,7 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
     ids.filter((id): id is string => !!id);
 
   if (list.length === 0) {
-    return {
-      kind: 'grid',
-      cols: 0,
-      rows: 0,
-      tileIds: [],
-      overflowIds: [],
-      featuredSpan: 1,
-    };
+    return { kind: 'grid', rows: [], cols: 0, tileIds: [], overflowIds: [] };
   }
 
   // ── Screen share: content on stage, cameras in a filmstrip ───────────────
@@ -277,22 +339,24 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
       prev,
     );
     const tileIds = sortByOrder(visible, order);
-    const { cols, rows } = gridDimensions(
-      tileIds.length + (overflow.length ? 1 : 0),
-    );
+    const cells = overflow.length ? [...tileIds, OVERFLOW_CELL] : tileIds;
+    const rows = chunk(cells, gridRowSizes(cells.length));
     return {
       kind: 'grid',
-      cols,
       rows,
+      cols: Math.max(...rows.map((r) => r.length)),
       tileIds,
       overflowIds: overflow,
-      featuredSpan: 1,
     };
   }
 
-  // ── Speaker view, 3+ people: active speaker featured first ───────────────
+  // ── Speaker view, 3+ people: featured speaker under a strip ──────────────
   const prevFeatured =
-    input.previous?.kind === 'grid' ? input.previous.featuredId : undefined;
+    prevLayout?.kind === 'speaker'
+      ? prevLayout.featuredId
+      : prevLayout?.kind === 'pip'
+        ? prevLayout.mainId
+        : undefined;
   const featuredId =
     speakerId ??
     (prevFeatured && prevFeatured !== selfId && order.includes(prevFeatured)
@@ -302,39 +366,34 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
     order[0];
   const { visible, overflow } = selectVisible(
     order,
-    maxVisible,
+    maxStrip + 1,
     required(selfId, featuredId),
     prev,
   );
+  const inStrip = new Set(visible.filter((id) => id !== featuredId));
 
-  let tileIds: string[];
-  if (prev.length) {
-    // Keep the previous arrangement; swap the featured tile into cell 0.
-    tileIds = [...visible];
-    const at = tileIds.indexOf(featuredId);
-    if (at > 0) {
-      [tileIds[0], tileIds[at]] = [tileIds[at], tileIds[0]];
+  let stripIds: string[];
+  if (prevLayout?.kind === 'speaker') {
+    // Keep the previous strip; the old featured tile takes the new one's slot.
+    const swapped = prevLayout.stripIds.map((id) =>
+      id === featuredId ? prevLayout.featuredId : id,
+    );
+    stripIds = swapped.filter(
+      (id, i) => inStrip.has(id) && swapped.indexOf(id) === i,
+    );
+    for (const id of sortByOrder([...inStrip], order)) {
+      if (!stripIds.includes(id)) stripIds.push(id);
     }
   } else {
-    tileIds = [
-      featuredId,
-      ...sortByOrder(
-        visible.filter((id) => id !== featuredId),
-        order,
-      ),
-    ];
+    stripIds = sortByOrder([...inStrip], order);
   }
 
-  const cells = tileIds.length + (overflow.length ? 1 : 0);
-  const { cols, rows } = gridDimensions(cells);
-  const featuredSpan = Math.min(cols, 1 + (cols * rows - cells));
+  const cells = overflow.length ? [...stripIds, OVERFLOW_CELL] : stripIds;
   return {
-    kind: 'grid',
-    cols,
-    rows,
-    tileIds,
-    overflowIds: overflow,
+    kind: 'speaker',
     featuredId,
-    featuredSpan,
+    stripRows: chunk(cells, stripRowSizes(cells.length)),
+    stripIds,
+    overflowIds: overflow,
   };
 }

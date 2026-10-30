@@ -49,19 +49,12 @@ function CallPost({
 }
 
 export interface DMChatProps {
-  /** Card shown over the whole shell (calling, incoming, ended). */
-  overlay?: ReactNode;
-  overlayPlacement?: 'center' | 'top-right';
+  /** The call widget, floating bottom-left over the sidebar. */
+  floating?: ReactNode;
 }
 
-/**
- * The 1:1 chat with the DM peer, shared by the dm scene and the scenes that
- * dim it (calling, incoming, ended). Prototype-only composition.
- */
-export default function DMChat({
-  overlay,
-  overlayPlacement = 'center',
-}: DMChatProps) {
+/** The 1:1 chat with the DM peer. Prototype-only composition. */
+export default function DMChat({ floating }: DMChatProps) {
   const { state, actions } = useVideoCall();
 
   return (
@@ -77,24 +70,14 @@ export default function DMChat({
               emphasis="quaternary"
               size="small"
               leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-              onClick={() => actions.startPreJoin('start')}
+              onClick={actions.startCall}
             >
-              Start video call
+              Start call
             </Button>
           }
         />
       }
-      overlay={
-        overlay ? (
-          <div
-            className={`${styles['dm-chat__scrim']} ${
-              styles[`dm-chat__scrim--${overlayPlacement}`]
-            }`}
-          >
-            {overlay}
-          </div>
-        ) : undefined
-      }
+      floating={floating}
     >
       <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="date" label="Today" />
@@ -139,7 +122,7 @@ export default function DMChat({
                 emphasis="tertiary"
                 size="small"
                 leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-                onClick={() => actions.startPreJoin('start')}
+                onClick={actions.startCall}
               >
                 Call back
               </Button>

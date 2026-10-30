@@ -1,0 +1,21 @@
+.participant-count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  border-radius: var(--radius-pill);
+  background: rgba(var(--center-channel-color-rgb), 0.08);
+  color: var(--center-channel-color);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+
+  &__label {
+    padding-inline: var(--spacing-xxs);
+  }
+
+  &__value {
+    min-width: 2ch;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+}

@@ -1,38 +1,28 @@
-import { useEffect, useMemo, type ComponentType } from 'react';
+import { useEffect, useMemo } from 'react';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useWalkthrough } from '@/walkthrough';
-import { SCENES, type SceneId } from './videoCalls.scenes';
+import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
+import ParticipantCountControl from './chrome/ParticipantCountControl';
+import CallPhaseEffects from './scenes/CallPhaseEffects';
+import CallWindowScene from './scenes/CallWindowScene';
+import ChatScene from './scenes/ChatScene';
 import { useVideoCallState } from './useVideoCallState';
 import { VideoCallContext } from './videoCallContext';
-import DMScene from './scenes/DMScene';
-import ChannelScene from './scenes/ChannelScene';
-import PreJoinScene from './scenes/PreJoinScene';
-import RingingOutScene from './scenes/RingingOutScene';
-import RingingInScene from './scenes/RingingInScene';
-import CallScene from './scenes/CallScene';
-import MinimizedScene from './scenes/MinimizedScene';
-import ScreenShareScene from './scenes/ScreenShareScene';
-import EndedScene from './scenes/EndedScene';
+import {
+  CONTEXTS,
+  PHASES,
+  SURFACES,
+  phaseAvailable,
+  surfaceAvailable,
+} from './videoCalls.scenes';
 import styles from './VideoCalls.module.scss';
-
-const SCENE_COMPONENTS: Record<SceneId, ComponentType> = {
-  dm: DMScene,
-  channel: ChannelScene,
-  'pre-join': PreJoinScene,
-  'ringing-out': RingingOutScene,
-  'ringing-in': RingingInScene,
-  call: CallScene,
-  minimized: MinimizedScene,
-  'screen-share': ScreenShareScene,
-  ended: EndedScene,
-};
 
 export default function VideoCalls() {
   const { setCenterSlot } = usePrototypeChrome();
   const { active: walkthroughActive } = useWalkthrough();
   const { state, participants, actions } = useVideoCallState();
-  const { scene } = state;
+  const { callContext, phase, surface, count } = state;
 
   useEffect(() => {
     if (walkthroughActive) {
@@ -40,28 +30,58 @@ export default function VideoCalls() {
       return () => setCenterSlot(null);
     }
     setCenterSlot(
-      <SceneSwitcher
-        scenes={SCENES}
-        activeId={scene}
-        onChange={(id) => actions.go(id as SceneId)}
-        ariaLabel="Prototype entry points"
-      />,
+      <div className={styles['video-calls__chrome']}>
+        <SceneSwitcher
+          scenes={CONTEXTS}
+          activeId={callContext}
+          onChange={(id) => actions.setContext(id as CallContext)}
+          ariaLabel="Conversation"
+        />
+        <SceneSwitcher
+          scenes={PHASES.filter((p) => phaseAvailable(callContext, p.id))}
+          activeId={phase}
+          onChange={(id) => actions.setPhase(id as CallPhase)}
+          ariaLabel="Call phase"
+        />
+        <SceneSwitcher
+          scenes={SURFACES.filter((s) => surfaceAvailable(phase, s.id))}
+          activeId={surface}
+          onChange={(id) => actions.setSurface(id as CallSurface)}
+          ariaLabel="Call surface"
+        />
+        <ParticipantCountControl
+          count={count}
+          onChange={actions.setCount}
+          disabled={callContext === 'dm'}
+        />
+      </div>,
     );
     return () => setCenterSlot(null);
-  }, [scene, actions, setCenterSlot, walkthroughActive]);
+  }, [
+    callContext,
+    phase,
+    surface,
+    count,
+    actions,
+    setCenterSlot,
+    walkthroughActive,
+  ]);
 
   const value = useMemo(
     () => ({ state, participants, actions }),
     [state, participants, actions],
   );
 
-  const Scene = SCENE_COMPONENTS[scene];
+  // The window hosts every phase except idle and incoming (those are widget-only).
+  const showWindow =
+    surface === 'window' && phase !== 'idle' && phase !== 'incoming';
 
   return (
     <VideoCallContext.Provider value={value}>
+      <CallPhaseEffects />
       <div className={styles['video-calls']}>
         <div className={styles['video-calls__frame']}>
-          <Scene />
+          {showWindow ? <CallWindowScene /> : <ChatScene />}
         </div>
       </div>
     </VideoCallContext.Provider>

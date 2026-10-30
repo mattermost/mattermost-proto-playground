@@ -299,7 +299,7 @@ export default function CallWindowHost({
         onViewChange={actions.setView}
         viewMenuOpen={openMenu === 'view'}
         onViewMenuOpenChange={(open) => setOpenMenu(open ? 'view' : null)}
-        onCollapse={() => actions.go('minimized')}
+        onCollapse={actions.collapse}
         layout={layout}
         participants={participants}
         clips={CLIPS}
@@ -317,7 +317,6 @@ export default function CallWindowHost({
         banner={banner}
         pane={pane}
         onDismissOverlays={closeMenu}
-        keepControlsVisible={openMenu !== null || state.pane !== null}
         controls={{
           participantCount: participants.length,
           participantsOpen: state.pane === 'participants',

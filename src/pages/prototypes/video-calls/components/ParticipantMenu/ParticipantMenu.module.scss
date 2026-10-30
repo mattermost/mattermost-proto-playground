@@ -1,0 +1,9 @@
+// Portal root for the participant menu. It lives on document.body, outside the
+// dark call surface, so tokens resolve to the normal (light/dark theme) menu
+// surface; colour is set explicitly so rows never inherit the call's white text.
+.participant-menu {
+  position: fixed;
+  z-index: 1000;
+  color: var(--center-channel-color);
+  font-family: inherit;
+}

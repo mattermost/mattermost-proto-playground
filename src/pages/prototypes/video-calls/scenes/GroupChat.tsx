@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
@@ -16,55 +17,71 @@ import { CHANNEL_NAME, ROSTER, SELF_ID } from '../videoCallsData';
 const byId = (id: string) => ROSTER.find((p) => p.id === id) ?? ROSTER[0];
 const SELF = byId(SELF_ID);
 const SOFIA = byId('sofia');
-const AIKO = byId('aiko');
 const MARCO = byId('marco');
-/** People already in the channel's ongoing call. */
-const IN_CALL = [MARCO, SOFIA, AIKO];
-/** Participant count after the user joins (the banner's three, plus self). */
-const COUNT_AFTER_JOIN = IN_CALL.length + 1;
 
-/** Channel with an ongoing call banner. Entry point for "Join call". */
-export default function ChannelScene() {
-  const { actions } = useVideoCall();
+export interface GroupChatProps {
+  kind: 'gm' | 'channel';
+  /** The call widget, floating bottom-left over the sidebar. */
+  floating?: ReactNode;
+}
 
-  const join = () => {
-    actions.patch({ count: COUNT_AFTER_JOIN });
-    actions.startPreJoin('join-group');
-  };
+/**
+ * Group DM or channel. While nobody (including you) is in the call, an ongoing
+ * call banner invites you to join; the participant-count control sets how many
+ * people are in it.
+ */
+export default function GroupChat({ kind, floating }: GroupChatProps) {
+  const { state, actions } = useVideoCall();
+  const others = ROSTER.slice(1, state.count);
+  const ongoing = state.phase === 'idle';
+  const chatName =
+    kind === 'gm'
+      ? others
+          .slice(0, 3)
+          .map((p) => p.name.split(' ')[0])
+          .join(', ')
+      : CHANNEL_NAME;
 
   return (
     <VideoCallChannelShell
+      floating={floating}
       header={
         <ChannelHeader
-          type="channel"
-          name={CHANNEL_NAME}
-          description="Design critiques, specs and shared work."
-          memberCount={24}
-          pinnedCount={2}
+          type={kind}
+          name={chatName}
+          description={
+            kind === 'channel' ? 'Design critiques, specs and shared work.' : ''
+          }
+          memberCount={kind === 'gm' ? state.count : 24}
+          pinnedCount={kind === 'channel' ? 2 : undefined}
           callButton={
             <Button
               emphasis="quaternary"
               size="small"
               leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-              onClick={join}
+              onClick={actions.startCall}
             >
-              Join call
+              {ongoing ? 'Join call' : 'Start call'}
             </Button>
           }
         />
       }
     >
-      <CallBanner
-        participants={IN_CALL.map((p) => ({
-          key: p.id,
-          name: p.name,
-          src: p.avatarSrc,
-        }))}
-        message={`${IN_CALL.length} people in a call`}
-        meta="12:40"
-        joinLabel="Join"
-        onJoin={join}
-      />
+      {ongoing && (
+        <CallBanner
+          participants={others.slice(0, 3).map((p) => ({
+            key: p.id,
+            name: p.name,
+            src: p.avatarSrc,
+          }))}
+          message={`${others.length} ${
+            others.length === 1 ? 'person' : 'people'
+          } in a call`}
+          meta="12:40"
+          joinLabel="Join"
+          onJoin={actions.startCall}
+        />
+      )}
       <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="date" label="Today" />
         <Message
@@ -100,7 +117,7 @@ export default function ChannelScene() {
         </Message>
       </div>
       <div className={layoutStyles['channel-shell__message-input']}>
-        <MessageInput placeholder={`Message ${CHANNEL_NAME}`} />
+        <MessageInput placeholder={`Message ${chatName}`} />
       </div>
     </VideoCallChannelShell>
   );
