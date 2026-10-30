@@ -147,8 +147,7 @@ function IncomingWidget() {
       callerName={PEER.name}
       callerAvatarSrc={PEER.avatarSrc}
       onAccept={() => actions.accept()}
-      onAcceptAudio={() => actions.accept({ audioOnly: true })}
-      onDecline={actions.decline}
+      onIgnore={actions.decline}
     />
   );
 }

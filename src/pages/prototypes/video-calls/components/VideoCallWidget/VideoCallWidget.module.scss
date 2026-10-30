@@ -80,7 +80,9 @@
     box-sizing: border-box;
     height: var(--video-call-widget-media-h);
     padding: 0 var(--spacing-s) var(--spacing-xs);
-    overflow: hidden;
+    // Clip the sides and bottom (phase content that outgrows the row), but let
+    // the calling ring pulse past the top into the header's empty space.
+    clip-path: inset(calc(var(--spacing-m) * -1) 0 0 0);
     transition: height var(--duration-moderate) var(--ease-transition);
 
     &--pre-join {

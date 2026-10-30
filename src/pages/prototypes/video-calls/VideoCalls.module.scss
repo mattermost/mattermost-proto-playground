@@ -2,6 +2,15 @@
 // ChannelShell / fullscreen popouts ship their own calc height + margin:auto,
 // so they are normalised to fill the frame.
 
+@keyframes video-calls-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes video-calls-window-in {
   from {
     opacity: 0;
@@ -37,17 +46,30 @@
     overflow: hidden;
   }
 
-  // The popout floats over the conversation, inset so the app shows around it.
+  // The popout floats over the conversation, inset so the app shows around it,
+  // with the conversation dimmed behind a scrim.
   &__window {
     position: absolute;
-    inset: var(--spacing-xxxxxl) var(--spacing-xxxxxl);
+    inset: 0;
     z-index: 10;
     display: flex;
+    box-sizing: border-box;
+    padding: var(--spacing-xxxxxl);
+    background: rgba(var(--center-channel-color-rgb), 0.48);
+    animation: video-calls-scrim-in var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__window-body {
+    display: flex;
+    flex: 1 1 auto;
     min-width: 0;
     min-height: 0;
     animation: video-calls-window-in var(--duration-quick) var(--ease-entrance);
+  }
 
-    @media (prefers-reduced-motion: reduce) {
+  @media (prefers-reduced-motion: reduce) {
+    &__window,
+    &__window-body {
       animation: none;
     }
   }

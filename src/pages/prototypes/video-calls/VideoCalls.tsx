@@ -90,7 +90,9 @@ export default function VideoCalls() {
           <ChatScene widgetHidden={showWindow} />
           {showWindow && (
             <div className={styles['video-calls__window']}>
-              <CallWindowScene />
+              <div className={styles['video-calls__window-body']}>
+                <CallWindowScene />
+              </div>
             </div>
           )}
         </div>

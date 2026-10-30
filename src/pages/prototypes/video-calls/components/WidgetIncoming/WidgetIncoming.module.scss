@@ -66,6 +66,12 @@
     padding: 0 var(--spacing-s) var(--spacing-s);
   }
 
+  // Ignore and Accept split the row evenly.
+  &__action {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     &__avatar::after {
       animation: none;

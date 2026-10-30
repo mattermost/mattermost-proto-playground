@@ -7,17 +7,15 @@ export interface WidgetIncomingLabels {
   /** Line under the caller name. */
   subtitle?: string;
   accept?: string;
-  acceptAudio?: string;
-  decline?: string;
+  ignore?: string;
 }
 
 export interface WidgetIncomingProps {
   callerName: string;
   callerAvatarSrc?: string;
   onAccept: () => void;
-  /** Accept without camera. Hidden when omitted. */
-  onAcceptAudio?: () => void;
-  onDecline: () => void;
+  /** Dismiss the call without answering. */
+  onIgnore: () => void;
   labels?: WidgetIncomingLabels;
   className?: string;
 }
@@ -25,20 +23,17 @@ export interface WidgetIncomingProps {
 const DEFAULT_LABELS: Required<WidgetIncomingLabels> = {
   subtitle: 'Incoming video call',
   accept: 'Accept',
-  acceptAudio: 'Audio only',
-  decline: 'Decline',
+  ignore: 'Ignore',
 };
 
 /**
- * Incoming-call state of the widget: caller, subtitle and Decline / Audio only
- * / Accept. Presentational; the host owns ringing, timeouts and sound.
+ * Incoming-call state of the widget: caller, subtitle and Ignore / Accept. Presentational; the host owns ringing, timeouts and sound.
  */
 export default function WidgetIncoming({
   callerName,
   callerAvatarSrc,
   onAccept,
-  onAcceptAudio,
-  onDecline,
+  onIgnore,
   labels,
   className,
 }: WidgetIncomingProps) {
@@ -65,19 +60,19 @@ export default function WidgetIncoming({
       </div>
       <div className={styles['widget-incoming__actions']}>
         <Button
+          className={styles['widget-incoming__action']}
           emphasis="tertiary"
-          destructive
           size="small"
-          onClick={onDecline}
+          onClick={onIgnore}
         >
-          {l.decline}
+          {l.ignore}
         </Button>
-        {onAcceptAudio && (
-          <Button emphasis="secondary" size="small" onClick={onAcceptAudio}>
-            {l.acceptAudio}
-          </Button>
-        )}
-        <Button emphasis="primary" size="small" onClick={onAccept}>
+        <Button
+          className={styles['widget-incoming__action']}
+          emphasis="primary"
+          size="small"
+          onClick={onAccept}
+        >
           {l.accept}
         </Button>
       </div>
