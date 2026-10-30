@@ -1,50 +1,42 @@
 import type { SVGProps } from 'react';
+import AppsIcon from '@mattermost/compass-icons/components/apps';
 
 /**
- * Outline call-layout glyphs. The installed compass-icons has no suitable
- * outline grid / speaker-with-filmstrip glyph (`apps` is filled,
- * `view-grid-plus-outline` carries a plus), so these two are hand-drawn:
- * 24x24 viewBox, 2px stroke, rounded joins, `currentColor`. No third-party
- * path data is used.
+ * Call-layout glyphs for the View button and menu. Grid uses the compass-icons
+ * `apps` glyph. compass-icons has no speaker-with-filmstrip glyph yet, so the
+ * speaker glyph is the design team's "view-gallery-outline" SVG (24x24),
+ * flipped vertically so the large tile sits below the row of small ones.
+ * Replace with a compass-icons glyph once one is added there.
  */
 export interface ViewGlyphProps extends Omit<
   SVGProps<SVGSVGElement>,
-  'children' | 'viewBox'
+  'width' | 'height'
 > {
-  /** Rendered size in px (`Icon` injects this). Default 20. */
+  /** Pixel size or CSS length. Default 20. */
   size?: number | string;
 }
 
-const outline = {
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 2,
-  strokeLinejoin: 'round',
-  'aria-hidden': true,
-  focusable: false,
-} as const;
-
-/** Grid view: four outlined rounded squares (2x2). */
-export function ViewGridGlyph({ size = 20, ...rest }: ViewGlyphProps) {
-  return (
-    <svg width={size} height={size} {...outline} {...rest}>
-      <rect x="4" y="4" width="6" height="6" rx="1.5" />
-      <rect x="14" y="4" width="6" height="6" rx="1.5" />
-      <rect x="4" y="14" width="6" height="6" rx="1.5" />
-      <rect x="14" y="14" width="6" height="6" rx="1.5" />
-    </svg>
-  );
+/** Grid view: compass-icons `apps`. */
+export function ViewGridGlyph(props: Omit<ViewGlyphProps, 'size'>) {
+  return <AppsIcon {...props} />;
 }
 
-/** Speaker view: one large outlined rect with a row of small ones along the top. */
+/** Speaker view: one large tile with a strip of small tiles along the top. */
 export function ViewSpeakerGlyph({ size = 20, ...rest }: ViewGlyphProps) {
   return (
-    <svg width={size} height={size} {...outline} {...rest}>
-      <rect x="4" y="4" width="3" height="3" rx="1" />
-      <rect x="10.5" y="4" width="3" height="3" rx="1" />
-      <rect x="17" y="4" width="3" height="3" rx="1" />
-      <rect x="4" y="11" width="16" height="9" rx="1.5" />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      {...rest}
+    >
+      <path
+        transform="translate(0 24) scale(1 -1)"
+        d="M1 3V21H23V3H1M21 5V14H3V5H21M11 16V19H8V16H11M3 16H6V19H3V16M13 19V16H16V19H13M18 19V16H21V19H18Z"
+      />
     </svg>
   );
 }
