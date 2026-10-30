@@ -6,9 +6,14 @@
 import assert from 'node:assert/strict';
 import {
   computeStageLayout,
-  gridDimensions,
+  gridRowSizes,
+  OVERFLOW_CELL,
+  stripRowSizes,
+  visibleIds,
   type GridLayout,
   type LayoutParticipant,
+  type ShareLayout,
+  type SpeakerLayout,
   type StageLayout,
 } from './computeStageLayout.ts';
 
@@ -43,11 +48,17 @@ function asGrid(layout: StageLayout): GridLayout {
   return layout as GridLayout;
 }
 
-function visibleIds(layout: StageLayout): string[] {
-  if (layout.kind === 'pip') return [layout.mainId, layout.pipId];
-  if (layout.kind === 'grid') return layout.tileIds;
-  return layout.filmstripIds;
+function asSpeaker(layout: StageLayout): SpeakerLayout {
+  assert.equal(layout.kind, 'speaker');
+  return layout as SpeakerLayout;
 }
+
+function asShare(layout: StageLayout): ShareLayout {
+  assert.equal(layout.kind, 'share');
+  return layout as ShareLayout;
+}
+
+const shape = (rows: string[][]) => rows.map((r) => r.length);
 
 let checks = 0;
 function check(name: string, fn: () => void) {
@@ -56,20 +67,45 @@ function check(name: string, fn: () => void) {
   console.log(`ok - ${name}`);
 }
 
+/** Grid view row shapes for 1..10 participants (everyone visible). */
+const GRID_SHAPES: Record<number, number[]> = {
+  1: [1],
+  2: [2],
+  3: [2, 1],
+  4: [2, 2],
+  5: [3, 2],
+  6: [3, 3],
+  7: [4, 3],
+  8: [4, 4],
+  9: [3, 3, 3],
+  10: [4, 3, 3],
+};
+
+/** Speaker view (3+) strip row shapes: N-1 others above the featured tile. */
+const STRIP_SHAPES: Record<number, number[]> = {
+  3: [2],
+  4: [3],
+  5: [4],
+  6: [5],
+  7: [6],
+  8: [7],
+  9: [4, 4],
+  10: [5, 4],
+};
+
 check('0 participants → empty grid', () => {
   const g = asGrid(
     computeStageLayout({ participants: [], view: 'speaker', sharing: false }),
   );
-  assert.deepEqual([g.cols, g.rows, g.tileIds.length], [0, 0, 0]);
+  assert.deepEqual([g.rows, g.cols, g.tileIds.length], [[], 0, 0]);
 });
 
-check('1 participant → self alone 1x1 (both views)', () => {
+check('1 participant → self alone (both views)', () => {
   for (const view of ['speaker', 'grid'] as const) {
     const g = asGrid(
       computeStageLayout({ participants: people(1), view, sharing: false }),
     );
-    assert.deepEqual([g.cols, g.rows], [1, 1]);
-    assert.deepEqual(g.tileIds, ['self']);
+    assert.deepEqual(g.rows, [['self']]);
   }
 });
 
@@ -82,41 +118,27 @@ check('2 participants speaker → pip (remote main, self pip)', () => {
   assert.deepEqual(l, { kind: 'pip', mainId: 'p1', pipId: 'self' });
 });
 
-check('2 participants grid → two equal tiles 2x1', () => {
-  const g = asGrid(
-    computeStageLayout({
-      participants: people(2),
-      view: 'grid',
-      sharing: false,
-    }),
-  );
-  assert.deepEqual([g.cols, g.rows, g.featuredSpan], [2, 1, 1]);
-  assert.deepEqual(g.tileIds, ['self', 'p1']);
-});
-
-const EXPECTED: Record<number, [number, number]> = {
-  1: [1, 1],
-  2: [2, 1],
-  3: [2, 2],
-  4: [2, 2],
-  5: [3, 2],
-  6: [3, 2],
-  7: [3, 3],
-  8: [3, 3],
-  9: [3, 3],
-  10: [4, 3],
-};
-
-check('gridDimensions table 1..10', () => {
+check('gridRowSizes / stripRowSizes tables', () => {
   for (let n = 1; n <= 10; n += 1) {
-    const { cols, rows } = gridDimensions(n);
-    assert.deepEqual([cols, rows], EXPECTED[n], `n=${n}`);
-    assert.ok(cols * rows >= n);
+    assert.deepEqual(gridRowSizes(n), GRID_SHAPES[n], `grid n=${n}`);
+  }
+  for (let n = 3; n <= 10; n += 1) {
+    assert.deepEqual(stripRowSizes(n - 1), STRIP_SHAPES[n], `strip n=${n}`);
+  }
+  // Rows sum to the cell count and never differ by more than one.
+  for (let n = 1; n <= 12; n += 1) {
+    for (const sizes of [gridRowSizes(n), stripRowSizes(n)]) {
+      assert.equal(
+        sizes.reduce((a, b) => a + b, 0),
+        n,
+      );
+      assert.ok(Math.max(...sizes) - Math.min(...sizes) <= 1, `n=${n}`);
+    }
   }
 });
 
-check('grid view 1..9: all visible, join order, no overflow', () => {
-  for (let n = 1; n <= 9; n += 1) {
+check('grid view 1..10: row shapes, join order, all visible', () => {
+  for (let n = 1; n <= 10; n += 1) {
     const g = asGrid(
       computeStageLayout({
         participants: people(n),
@@ -124,44 +146,40 @@ check('grid view 1..9: all visible, join order, no overflow', () => {
         sharing: false,
       }),
     );
+    assert.deepEqual(shape(g.rows), GRID_SHAPES[n], `n=${n}`);
+    assert.deepEqual(g.rows.flat(), IDS.slice(0, n));
     assert.deepEqual(g.tileIds, IDS.slice(0, n));
     assert.deepEqual(g.overflowIds, []);
-    assert.deepEqual([g.cols, g.rows], EXPECTED[n]);
+    assert.equal(g.cols, Math.max(...GRID_SHAPES[n]));
   }
 });
 
-check('grid view 10 with default maxVisible 9 → 8 tiles + chip(2)', () => {
+check('grid view 3 = 2 on top + 1 below (Figma)', () => {
+  const g = asGrid(
+    computeStageLayout({ participants: people(3), view: 'grid', sharing: false }),
+  );
+  assert.deepEqual(g.rows, [['self', 'p1'], ['p2']]);
+});
+
+check('grid view 10 with maxVisible 9 → 8 tiles + chip, 3x3', () => {
   const g = asGrid(
     computeStageLayout({
       participants: people(10),
       view: 'grid',
       sharing: false,
+      maxVisible: 9,
     }),
   );
   assert.equal(g.tileIds.length, 8);
   assert.equal(g.overflowIds.length, 2);
-  assert.deepEqual([g.cols, g.rows], [3, 3]);
+  assert.deepEqual(shape(g.rows), [3, 3, 3]);
+  assert.equal(g.rows.flat().at(-1), OVERFLOW_CELL);
   assert.ok(g.tileIds.includes('self'));
 });
 
-check('grid view 10 with maxVisible 10 → 4x3, no overflow', () => {
-  const g = asGrid(
-    computeStageLayout({
-      participants: people(10),
-      view: 'grid',
-      sharing: false,
-      maxVisible: 10,
-    }),
-  );
-  assert.deepEqual(
-    [g.cols, g.rows, g.tileIds.length, g.overflowIds.length],
-    [4, 3, 10, 0],
-  );
-});
-
-check('speaker view 3..10: grid, speaker featured first, self kept', () => {
+check('speaker view 3..10: featured + strip shapes, self in strip', () => {
   for (let n = 3; n <= 10; n += 1) {
-    const g = asGrid(
+    const s = asSpeaker(
       computeStageLayout({
         participants: people(n),
         view: 'speaker',
@@ -169,31 +187,38 @@ check('speaker view 3..10: grid, speaker featured first, self kept', () => {
         activeSpeakerId: 'p2',
       }),
     );
-    assert.equal(g.tileIds[0], 'p2', `n=${n}`);
-    assert.equal(g.featuredId, 'p2');
-    assert.ok(g.tileIds.includes('self'));
-    const cells = g.tileIds.length + (g.overflowIds.length ? 1 : 0);
-    assert.equal(g.featuredSpan, 1 + g.cols * g.rows - cells, `span n=${n}`);
-    assert.equal(g.tileIds.length + g.overflowIds.length, n);
+    assert.equal(s.featuredId, 'p2', `n=${n}`);
+    assert.deepEqual(shape(s.stripRows), STRIP_SHAPES[n], `n=${n}`);
+    assert.ok(s.stripIds.includes('self'));
+    assert.ok(!s.stripIds.includes('p2'));
+    assert.deepEqual(s.stripRows.flat(), s.stripIds);
+    assert.deepEqual(
+      s.stripIds,
+      IDS.slice(0, n).filter((id) => id !== 'p2'),
+    );
+    assert.equal(s.overflowIds.length, 0);
   }
 });
 
-check('speaker view 3: featured spans the empty cell (2 top / 2 below)', () => {
-  const g = asGrid(
+check('speaker strip overflow with maxStrip 4 → 3 tiles + chip', () => {
+  const s = asSpeaker(
     computeStageLayout({
-      participants: people(3),
+      participants: people(10),
       view: 'speaker',
       sharing: false,
+      activeSpeakerId: 'p7',
+      maxStrip: 4,
     }),
   );
-  assert.deepEqual(
-    [g.cols, g.rows, g.featuredSpan, g.featuredId],
-    [2, 2, 2, 'p1'],
-  );
+  assert.equal(s.featuredId, 'p7');
+  assert.deepEqual(shape(s.stripRows), [4]);
+  assert.equal(s.stripRows[0].at(-1), OVERFLOW_CELL);
+  assert.ok(s.stripIds.includes('self'));
+  assert.equal(s.stripIds.length + s.overflowIds.length + 1, 10);
 });
 
 check('self is never featured', () => {
-  const g = asGrid(
+  const s = asSpeaker(
     computeStageLayout({
       participants: people(4),
       view: 'speaker',
@@ -201,22 +226,25 @@ check('self is never featured', () => {
       activeSpeakerId: 'self',
     }),
   );
-  assert.notEqual(g.featuredId, 'self');
+  assert.notEqual(s.featuredId, 'self');
 });
 
 check('self never dropped with overflow, wherever self sits', () => {
   const list = people(10).reverse(); // self last
   for (const view of ['speaker', 'grid'] as const) {
-    for (const maxVisible of [2, 3, 5, 9]) {
+    for (const cap of [2, 3, 5, 9]) {
       const l = computeStageLayout({
         participants: list,
         view,
         sharing: false,
-        maxVisible,
+        maxVisible: cap,
+        maxStrip: cap,
         activeSpeakerId: 'p9',
       });
-      assert.ok(visibleIds(l).includes('self'), `${view} max=${maxVisible}`);
-      assert.ok(!(l as GridLayout).overflowIds.includes('self'));
+      assert.ok(visibleIds(l).includes('self'), `${view} cap=${cap}`);
+      if (l.kind === 'grid' || l.kind === 'speaker') {
+        assert.ok(!l.overflowIds.includes('self'));
+      }
     }
   }
 });
@@ -230,14 +258,10 @@ check(
       { id: 'p1' },
     ];
     const g = asGrid(
-      computeStageLayout({
-        participants: list,
-        view: 'grid',
-        sharing: false,
-        maxVisible: 10,
-      }),
+      computeStageLayout({ participants: list, view: 'grid', sharing: false }),
     );
     assert.equal(g.tileIds.length + g.overflowIds.length, 10);
+    assert.deepEqual(shape(g.rows), [4, 3, 3]);
     assert.ok(g.tileIds.includes('self'));
   },
 );
@@ -262,30 +286,26 @@ check(
   'overflow: speaker promoted only when not visible; set otherwise stable',
   () => {
     const base = people(10);
+    const opts = { view: 'grid', sharing: false, maxVisible: 9 } as const;
     let prev = computeStageLayout({
+      ...opts,
       participants: base,
-      view: 'grid',
-      sharing: false,
       activeSpeakerId: 'p1',
     });
     const first = asGrid(prev).tileIds;
-    // Visible speaker → identical layout.
     const same = asGrid(
       computeStageLayout({
+        ...opts,
         participants: base,
-        view: 'grid',
-        sharing: false,
         activeSpeakerId: 'p3',
         previous: prev,
       }),
     );
     assert.deepEqual(same.tileIds, first);
-    // Hidden speaker → promoted, exactly one tile leaves, self stays.
     const hidden = asGrid(prev).overflowIds[0];
     prev = computeStageLayout({
+      ...opts,
       participants: base,
-      view: 'grid',
-      sharing: false,
       activeSpeakerId: hidden,
       previous: prev,
     });
@@ -293,12 +313,10 @@ check(
     assert.ok(promoted.includes(hidden));
     assert.ok(promoted.includes('self'));
     assert.equal(promoted.filter((id) => !first.includes(id)).length, 1);
-    // Speaker goes quiet then talks again → no change.
     const again = asGrid(
       computeStageLayout({
+        ...opts,
         participants: base,
-        view: 'grid',
-        sharing: false,
         activeSpeakerId: hidden,
         previous: prev,
       }),
@@ -307,9 +325,9 @@ check(
   },
 );
 
-check('speaker view: speaker change swaps two tiles, others stay', () => {
+check('speaker view: speaker change swaps featured with its strip slot', () => {
   const base = people(6);
-  const a = asGrid(
+  const a = asSpeaker(
     computeStageLayout({
       participants: base,
       view: 'speaker',
@@ -317,7 +335,8 @@ check('speaker view: speaker change swaps two tiles, others stay', () => {
       activeSpeakerId: 'p1',
     }),
   );
-  const b = asGrid(
+  assert.deepEqual(a.stripIds, ['self', 'p2', 'p3', 'p4', 'p5']);
+  const b = asSpeaker(
     computeStageLayout({
       participants: base,
       view: 'speaker',
@@ -326,11 +345,9 @@ check('speaker view: speaker change swaps two tiles, others stay', () => {
       previous: a,
     }),
   );
-  assert.equal(b.tileIds[0], 'p4');
-  const moved = a.tileIds.filter((id, i) => b.tileIds[i] !== id);
-  assert.deepEqual(moved.sort(), ['p1', 'p4']);
-  // Same speaker again → identical.
-  const c = asGrid(
+  assert.equal(b.featuredId, 'p4');
+  assert.deepEqual(b.stripIds, ['self', 'p2', 'p3', 'p1', 'p5']);
+  const c = asSpeaker(
     computeStageLayout({
       participants: base,
       view: 'speaker',
@@ -339,9 +356,9 @@ check('speaker view: speaker change swaps two tiles, others stay', () => {
       previous: b,
     }),
   );
-  assert.deepEqual(c.tileIds, b.tileIds);
+  assert.deepEqual(c, b);
   // No speaker → previous featured kept.
-  const d = asGrid(
+  const d = asSpeaker(
     computeStageLayout({
       participants: base,
       view: 'speaker',
@@ -352,36 +369,59 @@ check('speaker view: speaker change swaps two tiles, others stay', () => {
   assert.equal(d.featuredId, 'p4');
 });
 
-check(
-  'sharing 1..10 → share layout, presenter = sharer, self + presenter visible',
-  () => {
-    for (let n = 1; n <= 10; n += 1) {
-      const sharer = n > 1 ? 'p1' : 'self';
-      for (const view of ['speaker', 'grid'] as const) {
-        const l = computeStageLayout({
+check('speaker view: someone joins → appended to strip, others stay', () => {
+  const a = asSpeaker(
+    computeStageLayout({
+      participants: people(5),
+      view: 'speaker',
+      sharing: false,
+      activeSpeakerId: 'p2',
+    }),
+  );
+  const b = asSpeaker(
+    computeStageLayout({
+      participants: people(6),
+      view: 'speaker',
+      sharing: false,
+      previous: a,
+    }),
+  );
+  assert.equal(b.featuredId, 'p2');
+  assert.deepEqual(b.stripIds, [...a.stripIds, 'p5']);
+});
+
+check('sharing 1..10 → filmstrip cells ≤ 6, presenter + self visible', () => {
+  for (let n = 1; n <= 10; n += 1) {
+    const sharer = n > 1 ? 'p1' : 'self';
+    for (const view of ['speaker', 'grid'] as const) {
+      const s = asShare(
+        computeStageLayout({
           participants: people(n, { [sharer]: { sharing: true } }),
           view,
           sharing: true,
-        });
-        assert.equal(l.kind, 'share');
-        if (l.kind !== 'share') return;
-        assert.equal(l.presenterId, sharer);
-        assert.ok(l.filmstripIds.includes('self'));
-        assert.ok(l.filmstripIds.includes(sharer));
-        assert.equal(l.filmstripIds.length + l.overflowIds.length, n);
-        assert.ok(l.filmstripIds.length + (l.overflowIds.length ? 1 : 0) <= 6);
-      }
+        }),
+      );
+      assert.equal(s.presenterId, sharer);
+      assert.ok(s.filmstripIds.includes('self'));
+      assert.ok(s.filmstripIds.includes(sharer));
+      assert.equal(s.filmstripIds.length + s.overflowIds.length, n);
+      // ≤ 6 people: everyone; 7+: 5 tiles + "+N" chip.
+      const cells = s.filmstripIds.length + (s.overflowIds.length ? 1 : 0);
+      assert.equal(cells, Math.min(n, 6), `n=${n}`);
+      assert.equal(s.overflowIds.length, n > 6 ? n - 5 : 0);
     }
-  },
-);
+  }
+});
 
 check('sharing without a sharer flag falls back to self as presenter', () => {
-  const l = computeStageLayout({
-    participants: people(3),
-    view: 'speaker',
-    sharing: true,
-  });
-  assert.equal(l.kind === 'share' && l.presenterId, 'self');
+  const s = asShare(
+    computeStageLayout({
+      participants: people(3),
+      view: 'speaker',
+      sharing: true,
+    }),
+  );
+  assert.equal(s.presenterId, 'self');
 });
 
 check('sharing=false ignores stale participant.sharing flags', () => {
@@ -393,18 +433,18 @@ check('sharing=false ignores stale participant.sharing flags', () => {
   assert.equal(l.kind, 'pip');
 });
 
-check('invalid maxVisible values are clamped', () => {
-  for (const maxVisible of [-5, 0, 1, Number.NaN, 99]) {
-    const l = asGrid(
-      computeStageLayout({
+check('invalid caps are clamped', () => {
+  for (const cap of [-5, 0, 1, Number.NaN, 99]) {
+    for (const view of ['speaker', 'grid'] as const) {
+      const l = computeStageLayout({
         participants: people(10),
-        view: 'grid',
+        view,
         sharing: false,
-        maxVisible,
-      }),
-    );
-    assert.ok(l.tileIds.includes('self'));
-    assert.ok(l.tileIds.length >= 1);
+        maxVisible: cap,
+        maxStrip: cap,
+      });
+      assert.ok(visibleIds(l).includes('self'));
+    }
   }
 });
 

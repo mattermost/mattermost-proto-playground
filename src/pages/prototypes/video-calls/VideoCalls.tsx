@@ -7,6 +7,7 @@ import ParticipantCountControl from './chrome/ParticipantCountControl';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import CallWindowScene from './scenes/CallWindowScene';
 import ChatScene from './scenes/ChatScene';
+import { useSelfCamera } from './useSelfCamera';
 import { useVideoCallState } from './useVideoCallState';
 import { VideoCallContext } from './videoCallContext';
 import {
@@ -23,6 +24,7 @@ export default function VideoCalls() {
   const { active: walkthroughActive } = useWalkthrough();
   const { state, participants, actions } = useVideoCallState();
   const { callContext, phase, surface, count } = state;
+  const selfCamera = useSelfCamera(state.media, actions, walkthroughActive);
 
   useEffect(() => {
     if (walkthroughActive) {
@@ -68,8 +70,8 @@ export default function VideoCalls() {
   ]);
 
   const value = useMemo(
-    () => ({ state, participants, actions }),
-    [state, participants, actions],
+    () => ({ state, participants, actions, selfCamera }),
+    [state, participants, actions, selfCamera],
   );
 
   // The window hosts every phase except idle and incoming (those are widget-only).

@@ -6,21 +6,18 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import CheckIcon from '@mattermost/compass-icons/components/check';
-import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import {
   PopoverMenu,
   PopoverMenuDivider,
-  PopoverMenuTitle,
 } from '@mattermost/compass-ui/components/popover-menu';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { playSound } from '../callSounds';
 import { CallThreadPane } from '../components/CallThreadPane';
+import { DeviceMenu } from '../components/DeviceMenu';
 import { ReactionTray } from '../components/ReactionTray';
 import { VideoCallWindow } from '../components/VideoCallWindow';
-import { useLocalCamera } from '../hooks/useLocalCamera';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useStageLayout } from '../hooks/useStageLayout';
 import { CLIPS, REACTIONS, SELF_ID } from '../videoCallsData';
@@ -70,7 +67,8 @@ export default function CallWindowHost({
   banner,
   playJoinSound = false,
 }: CallWindowHostProps) {
-  const { state, participants, actions, elapsedLabel } = useCallSession();
+  const { state, participants, actions, selfCamera, elapsedLabel } =
+    useCallSession();
   const rootRef = useRef<HTMLDivElement>(null);
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
   const [burst, setBurst] = useState<{ emoji: string; key: number } | null>(
@@ -119,32 +117,6 @@ export default function CallWindowHost({
   const devices = useMediaDevices({ enabled: true });
   const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
   const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
-  const realCameraId = devices.cameras.some(
-    (c) => c.deviceId === state.media.cameraDeviceId,
-  )
-    ? state.media.cameraDeviceId
-    : undefined;
-  const camera = useLocalCamera({
-    enabled: state.media.useWebcam && state.media.cameraOn,
-    deviceId: realCameraId,
-  });
-
-  const lastCameraStatus = useRef(camera.status);
-  useEffect(() => {
-    if (lastCameraStatus.current === camera.status) return;
-    lastCameraStatus.current = camera.status;
-    if (camera.status === 'denied') {
-      actions.pushNotice({
-        kind: 'permission',
-        text: 'Camera access was blocked. Allow it in your browser settings.',
-      });
-    } else if (camera.status === 'unavailable') {
-      actions.pushNotice({
-        kind: 'device',
-        text: camera.error ?? 'Your camera is unavailable.',
-      });
-    }
-  }, [camera.status, camera.error, actions]);
 
   // Join / leave notices when the call size changes ------------------------
   const prevParticipants = useRef(participants);
@@ -220,36 +192,6 @@ export default function CallWindowHost({
     [participants],
   );
 
-  const deviceMenu = (
-    id: 'mic' | 'camera',
-    title: string,
-    options: { deviceId: string; label: string }[],
-    selectedId: string | undefined,
-    onPick: (deviceId: string) => void,
-  ) => (
-    <PopoverMenu open={openMenu === id} role="menu" aria-label={title}>
-      <PopoverMenuTitle>{title}</PopoverMenuTitle>
-      {options.map((o, i) => {
-        const selected = selectedId ? selectedId === o.deviceId : i === 0;
-        return (
-          <MenuItem
-            key={o.deviceId}
-            role="menuitemradio"
-            aria-checked={selected}
-            label={o.label}
-            leadingElement={false}
-            trailingElement={selected}
-            trailingVisual={<Icon size="16" glyph={<CheckIcon />} />}
-            onClick={() => {
-              onPick(o.deviceId);
-              setOpenMenu(null);
-            }}
-          />
-        );
-      })}
-    </PopoverMenu>
-  );
-
   const moreMenu = (
     <PopoverMenu
       open={openMenu === 'more'}
@@ -303,7 +245,7 @@ export default function CallWindowHost({
         layout={layout}
         participants={participants}
         clips={CLIPS}
-        selfStream={camera.stream}
+        selfStream={selfCamera.stream}
         shareContent={shareContent}
         stageLabels={{
           presenting: (name) =>
@@ -328,23 +270,35 @@ export default function CallWindowHost({
           onToggleMic: actions.toggleMic,
           onOpenMicMenu: () => toggleMenu('mic'),
           micMenuOpen: openMenu === 'mic',
-          micMenu: deviceMenu(
-            'mic',
-            'Microphone',
-            mics,
-            state.media.micDeviceId,
-            (deviceId) => actions.setMedia({ micDeviceId: deviceId }),
+          micMenu: (
+            <DeviceMenu
+              open={openMenu === 'mic'}
+              title="Microphone"
+              devices={mics.map((m) => ({ id: m.deviceId, label: m.label }))}
+              selectedId={state.media.micDeviceId}
+              onSelect={(id) => {
+                actions.setMedia({ micDeviceId: id });
+                closeMenu();
+              }}
+              onClose={closeMenu}
+            />
           ),
           cameraOn: state.media.cameraOn,
-          onToggleCamera: actions.toggleCamera,
+          onToggleCamera: selfCamera.toggle,
           onOpenCameraMenu: () => toggleMenu('camera'),
           cameraMenuOpen: openMenu === 'camera',
-          cameraMenu: deviceMenu(
-            'camera',
-            'Camera',
-            cameras,
-            state.media.cameraDeviceId,
-            (deviceId) => actions.setMedia({ cameraDeviceId: deviceId }),
+          cameraMenu: (
+            <DeviceMenu
+              open={openMenu === 'camera'}
+              title="Camera"
+              devices={cameras.map((c) => ({ id: c.deviceId, label: c.label }))}
+              selectedId={state.media.cameraDeviceId}
+              onSelect={(id) => {
+                actions.setMedia({ cameraDeviceId: id });
+                closeMenu();
+              }}
+              onClose={closeMenu}
+            />
           ),
           sharing: state.sharing,
           onToggleShare: () => {

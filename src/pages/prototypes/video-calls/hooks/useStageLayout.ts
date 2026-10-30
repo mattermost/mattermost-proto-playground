@@ -6,10 +6,12 @@ import {
 } from '../layout/computeStageLayout';
 
 export interface UseStageLayoutOptions {
-  /** Grid cells incl. self and the overflow chip. Default 9. */
+  /** Grid cells incl. self and the overflow chip. Default 10 (everyone). */
   maxVisible?: number;
   /** Share filmstrip cells incl. the overflow chip. Default 6. */
   maxFilmstrip?: number;
+  /** Speaker-view strip cells incl. the overflow chip. Default 9 (everyone). */
+  maxStrip?: number;
 }
 
 /**
@@ -23,7 +25,7 @@ export function useStageLayout(
   sharing: boolean,
   options: UseStageLayoutOptions = {},
 ): StageLayout {
-  const { maxVisible, maxFilmstrip } = options;
+  const { maxVisible, maxFilmstrip, maxStrip } = options;
   const prevSpeakerRef = useRef<string | undefined>(undefined);
   const prevLayoutRef = useRef<StageLayout | null>(null);
 
@@ -50,11 +52,20 @@ export function useStageLayout(
         activeSpeakerId,
         maxVisible,
         maxFilmstrip,
+        maxStrip,
         previous: prevLayoutRef.current,
       }),
     // `participants` is intentionally represented by `shapeKey`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shapeKey, view, sharing, activeSpeakerId, maxVisible, maxFilmstrip],
+    [
+      shapeKey,
+      view,
+      sharing,
+      activeSpeakerId,
+      maxVisible,
+      maxFilmstrip,
+      maxStrip,
+    ],
   );
 
   useEffect(() => {

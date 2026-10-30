@@ -1,7 +1,8 @@
 // ---------------------------------------------------------------------------
 // Self-view PiP — floating self tile, snaps to stage corners (not in Figma;
-// Meet benchmark). Corners are expressed as left/top calc()s so the snap
-// animates (auto ↔ value would not).
+// Meet benchmark). The resting corner is CSS anchors (follows resizes); drag
+// and the settle spring write the `translate` property from JS, leaving
+// `transform` free for the host's layout animation.
 // ---------------------------------------------------------------------------
 
 @keyframes self-view-pip-enter {
@@ -19,26 +20,43 @@
   --self-view-pip-width: 240px;
   --self-view-pip-height: calc(var(--self-view-pip-width) * 9 / 16);
   --self-view-pip-inset: var(--spacing-l);
+  // Hairline that separates the PiP from video of a similar tone underneath.
+  --self-view-pip-border: rgba(var(--button-color-rgb, 255, 255, 255), 0.16);
 
   position: absolute;
   z-index: 5;
-  left: var(--self-view-pip-inset);
-  top: var(--self-view-pip-inset);
   width: var(--self-view-pip-width);
   height: var(--self-view-pip-height);
   border-radius: var(--radius-m);
   box-shadow: var(--elevation-4);
+  pointer-events: auto;
   cursor: grab;
   touch-action: none;
   user-select: none;
-  transition:
-    left var(--duration-moderate) var(--ease-transition),
-    top var(--duration-moderate) var(--ease-transition);
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  will-change: translate;
+  transition: box-shadow var(--duration-quick) var(--ease-transition);
   animation: self-view-pip-enter var(--duration-quick) var(--ease-entrance);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border: 1px solid var(--self-view-pip-border);
+    border-radius: inherit;
+    pointer-events: none;
+  }
 
   &:focus-visible {
     outline: 2px solid var(--button-bg, var(--color-info));
     outline-offset: 2px;
+  }
+
+  &[data-dragging] {
+    cursor: grabbing;
+    box-shadow: var(--elevation-6);
   }
 
   &__content {
@@ -46,6 +64,12 @@
     height: 100%;
     border-radius: inherit;
     overflow: hidden;
+
+    // No native image / video drag ghost while dragging the PiP.
+    :where(img, video) {
+      -webkit-user-drag: none;
+      user-select: none;
+    }
   }
 
   &__hide {
@@ -79,11 +103,12 @@
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xxxs);
-    height: var(--spacing-xxxl);
-    padding: 0 var(--spacing-m) 0 var(--spacing-s);
-    border: 0;
+    height: var(--spacing-xxl);
+    padding: 0 var(--spacing-s) 0 var(--spacing-xs);
+    border: 1px solid var(--self-view-pip-border);
     border-radius: var(--radius-pill);
     background: rgba(0, 0, 0, 0.8);
+    box-shadow: var(--elevation-4);
     color: var(--button-color, var(--color-neutral-0));
     font: inherit;
     font-size: var(--font-size-75);
@@ -112,36 +137,52 @@
     --self-view-pip-inset: var(--spacing-xs);
   }
 
+  &--corner-top-left,
+  &--corner-bottom-left {
+    left: var(--self-view-pip-inset);
+  }
+
   &--corner-top-right,
   &--corner-bottom-right {
-    left: calc(100% - var(--self-view-pip-width) - var(--self-view-pip-inset));
+    right: var(--self-view-pip-inset);
+  }
+
+  &--corner-top-left,
+  &--corner-top-right {
+    top: var(--self-view-pip-inset);
   }
 
   &--corner-bottom-left,
   &--corner-bottom-right {
-    top: calc(100% - var(--self-view-pip-height) - var(--self-view-pip-inset));
+    bottom: var(--self-view-pip-inset);
   }
 
-  &--dragging {
-    cursor: grabbing;
-    transition: none;
-    box-shadow: var(--elevation-6);
+  // Inline in a stage cell: plain tile, no float chrome.
+  &--docked {
+    position: relative;
+    z-index: auto;
+    width: 100%;
+    height: 100%;
+    box-shadow: none;
+    cursor: auto;
+    touch-action: auto;
+    will-change: auto;
+    animation: none;
+
+    &::after {
+      content: none;
+    }
   }
 
   // Chip replaces the tile: size to content, anchored to the same corner.
   &--hidden {
-    --self-view-pip-height: var(--spacing-xxxl);
-
     width: auto;
     height: auto;
     box-shadow: none;
     cursor: default;
-    transition: none;
 
-    &.self-view-pip--corner-top-right,
-    &.self-view-pip--corner-bottom-right {
-      left: auto;
-      right: var(--self-view-pip-inset);
+    &::after {
+      content: none;
     }
   }
 

@@ -33,6 +33,8 @@ export interface VideoCallState {
   count: number;
   /** Per-participant overrides applied on top of ROSTER (talking, muted, hand, ...). */
   overrides: Record<string, Partial<VideoParticipant>>;
+  /** Participants a host removed from the call (cleared when the count is set). */
+  removedIds: string[];
   view: StageView;
   pane: CallPane;
   handRaised: boolean;
@@ -54,9 +56,10 @@ const INITIAL_STATE: VideoCallState = {
   phase: 'idle',
   surface: 'widget',
   joinMode: 'start',
-  media: { micOn: true, cameraOn: true, useWebcam: false },
+  media: { micOn: true, cameraOn: false, useWebcam: false },
   count: 2,
   overrides: {},
+  removedIds: [],
   view: 'speaker',
   pane: null,
   handRaised: false,
@@ -99,21 +102,24 @@ export function useVideoCallState() {
 
   /** Roster slice for the current count with overrides and self media applied. */
   const participants = useMemo<VideoParticipant[]>(() => {
-    return ROSTER.slice(0, state.count).map((p) => {
-      const merged = { ...p, ...state.overrides[p.id] };
-      if (p.id === SELF_ID) {
-        return {
-          ...merged,
-          muted: !state.media.micOn,
-          cameraOn: state.media.cameraOn,
-          handRaised: state.handRaised,
-          sharing: state.sharing,
-        };
-      }
-      return merged;
-    });
+    return ROSTER.slice(0, state.count)
+      .filter((p) => !state.removedIds.includes(p.id))
+      .map((p) => {
+        const merged = { ...p, ...state.overrides[p.id] };
+        if (p.id === SELF_ID) {
+          return {
+            ...merged,
+            muted: !state.media.micOn,
+            cameraOn: state.media.cameraOn,
+            handRaised: state.handRaised,
+            sharing: state.sharing,
+          };
+        }
+        return merged;
+      });
   }, [
     state.count,
+    state.removedIds,
     state.overrides,
     state.media,
     state.handRaised,
@@ -179,7 +185,7 @@ export function useVideoCallState() {
         }),
       /** Prototype-chrome control: set the number of people (2..MAX_PARTICIPANTS). */
       setCount: (count: number) =>
-        setState((s) => ({ ...s, count: clampCount(count) })),
+        setState((s) => ({ ...s, count: clampCount(count), removedIds: [] })),
 
       // --- Real flow -------------------------------------------------------
       /** Header "Start call" / banner "Join": opens the widget at pre-join. */
@@ -250,6 +256,24 @@ export function useVideoCallState() {
       togglePane: (pane: Exclude<CallPane, null>) =>
         setState((s) => ({ ...s, pane: s.pane === pane ? null : pane })),
       closePane: () => setState((s) => ({ ...s, pane: null })),
+      /** Host control: remove someone from the call (mock). */
+      removeParticipant: (id: string) =>
+        setState((s) => ({
+          ...s,
+          removedIds: s.removedIds.includes(id)
+            ? s.removedIds
+            : [...s.removedIds, id],
+        })),
+      /** Host control: hand the host role to someone else (mock). */
+      makeHost: (id: string) =>
+        setState((s) => ({
+          ...s,
+          overrides: {
+            ...s.overrides,
+            [SELF_ID]: { ...s.overrides[SELF_ID], host: false },
+            [id]: { ...s.overrides[id], host: true },
+          },
+        })),
       patchParticipant: (id: string, next: Partial<VideoParticipant>) =>
         setState((s) => ({
           ...s,

@@ -6,6 +6,15 @@
   align-items: stretch;
 
   &__main,
+  &__chevron {
+    position: relative;
+  }
+
+  &__main {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
   // Triple-class selector so the narrow width beats IconButton's size rules.
   #{&}__chevron#{&}__chevron#{&}__chevron {
     width: var(--spacing-xxxl);
