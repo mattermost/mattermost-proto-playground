@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { RecordingPill } from '@mattermost/compass-proto';
+import { RecordingIndicator } from '@mattermost/compass-proto';
 import type { StageLayout } from '../../layout/computeStageLayout';
 import { CallControlsBar, type CallControlsBarProps } from '../CallControlsBar';
 import { CallNotice, type CallNoticeItem } from '../CallNotice';
@@ -195,7 +195,7 @@ export function VideoCallWindow({
       headerLeft={
         <>
           {recording && (
-            <RecordingPill state={recording} onStop={onStopRecording} />
+            <RecordingIndicator state={recording} onStop={onStopRecording} />
           )}
           <span className={styles['video-call-window__elapsed']}>
             {elapsedLabel} &bull; {l.participants(participantCount)}

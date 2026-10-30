@@ -1,8 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { ReactNode } from 'react';
-import AccountPlusOutlineIcon from '@mattermost/compass-icons/components/account-plus-outline';
-import AccountMinusOutlineIcon from '@mattermost/compass-icons/components/account-minus-outline';
-import { Icon } from '@mattermost/compass-ui/components/icon';
+import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
 import {
   Toast,
   type ToastProps,
@@ -65,10 +62,8 @@ const TOAST_TYPE: Record<
   permission: 'danger',
 };
 
-const KIND_ICON: Partial<Record<CallNoticeItemKind, ReactNode>> = {
-  joined: <Icon size="16" glyph={<AccountPlusOutlineIcon />} />,
-  left: <Icon size="16" glyph={<AccountMinusOutlineIcon />} />,
-};
+/** Join/leave use the proto call-notice pill; the rest stay Toasts. */
+const PILL_KINDS: readonly CallNoticeItemKind[] = ['joined', 'left'];
 
 interface ItemProps {
   notice: CallNoticeItem;
@@ -98,11 +93,18 @@ function NoticeItem({
     return () => window.clearTimeout(t);
   }, [id, persistent, autoDismissMs]);
 
+  if (PILL_KINDS.includes(notice.kind)) {
+    return (
+      <div className={styles['call-notice__item']}>
+        <CallNoticePill type="other" size="medium" message={notice.text} />
+      </div>
+    );
+  }
+
   return (
     <div className={styles['call-notice__item']}>
       <Toast
         type={TOAST_TYPE[notice.kind]}
-        icon={KIND_ICON[notice.kind]}
         message={notice.text}
         dismissLabel={dismissLabel}
         onDismiss={() => onDismiss(id)}
@@ -112,7 +114,7 @@ function NoticeItem({
 }
 
 /**
- * Stack of dismissible call notices (Compass `Toast`) for the top-center of a
+ * Stack of dismissible call notices (proto `CallNotice` pill for join/leave, Compass `Toast` otherwise) for the top-center of a
  * stage. Each Toast is its own polite live region. Transient kinds auto-dismiss
  * (timers are cleared on dismiss/unmount); network / permission / device persist.
  */
