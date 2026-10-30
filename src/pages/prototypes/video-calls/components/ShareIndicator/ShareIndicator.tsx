@@ -1,4 +1,3 @@
-import { Button } from '@mattermost/compass-ui/components/button';
 import styles from './ShareIndicator.module.scss';
 
 export interface ShareIndicatorLabels {
@@ -41,15 +40,14 @@ export function ShareIndicator({
     >
       <span className={styles['share-indicator__dot']} aria-hidden="true" />
       <span className={styles['share-indicator__text']}>{l.status}</span>
-      <Button
-        emphasis="link"
-        appearance="inverted"
-        size="x-small"
+      <button
+        type="button"
+        className={styles['share-indicator__stop']}
         aria-label={l.stopAria}
         onClick={onStop}
       >
         {l.stop}
-      </Button>
+      </button>
     </div>
   );
 }
