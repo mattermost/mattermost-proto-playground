@@ -31,6 +31,15 @@
   cursor: grab;
   touch-action: none;
 
+  // Eased settle into the nearest corner after a drag.
+  &--snapping {
+    transition: translate var(--duration-moderate) var(--ease-transition);
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
   &--dragging {
     cursor: grabbing;
     user-select: none;

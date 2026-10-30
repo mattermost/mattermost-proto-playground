@@ -334,6 +334,7 @@ export default function CallWidgetHost({
         styles['call-widget-host'],
         exiting && styles['call-widget-host--exiting'],
         widgetDrag.dragging && styles['call-widget-host--dragging'],
+        widgetDrag.snapping && styles['call-widget-host--snapping'],
       ]
         .filter(Boolean)
         .join(' ')}

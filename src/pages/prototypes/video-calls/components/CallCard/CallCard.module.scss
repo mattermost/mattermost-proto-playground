@@ -47,8 +47,10 @@
     min-width: 0;
   }
 
+  // Heading 200: Metropolis semibold 16 / 24.
   &__title {
     margin: 0;
+    font-family: var(--font-family-heading);
     overflow: hidden;
     font-size: var(--font-size-200);
     font-weight: var(--font-weight-semibold);
