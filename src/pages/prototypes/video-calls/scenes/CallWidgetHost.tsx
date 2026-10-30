@@ -15,9 +15,7 @@ import {
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { DeviceMenu } from '../components/DeviceMenu';
 import { VideoCallWidget } from '../components/VideoCallWidget';
-import { WidgetCalling } from '../components/WidgetCalling';
 import { WidgetIncoming } from '../components/WidgetIncoming';
-import { WidgetPreJoin } from '../components/WidgetPreJoin';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useMicLevel } from '../hooks/useMicLevel';
 import { useVideoCall } from '../videoCallContext';
@@ -30,7 +28,7 @@ import {
 } from '../videoCallsData';
 import CallMoreMenu from './CallMoreMenu';
 import ExitingPopover from './ExitingPopover';
-import PhaseCrossfade from './PhaseCrossfade';
+import { PhaseCrossfade } from '../components/PhaseCrossfade';
 import { useCallSession } from './useCallSession';
 import styles from './CallWidgetHost.module.scss';
 
@@ -142,68 +140,6 @@ function useDeviceMenus(ov: WidgetOverlay) {
   return { micMenu, cameraMenu, micLabel, cameraLabel };
 }
 
-/** Pre-join: self preview, mic test, device menus, Start / Join. */
-function PreJoinWidget({ ov }: { ov: WidgetOverlay }) {
-  const { state, participants, actions, selfCamera } = useVideoCall();
-  const { micMenu, cameraMenu } = useDeviceMenus(ov);
-  const micLevel = useMicLevel({
-    enabled: state.media.micOn,
-    simulated: true,
-  });
-  const mode = state.callContext === 'dm' ? 'start' : 'join';
-  const people = participants
-    .filter((p) => !p.self)
-    .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
-
-  return (
-    <WidgetPreJoin
-      mode={mode}
-      selfName={SELF.name}
-      selfAvatarSrc={SELF.avatarSrc}
-      cameraStream={selfCamera.stream}
-      micOn={state.media.micOn}
-      micLevel={micLevel}
-      cameraOn={state.media.cameraOn}
-      onToggleMic={actions.toggleMic}
-      onOpenMicMenu={() => ov.toggle('mic')}
-      micMenuOpen={ov.overlay === 'mic'}
-      micMenu={micMenu}
-      onToggleCamera={selfCamera.toggle}
-      onOpenCameraMenu={() => ov.toggle('camera')}
-      cameraMenuOpen={ov.overlay === 'camera'}
-      cameraMenu={cameraMenu}
-      people={people}
-      onPrimary={actions.confirmPreJoin}
-      onCancel={actions.cancelCall}
-      onExpand={actions.expand}
-    />
-  );
-}
-
-/** Outgoing 1:1 ring. The connect timer lives in CallPhaseEffects. */
-function CallingWidget({ ov }: { ov: WidgetOverlay }) {
-  const { state, actions, selfCamera } = useVideoCall();
-  const { micMenu, cameraMenu } = useDeviceMenus(ov);
-  return (
-    <WidgetCalling
-      peerName={PEER.name}
-      peerAvatarSrc={PEER.avatarSrc}
-      micOn={state.media.micOn}
-      onToggleMic={actions.toggleMic}
-      onOpenMicMenu={() => ov.toggle('mic')}
-      micMenuOpen={ov.overlay === 'mic'}
-      micMenu={micMenu}
-      cameraOn={state.media.cameraOn}
-      onToggleCamera={selfCamera.toggle}
-      onOpenCameraMenu={() => ov.toggle('camera')}
-      cameraMenuOpen={ov.overlay === 'camera'}
-      cameraMenu={cameraMenu}
-      onExpand={actions.expand}
-      onCancel={actions.cancelCall}
-    />
-  );
-}
-
 function IncomingWidget() {
   const { actions } = useVideoCall();
   return (
@@ -217,12 +153,26 @@ function IncomingWidget() {
   );
 }
 
-/** Live call: thumbnails, controls, participants + more popovers. */
-function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
+/**
+ * Pre-join, calling and the live call are ONE card (`VideoCallWidget`) that
+ * stays mounted while the phase changes, so its media row can animate and the
+ * mic / camera controls keep their place.
+ */
+function CardWidget({
+  ov,
+  phase,
+}: {
+  ov: WidgetOverlay;
+  phase: 'pre-join' | 'calling' | 'active';
+}) {
   const { state, participants, actions, selfCamera, elapsedLabel } =
     useCallSession();
   const { micMenu, cameraMenu, micLabel, cameraLabel } = useDeviceMenus(ov);
   const { overlay, close, toggle } = ov;
+  const micLevel = useMicLevel({
+    enabled: phase === 'pre-join' && state.media.micOn,
+    simulated: true,
+  });
   const devices = useMediaDevices({ enabled: true });
   const speakers = devices.speakers.length
     ? devices.speakers
@@ -231,13 +181,41 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
     speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
     speakers[0].label;
 
+  const people = participants
+    .filter((p) => !p.self)
+    .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
+  // Device pickers ride on chevrons until the call is live; then they move
+  // into the More menu.
+  const chevrons = phase !== 'active';
+
   return (
     <VideoCallWidget
+      phase={phase}
+      micOn={state.media.micOn}
+      onToggleMic={actions.toggleMic}
+      onOpenMicMenu={chevrons ? () => toggle('mic') : undefined}
+      micMenuOpen={overlay === 'mic'}
+      micMenu={micMenu}
+      cameraOn={state.media.cameraOn}
+      onToggleCamera={selfCamera.toggle}
+      onOpenCameraMenu={chevrons ? () => toggle('camera') : undefined}
+      cameraMenuOpen={overlay === 'camera'}
+      cameraMenu={cameraMenu}
+      selfStream={selfCamera.stream}
+      onExpand={actions.expand}
+      onCancel={actions.cancelCall}
+      joinMode={state.callContext === 'dm' ? 'start' : 'join'}
+      selfName={SELF.name}
+      selfAvatarSrc={SELF.avatarSrc}
+      micLevel={micLevel}
+      people={people}
+      onPrimary={actions.confirmPreJoin}
+      peerName={PEER.name}
+      peerAvatarSrc={PEER.avatarSrc}
       channelName={CHANNEL_NAME}
       elapsedLabel={elapsedLabel}
       participants={participants}
       clips={CLIPS}
-      selfStream={selfCamera.stream}
       participantCount={participants.length}
       participantsOpen={overlay === 'participants'}
       onToggleParticipants={() => toggle('participants')}
@@ -250,12 +228,6 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
           />
         </ExitingPopover>
       }
-      micOn={state.media.micOn}
-      onToggleMic={actions.toggleMic}
-      micMenu={micMenu}
-      cameraOn={state.media.cameraOn}
-      onToggleCamera={selfCamera.toggle}
-      cameraMenu={cameraMenu}
       sharing={state.sharing}
       onToggleShare={() => {
         close();
@@ -319,7 +291,6 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
           </ExitingPopover>
         </>
       }
-      onExpand={actions.expand}
       onLeave={actions.leave}
     />
   );
@@ -368,11 +339,12 @@ export default function CallWidgetHost({
         .join(' ')}
       onPointerDownCapture={ov.onPointerDownCapture}
     >
-      <PhaseCrossfade phaseKey={phase}>
-        {phase === 'pre-join' && <PreJoinWidget ov={ov} />}
-        {phase === 'calling' && <CallingWidget ov={ov} />}
-        {phase === 'incoming' && <IncomingWidget />}
-        {phase === 'active' && <ActiveWidget ov={ov} />}
+      <PhaseCrossfade phaseKey={phase === 'incoming' ? 'incoming' : 'card'}>
+        {phase === 'incoming' ? (
+          <IncomingWidget />
+        ) : (
+          <CardWidget ov={ov} phase={phase} />
+        )}
       </PhaseCrossfade>
     </div>
   );

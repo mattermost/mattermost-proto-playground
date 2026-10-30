@@ -1,12 +1,46 @@
-// Call widget content (302px card chrome comes from WidgetFrame).
+@keyframes video-call-widget-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.56;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+// ONE card for pre-join, calling and the live call (302px frame from
+// WidgetFrame). The frame is a size container so the pre-join preview height
+// can be expressed in cqw; the media row animates its height between phases.
 .video-call-widget {
+  container-type: inline-size;
+  // Inner content width: card minus the side padding and the 1px borders.
+  --video-call-widget-inner: calc(100cqw - 2 * var(--spacing-s) - 2px);
+
   &__header {
     display: flex;
     align-items: center;
     gap: var(--spacing-xxs);
-    min-height: 36px;
-    padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
-      var(--spacing-l);
+    min-height: 40px; // one-off layout height
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+      var(--spacing-s);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__lead {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
@@ -37,10 +71,117 @@
     flex: 0 0 auto;
   }
 
+  // Media row: fixed height per phase so the change animates (auto heights
+  // cannot transition). Content crossfades inside via PhaseCrossfade.
+  &__media {
+    --video-call-widget-media-h: 88px; // one-off layout height
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: var(--video-call-widget-media-h);
+    padding: 0 var(--spacing-s) var(--spacing-xs);
+    overflow: hidden;
+    transition: height var(--duration-moderate) var(--ease-transition);
+
+    &--pre-join {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
+      );
+    }
+
+    // Join mode adds the "N people in the call" row under the preview.
+    &--pre-join#{&}--people {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-s) + 24px +
+          var(--spacing-xs)
+      );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__pre-join {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__preview {
+    display: flex;
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-s);
+    overflow: hidden;
+
+    > * {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__people {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__people-label {
+    min-width: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // Calling: peer avatar with a soft pulsing ring and status text.
+  &__peer {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__ring {
+    position: relative;
+    display: inline-flex;
+    border-radius: var(--radius-pill);
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-pill);
+      border: var(--spacing-xxxxs) solid var(--online-indicator);
+      animation: video-call-widget-ring calc(var(--duration-moderate) * 6)
+        var(--ease-exit) infinite;
+      pointer-events: none;
+    }
+
+    &::after {
+      animation-delay: calc(var(--duration-moderate) * 3);
+    }
+  }
+
+  &__status {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+  }
+
   &__thumbs {
     display: flex;
     gap: var(--spacing-xs);
-    padding: 0 var(--spacing-l) var(--spacing-xs);
+    flex: 1 1 auto;
   }
 
   &__thumb {
@@ -71,19 +212,85 @@
     font-weight: var(--font-weight-semibold);
   }
 
+  // Controls row: mic / camera stay put in every phase; the trailing group
+  // changes (meter, Cancel, or participants / share / more / hang up).
   &__controls {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-xxxs);
+    gap: var(--spacing-xs);
     margin-top: auto;
-    padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-l);
+    box-sizing: border-box;
+    // Tall enough for the small Cancel button, so calling and active match.
+    min-height: calc(var(--spacing-xxs) + 32px + var(--spacing-s));
+    padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-s);
+    transition: padding-bottom var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: the actions row below supplies the bottom inset.
+    &--with-actions {
+      min-height: 0;
+      padding-bottom: var(--spacing-xs);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
 
-  &__actions {
+  &__trailing {
     display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__trailing-inner {
+    display: flex;
+    flex: 1 1 auto;
     align-items: center;
+    justify-content: flex-end;
     gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__meter {
+    flex: 1 1 auto;
+  }
+
+  // Pre-join Cancel / Start: stays mounted, collapses (grid 0fr -> 1fr) once
+  // the call is on.
+  &__actions {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--open {
+      grid-template-rows: 1fr;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  // The clip has no padding: padding would stay visible at 0fr.
+  &__actions-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__actions-row {
+    display: flex;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s) var(--spacing-s);
+  }
+
+  // Start / Join call: success green. The primary Button reads --button-bg
+  // (hover and active tints derive from it), so override the variable.
+  &__start {
+    --button-bg: var(--color-success);
+    // Takes the width left beside Cancel.
+    flex: 1 1 0;
+    min-width: 0;
   }
 
   &__hangup {
@@ -111,12 +318,20 @@
     }
   }
 
-  // Small recording indicator next to the elapsed time.
   &__rec {
     flex: 0 0 auto;
     width: var(--spacing-xs);
     height: var(--spacing-xs);
     border-radius: var(--radius-pill);
     background: var(--error-text, var(--color-danger));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__ring::before,
+    &__ring::after {
+      animation: none;
+      opacity: 0.4;
+      transform: scale(1.18);
+    }
   }
 }

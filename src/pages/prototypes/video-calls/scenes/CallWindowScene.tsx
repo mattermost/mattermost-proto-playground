@@ -8,7 +8,7 @@ import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER } from '../videoCallsData';
 import CallScene from './CallScene';
-import PhaseCrossfade from './PhaseCrossfade';
+import { PhaseCrossfade } from '../components/PhaseCrossfade';
 import PreJoinScene from './PreJoinScene';
 import ScreenShareScene from './ScreenShareScene';
 import styles from './CallWindowScene.module.scss';
