@@ -184,21 +184,18 @@ function CardWidget({
   const people = participants
     .filter((p) => !p.self)
     .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
-  // Device pickers ride on chevrons until the call is live; then they move
-  // into the More menu.
-  const chevrons = phase !== 'active';
 
   return (
     <VideoCallWidget
       phase={phase}
       micOn={state.media.micOn}
       onToggleMic={actions.toggleMic}
-      onOpenMicMenu={chevrons ? () => toggle('mic') : undefined}
+      onOpenMicMenu={() => toggle('mic')}
       micMenuOpen={overlay === 'mic'}
       micMenu={micMenu}
       cameraOn={state.media.cameraOn}
       onToggleCamera={selfCamera.toggle}
-      onOpenCameraMenu={chevrons ? () => toggle('camera') : undefined}
+      onOpenCameraMenu={() => toggle('camera')}
       cameraMenuOpen={overlay === 'camera'}
       cameraMenu={cameraMenu}
       selfStream={selfCamera.stream}
