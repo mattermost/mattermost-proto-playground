@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
@@ -31,6 +31,8 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   const { state, actions } = useVideoCall();
   const others = ROSTER.slice(1, state.count);
   const ongoing = state.phase === 'idle';
+  // The banner can be closed; it comes back with the next conversation.
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   // A group DM only has its own members; a channel shows everyone.
   const allowed =
     kind === 'gm' ? ROSTER.slice(0, state.count).map((p) => p.id) : undefined;
@@ -72,20 +74,16 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
               )
             }
           />
-          {ongoing && (
+          {ongoing && !bannerDismissed && (
             <div className={styles['group-chat__banner-anchor']}>
               <CallBanner
-                participants={others.slice(0, 3).map((p) => ({
-                  key: p.id,
-                  name: p.name,
-                  src: p.avatarSrc,
-                }))}
                 message={`${others.length} ${
                   others.length === 1 ? 'person' : 'people'
                 } in a call`}
                 meta="12:40"
                 joinLabel="Join"
                 onJoin={() => actions.startCall()}
+                onDismiss={() => setBannerDismissed(true)}
               />
             </div>
           )}

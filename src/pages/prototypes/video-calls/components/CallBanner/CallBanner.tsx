@@ -1,37 +1,37 @@
 import type { ReactNode } from 'react';
+import CloseIcon from '@mattermost/compass-icons/components/close';
+import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import {
-  UserAvatarGroup,
-  type UserAvatarGroupItem,
-} from '@mattermost/compass-ui/components/user-avatar-group';
-import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import styles from './CallBanner.module.scss';
 
 export interface CallBannerProps {
-  /** Participants already in the call. */
-  participants: UserAvatarGroupItem[];
   /** Main line, e.g. "3 people in a call". */
   message: ReactNode;
   /** Secondary text after the message, e.g. elapsed time "12:40". */
   meta?: ReactNode;
   joinLabel?: string;
   onJoin: () => void;
+  /** Shows a close button; omit for a banner that can't be dismissed. */
+  onDismiss?: () => void;
+  dismissLabel?: string;
   /** Accessible name for the banner region. */
   ariaLabel?: string;
   className?: string;
 }
 
 /**
- * Ongoing-call banner: a green, toast-like pill with the people in the call and
- * a Join action. Floats; the host positions it (see GroupChat).
+ * Ongoing-call banner: a green, dismissable pill at toast height with the call
+ * status and a Join action. Floats; the host positions it (see GroupChat).
  */
 export default function CallBanner({
-  participants,
   message,
   meta,
   joinLabel = 'Join',
   onJoin,
+  onDismiss,
+  dismissLabel = 'Dismiss',
   ariaLabel = 'Ongoing call',
   className,
 }: CallBannerProps) {
@@ -45,7 +45,6 @@ export default function CallBanner({
       <span className={styles['call-banner__icon']} aria-hidden="true">
         <Icon glyph={<VideoOutlineIcon />} size="20" />
       </span>
-      <UserAvatarGroup avatars={participants} size="24" max={3} />
       <p className={styles['call-banner__text']}>
         <span className={styles['call-banner__message']}>{message}</span>
         {meta && (
@@ -59,11 +58,23 @@ export default function CallBanner({
         className={styles['call-banner__join']}
         emphasis="primary"
         appearance="inverted"
-        size="small"
+        size="x-small"
         onClick={onJoin}
       >
         {joinLabel}
       </Button>
+      {onDismiss && (
+        <IconButton
+          className={styles['call-banner__dismiss']}
+          size="small"
+          padding="compact"
+          style="inverted"
+          aria-label={dismissLabel}
+          title={dismissLabel}
+          icon={<Icon size="16" glyph={<CloseIcon />} />}
+          onClick={onDismiss}
+        />
+      )}
     </section>
   );
 }

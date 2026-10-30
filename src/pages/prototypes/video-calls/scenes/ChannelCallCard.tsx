@@ -64,6 +64,19 @@ function useCallPost(): CallPostModel | null {
   const caller = byId(state.callerId);
   const now = clock(Date.now());
 
+  if (phase === 'calling') {
+    return {
+      authorId: caller.id,
+      timestamp: now,
+      card: {
+        state: 'calling',
+        title: `Calling ${byId(DM_PEER_ID).name}…`,
+        meta: 'Waiting for them to answer',
+        onCancel: actions.cancelCall,
+      },
+    };
+  }
+
   if (inCall) {
     return {
       authorId: caller.id,
@@ -73,7 +86,7 @@ function useCallPost(): CallPostModel | null {
         title: 'Call started',
         meta: `just now by ${caller.name}`,
         participants: people(true),
-        onLeave: phase === 'calling' ? actions.cancelCall : actions.leave,
+        onLeave: actions.leave,
       },
     };
   }
@@ -124,6 +137,12 @@ function useCallPost(): CallPostModel | null {
         meta: `Ended at ${clock(state.endedAt)} · Lasted ${formatCallDuration(
           state.endedDurationSec,
         )}`,
+        recordingLabel:
+          state.recordingsMade > 0
+            ? `${state.recordingsMade} ${
+                state.recordingsMade === 1 ? 'recording' : 'recordings'
+              }`
+            : undefined,
       },
     };
   }

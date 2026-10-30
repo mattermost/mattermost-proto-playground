@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import FileVideoOutlineIcon from '@mattermost/compass-icons/components/file-video-outline';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
-import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -11,8 +10,11 @@ import {
 } from '@mattermost/compass-ui/components/user-avatar-group';
 import styles from './CallCard.module.scss';
 
-/** `active`: call in progress, you're not in it. `joined`: you're in it. `ended`: call over. */
-export type CallCardState = 'active' | 'joined' | 'ended';
+/**
+ * `calling`: you're ringing someone (1:1). `active`: call in progress, you're
+ * not in it. `joined`: you're in it. `ended`: call over.
+ */
+export type CallCardState = 'calling' | 'active' | 'joined' | 'ended';
 
 export interface CallCardProps {
   /** Which step of the call the card shows. Default `active`. */
@@ -28,6 +30,9 @@ export interface CallCardProps {
   joinLabel?: string;
   /** Active: omit to hide Join call. */
   onJoin?: () => void;
+  /** Calling: cancel the outgoing ring. Omit to hide the button. */
+  onCancel?: () => void;
+  cancelLabel?: string;
   leaveLabel?: string;
   /** Joined: omit to hide Leave. */
   onLeave?: () => void;
@@ -57,6 +62,8 @@ export default function CallCard({
   onJoin,
   leaveLabel = 'Leave',
   onLeave,
+  onCancel,
+  cancelLabel = 'Cancel',
   recordingLabel,
   trailing,
   ariaLabel,
@@ -74,6 +81,12 @@ export default function CallCard({
         <Icon size="16" glyph={<FileVideoOutlineIcon />} />
         {recordingLabel}
       </span>
+    ) : null;
+  } else if (state === 'calling') {
+    right = onCancel ? (
+      <Button emphasis="primary" destructive size="medium" onClick={onCancel}>
+        {cancelLabel}
+      </Button>
     ) : null;
   } else if (state === 'joined') {
     right = onLeave ? (
@@ -93,7 +106,7 @@ export default function CallCard({
         className={styles['call-card__join']}
         emphasis="primary"
         size="medium"
-        leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+        leadingIcon={<Icon size="16" glyph={<PhoneInTalkIcon />} />}
         onClick={onJoin}
       >
         {joinLabel}
@@ -102,36 +115,42 @@ export default function CallCard({
   }
 
   return (
-    <section
-      className={[
-        styles['call-card'],
-        ended && styles['call-card--ended'],
-        className,
-      ]
+    <div
+      className={[styles['call-card-frame'], className]
         .filter(Boolean)
         .join(' ')}
-      aria-label={ariaLabel ?? title}
     >
-      <div className={styles['call-card__left']}>
-        <span className={styles['call-card__icon']} aria-hidden="true">
-          <Icon
-            glyph={ended ? <PhoneHangupIcon /> : <PhoneInTalkIcon />}
-            size="20"
-          />
-        </span>
-        <div className={styles['call-card__text']}>
-          <p className={styles['call-card__title']}>{title}</p>
-          {meta && <p className={styles['call-card__meta']}>{meta}</p>}
+      <section
+        className={[
+          styles['call-card'],
+          ended && styles['call-card--ended'],
+          state === 'calling' && styles['call-card--calling'],
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        aria-label={ariaLabel ?? title}
+      >
+        <div className={styles['call-card__left']}>
+          <span className={styles['call-card__icon']} aria-hidden="true">
+            <Icon
+              glyph={ended ? <PhoneHangupIcon /> : <PhoneInTalkIcon />}
+              size="20"
+            />
+          </span>
+          <div className={styles['call-card__text']}>
+            <p className={styles['call-card__title']}>{title}</p>
+            {meta && <p className={styles['call-card__meta']}>{meta}</p>}
+          </div>
         </div>
-      </div>
-      {(hasAvatars || right) && (
-        <div className={styles['call-card__right']}>
-          {hasAvatars && (
-            <UserAvatarGroup avatars={participants} max={max} size="28" />
-          )}
-          {right}
-        </div>
-      )}
-    </section>
+        {(hasAvatars || right) && (
+          <div className={styles['call-card__right']}>
+            {hasAvatars && (
+              <UserAvatarGroup avatars={participants} max={max} size="28" />
+            )}
+            {right}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

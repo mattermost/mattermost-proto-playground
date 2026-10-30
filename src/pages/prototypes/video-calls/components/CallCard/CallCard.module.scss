@@ -1,26 +1,28 @@
+// Sizing frame: the Figma card is at most 700px wide and stacks (Narrow
+// variant) when its frame gets narrower than ~480px. Container queries only
+// affect descendants, so the container is this wrapper, not the card itself.
+.call-card-frame {
+  width: 100%;
+  max-width: 700px; // one-off layout width, matches the Figma card
+  container-type: inline-size;
+}
+
 .call-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-l);
   box-sizing: border-box;
-  width: 100%;
-  max-width: 700px; // one-off layout width, matches the Figma card
-  container-type: inline-size;
   padding: var(--spacing-l);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: var(--radius-s);
   background: var(--center-channel-bg);
   box-shadow: var(--elevation-1);
   color: var(--center-channel-color);
-  transition: background-color var(--duration-quick) var(--ease-transition);
+  transition: box-shadow var(--duration-quick) var(--ease-transition);
 
+  // Hover lifts the card a step (Figma "State=Hover").
   &:hover {
-    background: color-mix(
-      in srgb,
-      var(--center-channel-color) 4%,
-      var(--center-channel-bg)
-    );
+    box-shadow: var(--elevation-2);
   }
 
   &__left {
@@ -86,7 +88,17 @@
   // Ended: grey icon disc instead of the online green.
   &--ended &__icon {
     background: rgba(var(--center-channel-color-rgb), 0.08);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    color: var(--color-neutral-650);
+  }
+
+  // Calling: the icon disc pulses like the widget's ringing avatar.
+  &--calling &__icon {
+    animation: call-card-ring calc(var(--duration-moderate) * 5)
+      var(--ease-exit) infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
   }
 
   &__recording {
@@ -97,6 +109,15 @@
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.72);
     white-space: nowrap;
+  }
+}
+
+@keyframes call-card-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-green-600-rgb), 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 var(--spacing-m) rgba(var(--color-green-600-rgb), 0);
   }
 }
 

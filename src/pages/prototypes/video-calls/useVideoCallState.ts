@@ -49,6 +49,8 @@ export interface VideoCallState {
   endedDurationSec: number;
   /** When the last call ended (ms), for the "Ended at …" call card. */
   endedAt: number | null;
+  /** Recordings started during the current / last call (the ended card lists them). */
+  recordingsMade: number;
   /** Who started the current / last call (the call card's author). */
   callerId: string;
   /** Set when an incoming call rang out; the DM shows a missed-call post. */
@@ -78,6 +80,7 @@ const INITIAL_STATE: VideoCallState = {
   callStartedAt: null,
   endedDurationSec: 0,
   endedAt: null,
+  recordingsMade: 0,
   callerId: SELF_ID,
   missedCall: false,
   soundOn: true,
@@ -196,6 +199,7 @@ export function useVideoCallState() {
             pane: phase === 'active' ? s.pane : null,
             missedCall: false,
             endedAt: null,
+            recordingsMade: 0,
             callerId: phase === 'incoming' ? DM_PEER_ID : s.callerId,
           };
         }),
@@ -221,6 +225,7 @@ export function useVideoCallState() {
             pane: null,
             missedCall: false,
             endedAt: null,
+            recordingsMade: 0,
             callerId: demo.phase === 'incoming' ? DM_PEER_ID : SELF_ID,
             callStartedAt: demo.phase === 'active' ? Date.now() : null,
           };
@@ -241,6 +246,7 @@ export function useVideoCallState() {
           missedCall: false,
           endedDurationSec: 0,
           endedAt: null,
+          recordingsMade: 0,
           callerId: SELF_ID,
           // Audio-only starts with the camera off (and releases the webcam).
           media: opts?.audioOnly ? releaseCamera(s.media) : s.media,
@@ -306,6 +312,7 @@ export function useVideoCallState() {
           return {
             ...s,
             recording,
+            recordingsMade: recording ? s.recordingsMade + 1 : s.recordingsMade,
             notices: [
               ...s.notices,
               {

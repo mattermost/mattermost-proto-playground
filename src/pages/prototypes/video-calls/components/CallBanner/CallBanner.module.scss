@@ -1,17 +1,19 @@
 // Floating toast-style banner: the host places it (centred under the channel
-// header); this module only styles the green pill itself.
+// header); this module only styles the green pill itself. Height matches the
+// Compass Toast (4px frame around a 32px row = 40px).
 .call-banner {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-m);
+  gap: var(--spacing-xs);
   max-width: 100%;
   box-sizing: border-box;
-  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs)
-    var(--spacing-m);
-  border-radius: var(--radius-m);
+  height: 40px; // one-off layout height, matches Toast
+  padding: var(--spacing-xxxs) var(--spacing-xxxs) var(--spacing-xxxs)
+    var(--spacing-s);
+  border-radius: var(--radius-s);
   // green-600, not the theme's online green: white text needs the contrast.
   background: var(--color-green-600);
-  box-shadow: var(--elevation-3);
+  box-shadow: var(--elevation-2);
   color: var(--button-color, var(--color-neutral-0));
 
   &__icon {
@@ -37,7 +39,14 @@
     font-variant-numeric: tabular-nums;
   }
 
-  &__join {
+  // White button, text in the banner's own green. The inverted primary Button
+  // reads --button-fg; triple class beats its appearance rule.
+  #{&}__join#{&}__join#{&}__join {
+    flex: 0 0 auto;
+    --button-fg: var(--color-green-600);
+  }
+
+  &__dismiss {
     flex: 0 0 auto;
   }
 }
