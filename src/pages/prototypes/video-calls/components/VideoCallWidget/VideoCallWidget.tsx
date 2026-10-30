@@ -71,6 +71,10 @@ export interface VideoCallWidgetProps {
   onToggleMore: () => void;
   /** Host-rendered menu, anchored above the card. */
   moreMenu?: ReactNode;
+  /** Additional host-rendered popovers (e.g. output picker, call info). */
+  extraPopovers?: ReactNode;
+  /** Shows a small recording dot in the header. */
+  recording?: boolean;
 
   onExpand: () => void;
   onLeave: () => void;
@@ -132,6 +136,8 @@ export function VideoCallWidget({
   moreOpen = false,
   onToggleMore,
   moreMenu,
+  extraPopovers,
+  recording = false,
   onExpand,
   onLeave,
   labels,
@@ -158,6 +164,7 @@ export function VideoCallWidget({
           {micMenu}
           {cameraMenu}
           {moreMenu}
+          {extraPopovers}
         </>
       }
     >
@@ -171,6 +178,14 @@ export function VideoCallWidget({
         <span className={styles['video-call-widget__elapsed']}>
           &middot; {elapsedLabel}
         </span>
+        {recording && (
+          <span
+            className={styles['video-call-widget__rec']}
+            role="img"
+            aria-label="Recording"
+            title="Recording"
+          />
+        )}
         <IconButton
           size="small"
           padding="compact"

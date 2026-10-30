@@ -109,4 +109,13 @@
       outline-offset: 2px;
     }
   }
+
+  // Small recording indicator next to the elapsed time.
+  &__rec {
+    flex: 0 0 auto;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: var(--error-text, var(--color-danger));
+  }
 }

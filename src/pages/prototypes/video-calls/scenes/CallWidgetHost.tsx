@@ -5,12 +5,13 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import { ParticipantsPanel } from '@mattermost/compass-proto';
-import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { CallInfoPanel, ParticipantsPanel } from '@mattermost/compass-proto';
 import {
-  PopoverMenu,
-  PopoverMenuDivider,
-} from '@mattermost/compass-ui/components/popover-menu';
+  DIAL_IN_NUMBER,
+  DIAL_IN_PIN,
+  EXTERNAL_LINK,
+  INTERNAL_LINK,
+} from '@/fixtures/calls/callConstants';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { DeviceMenu } from '../components/DeviceMenu';
 import { VideoCallWidget } from '../components/VideoCallWidget';
@@ -27,10 +28,13 @@ import {
   ROSTER,
   SELF_ID,
 } from '../videoCallsData';
+import CallMoreMenu from './CallMoreMenu';
+import ExitingPopover from './ExitingPopover';
 import { useCallSession } from './useCallSession';
 import styles from './CallWidgetHost.module.scss';
 
-type Overlay = 'participants' | 'more' | 'mic' | 'camera' | null;
+type Overlay =
+  'participants' | 'more' | 'mic' | 'camera' | 'output' | 'info' | null;
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
 const SELF = ROSTER.find((p) => p.id === SELF_ID) ?? ROSTER[0];
@@ -38,6 +42,10 @@ const SELF = ROSTER.find((p) => p.id === SELF_ID) ?? ROSTER[0];
 const FALLBACK_MICS = [
   { deviceId: 'fallback-mic-1', label: 'Default microphone' },
   { deviceId: 'fallback-mic-2', label: 'External USB microphone' },
+];
+const FALLBACK_SPEAKERS = [
+  { deviceId: 'fallback-speaker-1', label: 'Default speakers' },
+  { deviceId: 'fallback-speaker-2', label: 'External headphones' },
 ];
 const FALLBACK_CAMERAS = [
   { deviceId: 'fallback-camera-1', label: 'Built-in camera' },
@@ -208,6 +216,13 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
     useCallSession();
   const { micMenu, cameraMenu } = useDeviceMenus(ov);
   const { overlay, close, toggle } = ov;
+  const devices = useMediaDevices({ enabled: true });
+  const speakers = devices.speakers.length
+    ? devices.speakers
+    : FALLBACK_SPEAKERS;
+  const outputLabel =
+    speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
+    speakers[0].label;
 
   return (
     <VideoCallWidget
@@ -220,13 +235,13 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
       participantsOpen={overlay === 'participants'}
       onToggleParticipants={() => toggle('participants')}
       participantsPopover={
-        overlay === 'participants' ? (
+        <ExitingPopover open={overlay === 'participants'}>
           <ParticipantsPanel
             variant="widget"
             participants={participants}
             currentUserId={SELF_ID}
           />
-        ) : undefined
+        </ExitingPopover>
       }
       micOn={state.media.micOn}
       onToggleMic={actions.toggleMic}
@@ -248,40 +263,51 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
       moreOpen={overlay === 'more'}
       onToggleMore={() => toggle('more')}
       moreMenu={
-        <PopoverMenu
+        <CallMoreMenu
           open={overlay === 'more'}
-          role="menu"
-          aria-label="More options"
-        >
-          <MenuItem
-            label="Show call chat"
-            leadingElement={false}
-            onClick={() => {
-              close();
-              actions.expand();
-              actions.togglePane('chat');
-            }}
-          />
-          <MenuItem
-            label={
-              state.soundOn ? 'Turn call sounds off' : 'Turn call sounds on'
-            }
-            leadingElement={false}
-            onClick={() => {
-              actions.setSoundOn(!state.soundOn);
-              close();
-            }}
-          />
-          <PopoverMenuDivider />
-          <MenuItem
-            label="Copy call link"
-            leadingElement={false}
-            onClick={() => {
-              actions.pushNotice({ kind: 'info', text: 'Call link copied' });
+          recording={state.recording}
+          outputLabel={outputLabel}
+          onShowOutput={() => toggle('output')}
+          onToggleRecording={() => {
+            actions.toggleRecording();
+            close();
+          }}
+          onShowChat={() => {
+            close();
+            actions.expand();
+            if (state.pane !== 'chat') actions.togglePane('chat');
+          }}
+          onShowInfo={() => toggle('info')}
+        />
+      }
+      recording={state.recording}
+      extraPopovers={
+        <>
+          <DeviceMenu
+            open={overlay === 'output'}
+            title="Audio output"
+            devices={speakers.map((d) => ({ id: d.deviceId, label: d.label }))}
+            selectedId={state.media.speakerDeviceId}
+            onSelect={(id) => {
+              actions.setMedia({ speakerDeviceId: id });
               close();
             }}
+            onClose={ov.closeFromMenu}
           />
-        </PopoverMenu>
+          <ExitingPopover open={overlay === 'info'}>
+            <CallInfoPanel
+              fullWidth
+              variant="host"
+              onClose={close}
+              internalLink={INTERNAL_LINK}
+              externalLink={EXTERNAL_LINK}
+              dialInNumber={DIAL_IN_NUMBER}
+              dialInPin={DIAL_IN_PIN}
+              externalEnabled={state.externalEnabled}
+              onExternalEnabledChange={actions.setExternalEnabled}
+            />
+          </ExitingPopover>
+        </>
       }
       onExpand={actions.expand}
       onLeave={actions.leave}
@@ -294,9 +320,24 @@ function ActiveWidget({ ov }: { ov: WidgetOverlay }) {
  * widget surface (pre-join, calling, incoming, active). Owns the one-at-a-time
  * menu / popover state and its dismissal (outside click, Escape).
  */
-export default function CallWidgetHost() {
+export interface CallWidgetHostProps {
+  /** True while the widget plays its exit animation (the call already ended). */
+  exiting?: boolean;
+}
+
+export default function CallWidgetHost({
+  exiting = false,
+}: CallWidgetHostProps) {
   const { state } = useVideoCall();
   const ov = useWidgetOverlay();
+
+  // Keep rendering the last live phase while the widget fades out after Leave /
+  // Cancel / Decline (the state is already idle by then).
+  const [heldPhase, setHeldPhase] = useState(state.phase);
+  if (state.phase !== 'idle' && state.phase !== heldPhase) {
+    setHeldPhase(state.phase);
+  }
+  const phase = state.phase === 'idle' ? heldPhase : state.phase;
 
   // Menus never carry across phases.
   const { close } = ov;
@@ -304,18 +345,23 @@ export default function CallWidgetHost() {
     close();
   }, [state.phase, close]);
 
-  if (state.phase === 'idle') return null;
+  if (phase === 'idle') return null;
 
   return (
     <div
       ref={ov.widgetRef}
-      className={styles['call-widget-host']}
+      className={[
+        styles['call-widget-host'],
+        exiting && styles['call-widget-host--exiting'],
+      ]
+        .filter(Boolean)
+        .join(' ')}
       onPointerDownCapture={ov.onPointerDownCapture}
     >
-      {state.phase === 'pre-join' && <PreJoinWidget ov={ov} />}
-      {state.phase === 'calling' && <CallingWidget ov={ov} />}
-      {state.phase === 'incoming' && <IncomingWidget />}
-      {state.phase === 'active' && <ActiveWidget ov={ov} />}
+      {phase === 'pre-join' && <PreJoinWidget ov={ov} />}
+      {phase === 'calling' && <CallingWidget ov={ov} />}
+      {phase === 'incoming' && <IncomingWidget />}
+      {phase === 'active' && <ActiveWidget ov={ov} />}
     </div>
   );
 }

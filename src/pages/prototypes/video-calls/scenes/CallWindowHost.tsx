@@ -6,12 +6,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
-import {
-  PopoverMenu,
-  PopoverMenuDivider,
-} from '@mattermost/compass-ui/components/popover-menu';
+import { CallInfoPanel } from '@mattermost/compass-proto';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import {
+  DIAL_IN_NUMBER,
+  DIAL_IN_PIN,
+  EXTERNAL_LINK,
+  INTERNAL_LINK,
+} from '@/fixtures/calls/callConstants';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { playSound } from '../callSounds';
 import { CallThreadPane } from '../components/CallThreadPane';
@@ -28,15 +30,22 @@ import {
   hasSeenCallChat,
   markCallChatSeen,
 } from './callChat';
+import CallMoreMenu from './CallMoreMenu';
+import ExitingPopover from './ExitingPopover';
 import { useCallSession } from './useCallSession';
 import styles from './CallWindowHost.module.scss';
 
-type MenuId = 'mic' | 'camera' | 'reactions' | 'more' | 'view';
+type MenuId =
+  'mic' | 'camera' | 'reactions' | 'more' | 'view' | 'output' | 'info';
 
 const REACTION_MS = 2500;
 const FALLBACK_MICS = [
   { deviceId: 'fallback-mic-1', label: 'Default microphone' },
   { deviceId: 'fallback-mic-2', label: 'External USB microphone' },
+];
+const FALLBACK_SPEAKERS = [
+  { deviceId: 'fallback-speaker-1', label: 'Default speakers' },
+  { deviceId: 'fallback-speaker-2', label: 'External headphones' },
 ];
 const FALLBACK_CAMERAS = [
   { deviceId: 'fallback-camera-1', label: 'Built-in camera' },
@@ -118,6 +127,12 @@ export default function CallWindowHost({
   const devices = useMediaDevices({ enabled: true });
   const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
   const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
+  const speakers = devices.speakers.length
+    ? devices.speakers
+    : FALLBACK_SPEAKERS;
+  const outputLabel =
+    speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
+    speakers[0].label;
 
   // Join / leave notices when the call size changes ------------------------
   const prevParticipants = useRef(participants);
@@ -229,29 +244,34 @@ export default function CallWindowHost({
   );
 
   const moreMenu = (
-    <PopoverMenu
-      open={openMenu === 'more'}
-      role="menu"
-      aria-label="More options"
-    >
-      <MenuItem
-        label={state.soundOn ? 'Turn call sounds off' : 'Turn call sounds on'}
-        leadingElement={false}
-        onClick={() => {
-          actions.setSoundOn(!state.soundOn);
-          setOpenMenu(null);
+    <>
+      <CallMoreMenu
+        open={openMenu === 'more'}
+        recording={state.recording}
+        outputLabel={outputLabel}
+        onShowOutput={() => setOpenMenu('output')}
+        onToggleRecording={() => {
+          actions.toggleRecording();
+          closeMenu();
         }}
-      />
-      <PopoverMenuDivider />
-      <MenuItem
-        label="Copy call link"
-        leadingElement={false}
-        onClick={() => {
-          actions.pushNotice({ kind: 'info', text: 'Call link copied' });
-          setOpenMenu(null);
+        onShowChat={() => {
+          closeMenu();
+          if (state.pane !== 'chat') actions.togglePane('chat');
         }}
+        onShowInfo={() => setOpenMenu('info')}
       />
-    </PopoverMenu>
+      <DeviceMenu
+        open={openMenu === 'output'}
+        title="Audio output"
+        devices={speakers.map((d) => ({ id: d.deviceId, label: d.label }))}
+        selectedId={state.media.speakerDeviceId}
+        onSelect={(id) => {
+          actions.setMedia({ speakerDeviceId: id });
+          closeMenu();
+        }}
+        onClose={closeMenu}
+      />
+    </>
   );
 
   const pane =
@@ -296,6 +316,8 @@ export default function CallWindowHost({
         pane={pane}
         onDismissOverlays={closeMenu}
         getTileMenu={getTileMenu}
+        recording={state.recording ? 'recording' : undefined}
+        onStopRecording={actions.toggleRecording}
         controls={{
           participantCount: participants.length,
           participantsOpen: state.pane === 'participants',
@@ -365,6 +387,21 @@ export default function CallWindowHost({
           onLeave: actions.leave,
         }}
       />
+      <ExitingPopover
+        open={openMenu === 'info'}
+        className={styles['call-window-host__info']}
+      >
+        <CallInfoPanel
+          variant="host"
+          onClose={closeMenu}
+          internalLink={INTERNAL_LINK}
+          externalLink={EXTERNAL_LINK}
+          dialInNumber={DIAL_IN_NUMBER}
+          dialInPin={DIAL_IN_PIN}
+          externalEnabled={state.externalEnabled}
+          onExternalEnabledChange={actions.setExternalEnabled}
+        />
+      </ExitingPopover>
     </div>
   );
 }

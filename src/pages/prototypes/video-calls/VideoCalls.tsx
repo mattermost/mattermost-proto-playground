@@ -4,6 +4,7 @@ import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useWalkthrough } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
+import SoundToggle from './chrome/SoundToggle';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import CallWindowScene from './scenes/CallWindowScene';
 import ChatScene from './scenes/ChatScene';
@@ -56,6 +57,7 @@ export default function VideoCalls() {
           onChange={actions.setCount}
           disabled={callContext === 'dm'}
         />
+        <SoundToggle on={state.soundOn} onChange={actions.setSoundOn} />
       </div>,
     );
     return () => setCenterSlot(null);
@@ -64,6 +66,7 @@ export default function VideoCalls() {
     phase,
     surface,
     count,
+    state.soundOn,
     actions,
     setCenterSlot,
     walkthroughActive,

@@ -5,4 +5,13 @@
   display: flex;
   min-width: 0;
   min-height: 0;
+
+  // Call info popover, top-right under the window header (like CallPopout's).
+  &__info {
+    position: absolute;
+    top: calc(var(--spacing-xxxxl) + var(--spacing-m));
+    right: var(--spacing-l);
+    z-index: 6;
+    transform-origin: top right;
+  }
 }

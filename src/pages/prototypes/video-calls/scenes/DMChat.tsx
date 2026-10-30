@@ -9,10 +9,10 @@ import {
   MessageInput,
   layoutStyles,
 } from '@mattermost/compass-proto';
+import { formatCallDuration } from '../hooks/useCallTimer';
 import VideoCallChannelShell from '../VideoCallChannelShell';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
-import { formatDuration } from './callCopy';
 import styles from './DMChat.module.scss';
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
@@ -132,7 +132,7 @@ export default function DMChat({ floating }: DMChatProps) {
         {state.endedDurationSec > 0 && (
           <CallPost
             tone="ended"
-            title={`Call ended · ${formatDuration(state.endedDurationSec)}`}
+            title={`Call ended · ${formatCallDuration(state.endedDurationSec)}`}
             meta={`Video call with ${PEER.name}`}
           />
         )}

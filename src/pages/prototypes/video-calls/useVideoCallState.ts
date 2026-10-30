@@ -39,6 +39,10 @@ export interface VideoCallState {
   pane: CallPane;
   handRaised: boolean;
   sharing: boolean;
+  /** Mock call recording (shows the REC pill in the window, a dot in the widget). */
+  recording: boolean;
+  /** Call info: whether external participants may join (mock toggle). */
+  externalEnabled: boolean;
   notices: CallNotice[];
   callStartedAt: number | null;
   /** Seconds of the last finished call; the chat shows a "Call ended" post. */
@@ -64,6 +68,8 @@ const INITIAL_STATE: VideoCallState = {
   pane: null,
   handRaised: false,
   sharing: false,
+  recording: false,
+  externalEnabled: false,
   notices: [],
   callStartedAt: null,
   endedDurationSec: 0,
@@ -89,6 +95,7 @@ const CALL_RESET: Partial<VideoCallState> = {
   phase: 'idle',
   surface: 'widget',
   sharing: false,
+  recording: false,
   handRaised: false,
   pane: null,
   callStartedAt: null,
@@ -253,6 +260,25 @@ export function useVideoCallState() {
         setState((s) => ({ ...s, media: { ...s.media, ...next } })),
       toggleHand: () => setState((s) => ({ ...s, handRaised: !s.handRaised })),
       toggleShare: () => setState((s) => ({ ...s, sharing: !s.sharing })),
+      /** Mock recording toggle; also posts a notice like the real product would. */
+      toggleRecording: () =>
+        setState((s) => {
+          const recording = !s.recording;
+          return {
+            ...s,
+            recording,
+            notices: [
+              ...s.notices,
+              {
+                id: `notice-${++noticeSeq}`,
+                kind: 'recording' as const,
+                text: recording ? 'Recording started' : 'Recording stopped',
+              },
+            ].slice(-MAX_NOTICES),
+          };
+        }),
+      setExternalEnabled: (externalEnabled: boolean) =>
+        setState((s) => ({ ...s, externalEnabled })),
       setView: (view: StageView) => setState((s) => ({ ...s, view })),
       togglePane: (pane: Exclude<CallPane, null>) =>
         setState((s) => ({ ...s, pane: s.pane === pane ? null : pane })),
