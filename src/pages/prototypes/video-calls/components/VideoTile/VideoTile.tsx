@@ -8,6 +8,7 @@ import {
   type MouseEvent,
 } from 'react';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import {
   UserAvatar,
@@ -17,7 +18,6 @@ import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline
 import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
 import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
-import CrownOutlineIcon from '@mattermost/compass-icons/components/crown-outline';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import SyncIcon from '@mattermost/compass-icons/components/sync';
 import {
@@ -42,7 +42,7 @@ export interface VideoTileLabels {
   poorConnection?: string;
   reconnecting?: string;
   cameraOff?: string;
-  /** Accessible name / tooltip of the host badge. */
+  /** Text of the host tag. */
   host?: string;
   /** Accessible name of the host-controls `...` button and its menu. */
   participantActions?: string;
@@ -73,7 +73,7 @@ export interface VideoTileProps {
   muted?: boolean;
   speaking?: boolean;
   handRaised?: boolean;
-  /** Shows a compact host badge next to the name. */
+  /** Shows a HOST tag next to the name (label strip only, not thumbnails). */
   host?: boolean;
   /** Emoji shown as a short pop over the tile. Change `reactionKey` to replay the same emoji. */
   reaction?: string;
@@ -316,16 +316,6 @@ function VideoTileInner({
 
       {size === 'thumbnail' ? (
         <>
-          {host && (
-            <span
-              className={`${styles['video-tile__host']} ${styles['video-tile__host--thumbnail']}`}
-              role="img"
-              aria-label={l.host}
-              title={l.host}
-            >
-              <Icon glyph={<CrownOutlineIcon />} size="10" />
-            </span>
-          )}
           {muted && (
             <span
               className={styles['video-tile__muted-dot']}
@@ -345,14 +335,13 @@ function VideoTileInner({
             />
             <span className={styles['video-tile__name']}>{displayName}</span>
             {host && (
-              <span
+              <Tag
                 className={styles['video-tile__host']}
-                role="img"
-                aria-label={l.host}
-                title={l.host}
-              >
-                <Icon glyph={<CrownOutlineIcon />} size={iconSize} />
-              </span>
+                label={l.host}
+                type="info"
+                size="x-small"
+                casing="all-caps"
+              />
             )}
             {speaking && !muted && (
               <span className={styles['video-tile__wave']} aria-hidden="true">

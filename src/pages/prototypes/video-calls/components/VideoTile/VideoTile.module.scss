@@ -153,25 +153,9 @@
   }
 
   // 5 bars, 2px wide, 2px gap, heights 9 / 5 / 13 / 7 / 3.
-  // Host crown, after the name.
+  // HOST tag (compass-ui Tag), after the name.
   &__host {
     flex: 0 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-yellow-500);
-
-    // Thumbnails have no label chip: small dark circle, bottom-left.
-    &--thumbnail {
-      position: absolute;
-      left: var(--spacing-xxxs);
-      bottom: var(--spacing-xxxs);
-      z-index: 3;
-      width: var(--icon-size-20);
-      height: var(--icon-size-20);
-      border-radius: var(--radius-pill);
-      background: var(--video-tile-bg);
-    }
   }
 
   &__wave {
