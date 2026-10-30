@@ -15,9 +15,21 @@
     border-end-end-radius: 0;
   }
 
+  // Tighter than a square icon button: trimming the main segment and narrowing
+  // the chevron segment pulls the chevron toward the icon while the two still
+  // read (and hit) as one segmented control. Triple class beats IconButton's
+  // size rules.
+  #{&}__main#{&}__main#{&}__main {
+    width: calc(var(--spacing-xxl) + var(--spacing-xxxs)); // 28
+  }
+
+  &--size-medium#{&}--size-medium #{&}__main#{&}__main#{&}__main {
+    width: calc(var(--spacing-xxxl) + var(--spacing-xxxs)); // 36
+  }
+
   // Triple-class selector so the narrow width beats IconButton's size rules.
   #{&}__chevron#{&}__chevron#{&}__chevron {
-    width: var(--spacing-xxl);
+    width: var(--spacing-xl);
     min-width: 0;
     height: auto;
     padding-inline: 0;
@@ -35,7 +47,7 @@
   }
 
   &--size-small#{&}--size-small #{&}__chevron#{&}__chevron#{&}__chevron {
-    width: var(--spacing-xl);
+    width: var(--spacing-l);
   }
 
   @media (prefers-reduced-motion: reduce) {

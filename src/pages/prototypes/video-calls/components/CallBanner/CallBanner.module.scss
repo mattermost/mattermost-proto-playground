@@ -1,20 +1,24 @@
+// Floating toast-style banner: the host places it (centred under the channel
+// header); this module only styles the green pill itself.
 .call-banner {
-  display: flex;
-  flex: 0 0 auto;
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-m);
-  padding: var(--spacing-s) var(--spacing-l);
-  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  background: rgba(var(--color-success-rgb), 0.08);
-  color: var(--center-channel-color);
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs)
+    var(--spacing-m);
+  border-radius: var(--radius-m);
+  background: var(--online-indicator);
+  box-shadow: var(--elevation-3);
+  color: var(--button-color, var(--color-neutral-0));
 
   &__icon {
     display: inline-flex;
-    color: var(--online-indicator);
+    flex: 0 0 auto;
   }
 
   &__text {
-    flex: 1 1 auto;
     min-width: 0;
     margin: 0;
     overflow: hidden;
@@ -29,7 +33,6 @@
   }
 
   &__meta {
-    color: rgba(var(--center-channel-color-rgb), 0.72);
     font-variant-numeric: tabular-nums;
   }
 

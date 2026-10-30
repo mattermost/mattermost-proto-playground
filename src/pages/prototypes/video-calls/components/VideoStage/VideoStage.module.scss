@@ -1,3 +1,12 @@
+// The FLIP animation (flip.ts) animates this number alongside the tile's scale
+// so overlay chrome can divide it out and keep its size. Registered so it
+// interpolates.
+@property --flip-s {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
 // ---------------------------------------------------------------------------
 // Video stage — pip / grid / speaker / share layouts (Figma popout stage,
 // 12px gaps). One CSS grid (`__canvas`) holds every tile; VideoStage.tsx sets

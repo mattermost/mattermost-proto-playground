@@ -22,7 +22,10 @@ export interface CallBannerProps {
   className?: string;
 }
 
-/** Ongoing-call banner shown at the top of a channel with a Join action. */
+/**
+ * Ongoing-call banner: a green, toast-like pill with the people in the call and
+ * a Join action. Floats; the host positions it (see GroupChat).
+ */
 export default function CallBanner({
   participants,
   message,
@@ -55,6 +58,7 @@ export default function CallBanner({
       <Button
         className={styles['call-banner__join']}
         emphasis="primary"
+        appearance="inverted"
         size="small"
         onClick={onJoin}
       >

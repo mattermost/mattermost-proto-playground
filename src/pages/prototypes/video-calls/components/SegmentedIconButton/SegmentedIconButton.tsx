@@ -87,7 +87,7 @@ export function SegmentedIconButton({
         aria-expanded={menuOpen}
         icon={
           <Icon
-            size="16"
+            size={size === 'small' ? '12' : '16'}
             glyph={<ChevronUpIcon />}
             className={styles['segmented-icon-button__chevron-icon']}
           />

@@ -10,7 +10,8 @@
  * non-uniform scale would stretch the video. Instead each tile scales
  * UNIFORMLY (enough to cover its old box) and a `clip-path: inset()` crops it
  * to the old box's shape; both animate to identity. The video keeps
- * `object-fit: cover` proportions the whole way.
+ * `object-fit: cover` proportions the whole way. The scale is mirrored in the
+ * registered custom property `--flip-s` so name strips / badges can cancel it.
  */
 
 export interface FlipBox {
@@ -157,11 +158,18 @@ export function playFlip(
       el.animate(
         [
           {
-            transform: `translate(${dx}px, ${dy}px) scale(${s})`,
+            // Individual transform properties (not `transform`) so the tile's
+            // scale can ALSO be published as `--flip-s`: overlay chrome divides
+            // by it (see VideoTile) and keeps its on-screen size.
+            translate: `${dx}px ${dy}px`,
+            scale: String(s),
+            '--flip-s': String(s),
             clipPath: `inset(${iy}px ${ix}px round ${radius / s}px)`,
           },
           {
-            transform: 'none',
+            translate: '0px 0px',
+            scale: '1',
+            '--flip-s': '1',
             clipPath: `inset(0px 0px round ${radius}px)`,
           },
         ],

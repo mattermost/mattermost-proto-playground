@@ -99,7 +99,11 @@
   // -------------------------------------------------------------------------
   // Bottom 24px strip: hit area for the host-controls button (hover / focus).
   // The label chip sits inside it so hovering the chip also reveals the button.
+  // Overlay chrome cancels the FLIP scale (--flip-s) so it never balloons while a
+  // tile resizes into a new layout.
   &__strip {
+    scale: calc(1 / var(--flip-s, 1));
+    transform-origin: bottom left;
     position: absolute;
     left: 0;
     right: 0;
@@ -204,6 +208,8 @@
   // Top-right status badges (poor network, raised hand)
   // -------------------------------------------------------------------------
   &__badges {
+    scale: calc(1 / var(--flip-s, 1));
+    transform-origin: top right;
     position: absolute;
     top: var(--spacing-xs);
     right: var(--spacing-xs);

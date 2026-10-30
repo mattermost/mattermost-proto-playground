@@ -11,7 +11,7 @@ import {
   type StageView,
   type VideoParticipant,
 } from '@/types/videoCall';
-import { ROSTER, SELF_ID } from './videoCallsData';
+import { DM_PEER_ID, ROSTER, SELF_ID } from './videoCallsData';
 import {
   DEMO_SCENES,
   joinModeFor,
@@ -47,6 +47,10 @@ export interface VideoCallState {
   callStartedAt: number | null;
   /** Seconds of the last finished call; the chat shows a "Call ended" post. */
   endedDurationSec: number;
+  /** When the last call ended (ms), for the "Ended at …" call card. */
+  endedAt: number | null;
+  /** Who started the current / last call (the call card's author). */
+  callerId: string;
   /** Set when an incoming call rang out; the DM shows a missed-call post. */
   missedCall: boolean;
   soundOn: boolean;
@@ -73,6 +77,8 @@ const INITIAL_STATE: VideoCallState = {
   notices: [],
   callStartedAt: null,
   endedDurationSec: 0,
+  endedAt: null,
+  callerId: SELF_ID,
   missedCall: false,
   soundOn: true,
 };
@@ -189,6 +195,8 @@ export function useVideoCallState() {
             sharing: phase === 'active' ? s.sharing : false,
             pane: phase === 'active' ? s.pane : null,
             missedCall: false,
+            endedAt: null,
+            callerId: phase === 'incoming' ? DM_PEER_ID : s.callerId,
           };
         }),
       setSurface: (surface: CallSurface) =>
@@ -212,6 +220,8 @@ export function useVideoCallState() {
             sharing: Boolean(demo.sharing),
             pane: null,
             missedCall: false,
+            endedAt: null,
+            callerId: demo.phase === 'incoming' ? DM_PEER_ID : SELF_ID,
             callStartedAt: demo.phase === 'active' ? Date.now() : null,
           };
         }),
@@ -230,6 +240,8 @@ export function useVideoCallState() {
           joinMode: joinModeFor(s.callContext),
           missedCall: false,
           endedDurationSec: 0,
+          endedAt: null,
+          callerId: SELF_ID,
           // Audio-only starts with the camera off (and releases the webcam).
           media: opts?.audioOnly ? releaseCamera(s.media) : s.media,
         })),
@@ -269,6 +281,7 @@ export function useVideoCallState() {
           endedDurationSec: s.callStartedAt
             ? Math.max(1, Math.round((Date.now() - s.callStartedAt) / 1000))
             : 0,
+          endedAt: s.callStartedAt ? Date.now() : s.endedAt,
         })),
 
       // --- In-call ---------------------------------------------------------

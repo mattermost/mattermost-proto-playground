@@ -4,13 +4,24 @@
   justify-content: space-between;
   gap: var(--spacing-l);
   box-sizing: border-box;
+  width: 100%;
   max-width: 700px; // one-off layout width, matches the Figma card
+  container-type: inline-size;
   padding: var(--spacing-l);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   border-radius: var(--radius-s);
   background: var(--center-channel-bg);
   box-shadow: var(--elevation-1);
   color: var(--center-channel-color);
+  transition: background-color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: color-mix(
+      in srgb,
+      var(--center-channel-color) 4%,
+      var(--center-channel-bg)
+    );
+  }
 
   &__left {
     display: flex;
@@ -67,5 +78,37 @@
   // --button-bg (hover / active tints derive from it).
   &__join {
     --button-bg: var(--online-indicator);
+  }
+
+  // Ended: grey icon disc instead of the online green.
+  &--ended &__icon {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__recording {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    white-space: nowrap;
+  }
+}
+
+// Narrow (Figma "Width=Narrow"): header on top, then a divider and the avatars
+// with the action underneath. Keyed on the card's own width, not the viewport.
+@container (max-width: 480px) {
+  .call-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-m);
+
+    &__right {
+      justify-content: space-between;
+      padding-top: var(--spacing-m);
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    }
   }
 }

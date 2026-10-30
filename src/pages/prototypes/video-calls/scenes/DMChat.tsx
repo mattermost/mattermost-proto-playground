@@ -1,53 +1,18 @@
 import type { ReactNode } from 'react';
-import { Button } from '@mattermost/compass-ui/components/button';
-import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import {
   ChannelHeader,
   Message,
   MessageInput,
   layoutStyles,
 } from '@mattermost/compass-proto';
-import { formatCallDuration } from '../hooks/useCallTimer';
 import VideoCallChannelShell from '../VideoCallChannelShell';
+import ChannelCallPost from './ChannelCallCard';
 import StartCallMenu from './StartCallMenu';
-import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
-import styles from './DMChat.module.scss';
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
 const SELF = ROSTER.find((p) => p.id === SELF_ID) ?? ROSTER[0];
-
-function CallPost({
-  tone,
-  title,
-  meta,
-  action,
-}: {
-  tone: 'missed' | 'ended';
-  title: string;
-  meta: string;
-  action?: ReactNode;
-}) {
-  return (
-    <div className={styles['dm-chat__call-post']}>
-      <span
-        className={`${styles['dm-chat__call-post-icon']} ${
-          tone === 'missed' ? styles['dm-chat__call-post-icon--missed'] : ''
-        }`}
-        aria-hidden="true"
-      >
-        <Icon glyph={<VideoOutlineIcon />} size="20" />
-      </span>
-      <div className={styles['dm-chat__call-post-text']}>
-        <p className={styles['dm-chat__call-post-title']}>{title}</p>
-        <p className={styles['dm-chat__call-post-meta']}>{meta}</p>
-      </div>
-      {action}
-    </div>
-  );
-}
 
 export interface DMChatProps {
   /** The call widget, floating bottom-left over the sidebar. */
@@ -56,8 +21,6 @@ export interface DMChatProps {
 
 /** The 1:1 chat with the DM peer. Prototype-only composition. */
 export default function DMChat({ floating }: DMChatProps) {
-  const { state, actions } = useVideoCall();
-
   return (
     <VideoCallChannelShell
       header={
@@ -104,30 +67,7 @@ export default function DMChat({ floating }: DMChatProps) {
             type.
           </p>
         </Message>
-        {state.missedCall && (
-          <CallPost
-            tone="missed"
-            title="Missed call"
-            meta={`${PEER.name} · 10:41 AM`}
-            action={
-              <Button
-                emphasis="tertiary"
-                size="small"
-                leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-                onClick={() => actions.startCall()}
-              >
-                Call back
-              </Button>
-            }
-          />
-        )}
-        {state.endedDurationSec > 0 && (
-          <CallPost
-            tone="ended"
-            title={`Call ended · ${formatCallDuration(state.endedDurationSec)}`}
-            meta={`Video call with ${PEER.name}`}
-          />
-        )}
+        <ChannelCallPost />
       </div>
       <div className={layoutStyles['channel-shell__message-input']}>
         <MessageInput placeholder={`Message ${PEER.name}`} />

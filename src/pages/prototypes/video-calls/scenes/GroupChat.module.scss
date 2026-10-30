@@ -1,0 +1,19 @@
+.group-chat {
+  // Zero-height strip directly under the channel header. The banner inside is
+  // absolutely placed, so it floats over the messages, centred in the channel
+  // column, without taking any layout space.
+  &__banner-anchor {
+    position: relative;
+    z-index: 6;
+    height: 0;
+    pointer-events: none;
+
+    > * {
+      position: absolute;
+      top: var(--spacing-m);
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+  }
+}

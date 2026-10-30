@@ -10,8 +10,9 @@ import {
   layoutStyles,
 } from '@mattermost/compass-proto';
 import { CallBanner } from '../components/CallBanner';
-import { CallCard } from '../components/CallCard';
 import VideoCallChannelShell from '../VideoCallChannelShell';
+import ChannelCallPost from './ChannelCallCard';
+import styles from './GroupChat.module.scss';
 import StartCallMenu from './StartCallMenu';
 import { useVideoCall } from '../videoCallContext';
 import { CHANNEL_NAME, ROSTER, SELF_ID } from '../videoCallsData';
@@ -75,19 +76,21 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
             }
           />
           {ongoing && (
-            <CallBanner
-              participants={others.slice(0, 3).map((p) => ({
-                key: p.id,
-                name: p.name,
-                src: p.avatarSrc,
-              }))}
-              message={`${others.length} ${
-                others.length === 1 ? 'person' : 'people'
-              } in a call`}
-              meta="12:40"
-              joinLabel="Join"
-              onJoin={() => actions.startCall()}
-            />
+            <div className={styles['group-chat__banner-anchor']}>
+              <CallBanner
+                participants={others.slice(0, 3).map((p) => ({
+                  key: p.id,
+                  name: p.name,
+                  src: p.avatarSrc,
+                }))}
+                message={`${others.length} ${
+                  others.length === 1 ? 'person' : 'people'
+                } in a call`}
+                meta="12:40"
+                joinLabel="Join"
+                onJoin={() => actions.startCall()}
+              />
+            </div>
           )}
         </>
       }
@@ -105,23 +108,7 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
             through the new onboarding screens.
           </p>
         </Message>
-        <Message
-          avatarSrc={SOFIA.avatarSrc}
-          avatarAlt={SOFIA.name}
-          username={SOFIA.name}
-          timestamp="10:03 AM"
-        >
-          <CallCard
-            title="Call started"
-            meta={`3 minutes ago by ${SOFIA.name}`}
-            participants={others.map((p) => ({
-              key: p.id,
-              name: p.name,
-              src: p.avatarSrc,
-            }))}
-            onJoin={ongoing ? () => actions.startCall() : undefined}
-          />
-        </Message>
+        <ChannelCallPost />
         <Message
           avatarSrc={MARCO.avatarSrc}
           avatarAlt={MARCO.name}
