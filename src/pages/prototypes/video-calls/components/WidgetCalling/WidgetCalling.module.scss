@@ -65,7 +65,9 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-m);
-    padding: 0 var(--spacing-l) var(--spacing-l);
+    // Anchored to the card bottom, same inset as the active controls row.
+    margin-top: auto;
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xs);
   }
 
   @media (prefers-reduced-motion: reduce) {
