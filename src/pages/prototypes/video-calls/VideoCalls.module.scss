@@ -41,5 +41,10 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-m);
+
+    // Keep switcher labels on one line ("No call", "Pre-join", "In call").
+    button {
+      white-space: nowrap;
+    }
   }
 }

@@ -72,6 +72,7 @@ const INITIAL_STATE: VideoCallState = {
 };
 
 let noticeSeq = 0;
+const MAX_NOTICES = 3;
 
 function clampCount(count: number) {
   return Math.min(MAX_PARTICIPANTS, Math.max(2, Math.round(count)));
@@ -282,7 +283,12 @@ export function useVideoCallState() {
       pushNotice: (notice: Omit<CallNotice, 'id'>) =>
         setState((s) => ({
           ...s,
-          notices: [...s.notices, { ...notice, id: `notice-${++noticeSeq}` }],
+          // Keep the stack short: rapid changes (e.g. the People stepper) would
+          // otherwise bury the tiles under join/leave toasts.
+          notices: [
+            ...s.notices,
+            { ...notice, id: `notice-${++noticeSeq}` },
+          ].slice(-MAX_NOTICES),
         })),
       dismissNotice: (id: string) =>
         setState((s) => ({
