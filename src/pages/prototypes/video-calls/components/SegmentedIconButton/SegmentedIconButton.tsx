@@ -35,7 +35,7 @@ const cx = (...names: (string | false | undefined)[]) =>
 
 /**
  * One visual unit made of a main icon button and a joined chevron segment (opens a
- * device menu). Shared outer corners, hairline divider. Presentational: toggle and
+ * device menu). Shared outer corners, no divider. Presentational: toggle and
  * menu state are owned by the host.
  */
 export function SegmentedIconButton({

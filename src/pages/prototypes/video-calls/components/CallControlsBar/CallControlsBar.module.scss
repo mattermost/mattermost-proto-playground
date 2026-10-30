@@ -80,24 +80,7 @@
     border-end-end-radius: var(--radius-m);
   }
 
-  // Mic / camera: green tint when on, red glyph when off.
-  #{&}__toggle#{&}__toggle--on:not([data-active='true']) {
-    background-color: color-mix(
-      in srgb,
-      var(--online-indicator) 24%,
-      transparent
-    );
-    color: var(--neutral-0);
-
-    &:hover:not(:disabled) {
-      background-color: color-mix(
-        in srgb,
-        var(--online-indicator) 36%,
-        transparent
-      );
-    }
-  }
-
+  // Mic / camera: same fill as the sibling buttons; only the glyph goes red when off.
   #{&}__toggle#{&}__toggle--off {
     color: var(--error-text, var(--color-danger));
   }

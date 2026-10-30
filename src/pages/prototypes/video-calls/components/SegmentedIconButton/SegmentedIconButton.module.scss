@@ -1,5 +1,5 @@
 // Two IconButtons joined into one unit: outer corners rounded, inner corners
-// squared, a hairline divider between. Button chrome itself comes from compass-ui.
+// squared, no divider between. Button chrome itself comes from compass-ui.
 .segmented-icon-button {
   position: relative;
   display: inline-flex;
@@ -17,25 +17,13 @@
 
   // Triple-class selector so the narrow width beats IconButton's size rules.
   #{&}__chevron#{&}__chevron#{&}__chevron {
-    width: var(--spacing-xxxl);
+    width: var(--spacing-xxl);
     min-width: 0;
     height: auto;
     padding-inline: 0;
     align-self: stretch;
     border-start-start-radius: 0;
     border-end-start-radius: 0;
-
-    // Hairline divider.
-    &::before {
-      content: '';
-      position: absolute;
-      inset-block: var(--spacing-xs);
-      inset-inline-start: 0;
-      width: 1px;
-      background: currentColor;
-      opacity: 0.24;
-      pointer-events: none;
-    }
   }
 
   &__chevron-icon {
@@ -47,7 +35,7 @@
   }
 
   &--size-small#{&}--size-small #{&}__chevron#{&}__chevron#{&}__chevron {
-    width: var(--spacing-xxl);
+    width: var(--spacing-xl);
   }
 
   @media (prefers-reduced-motion: reduce) {
