@@ -27,6 +27,15 @@
   max-width: 100%;
   animation: call-widget-host-enter var(--duration-quick) var(--ease-entrance);
 
+  // Draggable anywhere on the card that isn't a control (see useWidgetDrag).
+  cursor: grab;
+  touch-action: none;
+
+  &--dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
   // Mirrors the outbound-calls PiP exit.
   &--exiting {
     animation: call-widget-host-exit var(--duration-quick) var(--ease-exit)

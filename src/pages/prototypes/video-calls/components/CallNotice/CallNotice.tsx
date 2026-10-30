@@ -11,6 +11,7 @@ import styles from './CallNotice.module.scss';
 export type CallNoticeItemKind =
   | 'joined'
   | 'left'
+  | 'host'
   | 'network'
   | 'recording'
   | 'device'
@@ -57,6 +58,7 @@ const TOAST_TYPE: Record<
 > = {
   joined: 'general',
   left: 'general',
+  host: 'general',
   info: 'info',
   recording: 'info',
   network: 'warning',
@@ -64,8 +66,8 @@ const TOAST_TYPE: Record<
   permission: 'danger',
 };
 
-/** Join/leave use the proto call-notice pill; the rest stay Toasts. */
-const PILL_KINDS: readonly CallNoticeItemKind[] = ['joined', 'left'];
+/** Join / leave / new host use the proto call-notice pill; the rest stay Toasts. */
+const PILL_KINDS: readonly CallNoticeItemKind[] = ['joined', 'left', 'host'];
 
 interface ItemProps {
   notice: CallNoticeItem;

@@ -239,7 +239,7 @@ export default function CallWindowHost({
           } else if (item === 'make-host') {
             actions.makeHost(id);
             actions.pushNotice({
-              kind: 'info',
+              kind: 'host',
               text: `${target.name} is now a host`,
             });
           } else if (item === 'remove') {

@@ -89,8 +89,23 @@
     background-color: var(--error-text, var(--color-danger));
     color: var(--neutral-0);
 
+    // Same tints as the compass destructive Button: darken the red, never
+    // drop the fill.
     &:hover:not(:disabled) {
-      background-color: var(--color-red-600);
+      background-color: color-mix(
+        in srgb,
+        black 8%,
+        var(--error-text, var(--color-danger))
+      );
+      color: var(--neutral-0);
+    }
+
+    &:active:not(:disabled) {
+      background-color: color-mix(
+        in srgb,
+        black 16%,
+        var(--error-text, var(--color-danger))
+      );
       color: var(--neutral-0);
     }
   }

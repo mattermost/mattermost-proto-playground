@@ -17,6 +17,8 @@ export interface VideoCallWindowFrameProps {
   onCollapse: () => void;
   /** Header row, left side (e.g. elapsed time and count). */
   headerLeft?: ReactNode;
+  /** Header row, centred over the body (e.g. the "you are sharing" pill). */
+  headerCenter?: ReactNode;
   /** Header row, right side, before the collapse button (e.g. the View toggle). */
   headerRight?: ReactNode;
   /** Body, below the header row, on the dark call surface. */
@@ -43,6 +45,7 @@ export function VideoCallWindowFrame({
   variant = 'windowed',
   onCollapse,
   headerLeft,
+  headerCenter,
   headerRight,
   children,
   labels,
@@ -99,6 +102,11 @@ export function VideoCallWindowFrame({
           <div className={styles['video-call-window-frame__header-left']}>
             {headerLeft}
           </div>
+          {headerCenter && (
+            <div className={styles['video-call-window-frame__header-center']}>
+              {headerCenter}
+            </div>
+          )}
           <div className={styles['video-call-window-frame__header-right']}>
             {headerRight}
             <IconButton

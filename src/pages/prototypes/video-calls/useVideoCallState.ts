@@ -221,7 +221,7 @@ export function useVideoCallState() {
 
       // --- Real flow -------------------------------------------------------
       /** Header "Start call" / banner "Join": opens the widget at pre-join. */
-      startCall: () =>
+      startCall: (opts?: { audioOnly?: boolean }) =>
         setState((s) => ({
           ...s,
           ...PER_CALL_RESET,
@@ -230,6 +230,8 @@ export function useVideoCallState() {
           joinMode: joinModeFor(s.callContext),
           missedCall: false,
           endedDurationSec: 0,
+          // Audio-only starts with the camera off (and releases the webcam).
+          media: opts?.audioOnly ? releaseCamera(s.media) : s.media,
         })),
       /** Pre-join primary action: a 1:1 call rings; group/channel joins directly. */
       confirmPreJoin: () =>

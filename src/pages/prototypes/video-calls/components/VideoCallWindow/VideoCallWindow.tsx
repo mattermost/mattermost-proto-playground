@@ -189,6 +189,7 @@ export function VideoCallWindow({
           </span>
         </>
       }
+      headerCenter={banner}
       headerRight={
         <ViewToggle
           view={view}
@@ -199,7 +200,14 @@ export function VideoCallWindow({
       }
     >
       <div className={styles['video-call-window']}>
-        <div className={styles['video-call-window__stage']}>
+        <div
+          className={cx(
+            styles['video-call-window__stage'],
+            !!paneSlot.node &&
+              !paneSlot.exiting &&
+              styles['video-call-window__stage--pane-open'],
+          )}
+        >
           <div
             className={styles['video-call-window__room']}
             onPointerDown={onDismissOverlays}
@@ -213,11 +221,6 @@ export function VideoCallWindow({
               labels={stageLabels}
               getTileMenu={getTileMenu}
             />
-            {banner && (
-              <div className={styles['video-call-window__banner']}>
-                {banner}
-              </div>
-            )}
             {onDismissNotice && (
               <CallNotice notices={notices} onDismiss={onDismissNotice} />
             )}

@@ -1,0 +1,71 @@
+.call-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-l);
+  box-sizing: border-box;
+  max-width: 700px; // one-off layout width, matches the Figma card
+  padding: var(--spacing-l);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  box-shadow: var(--elevation-1);
+  color: var(--center-channel-color);
+
+  &__left {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-40, 40px);
+    height: var(--icon-size-40, 40px);
+    border-radius: var(--radius-pill);
+    background: var(--online-indicator);
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
+  &__text {
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__right {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  // Join call: the online green from the design. The primary Button reads
+  // --button-bg (hover / active tints derive from it).
+  &__join {
+    --button-bg: var(--online-indicator);
+  }
+}

@@ -1,4 +1,4 @@
-// Pill on the call surface colour (`--calls-bg`) so it matches the window chrome.
+// Pill in the window header, tinted over the call surface (`--calls-bg`).
 .share-indicator {
   display: inline-flex;
   align-items: center;
@@ -7,9 +7,9 @@
   padding: 0 var(--spacing-xs) 0 var(--spacing-m);
   box-sizing: border-box;
   color: var(--button-color);
-  background: color-mix(in srgb, var(--calls-bg) 92%, transparent);
+  // Sits in the window header on the call surface: a light tint reads as a pill.
+  background: color-mix(in srgb, var(--neutral-0) 12%, transparent);
   border-radius: var(--radius-pill);
-  box-shadow: var(--elevation-2);
   white-space: nowrap;
 
   &__dot {

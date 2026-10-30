@@ -30,6 +30,7 @@ import CallMoreMenu from './CallMoreMenu';
 import ExitingPopover from './ExitingPopover';
 import { PhaseCrossfade } from '../components/PhaseCrossfade';
 import { useCallSession } from './useCallSession';
+import { useWidgetDrag } from './useWidgetDrag';
 import styles from './CallWidgetHost.module.scss';
 
 type Overlay =
@@ -325,6 +326,8 @@ export default function CallWidgetHost({
     close();
   }, [state.phase, close]);
 
+  const widgetDrag = useWidgetDrag(ov.widgetRef);
+
   if (phase === 'idle') return null;
 
   return (
@@ -333,10 +336,13 @@ export default function CallWidgetHost({
       className={[
         styles['call-widget-host'],
         exiting && styles['call-widget-host--exiting'],
+        widgetDrag.dragging && styles['call-widget-host--dragging'],
       ]
         .filter(Boolean)
         .join(' ')}
+      style={widgetDrag.style}
       onPointerDownCapture={ov.onPointerDownCapture}
+      {...widgetDrag.handlers}
     >
       <PhaseCrossfade phaseKey={phase === 'incoming' ? 'incoming' : 'card'}>
         {phase === 'incoming' ? (

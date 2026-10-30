@@ -59,6 +59,7 @@ export interface MediaPrefs {
 export type CallNoticeKind =
   | 'joined'
   | 'left'
+  | 'host'
   | 'network'
   | 'recording'
   | 'device'

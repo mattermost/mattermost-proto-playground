@@ -11,6 +11,7 @@ import {
 } from '@mattermost/compass-proto';
 import { formatCallDuration } from '../hooks/useCallTimer';
 import VideoCallChannelShell from '../VideoCallChannelShell';
+import StartCallMenu from './StartCallMenu';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
 import styles from './DMChat.module.scss';
@@ -65,16 +66,7 @@ export default function DMChat({ floating }: DMChatProps) {
           name={PEER.name}
           avatarSrc={PEER.avatarSrc}
           avatarStatus
-          callButton={
-            <Button
-              emphasis="quaternary"
-              size="small"
-              leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-              onClick={actions.startCall}
-            >
-              Start call
-            </Button>
-          }
+          callButton={<StartCallMenu />}
         />
       }
       floating={floating}
@@ -122,7 +114,7 @@ export default function DMChat({ floating }: DMChatProps) {
                 emphasis="tertiary"
                 size="small"
                 leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-                onClick={actions.startCall}
+                onClick={() => actions.startCall()}
               >
                 Call back
               </Button>

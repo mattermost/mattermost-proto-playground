@@ -55,6 +55,8 @@
     display: flex;
     box-sizing: border-box;
     padding: var(--spacing-xxxxxl);
+    // Clipped to the channels UI: same corner radius as ChannelShell.
+    border-radius: var(--radius-xl);
     background: rgba(var(--center-channel-color-rgb), 0.48);
     animation: video-calls-scrim-in var(--duration-quick) var(--ease-entrance);
   }

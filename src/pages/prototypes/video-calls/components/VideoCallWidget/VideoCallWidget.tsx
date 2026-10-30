@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
-import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import MonitorOffIcon from '@mattermost/compass-icons/components/monitor-off';
 import MonitorShareIcon from '@mattermost/compass-icons/components/monitor-share';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
@@ -235,7 +234,6 @@ export function VideoCallWidget({
     ) : phase === 'active' ? (
       <>
         <span className={styles['video-call-widget__channel']}>
-          <Icon size="16" glyph={<GlobeIcon />} />
           <span className={styles['video-call-widget__channel-name']}>
             {channelName}
           </span>

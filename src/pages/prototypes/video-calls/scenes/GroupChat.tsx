@@ -10,7 +10,9 @@ import {
   layoutStyles,
 } from '@mattermost/compass-proto';
 import { CallBanner } from '../components/CallBanner';
+import { CallCard } from '../components/CallCard';
 import VideoCallChannelShell from '../VideoCallChannelShell';
+import StartCallMenu from './StartCallMenu';
 import { useVideoCall } from '../videoCallContext';
 import { CHANNEL_NAME, ROSTER, SELF_ID } from '../videoCallsData';
 
@@ -46,42 +48,50 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
     <VideoCallChannelShell
       floating={floating}
       header={
-        <ChannelHeader
-          type={kind}
-          name={chatName}
-          description={
-            kind === 'channel' ? 'Design critiques, specs and shared work.' : ''
-          }
-          memberCount={kind === 'gm' ? state.count : 24}
-          pinnedCount={kind === 'channel' ? 2 : undefined}
-          callButton={
-            <Button
-              emphasis="quaternary"
-              size="small"
-              leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-              onClick={actions.startCall}
-            >
-              {ongoing ? 'Join call' : 'Start call'}
-            </Button>
-          }
-        />
+        <>
+          <ChannelHeader
+            type={kind}
+            name={chatName}
+            description={
+              kind === 'channel'
+                ? 'Design critiques, specs and shared work.'
+                : ''
+            }
+            memberCount={kind === 'gm' ? state.count : 24}
+            pinnedCount={kind === 'channel' ? 2 : undefined}
+            callButton={
+              ongoing ? (
+                <Button
+                  emphasis="quaternary"
+                  size="small"
+                  leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
+                  onClick={() => actions.startCall()}
+                >
+                  Join call
+                </Button>
+              ) : (
+                <StartCallMenu />
+              )
+            }
+          />
+          {ongoing && (
+            <CallBanner
+              participants={others.slice(0, 3).map((p) => ({
+                key: p.id,
+                name: p.name,
+                src: p.avatarSrc,
+              }))}
+              message={`${others.length} ${
+                others.length === 1 ? 'person' : 'people'
+              } in a call`}
+              meta="12:40"
+              joinLabel="Join"
+              onJoin={() => actions.startCall()}
+            />
+          )}
+        </>
       }
     >
-      {ongoing && (
-        <CallBanner
-          participants={others.slice(0, 3).map((p) => ({
-            key: p.id,
-            name: p.name,
-            src: p.avatarSrc,
-          }))}
-          message={`${others.length} ${
-            others.length === 1 ? 'person' : 'people'
-          } in a call`}
-          meta="12:40"
-          joinLabel="Join"
-          onJoin={actions.startCall}
-        />
-      )}
       <div className={layoutStyles['channel-shell__messages']}>
         <MessageSeparator type="date" label="Today" />
         <Message
@@ -94,6 +104,23 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
             Starting the weekly design critique now. Hop in if you want to walk
             through the new onboarding screens.
           </p>
+        </Message>
+        <Message
+          avatarSrc={SOFIA.avatarSrc}
+          avatarAlt={SOFIA.name}
+          username={SOFIA.name}
+          timestamp="10:03 AM"
+        >
+          <CallCard
+            title="Call started"
+            meta={`3 minutes ago by ${SOFIA.name}`}
+            participants={others.map((p) => ({
+              key: p.id,
+              name: p.name,
+              src: p.avatarSrc,
+            }))}
+            onJoin={ongoing ? () => actions.startCall() : undefined}
+          />
         </Message>
         <Message
           avatarSrc={MARCO.avatarSrc}

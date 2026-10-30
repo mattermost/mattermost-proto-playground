@@ -38,6 +38,7 @@
   }
 
   &__title {
+    font-family: var(--font-family-heading);
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
@@ -54,6 +55,7 @@
   }
 
   &__channel-name {
+    font-family: var(--font-family-heading);
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -173,6 +175,7 @@
   }
 
   &__status {
+    font-family: var(--font-family-heading);
     margin: 0;
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
@@ -310,8 +313,22 @@
     cursor: pointer;
     transition: background-color var(--duration-quick) var(--ease-transition);
 
+    // Same tints as the compass destructive Button: darken the red, never
+    // drop the fill.
     &:hover {
-      background: var(--color-red-600);
+      background: color-mix(
+        in srgb,
+        black 8%,
+        var(--error-text, var(--color-danger))
+      );
+    }
+
+    &:active {
+      background: color-mix(
+        in srgb,
+        black 16%,
+        var(--error-text, var(--color-danger))
+      );
     }
 
     &:focus-visible {
