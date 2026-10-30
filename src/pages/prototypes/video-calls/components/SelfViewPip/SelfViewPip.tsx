@@ -16,10 +16,7 @@ import EyeOutlineIcon from '@mattermost/compass-icons/components/eye-outline';
 import styles from './SelfViewPip.module.scss';
 
 export type SelfViewPipCorner =
-  | 'top-left'
-  | 'top-right'
-  | 'bottom-left'
-  | 'bottom-right';
+  'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export type SelfViewPipSize = 'default' | 'compact';
 
 export interface SelfViewPipLabels {
@@ -66,8 +63,8 @@ const DRAG_THRESHOLD = 4;
 const FLING_PROJECTION = 0.18;
 /** Pointer samples (ms) used for the release velocity. */
 const VELOCITY_WINDOW = 90;
-/** Rubber-band factor past the stage inset while dragging. */
-const RUBBER_BAND = 0.3;
+/** Rubber-band stiffness past the stage inset while dragging. */
+const RUBBER_BAND = 0.5;
 /** Settle spring: ~280ms to rest, slight overshoot only on a hard fling. */
 const SPRING_STIFFNESS = 420;
 const SPRING_DAMPING = 2 * 0.86 * Math.sqrt(SPRING_STIFFNESS);
@@ -92,8 +89,9 @@ function cornerFrom(
 function measure(el: HTMLElement): Geometry {
   const parent = (el.offsetParent as HTMLElement | null) ?? el.parentElement;
   const inset =
-    parseFloat(getComputedStyle(el).getPropertyValue('--self-view-pip-inset')) ||
-    0;
+    parseFloat(
+      getComputedStyle(el).getPropertyValue('--self-view-pip-inset'),
+    ) || 0;
   return {
     cw: parent?.clientWidth ?? 0,
     ch: parent?.clientHeight ?? 0,
@@ -111,9 +109,15 @@ function restPosition(corner: SelfViewPipCorner, g: Geometry): Vec {
   };
 }
 
-function rubber(value: number, min: number, max: number) {
-  if (value < min) return min - (min - value) * RUBBER_BAND;
-  if (value > max) return max + (value - max) * RUBBER_BAND;
+/**
+ * Clamp to [min, max] with a rubber band that saturates at `limit` px past
+ * either bound, so an over-drag resists but never leaves the stage.
+ */
+function rubber(value: number, min: number, max: number, limit: number) {
+  const band = (d: number) =>
+    limit > 0 ? limit * (1 - 1 / (1 + (d * RUBBER_BAND) / limit)) : 0;
+  if (value < min) return min - band(min - value);
+  if (value > max) return max + band(value - max);
   return value;
 }
 
@@ -171,6 +175,8 @@ export function SelfViewPip({
     base: Vec;
     min: Vec;
     max: Vec;
+    /** Max rubber-band overshoot (the stage inset). */
+    limit: number;
     target: Vec;
     moved: boolean;
     samples: { t: number; x: number; y: number }[];
@@ -234,8 +240,6 @@ export function SelfViewPip({
       frame.current = requestAnimationFrame(step);
     };
     frame.current = requestAnimationFrame(step);
-    // `write` / `stop` only touch refs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Corner changed (drag release, arrow key or a controlled prop): keep the
@@ -293,6 +297,7 @@ export function SelfViewPip({
         x: g.cw - g.w - g.inset - rest.x,
         y: g.ch - g.h - g.inset - rest.y,
       },
+      limit: g.inset,
       target: { ...offset.current },
       moved: false,
       samples: [{ t: e.timeStamp, x: e.clientX, y: e.clientY }],
@@ -312,12 +317,15 @@ export function SelfViewPip({
       el.dataset.dragging = ''; // not React-owned: survives re-renders
     }
     d.samples.push({ t: e.timeStamp, x: e.clientX, y: e.clientY });
-    while (d.samples.length > 2 && e.timeStamp - d.samples[0].t > VELOCITY_WINDOW) {
+    while (
+      d.samples.length > 2 &&
+      e.timeStamp - d.samples[0].t > VELOCITY_WINDOW
+    ) {
       d.samples.shift();
     }
     d.target = {
-      x: rubber(d.base.x + dx, d.min.x, d.max.x),
-      y: rubber(d.base.y + dy, d.min.y, d.max.y),
+      x: rubber(d.base.x + dx, d.min.x, d.max.x, d.limit),
+      y: rubber(d.base.y + dy, d.min.y, d.max.y, d.limit),
     };
     // One style write per frame, however fast pointer events arrive.
     if (!frame.current) {

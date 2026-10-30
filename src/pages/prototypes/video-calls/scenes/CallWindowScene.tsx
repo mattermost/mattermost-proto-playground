@@ -1,4 +1,10 @@
-import { Button } from '@mattermost/compass-ui/components/button';
+import { useState } from 'react';
+import { WindowCalling } from '../components/WindowCalling';
+import {
+  WindowDeviceControls,
+  type WindowDeviceMenuId,
+} from '../components/WindowDeviceControls';
+import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER } from '../videoCallsData';
 import CallScene from './CallScene';
@@ -8,25 +14,52 @@ import styles from './CallWindowScene.module.scss';
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
 
+const FALLBACK_MICS = [
+  { deviceId: 'fallback-mic-1', label: 'Default microphone' },
+  { deviceId: 'fallback-mic-2', label: 'External USB microphone' },
+];
+const FALLBACK_CAMERAS = [
+  { deviceId: 'fallback-camera-1', label: 'Built-in camera' },
+  { deviceId: 'fallback-camera-2', label: 'External webcam' },
+];
+
 /**
- * TEMPORARY placeholder for the expanded "calling" state (replaced by the
- * window package). Keeps the flow clickable end to end.
+ * Expanded "calling" state: a larger ringing screen in the dark window chrome.
+ * Collapse returns to the widget (the call keeps ringing); Cancel hangs up.
+ * `CallPhaseEffects` connects the call after the answer delay.
  */
-function CallingWindowStub() {
-  const { actions } = useVideoCall();
+function CallingWindow() {
+  const { state, actions, selfCamera } = useVideoCall();
+  const { media } = state;
+  const [openMenu, setOpenMenu] = useState<WindowDeviceMenuId | null>(null);
+  const devices = useMediaDevices({ enabled: media.useWebcam });
+  const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
+  const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
+
   return (
-    <div className={styles['call-window-scene__stub']}>
-      <p className={styles['call-window-scene__stub-title']}>
-        Calling {PEER.name}…
-      </p>
-      <div className={styles['call-window-scene__stub-actions']}>
-        <Button emphasis="tertiary" onClick={actions.collapse}>
-          Collapse
-        </Button>
-        <Button emphasis="tertiary" onClick={actions.cancelCall}>
-          Cancel
-        </Button>
-      </div>
+    <div className={styles['call-window-scene']}>
+      <WindowCalling
+        peerName={PEER.name}
+        peerAvatarSrc={PEER.avatarSrc}
+        onCollapse={actions.collapse}
+        onCancel={actions.cancelCall}
+        controls={
+          <WindowDeviceControls
+            micOn={media.micOn}
+            onToggleMic={actions.toggleMic}
+            mics={mics.map((m) => ({ id: m.deviceId, label: m.label }))}
+            micDeviceId={media.micDeviceId}
+            onSelectMic={(id) => actions.setMedia({ micDeviceId: id })}
+            cameraOn={media.cameraOn}
+            onToggleCamera={selfCamera.toggle}
+            cameras={cameras.map((c) => ({ id: c.deviceId, label: c.label }))}
+            cameraDeviceId={media.cameraDeviceId}
+            onSelectCamera={(id) => actions.setMedia({ cameraDeviceId: id })}
+            openMenu={openMenu}
+            onOpenMenuChange={setOpenMenu}
+          />
+        }
+      />
     </div>
   );
 }
@@ -38,6 +71,6 @@ function CallingWindowStub() {
 export default function CallWindowScene() {
   const { state } = useVideoCall();
   if (state.phase === 'pre-join') return <PreJoinScene />;
-  if (state.phase === 'calling') return <CallingWindowStub />;
+  if (state.phase === 'calling') return <CallingWindow />;
   return state.sharing ? <ScreenShareScene /> : <CallScene />;
 }

@@ -5,13 +5,13 @@
 // `transform` free for the host's layout animation.
 // ---------------------------------------------------------------------------
 
+// Scale only (no fade): when a host undocks the same element into the PiP it
+// runs its own transform animation, which overrides this one.
 @keyframes self-view-pip-enter {
   from {
-    opacity: 0;
     transform: scale(0.9);
   }
   to {
-    opacity: 1;
     transform: scale(1);
   }
 }

@@ -1,25 +1,11 @@
-// Mirrors compass-proto CallWidget chrome at the Figma width (280px).
+// Call widget content (302px card chrome comes from WidgetFrame).
 .video-call-widget {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 280px;
-
-  &__body {
-    background: var(--center-channel-bg);
-    color: var(--center-channel-color);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    border-radius: var(--radius-m);
-    box-shadow: var(--elevation-3);
-    overflow: hidden;
-  }
-
   &__header {
     display: flex;
     align-items: center;
     gap: var(--spacing-xxs);
-    min-height: 40px;
-    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+    min-height: 36px;
+    padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
       var(--spacing-m);
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
@@ -62,11 +48,13 @@
     flex: 1 1 0;
     min-width: 0;
     display: flex;
+  }
 
-    // VideoTile 'thumbnail' is a fixed 120x136; let it stretch to the column.
-    > :first-child {
-      width: 100%;
-    }
+  // VideoTile 'thumbnail' is a fixed 120x136; fill the column at a shorter,
+  // roughly 16:10 height. Doubled selector beats the tile's size rule.
+  &__tile#{&}__tile {
+    width: 100%;
+    height: 80px; // one-off layout height
   }
 
   &__overflow {
@@ -87,51 +75,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--spacing-xxs);
-    height: 44px;
-    padding: 0 var(--spacing-xs);
-  }
-
-  &__participants {
-    appearance: none;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxxxs);
-    padding: var(--spacing-xxs);
-    border: 0;
-    border-radius: var(--radius-s);
-    background: transparent;
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-75);
-    font-weight: var(--font-weight-semibold);
-    cursor: pointer;
-    transition: background-color var(--duration-quick) var(--ease-transition);
-
-    &:hover {
-      background: rgba(var(--center-channel-color-rgb), 0.08);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--button-bg);
-      outline-offset: 1px;
-    }
-
-    &--active {
-      background: rgba(var(--button-bg-rgb), 0.08);
-      color: var(--button-bg);
-    }
+    gap: var(--spacing-xxxs);
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xs);
   }
 
   &__actions {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xxs);
-  }
-
-  &__toggle--off {
-    color: var(--error-text, var(--color-danger));
+    gap: var(--spacing-xxxs);
   }
 
   &__hangup {
@@ -140,7 +91,7 @@
     align-items: center;
     justify-content: center;
     height: 28px;
-    min-width: 40px;
+    min-width: 36px;
     padding: 0 var(--spacing-xs);
     border: 0;
     border-radius: var(--radius-s);
@@ -157,13 +108,5 @@
       outline: 2px solid var(--button-bg);
       outline-offset: 2px;
     }
-  }
-
-  &__popover {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(100% + var(--spacing-xs));
-    z-index: 5;
   }
 }

@@ -17,6 +17,7 @@ import { playSound } from '../callSounds';
 import { CallThreadPane } from '../components/CallThreadPane';
 import { DeviceMenu } from '../components/DeviceMenu';
 import { ReactionTray } from '../components/ReactionTray';
+import type { VideoTileMenu } from '../components/VideoTile';
 import { VideoCallWindow } from '../components/VideoCallWindow';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useStageLayout } from '../hooks/useStageLayout';
@@ -192,6 +193,41 @@ export default function CallWindowHost({
     [participants],
   );
 
+  // Host controls: only the host sees a menu, and only on other people's tiles.
+  const iAmHost = participants.some((p) => p.self && p.host);
+  const getTileMenu = useCallback(
+    (id: string): VideoTileMenu | undefined => {
+      const target = participants.find((p) => p.id === id);
+      if (!iAmHost || !target || target.self) return undefined;
+      return {
+        items: [
+          { id: 'mute', label: 'Mute', disabled: Boolean(target.muted) },
+          { id: 'make-host', label: 'Make host' },
+          { id: 'remove', label: 'Remove from call', destructive: true },
+        ],
+        onSelect: (item) => {
+          if (item === 'mute') {
+            actions.patchParticipant(id, { muted: true });
+            actions.pushNotice({ kind: 'info', text: `Muted ${target.name}` });
+          } else if (item === 'make-host') {
+            actions.makeHost(id);
+            actions.pushNotice({
+              kind: 'info',
+              text: `${target.name} is now a host`,
+            });
+          } else if (item === 'remove') {
+            actions.removeParticipant(id);
+            actions.pushNotice({
+              kind: 'info',
+              text: `${target.name} was removed`,
+            });
+          }
+        },
+      };
+    },
+    [iAmHost, participants, actions],
+  );
+
   const moreMenu = (
     <PopoverMenu
       open={openMenu === 'more'}
@@ -259,6 +295,7 @@ export default function CallWindowHost({
         banner={banner}
         pane={pane}
         onDismissOverlays={closeMenu}
+        getTileMenu={getTileMenu}
         controls={{
           participantCount: participants.length,
           participantsOpen: state.pane === 'participants',

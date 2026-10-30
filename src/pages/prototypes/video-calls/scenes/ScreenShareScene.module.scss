@@ -1,9 +1,4 @@
 .screen-share-scene {
-  &__banner {
-    max-width: 100%;
-    box-shadow: var(--elevation-3);
-  }
-
   // Mock shared screen ---------------------------------------------------------
   &__screen {
     display: flex;

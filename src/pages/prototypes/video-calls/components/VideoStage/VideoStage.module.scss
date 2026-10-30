@@ -1,81 +1,119 @@
 // ---------------------------------------------------------------------------
-// Video stage — pip / grid / share layouts (Figma popout stage, 12px gaps).
-// Pure CSS sizing: the grid gets --video-stage-cols / --video-stage-rows and
-// the featured cell --video-stage-span inline (layout values, not tokens).
+// Video stage — pip / grid / speaker / share layouts (Figma popout stage,
+// 12px gaps). One CSS grid (`__canvas`) holds every tile; VideoStage.tsx sets
+// the grid template and each cell's grid lines inline (layout values, not
+// tokens). Column gaps are cell padding (half a gap each side) so the 120-col
+// grid has no gap arithmetic; the canvas bleeds half a gap so outer tiles
+// still sit `--video-stage-edge` from the stage edge (room for the 5px
+// speaking ring, which VideoTile draws outside the tile).
 // ---------------------------------------------------------------------------
+
+@keyframes video-stage-fade-in {
+  from {
+    opacity: 0;
+  }
+}
 
 .video-stage {
   --video-stage-gap: var(--spacing-m);
-  --video-stage-filmstrip: 200px;
+  --video-stage-edge: var(--spacing-xs);
+  --video-stage-film: 200px;
+  --video-stage-strip-max: 240px;
+  --video-stage-strip-aspect: calc(16 / 9);
 
   position: relative;
-  display: flex;
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
-  gap: var(--video-stage-gap);
+  container-type: inline-size;
   background: var(--calls-bg);
   color: var(--button-color, var(--color-neutral-0));
 
-  // Grid (also speaker view for 3+) -----------------------------------------
-  &__grid {
-    --video-stage-cell-w: calc(
-      (100% - (var(--video-stage-cols) - 1) * var(--video-stage-gap)) /
-        var(--video-stage-cols)
+  &__canvas {
+    // Speaker strip cell (incl. its gap padding) sized from the stage width.
+    --video-stage-strip-cell: min(
+      calc(var(--video-stage-strip-max) + var(--video-stage-gap)),
+      calc(
+        (100cqw - 2 * var(--video-stage-edge) + var(--video-stage-gap)) /
+          var(--video-stage-strip-count, 1)
+      )
+    );
+    --video-stage-strip-row: calc(
+      (var(--video-stage-strip-cell) - var(--video-stage-gap)) /
+        var(--video-stage-strip-aspect)
+    );
+    // Share filmstrip: column width / row height.
+    --video-stage-film-cell: calc(
+      var(--video-stage-film) + var(--video-stage-gap)
+    );
+    --video-stage-film-row: calc(
+      var(--video-stage-film) / var(--video-stage-strip-aspect)
     );
 
-    flex: 1 1 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center; // centers a short last row (3 = 2 + 1 centered)
+    position: absolute;
+    inset: var(--video-stage-edge)
+      calc(var(--video-stage-edge) - var(--video-stage-gap) / 2);
+    display: grid;
+    column-gap: 0;
+    row-gap: var(--video-stage-gap);
     align-content: center;
-    gap: var(--video-stage-gap);
-    min-width: 0;
-    min-height: 0;
   }
 
   &__cell {
     position: relative;
-    flex: 0 0 auto;
-    width: var(--video-stage-cell-w);
-    height: calc(
-      (100% - (var(--video-stage-rows) - 1) * var(--video-stage-gap)) /
-        var(--video-stage-rows)
-    );
     min-width: 0;
-    transition:
-      width var(--duration-moderate) var(--ease-transition),
-      height var(--duration-moderate) var(--ease-transition);
+    min-height: 0;
+    padding-inline: calc(var(--video-stage-gap) / 2);
 
-    &--featured {
-      width: calc(
-        var(--video-stage-span) * var(--video-stage-cell-w) +
-          (var(--video-stage-span) - 1) * var(--video-stage-gap)
-      );
+    // In-call floating self view: covers the whole stage, but only the PiP
+    // itself takes pointer events.
+    &--floating {
+      position: absolute;
+      inset: calc(var(--video-stage-edge) * -1)
+        calc((var(--video-stage-edge) - var(--video-stage-gap) / 2) * -1);
+      z-index: 5;
+      padding: 0;
+      pointer-events: none;
+    }
+
+    // Strip / filmstrip cells: a centred tile of the strip aspect.
+    &--strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // Doubled class: beats the docked SelfViewPip root's own 100% sizing.
+    &--strip#{&}--strip > * {
+      width: auto;
+      height: 100%;
+      max-width: 100%;
+      aspect-ratio: var(--video-stage-strip-aspect);
     }
   }
 
-  // 1:1 main tile -----------------------------------------------------------
-  &__main {
+  // FLIP target around each tile (radius read by the animation's clip).
+  &__frame {
     position: relative;
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-m);
   }
 
-  // Share: content + filmstrip -----------------------------------------------
+  // Share content ------------------------------------------------------------
   &__content {
     position: relative;
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: 0;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: var(--radius-m);
     background: rgba(0, 0, 0, 0.32);
+    animation: video-stage-fade-in var(--duration-moderate)
+      var(--ease-transition);
   }
 
   &__presenting {
@@ -90,28 +128,11 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  &__filmstrip {
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    min-width: 0;
-    min-height: 0;
-  }
-
-  &__strip-cell {
-    position: relative;
-    flex: 0 1 auto;
-    min-width: 0;
-    min-height: 0;
-    aspect-ratio: 16 / 9;
-  }
-
-  // Click target over a tile (pin / focus) ---------------------------------
+  // Keyboard select target (pointer clicks land on the frame) ---------------
   &__select {
     position: absolute;
     inset: 0;
-    z-index: 5;
+    z-index: 0;
     padding: 0;
     border: 0;
     border-radius: var(--radius-m);
@@ -174,52 +195,64 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  // -------------------------------------------------------------------------
-  // Modifiers
-  // -------------------------------------------------------------------------
-  &--filmstrip-side {
-    flex-direction: row;
-
-    .video-stage__filmstrip {
-      flex-direction: column;
-      width: var(--video-stage-filmstrip);
+  // Small chip in a strip: avatars beside the count.
+  &__cell--small-overflow {
+    .video-stage__overflow-body {
+      flex-direction: row;
+      gap: var(--spacing-xxs);
     }
 
-    .video-stage__strip-cell {
-      width: 100%;
+    .video-stage__overflow-count {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
     }
   }
 
-  &--filmstrip-bottom {
-    flex-direction: column;
+  // -------------------------------------------------------------------------
+  // Modifiers
+  // -------------------------------------------------------------------------
 
-    .video-stage__filmstrip {
-      flex-direction: row;
-      height: calc(var(--video-stage-filmstrip) * 9 / 16);
-    }
+  // Side filmstrip: tiles hug the stage edge when rows shrink below 16:9 of
+  // the column width.
+  &--filmstrip-side .video-stage__cell--strip {
+    justify-content: flex-end;
+  }
 
-    .video-stage__strip-cell {
-      height: 100%;
-    }
+  // Side filmstrip rows shrink so up to six fit the stage height.
+  &--filmstrip-side .video-stage__canvas {
+    --video-stage-film-row: min(
+      calc(var(--video-stage-film) / var(--video-stage-strip-aspect)),
+      calc(
+        (
+            100% - (var(--video-stage-strip-count, 1) + 1) *
+              var(--video-stage-gap)
+          ) /
+          var(--video-stage-strip-count, 1)
+      )
+    );
+  }
+
+  // Bottom filmstrip cells shrink so every cell fits the stage width.
+  &--filmstrip-bottom .video-stage__canvas {
+    --video-stage-film-cell: min(
+      calc(var(--video-stage-film) + var(--video-stage-gap)),
+      calc(100% / var(--video-stage-strip-count, 1))
+    );
   }
 
   &--compact {
     --video-stage-gap: var(--spacing-xs);
-    --video-stage-filmstrip: 182px;
-
-    &.video-stage--filmstrip-bottom .video-stage__filmstrip {
-      height: calc(var(--video-stage-filmstrip) / 2);
-    }
-
-    .video-stage__strip-cell {
-      aspect-ratio: 1;
-    }
+    --video-stage-edge: var(--spacing-xxs);
+    --video-stage-film: 120px;
+    --video-stage-strip-max: 120px;
+    --video-stage-strip-aspect: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .video-stage__cell,
+    .video-stage__content,
     .video-stage__overflow-body {
       transition: none;
+      animation: none;
     }
   }
 }

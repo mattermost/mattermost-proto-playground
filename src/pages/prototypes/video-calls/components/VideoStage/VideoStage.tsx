@@ -1,8 +1,29 @@
-import type { CSSProperties, ReactNode } from 'react';
+import {
+  Component,
+  useCallback,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
-import type { StageLayout } from '../../layout/computeStageLayout';
-import { VideoTile, type VideoTileConnection } from '../VideoTile';
+import {
+  OVERFLOW_CELL,
+  type StageLayout,
+} from '../../layout/computeStageLayout';
+import {
+  VideoTile,
+  type VideoTileConnection,
+  type VideoTileMenu,
+  type VideoTileSize,
+} from '../VideoTile';
 import { SelfViewPip, type SelfViewPipCorner } from '../SelfViewPip';
+import {
+  measureBoxes,
+  playFlip,
+  prefersReducedMotion,
+  readTiming,
+  type FlipBox,
+} from './flip';
 import styles from './VideoStage.module.scss';
 
 /** Participant fields the stage renders. `VideoParticipant` satisfies it. */
@@ -58,6 +79,8 @@ export interface VideoStageProps {
   onSelectTile?: (id: string) => void;
   /** Called by the overflow chip. */
   onSelectOverflow?: () => void;
+  /** Per-tile host-controls menu (passed to `VideoTile` as `menu`). */
+  getTileMenu?: (participantId: string) => VideoTileMenu | undefined;
   pipHidden?: boolean;
   onPipHiddenChange?: (hidden: boolean) => void;
   pipCorner?: SelfViewPipCorner;
@@ -84,15 +107,180 @@ const DEFAULT_LABELS: Required<VideoStageLabels> = {
   pipShow: 'Show self view',
 };
 
+/** Grid columns per row: divisible by 1-5 and centres any short row exactly. */
+const GRID_COLUMNS = 120;
+const SHARE_CONTENT = '__share__';
+
+type CellRole = 'tile' | 'featured' | 'strip' | 'floating';
+
+interface Placement {
+  role: CellRole;
+  column?: string;
+  row?: string;
+}
+
+interface StagePlan {
+  canvas: CSSProperties & Record<string, string | number>;
+  cells: Map<string, Placement>;
+}
+
 const cx = (...names: (string | false | undefined)[]) =>
   names.filter(Boolean).join(' ');
 
 /**
- * Call stage: renders a `StageLayout` (pip / grid / share) with CSS only (no
- * measuring). Tiles are keyed by participant id and kept in participant order
- * in the DOM; display order uses CSS `order`, so speaker swaps and reflows
- * never move or remount `<video>` elements within a layout kind. Overflow
- * participants are not rendered, so at most the visible tiles decode video.
+ * StageLayout → CSS grid placement. Every visible tile is a direct child of
+ * one grid, so switching layouts only changes `grid-column` / `grid-row`.
+ */
+function planStage(
+  layout: StageLayout,
+  filmstripPosition: 'side' | 'bottom',
+): StagePlan {
+  const cells = new Map<string, Placement>();
+
+  if (layout.kind === 'pip') {
+    cells.set(layout.mainId, { role: 'tile', column: '1 / -1', row: '1' });
+    cells.set(layout.pipId, { role: 'floating' });
+    return {
+      canvas: {
+        gridTemplateColumns: 'minmax(0, 1fr)',
+        gridTemplateRows: 'minmax(0, 1fr)',
+      },
+      cells,
+    };
+  }
+
+  if (layout.kind === 'grid') {
+    const k = Math.max(1, layout.cols);
+    const span = GRID_COLUMNS / k;
+    layout.rows.forEach((row, r) => {
+      const offset = ((k - row.length) * span) / 2;
+      row.forEach((id, i) => {
+        cells.set(id, {
+          role: 'tile',
+          column: `${1 + offset + i * span} / span ${span}`,
+          row: `${r + 1}`,
+        });
+      });
+    });
+    return {
+      canvas: {
+        gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${Math.max(1, layout.rows.length)}, minmax(0, 1fr))`,
+      },
+      cells,
+    };
+  }
+
+  if (layout.kind === 'speaker') {
+    // Strip of 16:9 cells along the top (half-columns so a short second row
+    // centres exactly), featured speaker below spanning the full width.
+    const rows = layout.stripRows;
+    const k = Math.max(1, ...rows.map((r) => r.length));
+    rows.forEach((row, r) => {
+      row.forEach((id, i) => {
+        cells.set(id, {
+          role: 'strip',
+          column: `${2 + (k - row.length) + 2 * i} / span 2`,
+          row: `${r + 1}`,
+        });
+      });
+    });
+    cells.set(layout.featuredId, {
+      role: 'featured',
+      column: '1 / -1',
+      row: `${rows.length + 1}`,
+    });
+    return {
+      canvas: {
+        '--video-stage-strip-count': k,
+        gridTemplateColumns: `minmax(0, 1fr) repeat(${2 * k}, calc(var(--video-stage-strip-cell) / 2)) minmax(0, 1fr)`,
+        gridTemplateRows: `repeat(${rows.length}, var(--video-stage-strip-row)) minmax(0, 1fr)`,
+      },
+      cells,
+    };
+  }
+
+  // share
+  const strip = layout.overflowIds.length
+    ? [...layout.filmstripIds, OVERFLOW_CELL]
+    : layout.filmstripIds;
+  const n = Math.max(1, strip.length);
+  if (filmstripPosition === 'side') {
+    cells.set(SHARE_CONTENT, { role: 'tile', column: '1', row: '1 / -1' });
+    strip.forEach((id, i) =>
+      cells.set(id, { role: 'strip', column: '2', row: `${i + 2}` }),
+    );
+    return {
+      canvas: {
+        '--video-stage-strip-count': n,
+        gridTemplateColumns: 'minmax(0, 1fr) var(--video-stage-film-cell)',
+        gridTemplateRows: `minmax(0, 1fr) repeat(${n}, var(--video-stage-film-row)) minmax(0, 1fr)`,
+      },
+      cells,
+    };
+  }
+  cells.set(SHARE_CONTENT, { role: 'tile', column: '1 / -1', row: '1' });
+  strip.forEach((id, i) =>
+    cells.set(id, { role: 'strip', column: `${i + 2}`, row: '2' }),
+  );
+  return {
+    canvas: {
+      '--video-stage-strip-count': n,
+      gridTemplateColumns: `minmax(0, 1fr) repeat(${n}, var(--video-stage-film-cell)) minmax(0, 1fr)`,
+      gridTemplateRows: 'minmax(0, 1fr) var(--video-stage-film-row)',
+    },
+    cells,
+  };
+}
+
+interface FlipBoundaryProps {
+  flipKey: string;
+  nodes: ReadonlyMap<string, HTMLElement>;
+  rootRef: { current: HTMLElement | null };
+  children: ReactNode;
+}
+
+/**
+ * Class boundary only for `getSnapshotBeforeUpdate`: the one React hook point
+ * that runs after render but BEFORE the DOM changes, i.e. where the "first"
+ * boxes of a FLIP can be read. The animation starts in `componentDidUpdate`
+ * (same timing as `useLayoutEffect`: after the commit, before paint).
+ */
+class FlipBoundary extends Component<FlipBoundaryProps> {
+  getSnapshotBeforeUpdate(prev: FlipBoundaryProps) {
+    if (prev.flipKey === this.props.flipKey || prefersReducedMotion()) {
+      return null;
+    }
+    return measureBoxes(this.props.nodes);
+  }
+
+  componentDidUpdate(
+    _prev: FlipBoundaryProps,
+    _state: unknown,
+    first: Map<string, FlipBox> | null,
+  ) {
+    const root = this.props.rootRef.current;
+    if (!first || !root) return;
+    const scale = root.offsetWidth
+      ? root.getBoundingClientRect().width / root.offsetWidth
+      : 1;
+    playFlip(this.props.nodes, first, readTiming(root), scale || 1);
+  }
+
+  render() {
+    return this.props.children;
+  }
+}
+
+/**
+ * Call stage: renders a `StageLayout` (pip / grid / speaker / share). Every
+ * tile is a direct child of one CSS grid, keyed by participant id and kept in
+ * participant order in the DOM; layouts only change each tile's grid lines,
+ * so switching view, sharing or joining never reparents or remounts a
+ * `<video>`. The self tile always sits inside `SelfViewPip` (docked in grids,
+ * floating in 1:1 speaker view) for the same reason. Layout changes animate
+ * with FLIP (see `flip.ts`); overflow participants are not rendered, so at
+ * most the visible tiles decode video.
  */
 export function VideoStage({
   layout,
@@ -102,6 +290,7 @@ export function VideoStage({
   shareContent,
   onSelectTile,
   onSelectOverflow,
+  getTileMenu,
   pipHidden,
   onPipHiddenChange,
   pipCorner,
@@ -114,12 +303,35 @@ export function VideoStage({
 }: VideoStageProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const byId = new Map(participants.map((p) => [p.id, p]));
-  const tileSize = compact ? 'compact' : 'default';
+  const plan = planStage(layout, filmstripPosition);
 
-  const renderTile = (
-    p: VideoStageParticipant,
-    opts: { pip?: boolean } = {},
-  ) => {
+  const rootRef = useRef<HTMLElement | null>(null);
+  const nodes = useRef(new Map<string, HTMLElement>()).current;
+  const refCache = useRef(
+    new Map<string, (el: HTMLElement | null) => void>(),
+  ).current;
+  const nodeRef = useCallback(
+    (id: string) => {
+      let fn = refCache.get(id);
+      if (!fn) {
+        fn = (el) => {
+          if (el) nodes.set(id, el);
+          else nodes.delete(id);
+        };
+        refCache.set(id, fn);
+      }
+      return fn;
+    },
+    [nodes, refCache],
+  );
+
+  const flipKey = `${layout.kind}|${filmstripPosition}|${compact ? 1 : 0}|${[
+    ...plan.cells,
+  ]
+    .map(([id, p]) => `${id}@${p.role}:${p.column ?? ''}/${p.row ?? ''}`)
+    .join(',')}`;
+
+  const renderTile = (p: VideoStageParticipant, size: VideoTileSize) => {
     const clip = p.clipId ? clips[p.clipId] : undefined;
     const useStream = !!p.self && !!selfStream;
     return (
@@ -137,55 +349,95 @@ export function VideoStage({
         reaction={p.reaction}
         connection={p.connection}
         paused={paused}
-        size={opts.pip && compact ? 'compact' : tileSize}
+        size={size}
         selfLabel={p.self ? l.self : undefined}
+        menu={getTileMenu?.(p.id)}
       />
     );
   };
 
-  const renderSelect = (p: VideoStageParticipant) =>
-    onSelectTile ? (
-      <button
-        type="button"
-        className={styles['video-stage__select']}
-        aria-label={l.selectTile(p.name)}
-        onClick={() => onSelectTile(p.id)}
-      />
-    ) : null;
+  const placementStyle = (place: Placement): CSSProperties =>
+    place.role === 'floating'
+      ? {}
+      : { gridColumn: place.column, gridRow: place.row };
 
-  /** Visible cells in participant (DOM) order, positioned with CSS `order`. */
-  const renderCells = (
-    ids: string[],
-    cellClass: string,
-    featured?: { id?: string; span: number },
-  ) =>
-    participants
-      .filter((p) => ids.includes(p.id))
-      .map((p) => {
-        const style = { order: ids.indexOf(p.id) } as CSSProperties &
-          Record<string, string | number>;
-        const isFeatured = featured?.id === p.id && featured.span > 1;
-        if (isFeatured) style['--video-stage-span'] = featured.span;
+  const cellClass = (place: Placement) =>
+    cx(styles['video-stage__cell'], styles[`video-stage__cell--${place.role}`]);
+
+  // Visible participants, in participant (DOM) order.
+  const tiles = participants
+    .filter((p) => plan.cells.has(p.id))
+    .map((p) => {
+      const place = plan.cells.get(p.id)!;
+      const small = place.role === 'strip' || place.role === 'floating';
+      const size: VideoTileSize = compact || small ? 'compact' : 'default';
+      if (p.self) {
+        const floating = place.role === 'floating';
         return (
           <div
             key={p.id}
-            className={cx(
-              cellClass,
-              isFeatured && styles['video-stage__cell--featured'],
-            )}
-            style={style}
+            className={cellClass(place)}
+            style={placementStyle(place)}
           >
-            {renderTile(p)}
-            {renderSelect(p)}
+            <SelfViewPip
+              ref={nodeRef(p.id)}
+              docked={!floating}
+              hidden={floating ? pipHidden : false}
+              onHiddenChange={onPipHiddenChange}
+              corner={pipCorner}
+              onCornerChange={onPipCornerChange}
+              size={compact ? 'compact' : 'default'}
+              labels={{ region: l.pipRegion, hide: l.pipHide, show: l.pipShow }}
+            >
+              {renderTile(p, size)}
+            </SelfViewPip>
           </div>
         );
-      });
+      }
+      return (
+        <div
+          key={p.id}
+          className={cellClass(place)}
+          style={placementStyle(place)}
+        >
+          {/* Pointer clicks select the tile; the button below is the keyboard
+              path (kept under the tile so tile controls stay clickable). */}
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div
+            ref={nodeRef(p.id)}
+            className={styles['video-stage__frame']}
+            onClick={
+              onSelectTile
+                ? (e) => {
+                    const t = e.target as Element;
+                    if (t.closest('button, [role="menu"]')) return;
+                    onSelectTile(p.id);
+                  }
+                : undefined
+            }
+          >
+            {onSelectTile && (
+              <button
+                type="button"
+                className={styles['video-stage__select']}
+                aria-label={l.selectTile(p.name)}
+                onClick={() => onSelectTile(p.id)}
+              />
+            )}
+            {renderTile(p, size)}
+          </div>
+        </div>
+      );
+    });
 
-  const renderOverflow = (overflowIds: string[], cellClass: string) => {
-    if (!overflowIds.length) return null;
+  const renderOverflow = () => {
+    const place = plan.cells.get(OVERFLOW_CELL);
+    if (!place || layout.kind === 'pip') return null;
+    const overflowIds = layout.overflowIds;
     const people = overflowIds
       .map((id) => byId.get(id))
       .filter((p): p is VideoStageParticipant => !!p);
+    const small = compact || place.role === 'strip';
     const content = (
       <>
         <span
@@ -198,7 +450,7 @@ export function VideoStage({
               src={p.avatarSrc}
               name={p.name}
               alt=""
-              size={compact ? '32' : '48'}
+              size={small ? '24' : '48'}
             />
           ))}
         </span>
@@ -209,28 +461,58 @@ export function VideoStage({
     );
     return (
       <div
-        key="overflow"
-        className={cx(cellClass, styles['video-stage__overflow'])}
-        style={{ order: 999 }}
-      >
-        {onSelectOverflow ? (
-          <button
-            type="button"
-            className={styles['video-stage__overflow-body']}
-            aria-label={l.overflowAria(overflowIds.length)}
-            onClick={onSelectOverflow}
-          >
-            {content}
-          </button>
-        ) : (
-          <div
-            className={styles['video-stage__overflow-body']}
-            role="img"
-            aria-label={l.overflowAria(overflowIds.length)}
-          >
-            {content}
-          </div>
+        key={OVERFLOW_CELL}
+        className={cx(
+          cellClass(place),
+          small && styles['video-stage__cell--small-overflow'],
         )}
+        style={placementStyle(place)}
+      >
+        <div
+          ref={nodeRef(OVERFLOW_CELL)}
+          className={styles['video-stage__frame']}
+        >
+          {onSelectOverflow ? (
+            <button
+              type="button"
+              className={styles['video-stage__overflow-body']}
+              aria-label={l.overflowAria(overflowIds.length)}
+              onClick={onSelectOverflow}
+            >
+              {content}
+            </button>
+          ) : (
+            <div
+              className={styles['video-stage__overflow-body']}
+              role="img"
+              aria-label={l.overflowAria(overflowIds.length)}
+            >
+              {content}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderShareContent = () => {
+    const place = plan.cells.get(SHARE_CONTENT);
+    if (!place || layout.kind !== 'share') return null;
+    const presenter = byId.get(layout.presenterId);
+    return (
+      <div
+        key={SHARE_CONTENT}
+        className={cellClass(place)}
+        style={placementStyle(place)}
+      >
+        <div className={styles['video-stage__content']}>
+          {shareContent}
+          {presenter && (
+            <span className={styles['video-stage__presenting']}>
+              {l.presenting(presenter.name)}
+            </span>
+          )}
+        </div>
       </div>
     );
   };
@@ -244,71 +526,15 @@ export function VideoStage({
     className,
   );
 
-  if (layout.kind === 'pip') {
-    const main = byId.get(layout.mainId);
-    const self = byId.get(layout.pipId);
-    return (
-      <section className={rootClass} aria-label={l.stage}>
-        {main && (
-          <div key={main.id} className={styles['video-stage__main']}>
-            {renderTile(main)}
-            {renderSelect(main)}
-          </div>
-        )}
-        {self && (
-          <SelfViewPip
-            key={self.id}
-            hidden={pipHidden}
-            onHiddenChange={onPipHiddenChange}
-            corner={pipCorner}
-            onCornerChange={onPipCornerChange}
-            size={compact ? 'compact' : 'default'}
-            labels={{ region: l.pipRegion, hide: l.pipHide, show: l.pipShow }}
-          >
-            {renderTile(self, { pip: true })}
-          </SelfViewPip>
-        )}
-      </section>
-    );
-  }
-
-  if (layout.kind === 'share') {
-    const presenter = byId.get(layout.presenterId);
-    return (
-      <section className={rootClass} aria-label={l.stage}>
-        <div className={styles['video-stage__content']}>
-          {shareContent}
-          {presenter && (
-            <span className={styles['video-stage__presenting']}>
-              {l.presenting(presenter.name)}
-            </span>
-          )}
-        </div>
-        <div className={styles['video-stage__filmstrip']}>
-          {renderCells(layout.filmstripIds, styles['video-stage__strip-cell'])}
-          {renderOverflow(
-            layout.overflowIds,
-            styles['video-stage__strip-cell'],
-          )}
-        </div>
-      </section>
-    );
-  }
-
-  const gridStyle = {
-    '--video-stage-cols': layout.cols,
-    '--video-stage-rows': layout.rows,
-  } as CSSProperties;
-
   return (
-    <section className={rootClass} aria-label={l.stage}>
-      <div className={styles['video-stage__grid']} style={gridStyle}>
-        {renderCells(layout.tileIds, styles['video-stage__cell'], {
-          id: layout.featuredId,
-          span: layout.featuredSpan,
-        })}
-        {renderOverflow(layout.overflowIds, styles['video-stage__cell'])}
-      </div>
+    <section ref={rootRef} className={rootClass} aria-label={l.stage}>
+      <FlipBoundary flipKey={flipKey} nodes={nodes} rootRef={rootRef}>
+        <div className={styles['video-stage__canvas']} style={plan.canvas}>
+          {renderShareContent()}
+          {tiles}
+          {renderOverflow()}
+        </div>
+      </FlipBoundary>
     </section>
   );
 }

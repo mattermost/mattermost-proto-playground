@@ -1,12 +1,10 @@
-import { useEffect, useRef, type ReactNode } from 'react';
-import ArrowCollapseIcon from '@mattermost/compass-icons/components/arrow-collapse';
-import { Icon } from '@mattermost/compass-ui/components/icon';
-import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { RecordingPill } from '@mattermost/compass-proto';
 import type { StageLayout } from '../../layout/computeStageLayout';
 import { CallControlsBar, type CallControlsBarProps } from '../CallControlsBar';
 import { CallNotice, type CallNoticeItem } from '../CallNotice';
 import { ReactionBurst } from '../ReactionBurst';
+import type { VideoTileMenu } from '../VideoTile';
 import { ViewToggle, type ViewToggleValue } from '../ViewToggle';
 import {
   VideoStage,
@@ -14,6 +12,7 @@ import {
   type VideoStageLabels,
   type VideoStageParticipant,
 } from '../VideoStage';
+import { VideoCallWindowFrame } from './VideoCallWindowFrame';
 import styles from './VideoCallWindow.module.scss';
 
 export interface VideoCallWindowLabels {
@@ -53,10 +52,16 @@ export interface VideoCallWindowProps {
   burst?: { emoji: string; key: string | number } | null;
   /** Banner rendered over the top of the stage (e.g. "You are sharing"). */
   banner?: ReactNode;
-  /** Side pane slot (participants / chat). */
+  /**
+   * Side pane slot (participants / chat). Set to open, `undefined` to close: the
+   * window keeps the last pane mounted while it animates out.
+   */
   pane?: ReactNode;
   /** Pointer-down on the stage; hosts close open menus here. */
   onDismissOverlays?: () => void;
+
+  /** Host controls: per-tile menu (passed through to `VideoStage`). */
+  getTileMenu?: (participantId: string) => VideoTileMenu | undefined;
 
   controls: CallControlsBarProps;
 
@@ -74,9 +79,48 @@ const DEFAULT_LABELS: Required<VideoCallWindowLabels> = {
 const cx = (...names: (string | false | undefined)[]) =>
   names.filter(Boolean).join(' ');
 
+/** Matches `--duration-moderate`; the pane is unmounted after this. */
+const PANE_EXIT_MS = 300;
+
+/**
+ * Keeps the last pane mounted through its exit and flips `expanded` a frame
+ * after mount so the open transition runs. Reduced motion unmounts at once.
+ */
+function usePaneTransition(pane: ReactNode) {
+  const open = Boolean(pane);
+  const [mounted, setMounted] = useState(open);
+  const [expanded, setExpanded] = useState(open);
+  const lastPane = useRef(pane);
+  if (pane) lastPane.current = pane;
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      const raf = requestAnimationFrame(() =>
+        requestAnimationFrame(() => setExpanded(true)),
+      );
+      return () => cancelAnimationFrame(raf);
+    }
+    setExpanded(false);
+    const reduce =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t = window.setTimeout(
+      () => setMounted(false),
+      reduce ? 0 : PANE_EXIT_MS,
+    );
+    return () => window.clearTimeout(t);
+  }, [open]);
+
+  return {
+    node: mounted ? lastPane.current : null,
+    expanded: expanded && open,
+  };
+}
+
 /**
  * Windowed call popout hosting `VideoStage` (mirrors compass-proto `CallPopout`
- * chrome: title bar, header row, dark stage, 3-zone controls). Plain props; the
+ * chrome via `VideoCallWindowFrame`: title bar, header row, dark stage, 3-zone controls). Plain props; the
  * scene wires state. Owns only the Meet-style shortcuts (Ctrl/Cmd+D mute, Ctrl/Cmd+E camera) while mounted.
  */
 export function VideoCallWindow({
@@ -102,12 +146,13 @@ export function VideoCallWindow({
   banner,
   pane,
   onDismissOverlays,
+  getTileMenu,
   controls,
   labels,
   className,
 }: VideoCallWindowProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
-  const fullscreen = variant === 'fullscreen';
+  const paneSlot = usePaneTransition(pane);
   const shortcutRef = useRef({
     mic: controls.onToggleMic,
     camera: controls.onToggleCamera,
@@ -138,80 +183,41 @@ export function VideoCallWindow({
   }, []);
 
   return (
-    <div
-      className={cx(
-        styles['video-call-window'],
-        fullscreen && styles['video-call-window--fullscreen'],
-        className,
-      )}
-      role="dialog"
-      aria-modal="false"
-      aria-label={l.title}
+    <VideoCallWindowFrame
+      variant={variant}
+      onCollapse={onCollapse}
+      className={className}
+      labels={{
+        title: l.title,
+        closeWindow: l.closeWindow,
+        collapse: l.collapse,
+      }}
+      headerLeft={
+        <>
+          {recording && (
+            <RecordingPill state={recording} onStop={onStopRecording} />
+          )}
+          <span className={styles['video-call-window__elapsed']}>
+            {elapsedLabel} &bull; {l.participants(participantCount)}
+          </span>
+        </>
+      }
+      headerRight={
+        <ViewToggle
+          view={view}
+          onChange={onViewChange}
+          open={viewMenuOpen}
+          onOpenChange={onViewMenuOpenChange}
+        />
+      }
     >
-      {!fullscreen && (
-        <div className={styles['video-call-window__app-header']}>
-          <span className={styles['video-call-window__window-controls']}>
-            <button
-              type="button"
-              aria-label={l.closeWindow}
-              className={cx(
-                styles['video-call-window__window-dot'],
-                styles['video-call-window__window-dot--close'],
-              )}
-              onClick={onCollapse}
-            />
-            <span
-              aria-hidden
-              className={cx(
-                styles['video-call-window__window-dot'],
-                styles['video-call-window__window-dot--min'],
-              )}
-            />
-            <span
-              aria-hidden
-              className={cx(
-                styles['video-call-window__window-dot'],
-                styles['video-call-window__window-dot--max'],
-              )}
-            />
-          </span>
-          <span className={styles['video-call-window__app-title']}>
-            {l.title}
-          </span>
-        </div>
-      )}
-
-      <div className={styles['video-call-window__container']}>
-        <div className={styles['video-call-window__header']}>
-          <div className={styles['video-call-window__header-left']}>
-            {recording && (
-              <RecordingPill state={recording} onStop={onStopRecording} />
-            )}
-            <span className={styles['video-call-window__elapsed']}>
-              {elapsedLabel} &bull; {l.participants(participantCount)}
-            </span>
-          </div>
-          <div className={styles['video-call-window__header-right']}>
-            <ViewToggle
-              view={view}
-              onChange={onViewChange}
-              open={viewMenuOpen}
-              onOpenChange={onViewMenuOpenChange}
-            />
-            <IconButton
-              size="small"
-              style="inverted"
-              aria-label={l.collapse}
-              title={l.collapse}
-              icon={<Icon size="16" glyph={<ArrowCollapseIcon />} />}
-              onClick={onCollapse}
-            />
-          </div>
-        </div>
-
+      <div className={styles['video-call-window']}>
         <div className={styles['video-call-window__stage']}>
           <div
-            className={styles['video-call-window__room']}
+            className={cx(
+              styles['video-call-window__room'],
+              Boolean(banner) && styles['video-call-window__room--has-banner'],
+            )}
             onPointerDown={onDismissOverlays}
           >
             <VideoStage
@@ -221,6 +227,7 @@ export function VideoCallWindow({
               selfStream={selfStream}
               shareContent={shareContent}
               labels={stageLabels}
+              getTileMenu={getTileMenu}
             />
             {banner && (
               <div className={styles['video-call-window__banner']}>
@@ -232,11 +239,26 @@ export function VideoCallWindow({
             )}
             <ReactionBurst emoji={burst?.emoji} burstKey={burst?.key} />
           </div>
-          {pane}
+          {paneSlot.node && (
+            <div
+              className={cx(
+                styles['video-call-window__pane'],
+                paneSlot.expanded && styles['video-call-window__pane--open'],
+              )}
+              aria-hidden={!paneSlot.expanded}
+              inert={!paneSlot.expanded}
+            >
+              <div className={styles['video-call-window__pane-clip']}>
+                <div className={styles['video-call-window__pane-body']}>
+                  {paneSlot.node}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <CallControlsBar {...controls} />
       </div>
-    </div>
+    </VideoCallWindowFrame>
   );
 }

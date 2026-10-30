@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react';
-import ViewGridPlusOutlineIcon from '@mattermost/compass-icons/components/view-grid-plus-outline';
-import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
+import { ViewGridGlyph, ViewSpeakerGlyph } from '../ViewGlyphs';
 import styles from './ViewToggle.module.scss';
 
 export type ViewToggleValue = 'speaker' | 'grid';
@@ -40,7 +39,8 @@ const DEFAULT_LABELS: Required<ViewToggleLabels> = {
 };
 
 /**
- * Header "View" button with a small layout menu (speaker / grid). The host owns
+ * Header "View" button with a small layout menu (speaker / grid). The button
+ * glyph reflects the selected view. The host owns
  * `open`, outside-click and Escape; the menu is anchored under the trigger.
  */
 export function ViewToggle({
@@ -53,8 +53,8 @@ export function ViewToggle({
 }: ViewToggleProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const options: { id: ViewToggleValue; label: string; glyph: ReactNode }[] = [
-    { id: 'speaker', label: l.speaker, glyph: <AccountOutlineIcon /> },
-    { id: 'grid', label: l.grid, glyph: <ViewGridPlusOutlineIcon /> },
+    { id: 'speaker', label: l.speaker, glyph: <ViewSpeakerGlyph /> },
+    { id: 'grid', label: l.grid, glyph: <ViewGridGlyph /> },
   ];
 
   return (
@@ -65,7 +65,12 @@ export function ViewToggle({
         emphasis="tertiary"
         appearance="inverted"
         size="small"
-        leadingIcon={<Icon size="16" glyph={<ViewGridPlusOutlineIcon />} />}
+        leadingIcon={
+          <Icon
+            size="16"
+            glyph={view === 'grid' ? <ViewGridGlyph /> : <ViewSpeakerGlyph />}
+          />
+        }
         aria-label={l.triggerAria}
         aria-haspopup="menu"
         aria-expanded={open}

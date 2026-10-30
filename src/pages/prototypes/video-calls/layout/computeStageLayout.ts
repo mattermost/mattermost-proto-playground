@@ -20,8 +20,11 @@
  *
  * ── Speaker view, 3+ people ─────────────────────────────────────────────────
  * One large featured tile (the active speaker) under a horizontal strip of
- * everyone else. The strip is a single row up to `STRIP_ROW_MAX` cells and
- * two centred rows beyond that (see `stripRowSizes`). Self stays in the strip.
+ * everyone else, always ONE row (`STRIP_ROW_MAX` = 9 = everyone at 10): two
+ * rows of 16:9 tiles took half of a 560px stage and starved the speaker,
+ * while one row of 9 still gives ~120x68 tiles. Tiles shrink with N; a host
+ * with a narrow stage caps the strip with `maxStrip` (the "+N" chip).
+ * Self stays in the strip.
  * 2 people in speaker view = remote large + self picture-in-picture.
  *
  * ── Ordering rules (deterministic) ──────────────────────────────────────────
@@ -59,7 +62,7 @@ export const DEFAULT_MAX_FILMSTRIP = 6;
 /** Speaker strip cells (incl. chip) — default fits everyone at 10 people. */
 export const DEFAULT_MAX_STRIP = MAX_PARTICIPANTS - 1;
 /** Speaker strip cells per row before it wraps to two rows. */
-export const STRIP_ROW_MAX = 7;
+export const STRIP_ROW_MAX = MAX_PARTICIPANTS - 1;
 
 export interface StageLayoutInput {
   participants: readonly LayoutParticipant[];

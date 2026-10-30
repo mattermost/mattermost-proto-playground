@@ -5,7 +5,7 @@
   gap: var(--spacing-xxxl);
   width: 100%;
   max-width: 1080px; // one-off layout width
-  padding: var(--spacing-xxl);
+  padding: var(--spacing-xl);
   box-sizing: border-box;
   color: var(--center-channel-color);
 
@@ -74,6 +74,20 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-m);
+  }
+
+  // Dark surface: only the text column is remapped (not the preview controls,
+  // whose device menus stay themed popovers). Compass components and the meter
+  // inside read these roles, so they come out light-on-dark.
+  &--dark {
+    color: var(--button-color);
+
+    .pre-join-panel__heading,
+    .pre-join-panel__participants,
+    .pre-join-panel__checks {
+      --center-channel-color: var(--button-color);
+      --center-channel-color-rgb: var(--button-color-rgb);
+    }
   }
 
   @media (max-width: 900px) {

@@ -89,8 +89,8 @@ const STRIP_SHAPES: Record<number, number[]> = {
   6: [5],
   7: [6],
   8: [7],
-  9: [4, 4],
-  10: [5, 4],
+  9: [8],
+  10: [9],
 };
 
 check('0 participants → empty grid', () => {
@@ -156,7 +156,11 @@ check('grid view 1..10: row shapes, join order, all visible', () => {
 
 check('grid view 3 = 2 on top + 1 below (Figma)', () => {
   const g = asGrid(
-    computeStageLayout({ participants: people(3), view: 'grid', sharing: false }),
+    computeStageLayout({
+      participants: people(3),
+      view: 'grid',
+      sharing: false,
+    }),
   );
   assert.deepEqual(g.rows, [['self', 'p1'], ['p2']]);
 });
@@ -173,7 +177,7 @@ check('grid view 10 with maxVisible 9 → 8 tiles + chip, 3x3', () => {
   assert.equal(g.tileIds.length, 8);
   assert.equal(g.overflowIds.length, 2);
   assert.deepEqual(shape(g.rows), [3, 3, 3]);
-  assert.equal(g.rows.flat().at(-1), OVERFLOW_CELL);
+  assert.equal(g.rows.flat().slice(-1)[0], OVERFLOW_CELL);
   assert.ok(g.tileIds.includes('self'));
 });
 
@@ -212,7 +216,7 @@ check('speaker strip overflow with maxStrip 4 → 3 tiles + chip', () => {
   );
   assert.equal(s.featuredId, 'p7');
   assert.deepEqual(shape(s.stripRows), [4]);
-  assert.equal(s.stripRows[0].at(-1), OVERFLOW_CELL);
+  assert.equal(s.stripRows[0].slice(-1)[0], OVERFLOW_CELL);
   assert.ok(s.stripIds.includes('self'));
   assert.equal(s.stripIds.length + s.overflowIds.length + 1, 10);
 });

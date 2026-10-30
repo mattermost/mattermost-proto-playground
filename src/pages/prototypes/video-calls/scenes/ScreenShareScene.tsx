@@ -1,4 +1,4 @@
-import { SectionNotice } from '@mattermost/compass-ui/components/section-notice';
+import { ShareIndicator } from '../components/ShareIndicator';
 import { useVideoCall } from '../videoCallContext';
 import CallWindowHost from './CallWindowHost';
 import styles from './ScreenShareScene.module.scss';
@@ -41,8 +41,8 @@ function MockSharedScreen() {
 }
 
 /**
- * Call window in the share layout (content + filmstrip). The sharing banner
- * offers "Stop sharing", which returns to the regular call layout.
+ * Call window in the share layout (content + filmstrip). The compact sharing pill
+ * offers "Stop", which returns to the regular call layout.
  */
 export default function ScreenShareScene() {
   const { actions } = useVideoCall();
@@ -51,15 +51,7 @@ export default function ScreenShareScene() {
     <CallWindowHost
       sharing
       shareContent={<MockSharedScreen />}
-      banner={
-        <SectionNotice
-          type="info"
-          title="You are sharing your screen"
-          primaryButtonLabel="Stop sharing"
-          onPrimaryAction={actions.toggleShare}
-          className={styles['screen-share-scene__banner']}
-        />
-      }
+      banner={<ShareIndicator onStop={actions.toggleShare} />}
     />
   );
 }

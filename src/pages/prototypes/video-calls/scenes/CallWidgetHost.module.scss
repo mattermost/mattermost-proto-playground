@@ -1,28 +1,22 @@
-// Temporary placeholder card for non-active widget phases (replaced later).
+// Widget enter motion mirrors the outbound-calls `.pip`. It plays once on
+// mount (not per phase), so pre-join -> calling -> active does not re-animate.
+@keyframes call-widget-host-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-s)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .call-widget-host {
-  &__stub {
-    width: 302px;
-    box-sizing: border-box;
-    padding: var(--spacing-l);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-m);
-    background: var(--center-channel-bg);
-    color: var(--center-channel-color);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    border-radius: var(--radius-l);
-    box-shadow: var(--elevation-4);
-  }
+  width: 302px; // one-off layout width, matches the outbound-calls widget
+  max-width: 100%;
+  animation: call-widget-host-enter var(--duration-quick) var(--ease-entrance);
 
-  &__stub-title {
-    margin: 0;
-    font-size: var(--font-size-100);
-    font-weight: var(--font-weight-semibold);
-  }
-
-  &__stub-actions {
-    display: flex;
-    gap: var(--spacing-xs);
-    flex-wrap: wrap;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 }

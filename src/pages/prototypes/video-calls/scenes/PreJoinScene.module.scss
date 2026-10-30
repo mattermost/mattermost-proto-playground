@@ -1,13 +1,19 @@
+// Fills the orchestrator frame; the dark window frame inside is 100% x 100%.
 .pre-join-scene {
+  position: relative;
   display: flex;
   flex: 1 1 auto;
-  align-items: center;
-  justify-content: center;
+  min-width: 0;
   min-height: 0;
-  overflow: auto;
-  border-radius: var(--radius-l);
-  background: var(--center-channel-bg);
-  color: var(--center-channel-color);
+
+  &__body {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    overflow: auto;
+  }
 
   &__overlay {
     position: absolute;
@@ -18,29 +24,13 @@
     gap: var(--spacing-xs);
     padding: var(--spacing-xxxxl) var(--spacing-l) var(--spacing-xxxl);
     text-align: center;
-    color: var(--button-color, var(--color-neutral-0));
+    color: var(--button-color);
   }
 
   &__message {
     margin: 0;
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
-  }
-
-  &__control {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xxxxs);
-  }
-
-  &__menu {
-    position: absolute;
-    bottom: calc(100% + var(--spacing-s));
-    left: 0;
-    z-index: 10;
-    min-width: 240px; // one-off layout width
-    transform-origin: bottom left;
   }
 
   &__who {

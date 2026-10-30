@@ -1,0 +1,29 @@
+// Pill on the call surface colour (`--calls-bg`) so it matches the window chrome.
+.share-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  height: 28px; // one-off compact height
+  padding: 0 var(--spacing-xs) 0 var(--spacing-m);
+  box-sizing: border-box;
+  color: var(--button-color);
+  background: color-mix(in srgb, var(--calls-bg) 92%, transparent);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--elevation-2);
+  white-space: nowrap;
+
+  &__dot {
+    flex: 0 0 auto;
+    width: var(--spacing-s);
+    height: var(--spacing-s);
+    border-radius: var(--radius-pill);
+    background: var(--error-text, var(--color-danger));
+  }
+
+  &__text {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+}

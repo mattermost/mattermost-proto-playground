@@ -5,27 +5,25 @@ import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizo
 import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
 import HandRightOutlineIcon from '@mattermost/compass-icons/components/hand-right-outline';
-import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
-import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
+import MonitorOffIcon from '@mattermost/compass-icons/components/monitor-off';
 import MonitorShareIcon from '@mattermost/compass-icons/components/monitor-share';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
-import VideoOffOutlineIcon from '@mattermost/compass-icons/components/video-off-outline';
-import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import type { VideoStageClip, VideoStageParticipant } from '../VideoStage';
 import { VideoTile } from '../VideoTile';
+import { WidgetFrame } from '../WidgetFrame';
+import {
+  WidgetMediaControls,
+  type WidgetMediaControlsLabels,
+} from '../WidgetMediaControls';
 import styles from './VideoCallWidget.module.scss';
 
-export interface VideoCallWidgetLabels {
+export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   /** Accessible name of the widget region. */
   region?: string;
   expand?: string;
   participants?: (count: number) => string;
-  mute?: string;
-  unmute?: string;
-  cameraOn?: string;
-  cameraOff?: string;
   raiseHand?: string;
   lowerHand?: string;
   share?: string;
@@ -53,8 +51,18 @@ export interface VideoCallWidgetProps {
 
   micOn: boolean;
   onToggleMic: () => void;
+  /** Chevron next to the mic: the host toggles its device menu. */
+  onOpenMicMenu: () => void;
+  micMenuOpen?: boolean;
+  /** Host-rendered device menu, anchored above the card. */
+  micMenu?: ReactNode;
   cameraOn: boolean;
   onToggleCamera: () => void;
+  onOpenCameraMenu: () => void;
+  cameraMenuOpen?: boolean;
+  cameraMenu?: ReactNode;
+  /** Live webcam stream shown (mirrored) in the signed-in user's thumbnail. */
+  selfStream?: MediaStream | null;
   handRaised: boolean;
   onToggleHand: () => void;
   sharing: boolean;
@@ -76,8 +84,10 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   participants: (n) => `Participants (${n})`,
   mute: 'Mute microphone',
   unmute: 'Unmute microphone',
+  micOptions: 'Microphone options',
   cameraOn: 'Turn camera on',
   cameraOff: 'Turn camera off',
+  cameraOptions: 'Camera options',
   raiseHand: 'Raise hand',
   lowerHand: 'Lower hand',
   share: 'Share screen',
@@ -89,11 +99,8 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   overflowAria: (n) => `${n} more ${n === 1 ? 'participant' : 'participants'}`,
 };
 
-const cx = (...names: (string | false | undefined)[]) =>
-  names.filter(Boolean).join(' ');
-
 /**
- * Minimized call card (Figma widget, 280px): header, two video thumbnails and a
+ * Minimized call card (302px, same as the outbound-calls widget): header, two video thumbnails and a
  * compact controls row. Mirrors compass-proto `CallWidget` chrome but swaps its
  * avatar header for live thumbnails. Presentational; host owns every state and
  * popover.
@@ -109,8 +116,15 @@ export function VideoCallWidget({
   participantsPopover,
   micOn,
   onToggleMic,
+  onOpenMicMenu,
+  micMenuOpen = false,
+  micMenu,
   cameraOn,
   onToggleCamera,
+  onOpenCameraMenu,
+  cameraMenuOpen = false,
+  cameraMenu,
+  selfStream,
   handRaised,
   onToggleHand,
   sharing,
@@ -125,184 +139,166 @@ export function VideoCallWidget({
 }: VideoCallWidgetProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const remote = participants.filter((p) => !p.self);
-  const thumbs = remote.slice(0, 2);
-  const extra = Math.max(0, remote.length - thumbs.length);
+  const self = participants.find((p) => p.self);
+  // Peer(s) first, then the signed-in user; the chip counts remote people hidden.
+  const thumbs = [remote[0], self].filter(
+    (p): p is VideoStageParticipant => !!p,
+  );
+  const extra = Math.max(0, remote.length - 1);
 
   return (
-    <div
-      className={cx(styles['video-call-widget'], className)}
-      role="region"
-      aria-label={l.region}
+    <WidgetFrame
+      ariaLabel={l.region}
+      className={[styles['video-call-widget'], className]
+        .filter(Boolean)
+        .join(' ')}
+      popovers={
+        <>
+          {participantsPopover}
+          {micMenu}
+          {cameraMenu}
+          {moreMenu}
+        </>
+      }
     >
-      <div className={styles['video-call-widget__body']}>
-        <div className={styles['video-call-widget__header']}>
-          <span className={styles['video-call-widget__channel']}>
-            <Icon size="16" glyph={<GlobeIcon />} />
-            <span className={styles['video-call-widget__channel-name']}>
-              {channelName}
-            </span>
+      <div className={styles['video-call-widget__header']}>
+        <span className={styles['video-call-widget__channel']}>
+          <Icon size="16" glyph={<GlobeIcon />} />
+          <span className={styles['video-call-widget__channel-name']}>
+            {channelName}
           </span>
-          <span className={styles['video-call-widget__elapsed']}>
-            &middot; {elapsedLabel}
-          </span>
+        </span>
+        <span className={styles['video-call-widget__elapsed']}>
+          &middot; {elapsedLabel}
+        </span>
+        <IconButton
+          size="small"
+          padding="compact"
+          className={styles['video-call-widget__expand']}
+          aria-label={l.expand}
+          title={l.expand}
+          icon={<Icon size="16" glyph={<ArrowExpandIcon />} />}
+          onClick={onExpand}
+        />
+      </div>
+
+      {thumbs.length > 0 && (
+        <div className={styles['video-call-widget__thumbs']}>
+          {thumbs.map((p, i) => {
+            const clip = p.clipId ? clips[p.clipId] : undefined;
+            const showOverflow = extra > 0 && i === 0;
+            return (
+              <div key={p.id} className={styles['video-call-widget__thumb']}>
+                <VideoTile
+                  className={styles['video-call-widget__tile']}
+                  name={p.name}
+                  avatarSrc={p.avatarSrc}
+                  videoSrc={clip?.src}
+                  posterSrc={clip?.poster}
+                  stream={p.self ? selfStream : undefined}
+                  mirrored={!!p.self}
+                  cameraOn={p.cameraOn}
+                  muted={p.muted}
+                  speaking={!!p.talking && !p.muted}
+                  handRaised={p.handRaised}
+                  reaction={p.reaction}
+                  connection={p.connection}
+                  size="thumbnail"
+                  selfLabel={l.self}
+                />
+                {showOverflow && (
+                  <span
+                    className={styles['video-call-widget__overflow']}
+                    role="img"
+                    aria-label={l.overflowAria(extra)}
+                  >
+                    {l.overflow(extra)}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div className={styles['video-call-widget__controls']}>
+        <IconButton
+          size="small"
+          padding="compact"
+          active={participantsOpen}
+          count={participantCount}
+          aria-label={l.participants(participantCount)}
+          title={l.participants(participantCount)}
+          aria-haspopup="true"
+          aria-expanded={participantsOpen}
+          icon={<Icon size="16" glyph={<AccountMultipleOutlineIcon />} />}
+          onClick={onToggleParticipants}
+        />
+
+        <div className={styles['video-call-widget__actions']}>
+          <WidgetMediaControls
+            micOn={micOn}
+            onToggleMic={onToggleMic}
+            onOpenMicMenu={onOpenMicMenu}
+            micMenuOpen={micMenuOpen}
+            cameraOn={cameraOn}
+            onToggleCamera={onToggleCamera}
+            onOpenCameraMenu={onOpenCameraMenu}
+            cameraMenuOpen={cameraMenuOpen}
+            labels={labels}
+          />
           <IconButton
             size="small"
             padding="compact"
-            className={styles['video-call-widget__expand']}
-            aria-label={l.expand}
-            title={l.expand}
-            icon={<Icon size="16" glyph={<ArrowExpandIcon />} />}
-            onClick={onExpand}
+            toggled={handRaised}
+            aria-label={handRaised ? l.lowerHand : l.raiseHand}
+            title={handRaised ? l.lowerHand : l.raiseHand}
+            icon={
+              <Icon
+                size="16"
+                glyph={
+                  handRaised ? <HandRightIcon /> : <HandRightOutlineIcon />
+                }
+              />
+            }
+            onClick={onToggleHand}
           />
-        </div>
-
-        {thumbs.length > 0 && (
-          <div className={styles['video-call-widget__thumbs']}>
-            {thumbs.map((p, i) => {
-              const clip = p.clipId ? clips[p.clipId] : undefined;
-              const showOverflow = extra > 0 && i === thumbs.length - 1;
-              return (
-                <div key={p.id} className={styles['video-call-widget__thumb']}>
-                  <VideoTile
-                    name={p.name}
-                    avatarSrc={p.avatarSrc}
-                    videoSrc={clip?.src}
-                    posterSrc={clip?.poster}
-                    cameraOn={p.cameraOn}
-                    muted={p.muted}
-                    speaking={!!p.talking && !p.muted}
-                    handRaised={p.handRaised}
-                    reaction={p.reaction}
-                    connection={p.connection}
-                    size="thumbnail"
-                    selfLabel={l.self}
-                  />
-                  {showOverflow && (
-                    <span
-                      className={styles['video-call-widget__overflow']}
-                      role="img"
-                      aria-label={l.overflowAria(extra)}
-                    >
-                      {l.overflow(extra)}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className={styles['video-call-widget__controls']}>
+          <IconButton
+            size="small"
+            padding="compact"
+            toggled={sharing}
+            aria-label={sharing ? l.stopShare : l.share}
+            title={sharing ? l.stopShare : l.share}
+            icon={
+              <Icon
+                size="16"
+                glyph={sharing ? <MonitorOffIcon /> : <MonitorShareIcon />}
+              />
+            }
+            onClick={onToggleShare}
+          />
+          <IconButton
+            size="small"
+            padding="compact"
+            active={moreOpen}
+            aria-label={l.more}
+            title={l.more}
+            aria-haspopup="menu"
+            aria-expanded={moreOpen}
+            icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+            onClick={onToggleMore}
+          />
           <button
             type="button"
-            className={cx(
-              styles['video-call-widget__participants'],
-              participantsOpen &&
-                styles['video-call-widget__participants--active'],
-            )}
-            aria-label={l.participants(participantCount)}
-            aria-expanded={participantsOpen}
-            title={l.participants(participantCount)}
-            onClick={onToggleParticipants}
+            className={styles['video-call-widget__hangup']}
+            aria-label={l.leave}
+            title={l.leave}
+            onClick={onLeave}
           >
-            <Icon size="16" glyph={<AccountMultipleOutlineIcon />} />
-            <span>{participantCount}</span>
+            <Icon size="16" glyph={<PhoneHangupIcon />} />
           </button>
-
-          <div className={styles['video-call-widget__actions']}>
-            <IconButton
-              size="small"
-              padding="compact"
-              className={cx(
-                styles['video-call-widget__toggle'],
-                !micOn && styles['video-call-widget__toggle--off'],
-              )}
-              aria-label={micOn ? l.mute : l.unmute}
-              title={micOn ? l.mute : l.unmute}
-              icon={
-                <Icon
-                  size="16"
-                  glyph={micOn ? <MicrophoneIcon /> : <MicrophoneOffIcon />}
-                />
-              }
-              onClick={onToggleMic}
-            />
-            <IconButton
-              size="small"
-              padding="compact"
-              className={cx(
-                styles['video-call-widget__toggle'],
-                !cameraOn && styles['video-call-widget__toggle--off'],
-              )}
-              aria-label={cameraOn ? l.cameraOff : l.cameraOn}
-              title={cameraOn ? l.cameraOff : l.cameraOn}
-              icon={
-                <Icon
-                  size="16"
-                  glyph={
-                    cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />
-                  }
-                />
-              }
-              onClick={onToggleCamera}
-            />
-            <IconButton
-              size="small"
-              padding="compact"
-              toggled={handRaised}
-              aria-label={handRaised ? l.lowerHand : l.raiseHand}
-              title={handRaised ? l.lowerHand : l.raiseHand}
-              icon={
-                <Icon
-                  size="16"
-                  glyph={
-                    handRaised ? <HandRightIcon /> : <HandRightOutlineIcon />
-                  }
-                />
-              }
-              onClick={onToggleHand}
-            />
-            <IconButton
-              size="small"
-              padding="compact"
-              toggled={sharing}
-              aria-label={sharing ? l.stopShare : l.share}
-              title={sharing ? l.stopShare : l.share}
-              icon={<Icon size="16" glyph={<MonitorShareIcon />} />}
-              onClick={onToggleShare}
-            />
-            <IconButton
-              size="small"
-              padding="compact"
-              toggled={moreOpen}
-              aria-label={l.more}
-              title={l.more}
-              aria-haspopup="menu"
-              aria-expanded={moreOpen}
-              icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
-              onClick={onToggleMore}
-            />
-            <button
-              type="button"
-              className={styles['video-call-widget__hangup']}
-              aria-label={l.leave}
-              title={l.leave}
-              onClick={onLeave}
-            >
-              <Icon size="16" glyph={<PhoneHangupIcon />} />
-            </button>
-          </div>
         </div>
       </div>
-
-      {participantsPopover && (
-        <div className={styles['video-call-widget__popover']}>
-          {participantsPopover}
-        </div>
-      )}
-      {moreMenu && (
-        <div className={styles['video-call-widget__popover']}>{moreMenu}</div>
-      )}
-    </div>
+    </WidgetFrame>
   );
 }

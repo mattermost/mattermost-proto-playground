@@ -1,0 +1,24 @@
+.widget-frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 302px; // one-off layout width, matches the outbound-calls widget
+  max-width: 100%;
+
+  &__body {
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-3);
+    overflow: hidden;
+  }
+
+  &__popovers {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + var(--spacing-xs));
+    z-index: 5;
+  }
+}

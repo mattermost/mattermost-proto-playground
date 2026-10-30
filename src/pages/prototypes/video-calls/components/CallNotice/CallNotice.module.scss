@@ -11,7 +11,7 @@
 
 .call-notice {
   position: absolute;
-  top: var(--spacing-m);
+  top: var(--call-notice-top, var(--spacing-m));
   left: 50%;
   z-index: 5;
   display: flex;

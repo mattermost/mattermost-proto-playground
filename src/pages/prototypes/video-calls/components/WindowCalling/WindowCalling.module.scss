@@ -1,0 +1,75 @@
+@keyframes window-calling-pulse {
+  from {
+    opacity: 0.56;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+.window-calling {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  color: var(--button-color);
+
+  &__avatar {
+    position: relative;
+    display: inline-flex;
+    margin-bottom: var(--spacing-m);
+  }
+
+  // Ring is a border pulse behind the avatar. Reduced motion: a static halo.
+  &__ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--button-color);
+    border-radius: var(--radius-pill);
+    pointer-events: none;
+    animation: window-calling-pulse 2s var(--ease-exit) infinite;
+
+    &--delayed {
+      animation-delay: 1s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      opacity: 0;
+
+      &:not(.window-calling__ring--delayed) {
+        opacity: 0.32;
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-align: center;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-600);
+    line-height: var(--line-height-600);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    color: rgba(var(--button-color-rgb), 0.72);
+  }
+}
