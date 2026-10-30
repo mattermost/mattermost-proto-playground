@@ -338,7 +338,7 @@ function VideoTileInner({
               <Tag
                 className={styles['video-tile__host']}
                 label={l.host}
-                type="info"
+                type="default"
                 size="x-small"
                 casing="all-caps"
               />

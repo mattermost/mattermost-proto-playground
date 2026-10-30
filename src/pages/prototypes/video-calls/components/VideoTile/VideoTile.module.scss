@@ -153,9 +153,12 @@
   }
 
   // 5 bars, 2px wide, 2px gap, heights 9 / 5 / 13 / 7 / 3.
-  // HOST tag (compass-ui Tag), after the name.
-  &__host {
+  // HOST tag (compass-ui Tag, default type), recoloured for the dark tile:
+  // the default tint assumes a light surface. Doubled class beats the Tag's own.
+  &__host#{&}__host {
     flex: 0 0 auto;
+    background-color: rgba(var(--button-color-rgb, 255, 255, 255), 0.16);
+    color: var(--button-color, var(--color-neutral-0));
   }
 
   &__wave {
