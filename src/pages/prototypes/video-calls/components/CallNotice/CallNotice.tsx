@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import RecordIcon from '@mattermost/compass-icons/components/record-circle-outline';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
 import {
   Toast,
@@ -101,6 +103,25 @@ function NoticeItem({
     );
   }
 
+  if (notice.kind === 'recording') {
+    return (
+      <div
+        className={[
+          styles['call-notice__item'],
+          styles['call-notice__popover'],
+        ].join(' ')}
+        role="status"
+      >
+        <span className={styles['call-notice__record']}>
+          <Icon size="16" glyph={<RecordIcon />} />
+        </span>
+        <span className={styles['call-notice__popover-text']}>
+          {notice.text}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className={styles['call-notice__item']}>
       <Toast
@@ -114,8 +135,8 @@ function NoticeItem({
 }
 
 /**
- * Stack of dismissible call notices (proto `CallNotice` pill for join/leave, Compass `Toast` otherwise) for the top-center of a
- * stage. Each Toast is its own polite live region. Transient kinds auto-dismiss
+ * Stack of dismissible call notices (proto `CallNotice` pill for join/leave, Compass `Toast` otherwise) for the bottom-left of a
+ * stage (above the controls bar). `recording` renders as a compact popover. Each Toast is its own polite live region. Transient kinds auto-dismiss
  * (timers are cleared on dismiss/unmount); network / permission / device persist.
  */
 export function CallNotice({

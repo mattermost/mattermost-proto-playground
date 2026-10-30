@@ -1,3 +1,26 @@
+// Right-sidebar enter/exit (same motion as the playground RHS standard).
+@keyframes video-call-window-rhs-enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--spacing-l));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes video-call-window-rhs-exit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--spacing-l));
+  }
+}
+
 .video-call-window {
   display: flex;
   flex-direction: column;
@@ -6,8 +29,8 @@
 
   &__elapsed {
     font-family: var(--font-family-body);
-    font-size: var(--font-size-75);
-    line-height: var(--line-height-75);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
     font-variant-numeric: tabular-nums;
     color: var(--button-color);
@@ -27,11 +50,6 @@
     min-height: 0;
     overflow: hidden;
     border-radius: var(--radius-m);
-
-    // Notices drop below the share pill instead of stacking over it.
-    &--has-banner {
-      --call-notice-top: calc(28px + var(--spacing-m) + var(--spacing-xs));
-    }
   }
 
   // Top-center over the stage; one-off height matches the ShareIndicator pill.
@@ -44,50 +62,26 @@
     transform: translateX(-50%);
   }
 
-  // Side pane: a grid column that animates 0fr -> 1fr so the stage resizes
-  // smoothly. The pane keeps its fixed width inside a clipped, offset body, so
-  // its content never reflows mid-animation.
+  // Right-hand sidebar at its fixed width (the pane never "grows"); the stage
+  // just yields the space. Content enters/exits like the RHS standard.
   &__pane {
-    display: grid;
-    grid-template-columns: 0fr;
     flex: 0 0 auto;
+    display: flex;
     min-height: 0;
-    transition: grid-template-columns var(--duration-moderate)
-      var(--ease-transition);
+    margin-inline-start: var(--spacing-s);
+    animation: video-call-window-rhs-enter var(--duration-quick)
+      var(--ease-entrance) both;
 
-    &--open {
-      grid-template-columns: 1fr;
+    &--exiting {
+      animation: video-call-window-rhs-exit var(--duration-quick)
+        var(--ease-exit) both;
     }
-  }
-
-  &__pane-clip {
-    min-width: 0;
-    min-height: 0;
-    overflow: hidden;
-    display: flex;
-  }
-
-  &__pane-body {
-    flex: 0 0 auto;
-    display: flex;
-    min-height: 0;
-    padding-inline-start: var(--spacing-s);
-    opacity: 0;
-    transform: translateX(var(--spacing-xl));
-    transition:
-      opacity var(--duration-moderate) var(--ease-transition),
-      transform var(--duration-moderate) var(--ease-transition);
-  }
-
-  &__pane--open &__pane-body {
-    opacity: 1;
-    transform: translateX(0);
   }
 
   @media (prefers-reduced-motion: reduce) {
     &__pane,
-    &__pane-body {
-      transition: none;
+    &__pane--exiting {
+      animation: none;
     }
   }
 }

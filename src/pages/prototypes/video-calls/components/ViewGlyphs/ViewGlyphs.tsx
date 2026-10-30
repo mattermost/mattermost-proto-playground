@@ -1,11 +1,11 @@
 import type { SVGProps } from 'react';
 
 /**
- * Stand-ins for the call layout glyphs. compass-icons has no grid-of-four or
- * speaker-with-filmstrip icons yet and Material icons are not installed, so
- * these two are drawn locally (Material-style geometry, 20x20 viewBox, 2px
- * clear-space like the compass set). Replace with compass-icons once the
- * glyphs are added there.
+ * Outline call-layout glyphs. The installed compass-icons has no suitable
+ * outline grid / speaker-with-filmstrip glyph (`apps` is filled,
+ * `view-grid-plus-outline` carries a plus), so these two are hand-drawn:
+ * 24x24 viewBox, 2px stroke, rounded joins, `currentColor`. No third-party
+ * path data is used.
  */
 export interface ViewGlyphProps extends Omit<
   SVGProps<SVGSVGElement>,
@@ -15,42 +15,36 @@ export interface ViewGlyphProps extends Omit<
   size?: number | string;
 }
 
-/** Grid view: four equal boxes (2x2). */
+const outline = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 2,
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
+  focusable: false,
+} as const;
+
+/** Grid view: four outlined rounded squares (2x2). */
 export function ViewGridGlyph({ size = 20, ...rest }: ViewGlyphProps) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-      focusable="false"
-      {...rest}
-    >
-      <rect x="2" y="2" width="7" height="7" rx="1.5" />
-      <rect x="11" y="2" width="7" height="7" rx="1.5" />
-      <rect x="2" y="11" width="7" height="7" rx="1.5" />
-      <rect x="11" y="11" width="7" height="7" rx="1.5" />
+    <svg width={size} height={size} {...outline} {...rest}>
+      <rect x="4" y="4" width="6" height="6" rx="1.5" />
+      <rect x="14" y="4" width="6" height="6" rx="1.5" />
+      <rect x="4" y="14" width="6" height="6" rx="1.5" />
+      <rect x="14" y="14" width="6" height="6" rx="1.5" />
     </svg>
   );
 }
 
-/** Speaker view: one large box with a strip of small boxes along the top. */
+/** Speaker view: one large outlined rect with a row of small ones along the top. */
 export function ViewSpeakerGlyph({ size = 20, ...rest }: ViewGlyphProps) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-      focusable="false"
-      {...rest}
-    >
-      <rect x="2" y="2" width="4.5" height="3.5" rx="1" />
-      <rect x="7.75" y="2" width="4.5" height="3.5" rx="1" />
-      <rect x="13.5" y="2" width="4.5" height="3.5" rx="1" />
-      <rect x="2" y="7.5" width="16" height="10.5" rx="1.5" />
+    <svg width={size} height={size} {...outline} {...rest}>
+      <rect x="4" y="4" width="3" height="3" rx="1" />
+      <rect x="10.5" y="4" width="3" height="3" rx="1" />
+      <rect x="17" y="4" width="3" height="3" rx="1" />
+      <rect x="4" y="11" width="16" height="9" rx="1.5" />
     </svg>
   );
 }

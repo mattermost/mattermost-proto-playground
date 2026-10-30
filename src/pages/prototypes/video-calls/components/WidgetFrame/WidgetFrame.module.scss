@@ -12,6 +12,9 @@
     border-radius: var(--radius-m);
     box-shadow: var(--elevation-3);
     overflow: hidden;
+    // Calling and active share one height so the widget doesn't jump when the
+    // call connects (one-off layout value).
+    min-height: 172px;
   }
 
   &__popovers {

@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { RecordingIndicator } from '@mattermost/compass-proto';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import type { StageLayout } from '../../layout/computeStageLayout';
 import { CallControlsBar, type CallControlsBarProps } from '../CallControlsBar';
 import { CallNotice, type CallNoticeItem } from '../CallNotice';
@@ -79,42 +80,21 @@ const DEFAULT_LABELS: Required<VideoCallWindowLabels> = {
 const cx = (...names: (string | false | undefined)[]) =>
   names.filter(Boolean).join(' ');
 
-/** Matches `--duration-moderate`; the pane is unmounted after this. */
-const PANE_EXIT_MS = 300;
+/** Matches `--duration-quick`; the pane is unmounted after its exit. */
+const PANE_EXIT_MS = 150;
 
 /**
- * Keeps the last pane mounted through its exit and flips `expanded` a frame
- * after mount so the open transition runs. Reduced motion unmounts at once.
+ * Keeps the last pane mounted through its exit animation (`useExitAnimation`).
+ * Reduced motion is handled in CSS (animation off); the unmount delay is moot.
  */
 function usePaneTransition(pane: ReactNode) {
   const open = Boolean(pane);
-  const [mounted, setMounted] = useState(open);
-  const [expanded, setExpanded] = useState(open);
   const lastPane = useRef(pane);
   if (pane) lastPane.current = pane;
-
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      const raf = requestAnimationFrame(() =>
-        requestAnimationFrame(() => setExpanded(true)),
-      );
-      return () => cancelAnimationFrame(raf);
-    }
-    setExpanded(false);
-    const reduce =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const t = window.setTimeout(
-      () => setMounted(false),
-      reduce ? 0 : PANE_EXIT_MS,
-    );
-    return () => window.clearTimeout(t);
-  }, [open]);
-
+  const { rendered, exiting } = useExitAnimation(open, PANE_EXIT_MS);
   return {
-    node: mounted ? lastPane.current : null,
-    expanded: expanded && open,
+    node: rendered || open ? lastPane.current : null,
+    exiting: exiting || !open,
   };
 }
 
@@ -221,10 +201,7 @@ export function VideoCallWindow({
       <div className={styles['video-call-window']}>
         <div className={styles['video-call-window__stage']}>
           <div
-            className={cx(
-              styles['video-call-window__room'],
-              Boolean(banner) && styles['video-call-window__room--has-banner'],
-            )}
+            className={styles['video-call-window__room']}
             onPointerDown={onDismissOverlays}
           >
             <VideoStage
@@ -250,16 +227,12 @@ export function VideoCallWindow({
             <div
               className={cx(
                 styles['video-call-window__pane'],
-                paneSlot.expanded && styles['video-call-window__pane--open'],
+                paneSlot.exiting && styles['video-call-window__pane--exiting'],
               )}
-              aria-hidden={!paneSlot.expanded}
-              inert={!paneSlot.expanded}
+              aria-hidden={paneSlot.exiting}
+              inert={paneSlot.exiting}
             >
-              <div className={styles['video-call-window__pane-clip']}>
-                <div className={styles['video-call-window__pane-body']}>
-                  {paneSlot.node}
-                </div>
-              </div>
+              {paneSlot.node}
             </div>
           )}
         </div>

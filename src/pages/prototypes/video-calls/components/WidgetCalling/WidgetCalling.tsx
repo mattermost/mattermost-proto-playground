@@ -13,8 +13,6 @@ import styles from './WidgetCalling.module.scss';
 
 export interface WidgetCallingLabels extends WidgetMediaControlsLabels {
   region?: string;
-  /** Small heading in the card header. */
-  heading?: string;
   /** "Calling Name…". */
   calling?: (name: string) => string;
   expand?: string;
@@ -43,7 +41,6 @@ export interface WidgetCallingProps {
 
 const DEFAULT_LABELS: Required<WidgetCallingLabels> = {
   region: 'Outgoing call',
-  heading: 'Video call',
   calling: (name) => `Calling ${name}…`,
   expand: 'Expand call window',
   cancel: 'Cancel',
@@ -91,7 +88,6 @@ export default function WidgetCalling({
       }
     >
       <div className={styles['widget-calling__header']}>
-        <span className={styles['widget-calling__heading']}>{l.heading}</span>
         <IconButton
           size="small"
           padding="compact"

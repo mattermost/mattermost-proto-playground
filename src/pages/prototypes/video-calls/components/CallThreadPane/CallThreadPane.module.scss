@@ -6,9 +6,16 @@
   min-height: 0;
   color: var(--center-channel-color);
   background: var(--center-channel-bg);
-  border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   border-radius: var(--radius-m);
+  box-shadow: var(--elevation-2);
   overflow: hidden;
+
+  // No outer border: the elevation shadow separates the pane. Reset the proto
+  // ParticipantsPanel / RightSidebar root chrome (border, own shadow).
+  > :first-child {
+    border: 0;
+    box-shadow: none;
+  }
 
   &__header {
     display: flex;
