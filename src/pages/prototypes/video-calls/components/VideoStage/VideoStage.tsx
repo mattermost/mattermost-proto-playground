@@ -167,6 +167,8 @@ function planStage(
     });
     return {
       canvas: {
+        '--video-stage-grid-cols': k,
+        '--video-stage-grid-rows': Math.max(1, layout.rows.length),
         gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
         gridTemplateRows: `repeat(${Math.max(1, layout.rows.length)}, minmax(0, 1fr))`,
       },
@@ -539,7 +541,13 @@ export function VideoStage({
   return (
     <section ref={rootRef} className={rootClass} aria-label={l.stage}>
       <FlipBoundary flipKey={flipKey} nodes={nodes} rootRef={rootRef}>
-        <div className={styles['video-stage__canvas']} style={plan.canvas}>
+        <div
+          className={cx(
+            styles['video-stage__canvas'],
+            layout.kind === 'grid' && styles['video-stage__canvas--grid'],
+          )}
+          style={plan.canvas}
+        >
           {renderShareContent()}
           {tiles}
           {renderOverflow()}

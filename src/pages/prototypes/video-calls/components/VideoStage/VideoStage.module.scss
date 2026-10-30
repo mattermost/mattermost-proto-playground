@@ -29,7 +29,7 @@
   height: 100%;
   min-width: 0;
   min-height: 0;
-  container-type: inline-size;
+  container-type: size;
   background: var(--calls-bg);
   color: var(--button-color, var(--color-neutral-0));
 
@@ -61,6 +61,29 @@
     column-gap: 0;
     row-gap: var(--video-stage-gap);
     align-content: center;
+
+    // Grid view: shrink the canvas to the largest block of 16:9 tiles that
+    // fits, centred, so tiles stay grouped instead of drifting apart.
+    &--grid {
+      --video-stage-grid-tile-h: calc(
+        (
+            100cqh - 2 * var(--video-stage-edge) - (var(--video-stage-grid-rows) - 1) *
+              var(--video-stage-gap)
+          ) / var(--video-stage-grid-rows)
+      );
+      left: 50%;
+      right: auto;
+      width: min(
+        calc(100cqw - 2 * var(--video-stage-edge) + var(--video-stage-gap)),
+        calc(
+          var(--video-stage-grid-cols) *
+            (
+              var(--video-stage-grid-tile-h) * 16 / 9 + var(--video-stage-gap)
+            )
+        )
+      );
+      translate: -50% 0;
+    }
   }
 
   &__cell {
