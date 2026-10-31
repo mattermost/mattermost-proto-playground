@@ -1,4 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { ModalOverlay } from '@mattermost/compass-ui/components/modal';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useWalkthrough } from '@/walkthrough';
@@ -80,21 +82,31 @@ export default function VideoCalls() {
   // The window hosts every phase except idle and incoming (those are widget-only).
   const showWindow =
     surface === 'window' && phase !== 'idle' && phase !== 'incoming';
+  // The scrim portals into the channels frame (not document.body), so it is
+  // clipped to the app layout. The window stays mounted through the fade-out.
+  const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null);
+  const windowRendered = useExitAnimation(showWindow, 150).rendered;
 
   return (
     <VideoCallContext.Provider value={value}>
       <CallPhaseEffects />
       <div className={styles['video-calls']}>
-        <div className={styles['video-calls__frame']}>
+        <div ref={setFrameEl} className={styles['video-calls__frame']}>
           {/* The conversation stays visible behind the popout window. */}
           <ChatScene widgetHidden={showWindow} />
-          {showWindow && (
-            <div className={styles['video-calls__window']}>
+          <ModalOverlay
+            open={showWindow}
+            container={frameEl}
+            lockScroll={false}
+            className={styles['video-calls__scrim']}
+            style={{ position: 'absolute' }}
+          >
+            {windowRendered && (
               <div className={styles['video-calls__window-body']}>
                 <CallWindowScene />
               </div>
-            </div>
-          )}
+            )}
+          </ModalOverlay>
         </div>
       </div>
     </VideoCallContext.Provider>

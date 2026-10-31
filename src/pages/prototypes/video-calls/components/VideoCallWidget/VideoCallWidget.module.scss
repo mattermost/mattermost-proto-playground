@@ -27,7 +27,7 @@
   }
 
   &__title {
-    font-family: var(--font-family-heading);
+    font-family: var(--font-family-body);
     flex: 1 1 auto;
     min-width: 0;
     margin: 0;
@@ -44,7 +44,8 @@
   }
 
   &__channel-name {
-    font-family: var(--font-family-heading);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -142,7 +143,7 @@
   }
 
   &__status {
-    font-family: var(--font-family-heading);
+    font-family: var(--font-family-body);
     margin: 0;
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
@@ -270,9 +271,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    // A regular small IconButton square, no extra width.
+    width: 28px;
     height: 28px;
-    min-width: 36px;
-    padding: 0 var(--spacing-xs);
+    padding: 0;
     border: 0;
     border-radius: var(--radius-s);
     background: var(--error-text, var(--color-danger));

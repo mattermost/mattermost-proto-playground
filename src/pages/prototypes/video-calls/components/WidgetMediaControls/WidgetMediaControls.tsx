@@ -78,6 +78,7 @@ export default function WidgetMediaControls({
       {onOpenMicMenu ? (
         <SegmentedIconButton
           size="small"
+          padding="compact"
           style="default"
           menuOpen={micMenuOpen}
           label={micOn ? l.mute : l.unmute}
@@ -107,6 +108,7 @@ export default function WidgetMediaControls({
       {onOpenCameraMenu ? (
         <SegmentedIconButton
           size="small"
+          padding="compact"
           style="default"
           menuOpen={cameraMenuOpen}
           label={cameraOn ? l.cameraOff : l.cameraOn}

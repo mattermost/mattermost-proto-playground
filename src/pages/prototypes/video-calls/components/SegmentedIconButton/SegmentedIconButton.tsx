@@ -20,6 +20,8 @@ export interface SegmentedIconButtonProps {
   menuOpen?: boolean;
   disabled?: boolean;
   size?: SegmentedIconButtonSize;
+  /** `compact` trims the buttons to the tight IconButton padding (28px at small). Default `default`. */
+  padding?: 'default' | 'compact';
   /** `inverted` for dark surfaces, `default` for light ones. */
   style?: SegmentedIconButtonStyle;
   onClick?: () => void;
@@ -46,6 +48,7 @@ export function SegmentedIconButton({
   menuOpen = false,
   disabled = false,
   size = 'medium',
+  padding = 'default',
   style = 'default',
   onClick,
   onChevronClick,
@@ -65,6 +68,7 @@ export function SegmentedIconButton({
     >
       <IconButton
         size={size}
+        padding={padding}
         style={style}
         toggled={toggled}
         active={menuOpen}
@@ -77,6 +81,7 @@ export function SegmentedIconButton({
       />
       <IconButton
         size={size}
+        padding={padding}
         style={style}
         active={menuOpen}
         disabled={disabled}

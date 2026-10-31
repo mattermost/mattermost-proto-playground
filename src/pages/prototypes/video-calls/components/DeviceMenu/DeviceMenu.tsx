@@ -5,13 +5,12 @@ import {
 } from 'react';
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import {
   PopoverMenu,
   PopoverMenuDivider,
   PopoverMenuGroup,
-  PopoverMenuGroupTitle,
-  PopoverMenuTitle,
 } from '@mattermost/compass-ui/components/popover-menu';
 import styles from './DeviceMenu.module.scss';
 
@@ -181,13 +180,13 @@ export function DeviceMenu({
         onKeyDown={onMenuKeyDown}
         className={cx(styles['device-menu'], className)}
       >
-        <PopoverMenuTitle>{title}</PopoverMenuTitle>
+        <MenuGroupHeading label={title} />
         {sections
           ? sections.map((s, i) => (
               <div key={s.id} role="group" aria-label={s.title}>
                 {i > 0 && <PopoverMenuDivider />}
                 <PopoverMenuGroup>
-                  <PopoverMenuGroupTitle>{s.title}</PopoverMenuGroupTitle>
+                  <MenuGroupHeading label={s.title} />
                   {renderItems(s.devices, s.selectedId, s.onSelect)}
                 </PopoverMenuGroup>
               </div>
