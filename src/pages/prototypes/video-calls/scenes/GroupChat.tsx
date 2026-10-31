@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
@@ -15,6 +16,9 @@ import styles from './GroupChat.module.scss';
 import StartCallMenu from './StartCallMenu';
 import { useVideoCall } from '../videoCallContext';
 import { CHANNEL_NAME, ROSTER } from '../videoCallsData';
+
+/** Matches `--duration-quick` (the banner's slide-off). */
+const BANNER_EXIT_MS = 150;
 
 export interface GroupChatProps {
   kind: 'gm' | 'channel';
@@ -33,6 +37,8 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   const ongoing = state.phase === 'idle';
   // The banner can be closed; it comes back with the next conversation.
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  // Stays mounted through its slide-off after a dismiss or when you join.
+  const banner = useExitAnimation(ongoing && !bannerDismissed, BANNER_EXIT_MS);
   // A group DM only has its own members; a channel shows everyone.
   const allowed =
     kind === 'gm' ? ROSTER.slice(0, state.count).map((p) => p.id) : undefined;
@@ -74,8 +80,15 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
               )
             }
           />
-          {ongoing && !bannerDismissed && (
-            <div className={styles['group-chat__banner-anchor']}>
+          {banner.rendered && (
+            <div
+              className={[
+                styles['group-chat__banner-anchor'],
+                banner.exiting && styles['group-chat__banner-anchor--exiting'],
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
               <CallBanner
                 message={`${others.length} ${
                   others.length === 1 ? 'person' : 'people'

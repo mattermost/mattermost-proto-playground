@@ -1,3 +1,25 @@
+@keyframes group-chat-banner-in {
+  from {
+    opacity: 0;
+    translate: 0 calc(var(--spacing-xxxl) * -1);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes group-chat-banner-out {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+  to {
+    opacity: 0;
+    translate: 0 calc(var(--spacing-xxxl) * -1);
+  }
+}
+
 .group-chat {
   // Zero-height strip directly under the channel header. The banner inside is
   // absolutely placed, so it floats over the messages, centred in the channel
@@ -7,6 +29,35 @@
     z-index: 6;
     height: 0;
     pointer-events: none;
+    // The banner slides in from the header's bottom edge: clip only what would
+    // rise above it (sides and bottom stay open, shadow included).
+    clip-path: inset(0 -100vw -100vh -100vw);
+
+    // Slides in from the top edge of the channel (Compass entrance: quick +
+    // ease-entrance) and back out on dismiss (exit: quick + ease-exit). The
+    // slide uses `translate` so the horizontal centring `transform` below is
+    // untouched.
+    > * {
+      animation: group-chat-banner-in var(--duration-quick) var(--ease-entrance)
+        both;
+    }
+
+    &--exiting > * {
+      animation: group-chat-banner-out var(--duration-quick) var(--ease-exit)
+        both;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      > *,
+      &--exiting > * {
+        animation: none;
+      }
+
+      &--exiting > * {
+        opacity: 0;
+      }
+    }
 
     > * {
       position: absolute;
