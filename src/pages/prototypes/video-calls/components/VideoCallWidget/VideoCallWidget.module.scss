@@ -165,8 +165,8 @@
       position: absolute;
       inset: 0;
       border-radius: var(--radius-pill);
-      // green-600 at 16%, filled.
-      background: rgba(var(--color-green-600-rgb), 0.16);
+      // green-600 at 32%, filled.
+      background: rgba(var(--color-green-600-rgb), 0.32);
       // Behind the avatar, so the fill never tints it.
       z-index: -1;
       animation: video-call-widget-ring calc(var(--duration-moderate) * 6)
