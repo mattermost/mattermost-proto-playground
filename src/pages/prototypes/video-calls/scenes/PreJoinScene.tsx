@@ -71,8 +71,12 @@ export default function PreJoinScene() {
 
   useEffect(
     () => () => {
-      if (testTimer.current !== null) window.clearTimeout(testTimer.current);
-      stopSound('join');
+      if (testTimer.current !== null) {
+        window.clearTimeout(testTimer.current);
+        // Only a speaker test in progress owns the 'join' sound; the call's own
+        // join chime must survive this scene's crossfade-out.
+        stopSound('join');
+      }
     },
     [],
   );

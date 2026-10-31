@@ -355,7 +355,7 @@ function VideoTileInner({
             <IconButton
               ref={moreRef}
               className={styles['video-tile__more']}
-              icon={<DotsHorizontalIcon />}
+              icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
               size="small"
               style="inverted"
               aria-label={l.participantActions}

@@ -12,6 +12,7 @@ import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
 import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
 import avatarMarcoRinaldi from '@/assets/avatars/Marco Rinaldi.png';
 import { useVideoCall } from './videoCallContext';
+import { groupChatName } from './videoCallsData';
 
 /** Default sidebar tree for every scene that shows the channel chrome. */
 const CHANNELS_SIDEBAR_MODEL = buildDefaultChannelsSidebarModel({
@@ -42,13 +43,16 @@ const MARCO = {
  * A favourite appears only under Favorites, so Marco is dropped from any other
  * category.
  */
-function buildSidebarModel(context: 'dm' | 'gm' | 'channel'): SidebarModel {
+const DEFAULT_GM_ROW = 'Hilda Martin, Steve M...';
+
+function buildSidebarModel(
+  context: 'dm' | 'gm' | 'channel',
+  count: number,
+): SidebarModel {
+  // The group DM row is the open group chat, named after its members.
+  const gmName = groupChatName(count);
   const activeName =
-    context === 'dm'
-      ? MARCO.name
-      : context === 'gm'
-        ? 'Hilda Martin, Steve M...'
-        : 'UX Design';
+    context === 'dm' ? MARCO.name : context === 'gm' ? gmName : 'UX Design';
   const groups = CHANNELS_SIDEBAR_MODEL.groups.map((group) => {
     const kept = group.items.filter((i) => i.name !== MARCO.name);
     const items =
@@ -57,7 +61,13 @@ function buildSidebarModel(context: 'dm' | 'gm' | 'channel'): SidebarModel {
         : kept;
     return {
       ...group,
-      items: items.map((i) => ({ ...i, active: i.name === activeName })),
+      items: items.map((i) => {
+        const row =
+          context === 'gm' && i.name === DEFAULT_GM_ROW
+            ? { ...i, name: gmName, memberCount: count }
+            : i;
+        return { ...row, active: row.name === activeName };
+      }),
     };
   });
   return {
@@ -94,8 +104,8 @@ export default function VideoCallChannelShell({
 }: VideoCallChannelShellProps) {
   const { state } = useVideoCall();
   const model = useMemo(
-    () => buildSidebarModel(state.callContext),
-    [state.callContext],
+    () => buildSidebarModel(state.callContext, state.count),
+    [state.callContext, state.count],
   );
   return (
     <ChannelShell

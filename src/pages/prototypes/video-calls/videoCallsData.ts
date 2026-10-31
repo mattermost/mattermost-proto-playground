@@ -110,3 +110,11 @@ export const ROSTER: VideoParticipant[] = [
 ];
 
 export const REACTIONS = ['👍', '👏', '🎉', '😂', '❤️'] as const;
+
+/** Group DM display name: first names of up to three other members. */
+export function groupChatName(count: number): string {
+  return ROSTER.slice(1, count)
+    .slice(0, 3)
+    .map((p) => p.name.split(' ')[0])
+    .join(', ');
+}

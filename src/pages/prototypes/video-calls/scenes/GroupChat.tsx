@@ -15,7 +15,7 @@ import { GROUP_POSTS } from './chatSamplesData';
 import styles from './GroupChat.module.scss';
 import StartCallMenu from './StartCallMenu';
 import { useVideoCall } from '../videoCallContext';
-import { CHANNEL_NAME, ROSTER } from '../videoCallsData';
+import { CHANNEL_NAME, ROSTER, groupChatName } from '../videoCallsData';
 
 /** Matches `--duration-quick` (the banner's slide-off). */
 const BANNER_EXIT_MS = 150;
@@ -42,13 +42,7 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   // A group DM only has its own members; a channel shows everyone.
   const allowed =
     kind === 'gm' ? ROSTER.slice(0, state.count).map((p) => p.id) : undefined;
-  const chatName =
-    kind === 'gm'
-      ? others
-          .slice(0, 3)
-          .map((p) => p.name.split(' ')[0])
-          .join(', ')
-      : CHANNEL_NAME;
+  const chatName = kind === 'gm' ? groupChatName(state.count) : CHANNEL_NAME;
 
   return (
     <VideoCallChannelShell

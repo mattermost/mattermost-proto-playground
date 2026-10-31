@@ -95,7 +95,7 @@ export function WindowDeviceControls({
     onToggle: () => void,
     menu: ReactNode,
   ) => (
-    <div className={styles['window-device-controls__slot']}>
+    <div className={styles['window-device-controls__slot']} data-menu-anchor>
       <SegmentedIconButton
         size="medium"
         style="inverted"

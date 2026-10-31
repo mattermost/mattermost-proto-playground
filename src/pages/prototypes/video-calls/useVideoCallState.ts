@@ -88,6 +88,26 @@ const INITIAL_STATE: VideoCallState = {
 
 let noticeSeq = 0;
 const MAX_NOTICES = 5;
+/** Notices that stay until dismissed (mirrors CallNotice's defaults). */
+const PERSISTENT_NOTICE_KINDS: readonly CallNotice['kind'][] = [
+  'network',
+  'permission',
+  'device',
+];
+
+/**
+ * Cap the stack at MAX_NOTICES. Drop the oldest transient notice first so a
+ * network / permission / device warning is not pushed off by chatter; only a
+ * stack of nothing but persistent notices loses its oldest.
+ */
+function trimNotices(list: CallNotice[]): CallNotice[] {
+  const out = [...list];
+  while (out.length > MAX_NOTICES) {
+    const i = out.findIndex((n) => !PERSISTENT_NOTICE_KINDS.includes(n.kind));
+    out.splice(i === -1 ? 0 : i, 1);
+  }
+  return out;
+}
 
 function clampCount(count: number) {
   return Math.min(MAX_PARTICIPANTS, Math.max(2, Math.round(count)));
@@ -313,14 +333,14 @@ export function useVideoCallState() {
             ...s,
             recording,
             recordingsMade: recording ? s.recordingsMade + 1 : s.recordingsMade,
-            notices: [
+            notices: trimNotices([
               ...s.notices,
               {
                 id: `notice-${++noticeSeq}`,
                 kind: 'recording' as const,
                 text: recording ? 'Recording started' : 'Recording stopped',
               },
-            ].slice(-MAX_NOTICES),
+            ]),
           };
         }),
       setExternalEnabled: (externalEnabled: boolean) =>
@@ -357,10 +377,10 @@ export function useVideoCallState() {
           ...s,
           // Keep the stack short: rapid changes (e.g. the People stepper) would
           // otherwise bury the tiles under join/leave toasts.
-          notices: [
+          notices: trimNotices([
             ...s.notices,
             { ...notice, id: `notice-${++noticeSeq}` },
-          ].slice(-MAX_NOTICES),
+          ]),
         })),
       dismissNotice: (id: string) =>
         setState((s) => ({
