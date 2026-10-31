@@ -21,9 +21,9 @@
   "dependencies": {
     "@fontsource/metropolis": "^5.2.5",
     "@fontsource/open-sans": "^5.2.7",
-    "@mattermost/compass-icons": "^0.1.63",
+    "@mattermost/compass-icons": "^0.1.64",
     "@mattermost/compass-proto": "file:../compass-design/packages/compass-proto",
-    "@mattermost/compass-ui": "^0.1.0-alpha.22",
+    "@mattermost/compass-ui": "^0.1.0-alpha.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^6.28.0",
