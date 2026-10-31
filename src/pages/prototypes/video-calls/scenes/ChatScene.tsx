@@ -19,7 +19,7 @@ export interface ChatSceneProps {
 export default function ChatScene({ widgetHidden = false }: ChatSceneProps) {
   const { state } = useVideoCall();
   const { rendered, exiting } = useExitAnimation(
-    state.phase !== 'idle' && !widgetHidden,
+    state.phase !== 'idle' && state.phase !== 'ongoing' && !widgetHidden,
     WIDGET_EXIT_MS,
   );
   const widget = rendered ? <CallWidgetHost exiting={exiting} /> : undefined;

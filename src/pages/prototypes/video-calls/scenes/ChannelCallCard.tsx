@@ -38,27 +38,65 @@ function useCallPost(): CallPostModel | null {
       .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
 
   if (callContext !== 'dm') {
-    // Someone else started it; it is already running when you open the channel.
-    const starter = byId('sofia');
-    return {
-      authorId: starter.id,
-      timestamp: '10:03 AM',
-      card: inCall
-        ? {
-            state: 'joined',
-            title: 'Call started',
-            meta: `3 minutes ago by ${starter.name}`,
-            participants: people(true),
-            onLeave: actions.leave,
-          }
-        : {
-            state: 'active',
-            title: 'Call started',
-            meta: `3 minutes ago by ${starter.name}`,
-            participants: people(false),
-            onJoin: phase === 'idle' ? () => actions.startCall() : undefined,
-          },
-    };
+    const mine = state.callerId === SELF_ID;
+    const starter = byId(state.callerId);
+    const when = mine ? 'just now' : '3 minutes ago';
+    const timestamp = mine ? clock(Date.now()) : '10:03 AM';
+
+    // A call is running and you are not in it (or are about to join it).
+    if (
+      phase === 'ongoing' ||
+      (phase === 'pre-join' && state.joinMode === 'join-group')
+    ) {
+      return {
+        authorId: starter.id,
+        timestamp,
+        card: {
+          state: 'active',
+          title: 'Call started',
+          meta: `${when} by ${starter.name}`,
+          participants: people(false),
+          onJoin: phase === 'ongoing' ? () => actions.startCall() : undefined,
+        },
+      };
+    }
+
+    if (phase === 'active') {
+      return {
+        authorId: starter.id,
+        timestamp,
+        card: {
+          state: 'joined',
+          title: 'Call started',
+          meta: `${when} by ${starter.name}`,
+          participants: people(true),
+          onLeave: actions.leave,
+        },
+      };
+    }
+
+    // You started a call and hung up: it ended. Otherwise there is no call yet.
+    if (phase === 'idle' && state.endedDurationSec > 0 && state.endedAt) {
+      return {
+        authorId: SELF_ID,
+        timestamp: clock(state.endedAt),
+        card: {
+          state: 'ended',
+          title: 'Call ended',
+          meta: `Ended at ${clock(state.endedAt)} · Lasted ${formatCallDuration(
+            state.endedDurationSec,
+          )}`,
+          recordingLabel:
+            state.recordingsMade > 0
+              ? `${state.recordingsMade} ${
+                  state.recordingsMade === 1 ? 'recording' : 'recordings'
+                }`
+              : undefined,
+        },
+      };
+    }
+
+    return null;
   }
 
   const caller = byId(state.callerId);

@@ -39,7 +39,17 @@ export type CallContext = 'dm' | 'gm' | 'channel';
  * Where the user is in the call lifecycle. Every phase renders in whichever
  * surface is active (widget or window); there is no separate modal.
  */
-export type CallPhase = 'idle' | 'pre-join' | 'calling' | 'incoming' | 'active';
+/**
+ * `idle`: no call. `ongoing`: a call is running in a group / channel and you are
+ * not in it (Join). The rest are the user's own steps through a call.
+ */
+export type CallPhase =
+  | 'idle'
+  | 'ongoing'
+  | 'pre-join'
+  | 'calling'
+  | 'incoming'
+  | 'active';
 
 /** `widget` = the small card over the sidebar; `window` = the expanded dark call window. */
 export type CallSurface = 'widget' | 'window';

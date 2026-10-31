@@ -81,7 +81,10 @@ export default function VideoCalls() {
 
   // The window hosts every phase except idle and incoming (those are widget-only).
   const showWindow =
-    surface === 'window' && phase !== 'idle' && phase !== 'incoming';
+    surface === 'window' &&
+    phase !== 'idle' &&
+    phase !== 'ongoing' &&
+    phase !== 'incoming';
   // The scrim portals into the channels frame (not document.body), so it is
   // clipped to the app layout. The window stays mounted through the fade-out.
   const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null);

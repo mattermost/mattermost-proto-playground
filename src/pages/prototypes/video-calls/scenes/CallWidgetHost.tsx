@@ -201,7 +201,7 @@ function CardWidget({
       selfStream={selfCamera.stream}
       onExpand={actions.expand}
       onCancel={actions.cancelCall}
-      joinMode={state.callContext === 'dm' ? 'start' : 'join'}
+      joinMode={state.joinMode === 'join-group' ? 'join' : 'start'}
       selfName={SELF.name}
       selfAvatarSrc={SELF.avatarSrc}
       micLevel={micLevel}
@@ -312,10 +312,12 @@ export default function CallWidgetHost({
   // Keep rendering the last live phase while the widget fades out after Leave /
   // Cancel / Decline (the state is already idle by then).
   const [heldPhase, setHeldPhase] = useState(state.phase);
-  if (state.phase !== 'idle' && state.phase !== heldPhase) {
+  // `idle` and `ongoing` (a call running without you) have no widget.
+  const noWidget = state.phase === 'idle' || state.phase === 'ongoing';
+  if (!noWidget && state.phase !== heldPhase) {
     setHeldPhase(state.phase);
   }
-  const phase = state.phase === 'idle' ? heldPhase : state.phase;
+  const phase = noWidget ? heldPhase : state.phase;
 
   // Menus never carry across phases.
   const { close } = ov;
@@ -325,7 +327,7 @@ export default function CallWidgetHost({
 
   const widgetDrag = useWidgetDrag(ov.widgetRef);
 
-  if (phase === 'idle') return null;
+  if (phase === 'idle' || phase === 'ongoing') return null;
 
   return (
     <div

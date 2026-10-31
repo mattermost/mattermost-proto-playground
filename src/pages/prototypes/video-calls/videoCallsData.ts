@@ -13,6 +13,8 @@ export const CHANNEL_NAME = 'UX Design';
 export const SELF_ID = 'leonard';
 /** The other person in the 1:1 DM. */
 export const DM_PEER_ID = 'marco';
+/** Who started the call that is already running in a group / channel. */
+export const GROUP_STARTER_ID = 'sofia';
 
 /**
  * Remote video loops, keyed by `VideoParticipant.clipId`. Filled in by the

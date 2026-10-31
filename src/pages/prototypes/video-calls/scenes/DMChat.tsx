@@ -8,6 +8,7 @@ import VideoCallChannelShell from '../VideoCallChannelShell';
 import ChatThread from './ChatThread';
 import { DM_POSTS } from './chatSamplesData';
 import StartCallMenu from './StartCallMenu';
+import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER } from '../videoCallsData';
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
@@ -19,6 +20,7 @@ export interface DMChatProps {
 
 /** The 1:1 chat with the DM peer. Prototype-only composition. */
 export default function DMChat({ floating }: DMChatProps) {
+  const { state } = useVideoCall();
   return (
     <VideoCallChannelShell
       header={
@@ -27,7 +29,9 @@ export default function DMChat({ floating }: DMChatProps) {
           name={PEER.name}
           avatarSrc={PEER.avatarSrc}
           avatarStatus
-          callButton={<StartCallMenu />}
+          // Only offered with no call; while ringing / in a call it is an empty
+          // node (`undefined` would restore the header's own default button).
+          callButton={state.phase === 'idle' ? <StartCallMenu /> : <></>}
         />
       }
       floating={floating}

@@ -84,11 +84,13 @@
     }
 
     // Join mode adds the "N people in the call" row under the preview.
+    // No bottom padding here: the controls row below already has its own top
+    // padding, so the avatars sit close to it.
     &--pre-join#{&}--people {
       --video-call-widget-media-h: calc(
-        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-s) + 24px +
-          var(--spacing-xs)
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-s) + 24px
       );
+      padding-bottom: 0;
     }
 
     @media (prefers-reduced-motion: reduce) {

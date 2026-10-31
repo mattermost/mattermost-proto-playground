@@ -73,6 +73,12 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
+  // Keep the people in the call close to the device checks below them: pull the
+  // next block up so only a small gap remains instead of the full details gap.
+  &__participants {
+    margin-bottom: calc((var(--spacing-xl) - var(--spacing-xs)) * -1);
+  }
+
   &__participants,
   &__checks {
     display: flex;

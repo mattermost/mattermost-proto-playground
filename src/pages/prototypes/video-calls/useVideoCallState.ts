@@ -11,7 +11,12 @@ import {
   type StageView,
   type VideoParticipant,
 } from '@/types/videoCall';
-import { DM_PEER_ID, ROSTER, SELF_ID } from './videoCallsData';
+import {
+  DM_PEER_ID,
+  GROUP_STARTER_ID,
+  ROSTER,
+  SELF_ID,
+} from './videoCallsData';
 import {
   DEMO_SCENES,
   joinModeFor,
@@ -145,7 +150,14 @@ function releaseCamera(media: MediaPrefs): MediaPrefs {
 
 /** A call ended or was abandoned: reset call fields and release the webcam. */
 function endCall(s: VideoCallState): VideoCallState {
-  return { ...s, ...CALL_RESET, media: releaseCamera(s.media) };
+  // A group / channel call someone else started keeps running without you.
+  const continues = s.callContext !== 'dm' && s.callerId !== SELF_ID;
+  return {
+    ...s,
+    ...CALL_RESET,
+    phase: continues ? 'ongoing' : 'idle',
+    media: releaseCamera(s.media),
+  };
 }
 
 export function useVideoCallState() {
@@ -194,7 +206,7 @@ export function useVideoCallState() {
             ...s,
             callContext: context,
             count: countFor(context, s.count),
-            joinMode: joinModeFor(context),
+            joinMode: joinModeFor(context, s.phase, s.joinMode),
             ...(keepPhase
               ? {}
               : { ...CALL_RESET, media: releaseCamera(s.media) }),
@@ -213,14 +225,19 @@ export function useVideoCallState() {
             media: phase === 'idle' ? releaseCamera(s.media) : s.media,
             phase,
             surface,
-            joinMode: joinModeFor(s.callContext),
+            joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
             callStartedAt: phase === 'active' ? Date.now() : null,
             sharing: phase === 'active' ? s.sharing : false,
             pane: phase === 'active' ? s.pane : null,
             missedCall: false,
             endedAt: null,
             recordingsMade: 0,
-            callerId: phase === 'incoming' ? DM_PEER_ID : s.callerId,
+            callerId:
+              phase === 'incoming'
+                ? DM_PEER_ID
+                : phase === 'ongoing'
+                  ? GROUP_STARTER_ID
+                  : s.callerId,
           };
         }),
       setSurface: (surface: CallSurface) =>
@@ -238,7 +255,7 @@ export function useVideoCallState() {
             media: demo.phase === 'idle' ? releaseCamera(s.media) : s.media,
             callContext: demo.context,
             count: countFor(demo.context, s.count),
-            joinMode: joinModeFor(demo.context),
+            joinMode: joinModeFor(demo.context, s.phase, s.joinMode),
             phase: demo.phase,
             surface: demo.surface,
             sharing: Boolean(demo.sharing),
@@ -262,12 +279,13 @@ export function useVideoCallState() {
           ...PER_CALL_RESET,
           phase: 'pre-join',
           surface: 'widget',
-          joinMode: joinModeFor(s.callContext),
+          joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
           missedCall: false,
           endedDurationSec: 0,
           endedAt: null,
           recordingsMade: 0,
-          callerId: SELF_ID,
+          // Joining a call that is already running means someone else started it.
+          callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
           // Audio-only starts with the camera off (and releases the webcam).
           media: opts?.audioOnly ? releaseCamera(s.media) : s.media,
         })),

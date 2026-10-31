@@ -11,8 +11,9 @@ const byId = (id: string) => ROSTER.find((p) => p.id === id) ?? ROSTER[0];
 /**
  * Message list anchored to the bottom of the channel (newest messages sit just
  * above the composer, older ones scroll up). Posts are grouped under date
- * separators; the call post slots in where `callPostAfter` says, or at the end
- * when `callPostAtEnd` is set.
+ * separators; the call post slots in where `callPostAfter` says (a call someone
+ * else started earlier), or at the end when `callPostAtEnd` is set (a call you
+ * started just now, or one that just ended).
  */
 export default function ChatThread({
   posts,
@@ -90,7 +91,7 @@ export default function ChatThread({
                     </p>
                   ))}
                 </Message>
-                {post.callPostAfter && <ChannelCallPost />}
+                {post.callPostAfter && !callPostAtEnd && <ChannelCallPost />}
               </Fragment>
             );
           })}

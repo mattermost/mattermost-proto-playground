@@ -15,7 +15,12 @@ import { GROUP_POSTS } from './chatSamplesData';
 import styles from './GroupChat.module.scss';
 import StartCallMenu from './StartCallMenu';
 import { useVideoCall } from '../videoCallContext';
-import { CHANNEL_NAME, ROSTER, groupChatName } from '../videoCallsData';
+import {
+  CHANNEL_NAME,
+  ROSTER,
+  SELF_ID,
+  groupChatName,
+} from '../videoCallsData';
 
 /** Matches `--duration-quick` (the banner's slide-off). */
 const BANNER_EXIT_MS = 150;
@@ -34,7 +39,9 @@ export interface GroupChatProps {
 export default function GroupChat({ kind, floating }: GroupChatProps) {
   const { state, actions } = useVideoCall();
   const others = ROSTER.slice(1, state.count);
-  const ongoing = state.phase === 'idle';
+  // A call is running in this conversation and you are not in it.
+  const ongoing = state.phase === 'ongoing';
+  const noCall = state.phase === 'idle';
   // The banner can be closed; it comes back with the next conversation.
   const [bannerDismissed, setBannerDismissed] = useState(false);
   // Stays mounted through its slide-off after a dismiss or when you join.
@@ -69,8 +76,12 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
                 >
                   Join call
                 </Button>
-              ) : (
+              ) : noCall ? (
                 <StartCallMenu />
+              ) : (
+                // In a call: no start/join button (an empty node, since `undefined`
+                // would bring back the header's own "Start a Call" default).
+                <></>
               )
             }
           />
@@ -97,7 +108,11 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
         </>
       }
     >
-      <ChatThread posts={GROUP_POSTS} allowedAuthors={allowed} />
+      <ChatThread
+        posts={GROUP_POSTS}
+        allowedAuthors={allowed}
+        callPostAtEnd={state.callerId === SELF_ID}
+      />
       <div className={layoutStyles['channel-shell__message-input']}>
         <MessageInput placeholder={`Message ${chatName}`} />
       </div>

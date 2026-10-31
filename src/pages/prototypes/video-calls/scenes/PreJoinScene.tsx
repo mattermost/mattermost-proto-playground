@@ -96,37 +96,44 @@ export default function PreJoinScene() {
   const others = participants.filter((p) => !p.self);
   const isStart = joinMode === 'start';
 
-  const who =
-    joinMode === 'join-group' ? (
-      <div className={styles['pre-join-scene__who']}>
-        {others.length > 0 && (
-          <UserAvatarGroup
-            size="32"
-            max={4}
-            avatars={others.map((p) => ({
-              key: p.id,
-              name: p.name,
-              src: p.avatarSrc,
-            }))}
-          />
-        )}
-        <p className={styles['pre-join-scene__who-text']}>
-          {others.length > 0
-            ? `${describePeople(others.map((p) => p.name))} ${others.length === 1 ? 'is' : 'are'} in the call`
-            : 'No one else is here yet'}
-        </p>
-      </div>
-    ) : (
-      <div className={styles['pre-join-scene__who']}>
-        <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
-        <p className={styles['pre-join-scene__who-text']}>
-          <span className={styles['pre-join-scene__who-name']}>
-            {PEER.name}
-          </span>{' '}
-          {isStart ? 'will be called' : 'is waiting for you'}
-        </p>
-      </div>
-    );
+  const startingGroup = isStart && state.callContext !== 'dm';
+
+  const who = startingGroup ? (
+    <div className={styles['pre-join-scene__who']}>
+      <p className={styles['pre-join-scene__who-text']}>
+        {others.length > 0
+          ? `${describePeople(others.map((p) => p.name))} will be notified`
+          : 'Everyone here will be notified'}
+      </p>
+    </div>
+  ) : joinMode === 'join-group' ? (
+    <div className={styles['pre-join-scene__who']}>
+      {others.length > 0 && (
+        <UserAvatarGroup
+          size="32"
+          max={4}
+          avatars={others.map((p) => ({
+            key: p.id,
+            name: p.name,
+            src: p.avatarSrc,
+          }))}
+        />
+      )}
+      <p className={styles['pre-join-scene__who-text']}>
+        {others.length > 0
+          ? `${describePeople(others.map((p) => p.name))} ${others.length === 1 ? 'is' : 'are'} in the call`
+          : 'No one else is here yet'}
+      </p>
+    </div>
+  ) : (
+    <div className={styles['pre-join-scene__who']}>
+      <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
+      <p className={styles['pre-join-scene__who-text']}>
+        <span className={styles['pre-join-scene__who-name']}>{PEER.name}</span>{' '}
+        {isStart ? 'will be called' : 'is waiting for you'}
+      </p>
+    </div>
+  );
 
   return (
     <div className={styles['pre-join-scene']}>

@@ -20,6 +20,7 @@ export const CONTEXTS: { id: CallContext; label: string }[] = [
 
 export const PHASES: { id: CallPhase; label: string }[] = [
   { id: 'idle', label: 'No call' },
+  { id: 'ongoing', label: 'Ongoing' },
   { id: 'pre-join', label: 'Pre-join' },
   { id: 'calling', label: 'Calling' },
   { id: 'incoming', label: 'Incoming' },
@@ -31,20 +32,39 @@ export const SURFACES: { id: CallSurface; label: string }[] = [
   { id: 'window', label: 'Window' },
 ];
 
-/** Only 1:1 DM calls ring; groups and channels go pre-join -> active. */
+/**
+ * Only 1:1 DM calls ring; groups and channels go pre-join -> active. A call
+ * that is already running without you (`ongoing`) only exists in groups and
+ * channels.
+ */
 export function phaseAvailable(context: CallContext, phase: CallPhase) {
   if (phase === 'calling' || phase === 'incoming') return context === 'dm';
+  if (phase === 'ongoing') return context !== 'dm';
   return true;
 }
 
-/** The pre-join variant implied by where the call is started from. */
-export function joinModeFor(context: CallContext): JoinMode {
-  return context === 'dm' ? 'start' : 'join-group';
+/**
+ * The pre-join variant implied by where the call is started from: a DM always
+ * starts (and rings); in a group / channel, arriving from `ongoing` joins the
+ * running call, arriving from `idle` starts a new one. Any other phase keeps
+ * the current mode.
+ */
+export function joinModeFor(
+  context: CallContext,
+  fromPhase: CallPhase = 'idle',
+  current: JoinMode = 'start',
+): JoinMode {
+  if (context === 'dm') return 'start';
+  if (fromPhase === 'ongoing') return 'join-group';
+  if (fromPhase === 'idle') return 'start';
+  return current;
 }
 
 /** Incoming cards cannot be expanded; the window only hosts the other phases. */
 export function surfaceAvailable(phase: CallPhase, surface: CallSurface) {
-  if (phase === 'idle' || phase === 'incoming') return surface === 'widget';
+  if (phase === 'idle' || phase === 'ongoing' || phase === 'incoming') {
+    return surface === 'widget';
+  }
   return true;
 }
 
