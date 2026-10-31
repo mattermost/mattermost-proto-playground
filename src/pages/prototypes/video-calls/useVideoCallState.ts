@@ -87,7 +87,7 @@ const INITIAL_STATE: VideoCallState = {
 };
 
 let noticeSeq = 0;
-const MAX_NOTICES = 3;
+const MAX_NOTICES = 5;
 
 function clampCount(count: number) {
   return Math.min(MAX_PARTICIPANTS, Math.max(2, Math.round(count)));
