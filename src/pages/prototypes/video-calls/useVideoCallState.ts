@@ -60,6 +60,8 @@ export interface VideoCallState {
   callerId: string;
   /** Set when an incoming call rang out; the DM shows a missed-call post. */
   missedCall: boolean;
+  /** Set when you declined an incoming call; the DM shows a declined-call post. */
+  declinedCall: boolean;
   soundOn: boolean;
 }
 
@@ -88,6 +90,7 @@ const INITIAL_STATE: VideoCallState = {
   recordingsMade: 0,
   callerId: SELF_ID,
   missedCall: false,
+  declinedCall: false,
   soundOn: true,
 };
 
@@ -230,6 +233,7 @@ export function useVideoCallState() {
             sharing: phase === 'active' ? s.sharing : false,
             pane: phase === 'active' ? s.pane : null,
             missedCall: false,
+            declinedCall: false,
             endedAt: null,
             recordingsMade: 0,
             callerId:
@@ -237,7 +241,9 @@ export function useVideoCallState() {
                 ? DM_PEER_ID
                 : phase === 'ongoing'
                   ? GROUP_STARTER_ID
-                  : s.callerId,
+                  : s.phase === 'idle'
+                    ? SELF_ID
+                    : s.callerId,
           };
         }),
       setSurface: (surface: CallSurface) =>
@@ -261,6 +267,7 @@ export function useVideoCallState() {
             sharing: Boolean(demo.sharing),
             pane: null,
             missedCall: false,
+            declinedCall: false,
             endedAt: null,
             recordingsMade: 0,
             callerId: demo.phase === 'incoming' ? DM_PEER_ID : SELF_ID,
@@ -281,6 +288,7 @@ export function useVideoCallState() {
           surface: 'widget',
           joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
           missedCall: false,
+          declinedCall: false,
           endedDurationSec: 0,
           endedAt: null,
           recordingsMade: 0,
@@ -307,17 +315,23 @@ export function useVideoCallState() {
         setState((s) => ({ ...s, phase: 'active', callStartedAt: Date.now() })),
       /** Cancel pre-join or an outgoing ring: back to the chat. */
       cancelCall: () => setState(endCall),
-      /** Incoming card: Accept enters the live call in the same widget. */
+      /** Incoming card: Accept connects in the same widget ("Joining…"), then goes live. */
       accept: (opts?: { audioOnly?: boolean }) =>
         setState((s) => ({
           ...s,
-          phase: 'active',
+          phase: 'joining',
           surface: 'widget',
-          callStartedAt: Date.now(),
           media: opts?.audioOnly ? { ...s.media, cameraOn: false } : s.media,
         })),
-      /** Incoming card: Decline returns to the chat with no missed-call post. */
-      decline: () => setState(endCall),
+      /** Joining finished (or a demo shortcut): the accepted call is live. */
+      joined: () =>
+        setState((s) =>
+          s.phase === 'joining'
+            ? { ...s, phase: 'active', callStartedAt: Date.now() }
+            : s,
+        ),
+      /** Incoming card: Decline returns to the chat with a "Call declined" post both people see. */
+      decline: () => setState((s) => ({ ...endCall(s), declinedCall: true })),
       /** Incoming call rang out: the chat gets a missed-call post. */
       missIncoming: () =>
         setState((s) => ({ ...endCall(s), missedCall: true })),

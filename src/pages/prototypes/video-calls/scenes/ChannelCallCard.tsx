@@ -129,16 +129,41 @@ function useCallPost(): CallPostModel | null {
     };
   }
 
-  if (phase === 'incoming') {
+  if (phase === 'incoming' || phase === 'joining') {
     return {
       authorId: caller.id,
       timestamp: now,
       card: {
         state: 'active',
-        title: 'Call started',
-        meta: `just now by ${caller.name}`,
+        title:
+          phase === 'incoming'
+            ? `${caller.name} is calling you`
+            : `Joining ${caller.name}…`,
+        meta: phase === 'incoming' ? 'Video call · just now' : 'Connecting…',
         participants: people(false),
-        onJoin: () => actions.accept(),
+        onJoin: phase === 'incoming' ? () => actions.accept() : undefined,
+      },
+    };
+  }
+
+  if (phase === 'idle' && state.declinedCall) {
+    return {
+      authorId: DM_PEER_ID,
+      timestamp: now,
+      card: {
+        state: 'ended',
+        title: 'Call declined',
+        meta: `You declined a call from ${byId(DM_PEER_ID).name} · ${now}`,
+        trailing: (
+          <Button
+            emphasis="tertiary"
+            size="small"
+            leadingIcon={<Icon glyph={<PhoneIcon />} />}
+            onClick={() => actions.startCall()}
+          >
+            Call back
+          </Button>
+        ),
       },
     };
   }

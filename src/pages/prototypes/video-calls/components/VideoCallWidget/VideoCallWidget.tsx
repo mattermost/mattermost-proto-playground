@@ -23,7 +23,8 @@ import {
 } from '../WidgetMediaControls';
 import styles from './VideoCallWidget.module.scss';
 
-export type VideoCallWidgetPhase = 'pre-join' | 'calling' | 'active';
+export type VideoCallWidgetPhase =
+  'pre-join' | 'calling' | 'joining' | 'active';
 
 export interface VideoCallWidgetPerson {
   key: string;
@@ -35,6 +36,7 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   /** Accessible name of the widget region, per phase. */
   regionPreJoin?: string;
   regionCalling?: string;
+  regionJoining?: string;
   regionActive?: string;
   expand?: string;
   /** Heading when starting a 1:1 call. */
@@ -47,6 +49,8 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   micLevel?: string;
   /** "Calling Name…". */
   calling?: (name: string) => string;
+  /** "Joining call with Name…" after accepting an incoming call. */
+  joining?: (name: string) => string;
   /** "N people in the call". */
   peopleInCall?: (count: number) => string;
   participants?: (count: number) => string;
@@ -130,6 +134,7 @@ export interface VideoCallWidgetProps {
 const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   regionPreJoin: 'Call setup',
   regionCalling: 'Outgoing call',
+  regionJoining: 'Joining call',
   regionActive: 'Active call',
   expand: 'Expand call window',
   titleStart: 'Ready to start the call?',
@@ -139,6 +144,7 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   cancel: 'Cancel',
   micLevel: 'Microphone level',
   calling: (name) => `Calling ${name}…`,
+  joining: (name) => `Joining call with ${name}…`,
   peopleInCall: (n) => `${n} ${n === 1 ? 'person' : 'people'} in the call`,
   participants: (n) => `Participants (${n})`,
   mute: 'Mute microphone',
@@ -225,7 +231,9 @@ export function VideoCallWidget({
       ? l.regionPreJoin
       : phase === 'calling'
         ? l.regionCalling
-        : l.regionActive;
+        : phase === 'joining'
+          ? l.regionJoining
+          : l.regionActive;
 
   const lead =
     phase === 'pre-join' ? (
@@ -293,6 +301,13 @@ export function VideoCallWidget({
           {l.calling(peerName)}
         </p>
       </div>
+    ) : phase === 'joining' ? (
+      <div className={styles['video-call-widget__peer']} aria-live="polite">
+        <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
+        <p className={styles['video-call-widget__status']}>
+          {l.joining(peerName)}
+        </p>
+      </div>
     ) : (
       <div className={styles['video-call-widget__thumbs']}>
         {thumbs.map((p, i) => {
@@ -342,7 +357,7 @@ export function VideoCallWidget({
         label={l.micLevel}
         showIcon={false}
       />
-    ) : phase === 'calling' ? (
+    ) : phase === 'calling' || phase === 'joining' ? (
       <Button emphasis="primary" destructive size="small" onClick={onCancel}>
         {l.cancel}
       </Button>
@@ -422,6 +437,7 @@ export function VideoCallWidget({
           aria-label={l.expand}
           title={l.expand}
           icon={<Icon size="16" glyph={<ArrowExpandIcon />} />}
+          disabled={phase === 'joining'}
           onClick={onExpand}
         />
       </div>

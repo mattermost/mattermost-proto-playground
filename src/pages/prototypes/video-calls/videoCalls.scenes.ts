@@ -24,6 +24,7 @@ export const PHASES: { id: CallPhase; label: string }[] = [
   { id: 'pre-join', label: 'Pre-join' },
   { id: 'calling', label: 'Calling' },
   { id: 'incoming', label: 'Incoming' },
+  { id: 'joining', label: 'Joining' },
   { id: 'active', label: 'In call' },
 ];
 
@@ -33,12 +34,15 @@ export const SURFACES: { id: CallSurface; label: string }[] = [
 ];
 
 /**
- * Only 1:1 DM calls ring; groups and channels go pre-join -> active. A call
+ * Only 1:1 DM calls ring (and so show `joining` after Accept); groups and
+ * channels go pre-join -> active. A call
  * that is already running without you (`ongoing`) only exists in groups and
  * channels.
  */
 export function phaseAvailable(context: CallContext, phase: CallPhase) {
-  if (phase === 'calling' || phase === 'incoming') return context === 'dm';
+  if (phase === 'calling' || phase === 'incoming' || phase === 'joining') {
+    return context === 'dm';
+  }
   if (phase === 'ongoing') return context !== 'dm';
   return true;
 }
@@ -60,9 +64,14 @@ export function joinModeFor(
   return current;
 }
 
-/** Incoming cards cannot be expanded; the window only hosts the other phases. */
+/** Incoming and joining cards cannot be expanded; the window hosts the other phases. */
 export function surfaceAvailable(phase: CallPhase, surface: CallSurface) {
-  if (phase === 'idle' || phase === 'ongoing' || phase === 'incoming') {
+  if (
+    phase === 'idle' ||
+    phase === 'ongoing' ||
+    phase === 'incoming' ||
+    phase === 'joining'
+  ) {
     return surface === 'widget';
   }
   return true;
@@ -77,6 +86,7 @@ export type DemoSceneId =
   | 'calling-widget'
   | 'calling-window'
   | 'incoming'
+  | 'joining'
   | 'call-widget'
   | 'call-window'
   | 'screen-share';
@@ -134,6 +144,13 @@ export const DEMO_SCENES: DemoScene[] = [
     label: 'Incoming',
     context: 'dm',
     phase: 'incoming',
+    surface: 'widget',
+  },
+  {
+    id: 'joining',
+    label: 'Joining',
+    context: 'dm',
+    phase: 'joining',
     surface: 'widget',
   },
   {

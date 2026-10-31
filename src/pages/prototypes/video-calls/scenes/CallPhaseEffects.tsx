@@ -4,6 +4,8 @@ import { useVideoCall } from '../videoCallContext';
 
 /** How long an outgoing call rings before the other person answers (demo). */
 const CALLING_ANSWER_MS = 6000;
+/** How long an accepted incoming call shows "Joining…" before it is live. */
+const JOINING_MS = 1800;
 /** How long an incoming call rings before it becomes a missed call. */
 const INCOMING_RING_MS = 25000;
 
@@ -36,6 +38,12 @@ export default function CallPhaseEffects() {
   useEffect(() => {
     if (phase !== 'incoming') return;
     const timer = window.setTimeout(actions.missIncoming, INCOMING_RING_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase, actions]);
+
+  useEffect(() => {
+    if (phase !== 'joining') return;
+    const timer = window.setTimeout(actions.joined, JOINING_MS);
     return () => window.clearTimeout(timer);
   }, [phase, actions]);
 

@@ -19,17 +19,12 @@ import { WidgetIncoming } from '../components/WidgetIncoming';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useMicLevel } from '../hooks/useMicLevel';
 import { useVideoCall } from '../videoCallContext';
-import {
-  CHANNEL_NAME,
-  CLIPS,
-  DM_PEER_ID,
-  ROSTER,
-  SELF_ID,
-} from '../videoCallsData';
+import { CLIPS, DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
 import CallMoreMenu from './CallMoreMenu';
 import ExitingPopover from './ExitingPopover';
 import { PhaseCrossfade } from '../components/PhaseCrossfade';
 import { useCallSession } from './useCallSession';
+import { useConversationName } from './useConversationName';
 import { useWidgetDrag } from './useWidgetDrag';
 import styles from './CallWidgetHost.module.scss';
 
@@ -148,7 +143,7 @@ function IncomingWidget() {
       callerName={PEER.name}
       callerAvatarSrc={PEER.avatarSrc}
       onAccept={() => actions.accept()}
-      onIgnore={actions.decline}
+      onDecline={actions.decline}
     />
   );
 }
@@ -163,10 +158,11 @@ function CardWidget({
   phase,
 }: {
   ov: WidgetOverlay;
-  phase: 'pre-join' | 'calling' | 'active';
+  phase: 'pre-join' | 'calling' | 'joining' | 'active';
 }) {
   const { state, participants, actions, selfCamera, elapsedLabel } =
     useCallSession();
+  const conversationName = useConversationName();
   const { micMenu, cameraMenu, micLabel, cameraLabel } = useDeviceMenus(ov);
   const { overlay, close, toggle } = ov;
   const micLevel = useMicLevel({
@@ -209,7 +205,7 @@ function CardWidget({
       onPrimary={actions.confirmPreJoin}
       peerName={PEER.name}
       peerAvatarSrc={PEER.avatarSrc}
-      channelName={CHANNEL_NAME}
+      channelName={conversationName}
       elapsedLabel={elapsedLabel}
       participants={participants}
       clips={CLIPS}

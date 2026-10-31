@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -44,6 +44,10 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   const noCall = state.phase === 'idle';
   // The banner can be closed; it comes back with the next conversation.
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  // A later call (after an idle phase) shows its banner again.
+  useEffect(() => {
+    if (noCall) setBannerDismissed(false);
+  }, [noCall]);
   // Stays mounted through its slide-off after a dismiss or when you join.
   const banner = useExitAnimation(ongoing && !bannerDismissed, BANNER_EXIT_MS);
   // A group DM only has its own members; a channel shows everyone.

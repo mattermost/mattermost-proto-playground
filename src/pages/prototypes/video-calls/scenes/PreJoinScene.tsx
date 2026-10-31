@@ -20,6 +20,7 @@ import { useMicLevel, useMicStream } from '../hooks/useMicLevel';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
 import { describePeople } from './callCopy';
+import { useConversationName } from './useConversationName';
 import styles from './PreJoinScene.module.scss';
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
@@ -49,6 +50,7 @@ const TITLES = {
 export default function PreJoinScene() {
   const { state, participants, actions, selfCamera } = useVideoCall();
   const { media, joinMode, soundOn } = state;
+  const conversationName = useConversationName();
   const [openMenu, setOpenMenu] = useState<WindowDeviceMenuId | null>(null);
   const [micCheck, setMicCheck] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -137,7 +139,10 @@ export default function PreJoinScene() {
 
   return (
     <div className={styles['pre-join-scene']}>
-      <VideoCallWindowFrame onCollapse={actions.collapse}>
+      <VideoCallWindowFrame
+        onCollapse={actions.collapse}
+        labels={{ title: `Call · ${conversationName}` }}
+      >
         <div className={styles['pre-join-scene__body']}>
           <PreJoinPanel
             appearance="dark"

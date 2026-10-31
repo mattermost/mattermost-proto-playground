@@ -33,6 +33,7 @@ import {
 import CallMoreMenu from './CallMoreMenu';
 import ExitingPopover from './ExitingPopover';
 import { useCallSession } from './useCallSession';
+import { useConversationName } from './useConversationName';
 import styles from './CallWindowHost.module.scss';
 
 type MenuId =
@@ -79,6 +80,7 @@ export default function CallWindowHost({
 }: CallWindowHostProps) {
   const { state, participants, actions, selfCamera, elapsedLabel } =
     useCallSession();
+  const conversationName = useConversationName();
   const rootRef = useRef<HTMLDivElement>(null);
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
   const [burst, setBurst] = useState<{ emoji: string; key: number } | null>(
@@ -304,6 +306,7 @@ export default function CallWindowHost({
   return (
     <div ref={rootRef} className={styles['call-window-host']}>
       <VideoCallWindow
+        labels={{ title: `Call · ${conversationName}` }}
         elapsedLabel={elapsedLabel}
         participantCount={participants.length}
         view={state.view}

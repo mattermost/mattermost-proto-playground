@@ -41,7 +41,7 @@ export type CallContext = 'dm' | 'gm' | 'channel';
  */
 /**
  * `idle`: no call. `ongoing`: a call is running in a group / channel and you are
- * not in it (Join). The rest are the user's own steps through a call.
+ * not in it (Join). `joining`: you accepted an incoming call and the connection is being set up. The rest are the user's own steps through a call.
  */
 export type CallPhase =
   | 'idle'
@@ -49,6 +49,7 @@ export type CallPhase =
   | 'pre-join'
   | 'calling'
   | 'incoming'
+  | 'joining'
   | 'active';
 
 /** `widget` = the small card over the sidebar; `window` = the expanded dark call window. */

@@ -9,6 +9,7 @@ import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER } from '../videoCallsData';
 import CallScene from './CallScene';
 import { PhaseCrossfade } from '../components/PhaseCrossfade';
+import { useConversationName } from './useConversationName';
 import PreJoinScene from './PreJoinScene';
 import ScreenShareScene from './ScreenShareScene';
 import styles from './CallWindowScene.module.scss';
@@ -31,6 +32,7 @@ const FALLBACK_CAMERAS = [
  */
 function CallingWindow() {
   const { state, actions, selfCamera } = useVideoCall();
+  const conversationName = useConversationName();
   const { media } = state;
   const [openMenu, setOpenMenu] = useState<WindowDeviceMenuId | null>(null);
   const devices = useMediaDevices({ enabled: media.useWebcam });
@@ -40,6 +42,7 @@ function CallingWindow() {
   return (
     <div className={styles['call-window-scene']}>
       <WindowCalling
+        labels={{ title: `Call · ${conversationName}` }}
         peerName={PEER.name}
         peerAvatarSrc={PEER.avatarSrc}
         onCollapse={actions.collapse}

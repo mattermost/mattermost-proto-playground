@@ -4,18 +4,18 @@ import { WidgetFrame } from '../WidgetFrame';
 import styles from './WidgetIncoming.module.scss';
 
 export interface WidgetIncomingLabels {
-  /** Line under the caller name. */
+  /** Line under the caller name (the call type). */
   subtitle?: string;
   accept?: string;
-  ignore?: string;
+  decline?: string;
 }
 
 export interface WidgetIncomingProps {
   callerName: string;
   callerAvatarSrc?: string;
   onAccept: () => void;
-  /** Dismiss the call without answering. */
-  onIgnore: () => void;
+  /** Turn the call down; the caller sees a declined-call post. */
+  onDecline: () => void;
   labels?: WidgetIncomingLabels;
   className?: string;
 }
@@ -23,7 +23,7 @@ export interface WidgetIncomingProps {
 const DEFAULT_LABELS: Required<WidgetIncomingLabels> = {
   subtitle: 'Incoming video call',
   accept: 'Accept',
-  ignore: 'Ignore',
+  decline: 'Decline',
 };
 
 /**
@@ -33,7 +33,7 @@ export default function WidgetIncoming({
   callerName,
   callerAvatarSrc,
   onAccept,
-  onIgnore,
+  onDecline,
   labels,
   className,
 }: WidgetIncomingProps) {
@@ -50,7 +50,7 @@ export default function WidgetIncoming({
             src={callerAvatarSrc}
             alt=""
             name={callerName}
-            size="40"
+            size="48"
           />
         </span>
         <div className={styles['widget-incoming__text']}>
@@ -63,9 +63,9 @@ export default function WidgetIncoming({
           className={styles['widget-incoming__action']}
           emphasis="tertiary"
           size="small"
-          onClick={onIgnore}
+          onClick={onDecline}
         >
-          {l.ignore}
+          {l.decline}
         </Button>
         <Button
           className={styles['widget-incoming__action']}
