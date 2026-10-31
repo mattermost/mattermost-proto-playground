@@ -237,7 +237,7 @@ export function useVideoCallState() {
             endedAt: null,
             recordingsMade: 0,
             callerId:
-              phase === 'incoming'
+              phase === 'incoming' || phase === 'joining'
                 ? DM_PEER_ID
                 : phase === 'ongoing'
                   ? GROUP_STARTER_ID
@@ -270,7 +270,10 @@ export function useVideoCallState() {
             declinedCall: false,
             endedAt: null,
             recordingsMade: 0,
-            callerId: demo.phase === 'incoming' ? DM_PEER_ID : SELF_ID,
+            callerId:
+              demo.phase === 'incoming' || demo.phase === 'joining'
+                ? DM_PEER_ID
+                : SELF_ID,
             callStartedAt: demo.phase === 'active' ? Date.now() : null,
           };
         }),

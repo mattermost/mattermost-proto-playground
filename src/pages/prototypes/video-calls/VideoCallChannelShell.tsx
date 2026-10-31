@@ -11,7 +11,7 @@ import avatarDavidLiang from '@/assets/avatars/David Liang.png';
 import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
 import avatarEthanBrooks from '@/assets/avatars/Ethan Brooks.png';
 import avatarMarcoRinaldi from '@/assets/avatars/Marco Rinaldi.png';
-import type { CallPhase } from '@/types/videoCall';
+import type { CallPhase, JoinMode } from '@/types/videoCall';
 import { useVideoCall } from './videoCallContext';
 import { groupChatName } from './videoCallsData';
 
@@ -51,12 +51,14 @@ const OTHER_CALL_ROW = 'Release Discussion';
 
 /**
  * Whether the open conversation has a call running. A DM only has one once it
- * is ringing (pre-join is not a call yet); a group or channel call is already
- * running before you join.
+ * is ringing (pre-join is not a call yet). A group or channel call is already
+ * running before you join, but pre-join only counts when it joins that call
+ * (starting a new one from idle is not a call yet).
  */
 function conversationHasCall(
   context: 'dm' | 'gm' | 'channel',
   phase: CallPhase,
+  joinMode: JoinMode,
 ) {
   if (context === 'dm') {
     return (
@@ -66,6 +68,7 @@ function conversationHasCall(
       phase === 'active'
     );
   }
+  if (phase === 'pre-join') return joinMode === 'join-group';
   return phase !== 'idle';
 }
 
@@ -73,8 +76,9 @@ function buildSidebarModel(
   context: 'dm' | 'gm' | 'channel',
   count: number,
   phase: CallPhase,
+  joinMode: JoinMode,
 ): SidebarModel {
-  const openHasCall = conversationHasCall(context, phase);
+  const openHasCall = conversationHasCall(context, phase, joinMode);
   // The group DM row is the open group chat, named after its members.
   const gmName = groupChatName(count);
   const activeName =
@@ -135,8 +139,14 @@ export default function VideoCallChannelShell({
 }: VideoCallChannelShellProps) {
   const { state } = useVideoCall();
   const model = useMemo(
-    () => buildSidebarModel(state.callContext, state.count, state.phase),
-    [state.callContext, state.count, state.phase],
+    () =>
+      buildSidebarModel(
+        state.callContext,
+        state.count,
+        state.phase,
+        state.joinMode,
+      ),
+    [state.callContext, state.count, state.phase, state.joinMode],
   );
   return (
     <ChannelShell
