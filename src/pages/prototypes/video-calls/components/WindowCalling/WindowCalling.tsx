@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { CallingPulse } from '../CallingPulse';
 import { VideoCallWindowFrame } from '../VideoCallWindow';
 import styles from './WindowCalling.module.scss';
 
@@ -67,14 +68,9 @@ export function WindowCalling({
       }}
     >
       <div className={styles['window-calling']}>
-        <div className={styles['window-calling__avatar']}>
-          <span className={styles['window-calling__ring']} aria-hidden="true" />
-          <span
-            className={`${styles['window-calling__ring']} ${styles['window-calling__ring--delayed']}`}
-            aria-hidden="true"
-          />
+        <CallingPulse className={styles['window-calling__avatar']}>
           <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="120" />
-        </div>
+        </CallingPulse>
         <div className={styles['window-calling__text']} role="status">
           <h2 className={styles['window-calling__title']}>
             {l.calling(peerName)}

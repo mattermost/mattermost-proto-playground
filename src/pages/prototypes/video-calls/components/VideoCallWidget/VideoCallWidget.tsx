@@ -11,6 +11,7 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
+import { CallingPulse } from '../CallingPulse';
 import { MicLevelMeter } from '../MicLevelMeter';
 import { PhaseCrossfade } from '../PhaseCrossfade';
 import type { VideoStageClip, VideoStageParticipant } from '../VideoStage';
@@ -285,9 +286,9 @@ export function VideoCallWidget({
       </div>
     ) : phase === 'calling' ? (
       <div className={styles['video-call-widget__peer']} aria-live="polite">
-        <span className={styles['video-call-widget__ring']}>
+        <CallingPulse>
           <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
-        </span>
+        </CallingPulse>
         <p className={styles['video-call-widget__status']}>
           {l.calling(peerName)}
         </p>

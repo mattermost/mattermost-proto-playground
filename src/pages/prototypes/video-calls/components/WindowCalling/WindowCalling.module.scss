@@ -1,14 +1,3 @@
-@keyframes window-calling-pulse {
-  from {
-    opacity: 0.56;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(1.7);
-  }
-}
-
 .window-calling {
   flex: 1 1 auto;
   min-height: 0;
@@ -20,34 +9,11 @@
   padding: var(--spacing-xl);
   color: var(--button-color);
 
+  // The shared CallingPulse wraps the avatar; the popout's bigger avatar lets
+  // the circles grow a little further.
   &__avatar {
-    position: relative;
-    display: inline-flex;
+    --calling-pulse-scale: 1.6;
     margin-bottom: var(--spacing-m);
-  }
-
-  // Ring is a border pulse behind the avatar. Reduced motion: a static halo.
-  &__ring {
-    position: absolute;
-    inset: 0;
-    border: 2px solid var(--button-color);
-    border-radius: var(--radius-pill);
-    pointer-events: none;
-    animation: window-calling-pulse 2s var(--ease-exit) infinite;
-
-    &--delayed {
-      animation-delay: 1s;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: none;
-      opacity: 0;
-
-      &:not(.window-calling__ring--delayed) {
-        opacity: 0.32;
-        transform: scale(1.2);
-      }
-    }
   }
 
   &__text {

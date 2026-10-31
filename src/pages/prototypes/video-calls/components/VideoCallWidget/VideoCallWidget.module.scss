@@ -1,15 +1,3 @@
-// Filled (not bordered) pulse: each circle grows and fades out.
-@keyframes video-call-widget-ring {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
-
 // ONE card for pre-join, calling and the live call (302px frame from
 // WidgetFrame). The frame is a size container so the pre-join preview height
 // can be expressed in cqw; the media row animates its height between phases.
@@ -142,7 +130,7 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  // Calling: peer avatar with a soft pulsing ring and status text.
+  // Calling: peer avatar with the shared pulse, and status text.
   &__peer {
     display: flex;
     flex: 1 1 auto;
@@ -151,32 +139,6 @@
     justify-content: center;
     gap: var(--spacing-m);
     min-width: 0;
-  }
-
-  &__ring {
-    position: relative;
-    isolation: isolate;
-    display: inline-flex;
-    border-radius: var(--radius-pill);
-
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: var(--radius-pill);
-      // green-600 at 32%, filled.
-      background: rgba(var(--color-green-600-rgb), 0.32);
-      // Behind the avatar, so the fill never tints it.
-      z-index: -1;
-      animation: video-call-widget-ring calc(var(--duration-moderate) * 6)
-        var(--ease-exit) infinite;
-      pointer-events: none;
-    }
-
-    &::after {
-      animation-delay: calc(var(--duration-moderate) * 3);
-    }
   }
 
   &__status {
@@ -348,14 +310,5 @@
     height: var(--spacing-xs);
     border-radius: var(--radius-pill);
     background: var(--error-text, var(--color-danger));
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &__ring::before,
-    &__ring::after {
-      animation: none;
-      opacity: 1;
-      transform: scale(1.3);
-    }
   }
 }
