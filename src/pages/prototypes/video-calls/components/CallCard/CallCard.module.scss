@@ -16,13 +16,19 @@
   padding: var(--spacing-l);
   border-radius: var(--radius-s);
   background: var(--center-channel-bg);
-  box-shadow: var(--elevation-1);
+  // 1px ring drawn as a shadow spread (not a border) so the card stays 72px
+  // tall, with the elevation on top.
+  box-shadow:
+    0 0 0 1px rgba(var(--center-channel-color-rgb), 0.12),
+    var(--elevation-1);
   color: var(--center-channel-color);
   transition: box-shadow var(--duration-quick) var(--ease-transition);
 
   // Hover lifts the card a step (Figma "State=Hover").
   &:hover {
-    box-shadow: var(--elevation-2);
+    box-shadow:
+      0 0 0 1px rgba(var(--center-channel-color-rgb), 0.12),
+      var(--elevation-2);
   }
 
   &__left {
