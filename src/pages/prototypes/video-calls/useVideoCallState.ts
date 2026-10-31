@@ -273,7 +273,7 @@ export function useVideoCallState() {
 
       // --- Real flow -------------------------------------------------------
       /** Header "Start call" / banner "Join": opens the widget at pre-join. */
-      startCall: (opts?: { audioOnly?: boolean }) =>
+      startCall: (opts?: { audioOnly?: boolean; video?: boolean }) =>
         setState((s) => ({
           ...s,
           ...PER_CALL_RESET,
@@ -286,8 +286,14 @@ export function useVideoCallState() {
           recordingsMade: 0,
           // Joining a call that is already running means someone else started it.
           callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
-          // Audio-only starts with the camera off (and releases the webcam).
-          media: opts?.audioOnly ? releaseCamera(s.media) : s.media,
+          // Audio-only starts with the camera off (and releases the webcam);
+          // "Start video call" turns it on, which also asks the browser for the
+          // webcam (the menu pick is the user gesture).
+          media: opts?.audioOnly
+            ? releaseCamera(s.media)
+            : opts?.video
+              ? { ...s.media, cameraOn: true, useWebcam: true }
+              : s.media,
         })),
       /** Pre-join primary action: a 1:1 call rings; group/channel joins directly. */
       confirmPreJoin: () =>

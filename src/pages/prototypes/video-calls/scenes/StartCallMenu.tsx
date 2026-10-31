@@ -48,7 +48,10 @@ export default function StartCallMenu() {
         onOpenChange={setOpen}
         onSelect={(id) => {
           setOpen(false);
-          actions.startCall({ audioOnly: id === 'audio' });
+          actions.startCall({
+            audioOnly: id === 'audio',
+            video: id === 'video',
+          });
         }}
       />
     </div>
