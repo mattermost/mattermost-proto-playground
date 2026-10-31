@@ -1,0 +1,314 @@
+// ONE card for pre-join, calling and the live call (302px frame from
+// WidgetFrame). The frame is a size container so the pre-join preview height
+// can be expressed in cqw; the media row animates its height between phases.
+.video-call-widget {
+  container-type: inline-size;
+  // Inner content width: card minus the side padding and the 1px borders.
+  --video-call-widget-inner: calc(100cqw - 2 * var(--spacing-s) - 2px);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-height: 40px; // one-off layout height
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+      var(--spacing-s);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__lead {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__title {
+    font-family: var(--font-family-heading);
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__channel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__channel-name {
+    font-family: var(--font-family-heading);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__elapsed {
+    flex: 1 1 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__expand {
+    flex: 0 0 auto;
+  }
+
+  // Media row: fixed height per phase so the change animates (auto heights
+  // cannot transition). Content crossfades inside via PhaseCrossfade.
+  &__media {
+    --video-call-widget-media-h: 88px; // one-off layout height
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: var(--video-call-widget-media-h);
+    padding: 0 var(--spacing-s) var(--spacing-xs);
+    // Clip the sides and bottom (phase content that outgrows the row), but let
+    // the calling ring pulse past the top into the header's empty space.
+    clip-path: inset(calc(var(--spacing-m) * -1) 0 0 0);
+    transition: height var(--duration-moderate) var(--ease-transition);
+
+    &--pre-join {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
+      );
+    }
+
+    // Join mode adds the "N people in the call" row under the preview.
+    &--pre-join#{&}--people {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-s) + 24px +
+          var(--spacing-xs)
+      );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__pre-join {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__preview {
+    display: flex;
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-s);
+    overflow: hidden;
+
+    > * {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__people {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__people-label {
+    min-width: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // Calling: peer avatar with the shared pulse, and status text.
+  &__peer {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__status {
+    font-family: var(--font-family-heading);
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+  }
+
+  &__thumbs {
+    display: flex;
+    gap: var(--spacing-xxxs);
+    flex: 1 1 auto;
+  }
+
+  &__thumb {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+  }
+
+  // VideoTile 'thumbnail' is a fixed 120x136; fill the column at a shorter,
+  // roughly 16:10 height. Doubled selector beats the tile's size rule.
+  &__tile#{&}__tile {
+    width: 100%;
+    height: 80px; // one-off layout height
+  }
+
+  &__overflow {
+    position: absolute;
+    top: var(--spacing-xxxs);
+    left: var(--spacing-xxxs);
+    z-index: 4;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--neutral-0);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // Controls row: mic / camera stay put in every phase; the trailing group
+  // changes (meter, Cancel, or participants / share / more / hang up).
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: auto;
+    box-sizing: border-box;
+    // Tall enough for the small Cancel button, so calling and active match.
+    min-height: calc(var(--spacing-xxs) + 32px + var(--spacing-s));
+    padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-s);
+    transition: padding-bottom var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: the actions row below supplies the bottom inset.
+    &--with-actions {
+      min-height: 0;
+      padding-bottom: var(--spacing-xs);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__trailing {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__trailing-inner {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__meter {
+    flex: 1 1 auto;
+  }
+
+  // Pre-join Cancel / Start: stays mounted, collapses (grid 0fr -> 1fr) once
+  // the call is on.
+  &__actions {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--open {
+      grid-template-rows: 1fr;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  // The clip has no padding: padding would stay visible at 0fr.
+  &__actions-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__actions-row {
+    display: flex;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s) var(--spacing-s);
+  }
+
+  // Start / Join call: green-600 (white text needs the contrast). The primary Button reads --button-bg
+  // (hover and active tints derive from it), so override the variable.
+  &__start {
+    --button-bg: var(--color-green-600);
+    // Takes the width left beside Cancel.
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  &__hangup {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    min-width: 36px;
+    padding: 0 var(--spacing-xs);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: var(--error-text, var(--color-danger));
+    color: var(--neutral-0);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    // Same tints as the compass destructive Button: darken the red, never
+    // drop the fill.
+    &:hover {
+      background: color-mix(
+        in srgb,
+        black 8%,
+        var(--error-text, var(--color-danger))
+      );
+    }
+
+    &:active {
+      background: color-mix(
+        in srgb,
+        black 16%,
+        var(--error-text, var(--color-danger))
+      );
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__rec {
+    flex: 0 0 auto;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: var(--error-text, var(--color-danger));
+  }
+}

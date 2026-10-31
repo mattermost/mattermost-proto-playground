@@ -1,0 +1,58 @@
+// Widget enter motion mirrors the outbound-calls `.pip`. It plays once on
+// mount (not per phase), so pre-join -> calling -> active does not re-animate.
+@keyframes call-widget-host-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--spacing-s)) scale(0.96);
+  }
+}
+
+@keyframes call-widget-host-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-s)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.call-widget-host {
+  width: 302px; // one-off layout width, matches the outbound-calls widget
+  max-width: 100%;
+  animation: call-widget-host-enter var(--duration-quick) var(--ease-entrance);
+
+  // Draggable anywhere on the card that isn't a control (see useWidgetDrag).
+  cursor: grab;
+  touch-action: none;
+
+  // Eased settle into the nearest corner after a drag.
+  &--snapping {
+    transition: translate var(--duration-moderate) var(--ease-transition);
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &--dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  // Mirrors the outbound-calls PiP exit.
+  &--exiting {
+    animation: call-widget-host-exit var(--duration-quick) var(--ease-exit)
+      forwards;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

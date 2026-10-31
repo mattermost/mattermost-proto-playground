@@ -1,0 +1,28 @@
+// The menu is a light/dark *themed* surface regardless of where it is anchored:
+// it re-asserts the theme text colour on its rows so no ancestor `color` or
+// `button { ... }` chrome (e.g. the dark call controls bar) can bleed into it.
+.device-menu {
+  color: var(--center-channel-color);
+  transform-origin: bottom center;
+  min-width: 240px;
+
+  // Beat PopoverMenu's own `transform-origin: top left` regardless of CSS order.
+  &#{&} {
+    transform-origin: bottom center;
+  }
+
+  [role^='menuitem']:not(:disabled) {
+    color: var(--center-channel-color);
+  }
+
+  &__anchor {
+    display: contents;
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-l);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}

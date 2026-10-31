@@ -1,0 +1,83 @@
+// Entrance from below / the left edge.
+@keyframes call-notice-in {
+  from {
+    opacity: 0;
+    transform: translate(calc(var(--spacing-m) * -1), var(--spacing-m));
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+// Fade-off once a notice has had its time.
+@keyframes call-notice-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(var(--spacing-m) * -1), 0);
+  }
+}
+
+// Bottom-left of the room. The room ends above the controls bar, so this
+// never overlaps the bar or the participants button; the offset is a gutter.
+.call-notice {
+  position: absolute;
+  bottom: var(--spacing-m);
+  left: var(--spacing-m);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
+  max-width: calc(100% - var(--spacing-xxl));
+  pointer-events: none;
+
+  &__item {
+    pointer-events: auto;
+    max-width: 100%;
+    animation: call-notice-in var(--duration-quick) var(--ease-entrance) both;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__item--leaving {
+    animation: call-notice-out var(--duration-quick) var(--ease-exit) both;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  // Compact popover surface for recording started / stopped.
+  &__popover {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-l) var(--spacing-s) var(--spacing-m);
+    color: var(--center-channel-color);
+    background: var(--center-channel-bg);
+    border-radius: var(--radius-m);
+    box-shadow: var(--elevation-3);
+  }
+
+  &__record {
+    display: inline-flex;
+    flex: 0 0 auto;
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__popover-text {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+}

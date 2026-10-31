@@ -1,0 +1,112 @@
+// Mirrors CallPopout controls (compass-proto): 52px inverted IconButtons on the
+// 8% white fill, red destructive Leave, 3 zones.
+.call-controls-bar {
+  position: relative;
+  z-index: 4;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-m);
+  padding: var(--spacing-m) 0;
+
+  &__left,
+  &__right {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+
+  &__center {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__slot {
+    position: relative;
+    display: flex;
+  }
+
+  &__popover {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-s));
+    left: 50%;
+    z-index: 6;
+    transform: translateX(-50%);
+  }
+
+  // Shared button chrome (copied from CallPopout so the bar reads identically).
+  // Scoped to the bar's own buttons (direct children / segment groups) so it can
+  // never leak into popover content such as menu items (the old white-on-white bug).
+  &__left > button,
+  &__center > button,
+  &__slot > button,
+  &__segment button {
+    background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
+    color: color-mix(in srgb, var(--neutral-0) 72%, transparent);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
+    }
+
+    &:active:not(:disabled):not([data-active='true']) {
+      background-color: color-mix(in srgb, var(--neutral-0) 24%, transparent);
+    }
+
+    &[aria-pressed='true']:not(:disabled),
+    &[data-active='true']:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
+    }
+  }
+
+  &__left > button,
+  &__center > button,
+  &__slot > button,
+  &__right > button {
+    border-radius: var(--radius-m);
+  }
+
+  // Segment outer corners match the other bar buttons.
+  &__segment button:first-child {
+    border-start-start-radius: var(--radius-m);
+    border-end-start-radius: var(--radius-m);
+  }
+
+  &__segment button:last-child {
+    border-start-end-radius: var(--radius-m);
+    border-end-end-radius: var(--radius-m);
+  }
+
+  // Mic / camera: same fill as the sibling buttons; only the glyph goes red when off.
+  #{&}__toggle#{&}__toggle--off {
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__right > button {
+    background-color: var(--error-text, var(--color-danger));
+    color: var(--neutral-0);
+
+    // Same tints as the compass destructive Button: darken the red, never
+    // drop the fill.
+    &:hover:not(:disabled) {
+      background-color: color-mix(
+        in srgb,
+        black 8%,
+        var(--error-text, var(--color-danger))
+      );
+      color: var(--neutral-0);
+    }
+
+    &:active:not(:disabled) {
+      background-color: color-mix(
+        in srgb,
+        black 16%,
+        var(--error-text, var(--color-danger))
+      );
+      color: var(--neutral-0);
+    }
+  }
+}

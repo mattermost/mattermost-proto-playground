@@ -1,0 +1,58 @@
+// Two IconButtons joined into one unit: outer corners rounded, inner corners
+// squared, no divider between. Button chrome itself comes from compass-ui.
+.segmented-icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+
+  &__main,
+  &__chevron {
+    position: relative;
+  }
+
+  &__main {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  // Tighter than a square icon button: trimming the main segment and narrowing
+  // the chevron segment pulls the chevron toward the icon while the two still
+  // read (and hit) as one segmented control. Triple class beats IconButton's
+  // size rules.
+  #{&}__main#{&}__main#{&}__main {
+    width: calc(var(--spacing-xxl) + var(--spacing-xxxs)); // 28
+  }
+
+  &--size-medium#{&}--size-medium #{&}__main#{&}__main#{&}__main {
+    width: calc(var(--spacing-xxxl) + var(--spacing-xxxs)); // 36
+  }
+
+  // Triple-class selector so the narrow width beats IconButton's size rules.
+  #{&}__chevron#{&}__chevron#{&}__chevron {
+    width: var(--spacing-xl);
+    min-width: 0;
+    height: auto;
+    padding-inline: 0;
+    align-self: stretch;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+  }
+
+  &__chevron-icon {
+    transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  &--open &__chevron-icon {
+    transform: rotate(180deg);
+  }
+
+  &--size-small#{&}--size-small #{&}__chevron#{&}__chevron#{&}__chevron {
+    width: var(--spacing-l);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__chevron-icon {
+      transition: none;
+    }
+  }
+}

@@ -1,0 +1,52 @@
+// Filled circles that grow and fade out, one cycle apart by half a period.
+@keyframes calling-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(var(--calling-pulse-scale, 1.5));
+    opacity: 0;
+  }
+}
+
+.calling-pulse {
+  position: relative;
+  // Own stacking context so the circles (z-index -1) sit behind the avatar
+  // but never behind the surface.
+  isolation: isolate;
+  display: inline-flex;
+  border-radius: var(--radius-pill);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: var(--radius-pill);
+    background: var(
+      --calling-pulse-color,
+      rgba(var(--color-green-600-rgb), 0.32)
+    );
+    animation: calling-pulse calc(var(--duration-moderate) * 6) var(--ease-exit)
+      infinite;
+    pointer-events: none;
+  }
+
+  &::after {
+    animation-delay: calc(var(--duration-moderate) * 3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+      transform: scale(1.3);
+    }
+
+    &::after {
+      animation: none;
+      opacity: 0;
+    }
+  }
+}

@@ -1,0 +1,316 @@
+// The FLIP animation (flip.ts) animates this number alongside the tile's scale
+// so overlay chrome can divide it out and keep its size. Registered so it
+// interpolates.
+@property --flip-s {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+
+// ---------------------------------------------------------------------------
+// Video stage — pip / grid / speaker / share layouts (Figma popout stage,
+// 12px gaps). One CSS grid (`__canvas`) holds every tile; VideoStage.tsx sets
+// the grid template and each cell's grid lines inline (layout values, not
+// tokens). Column gaps are cell padding (half a gap each side) so the 120-col
+// grid has no gap arithmetic; the canvas bleeds half a gap so outer tiles
+// still sit `--video-stage-edge` from the stage edge. The speaking ring is
+// drawn inside each tile by VideoTile.
+// Featured (speaker view, 1:1 remote) tiles are the largest 16:9 box that fits
+// the cell, centred; grid tiles keep the cell height but are never wider than
+// 16:9 (taller / portrait cells are left as they are).
+// ---------------------------------------------------------------------------
+
+@keyframes video-stage-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.video-stage {
+  --video-stage-gap: var(--spacing-m);
+  --video-stage-edge: var(--spacing-xs);
+  --video-stage-film: 200px;
+  --video-stage-strip-max: 240px;
+  --video-stage-strip-aspect: calc(16 / 9);
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+  background: var(--calls-bg);
+  color: var(--button-color, var(--color-neutral-0));
+
+  &__canvas {
+    // Speaker strip cell (incl. its gap padding) sized from the stage width.
+    --video-stage-strip-cell: min(
+      calc(var(--video-stage-strip-max) + var(--video-stage-gap)),
+      calc(
+        (100cqw - 2 * var(--video-stage-edge) + var(--video-stage-gap)) /
+          var(--video-stage-strip-count, 1)
+      )
+    );
+    --video-stage-strip-row: calc(
+      (var(--video-stage-strip-cell) - var(--video-stage-gap)) /
+        var(--video-stage-strip-aspect)
+    );
+    // Share filmstrip: column width / row height.
+    --video-stage-film-cell: calc(
+      var(--video-stage-film) + var(--video-stage-gap)
+    );
+    --video-stage-film-row: calc(
+      var(--video-stage-film) / var(--video-stage-strip-aspect)
+    );
+
+    position: absolute;
+    inset: var(--video-stage-edge)
+      calc(var(--video-stage-edge) - var(--video-stage-gap) / 2);
+    display: grid;
+    column-gap: 0;
+    row-gap: var(--video-stage-gap);
+    align-content: center;
+
+    // Grid view: shrink the canvas to the largest block of 16:9 tiles that
+    // fits, centred, so tiles stay grouped instead of drifting apart.
+    &--grid {
+      --video-stage-grid-tile-h: calc(
+        (
+            100cqh - 2 * var(--video-stage-edge) -
+              (var(--video-stage-grid-rows) - 1) * var(--video-stage-gap)
+          ) /
+          var(--video-stage-grid-rows)
+      );
+      left: 50%;
+      right: auto;
+      width: min(
+        calc(100cqw - 2 * var(--video-stage-edge) + var(--video-stage-gap)),
+        calc(
+          var(--video-stage-grid-cols) *
+            (var(--video-stage-grid-tile-h) * 16 / 9 + var(--video-stage-gap))
+        )
+      );
+      translate: -50% 0;
+    }
+  }
+
+  &__cell {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    padding-inline: calc(var(--video-stage-gap) / 2);
+
+    // In-call floating self view: covers the whole stage, but only the PiP
+    // itself takes pointer events.
+    &--floating {
+      position: absolute;
+      inset: calc(var(--video-stage-edge) * -1)
+        calc((var(--video-stage-edge) - var(--video-stage-gap) / 2) * -1);
+      z-index: 5;
+      padding: 0;
+      pointer-events: none;
+    }
+
+    // Strip / filmstrip cells: a centred tile of the strip aspect.
+    &--strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // Featured + grid cells are size containers so their tile can be sized
+    // from the cell (cqw / cqh) and centred.
+    &--featured,
+    &--grid {
+      container-type: size;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    // Featured: largest 16:9 box in the cell.
+    &--featured#{&}--featured > * {
+      flex: 0 0 auto;
+      width: min(100cqw, calc(100cqh * 16 / 9));
+      height: min(100cqh, calc(100cqw * 9 / 16));
+    }
+
+    // Grid: never wider than 16:9, full cell height otherwise.
+    &--grid#{&}--grid > * {
+      flex: 0 0 auto;
+      width: min(100cqw, calc(100cqh * 16 / 9));
+      height: 100%;
+    }
+
+    // Doubled class: beats the docked SelfViewPip root's own 100% sizing.
+    &--strip#{&}--strip > * {
+      width: auto;
+      height: 100%;
+      max-width: 100%;
+      aspect-ratio: var(--video-stage-strip-aspect);
+    }
+  }
+
+  // FLIP target around each tile (radius read by the animation's clip).
+  &__frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-m);
+  }
+
+  // Share content ------------------------------------------------------------
+  &__content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: var(--radius-m);
+    background: rgba(0, 0, 0, 0.32);
+    animation: video-stage-fade-in var(--duration-moderate)
+      var(--ease-transition);
+  }
+
+  &__presenting {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: var(--spacing-xxxs) var(--spacing-xxs);
+    border-radius: 0 var(--radius-s) 0 var(--radius-m);
+    background: rgba(0, 0, 0, 0.8);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // Keyboard select target (pointer clicks land on the frame) ---------------
+  &__select {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-m);
+    background: transparent;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg, var(--color-info));
+      outline-offset: 2px;
+    }
+  }
+
+  // "+N" overflow chip tile -------------------------------------------------
+  &__overflow-body {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-m);
+    background: rgba(var(--button-color-rgb, 255, 255, 255), 0.08);
+    color: inherit;
+    font: inherit;
+
+    &:is(button) {
+      cursor: pointer;
+      transition: background-color var(--duration-quick) var(--ease-transition);
+
+      &:hover {
+        background: rgba(var(--button-color-rgb, 255, 255, 255), 0.16);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--button-bg, var(--color-info));
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  &__overflow-avatars {
+    display: inline-flex;
+
+    > * + * {
+      margin-left: calc(var(--spacing-xs) * -1);
+    }
+
+    > * {
+      box-shadow: 0 0 0 2px var(--calls-bg);
+      border-radius: var(--radius-pill);
+    }
+  }
+
+  &__overflow-count {
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // Small chip in a strip: avatars beside the count.
+  &__cell--small-overflow {
+    .video-stage__overflow-body {
+      flex-direction: row;
+      gap: var(--spacing-xxs);
+    }
+
+    .video-stage__overflow-count {
+      font-size: var(--font-size-100);
+      line-height: var(--line-height-100);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Modifiers
+  // -------------------------------------------------------------------------
+
+  // Side filmstrip: tiles hug the stage edge when rows shrink below 16:9 of
+  // the column width.
+  &--filmstrip-side .video-stage__cell--strip {
+    justify-content: flex-end;
+  }
+
+  // Side filmstrip rows shrink so up to six fit the stage height.
+  &--filmstrip-side .video-stage__canvas {
+    --video-stage-film-row: min(
+      calc(var(--video-stage-film) / var(--video-stage-strip-aspect)),
+      calc(
+        (
+            100% - (var(--video-stage-strip-count, 1) + 1) *
+              var(--video-stage-gap)
+          ) /
+          var(--video-stage-strip-count, 1)
+      )
+    );
+  }
+
+  // Bottom filmstrip cells shrink so every cell fits the stage width.
+  &--filmstrip-bottom .video-stage__canvas {
+    --video-stage-film-cell: min(
+      calc(var(--video-stage-film) + var(--video-stage-gap)),
+      calc(100% / var(--video-stage-strip-count, 1))
+    );
+  }
+
+  &--compact {
+    --video-stage-gap: var(--spacing-xs);
+    --video-stage-edge: var(--spacing-xxs);
+    --video-stage-film: 120px;
+    --video-stage-strip-max: 120px;
+    --video-stage-strip-aspect: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-stage__content,
+    .video-stage__overflow-body {
+      transition: none;
+      animation: none;
+    }
+  }
+}

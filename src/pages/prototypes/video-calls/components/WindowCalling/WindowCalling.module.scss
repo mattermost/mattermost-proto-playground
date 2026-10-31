@@ -1,0 +1,41 @@
+.window-calling {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  color: var(--button-color);
+
+  // The shared CallingPulse wraps the avatar; the popout's bigger avatar lets
+  // the circles grow a little further.
+  &__avatar {
+    --calling-pulse-scale: 1.6;
+    margin-bottom: var(--spacing-m);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-align: center;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-600);
+    line-height: var(--line-height-600);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    color: rgba(var(--button-color-rgb), 0.72);
+  }
+}

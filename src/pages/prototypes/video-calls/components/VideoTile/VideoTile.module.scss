@@ -1,0 +1,388 @@
+// ---------------------------------------------------------------------------
+// Video tile — Figma "Video Window" (3424:168480)
+// Speaking x Video x size. Default fills its parent cell; compact = 182 square;
+// thumbnail = widget 120x136.
+// ---------------------------------------------------------------------------
+
+@keyframes video-tile-wave {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.45);
+  }
+}
+
+@keyframes video-tile-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) scale(0.6);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -10%) scale(1.15);
+  }
+  75% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(1);
+  }
+}
+
+@keyframes video-tile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.video-tile {
+  // Figma camera-off fill and muted glyph red have no Compass token yet.
+  --video-tile-bg: var(--calls-video-bg, #080c14);
+  --video-tile-muted: var(--calls-muted-color, #ff585b);
+  --video-tile-ring: var(--online-indicator);
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--video-tile-bg);
+  color: var(--button-color, var(--color-neutral-0));
+  isolation: isolate;
+
+  // Speaking ring: an inset border overlay above the media, inside the tile
+  // edge (no layout shift, follows the tile radius, nothing outside to clip).
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 3px transparent;
+    pointer-events: none;
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+  }
+
+  &__media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: var(--video-tile-bg);
+  }
+
+  &__avatar {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-m);
+  }
+
+  &__avatar-image {
+    border-radius: var(--radius-pill);
+    transition: box-shadow var(--duration-quick) var(--ease-transition);
+  }
+
+  // -------------------------------------------------------------------------
+  // Label chip — bottom-left, flush to the tile corner
+  // -------------------------------------------------------------------------
+  // Bottom 24px strip: hit area for the host-controls button (hover / focus).
+  // The label chip sits inside it so hovering the chip also reveals the button.
+  // Overlay chrome cancels the FLIP scale (--flip-s) so it never balloons while a
+  // tile resizes into a new layout.
+  &__strip {
+    scale: calc(1 / var(--flip-s, 1));
+    transform-origin: bottom left;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    height: var(--spacing-xxl);
+    pointer-events: none;
+  }
+
+  &__more {
+    position: absolute;
+    right: var(--spacing-xxxs);
+    bottom: 0;
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__label {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    max-width: calc(100% - var(--spacing-xs));
+    height: var(--spacing-xxl);
+    padding: var(--spacing-xxxs) var(--spacing-xxs);
+    border-radius: 0 var(--radius-s) 0 var(--radius-s);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--button-color, var(--color-neutral-0));
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__mic {
+    flex: 0 0 auto;
+    color: var(--button-color, var(--color-neutral-0));
+
+    &--muted {
+      color: var(--video-tile-muted);
+    }
+  }
+
+  &__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // 5 bars, 2px wide, 2px gap, heights 9 / 5 / 13 / 7 / 3.
+  // HOST tag (compass-ui Tag, default type), recoloured for the dark tile:
+  // the default tint assumes a light surface. Doubled class beats the Tag's own.
+  &__host#{&}__host {
+    flex: 0 0 auto;
+    background-color: rgba(var(--button-color-rgb, 255, 255, 255), 0.16);
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
+  &__wave {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxxs);
+    height: var(--icon-size-16);
+    margin-left: var(--spacing-xxxxs);
+  }
+
+  &__wave-bar {
+    display: block;
+    width: var(--spacing-xxxxs);
+    border-radius: var(--radius-m);
+    background: var(--video-tile-ring);
+    transform-origin: center;
+    animation: video-tile-wave calc(var(--duration-moderate) * 3)
+      var(--ease-transition) infinite;
+
+    &:nth-child(1) {
+      height: 9px;
+      animation-delay: calc(var(--duration-quick) * -1);
+    }
+    &:nth-child(2) {
+      height: 5px;
+      animation-delay: calc(var(--duration-quick) * -3);
+    }
+    &:nth-child(3) {
+      height: 13px;
+    }
+    &:nth-child(4) {
+      height: 7px;
+      animation-delay: calc(var(--duration-quick) * -2);
+    }
+    &:nth-child(5) {
+      height: 3px;
+      animation-delay: calc(var(--duration-quick) * -4);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Top-right status badges (poor network, raised hand)
+  // -------------------------------------------------------------------------
+  &__badges {
+    scale: calc(1 / var(--flip-s, 1));
+    transform-origin: top right;
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    z-index: 3;
+    display: flex;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-24);
+    height: var(--icon-size-24);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.64);
+    color: var(--away-indicator, var(--color-warning));
+
+    // Yellow badge with a dark glyph for contrast.
+    &--hand {
+      color: var(--color-neutral-1050);
+      background: var(--color-yellow-500);
+    }
+  }
+
+  // Widget thumbnail: small dark circular muted badge bottom-right.
+  &__muted-dot {
+    position: absolute;
+    right: var(--spacing-xxxs);
+    bottom: var(--spacing-xxxs);
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-20);
+    height: var(--icon-size-20);
+    border-radius: var(--radius-pill);
+    background: var(--video-tile-bg);
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
+  &__reaction {
+    position: absolute;
+    left: 50%;
+    bottom: 30%;
+    z-index: 3;
+    font-size: var(--font-size-800);
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 0);
+    animation: video-tile-pop calc(var(--duration-moderate) * 8)
+      var(--ease-entrance) forwards;
+  }
+
+  &__reconnecting {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    background: rgba(var(--calls-bg-rgb, 9, 29, 72), 0.72);
+    color: var(--button-color, var(--color-neutral-0));
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__spinner {
+    animation: video-tile-spin calc(var(--duration-moderate) * 4)
+      var(--ease-transition) infinite;
+  }
+
+  // -------------------------------------------------------------------------
+  // Modifiers
+  // -------------------------------------------------------------------------
+  &--speaking {
+    &::after {
+      box-shadow: inset 0 0 0 3px var(--video-tile-ring);
+    }
+
+    .video-tile__avatar-image {
+      box-shadow: 0 0 0 3px var(--video-tile-ring);
+    }
+  }
+
+  &--has-menu {
+    .video-tile__strip {
+      pointer-events: auto;
+    }
+
+    .video-tile__label {
+      max-width: calc(100% - var(--spacing-xxl) - var(--spacing-xs));
+    }
+
+    .video-tile__strip:hover .video-tile__more,
+    .video-tile__strip:focus-within .video-tile__more,
+    .video-tile__more:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  &--menu-open .video-tile__more {
+    opacity: 1;
+  }
+
+  &--mirrored {
+    .video-tile__media {
+      transform: scaleX(-1);
+    }
+  }
+
+  &--reconnecting {
+    .video-tile__media {
+      filter: grayscale(0.6);
+    }
+  }
+
+  // Compact fills its parent like default (the filmstrip / mobile grid sets
+  // the 182 square); only the inner scale changes.
+  &--size-compact {
+    .video-tile__badges {
+      top: var(--spacing-xxxs);
+      right: var(--spacing-xxxs);
+    }
+  }
+
+  &--size-thumbnail {
+    width: 120px;
+    height: 136px;
+    border-radius: var(--radius-s);
+
+    .video-tile__avatar {
+      padding: var(--spacing-xxxs);
+    }
+
+    .video-tile__badges {
+      top: var(--spacing-xxxs);
+      right: var(--spacing-xxxs);
+    }
+
+    .video-tile__badge {
+      width: var(--icon-size-20);
+      height: var(--icon-size-20);
+    }
+
+    .video-tile__reaction {
+      font-size: var(--font-size-600);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      transition: none;
+    }
+
+    .video-tile__avatar-image,
+    .video-tile__more {
+      transition: none;
+    }
+
+    .video-tile__wave-bar,
+    .video-tile__spinner {
+      animation: none;
+    }
+
+    // Reaction still appears (information), just without the pop motion.
+    .video-tile__reaction {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}

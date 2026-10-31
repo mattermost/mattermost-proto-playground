@@ -1,0 +1,100 @@
+// Stage frame — same centering as the other call prototypes (flex + padding).
+// ChannelShell / fullscreen popouts ship their own calc height + margin:auto,
+// so they are normalised to fill the frame.
+
+@keyframes video-calls-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes video-calls-window-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.video-calls {
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+  gap: var(--spacing-m);
+
+  &__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-width: 1440px;
+    max-height: 800px;
+    overflow: hidden;
+  }
+
+  // The popout floats over the conversation, inset so the app shows around it,
+  // with the conversation dimmed behind a scrim.
+  &__window {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    box-sizing: border-box;
+    padding: var(--spacing-xxxxxl);
+    // Clipped to the channels UI: same corner radius as ChannelShell.
+    border-radius: var(--radius-xl);
+    background: rgba(var(--center-channel-color-rgb), 0.48);
+    animation: video-calls-scrim-in var(--duration-quick) var(--ease-entrance);
+  }
+
+  &__window-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    animation: video-calls-window-in var(--duration-quick) var(--ease-entrance);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__window,
+    &__window-body {
+      animation: none;
+    }
+  }
+
+  &__frame :global([class*='channel-shell']:not([class*='channel-shell__'])),
+  &__frame :global([class*='popout--fullscreen']) {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  // Prototype chrome in the top-nav centre slot: one switcher per demo axis.
+  &__chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+
+    // Keep switcher labels on one line ("No call", "Pre-join", "In call").
+    button {
+      white-space: nowrap;
+    }
+  }
+}

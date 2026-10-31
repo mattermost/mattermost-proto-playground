@@ -1,0 +1,114 @@
+.pre-join-panel {
+  // Two columns; the details block centres on the preview row only (the device
+  // controls sit in a second row under the preview).
+  display: grid;
+  grid-template-columns: minmax(0, 60fr) minmax(0, 32fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  justify-content: center;
+  column-gap: var(--spacing-xxxl);
+  row-gap: var(--spacing-l);
+  width: 100%;
+  max-width: 1080px; // one-off layout width
+  padding: var(--spacing-xl);
+  box-sizing: border-box;
+  color: var(--center-channel-color);
+
+  // The media wrapper only groups preview + controls in the markup; its
+  // children are placed straight onto the panel grid.
+  &__media {
+    display: contents;
+  }
+
+  &__preview {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    box-shadow: var(--elevation-2);
+  }
+
+  &__preview-controls {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-m);
+  }
+
+  &__details {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    min-width: 0;
+    max-width: 360px; // one-off layout width
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-600);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-600);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__participants,
+  &__checks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-m);
+  }
+
+  // Dark surface: only the text column is remapped (not the preview controls,
+  // whose device menus stay themed popovers). Compass components and the meter
+  // inside read these roles, so they come out light-on-dark.
+  &--dark {
+    color: var(--button-color);
+
+    .pre-join-panel__heading,
+    .pre-join-panel__participants,
+    .pre-join-panel__checks {
+      --center-channel-color: var(--button-color);
+      --center-channel-color-rgb: var(--button-color-rgb);
+    }
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--spacing-xl);
+
+    .pre-join-panel__details {
+      grid-column: 1;
+      grid-row: 3;
+      max-width: none;
+      width: 100%;
+    }
+  }
+}

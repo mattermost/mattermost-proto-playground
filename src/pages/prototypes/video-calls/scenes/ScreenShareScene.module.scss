@@ -1,0 +1,95 @@
+.screen-share-scene {
+  // Mock shared screen ---------------------------------------------------------
+  &__screen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: var(--center-channel-bg);
+    color: var(--center-channel-color);
+  }
+
+  &__chrome {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s) var(--spacing-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-pill);
+    background: rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__address {
+    flex: 1 1 auto;
+    max-width: 320px;
+    height: var(--spacing-l);
+    margin-left: var(--spacing-m);
+    border-radius: var(--radius-pill);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__slide {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xxl) var(--spacing-xxxl);
+    overflow: hidden;
+  }
+
+  &__eyebrow {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--button-bg);
+  }
+
+  &__heading {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-600);
+    line-height: var(--line-height-600);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-l);
+    margin-top: var(--spacing-m);
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: var(--spacing-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-m);
+    background: rgba(var(--button-bg-rgb), 0.04);
+  }
+
+  &__bar,
+  &__bar--short {
+    display: block;
+    height: var(--spacing-m);
+    border-radius: var(--radius-pill);
+    background: rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__bar--short {
+    width: 60%;
+  }
+}

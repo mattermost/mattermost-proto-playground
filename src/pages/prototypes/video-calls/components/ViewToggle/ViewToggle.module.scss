@@ -1,0 +1,13 @@
+.view-toggle {
+  position: relative;
+  display: inline-flex;
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    right: 0;
+    z-index: 6;
+    min-width: 160px;
+    transform-origin: top right;
+  }
+}
