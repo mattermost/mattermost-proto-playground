@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import RecordIcon from '@mattermost/compass-icons/components/record-circle-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
@@ -33,7 +33,7 @@ export interface CallNoticeLabels {
 export interface CallNoticeProps {
   notices: readonly CallNoticeItem[];
   onDismiss: (id: string) => void;
-  /** Auto-dismiss delay for transient kinds. Default 5000. */
+  /** How long transient notices stay before fading off. Default 3000. */
   autoDismissMs?: number;
   /** Kinds that stay until dismissed. Default network, permission, device. */
   persistentKinds?: readonly CallNoticeItemKind[];
@@ -77,6 +77,9 @@ interface ItemProps {
   onDismiss: (id: string) => void;
 }
 
+/** Length of the fade-off before a timed-out notice is removed. */
+const FADE_OUT_MS = 200;
+
 function NoticeItem({
   notice,
   persistent,
@@ -85,35 +88,35 @@ function NoticeItem({
   onDismiss,
 }: ItemProps) {
   const { id } = notice;
-  // Latest callback without restarting the timer when the host re-renders.
+  const [leaving, setLeaving] = useState(false);
+  // Latest callback without restarting the timers when the host re-renders.
   const onDismissRef = useRef(onDismiss);
   useEffect(() => {
     onDismissRef.current = onDismiss;
   }, [onDismiss]);
 
+  // Visible for `autoDismissMs`, then fades off, then is removed.
   useEffect(() => {
     if (persistent) return;
-    const t = window.setTimeout(() => onDismissRef.current(id), autoDismissMs);
-    return () => window.clearTimeout(t);
+    const fade = window.setTimeout(() => setLeaving(true), autoDismissMs);
+    const remove = window.setTimeout(
+      () => onDismissRef.current(id),
+      autoDismissMs + FADE_OUT_MS,
+    );
+    return () => {
+      window.clearTimeout(fade);
+      window.clearTimeout(remove);
+    };
   }, [id, persistent, autoDismissMs]);
 
+  let content: ReactNode;
   if (PILL_KINDS.includes(notice.kind)) {
-    return (
-      <div className={styles['call-notice__item']}>
-        <CallNoticePill type="other" size="medium" message={notice.text} />
-      </div>
+    content = (
+      <CallNoticePill type="other" size="medium" message={notice.text} />
     );
-  }
-
-  if (notice.kind === 'recording') {
-    return (
-      <div
-        className={[
-          styles['call-notice__item'],
-          styles['call-notice__popover'],
-        ].join(' ')}
-        role="status"
-      >
+  } else if (notice.kind === 'recording') {
+    content = (
+      <div className={styles['call-notice__popover']} role="status">
         <span className={styles['call-notice__record']}>
           <Icon size="16" glyph={<RecordIcon />} />
         </span>
@@ -122,16 +125,27 @@ function NoticeItem({
         </span>
       </div>
     );
-  }
-
-  return (
-    <div className={styles['call-notice__item']}>
+  } else {
+    content = (
       <Toast
         type={TOAST_TYPE[notice.kind]}
         message={notice.text}
         dismissLabel={dismissLabel}
         onDismiss={() => onDismiss(id)}
       />
+    );
+  }
+
+  return (
+    <div
+      className={[
+        styles['call-notice__item'],
+        leaving && styles['call-notice__item--leaving'],
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {content}
     </div>
   );
 }
@@ -144,7 +158,7 @@ function NoticeItem({
 export function CallNotice({
   notices,
   onDismiss,
-  autoDismissMs = 5000,
+  autoDismissMs = 3000,
   persistentKinds = DEFAULT_PERSISTENT,
   labels,
   className,

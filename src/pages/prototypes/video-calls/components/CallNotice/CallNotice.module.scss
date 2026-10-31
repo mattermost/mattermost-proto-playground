@@ -10,6 +10,18 @@
   }
 }
 
+// Fade-off once a notice has had its time.
+@keyframes call-notice-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(calc(var(--spacing-m) * -1), 0);
+  }
+}
+
 // Bottom-left of the room. The room ends above the controls bar, so this
 // never overlaps the bar or the participants button; the offset is a gutter.
 .call-notice {
@@ -32,6 +44,16 @@
 
     @media (prefers-reduced-motion: reduce) {
       animation: none;
+    }
+  }
+
+  &__item--leaving {
+    animation: call-notice-out var(--duration-quick) var(--ease-exit) both;
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      opacity: 0;
     }
   }
 
