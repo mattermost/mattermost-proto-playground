@@ -22,5 +22,11 @@
     right: 0;
     bottom: calc(100% + var(--spacing-xs));
     z-index: 5;
+
+    // Menus opened from the widget (device pickers, More) match its width.
+    [role='menu'] {
+      box-sizing: border-box;
+      width: 100%;
+    }
   }
 }
