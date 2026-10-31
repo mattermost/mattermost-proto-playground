@@ -1,7 +1,8 @@
+// Filled (not bordered) pulse: each circle grows and fades out.
 @keyframes video-call-widget-ring {
   0% {
     transform: scale(1);
-    opacity: 0.56;
+    opacity: 1;
   }
   100% {
     transform: scale(1.5);
@@ -154,6 +155,7 @@
 
   &__ring {
     position: relative;
+    isolation: isolate;
     display: inline-flex;
     border-radius: var(--radius-pill);
 
@@ -163,7 +165,10 @@
       position: absolute;
       inset: 0;
       border-radius: var(--radius-pill);
-      border: var(--spacing-xxxxs) solid var(--online-indicator);
+      // green-600 at 16%, filled.
+      background: rgba(var(--color-green-600-rgb), 0.16);
+      // Behind the avatar, so the fill never tints it.
+      z-index: -1;
       animation: video-call-widget-ring calc(var(--duration-moderate) * 6)
         var(--ease-exit) infinite;
       pointer-events: none;
@@ -349,8 +354,8 @@
     &__ring::before,
     &__ring::after {
       animation: none;
-      opacity: 0.4;
-      transform: scale(1.18);
+      opacity: 1;
+      transform: scale(1.3);
     }
   }
 }
