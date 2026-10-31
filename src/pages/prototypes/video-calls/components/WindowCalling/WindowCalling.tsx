@@ -77,10 +77,12 @@ export function WindowCalling({
           </h2>
           <p className={styles['window-calling__hint']}>{l.hint}</p>
         </div>
-        {controls}
-        <Button emphasis="primary" destructive onClick={onCancel}>
-          {l.cancel}
-        </Button>
+        <div className={styles['window-calling__actions']}>
+          {controls}
+          <Button emphasis="primary" destructive onClick={onCancel}>
+            {l.cancel}
+          </Button>
+        </div>
       </div>
     </VideoCallWindowFrame>
   );
