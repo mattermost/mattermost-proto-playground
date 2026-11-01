@@ -26,13 +26,13 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 ```md
 # <Prototype name> — docs
 
-| Item | Link | Type |
-| --- | --- | --- |
-| PRFAQ | <url> | requirement |
-| UX spec | <url> (source: `<slug>-spec.md`) | requirement |
-| Figma | <url> | requirement |
-| Jira | <url> | background |
-| Engineering brief | <url> | background |
+| Item              | Link                             | Type        |
+| ----------------- | -------------------------------- | ----------- |
+| PRFAQ             | <url>                            | requirement |
+| UX spec           | <url> (source: `<slug>-spec.md`) | requirement |
+| Figma             | <url>                            | requirement |
+| Jira              | <url>                            | background  |
+| Engineering brief | <url>                            | background  |
 ```
 
 ## Invariants
