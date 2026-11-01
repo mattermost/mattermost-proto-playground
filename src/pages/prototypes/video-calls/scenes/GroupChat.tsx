@@ -8,7 +8,8 @@ import {
   MessageInput,
   layoutStyles,
 } from '@mattermost/compass-proto';
-import { CallBanner } from '../components/CallBanner';
+import { CallBanner, type CallBannerProps } from '../components/CallBanner';
+import { useCallTimer } from '../hooks/useCallTimer';
 import VideoCallChannelShell from '../VideoCallChannelShell';
 import ChatThread from './ChatThread';
 import { GROUP_POSTS } from './chatSamplesData';
@@ -24,6 +25,18 @@ import {
 
 /** Matches `--duration-quick` (the banner's slide-off). */
 const BANNER_EXIT_MS = 150;
+
+/** How long the call was already running when you opened the conversation. */
+const ONGOING_ELAPSED_MS = (12 * 60 + 40) * 1000;
+
+/** The ongoing-call banner with its elapsed time ticking. Re-renders alone each second. */
+function OngoingCallBanner({
+  startedAt,
+  ...props
+}: Omit<CallBannerProps, 'meta'> & { startedAt: number }) {
+  const { label } = useCallTimer(startedAt);
+  return <CallBanner {...props} meta={label} />;
+}
 
 export interface GroupChatProps {
   kind: 'gm' | 'channel';
@@ -44,6 +57,9 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   const noCall = state.phase === 'idle';
   // The banner can be closed; it comes back with the next conversation.
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  // When the running call started: fixed for this conversation, so the banner's
+  // time keeps elapsing across phases instead of restarting.
+  const [ongoingStartedAt] = useState(() => Date.now() - ONGOING_ELAPSED_MS);
   // A later call (after an idle phase) shows its banner again.
   useEffect(() => {
     if (noCall) setBannerDismissed(false);
@@ -98,11 +114,11 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
                 .filter(Boolean)
                 .join(' ')}
             >
-              <CallBanner
+              <OngoingCallBanner
+                startedAt={ongoingStartedAt}
                 message={`${others.length} ${
                   others.length === 1 ? 'person' : 'people'
                 } in a call`}
-                meta="12:40"
                 joinLabel="Join"
                 onJoin={() => actions.startCall()}
                 onDismiss={() => setBannerDismissed(true)}
