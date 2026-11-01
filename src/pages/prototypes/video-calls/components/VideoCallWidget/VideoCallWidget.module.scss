@@ -83,11 +83,9 @@
       );
     }
 
-    // Calling, joining and the live call share the pre-join preview's 16:9, so
-    // they are one size and the video area never changes shape; only pre-join is
-    // taller (its Cancel / Start row sits below).
-    &--calling,
-    &--joining,
+    // Live call: the same 16:9 as the pre-join preview, so the speaker tile and
+    // the preview share a shape. Calling and joining stay compact: the card
+    // grows when the call connects.
     &--active {
       --video-call-widget-media-h: calc(
         var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
@@ -309,9 +307,8 @@
     transition: padding-bottom var(--duration-moderate) var(--ease-transition);
 
     // Pre-join: the actions row below supplies the bottom inset.
-    // The same minimum height as the other phases, so the card does not change
-    // size between pre-join, calling and the live call.
     &--with-actions {
+      min-height: 0;
       padding-bottom: var(--spacing-xs);
     }
 
