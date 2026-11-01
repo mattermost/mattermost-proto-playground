@@ -91,10 +91,14 @@
   &__right > button {
     background-color: var(--error-text, var(--color-danger));
     color: var(--neutral-0);
+  }
 
-    // Same tints as the compass destructive Button: darken the red, never
-    // drop the fill.
-    &:hover:not(:disabled) {
+  // Same tints as the compass destructive Button: darken the red, never drop
+  // the fill. Compass IconButton's own hover / active rules are more specific
+  // (they would fade the fill to a pale red tint), so the class is repeated to
+  // win without !important.
+  #{&}__right#{&}__right#{&}__right > button {
+    &:hover:not(:disabled):not(:active) {
       background-color: color-mix(
         in srgb,
         black 8%,
