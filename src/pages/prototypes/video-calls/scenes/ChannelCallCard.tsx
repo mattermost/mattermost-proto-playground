@@ -3,7 +3,7 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import { Message } from '@mattermost/compass-proto';
 import { CallCard, type CallCardProps } from '../components/CallCard';
-import { formatCallDuration } from '../hooks/useCallTimer';
+import { formatCallDuration, useCallTimer } from '../hooks/useCallTimer';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
 
@@ -31,6 +31,11 @@ function useCallPost(): CallPostModel | null {
   const { state, actions } = useVideoCall();
   const { callContext, phase } = state;
   const inCall = phase === 'calling' || phase === 'active';
+  // How long the call already running in a group / channel has been going
+  // (the same start time as the banner's timer).
+  const { seconds: ongoingSeconds } = useCallTimer(
+    callContext !== 'dm' ? state.ongoingStartedAt : null,
+  );
 
   const people = (joined: boolean) =>
     ROSTER.slice(0, state.count)
@@ -40,7 +45,10 @@ function useCallPost(): CallPostModel | null {
   if (callContext !== 'dm') {
     const mine = state.callerId === SELF_ID;
     const starter = byId(state.callerId);
-    const when = mine ? 'just now' : '3 minutes ago';
+    const minutes = Math.floor(ongoingSeconds / 60);
+    const when = mine
+      ? 'just now'
+      : `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
     const timestamp = mine ? clock(Date.now()) : '10:03 AM';
 
     // A call is running and you are not in it (or are about to join it).

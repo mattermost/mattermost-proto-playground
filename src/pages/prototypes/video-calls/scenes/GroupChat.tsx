@@ -26,9 +26,6 @@ import {
 /** Matches `--duration-quick` (the banner's slide-off). */
 const BANNER_EXIT_MS = 150;
 
-/** How long the call was already running when you opened the conversation. */
-const ONGOING_ELAPSED_MS = (12 * 60 + 40) * 1000;
-
 /** The ongoing-call banner with its elapsed time ticking. Re-renders alone each second. */
 function OngoingCallBanner({
   startedAt,
@@ -57,9 +54,6 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   const noCall = state.phase === 'idle';
   // The banner can be closed; it comes back with the next conversation.
   const [bannerDismissed, setBannerDismissed] = useState(false);
-  // When the running call started: fixed for this conversation, so the banner's
-  // time keeps elapsing across phases instead of restarting.
-  const [ongoingStartedAt] = useState(() => Date.now() - ONGOING_ELAPSED_MS);
   // A later call (after an idle phase) shows its banner again.
   useEffect(() => {
     if (noCall) setBannerDismissed(false);
@@ -115,7 +109,7 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
                 .join(' ')}
             >
               <OngoingCallBanner
-                startedAt={ongoingStartedAt}
+                startedAt={state.ongoingStartedAt}
                 message={`${others.length} ${
                   others.length === 1 ? 'person' : 'people'
                 } in a call`}

@@ -137,3 +137,6 @@ export const DEFAULT_SHARE_SOURCE: ShareSource = {
   label: 'Entire screen',
   what: 'your entire screen',
 };
+
+/** How long the call that is already running in a group / channel has been going. */
+export const ONGOING_ELAPSED_MS = (12 * 60 + 40) * 1000;

@@ -15,6 +15,7 @@ import {
   DEFAULT_SHARE_SOURCE,
   DM_PEER_ID,
   GROUP_STARTER_ID,
+  ONGOING_ELAPSED_MS,
   ROSTER,
   SELF_ID,
   type ShareSource,
@@ -62,6 +63,11 @@ export interface VideoCallState {
   recordingsMade: number;
   /** Who started the current / last call (the call card's author). */
   callerId: string;
+  /**
+   * When the call already running in a group / channel started. Shared by the
+   * banner's elapsed time and the call card's "N minutes ago", so they agree.
+   */
+  ongoingStartedAt: number;
   /** Set when an incoming call rang out; the DM shows a missed-call post. */
   missedCall: boolean;
   /** Set when you declined an incoming call; the DM shows a declined-call post. */
@@ -94,6 +100,7 @@ const INITIAL_STATE: VideoCallState = {
   endedAt: null,
   recordingsMade: 0,
   callerId: SELF_ID,
+  ongoingStartedAt: Date.now() - ONGOING_ELAPSED_MS,
   missedCall: false,
   declinedCall: false,
   soundOn: true,
