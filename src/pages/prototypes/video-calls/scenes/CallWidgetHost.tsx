@@ -216,6 +216,7 @@ function CardWidget({
       participants={participants}
       clips={CLIPS}
       participantCount={participants.length}
+      hideParticipants={state.callContext === 'dm'}
       participantsOpen={overlay === 'participants'}
       onToggleParticipants={() => toggle('participants')}
       participantsPopover={

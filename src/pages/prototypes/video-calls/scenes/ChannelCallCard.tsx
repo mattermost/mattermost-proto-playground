@@ -46,9 +46,10 @@ function useCallPost(): CallPostModel | null {
     const mine = state.callerId === SELF_ID;
     const starter = byId(state.callerId);
     const minutes = Math.floor(ongoingSeconds / 60);
-    const when = mine
-      ? 'just now'
-      : `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    const when =
+      mine && phase !== 'ongoing'
+        ? 'just now'
+        : `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
     const timestamp = mine ? clock(Date.now()) : '10:03 AM';
 
     // A call is running and you are not in it (or are about to join it).
@@ -172,6 +173,18 @@ function useCallPost(): CallPostModel | null {
             Call back
           </Button>
         ),
+      },
+    };
+  }
+
+  if (phase === 'idle' && state.canceledCall) {
+    return {
+      authorId: SELF_ID,
+      timestamp: now,
+      card: {
+        state: 'ended',
+        title: 'Call canceled',
+        meta: `You canceled the call to ${byId(DM_PEER_ID).name} · ${now}`,
       },
     };
   }

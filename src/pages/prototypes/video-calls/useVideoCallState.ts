@@ -72,6 +72,8 @@ export interface VideoCallState {
   missedCall: boolean;
   /** Set when you declined an incoming call; the DM shows a declined-call post. */
   declinedCall: boolean;
+  /** Set when you cancelled an outgoing call before it was answered; the DM shows a canceled-call post. */
+  canceledCall: boolean;
   soundOn: boolean;
 }
 
@@ -103,6 +105,7 @@ const INITIAL_STATE: VideoCallState = {
   ongoingStartedAt: Date.now() - ONGOING_ELAPSED_MS,
   missedCall: false,
   declinedCall: false,
+  canceledCall: false,
   soundOn: true,
 };
 
@@ -165,14 +168,27 @@ function releaseCamera(media: MediaPrefs): MediaPrefs {
   return { ...media, cameraOn: false, useWebcam: false };
 }
 
-/** A call ended or was abandoned: reset call fields and release the webcam. */
-function endCall(s: VideoCallState): VideoCallState {
-  // A group / channel call someone else started keeps running without you.
-  const continues = s.callContext !== 'dm' && s.callerId !== SELF_ID;
+/**
+ * A call ended or was abandoned: reset call fields and release the webcam.
+ *
+ * Leaving a group / channel call never ends it for the others (only the host's
+ * End call for everyone does), so the conversation goes back to Ongoing, whoever
+ * started it. Cancelling or abandoning one you were still starting, or a DM
+ * call (1:1 calls end for both people), goes back to No call. Backing out of
+ * joining a call someone else started returns to Ongoing.
+ */
+function endCall(s: VideoCallState, leaving = false): VideoCallState {
+  const groupOrChannel = s.callContext !== 'dm';
+  const continues = groupOrChannel && (leaving || s.callerId !== SELF_ID);
   return {
     ...s,
     ...CALL_RESET,
     phase: continues ? 'ongoing' : 'idle',
+    // The running call keeps the time it started, so the banner and card agree.
+    ongoingStartedAt:
+      continues && leaving && s.callerId === SELF_ID && s.callStartedAt
+        ? s.callStartedAt
+        : s.ongoingStartedAt,
     media: releaseCamera(s.media),
   };
 }
@@ -249,6 +265,7 @@ export function useVideoCallState() {
             pane: phase === 'active' ? s.pane : null,
             missedCall: false,
             declinedCall: false,
+            canceledCall: false,
             endedAt: null,
             recordingsMade: 0,
             callerId:
@@ -284,6 +301,7 @@ export function useVideoCallState() {
             pane: null,
             missedCall: false,
             declinedCall: false,
+            canceledCall: false,
             endedAt: null,
             recordingsMade: 0,
             callerId:
@@ -308,6 +326,7 @@ export function useVideoCallState() {
           joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
           missedCall: false,
           declinedCall: false,
+          canceledCall: false,
           endedDurationSec: 0,
           endedAt: null,
           recordingsMade: 0,
@@ -333,7 +352,12 @@ export function useVideoCallState() {
       connect: () =>
         setState((s) => ({ ...s, phase: 'active', callStartedAt: Date.now() })),
       /** Cancel pre-join or an outgoing ring: back to the chat. */
-      cancelCall: () => setState(endCall),
+      cancelCall: () =>
+        setState((s) =>
+          s.phase === 'calling'
+            ? { ...endCall(s), canceledCall: true }
+            : endCall(s),
+        ),
       /** Incoming card: Accept connects in the same widget ("Joining…"), then goes live. */
       accept: (opts?: { audioOnly?: boolean }) =>
         setState((s) => ({
@@ -360,7 +384,7 @@ export function useVideoCallState() {
       /** Hang up: back to the chat; the chat's call post is the only end UI. */
       leave: () =>
         setState((s) => ({
-          ...endCall(s),
+          ...endCall(s, true),
           endedDurationSec: s.callStartedAt
             ? Math.max(1, Math.round((Date.now() - s.callStartedAt) / 1000))
             : 0,

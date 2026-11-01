@@ -7,7 +7,7 @@ const CALLING_ANSWER_MS = 6000;
 /** How long an accepted incoming call shows "Joining…" before it is live. */
 const JOINING_MS = 1800;
 /** How long an incoming call rings before it becomes a missed call. */
-const INCOMING_RING_MS = 25000;
+const INCOMING_RING_MS = 30000;
 
 /**
  * Surface-independent side effects of the call lifecycle: ring loops and the

@@ -327,6 +327,7 @@ export default function CallWindowHost({
         onStopRecording={actions.toggleRecording}
         controls={{
           participantCount: participants.length,
+          hideParticipants: state.callContext === 'dm',
           participantsOpen: state.pane === 'participants',
           onToggleParticipants: () => {
             closeMenu();

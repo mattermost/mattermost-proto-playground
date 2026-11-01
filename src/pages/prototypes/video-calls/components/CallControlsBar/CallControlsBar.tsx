@@ -40,6 +40,8 @@ export interface CallControlsBarLabels {
 export interface CallControlsBarProps {
   /** Left zone: participants toggle with count. */
   participantCount: number;
+  /** Hide the People button (not meaningful in a 1:1 DM). */
+  hideParticipants?: boolean;
   participantsOpen?: boolean;
   onToggleParticipants: () => void;
 
@@ -114,6 +116,7 @@ const cx = (...names: (string | false | undefined)[]) =>
  */
 export function CallControlsBar({
   participantCount,
+  hideParticipants = false,
   participantsOpen = false,
   onToggleParticipants,
   micOn,
@@ -157,16 +160,18 @@ export function CallControlsBar({
       aria-label={l.toolbar}
     >
       <div className={styles['call-controls-bar__left']}>
-        <IconButton
-          size="medium"
-          style="inverted"
-          active={participantsOpen}
-          count={participantCount}
-          aria-label={l.participants(participantCount)}
-          title={l.participants(participantCount)}
-          icon={<Icon size="20" glyph={<AccountMultipleOutlineIcon />} />}
-          onClick={onToggleParticipants}
-        />
+        {!hideParticipants && (
+          <IconButton
+            size="medium"
+            style="inverted"
+            active={participantsOpen}
+            count={participantCount}
+            aria-label={l.participants(participantCount)}
+            title={l.participants(participantCount)}
+            icon={<Icon size="20" glyph={<AccountMultipleOutlineIcon />} />}
+            onClick={onToggleParticipants}
+          />
+        )}
       </div>
 
       <div className={styles['call-controls-bar__center']}>

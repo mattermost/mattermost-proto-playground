@@ -24,6 +24,16 @@
   padding: var(--spacing-xxl);
   gap: var(--spacing-m);
 
+  // The sidebar's in-call icon (the same icon while ringing or active) sits on a
+  // green pill; compass-design draws it without a background. green-600 keeps
+  // the white glyph readable.
+  :global([class*='channel-sidebar-item__call']) {
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: var(--color-green-600);
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
   &__frame {
     position: relative;
     display: flex;

@@ -141,6 +141,8 @@ export interface VideoCallWidgetProps {
   participants?: readonly VideoStageParticipant[];
   clips?: Record<string, VideoStageClip>;
   participantCount?: number;
+  /** Hide the People button (not meaningful in a 1:1 DM). */
+  hideParticipants?: boolean;
   participantsOpen?: boolean;
   onToggleParticipants?: () => void;
   /** Host-rendered participants surface, anchored above the card. */
@@ -236,6 +238,7 @@ export function VideoCallWidget({
   participants = [],
   clips = {},
   participantCount = 0,
+  hideParticipants = false,
   participantsOpen = false,
   onToggleParticipants,
   participantsPopover,
@@ -442,18 +445,20 @@ export function VideoCallWidget({
       </Button>
     ) : (
       <>
-        <IconButton
-          size="small"
-          padding="compact"
-          active={participantsOpen}
-          count={participantCount}
-          aria-label={l.participants(participantCount)}
-          title={l.participants(participantCount)}
-          aria-haspopup="true"
-          aria-expanded={participantsOpen}
-          icon={<Icon size="16" glyph={<AccountMultipleOutlineIcon />} />}
-          onClick={onToggleParticipants}
-        />
+        {!hideParticipants && (
+          <IconButton
+            size="small"
+            padding="compact"
+            active={participantsOpen}
+            count={participantCount}
+            aria-label={l.participants(participantCount)}
+            title={l.participants(participantCount)}
+            aria-haspopup="true"
+            aria-expanded={participantsOpen}
+            icon={<Icon size="16" glyph={<AccountMultipleOutlineIcon />} />}
+            onClick={onToggleParticipants}
+          />
+        )}
         <IconButton
           size="small"
           padding="compact"
