@@ -74,9 +74,9 @@ export default function PreJoinScene() {
     () => () => {
       if (testTimer.current !== null) {
         window.clearTimeout(testTimer.current);
-        // Only a speaker test in progress owns the 'join' sound; the call's own
+        // Only a speaker test in progress owns the 'join-self' sound; the call's own
         // join chime must survive this scene's crossfade-out.
-        stopSound('join');
+        stopSound('join-self');
       }
     },
     [],
@@ -85,10 +85,10 @@ export default function PreJoinScene() {
   const testSpeakers = () => {
     if (testTimer.current !== null) window.clearTimeout(testTimer.current);
     setSoundsEnabled(soundOn);
-    playSound('join');
+    playSound('join-self');
     setTesting(true);
     testTimer.current = window.setTimeout(() => {
-      stopSound('join');
+      stopSound('join-self');
       setTesting(false);
       testTimer.current = null;
     }, SPEAKER_TEST_MS);

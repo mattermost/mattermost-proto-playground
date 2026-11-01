@@ -5,5 +5,5 @@ import CallWindowHost from './CallWindowHost';
  * returns to the widget, share swaps in the share layout, Leave hangs up.
  */
 export default function CallScene() {
-  return <CallWindowHost playJoinSound />;
+  return <CallWindowHost />;
 }

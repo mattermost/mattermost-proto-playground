@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { playSound, setSoundsEnabled, stopSound } from '../callSounds';
 import { useVideoCall } from '../videoCallContext';
 
@@ -15,7 +15,7 @@ const INCOMING_RING_MS = 25000;
  * Lives under the provider so the widget and the window share one behaviour.
  */
 export default function CallPhaseEffects() {
-  const { state, actions } = useVideoCall();
+  const { state, participants, actions } = useVideoCall();
   const { phase, soundOn } = state;
 
   useEffect(() => {
@@ -53,6 +53,41 @@ export default function CallPhaseEffects() {
     playSound('ring-incoming', { loop: true });
     return () => stopSound('ring-incoming');
   }, [phase, soundOn]);
+
+  // Join chime when you connect (like the plugin, the DM caller who just heard
+  // the ringback does not also get it).
+  const prevPhase = useRef(phase);
+  useEffect(() => {
+    const from = prevPhase.current;
+    prevPhase.current = phase;
+    if (phase === 'active' && from !== 'active' && from !== 'calling') {
+      playSound('join-self');
+    }
+  }, [phase]);
+
+  // Someone else joining while you are in the call.
+  const prevIds = useRef<string[] | null>(null);
+  useEffect(() => {
+    if (phase !== 'active') {
+      prevIds.current = null;
+      return;
+    }
+    const ids = participants.map((p) => p.id);
+    const before = prevIds.current;
+    prevIds.current = ids;
+    if (before && ids.some((id) => !before.includes(id))) {
+      playSound('join-user');
+    }
+  }, [phase, participants]);
+
+  // Leave cue when you hang up (a Leave sets `endedAt`; cancel and decline do not).
+  const prevEndedAt = useRef(state.endedAt);
+  useEffect(() => {
+    if (state.endedAt !== null && state.endedAt !== prevEndedAt.current) {
+      playSound('leave');
+    }
+    prevEndedAt.current = state.endedAt;
+  }, [state.endedAt]);
 
   return null;
 }

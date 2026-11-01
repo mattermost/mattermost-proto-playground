@@ -6,24 +6,34 @@
  * audio before a user gesture, so play() rejections (NotAllowedError) are
  * swallowed silently.
  *
- * Files come from mattermost-plugin-calls (see src/assets/sounds/README.md).
- * The plugin ships only `ringback` (no distinct incoming ringtone), so
- * 'ring-incoming' reuses it at full volume and 'ring-outgoing' reuses it at a
- * lower volume. 'notification' has no counterpart and is intentionally unmapped.
+ * Files come from mattermost-plugin-calls and the Mattermost webapp (see
+ * src/assets/sounds/README.md). The names follow the plugin: `join-self` when
+ * you connect, `join-user` when someone else joins, `leave` (the plugin's
+ * leave_self) when you hang up. 'ring-outgoing' is the plugin's ringback (looped, as
+ * in the plugin); 'ring-incoming' is the webapp's default call ringtone (Calm). 'notification'
+ * has no counterpart and is intentionally unmapped.
  */
-import ringbackUrl from '@/assets/sounds/ringback.mp3';
-import joinUrl from '@/assets/sounds/join_user.mp3';
+import callRingtoneUrl from '@/assets/sounds/calls_calm.mp3';
+import joinSelfUrl from '@/assets/sounds/join_self.mp3';
+import joinUserUrl from '@/assets/sounds/join_user.mp3';
 import leaveUrl from '@/assets/sounds/leave_self.mp3';
+import ringbackUrl from '@/assets/sounds/ringback.mp3';
 
 export type CallSoundName =
-  'ring-incoming' | 'ring-outgoing' | 'join' | 'leave' | 'notification';
+  | 'ring-incoming'
+  | 'ring-outgoing'
+  | 'join-self'
+  | 'join-user'
+  | 'leave'
+  | 'notification';
 
 type SoundDef = { url: string; volume?: number };
 
 const SOUND_MAP: Partial<Record<CallSoundName, SoundDef>> = {
-  'ring-incoming': { url: ringbackUrl },
-  'ring-outgoing': { url: ringbackUrl, volume: 0.5 },
-  join: { url: joinUrl },
+  'ring-incoming': { url: callRingtoneUrl },
+  'ring-outgoing': { url: ringbackUrl },
+  'join-self': { url: joinSelfUrl },
+  'join-user': { url: joinUserUrl },
   leave: { url: leaveUrl },
 };
 

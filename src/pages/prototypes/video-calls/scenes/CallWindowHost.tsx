@@ -15,7 +15,6 @@ import {
   INTERNAL_LINK,
 } from '@/fixtures/calls/callConstants';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
-import { playSound } from '../callSounds';
 import { CallThreadPane } from '../components/CallThreadPane';
 import { DeviceMenu } from '../components/DeviceMenu';
 import { ReactionTray } from '../components/ReactionTray';
@@ -53,17 +52,12 @@ const FALLBACK_CAMERAS = [
   { deviceId: 'fallback-camera-2', label: 'External webcam' },
 ];
 
-// Join chime plays once per call, not on every call <-> screen-share remount.
-let joinSoundPlayedFor: number | null = null;
-
 export interface CallWindowHostProps {
   /** Share layout (content on stage + filmstrip). */
   sharing?: boolean;
   shareContent?: ReactNode;
   /** Banner over the stage (e.g. "You are sharing your screen"). */
   banner?: ReactNode;
-  /** Play the join chime on entry (the call scene only). */
-  playJoinSound?: boolean;
 }
 
 /**
@@ -76,7 +70,6 @@ export default function CallWindowHost({
   sharing = false,
   shareContent,
   banner,
-  playJoinSound = false,
 }: CallWindowHostProps) {
   const {
     state,
@@ -164,14 +157,6 @@ export default function CallWindowHost({
       actions.pushNotice({ kind: 'left', text: `${left.name} left` });
     }
   }, [participants, actions]);
-
-  // Join chime ---------------------------------------------------------------
-  useEffect(() => {
-    if (!playJoinSound || startedAt === null) return;
-    if (joinSoundPlayedFor === startedAt) return;
-    joinSoundPlayedFor = startedAt;
-    playSound('join');
-  }, [playJoinSound, startedAt]);
 
   // Reactions ----------------------------------------------------------------
   useEffect(
