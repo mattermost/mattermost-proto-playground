@@ -5,6 +5,7 @@ import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import VolumeHighIcon from '@mattermost/compass-icons/components/volume-high';
+import type { JoinMode } from '@/types/videoCall';
 import { CallNotice } from '../components/CallNotice';
 import { MicLevelMeter } from '../components/MicLevelMeter';
 import { PreJoinPanel } from '../components/PreJoinPanel';
@@ -36,11 +37,9 @@ const FALLBACK_CAMERAS = [
   { deviceId: 'fallback-camera-2', label: 'External webcam' },
 ];
 
-const TITLES = {
-  start: 'Ready to start the call?',
-  accept: 'Ready to join?',
-  'join-group': 'Ready to join the call?',
-} as const;
+/** "Start call with Marco" / "Join call with UX Design". */
+const titleFor = (joinMode: JoinMode, name: string) =>
+  `${joinMode === 'start' ? 'Start' : 'Join'} call with ${name}`;
 
 /**
  * Large "ready to join" check inside the dark call window. Camera and mic are
@@ -97,6 +96,7 @@ export default function PreJoinScene() {
 
   const others = participants.filter((p) => !p.self);
   const isStart = joinMode === 'start';
+  const title = titleFor(joinMode, conversationName);
 
   const startingGroup = isStart && state.callContext !== 'dm';
 
@@ -146,9 +146,9 @@ export default function PreJoinScene() {
         <div className={styles['pre-join-scene__body']}>
           <PreJoinPanel
             appearance="dark"
-            title={TITLES[joinMode]}
+            title={title}
             subtitle="Check your camera and microphone first."
-            ariaLabel={TITLES[joinMode]}
+            ariaLabel={title}
             preview={
               <>
                 <VideoTile

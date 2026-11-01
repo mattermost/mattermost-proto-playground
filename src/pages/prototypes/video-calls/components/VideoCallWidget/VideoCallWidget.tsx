@@ -66,9 +66,9 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   regionActive?: string;
   expand?: string;
   /** Heading when starting a 1:1 call. */
-  titleStart?: string;
+  titleStart?: (name: string) => string;
   /** Heading when joining a group / channel call. */
-  titleJoin?: string;
+  titleJoin?: (name: string) => string;
   start?: string;
   join?: string;
   cancel?: string;
@@ -171,8 +171,8 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   regionJoining: 'Joining call',
   regionActive: 'Active call',
   expand: 'Expand call window',
-  titleStart: 'Ready to start the call?',
-  titleJoin: 'Ready to join?',
+  titleStart: (name) => `Start call with ${name}`,
+  titleJoin: (name) => `Join call with ${name}`,
   start: 'Start call',
   join: 'Join call',
   cancel: 'Cancel',
@@ -276,7 +276,9 @@ export function VideoCallWidget({
   const lead =
     phase === 'pre-join' ? (
       <h2 className={styles['video-call-widget__title']}>
-        {joinMode === 'start' ? l.titleStart : l.titleJoin}
+        {joinMode === 'start'
+          ? l.titleStart(channelName)
+          : l.titleJoin(channelName)}
       </h2>
     ) : phase === 'active' ? (
       <>
