@@ -1,6 +1,8 @@
 // Mirrors CallPopout controls (compass-proto): 52px inverted IconButtons on the
 // 8% white fill, red destructive Leave, 3 zones.
 .call-controls-bar {
+  $bar: &;
+
   position: relative;
   z-index: 4;
   flex: 0 0 auto;
@@ -48,20 +50,42 @@
   &__segment button {
     background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
     color: color-mix(in srgb, var(--neutral-0) 72%, transparent);
+  }
 
-    &:hover:not(:disabled) {
+  // Hover / active / pressed: the fill steps up in opacity (8% -> 16% -> 24%).
+  // Compass IconButton's own hover / active rules are more specific and would
+  // hold the fill at 8% (no hover feedback), so the class is repeated to win
+  // without !important. A muted mic / camera keeps its red glyph on hover.
+  #{&}__left#{&}__left#{&}__left > button,
+  #{&}__center#{&}__center#{&}__center > button,
+  #{&}__slot#{&}__slot#{&}__slot > button,
+  #{&}__segment#{&}__segment#{&}__segment button {
+    &:hover:not(:disabled):not(:active) {
       background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+    }
+
+    &:hover:not(:disabled):not(:active) {
       color: var(--neutral-0);
+    }
+
+    &#{$bar}__toggle--off:hover:not(:disabled):not(:active) {
+      color: var(--error-text, var(--color-danger));
     }
 
     &:active:not(:disabled):not([data-active='true']) {
       background-color: color-mix(in srgb, var(--neutral-0) 24%, transparent);
     }
 
+    // Pressed (menu open / toggled on): already at 16%; hovering steps it up.
     &[aria-pressed='true']:not(:disabled),
     &[data-active='true']:not(:disabled) {
       background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
       color: var(--neutral-0);
+    }
+
+    &[aria-pressed='true']:hover:not(:disabled),
+    &[data-active='true']:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 24%, transparent);
     }
   }
 
