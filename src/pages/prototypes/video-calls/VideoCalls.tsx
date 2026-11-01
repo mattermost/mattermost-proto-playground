@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { ModalOverlay } from '@mattermost/compass-ui/components/modal';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
-import { useWalkthrough } from '@/walkthrough';
+import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
 import SoundToggle from './chrome/SoundToggle';
@@ -15,11 +15,15 @@ import { useVideoCallState } from './useVideoCallState';
 import { VideoCallContext } from './videoCallContext';
 import {
   CONTEXTS,
+  DEMO_SCENES,
   PHASES,
   SURFACES,
   phaseAvailable,
   surfaceAvailable,
+  type DemoSceneId,
 } from './videoCalls.scenes';
+import { videoCallsWalkthrough } from './videoCallsWalkthrough';
+import { stampVideoCallsWalkthroughFocus } from './videoCallsWalkthroughFocus';
 import styles from './VideoCalls.module.scss';
 
 export default function VideoCalls() {
@@ -28,6 +32,31 @@ export default function VideoCalls() {
   const { state, participants, actions } = useVideoCallState();
   const { callContext, phase, surface, count } = state;
   const selfCamera = useSelfCamera(state.media, actions, walkthroughActive);
+
+  // Each walkthrough step names a demo scene (a combination of the three axes).
+  const onWalkthroughScene = useCallback(
+    (next: string) => {
+      if (DEMO_SCENES.some((d) => d.id === next)) {
+        actions.goToDemo(next as DemoSceneId);
+      }
+    },
+    [actions],
+  );
+  useRegisterWalkthrough(videoCallsWalkthrough, { onScene: onWalkthroughScene });
+
+  // Stamp focus anchors after each scene paints (widget / window animate in).
+  useLayoutEffect(() => {
+    if (!walkthroughActive) return;
+    let cleanup = stampVideoCallsWalkthroughFocus();
+    const t = window.setTimeout(() => {
+      cleanup();
+      cleanup = stampVideoCallsWalkthroughFocus();
+    }, 180);
+    return () => {
+      window.clearTimeout(t);
+      cleanup();
+    };
+  }, [walkthroughActive, callContext, phase, surface, state.sharing]);
 
   useEffect(() => {
     if (walkthroughActive) {
