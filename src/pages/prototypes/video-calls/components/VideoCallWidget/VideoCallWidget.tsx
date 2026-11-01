@@ -258,10 +258,10 @@ export function VideoCallWidget({
 
   const remote = participants.filter((p) => !p.self);
   const self = participants.find((p) => p.self);
-  // Peer(s) first, then the signed-in user; the chip counts remote people hidden.
-  const thumbs = [remote[0], self].filter(
-    (p): p is VideoStageParticipant => !!p,
-  );
+  // Always speaker view: the person talking (else the first remote person)
+  // fills the card and you sit in a small self PiP. The chip counts the other
+  // remote people who are not shown.
+  const speaker = remote.find((p) => p.talking && !p.muted) ?? remote[0];
   const extra = Math.max(0, remote.length - 1);
 
   const region =
@@ -373,41 +373,53 @@ export function VideoCallWidget({
         </div>
       </div>
     ) : (
-      <div className={styles['video-call-widget__thumbs']}>
-        {thumbs.map((p, i) => {
-          const clip = p.clipId ? clips[p.clipId] : undefined;
-          const showOverflow = extra > 0 && i === 0;
-          return (
-            <div key={p.id} className={styles['video-call-widget__thumb']}>
-              <VideoTile
-                className={styles['video-call-widget__tile']}
-                name={p.name}
-                avatarSrc={p.avatarSrc}
-                videoSrc={clip?.src}
-                posterSrc={clip?.poster}
-                stream={p.self ? selfStream : undefined}
-                mirrored={!!p.self}
-                cameraOn={p.cameraOn}
-                muted={p.muted}
-                speaking={!!p.talking && !p.muted}
-                handRaised={p.handRaised}
-                reaction={p.reaction}
-                connection={p.connection}
-                size="thumbnail"
-                selfLabel={l.self}
-              />
-              {showOverflow && (
-                <span
-                  className={styles['video-call-widget__overflow']}
-                  role="img"
-                  aria-label={l.overflowAria(extra)}
-                >
-                  {l.overflow(extra)}
-                </span>
-              )}
-            </div>
-          );
-        })}
+      <div className={styles['video-call-widget__speaker']}>
+        {speaker && (
+          <VideoTile
+            className={styles['video-call-widget__speaker-tile']}
+            name={speaker.name}
+            avatarSrc={speaker.avatarSrc}
+            videoSrc={speaker.clipId ? clips[speaker.clipId]?.src : undefined}
+            posterSrc={
+              speaker.clipId ? clips[speaker.clipId]?.poster : undefined
+            }
+            cameraOn={speaker.cameraOn}
+            muted={speaker.muted}
+            speaking={!!speaker.talking && !speaker.muted}
+            handRaised={speaker.handRaised}
+            reaction={speaker.reaction}
+            connection={speaker.connection}
+            size="thumbnail"
+            selfLabel={l.self}
+          />
+        )}
+        {extra > 0 && (
+          <span
+            className={styles['video-call-widget__overflow']}
+            role="img"
+            aria-label={l.overflowAria(extra)}
+          >
+            {l.overflow(extra)}
+          </span>
+        )}
+        {self && (
+          <div className={styles['video-call-widget__pip']}>
+            <VideoTile
+              className={styles['video-call-widget__pip-tile']}
+              name={self.name}
+              avatarSrc={self.avatarSrc}
+              stream={selfStream}
+              mirrored
+              cameraOn={self.cameraOn}
+              muted={self.muted}
+              speaking={!!self.talking && !self.muted}
+              handRaised={self.handRaised}
+              reaction={self.reaction}
+              size="thumbnail"
+              selfLabel={l.self}
+            />
+          </div>
+        )}
       </div>
     );
 

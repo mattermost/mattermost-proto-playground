@@ -83,6 +83,14 @@
       );
     }
 
+    // Live call: the same 16:9 as the pre-join preview, so connecting keeps the
+    // card the same size.
+    &--active {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
+      );
+    }
+
     // Join mode adds the "N people in the call" row under the preview.
     // No bottom padding here: the controls row below already has its own top
     // padding, so the avatars sit close to it.
@@ -222,24 +230,35 @@
     background: var(--color-danger);
   }
 
-  &__thumbs {
-    display: flex;
-    gap: var(--spacing-xxxs);
-    flex: 1 1 auto;
-  }
-
-  &__thumb {
+  // Speaker view: the speaker fills the card, a small self PiP sits bottom-right.
+  &__speaker {
     position: relative;
-    flex: 1 1 0;
+    flex: 1 1 auto;
     min-width: 0;
-    display: flex;
   }
 
-  // VideoTile 'thumbnail' is a fixed 120x136; fill the column at a shorter,
-  // roughly 16:10 height. Doubled selector beats the tile's size rule.
-  &__tile#{&}__tile {
+  // VideoTile 'thumbnail' is a fixed 120x136; fill the card instead. Doubled
+  // selector beats the tile's size rule.
+  &__speaker-tile#{&}__speaker-tile {
     width: 100%;
-    height: 80px; // one-off layout height
+    height: 100%;
+    border-radius: var(--radius-s);
+  }
+
+  &__pip {
+    position: absolute;
+    right: var(--spacing-xs);
+    bottom: var(--spacing-xs);
+    z-index: 4;
+    width: 88px; // one-off PiP width (16:9)
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-s);
+    box-shadow: var(--elevation-3);
+  }
+
+  &__pip-tile#{&}__pip-tile {
+    width: 100%;
+    height: 100%;
     border-radius: var(--radius-s);
   }
 
