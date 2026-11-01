@@ -416,6 +416,7 @@ export function VideoCallWidget({
               handRaised={self.handRaised}
               reaction={self.reaction}
               size="thumbnail"
+              showLabel={false}
               selfLabel={l.self}
             />
           </div>

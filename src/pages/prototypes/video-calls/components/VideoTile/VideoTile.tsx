@@ -84,6 +84,8 @@ export interface VideoTileProps {
   /** Off-screen / overflow: show the poster frame and never decode video. */
   paused?: boolean;
   size?: VideoTileSize;
+  /** Thumbnail only: show the compact mic / name label. Default: true. */
+  showLabel?: boolean;
   /** Thumbnail only: also show the name next to the mic state (room permitting). */
   showName?: boolean;
   /** Shown after the name for the signed-in user, e.g. "You" → "Leonard Riley (You)". */
@@ -135,6 +137,7 @@ function VideoTileInner({
   mirrored = false,
   paused = false,
   size = 'default',
+  showLabel = true,
   showName = false,
   selfLabel,
   menu,
@@ -318,20 +321,22 @@ function VideoTileInner({
       )}
 
       {size === 'thumbnail' ? (
-        // Compact label, bottom-left like the large tile: the mic state (red
-        // when muted) and, when there is room, the name.
-        <figcaption
-          className={`${styles['video-tile__label']} ${styles['video-tile__label--compact']}`}
-        >
-          <Icon
-            className={`${styles['video-tile__mic']} ${muted ? styles['video-tile__mic--muted'] : ''}`}
-            glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
-            size={iconSize}
-          />
-          {showName && (
-            <span className={styles['video-tile__name']}>{displayName}</span>
-          )}
-        </figcaption>
+        showLabel && (
+          // Compact label, bottom-left like the large tile: the mic state (red
+          // when muted) and, when there is room, the name.
+          <figcaption
+            className={`${styles['video-tile__label']} ${styles['video-tile__label--compact']}`}
+          >
+            <Icon
+              className={`${styles['video-tile__mic']} ${muted ? styles['video-tile__mic--muted'] : ''}`}
+              glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
+              size={iconSize}
+            />
+            {showName && (
+              <span className={styles['video-tile__name']}>{displayName}</span>
+            )}
+          </figcaption>
+        )
       ) : (
         <div className={styles['video-tile__strip']}>
           <figcaption className={styles['video-tile__label']}>
