@@ -62,7 +62,7 @@ export function ViewToggle({
       className={[styles['view-toggle'], className].filter(Boolean).join(' ')}
     >
       <Button
-        emphasis="tertiary"
+        emphasis="quaternary"
         appearance="inverted"
         size="small"
         leadingIcon={
