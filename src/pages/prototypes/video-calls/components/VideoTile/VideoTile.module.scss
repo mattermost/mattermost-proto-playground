@@ -140,6 +140,13 @@
     font-weight: var(--font-weight-semibold);
   }
 
+  // Thumbnail (widget): a shorter chip so it fits the small tiles.
+  &__label--compact {
+    z-index: 3;
+    height: var(--icon-size-20);
+    padding: 0 var(--spacing-xxs);
+  }
+
   &__mic {
     flex: 0 0 auto;
     color: var(--button-color, var(--color-neutral-0));
@@ -233,22 +240,6 @@
       color: var(--color-neutral-1050);
       background: var(--color-yellow-500);
     }
-  }
-
-  // Widget thumbnail: small dark circular muted badge bottom-right.
-  &__muted-dot {
-    position: absolute;
-    right: var(--spacing-xxxs);
-    bottom: var(--spacing-xxxs);
-    z-index: 3;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--icon-size-20);
-    height: var(--icon-size-20);
-    border-radius: var(--radius-pill);
-    background: var(--video-tile-bg);
-    color: var(--button-color, var(--color-neutral-0));
   }
 
   &__reaction {

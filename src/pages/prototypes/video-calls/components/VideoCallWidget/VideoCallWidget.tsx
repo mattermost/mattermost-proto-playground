@@ -390,7 +390,7 @@ export function VideoCallWidget({
             reaction={speaker.reaction}
             connection={speaker.connection}
             size="thumbnail"
-            selfLabel={l.self}
+            showName
           />
         )}
         {extra > 0 && (

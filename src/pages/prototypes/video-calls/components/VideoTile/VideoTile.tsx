@@ -84,6 +84,8 @@ export interface VideoTileProps {
   /** Off-screen / overflow: show the poster frame and never decode video. */
   paused?: boolean;
   size?: VideoTileSize;
+  /** Thumbnail only: also show the name next to the mic state (room permitting). */
+  showName?: boolean;
   /** Shown after the name for the signed-in user, e.g. "You" → "Leonard Riley (You)". */
   selfLabel?: string;
   /**
@@ -133,6 +135,7 @@ function VideoTileInner({
   mirrored = false,
   paused = false,
   size = 'default',
+  showName = false,
   selfLabel,
   menu,
   labels,
@@ -221,7 +224,7 @@ function VideoTileInner({
     .filter(Boolean)
     .join(' ');
 
-  const iconSize = size === 'thumbnail' ? '10' : '12';
+  const iconSize = '12';
 
   return (
     <figure
@@ -315,16 +318,20 @@ function VideoTileInner({
       )}
 
       {size === 'thumbnail' ? (
-        <>
-          {muted && (
-            <span
-              className={styles['video-tile__muted-dot']}
-              aria-hidden="true"
-            >
-              <Icon glyph={<MicrophoneOffIcon />} size="10" />
-            </span>
+        // Compact label, bottom-left like the large tile: the mic state (red
+        // when muted) and, when there is room, the name.
+        <figcaption
+          className={`${styles['video-tile__label']} ${styles['video-tile__label--compact']}`}
+        >
+          <Icon
+            className={`${styles['video-tile__mic']} ${muted ? styles['video-tile__mic--muted'] : ''}`}
+            glyph={muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
+            size={iconSize}
+          />
+          {showName && (
+            <span className={styles['video-tile__name']}>{displayName}</span>
           )}
-        </>
+        </figcaption>
       ) : (
         <div className={styles['video-tile__strip']}>
           <figcaption className={styles['video-tile__label']}>
