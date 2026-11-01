@@ -1,0 +1,338 @@
+# UX Specs: Video Calls
+
+Figma: [Video-Calling](https://www.figma.com/design/WcvNikeYFxnW15IaZU9JM0) (board 1335:418726, may be stale) · [Call Card](https://www.figma.com/design/uHkbu1krioaScJ3AfxLPg2?node-id=2801-2389) (frame 2801:2389)
+Prototype: mattermost-proto-playground, "Video Calls" (PR #84, branch `claude/practical-goodall-ac0d7b`)
+
+---
+
+## Overview
+
+Mattermost Calls gains video. The first release is 1:1 video calls in direct messages (DMs). Multi-party video calls, up to 10 people in group messages (GMs) and channels, follow next. This spec covers how a person starts, joins, runs and leaves a video call from a DM, GM or channel, on desktop. It describes the in-conversation surfaces (header entry points, call banner, call card, sidebar indicator, call widget) and the expanded call window.
+
+![Call window (popout) for a 1:1 DM call in speaker view: the other person large, your self-view in the corner. Remote video is a placeholder avatar in the prototype.](shots/final/13-window-active-dm.png)
+
+Background (not a requirement source): the FY28 Multi-party Video two-pager is an engineering brief and is not quoted here.
+
+Related specs affected by the introduction of video calling:
+- [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls)
+- Outbound SIP calling: [UX Spec: Outbound Calls — Implementation Tiers](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4647059458/UX+Spec+Outbound+Calls+Implementation+Tiers) and [Phase 1 — Basic Outbound SIP Calling](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4646993930/Phase+1+Basic+Outbound+SIP+Calling)
+
+*TODO: state what changes in each of those specs once video is introduced (for example the widget, incoming call and call card states they define). Not yet reviewed against this spec.*
+
+## Phases and Scope
+
+Phase 1: 1:1 video calls in DMs. Covers ringing (calling, incoming, joining), pre-join, widget, call window, screen share, call card states and sounds.
+
+Phase 2: multi-party video, up to 10 participants, in GMs and channels. Adds Ongoing calls, the call banner, join-mode pre-join, grid and speaker layouts for 3-10 people, host controls and the participants pane. Cap of 10 confirmed for this phase.
+
+Phase 3: support for large numbers of participants, for all-company call scenarios. Not designed or prototyped yet; the prototype caps at 10. *TODO: layouts beyond 10, host and moderation controls, and attendee roles are open and need design.*
+
+Both phases: desktop web and desktop app; voice-started and video-started calls; recording indicator. Sections below say "Phase 2" where behavior applies only to group calls.
+
+Out of scope for this spec: mobile; System Console configuration; real remote video (tiles show avatars); popout window focus handling; promotion of components to compass-design.
+
+## User Flows
+
+- Starting a call from a DM, GM or channel header
+- Receiving, accepting and declining a DM call
+- Receiving a new call while in an active call
+- Joining a call someone else started in a GM or channel
+- Checking devices before joining
+- Using the call widget
+- Expanding to the call window
+- Viewing participants: grid, speaker, screen share
+- Host controls, hand raise, reactions
+- Leaving a call and what the conversation shows afterwards
+
+---
+
+## UX Functional Behavior
+
+### Call lifecycle by conversation type
+
+Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
+
+**DM (1:1).** A DM call rings.
+1. No call. The header shows Start call.
+2. Pre-join (start mode). Starting from the menu opens the widget at pre-join.
+3. Calling. Confirming pre-join rings the other person. The widget shows "Calling <name>…" with Cancel. The timer starts only when the other person joins, and no talking indicators show while calling. After 30 seconds without an answer the call times out and hangs up, and the call card becomes No answer (per the DM Calls UX spec). In the prototype an unanswered incoming call becomes a missed call after 30 seconds, but the outgoing call is answered after 6 seconds (a demo timer) and has no 30 second timeout. *TODO: the outgoing No answer timeout needs a way to run without the demo auto-answer.*
+4. In call.
+Receiving: Incoming (widget with Decline / Accept; rings up to 30 seconds, then becomes a missed call) → Joining → In call. Accepting shows a widget-only "Joining call with <name>…" for about 1.8 seconds before the call goes live. Joining is not expandable.
+
+**GM and channel.** These do not ring. Phases are No call or Ongoing (someone else's call is running and you are not in it), then Pre-join, then In call.
+- Starting from No call: pre-join in start mode; confirming goes straight to In call (nobody is rung).
+- Joining from Ongoing: pre-join in join mode; confirming goes to In call.
+- Ongoing and Incoming/Calling/Joining are mutually exclusive by conversation type: Ongoing exists only in GM and channel; Calling, Incoming and Joining only in DM.
+
+**Leaving and ending a call (product rule).**
+- 1:1 DM: the call ends for both people as soon as either one leaves.
+- GM and channel (all other cases): the call continues while anyone remains, until the host chooses End call for everyone.
+- If the host chooses Leave (not End call for everyone), host transfers automatically to the earliest-joined remaining participant (the second person to join, or the first-joined person still in the call). A notice announces the new host.
+- After you leave a group call that is still running, the conversation returns to Ongoing (banner, Join call, call card Active), whoever started it.
+
+> ⚠️ **Prototype differs.** Leaving a group call now returns the conversation to Ongoing while others remain (including a call you started), and a 1:1 DM call ends for both. Still missing: End call for everyone, automatic host transfer when the host leaves (Make host is a manual tile action), and the host variant of the Leave button in group calls.
+
+Per the DM Calls UX spec: in a DM, hang up leaves immediately with no confirmation and ends the call for both. In a GM or channel, a non-host leaves immediately with no menu. A host sees End call for everyone, Leave and Cancel; End call for everyone has a subtitle to prevent misclicks, shows no confirmation modal, and updates the call card to the ended state at once. *TODO: the prototype's Leave is a single button for everyone.*
+
+### Receiving a new call while in an active call
+
+> ⚠️ **Not prototyped.** The prototype holds one call phase at a time. The Incoming chrome switcher replaces the active call instead of stacking on it, so there is no behavior to describe from the build.
+
+**Current behavior in mattermost-plugin-calls** (read from the plugin source on its default branch; not run, and the web and desktop paths below are not tested):
+- No ring. If you are connected to a call, the plugin marks the incoming call as "already rung" and never plays the ring for it (it also does not ring for a second call while another is already ringing).
+- No notification for a call you are already in or started yourself.
+- Where the notification shows: when you are on a call in the browser without the global widget, the full incoming card is hidden and a condensed notification, "Call from <caller>" (with "with <others>" in a group message), appears above the call widget, with Join and dismiss actions. Otherwise the standard incoming card ("<caller> is inviting you to a call", Ignore / Join) shows bottom-left.
+- Join while in a call: opens a modal, "You're already in a call in <channel>. Do you want to leave and join a call with <user>?", with Cancel and "Leave and join new call". Confirming disconnects from the current call and connects to the new one. In the desktop app the join request is sent to the desktop app instead. There is no hold and no call waiting.
+- Ignore dismisses the notification only; the caller is not told.
+- Scope: the plugin sends incoming notifications for DM and GM calls. This design has an incoming call notice for 1:1 DMs only; GM and channel calls do not have one (join from the banner, header or call card). *Question: confirm GM invitations stop ringing and notifying compared with the plugin today.*
+
+**Decisions for video: no change from the plugin.**
+- While you are in a call, a new incoming call does not ring (notification only, no audio cue).
+- Joining the new call from its notification opens the confirmation modal ("You're already in a call in [channel]. Do you want to leave and join a call with [user]?", Cancel / "Leave and join new call"), not an inline Accept-and-end card.
+- No hold and no call waiting. Accepting always ends the current call: a group call someone else started returns to Ongoing, and a 1:1 call you are in ends for the other person.
+- Accepting a call never turns the camera on by itself, including a video call accepted from an audio-only call. The camera is as the person left it (off by default), and turning it on is a click.
+- The ringing conversation and the active one show the same sidebar call icon (green pill), as described under Entry points.
+
+**What the caller sees when the callee is in another call (decided).** Until now: nothing. The caller got the standard calling state, and the call timed out as a missed call (No answer). Now, while the caller is calling and the callee is in another call, the DM channel header shows a small, non-blocking "[name] is on another call" status, repeated as the widget's calling subtitle. Ringing, the 30 second timeout and the No answer card are unchanged, so there is no busy signal, auto-decline or new call state. The status tells the caller why there is no answer and discourages repeated redialing, while the callee still gets the notification and decides. It reveals only that the person is in a call, which presence already hints at, so it follows the same visibility as presence; the sidebar in-call icon stays tied to the open conversation's own call. The prototype does not show this yet. *TODO: add the header status and calling subtitle.*
+
+**Where the notification appears when the call window is open.** The plugin today shows incoming calls in the expanded call view's top row, at the right of the header (a condensed "Call from [caller]" card with Join and dismiss, up to 287px wide, stacked with a 5px gap when there are several), not over the video. *Recommendation (to confirm): keep that placement, as a compact notification in the call window header, right side, between the elapsed time and the View button. It never covers video tiles or the controls bar, and it fits the no-ring, no-hold behavior. The prototype has no such notice yet.*
+
+**Current style of that notice (plugin, read from its source, not rendered here).** One compact row on a green card (the "online" green) with a darker 16% black overlay inside, 8px radius and 8px padding: a 20px avatar, the text "Call from **[caller]**" (12px white, cut with an ellipsis and a tooltip when too long; a group message adds "with [others]"), a small Join button with a call icon (11px semibold, a translucent fill, or a 1px white outline in the expanded view) and a close X. The whole card is clickable and opens the conversation. It is built from the plugin's own styled components with fixed pixel sizes, not Compass components, and the text is small. *Recommendation (to confirm): restyle it with the call banner pattern from this spec (40px toast-height green pill, video or call icon, white text, inverted Join, dismiss X), so the channel banner and the in-call notice read as one family, using Compass components and tokens.*
+
+*Design questions for video (what the plugin does not settle):*
+1. *Confirm the notification placement above (call window header, right side).*
+
+### Entry points
+
+**Header.** DM, GM and channel headers show a Start call split button with a menu: Start video call, Start audio call (secondary label "Camera off"). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off.
+- GM / channel with an Ongoing call: the header shows Join call (quaternary) instead of Start call.
+- During your own call the header shows no start/join control.
+
+![Header Start call menu: Start video call and Start audio call](shots/final/01-header-start-call-menu.png)
+
+**Sidebar in-call icon.** A conversation row with a running call shows the in-call icon.
+- The open conversation's row shows it while a call runs there: DM when calling, incoming, joining or active; GM / channel from the moment a call runs (Ongoing) through pre-join (join mode) and In call.
+- Starting a new group call from No call does not mark the row during pre-join; it marks once you are in the call.
+- A channel elsewhere in the sidebar (Release Discussion in the prototype) always shows the icon, to demonstrate discovery.
+- The icon is the same call icon whether the call is ringing or active, drawn on a green pill-shaped background. The prototype matches (the pill is drawn in the prototype with a style override, since compass-design draws the icon without a background).
+
+![Sidebar row with the in-call icon (Marco Rinaldi, call active)](shots/final/07-sidebar-in-call-icon.png)
+
+**Channel call banner (GM / channel, Ongoing only).** A green floating pill at toast height (40px) below the header: video icon, "N people in a call · 12:40", Join (inverted), Dismiss (X).
+- Slides in from the header edge and slides off when dismissed or when you join (Compass `--duration-quick`, entrance / exit easings; no motion under reduced motion).
+- Dismissing hides it for the rest of the conversation visit; a later call (after No call) shows it again.
+- The elapsed time updates live every second while the banner is showing, starting from the running call's start time (the prototype's call has been going 12:40 when the conversation opens). The call card's "N minutes ago by [name]" uses the same start time, so the card and banner agree. The participant count is live in product; in the prototype it follows the People control.
+
+![Channel call banner for an ongoing call](shots/final/15-channel-call-banner.png)
+
+**Call card (post in the message list).** Max width 700px; stacks below about 480px (Figma Narrow). Hover adds a shadow. States:
+
+| State | Where | Title / meta | Action |
+| --- | --- | --- | --- |
+| Calling | DM, you are ringing | "Calling <name>…" / "Waiting for them to answer" | Cancel |
+| Active | DM incoming/joining; GM/channel Ongoing and pre-join (join mode) | DM incoming: "<name> is calling you" / "Video call · just now"; joining: "Joining <name>…" / "Connecting…"; group: "Call started" / "<when> by <name>" | Join call (only when you can act) |
+| Joined | You are in the call | "Call started" / "just now by <name>"; avatars | Leave |
+| Ended | Call over | "Call ended" / "Ended at <time> · Lasted <m:ss>"; "N recording(s)" when recorded | none |
+| Declined | DM, you declined | "Call declined" / "You declined a call from <name> · <time>" | Call back |
+| Missed | DM, ring timed out | "Missed call" / "<name> · <time>" | Call back |
+
+The DM Calls UX spec defines the card for both people (caller and callee): Calling, Connected, Canceled call, No answer (callee: No answer / missed call), Declined, Ended. The prototype shows one card per state, including Canceled call ("Call canceled" / "You canceled the call to [name] · [time]"). *TODO: caller versus callee copy.*
+
+![Call card: Calling](shots/final/04-call-card-calling.png)
+
+![Call card: incoming call (Active)](shots/final/10-call-card-incoming.png)
+
+![Call card: Joined](shots/final/06-call-card-joined.png)
+
+![Call card: ongoing group call (Active)](shots/final/16-call-card-active-group.png)
+
+![Call card: Ended](shots/final/08-call-card-ended.png)
+
+![Call card: Declined](shots/final/11-call-card-declined.png)
+
+![Call card: Canceled](shots/final/25-call-card-canceled.png)
+
+The caller is named as the post author: joining or receiving a DM call names the DM peer as caller; a call joined in a group names its starter.
+In a GM, only that group's members' messages appear; a channel shows everyone.
+
+### Pre-join
+
+Opens in the widget (default) or the window. Never touches camera or microphone on load.
+- Camera is off by default, unless Start video call was chosen from the header menu. In that case video is enabled by default in pre-join: the camera is on when pre-join opens and the browser prompt appears at that moment (the menu pick is the user gesture). Start audio call, Join call from the banner or header, and Call back all open pre-join with the camera off. In any pre-join the camera icon turns the camera on and triggers the browser prompt; nothing is requested on page load. While the camera starts the preview shows "Starting camera…".
+- Title (widget and window): "Start call with <name>" (start) or "Join call with <name>" (join), where <name> is the peer, the group or the channel (for example "Start call with Marco Rinaldi", "Join call with UX Design"). The window adds the subtitle "Check your camera and microphone first."
+- Mic level meter: simulated until the person selects Check my microphone, which requests the microphone and drives the meter from real input. Helper text explains the state: simulated, "Say something to see the meter move", blocked, or no working microphone.
+- Test speakers plays the join chime for 1.5s and the button reads "Playing…". Disabled when sounds are off (helper text points to the prototype sound toggle).
+- Who copy (window only): DM start "<name> will be called"; group start "<names> will be notified" (or "Everyone here will be notified" when the member list is empty); group join: avatars plus "<names> are in the call". The widget pre-join shows no "will be notified" copy: in start mode it shows only the self preview, controls and Start call / Cancel; in join mode it adds "N people in the call" with avatars. *Verified in the running prototype (widget). Window copy read from code.*
+- Primary: Start call or Join call. Secondary: Cancel (returns to the conversation and releases the camera).
+- Mic and camera controls are segmented: toggle plus a chevron that opens the device list.
+
+![Widget pre-join, start mode (DM)](shots/final/02-widget-prejoin-start.png)
+
+![Widget pre-join, join mode (channel)](shots/final/17-widget-prejoin-join.png)
+
+![Window pre-join (DM)](shots/final/14-window-prejoin.png)
+
+### Call widget
+
+302px wide, over the sidebar bottom-left. One card stays mounted across pre-join, calling, joining and active; content crossfades (quick duration) and the media row animates height.
+- Draggable anywhere inside the channel area; releasing snaps to the nearest corner with equal insets in all corners. The chosen corner stays pinned when the card changes height. Presses on buttons and menus do not start a drag.
+- Title is the conversation name: the peer (DM), the group (GM: first names of up to three members) or the channel.
+- Persistent segmented mic and camera controls with device chevrons; the menus match the widget width.
+- Active: elapsed time, recording dot when recording, a 16:9 video area, participant count (opens a participants popover), share screen, More, Expand, Leave (square hang-up). While you share, the video area gives way to the sharing state (see Screen share).
+- The widget video is always speaker view: the person talking (otherwise the first remote person) fills the 16:9 area with their mic state and name bottom-left, and you sit in a small self picture-in-picture (no mute indicator there, since the mic control already shows it; a smaller avatar on a lighter fill when your camera is off). A "+N" chip counts other remote people who are not shown. There is no grid view in the widget.
+- Calling and joining are compact (no large video area); the card resizes for each state and keeps the widget's corner pinned. Calling, joining and live share one 302px width.
+- More menu: Audio output, Raise / Lower hand, Record call / Stop recording, Show chat thread (expands to the window with the chat pane), Call info. Escape or an outside click closes menus; one menu is open at a time.
+- Incoming: caller avatar (48px) with a small call-type badge (video icon), "Incoming video call", Decline (tertiary) and Accept (primary, blue). The component also supports an audio variant (phone badge, "Incoming audio call"), but the prototype never shows it. *Question: should an incoming audio-started call show the audio variant, and does Accept then join with the camera off?*
+- Joining (after Accept): "Joining call with <name>…" over the caller's avatar, with mic and camera controls and a red Cancel. The chat card reads "Joining <name>…" / "Connecting…".
+- Button colours: the DM Calls UX spec plans a red Decline and a green Accept for 1:1 incoming calls (marked deferred to a next phase). The prototype shows a tertiary Decline and a blue primary Accept in the widget, and a green Join call on the chat card. *Question: adopt red Decline / green Accept now, and use the same green on the card?*
+- People button: hidden in a 1:1 DM, where it is not meaningful, per the DM Calls UX spec (widget and call window). It stays in group and channel calls.
+- Enter and exit are quick fades; exit plays after Leave, Cancel or Decline.
+
+*Known gap, out of scope: the widget More menu still repeats Microphone and Camera rows next to the segmented controls.*
+
+![Widget: calling](shots/final/03-widget-calling.png)
+
+![Widget: incoming call](shots/final/09-widget-incoming.png)
+
+![Widget: joining](shots/final/12-widget-joining.png)
+
+![Widget: active call, DM (speaker view with self picture-in-picture)](shots/final/05-widget-active-dm.png)
+
+![Widget: active call, channel (+N chip, participant count 4)](shots/final/18-widget-active-group.png)
+
+### Call window (popout)
+
+Dark surface floating inset over the conversation, which stays visible; a scrim covers the channels frame only. Phases that expand: pre-join, calling, active. Incoming, joining, No call and Ongoing are widget-only.
+- Title bar: "Call · <conversation name>". Header: elapsed time and participant count ("12:40 • 4 participants"), recording indicator when recording, share pill when sharing (Stop), view toggle (Speaker / Grid) at right.
+- Controls bar (three zones): participants; mic and camera (segmented, with device menus), share, reactions, raise hand; chat (blue unread dot), More, Leave.
+- Side panes (participants, chat thread) slide in over the right edge like the right-hand sidebar, per the RHS overlay pattern (docs/RHS-OVERLAY-PATTERN.md), and the stage resizes with them. Panes are 400px wide. Only one pane at a time. Chat messages persist for the call.
+- Shortcuts while the window is open: Ctrl/Cmd+D toggles the microphone, Ctrl/Cmd+E toggles the camera (ignored in text fields).
+- Collapse returns to the widget.
+
+![Call window: active DM call](shots/final/13-window-active-dm.png)
+
+![Call window with the chat pane open (400px)](shots/final/23-window-chat-pane.png)
+
+### Stage layouts (2-10 participants)
+
+**Grid.** Equal tiles in rows chosen for near 16:9 tiles: 2 → [2]; 3 → [2,1]; 4 → [2,2]; 5 → [3,2]; 6 → [3,3]; 7 → [4,3]; 8 → [4,4]; 9 → [3,3,3]; 10 → [4,3,3]. A short last row is centred. Grid order is join order; speaking never reorders it. More tiles than cells collapse into a "+N" chip while keeping you, the presenter and the active speaker visible.
+
+**Speaker.** 2 people: remote tile fills the stage with self-view picture-in-picture. 3+: the active speaker is featured in a large tile below one strip of everyone else, which runs along the top (you stay in the strip, never featured). When the speaker changes, the old featured tile swaps into the new speaker's strip slot.
+
+![Speaker view with 4 people (strip on top, featured speaker below)](shots/final/19-window-speaker-4.png)
+
+![Grid view with 4 people](shots/final/20-window-grid-4.png)
+
+![Grid view with 10 people (4, 3, 3 rows)](shots/final/21-window-grid-10.png)
+
+**Screen share.** Shared content fills the stage with a filmstrip of camera tiles (up to 6 cells including a "+N" chip). The stage tile is labelled "You are presenting" (or "<name> is presenting" for someone else), and the header shows a share pill: a red dot, "You are sharing <what>", and Stop.
+
+How sharing starts and stops (widget and window behave the same):
+- Select Share screen (widget controls or window controls bar) while In call. That click is the user gesture that opens the browser's own source picker; the page cannot list or preselect sources, and nothing is captured until the person confirms in the picker. Nothing is requested on load.
+- Closing or cancelling the picker is silent: no share starts and no error shows. Any other failure posts a persistent device notice, "Could not start screen sharing."
+- The share names what is captured: "your entire screen" (entire screen), "the <title> tab" (browser tab) or the window's title (window). The same wording appears in the widget and the window header.
+- Stop sharing from the widget's Stop sharing button, the window's pill Stop, the Share screen control (now active), or the browser's own "Stop sharing" bar; all end the share. The capture is also released when you leave the call or the call phase changes.
+- Sharing is only available while In call. It is not available in pre-join, calling or joining.
+- Where the browser has no screen capture (and in the demo scenes), the prototype shows a stand-in slide and posts an info notice: "Screen capture is not available here. Showing a stand-in." The stand-in is prototype-only; the product has no equivalent.
+- *Verified in the running prototype with a fake capture source; the browser picker itself cannot be shown in an automated browser.*
+
+Widget while sharing (Phase 1): the 16:9 video area is replaced by a live thumbnail of what you share (96px wide; a monitor-share icon when there is no capture), a red dot with "You're sharing <what>", and a red Stop sharing button. Mic, camera, participants, share, More, Expand and Leave stay in place and the Share screen control shows its active state. *Question: at 302px the status text is cut with an ellipsis ("You're sharing your enti…"); allow two lines or shorten to "Sharing your screen"?*
+
+**Self-view picture-in-picture.** Draggable with release velocity; settles into the nearest corner with a spring. Arrow keys move it between corners; Escape cancels a drag; a hide control collapses it to a "Show self view" chip.
+
+**Tiles.** Name label with mute state; HOST tag next to the host's name (popout tiles only); active speaker border and sound wave (not shown when muted); raised-hand badge; reaction pop (emoji shows 2.5s on the tile with a stage-wide burst); poor connection and "Reconnecting…" states.
+
+GM and channel calls are capped at 10 participants in Phase 2 (confirmed). Behavior at the cap (blocking the 11th person, copy) is not designed. *Question: what does the 11th person see when they try to join?*
+
+### Host controls
+
+Only the host sees host controls, on other people's tiles. Hover or focus the tile's label strip to reveal the "..." button, or right-click the tile. Menu: Mute (disabled if already muted), Make host, Remove from call (destructive). Each posts a notice ("Muted <name>", "<name> is now a host", "<name> was removed"). Make host moves the HOST tag; you stop being host. Leaving as host transfers host automatically (see Leaving and ending a call); End call for everyone is a host-only action that is not in the prototype yet.
+
+![Host tile menu: Mute, Make host, Remove from call](shots/final/22-window-host-menu.png)
+
+### Notices, recording and warnings
+
+- Notices stack bottom-left of the stage above the controls, up to 5, newest at the bottom.
+- Transient (joined, left, host, info, recording) fade after 3 seconds (200ms fade-off). Persistent until dismissed: network (warning), device (danger), permission (danger), and "Recording and transcription has started". When the stack is full the oldest transient notice drops first so warnings are not pushed off.
+- Joined / left / host use the proto call-notice pill; others use Compass Toast; "Recording stopped" uses a compact popover with a record icon.
+- "Recording and transcription has started" is a persistent popover notice (record icon, title, the body "Consider letting everyone know that this meeting is being recorded and transcribed.", a primary Dismiss button and a close button). It stays until dismissed and is not dropped when the stack is full.
+- Every pill shows the same muted-microphone icon, including "joined" and "left" (see Deviations).
+- The stack sits over the bottom-left of the stage and can overlap tile name labels when a side pane narrows the stage (seen with the chat pane open at 4 people). *Question: reserve space or move the stack when a pane is open.*
+- When many people join at once (for example 4 to 10), up to 5 notices stack and the oldest transient one drops first.
+- Recording: Record call in More toggles it, posts "Recording and transcription has started" / "Recording stopped", shows the recording indicator in the window header (with Stop) and a dot in the widget header. The ended call card lists the number of recordings.
+
+!["Recording and transcription has started" popover notice, with the REC indicator in the header](shots/final/24-window-recording-notice.png)
+- Permission and device warnings: if the browser camera is blocked, a permission notice appears; if no camera is found, a device notice appears. *Verify exact copy in the running prototype.*
+- Network warnings: only the per-tile poor-connection and reconnecting states exist; no persistent network notice is triggered in the prototype.
+
+### Sounds
+
+Sounds follow the existing mattermost-plugin-calls (v2, LiveKit) behavior (read from the plugin source, not run):
+- **Ring:** the incoming call loops the user's chosen call ringtone (default "Calm"); the caller hears the looped ringback while calling.
+- **Join (you):** a join sound plays when you connect to the call, except a 1:1 DM caller with ringing enabled, who hears the outbound ringback instead.
+- **Join (others):** a join sound plays when another person joins while you are in the call, only while fewer than 8 people are in the call (a user preference, default 8). Larger calls are silent for joins.
+- **Leave (you):** a leave sound plays once when your own call connection closes, for any reason including a dropped connection or error.
+- **Others leaving:** no sound.
+- **No notification sound** for a new call while you are in a call (see Receiving a new call while in an active call).
+
+Prototype differences:
+- Now matching the plugin: the join-self sound plays when you connect (and for Test speakers); the join-user sound plays when someone else joins during the call, and for a 1:1 DM caller when the other person answers (after the ringback); the leave sound plays when you hang up; the incoming ring is the "Calm" ringtone and the outgoing ring is the ringback, both looped at full volume. *Playback is read from code; audio cannot be heard in the automated browser.*
+- Still different: the join-user sound plays for every join, with no "fewer than 8 people" limit, and the leave sound plays only on Leave (not on a dropped connection). Cancel and Decline are silent.
+- *TODO: apply the 8-participant limit to join sounds and play the leave sound on connection loss.*
+
+Sounds are on by default in the prototype with a toggle in the prototype chrome (not product UI); the product uses the user's calls sound preference. Browsers may block audio before a user gesture; the failure is silent.
+
+---
+
+## Motion
+
+Compass durations and easings only: quick (150ms) with entrance / exit easings for banner, crossfade, notices, panes and widget enter / exit; moderate (300ms) with the transition easing for widget media-row height and corner snapping. Under `prefers-reduced-motion`, these animations are disabled; corner snapping is a position change without easing. The self-view picture-in-picture uses a spring (stiffness 420) when settling after a drag. *Verify reduced motion for the PiP spring.*
+
+## Accessibility
+
+- Every control has an accessible name (for example "Hide self view", "Dismiss notification", "More options", "Expand call window"); toolbars and regions are labelled ("Call notifications", "Active call", "Outgoing call", "Joining call", "Call setup").
+- Call state changes use polite live regions (calling, joining, notices, helper text); the incoming widget is a dialog.
+- Keyboard: Escape closes menus; arrow keys navigate device and participant menus (Home also supported in device menus); arrow keys move the self view; Ctrl/Cmd+D and Ctrl/Cmd+E for mic and camera. *Verify focus order and Tab reachability of the draggable widget.*
+- Tiles expose "<name>: <status>" (speaking, hand raised, host, muted, poor connection).
+- The window's View button shows the text "View" but its accessible name is "Change call layout", so the visible label is not part of the name (WCAG 2.5.3 Label in Name). *Question: rename to "View" or "View: change call layout".*
+- A participant with no avatar image shows initials on a green disc (for example "Et"); the name label stays the accessible name.
+- Contrast: white text on green-600 is 3.54:1, which passes only for large text or UI components; green-700 is 5.2:1 and passes for body text. *Question: which surfaces use green-600 for small white text (Join banner, Start call button)? Move small text to green-700 or enlarge.*
+- Reduced motion: see Motion.
+
+---
+
+## Components Used / New Components
+
+Existing (Compass UI): Button, IconButton, Icon, UserAvatar, UserAvatarGroup, Tag, Toast, PopoverMenu, MenuItem, ModalOverlay.
+Existing (Compass proto): ChannelShell, ChannelHeader, Message, MessageInput, CallNotice pill, RecordingIndicator, CallInfoPanel, ParticipantsPanel.
+New in the prototype (candidates for the design system): CallCard, CallBanner, VideoCallWidget, VideoCallWindow, VideoStage and VideoTile, SelfViewPip, CallControlsBar, SegmentedIconButton, DeviceMenu, WidgetIncoming, PreJoinPanel, MicLevelMeter, ViewToggle.
+
+## Deviations from Figma
+
+The prototype wins. Differences found so far (structure only; a pixel comparison was not possible because Figma image export was blocked in this session):
+
+1. The Call Card Figma file defines Active, Active + Joined and Inactive, each Default / Hover × Default / Narrow (12 variants). The Calling, Declined and No answer / missed states come from the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec, so the Call Card file predates them rather than the prototype inventing them. The prototype implements those states, including Canceled call. The Call back action on declined and missed cards is not listed in that spec's states table. *Question: is Call back intended, and should the Call Card file gain variants for the new states?*
+2. The Video-Calling board (1335:418726) shows an older widget and call room (participant grid, screen share grid, widget controls). The prototype's widget (persistent segmented controls, one card across phases), window, banner and sidebar icon have no matching frames.
+3. Prototype-only decisions to confirm with design: remote video tiles are avatar-only placeholders; the widget More menu still has duplicate Microphone and Camera rows; the notice pill uses a fixed mic-off icon for every message; the Speaker and Grid view glyphs are a custom SVG and a compass-icons `apps` glyph because the compass-icons set is missing a view glyph and Wi-Fi icons.
+
+## Open Questions
+
+0. Receiving a new call while in an active call: current plugin behavior is documented in UX Functional Behavior (no ring, condensed notification, "Leave and join new call" modal). Ring and join-modal behavior stay as in the plugin; the remaining video-specific questions are open.
+1. *Resolved:* a 1:1 DM call ends when either person leaves. In all other cases the call continues until the host chooses End call for everyone; if the host leaves, host transfers to the earliest-joined remaining participant. *Prototype now follows the leave rules; End call for everyone and host transfer are still to do (see Leaving and ending a call).*
+2. *Resolved for Phase 2:* the GM and channel cap is 10 participants. Phase 3 (large calls) is separate.
+3. Should the call banner dismissal persist across sessions or only for the current visit?
+4. *Resolved:* the banner live-updates (elapsed time and participant count). The prototype now ticks the elapsed time; the count follows the People control.
+5. Green-600 versus green-700 for small white text (3.54:1 versus 5.2:1).
+6. *Resolved:* for DM calls the caller already sees declined, no answer and canceled outcomes on the call card (see Calls UX Improvements for DM Calls). The prototype shows one Declined / Missed card post; confirm the caller's wording differs from the callee's as that spec's caller and callee columns imply.
+7. Which events produce persistent network warnings, and what is the copy?
+8. *Resolved:* sounds follow mattermost-plugin-calls v2 (see Sounds). The prototype now plays join-self, join-user and leave; the 8-participant join limit and leave-on-disconnect are still to do.
+9. *Resolved:* GM and channel calls have no incoming call notice, so there is no Audio only choice there; people join from the Ongoing banner, header Join call or call card. Remaining question: should the 1:1 DM incoming widget offer Audio only? (The unused `IncomingCallCard` component has it; the widget does not.)
+10. Where should the Figma board be refreshed so it matches the prototype?
+
+## References and Resources
+
+- Prototype: mattermost-proto-playground, Video Calls (PR #84)
+- Figma: Video-Calling (WcvNikeYFxnW15IaZU9JM0), Call Card (uHkbu1krioaScJ3AfxLPg2)
+- RHS overlay pattern: docs/RHS-OVERLAY-PATTERN.md in the prototype repo
+- Related UX specs: Calls UX Improvements for DM Calls; UX Spec: Outbound Calls — Implementation Tiers; Phase 1 — Basic Outbound SIP Calling (links under Overview)
+- Related: FY28 Multi-party Video two-pager (background only)
