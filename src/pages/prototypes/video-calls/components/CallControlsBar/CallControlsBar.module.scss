@@ -8,7 +8,10 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: var(--spacing-m);
-  padding: var(--spacing-m) 0;
+  // The frame body insets the bar more at the bottom than at the sides; the
+  // extra side padding here makes the buttons sit the same distance from the
+  // left, right and bottom edges of the window.
+  padding: var(--spacing-m) var(--spacing-s);
 
   &__left,
   &__right {
