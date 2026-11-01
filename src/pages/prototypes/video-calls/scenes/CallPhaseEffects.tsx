@@ -54,15 +54,15 @@ export default function CallPhaseEffects() {
     return () => stopSound('ring-incoming');
   }, [phase, soundOn]);
 
-  // Join chime when you connect (like the plugin, the DM caller who just heard
-  // the ringback does not also get it).
+  // Connecting: you hear join-self, except the DM caller, who just heard the
+  // ringback and instead hears join-user when the other person answers (the
+  // plugin treats the callee as someone else joining).
   const prevPhase = useRef(phase);
   useEffect(() => {
     const from = prevPhase.current;
     prevPhase.current = phase;
-    if (phase === 'active' && from !== 'active' && from !== 'calling') {
-      playSound('join-self');
-    }
+    if (phase !== 'active' || from === 'active') return;
+    playSound(from === 'calling' ? 'join-user' : 'join-self');
   }, [phase]);
 
   // Someone else joining while you are in the call.
