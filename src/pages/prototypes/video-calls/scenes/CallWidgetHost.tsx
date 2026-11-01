@@ -229,6 +229,7 @@ function CardWidget({
       }
       sharing={state.sharing}
       shareLabel={state.shareSource?.what}
+      shareStream={screenShare.stream}
       onToggleShare={() => {
         close();
         screenShare.toggle();

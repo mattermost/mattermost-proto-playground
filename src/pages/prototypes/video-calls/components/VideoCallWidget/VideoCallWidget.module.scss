@@ -155,13 +155,41 @@
     text-align: center;
   }
 
-  // Sharing state of the media row: what you share + a clear Stop.
+  // Sharing state of the media row: live thumbnail, what you share + a clear Stop.
   &__sharing {
     display: flex;
     flex: 1 1 auto;
-    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__share-thumb {
+    display: flex;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
+    width: 96px; // one-off thumbnail width (16:9 inside the 88px media row)
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__share-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000; // letterbox behind a captured surface, not a theme colour
+  }
+
+  &__sharing-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--spacing-s);
     min-width: 0;
   }
@@ -170,12 +198,20 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-s);
+    max-width: 100%;
     min-width: 0;
     margin: 0;
     font-family: var(--font-family-body);
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
     font-weight: var(--font-weight-semibold);
+  }
+
+  &__sharing-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__sharing-dot {

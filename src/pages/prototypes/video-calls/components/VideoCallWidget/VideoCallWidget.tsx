@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import ArrowExpandIcon from '@mattermost/compass-icons/components/arrow-expand';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
@@ -22,6 +22,32 @@ import {
   type WidgetMediaControlsLabels,
 } from '../WidgetMediaControls';
 import styles from './VideoCallWidget.module.scss';
+
+/** Small live preview of what you share; a placeholder when there is no capture. */
+function ShareThumb({ stream }: { stream?: MediaStream | null }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (ref.current) ref.current.srcObject = stream ?? null;
+  }, [stream]);
+  return (
+    <span
+      className={styles['video-call-widget__share-thumb']}
+      aria-hidden="true"
+    >
+      {stream ? (
+        <video
+          ref={ref}
+          className={styles['video-call-widget__share-video']}
+          autoPlay
+          muted
+          playsInline
+        />
+      ) : (
+        <Icon size="24" glyph={<MonitorShareIcon />} />
+      )}
+    </span>
+  );
+}
 
 export type VideoCallWidgetPhase =
   'pre-join' | 'calling' | 'joining' | 'active';
@@ -122,6 +148,8 @@ export interface VideoCallWidgetProps {
   sharing?: boolean;
   /** What is being shared ("Entire screen", a window name, …). */
   shareLabel?: string;
+  /** Live capture shown as a thumbnail in the sharing state; omit for a placeholder. */
+  shareStream?: MediaStream | null;
   onToggleShare?: () => void;
   moreOpen?: boolean;
   onToggleMore?: () => void;
@@ -213,6 +241,7 @@ export function VideoCallWidget({
   participantsPopover,
   sharing = false,
   shareLabel = 'your screen',
+  shareStream,
   onToggleShare,
   moreOpen = false,
   onToggleMore,
@@ -318,22 +347,30 @@ export function VideoCallWidget({
         </p>
       </div>
     ) : sharing ? (
-      <div className={styles['video-call-widget__sharing']} role="status">
-        <p className={styles['video-call-widget__sharing-text']}>
-          <span
-            className={styles['video-call-widget__sharing-dot']}
-            aria-hidden="true"
-          />
-          {l.sharingStatus(shareLabel)}
-        </p>
-        <Button
-          emphasis="primary"
-          destructive
-          size="small"
-          onClick={onToggleShare}
-        >
-          {l.stopSharing}
-        </Button>
+      <div className={styles['video-call-widget__sharing']}>
+        <ShareThumb stream={shareStream} />
+        <div className={styles['video-call-widget__sharing-body']}>
+          <p
+            className={styles['video-call-widget__sharing-text']}
+            role="status"
+          >
+            <span
+              className={styles['video-call-widget__sharing-dot']}
+              aria-hidden="true"
+            />
+            <span className={styles['video-call-widget__sharing-label']}>
+              {l.sharingStatus(shareLabel)}
+            </span>
+          </p>
+          <Button
+            emphasis="primary"
+            destructive
+            size="small"
+            onClick={onToggleShare}
+          >
+            {l.stopSharing}
+          </Button>
+        </div>
       </div>
     ) : (
       <div className={styles['video-call-widget__thumbs']}>
