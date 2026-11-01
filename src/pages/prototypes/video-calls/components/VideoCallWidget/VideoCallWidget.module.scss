@@ -83,13 +83,16 @@
       );
     }
 
-    // Live call: the same 16:9 as the pre-join preview, so the speaker tile and
-    // the preview share a shape. Calling and joining stay compact: the card
-    // grows when the call connects.
+    // Live call: the same 16:9 as the pre-join preview. The gap from the video
+    // to the control buttons (this padding plus the controls row's own 8px above
+    // the buttons) equals the buttons' side padding (--spacing-s), so the video
+    // and the controls are spaced evenly. Calling and joining stay compact: the
+    // card grows when the call connects.
     &--active {
       --video-call-widget-media-h: calc(
-        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xxxxs)
       );
+      padding-bottom: var(--spacing-xxxxs);
     }
 
     // Join mode adds the "N people in the call" row under the preview.
