@@ -40,7 +40,7 @@
   // room for it by animating its end padding, so the call room resizes smoothly
   // while the pane slides / fades in (RHS standard).
   &__stage {
-    --video-call-window-pane-w: 320px; // one-off layout width, matches CallThreadPane
+    --video-call-window-pane-w: 400px; // one-off layout width, matches CallThreadPane
     position: relative;
     flex: 1 1 auto;
     min-height: 0;
