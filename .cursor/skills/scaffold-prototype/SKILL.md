@@ -13,10 +13,27 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
    - `<Slug>.module.scss` — shared styles
    - `components/` — prototype-only shared UI
    - `scenes/` — one file per scene-switcher entry (**not** `views/`)
+   - `docs/` — input references, with a `README.md` (template below)
 2. Register the prototype in `src/manifests/prototypes.ts` and wire the route.
 3. In the orchestrator, use `usePrototypeChrome()` and a `useEffect` to `setCenterSlot(<SceneSwitcher …/>)`; cleanup with `setCenterSlot(null)`; sync when `activeScene` changes.
 4. Prefer `SceneSwitcher` with a clear `ariaLabel`. Do not `position: fixed` the control to the viewport.
 5. Import Compass pieces from `@mattermost/compass-ui` **subpaths** and `@mattermost/compass-proto` (root). Do not reimplement them under prototype `components/`. Before using a component: cheat sheet → installed `.d.ts` → sibling guideline. Desktop vs mobile and overlay wiring: [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md).
+
+6. Ask the user for the requirements, PRFAQ, Figma, and Confluence links (and Jira / PR links if any). Record each in `docs/README.md`, labelled **requirement** or **background**. Save UX spec source as `docs/<slug>-spec.md` and screenshots under `docs/shots/`. Link rather than paste confidential content; no absolute local paths. Conventions: [Prototype docs](../../../src/pages/prototypes/AGENTS.md#prototype-docs).
+
+### `docs/README.md` template
+
+```md
+# <Prototype name> — docs
+
+| Item | Link | Type |
+| --- | --- | --- |
+| PRFAQ | <url> | requirement |
+| UX spec | <url> (source: `<slug>-spec.md`) | requirement |
+| Figma | <url> | requirement |
+| Jira | <url> | background |
+| Engineering brief | <url> | background |
+```
 
 ## Invariants
 
