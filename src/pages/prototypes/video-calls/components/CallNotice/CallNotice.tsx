@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import RecordIcon from '@mattermost/compass-icons/components/record-circle-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
+import { PopoverNotice } from '@mattermost/compass-ui/components/popover-notice';
 import {
   Toast,
   type ToastProps,
@@ -14,6 +15,7 @@ export type CallNoticeItemKind =
   | 'host'
   | 'network'
   | 'recording'
+  | 'recording-started'
   | 'device'
   | 'permission'
   | 'info';
@@ -28,6 +30,10 @@ export interface CallNoticeLabels {
   /** Accessible name of the notice stack. */
   region?: string;
   dismiss?: string;
+  /** Body of the "recording started" popover notice. */
+  recordingStartedBody?: string;
+  /** Action button on the "recording started" popover notice. */
+  recordingStartedAction?: string;
 }
 
 export interface CallNoticeProps {
@@ -45,11 +51,15 @@ const DEFAULT_PERSISTENT: readonly CallNoticeItemKind[] = [
   'network',
   'permission',
   'device',
+  'recording-started',
 ];
 
 const DEFAULT_LABELS: Required<CallNoticeLabels> = {
   region: 'Call notifications',
   dismiss: 'Dismiss notification',
+  recordingStartedBody:
+    'Consider letting everyone know that this meeting is being recorded and transcribed.',
+  recordingStartedAction: 'Dismiss',
 };
 
 const TOAST_TYPE: Record<
@@ -61,6 +71,7 @@ const TOAST_TYPE: Record<
   host: 'general',
   info: 'info',
   recording: 'info',
+  'recording-started': 'info',
   network: 'warning',
   device: 'danger',
   permission: 'danger',
@@ -74,6 +85,8 @@ interface ItemProps {
   persistent: boolean;
   autoDismissMs: number;
   dismissLabel: string;
+  recordingStartedBody: string;
+  recordingStartedAction: string;
   onDismiss: (id: string) => void;
 }
 
@@ -85,6 +98,8 @@ function NoticeItem({
   persistent,
   autoDismissMs,
   dismissLabel,
+  recordingStartedBody,
+  recordingStartedAction,
   onDismiss,
 }: ItemProps) {
   const { id } = notice;
@@ -113,6 +128,25 @@ function NoticeItem({
   if (PILL_KINDS.includes(notice.kind)) {
     content = (
       <CallNoticePill type="other" size="medium" message={notice.text} />
+    );
+  } else if (notice.kind === 'recording-started') {
+    content = (
+      <PopoverNotice
+        className={styles['call-notice__recording-started']}
+        icon={<Icon glyph={<RecordIcon />} />}
+        title={notice.text}
+        closeLabel={dismissLabel}
+        onClose={() => onDismiss(id)}
+        actions={[
+          {
+            label: recordingStartedAction,
+            emphasis: 'primary',
+            onClick: () => onDismiss(id),
+          },
+        ]}
+      >
+        {recordingStartedBody}
+      </PopoverNotice>
     );
   } else if (notice.kind === 'recording') {
     content = (
@@ -178,6 +212,8 @@ export function CallNotice({
           persistent={persistentKinds.includes(n.kind)}
           autoDismissMs={autoDismissMs}
           dismissLabel={l.dismiss}
+          recordingStartedBody={l.recordingStartedBody}
+          recordingStartedAction={l.recordingStartedAction}
           onDismiss={onDismiss}
         />
       ))}

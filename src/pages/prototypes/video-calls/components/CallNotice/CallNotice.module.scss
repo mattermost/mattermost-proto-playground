@@ -57,7 +57,18 @@
     }
   }
 
-  // Compact popover surface for recording started / stopped.
+  // "Recording and transcription has started": Compass PopoverNotice with the
+  // red record glyph; stays until dismissed.
+  &__recording-started {
+    width: 420px; // one-off notice width, wider than the compact pill
+    max-width: 100%;
+
+    :global([class*='popover-notice__icon']) {
+      color: var(--error-text, var(--color-danger));
+    }
+  }
+
+  // Compact popover surface for recording stopped.
   &__popover {
     display: flex;
     align-items: center;

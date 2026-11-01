@@ -73,6 +73,7 @@ export type CallNoticeKind =
   | 'host'
   | 'network'
   | 'recording'
+  | 'recording-started'
   | 'device'
   | 'permission'
   | 'info';

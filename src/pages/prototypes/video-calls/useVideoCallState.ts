@@ -106,6 +106,7 @@ const PERSISTENT_NOTICE_KINDS: readonly CallNotice['kind'][] = [
   'network',
   'permission',
   'device',
+  'recording-started',
 ];
 
 /**
@@ -394,8 +395,12 @@ export function useVideoCallState() {
               ...s.notices,
               {
                 id: `notice-${++noticeSeq}`,
-                kind: 'recording' as const,
-                text: recording ? 'Recording started' : 'Recording stopped',
+                kind: recording
+                  ? ('recording-started' as const)
+                  : ('recording' as const),
+                text: recording
+                  ? 'Recording and transcription has started'
+                  : 'Recording stopped',
               },
             ]),
           };
