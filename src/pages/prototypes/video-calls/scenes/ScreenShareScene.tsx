@@ -45,13 +45,22 @@ function MockSharedScreen() {
  * offers "Stop", which returns to the regular call layout.
  */
 export default function ScreenShareScene() {
-  const { actions } = useVideoCall();
+  const { state, actions } = useVideoCall();
 
   return (
     <CallWindowHost
       sharing
       shareContent={<MockSharedScreen />}
-      banner={<ShareIndicator onStop={actions.toggleShare} />}
+      banner={
+        <ShareIndicator
+          onStop={actions.toggleShare}
+          labels={
+            state.shareSource
+              ? { status: `You are sharing ${state.shareSource.what}` }
+              : undefined
+          }
+        />
+      }
     />
   );
 }

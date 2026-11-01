@@ -56,6 +56,10 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   participants?: (count: number) => string;
   share?: string;
   stopShare?: string;
+  /** "You're sharing Name" shown in the media row while you share. */
+  sharingStatus?: (what: string) => string;
+  /** Stop button text in the sharing state. */
+  stopSharing?: string;
   more?: string;
   leave?: string;
   /** Suffix after the signed-in user's name on a tile, e.g. "You". */
@@ -116,6 +120,8 @@ export interface VideoCallWidgetProps {
   /** Host-rendered participants surface, anchored above the card. */
   participantsPopover?: ReactNode;
   sharing?: boolean;
+  /** What is being shared ("Entire screen", a window name, …). */
+  shareLabel?: string;
   onToggleShare?: () => void;
   moreOpen?: boolean;
   onToggleMore?: () => void;
@@ -155,6 +161,8 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   cameraOptions: 'Camera options',
   share: 'Share screen',
   stopShare: 'Stop sharing screen',
+  sharingStatus: (what) => `You're sharing ${what}`,
+  stopSharing: 'Stop sharing',
   more: 'More options',
   leave: 'Leave call',
   self: 'You',
@@ -204,6 +212,7 @@ export function VideoCallWidget({
   onToggleParticipants,
   participantsPopover,
   sharing = false,
+  shareLabel = 'your screen',
   onToggleShare,
   moreOpen = false,
   onToggleMore,
@@ -307,6 +316,24 @@ export function VideoCallWidget({
         <p className={styles['video-call-widget__status']}>
           {l.joining(peerName)}
         </p>
+      </div>
+    ) : sharing ? (
+      <div className={styles['video-call-widget__sharing']} role="status">
+        <p className={styles['video-call-widget__sharing-text']}>
+          <span
+            className={styles['video-call-widget__sharing-dot']}
+            aria-hidden="true"
+          />
+          {l.sharingStatus(shareLabel)}
+        </p>
+        <Button
+          emphasis="primary"
+          destructive
+          size="small"
+          onClick={onToggleShare}
+        >
+          {l.stopSharing}
+        </Button>
       </div>
     ) : (
       <div className={styles['video-call-widget__thumbs']}>

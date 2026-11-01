@@ -120,3 +120,47 @@ export function groupChatName(count: number): string {
     .map((p) => p.name.split(' ')[0])
     .join(', ');
 }
+
+export type ShareKind = 'screen' | 'window' | 'tab';
+
+/** Something you can share into the call (mock capture sources for the picker). */
+export interface ShareSource {
+  id: string;
+  kind: ShareKind;
+  label: string;
+  /** Reads in a sentence: "You're sharing <what>". */
+  what: string;
+}
+
+export const SHARE_SOURCES: ShareSource[] = [
+  {
+    id: 'screen-1',
+    kind: 'screen',
+    label: 'Entire screen',
+    what: 'your entire screen',
+  },
+  { id: 'screen-2', kind: 'screen', label: 'Screen 2', what: 'Screen 2' },
+  { id: 'window-figma', kind: 'window', label: 'Figma', what: 'Figma' },
+  {
+    id: 'window-mattermost',
+    kind: 'window',
+    label: 'Mattermost',
+    what: 'Mattermost',
+  },
+  { id: 'window-notes', kind: 'window', label: 'Notes', what: 'Notes' },
+  {
+    id: 'tab-onboarding',
+    kind: 'tab',
+    label: 'Onboarding redesign',
+    what: 'the Onboarding redesign tab',
+  },
+  {
+    id: 'tab-research',
+    kind: 'tab',
+    label: 'Research notes',
+    what: 'the Research notes tab',
+  },
+];
+
+/** What "Share screen" picks by default so sharing is one click away. */
+export const DEFAULT_SHARE_SOURCE = SHARE_SOURCES[0];

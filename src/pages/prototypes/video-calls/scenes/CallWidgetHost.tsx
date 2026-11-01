@@ -222,6 +222,7 @@ function CardWidget({
         </ExitingPopover>
       }
       sharing={state.sharing}
+      shareLabel={state.shareSource?.what}
       onToggleShare={() => {
         close();
         actions.toggleShare();

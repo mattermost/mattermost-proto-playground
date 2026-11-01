@@ -12,10 +12,12 @@ import {
   type VideoParticipant,
 } from '@/types/videoCall';
 import {
+  DEFAULT_SHARE_SOURCE,
   DM_PEER_ID,
   GROUP_STARTER_ID,
   ROSTER,
   SELF_ID,
+  type ShareSource,
 } from './videoCallsData';
 import {
   DEMO_SCENES,
@@ -44,6 +46,10 @@ export interface VideoCallState {
   pane: CallPane;
   handRaised: boolean;
   sharing: boolean;
+  /** What you are sharing while `sharing` is on (named in the widget and window). */
+  shareSource: ShareSource | null;
+  /** The "choose what to share" dialog is open (nothing is shared yet). */
+  sharePickerOpen: boolean;
   /** Mock call recording (shows the REC pill in the window, a dot in the widget). */
   recording: boolean;
   /** Call info: whether external participants may join (mock toggle). */
@@ -81,6 +87,8 @@ const INITIAL_STATE: VideoCallState = {
   pane: null,
   handRaised: false,
   sharing: false,
+  shareSource: null,
+  sharePickerOpen: false,
   recording: false,
   externalEnabled: false,
   notices: [],
@@ -129,6 +137,7 @@ function countFor(context: CallContext, current: number) {
 
 /** Per-call state that never carries over into a new call. */
 const PER_CALL_RESET: Partial<VideoCallState> = {
+  sharePickerOpen: false,
   recording: false,
   handRaised: false,
   removedIds: [],
@@ -142,6 +151,7 @@ const CALL_RESET: Partial<VideoCallState> = {
   phase: 'idle',
   surface: 'widget',
   sharing: false,
+  shareSource: null,
   pane: null,
   callStartedAt: null,
 };
@@ -231,6 +241,7 @@ export function useVideoCallState() {
             joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
             callStartedAt: phase === 'active' ? Date.now() : null,
             sharing: phase === 'active' ? s.sharing : false,
+            shareSource: phase === 'active' ? s.shareSource : null,
             pane: phase === 'active' ? s.pane : null,
             missedCall: false,
             declinedCall: false,
@@ -265,6 +276,7 @@ export function useVideoCallState() {
             phase: demo.phase,
             surface: demo.surface,
             sharing: Boolean(demo.sharing),
+            shareSource: demo.sharing ? DEFAULT_SHARE_SOURCE : null,
             pane: null,
             missedCall: false,
             declinedCall: false,
@@ -365,7 +377,26 @@ export function useVideoCallState() {
       setMedia: (next: Partial<MediaPrefs>) =>
         setState((s) => ({ ...s, media: { ...s.media, ...next } })),
       toggleHand: () => setState((s) => ({ ...s, handRaised: !s.handRaised })),
-      toggleShare: () => setState((s) => ({ ...s, sharing: !s.sharing })),
+      /**
+       * The share button: stops an active share, otherwise opens the picker so
+       * you choose what to share first (nothing is shared until you confirm).
+       */
+      toggleShare: () =>
+        setState((s) =>
+          s.sharing
+            ? { ...s, sharing: false, shareSource: null }
+            : { ...s, sharePickerOpen: true },
+        ),
+      /** Picker confirmed: start sharing the chosen source. */
+      startShare: (source: ShareSource) =>
+        setState((s) => ({
+          ...s,
+          sharing: true,
+          shareSource: source,
+          sharePickerOpen: false,
+        })),
+      closeSharePicker: () =>
+        setState((s) => ({ ...s, sharePickerOpen: false })),
       /** Mock recording toggle; also posts a notice like the real product would. */
       toggleRecording: () =>
         setState((s) => {
