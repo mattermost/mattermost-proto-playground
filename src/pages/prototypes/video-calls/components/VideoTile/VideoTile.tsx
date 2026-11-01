@@ -357,6 +357,7 @@ function VideoTileInner({
               className={styles['video-tile__more']}
               icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
               size="small"
+              padding="compact"
               style="inverted"
               aria-label={l.participantActions}
               aria-haspopup="menu"
