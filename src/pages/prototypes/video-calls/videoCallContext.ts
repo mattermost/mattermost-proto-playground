@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { VideoParticipant } from '@/types/videoCall';
+import type { ScreenShare } from './useScreenShare';
 import type { SelfCamera } from './useSelfCamera';
 import type { VideoCallActions, VideoCallState } from './useVideoCallState';
 
@@ -10,6 +11,8 @@ export interface VideoCallContextValue {
   actions: VideoCallActions;
   /** The shared opt-in webcam (pre-join, widget and window all read this). */
   selfCamera: SelfCamera;
+  /** The shared screen capture (the widget and the window both read this). */
+  screenShare: ScreenShare;
 }
 
 export const VideoCallContext = createContext<VideoCallContextValue | null>(

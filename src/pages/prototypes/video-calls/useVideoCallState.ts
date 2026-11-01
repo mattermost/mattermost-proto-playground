@@ -48,8 +48,6 @@ export interface VideoCallState {
   sharing: boolean;
   /** What you are sharing while `sharing` is on (named in the widget and window). */
   shareSource: ShareSource | null;
-  /** The "choose what to share" dialog is open (nothing is shared yet). */
-  sharePickerOpen: boolean;
   /** Mock call recording (shows the REC pill in the window, a dot in the widget). */
   recording: boolean;
   /** Call info: whether external participants may join (mock toggle). */
@@ -88,7 +86,6 @@ const INITIAL_STATE: VideoCallState = {
   handRaised: false,
   sharing: false,
   shareSource: null,
-  sharePickerOpen: false,
   recording: false,
   externalEnabled: false,
   notices: [],
@@ -137,7 +134,6 @@ function countFor(context: CallContext, current: number) {
 
 /** Per-call state that never carries over into a new call. */
 const PER_CALL_RESET: Partial<VideoCallState> = {
-  sharePickerOpen: false,
   recording: false,
   handRaised: false,
   removedIds: [],
@@ -377,26 +373,15 @@ export function useVideoCallState() {
       setMedia: (next: Partial<MediaPrefs>) =>
         setState((s) => ({ ...s, media: { ...s.media, ...next } })),
       toggleHand: () => setState((s) => ({ ...s, handRaised: !s.handRaised })),
-      /**
-       * The share button: stops an active share, otherwise opens the picker so
-       * you choose what to share first (nothing is shared until you confirm).
-       */
-      toggleShare: () =>
-        setState((s) =>
-          s.sharing
-            ? { ...s, sharing: false, shareSource: null }
-            : { ...s, sharePickerOpen: true },
-        ),
-      /** Picker confirmed: start sharing the chosen source. */
+      /** Sharing started (the capture, or the stand-in, is running). */
       startShare: (source: ShareSource) =>
-        setState((s) => ({
-          ...s,
-          sharing: true,
-          shareSource: source,
-          sharePickerOpen: false,
-        })),
-      closeSharePicker: () =>
-        setState((s) => ({ ...s, sharePickerOpen: false })),
+        setState((s) =>
+          s.phase === 'active'
+            ? { ...s, sharing: true, shareSource: source }
+            : s,
+        ),
+      stopShare: () =>
+        setState((s) => ({ ...s, sharing: false, shareSource: null })),
       /** Mock recording toggle; also posts a notice like the real product would. */
       toggleRecording: () =>
         setState((s) => {

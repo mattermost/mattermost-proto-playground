@@ -78,8 +78,14 @@ export default function CallWindowHost({
   banner,
   playJoinSound = false,
 }: CallWindowHostProps) {
-  const { state, participants, actions, selfCamera, elapsedLabel } =
-    useCallSession();
+  const {
+    state,
+    participants,
+    actions,
+    selfCamera,
+    screenShare,
+    elapsedLabel,
+  } = useCallSession();
   const conversationName = useConversationName();
   const rootRef = useRef<HTMLDivElement>(null);
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
@@ -378,7 +384,7 @@ export default function CallWindowHost({
           sharing: state.sharing,
           onToggleShare: () => {
             closeMenu();
-            actions.toggleShare();
+            screenShare.toggle();
           },
           reactionsOpen: openMenu === 'reactions',
           onToggleReactions: () => toggleMenu('reactions'),

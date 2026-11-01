@@ -160,8 +160,14 @@ function CardWidget({
   ov: WidgetOverlay;
   phase: 'pre-join' | 'calling' | 'joining' | 'active';
 }) {
-  const { state, participants, actions, selfCamera, elapsedLabel } =
-    useCallSession();
+  const {
+    state,
+    participants,
+    actions,
+    selfCamera,
+    screenShare,
+    elapsedLabel,
+  } = useCallSession();
   const conversationName = useConversationName();
   const { micMenu, cameraMenu, micLabel, cameraLabel } = useDeviceMenus(ov);
   const { overlay, close, toggle } = ov;
@@ -225,7 +231,7 @@ function CardWidget({
       shareLabel={state.shareSource?.what}
       onToggleShare={() => {
         close();
-        actions.toggleShare();
+        screenShare.toggle();
       }}
       moreOpen={overlay === 'more'}
       onToggleMore={() => toggle('more')}

@@ -1,7 +1,26 @@
+import { useEffect, useRef } from 'react';
 import { ShareIndicator } from '../components/ShareIndicator';
 import { useVideoCall } from '../videoCallContext';
 import CallWindowHost from './CallWindowHost';
 import styles from './ScreenShareScene.module.scss';
+
+/** The live capture: what you are really sharing, shown on the stage. */
+function SharedScreenVideo({ stream }: { stream: MediaStream }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (ref.current) ref.current.srcObject = stream;
+  }, [stream]);
+  return (
+    <video
+      ref={ref}
+      className={styles['screen-share-scene__video']}
+      autoPlay
+      muted
+      playsInline
+      aria-label="Your shared screen"
+    />
+  );
+}
 
 /** Prototype-only stand-in for a captured screen: a stylized slide, not a real capture. */
 function MockSharedScreen() {
@@ -45,15 +64,21 @@ function MockSharedScreen() {
  * offers "Stop", which returns to the regular call layout.
  */
 export default function ScreenShareScene() {
-  const { state, actions } = useVideoCall();
+  const { state, screenShare } = useVideoCall();
 
   return (
     <CallWindowHost
       sharing
-      shareContent={<MockSharedScreen />}
+      shareContent={
+        screenShare.stream ? (
+          <SharedScreenVideo stream={screenShare.stream} />
+        ) : (
+          <MockSharedScreen />
+        )
+      }
       banner={
         <ShareIndicator
-          onStop={actions.toggleShare}
+          onStop={screenShare.toggle}
           labels={
             state.shareSource
               ? { status: `You are sharing ${state.shareSource.what}` }

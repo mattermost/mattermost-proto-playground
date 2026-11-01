@@ -1,4 +1,13 @@
 .screen-share-scene {
+  // Live capture: fit the whole shared surface, letterboxed on black.
+  &__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000; // letterbox behind a captured surface, not a theme colour
+  }
+
   // Mock shared screen ---------------------------------------------------------
   &__screen {
     display: flex;

@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ModalOverlay } from '@mattermost/compass-ui/components/modal';
-import { ScreenSharePicker } from './components/ScreenSharePicker';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
@@ -11,6 +16,7 @@ import SoundToggle from './chrome/SoundToggle';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import CallWindowScene from './scenes/CallWindowScene';
 import ChatScene from './scenes/ChatScene';
+import { useScreenShare } from './useScreenShare';
 import { useSelfCamera } from './useSelfCamera';
 import { useVideoCallState } from './useVideoCallState';
 import { VideoCallContext } from './videoCallContext';
@@ -33,6 +39,7 @@ export default function VideoCalls() {
   const { state, participants, actions } = useVideoCallState();
   const { callContext, phase, surface, count } = state;
   const selfCamera = useSelfCamera(state.media, actions, walkthroughActive);
+  const screenShare = useScreenShare(state.sharing, actions, walkthroughActive);
 
   // Each walkthrough step names a demo scene (a combination of the three axes).
   const onWalkthroughScene = useCallback(
@@ -43,7 +50,9 @@ export default function VideoCalls() {
     },
     [actions],
   );
-  useRegisterWalkthrough(videoCallsWalkthrough, { onScene: onWalkthroughScene });
+  useRegisterWalkthrough(videoCallsWalkthrough, {
+    onScene: onWalkthroughScene,
+  });
 
   // Stamp focus anchors after each scene paints (widget / window animate in).
   useLayoutEffect(() => {
@@ -105,8 +114,8 @@ export default function VideoCalls() {
   ]);
 
   const value = useMemo(
-    () => ({ state, participants, actions, selfCamera }),
-    [state, participants, actions, selfCamera],
+    () => ({ state, participants, actions, selfCamera, screenShare }),
+    [state, participants, actions, selfCamera, screenShare],
   );
 
   // The window hosts every phase except idle, incoming and joining (those are widget-only).
@@ -120,7 +129,6 @@ export default function VideoCalls() {
   // clipped to the app layout. The window stays mounted through the fade-out.
   const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null);
   const windowRendered = useExitAnimation(showWindow, 150).rendered;
-  const sharePickerOpen = state.sharePickerOpen && phase === 'active';
 
   return (
     <VideoCallContext.Provider value={value}>
@@ -141,20 +149,6 @@ export default function VideoCalls() {
                 <CallWindowScene />
               </div>
             )}
-          </ModalOverlay>
-          {/* Choose what to share: above the window scrim, clipped to the frame. */}
-          <ModalOverlay
-            open={sharePickerOpen}
-            container={frameEl}
-            lockScroll={false}
-            zIndex={20}
-            style={{ position: 'absolute' }}
-            onClose={actions.closeSharePicker}
-          >
-            <ScreenSharePicker
-              onShare={(source) => actions.startShare(source)}
-              onCancel={actions.closeSharePicker}
-            />
           </ModalOverlay>
         </div>
       </div>
