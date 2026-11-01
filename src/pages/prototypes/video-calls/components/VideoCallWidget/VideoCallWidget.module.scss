@@ -256,10 +256,21 @@
     box-shadow: var(--elevation-3);
   }
 
+  // Camera off: a smaller avatar that fits the PiP, on a slightly lighter fill
+  // so it reads apart from the speaker's tile when theirs is off too.
   &__pip-tile#{&}__pip-tile {
+    --video-tile-bg: color-mix(
+      in srgb,
+      var(--neutral-0) 14%,
+      var(--calls-video-bg, #080c14)
+    );
     width: 100%;
     height: 100%;
     border-radius: var(--radius-s);
+
+    :global([class*='video-tile__avatar-image']) {
+      transform: scale(0.7); // 40px avatar -> 28px; no 28px avatar size exists
+    }
   }
 
   &__overflow {
