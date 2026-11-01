@@ -1,4 +1,7 @@
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { WidgetFrame } from '../WidgetFrame';
 import styles from './WidgetIncoming.module.scss';
@@ -11,6 +14,8 @@ export interface WidgetIncomingLabels {
 }
 
 export interface WidgetIncomingProps {
+  /** Shown as the icon on the avatar and in the subtitle. Default: `video`. */
+  callType?: 'video' | 'audio';
   callerName: string;
   callerAvatarSrc?: string;
   onAccept: () => void;
@@ -30,6 +35,7 @@ const DEFAULT_LABELS: Required<WidgetIncomingLabels> = {
  * Incoming-call state of the widget: caller, subtitle and Ignore / Accept. Presentational; the host owns ringing, timeouts and sound.
  */
 export default function WidgetIncoming({
+  callType = 'video',
   callerName,
   callerAvatarSrc,
   onAccept,
@@ -37,7 +43,12 @@ export default function WidgetIncoming({
   labels,
   className,
 }: WidgetIncomingProps) {
-  const l = { ...DEFAULT_LABELS, ...labels };
+  const l = {
+    ...DEFAULT_LABELS,
+    subtitle:
+      callType === 'audio' ? 'Incoming audio call' : DEFAULT_LABELS.subtitle,
+    ...labels,
+  };
   return (
     <WidgetFrame
       role="dialog"
@@ -52,6 +63,14 @@ export default function WidgetIncoming({
             name={callerName}
             size="48"
           />
+          <span className={styles['widget-incoming__badge']} aria-hidden="true">
+            <Icon
+              size="12"
+              glyph={
+                callType === 'audio' ? <PhoneIcon /> : <VideoOutlineIcon />
+              }
+            />
+          </span>
         </span>
         <div className={styles['widget-incoming__text']}>
           <p className={styles['widget-incoming__name']}>{callerName}</p>

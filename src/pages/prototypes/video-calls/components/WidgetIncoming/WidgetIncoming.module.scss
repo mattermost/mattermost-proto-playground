@@ -36,6 +36,24 @@
     }
   }
 
+  // Call-type badge on the avatar's corner (video camera / phone).
+  &__badge {
+    position: absolute;
+    right: calc(var(--spacing-xxxs) * -1);
+    bottom: calc(var(--spacing-xxxs) * -1);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; // one-off badge size
+    height: 20px;
+    box-sizing: border-box;
+    border: 2px solid var(--center-channel-bg);
+    border-radius: var(--radius-pill);
+    background: var(--online-indicator);
+    color: var(--neutral-0);
+  }
+
   &__text {
     display: flex;
     flex-direction: column;
