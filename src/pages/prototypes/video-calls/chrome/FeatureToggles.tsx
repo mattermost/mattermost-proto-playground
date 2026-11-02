@@ -24,7 +24,8 @@ export default function FeatureToggles({
         size="x-small"
         aria-label="Video calls"
         title={features.video ? 'Video calls on' : 'Video calls off'}
-        toggled={features.video}
+        active={features.video}
+        aria-pressed={features.video}
         icon={<Icon size="12" glyph={<VideoOutlineIcon />} />}
         onClick={() => onChange({ video: !features.video })}
       />
@@ -32,7 +33,8 @@ export default function FeatureToggles({
         size="x-small"
         aria-label="Phone calls"
         title={features.phone ? 'Phone calls on' : 'Phone calls off'}
-        toggled={features.phone}
+        active={features.phone}
+        aria-pressed={features.phone}
         icon={<Icon size="12" glyph={<PhoneIcon />} />}
         onClick={() => onChange({ phone: !features.phone })}
       />
