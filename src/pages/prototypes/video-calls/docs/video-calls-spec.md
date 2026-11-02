@@ -187,11 +187,13 @@ Copy call link copies the call link for a Mattermost call and shows a "Call link
 
 The same button follows the conversation's call state:
 
-| Call state                                | Button                                      | Tooltip    | Click                       |
-| ----------------------------------------- | ------------------------------------------- | ---------- | --------------------------- |
-| No call                                   | Phone icon with chevron                     | Start call | Opens the menu              |
-| Ongoing (GM / channel, you are not in it) | Green phone icon, no chevron                | Join call  | Opens pre-join in join mode |
-| Ringing, pre-join or in the call (yours)  | Green phone icon, pressed state, no chevron | In call    | None                        |
+| Call state                                | Button                                              | Tooltip    | Click                       |
+| ----------------------------------------- | --------------------------------------------------- | ---------- | --------------------------- |
+| No call                                   | Phone icon with chevron                             | Start call | Opens the menu              |
+| Ongoing (GM / channel, you are not in it) | Green in-call phone icon, no chevron                | Join call  | Opens pre-join in join mode |
+| Ringing, pre-join or in the call (yours)  | Green in-call phone icon, pressed state, no chevron | In call    | None                        |
+
+The in-call phone icon is the same glyph as the sidebar's in-call icon (`phone-in-talk`), so the header and the conversation row read as one signal.
 
 _Question: should clicking the In call state bring the call widget forward (for example when it has been dragged away or the window is open)?_
 

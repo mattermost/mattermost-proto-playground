@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
@@ -67,7 +68,10 @@ export default function CallHeaderButton({
           .join(' ')}
         icon={
           <>
-            <Icon glyph={<PhoneIcon />} />
+            {/* A running call uses the same glyph as the sidebar's in-call icon. */}
+            <Icon
+              glyph={state === 'start' ? <PhoneIcon /> : <PhoneInTalkIcon />}
+            />
             {menu && (
               <Icon
                 glyph={<ChevronDownIcon />}
