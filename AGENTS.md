@@ -65,6 +65,7 @@ Never put absolute local paths (a home directory, `~/.claude/...`, session memor
 ## Area-specific guidance
 
 - [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) — Prototypes
+- [src/pages/prototypes/AGENTS.md#prototype-docs](src/pages/prototypes/AGENTS.md#prototype-docs) — Per-prototype `docs/` (requirements, PRFAQ, specs); read first
 - [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md) — Split plan
 - [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype
 - [.cursor/skills/guided-walkthrough/SKILL.md](.cursor/skills/guided-walkthrough/SKILL.md) — Guided walkthrough mode for a prototype
