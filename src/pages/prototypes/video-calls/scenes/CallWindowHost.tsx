@@ -281,6 +281,7 @@ export default function CallWindowHost({
         viewMenuOpen={openMenu === 'view'}
         onViewMenuOpenChange={(open) => setOpenMenu(open ? 'view' : null)}
         onCollapse={actions.collapse}
+        audioOnly={state.mode === 'audio'}
         layout={layout}
         participants={participants}
         clips={CLIPS}

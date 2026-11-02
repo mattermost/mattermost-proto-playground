@@ -286,7 +286,17 @@ Dark surface floating inset over the conversation, which stays visible; a scrim 
 
 ![Call window with the chat pane open (400px)](shots/final/23-window-chat-pane.png)
 
+**Audio mode window (video disabled).** The window follows the old-style call room, as in the external call participants prototype and the compass-proto call popout, instead of the video stage:
+
+- No Speaker / Grid view toggle in the header (the header keeps the time and participant count, the recording indicator and the share pill), and no self-view picture-in-picture.
+- The stage is a room of avatars, wrapped and centred, with no video tiles: each person is an avatar with their name below (yours reads "(You)"), a mute badge, a HOST label, a talking ring (not shown when muted), a raised-hand overlay and a reaction. Avatars are medium (96px) up to six people and small (72px) beyond.
+- The controls bar has no camera control, and Ctrl/Cmd+E does nothing. Everything else (participants and chat panes, share, reactions, raise hand, More, Leave) is as in Video mode.
+- Host actions on a person (Mute, Make host, Remove from call) are not on the avatars in the prototype. _Question: where does the host menu live in the audio room (avatar overflow, as the compass-proto avatar offers, or only in the participants pane)?_
+- While you share your screen the window still uses the share layout (shared content with a filmstrip of avatars).
+
 ### Stage layouts (2-10 participants)
+
+Video mode only.
 
 **Grid.** Equal tiles in rows chosen for near 16:9 tiles: 2 → [2]; 3 → [2,1]; 4 → [2,2]; 5 → [3,2]; 6 → [3,3]; 7 → [4,3]; 8 → [4,4]; 9 → [3,3,3]; 10 → [4,3,3]. A short last row is centred. Grid order is join order; speaking never reorders it. More tiles than cells collapse into a "+N" chip while keeping you, the presenter and the active speaker visible.
 

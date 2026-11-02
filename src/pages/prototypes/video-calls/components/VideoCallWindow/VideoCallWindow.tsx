@@ -3,6 +3,7 @@ import { RecordingIndicator } from '@mattermost/compass-proto';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import type { StageLayout } from '../../layout/computeStageLayout';
 import { CallControlsBar, type CallControlsBarProps } from '../CallControlsBar';
+import { AudioRoom } from '../AudioRoom';
 import { CallNotice, type CallNoticeItem } from '../CallNotice';
 import { ReactionBurst } from '../ReactionBurst';
 import type { VideoTileMenu } from '../VideoTile';
@@ -39,6 +40,12 @@ export interface VideoCallWindowProps {
   viewMenuOpen: boolean;
   onViewMenuOpenChange: (open: boolean) => void;
   onCollapse: () => void;
+  /**
+   * Video is not available: the old-style room (avatars, no layouts, no self
+   * view) instead of the video stage, and no view toggle. A screen share still
+   * uses the share layout.
+   */
+  audioOnly?: boolean;
 
   /** Stage. */
   layout: StageLayout;
@@ -114,6 +121,7 @@ export function VideoCallWindow({
   viewMenuOpen,
   onViewMenuOpenChange,
   onCollapse,
+  audioOnly = false,
   layout,
   participants,
   clips,
@@ -217,12 +225,14 @@ export function VideoCallWindow({
       }
       headerCenter={banner}
       headerRight={
-        <ViewToggle
-          view={view}
-          onChange={onViewChange}
-          open={viewMenuOpen}
-          onOpenChange={onViewMenuOpenChange}
-        />
+        audioOnly ? undefined : (
+          <ViewToggle
+            view={view}
+            onChange={onViewChange}
+            open={viewMenuOpen}
+            onOpenChange={onViewMenuOpenChange}
+          />
+        )
       }
     >
       <div className={styles['video-call-window']}>
@@ -237,16 +247,20 @@ export function VideoCallWindow({
             className={styles['video-call-window__room']}
             onPointerDown={onDismissOverlays}
           >
-            <VideoStage
-              layout={layout}
-              participants={participants}
-              clips={clips}
-              selfStream={selfStream}
-              shareContent={shareContent}
-              labels={stageLabels}
-              getTileMenu={getTileMenu}
-              settledWidth={settledStageWidth}
-            />
+            {audioOnly && !shareContent ? (
+              <AudioRoom participants={participants} />
+            ) : (
+              <VideoStage
+                layout={layout}
+                participants={participants}
+                clips={clips}
+                selfStream={selfStream}
+                shareContent={shareContent}
+                labels={stageLabels}
+                getTileMenu={getTileMenu}
+                settledWidth={settledStageWidth}
+              />
+            )}
             {onDismissNotice && (
               <CallNotice notices={notices} onDismiss={onDismissNotice} />
             )}
