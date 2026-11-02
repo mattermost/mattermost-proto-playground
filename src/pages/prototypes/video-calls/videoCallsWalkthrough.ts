@@ -23,7 +23,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       title: 'Video calls where the conversation is',
       lead: 'Calls start from the conversation you are already in, so people never leave the thread to talk face to face.',
       lookFor: [
-        'Start call button in the channel header',
+        'Call button (a phone icon) in the channel header',
         'The conversation staying visible while a call runs',
       ],
       bullets: [
@@ -38,12 +38,17 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       section: 'start',
       railGroup: 'Direct message',
       title: 'Start a call from a message',
-      lead: 'The Start call button in the header offers a video or an audio call.',
-      lookFor: ['Start call button', 'Video and audio options'],
+      lead: 'The call button in the header, a phone icon with a chevron, offers a video or an audio call.',
+      lookFor: [
+        'Call button (hover for “Start call”)',
+        'Video and audio options',
+      ],
       bullets: [
         'Start video call turns your camera on in the next step.',
         'Start audio call keeps the camera off.',
         'Copy call link copies the link to share; it does not start a call.',
+        'Call settings, below a divider, is where call preferences live. It is only a placeholder in this prototype.',
+        'While a call runs, the same button turns green: “Join call” when a group or channel call is running without you, “In call” once you are in it.',
       ],
       scene: 'dm',
       focus: {
@@ -64,7 +69,10 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Group message',
       title: 'Group messages start a shared call',
       lead: 'In a group message the call is not rung to anyone one by one — it opens for the whole group to join.',
-      lookFor: ['Group conversation name in the sidebar', 'Start call button'],
+      lookFor: [
+        'Group conversation name in the sidebar',
+        'Call button in the header',
+      ],
       bullets: [
         'Members see an ongoing call and can join whenever they like.',
         'The sidebar row for the conversation shows an in-call icon while a call runs.',
@@ -92,11 +100,14 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       lookFor: [
         'Microphone and camera toggles',
         'Level meter',
-        'Start / Join button',
+        'Start call (green) on the left, Cancel on the right',
       ],
       bullets: [
         'The chevrons next to the toggles pick which device to use.',
         'Cancel leaves without ringing anyone.',
+        'This screen is the default when you start a call. A setting, “Skip the pre-join screen”, starts calls straight away instead.',
+        'Opening a call link, or joining a call that is already running, always shows it.',
+        'When video calls are off, the same screen only checks your microphone.',
       ],
       scene: 'prejoin-widget',
       focus: {
@@ -120,6 +131,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       lookFor: ['Window floating over the conversation', 'Collapse control'],
       bullets: [
         'Collapse returns to the small widget without losing your choices.',
+        'Start call (green) and Cancel sit in the same order as in the widget.',
       ],
       scene: 'prejoin-window',
     },
@@ -129,7 +141,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Ringing',
       title: 'Waiting for an answer',
       lead: 'In a one-to-one message the other person is rung, and the widget shows who you are calling.',
-      lookFor: ['Outgoing call card', 'Cancel'],
+      lookFor: ['Outgoing call card', 'Cancel, with a hang-up icon'],
       bullets: ['You can cancel at any time before they answer.'],
       scene: 'calling-widget',
       focus: {
@@ -147,7 +159,11 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Ringing',
       title: 'Ringing, expanded',
       lead: 'The ringing state also has a larger version in the call window.',
-      lookFor: ['Peer avatar', 'Mic and camera controls', 'Cancel'],
+      lookFor: [
+        'Peer avatar',
+        'Mic and camera controls',
+        'Cancel, with a hang-up icon',
+      ],
       scene: 'calling-window',
     },
     {
@@ -155,7 +171,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       section: 'receive',
       title: 'An incoming call',
       lead: 'The person being called sees a card with the caller and the choice to accept or decline.',
-      lookFor: ['Caller name and avatar', 'Accept and Decline'],
+      lookFor: ['Caller name and avatar', 'Accept (green) and Decline'],
       bullets: [
         'Declining leaves a “Call declined” post in the conversation.',
         'A call that rings out leaves a missed-call post instead.',
@@ -267,11 +283,11 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Phone',
       title: 'Phone calls sit next to video calls',
       lead: 'When phone calling is on, a message header adds a Phone call group under the video and audio options. It is not offered in group messages or channels.',
-      lookFor: ['Start call button', 'Mattermost call and Phone call groups'],
+      lookFor: ['Call button', 'Mattermost call and Phone call groups'],
       bullets: [
         'The phone number is a fixed demo number here; the full outbound flow lives in the Outbound Calls prototype.',
-        'With phone calling off the menu is video, audio and Copy call link. With video calling off it offers Start audio call and Copy call link.',
-        'Use the video and phone toggles in the prototype header to try each combination.',
+        'Mattermost call groups Start video call, Start audio call and Copy call link. Phone call lists the number to dial.',
+        'Without phone calling the menu has no groups. With video calling off it offers Start audio call and Copy call link, and calls are audio only.',
       ],
       scene: 'dm',
       focus: {
@@ -281,7 +297,35 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
           title: 'One menu, two kinds of call',
           points: [
             'Mattermost calls: video or audio.',
-            'Phone call: dials the number straight away, with no pre-join.',
+            'Phone call: dials the number straight away, with no pre-join, even if pre-join is on.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'phone-calling',
+      section: 'phone',
+      railGroup: 'Phone',
+      title: 'Dialing a phone number',
+      lead: 'A phone call goes straight to ringing, in the small widget only. There is no setup screen and no window.',
+      lookFor: [
+        'Calling name and number',
+        'Phone badge',
+        'Cancel, with a hang-up icon',
+      ],
+      bullets: [
+        'A different ringing sound from a Mattermost call, so the two are easy to tell apart.',
+        'The prototype answers after a few seconds and moves on to the call itself.',
+      ],
+      scene: 'phone-calling',
+      focus: {
+        id: 'call-widget',
+        emphasis: 'ring',
+        note: {
+          title: 'Compact by design',
+          points: [
+            'No video area, since a phone line carries audio only.',
+            'The number and its label sit under the name.',
           ],
         },
       },
@@ -292,7 +336,11 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Phone',
       title: 'A phone call uses the same widget',
       lead: 'A phone call is audio only. It keeps the widget but drops what a phone line cannot do.',
-      lookFor: ['Phone badge and number', 'No camera, share or expand'],
+      lookFor: [
+        'Phone badge and number',
+        'Keypad button',
+        'No camera, share or expand',
+      ],
       bullets: [
         'The widget only: a phone call has no call window.',
         'A phone call cannot become a video call.',
