@@ -1,8 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
-import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Tooltip } from '@mattermost/compass-ui/components/tooltip';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import styles from './CallHeaderButton.module.scss';
@@ -53,28 +53,38 @@ export default function CallHeaderButton({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Button
-        emphasis="quaternary"
+      <IconButton
         size="small"
+        padding="compact"
         className={[
           styles['call-header-button__trigger'],
+          menu && styles['call-header-button__trigger--menu'],
+          menu && menuOpen && styles['call-header-button__trigger--open'],
           state !== 'start' && styles['call-header-button__trigger--live'],
           state === 'in-call' && styles['call-header-button__trigger--in-call'],
         ]
           .filter(Boolean)
           .join(' ')}
-        leadingIcon={<Icon glyph={<PhoneIcon />} />}
-        trailingIcon={menu ? <Icon glyph={<ChevronDownIcon />} /> : undefined}
+        icon={
+          <>
+            <Icon glyph={<PhoneIcon />} />
+            {menu && (
+              <Icon
+                glyph={<ChevronDownIcon />}
+                className={styles['call-header-button__chevron']}
+              />
+            )}
+          </>
+        }
         aria-label={label}
         aria-haspopup={menu ? 'menu' : undefined}
         aria-expanded={menu ? menuOpen : undefined}
-        aria-pressed={state === 'in-call' ? true : undefined}
+        active={menu && menuOpen}
+        toggled={state === 'in-call' ? true : undefined}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         onClick={onClick}
-      >
-        {null}
-      </Button>
+      />
       {tip.rendered && (
         <div
           className={[

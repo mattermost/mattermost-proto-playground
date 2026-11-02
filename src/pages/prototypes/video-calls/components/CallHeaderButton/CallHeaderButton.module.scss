@@ -2,10 +2,24 @@
   position: relative;
   display: inline-flex;
 
-  // Icon-only: no label gap, so the phone and chevron sit together.
-  &__trigger {
+  // IconButton is square; with a chevron it holds two glyphs, so it grows to
+  // fit them. Triple class beats IconButton's size rules (same trick as
+  // SegmentedIconButton). Without a chevron it stays a normal square button.
+  #{&}__trigger#{&}__trigger--menu#{&}__trigger--menu {
+    width: auto;
     gap: var(--spacing-xxxs);
+    padding-inline: var(--spacing-xs);
+  }
 
+  &__chevron {
+    transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  &__trigger--open &__chevron {
+    transform: rotate(180deg);
+  }
+
+  &__trigger {
     // A call is running (join) or you are in it: the phone reads as live.
     &--live {
       color: var(--online-indicator, var(--color-success));
@@ -38,6 +52,12 @@
 
     @media (prefers-reduced-motion: reduce) {
       animation: none;
+      transition: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__chevron {
       transition: none;
     }
   }
