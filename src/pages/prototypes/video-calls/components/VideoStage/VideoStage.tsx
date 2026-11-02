@@ -170,6 +170,7 @@ const cx = (...names: (string | false | undefined)[]) =>
 function planStage(
   layout: StageLayout,
   filmstripPosition: 'side' | 'bottom',
+  stripSlots = 0,
 ): StagePlan {
   const cells = new Map<string, Placement>();
 
@@ -213,7 +214,9 @@ function planStage(
     // Strip of 16:9 cells along the top (half-columns so a short second row
     // centres exactly), featured speaker below in the largest 16:9 box that fits (centred).
     const rows = layout.stripRows;
-    const k = Math.max(1, ...rows.map((r) => r.length));
+    // A paged strip sizes cells for a full page, so a shorter last page keeps
+    // the same tile size (its tiles are centred).
+    const k = Math.max(1, stripSlots, ...rows.map((r) => r.length));
     rows.forEach((row, r) => {
       row.forEach((id, i) => {
         cells.set(id, {
@@ -404,6 +407,7 @@ export function VideoStage({
     return {
       page,
       pageCount,
+      slots: perPage + (selfInStrip ? 1 : 0),
       layout: { ...inputLayout, stripIds: visible, stripRows: [visible] },
     };
   }, [inputLayout, stripBox, participants, stripPage]);
@@ -416,7 +420,7 @@ export function VideoStage({
       new Map(participants.map((p) => [p.id, getTileMenu?.(p.id)] as const)),
     [participants, getTileMenu],
   );
-  const plan = planStage(layout, filmstripPosition);
+  const plan = planStage(layout, filmstripPosition, paged?.slots);
 
   const rootRef = useRef<HTMLElement | null>(null);
   const nodes = useRef(new Map<string, HTMLElement>()).current;
