@@ -48,6 +48,10 @@ export interface VideoStageParticipant {
 export interface VideoStageClip {
   src?: string;
   poster?: string;
+  /** Seconds into the loop this participant starts at. */
+  offset?: number;
+  /** Mirror the clip so a shared source reads as a different framing. */
+  mirrored?: boolean;
 }
 
 export interface VideoStageLabels {
@@ -351,6 +355,8 @@ export function VideoStage({
         avatarSrc={p.avatarSrc}
         videoSrc={useStream ? undefined : clip?.src}
         posterSrc={clip?.poster}
+        clipOffset={clip?.offset}
+        clipMirrored={clip?.mirrored}
         stream={useStream ? selfStream : undefined}
         mirrored={useStream}
         cameraOn={p.cameraOn}

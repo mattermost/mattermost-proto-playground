@@ -7,6 +7,9 @@ import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
+import marcoClip from '@/assets/video/marco.mp4';
+import marcoPoster from '@/assets/video/marco-poster.jpg';
+import type { VideoStageClip } from './components/VideoStage';
 import type { VideoParticipant } from '@/types/videoCall';
 
 export const CHANNEL_NAME = 'UX Design';
@@ -17,13 +20,15 @@ export const DM_PEER_ID = 'marco';
 export const GROUP_STARTER_ID = 'sofia';
 
 /**
- * Remote video loops, keyed by `VideoParticipant.clipId`. Filled in by the
- * assets package (src/assets/video/). Until a clip exists the tile falls back
- * to the avatar-on-dark presentation, so every entry is optional.
+ * Remote video loops, keyed by `VideoParticipant.clipId` (one entry per
+ * participant). Clips are generated placeholders, see src/assets/video/README.md.
+ * Several participants can point at the same file with a different `offset`
+ * and `mirrored` so a 10-tile grid never shows two identical neighbours. A
+ * participant with `cameraOn` but no entry here falls back to the avatar.
  */
-export const CLIPS: Record<string, { src?: string; poster?: string }> = {};
-
-export const CLIP_IDS = ['clip-a', 'clip-b', 'clip-c', 'clip-d'] as const;
+export const CLIPS: Record<string, VideoStageClip> = {
+  marco: { src: marcoClip, poster: marcoPoster },
+};
 
 /**
  * Full roster, in join order. A call with N participants shows `ROSTER.slice(0, N)`.
@@ -47,7 +52,7 @@ export const ROSTER: VideoParticipant[] = [
     cameraOn: true,
     muted: false,
     talking: true,
-    clipId: 'clip-a',
+    clipId: 'marco',
   },
   {
     id: 'sofia',
@@ -55,7 +60,7 @@ export const ROSTER: VideoParticipant[] = [
     avatarSrc: avatarSofia,
     cameraOn: true,
     muted: true,
-    clipId: 'clip-b',
+    clipId: 'sofia',
   },
   {
     id: 'aiko',
@@ -70,7 +75,7 @@ export const ROSTER: VideoParticipant[] = [
     avatarSrc: avatarArjunPatel,
     cameraOn: true,
     muted: true,
-    clipId: 'clip-c',
+    clipId: 'arjun',
   },
   {
     id: 'danielle',
@@ -78,7 +83,7 @@ export const ROSTER: VideoParticipant[] = [
     avatarSrc: avatarDanielle,
     cameraOn: true,
     muted: true,
-    clipId: 'clip-d',
+    clipId: 'danielle',
   },
   {
     id: 'darius',
@@ -93,7 +98,7 @@ export const ROSTER: VideoParticipant[] = [
     avatarSrc: avatarDavidLiang,
     cameraOn: true,
     muted: true,
-    clipId: 'clip-a',
+    clipId: 'david',
   },
   {
     id: 'emma',
@@ -101,7 +106,7 @@ export const ROSTER: VideoParticipant[] = [
     avatarSrc: avatarEmmaNovak,
     cameraOn: true,
     muted: true,
-    clipId: 'clip-b',
+    clipId: 'emma',
   },
   {
     id: 'ethan',

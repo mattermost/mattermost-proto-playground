@@ -388,6 +388,12 @@ export function VideoCallWidget({
             posterSrc={
               speaker.clipId ? clips[speaker.clipId]?.poster : undefined
             }
+            clipOffset={
+              speaker.clipId ? clips[speaker.clipId]?.offset : undefined
+            }
+            clipMirrored={
+              speaker.clipId ? clips[speaker.clipId]?.mirrored : undefined
+            }
             cameraOn={speaker.cameraOn}
             muted={speaker.muted}
             speaking={!!speaker.talking && !speaker.muted}

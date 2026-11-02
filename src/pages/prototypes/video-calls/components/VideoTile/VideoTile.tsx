@@ -7,6 +7,7 @@ import {
   type CSSProperties,
   type MouseEvent,
 } from 'react';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -67,6 +68,13 @@ export interface VideoTileProps {
   videoSrc?: string;
   /** Poster frame; shown while paused and before the clip loads. */
   posterSrc?: string;
+  /**
+   * Seconds into the loop where this tile starts, so tiles that share a clip
+   * do not play in lockstep. Wrapped to the clip length.
+   */
+  clipOffset?: number;
+  /** Mirror the remote clip horizontally (another look from a shared clip). */
+  clipMirrored?: boolean;
   /** Live stream (self webcam). Takes precedence over `videoSrc`. */
   stream?: MediaStream | null;
   cameraOn: boolean;
@@ -81,7 +89,12 @@ export interface VideoTileProps {
   connection?: VideoTileConnection;
   /** Mirror the video horizontally (self webcam). */
   mirrored?: boolean;
-  /** Off-screen / overflow: show the poster frame and never decode video. */
+  /**
+   * Off-screen / overflow: the clip pauses on a still frame and stops
+   * decoding. The `<video>` element stays mounted so resuming (or a layout
+   * change) never restarts the loop. Tiles also pause on their own while
+   * scrolled out of view, in a hidden tab, or under `prefers-reduced-motion`.
+   */
   paused?: boolean;
   size?: VideoTileSize;
   /** Thumbnail only: show the compact mic / name label. Default: true. */
@@ -125,6 +138,8 @@ function VideoTileInner({
   avatarSrc,
   videoSrc,
   posterSrc,
+  clipOffset = 0,
+  clipMirrored = false,
   stream,
   cameraOn,
   muted = false,
@@ -147,6 +162,13 @@ function VideoTileInner({
 }: VideoTileProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const streamRef = useRef<HTMLVideoElement>(null);
+  const clipRef = useRef<HTMLVideoElement>(null);
+  const rootElRef = useRef<HTMLElement>(null);
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+  const [inView, setInView] = useState(true);
+  const [tabVisible, setTabVisible] = useState(
+    () => typeof document === 'undefined' || !document.hidden,
+  );
   const moreRef = useRef<HTMLButtonElement>(null);
   const [menuState, setMenuState] = useState<{
     id: number;
@@ -182,10 +204,13 @@ function VideoTileInner({
   const hasStream = cameraOn && !!stream;
   const hasClip = cameraOn && !hasStream && !!videoSrc;
   const showStream = hasStream && !paused;
-  const showClip = hasClip && !paused;
+  // The clip element stays mounted while paused (poster / last frame shows),
+  // so toggling `paused` or moving between layout cells never restarts it.
+  const showClip = hasClip;
   const showPoster =
-    cameraOn && paused && !!posterSrc && (hasStream || hasClip);
+    cameraOn && !hasStream && !hasClip && paused && !!posterSrc;
   const showAvatar = !showStream && !showClip && !showPoster;
+  const playClip = hasClip && !paused && inView && tabVisible && !reducedMotion;
   const reconnecting = connection === 'reconnecting';
 
   useEffect(() => {
@@ -199,6 +224,56 @@ function VideoTileInner({
       video.srcObject = null;
     };
   }, [stream, showStream]);
+
+  // Pause clips that are scrolled out of view.
+  useEffect(() => {
+    const el = rootElRef.current;
+    if (!hasClip || !el || typeof IntersectionObserver === 'undefined') {
+      return undefined;
+    }
+    const io = new IntersectionObserver(([entry]) =>
+      setInView(entry.isIntersecting),
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasClip]);
+
+  // Pause clips while the tab is hidden.
+  useEffect(() => {
+    if (!hasClip) return undefined;
+    const onChange = () => setTabVisible(!document.hidden);
+    onChange();
+    document.addEventListener('visibilitychange', onChange);
+    return () => document.removeEventListener('visibilitychange', onChange);
+  }, [hasClip]);
+
+  // Start at this tile's offset once the clip length is known.
+  useEffect(() => {
+    const video = clipRef.current;
+    if (!video || !hasClip) return undefined;
+    const seek = () => {
+      const d = video.duration;
+      if (clipOffset > 0 && Number.isFinite(d) && d > 0) {
+        video.currentTime = clipOffset % d;
+      }
+    };
+    if (video.readyState >= 1) seek();
+    else video.addEventListener('loadedmetadata', seek, { once: true });
+    return () => video.removeEventListener('loadedmetadata', seek);
+  }, [hasClip, videoSrc, clipOffset]);
+
+  // Play / pause without remounting.
+  useEffect(() => {
+    const video = clipRef.current;
+    if (!video || !hasClip) return;
+    if (playClip) {
+      video.play().catch(() => {
+        /* autoplay refused; the poster stays until a user gesture */
+      });
+    } else {
+      video.pause();
+    }
+  }, [hasClip, playClip, videoSrc]);
 
   const displayName = selfLabel ? `${name} (${selfLabel})` : name;
   const status = [
@@ -219,7 +294,7 @@ function VideoTileInner({
     speaking ? styles['video-tile--speaking'] : '',
     showAvatar ? styles['video-tile--camera-off'] : '',
     reconnecting ? styles['video-tile--reconnecting'] : '',
-    mirrored ? styles['video-tile--mirrored'] : '',
+    mirrored || (clipMirrored && hasClip) ? styles['video-tile--mirrored'] : '',
     menu ? styles['video-tile--has-menu'] : '',
     menuState ? styles['video-tile--menu-open'] : '',
     className ?? '',
@@ -231,6 +306,7 @@ function VideoTileInner({
 
   return (
     <figure
+      ref={rootElRef}
       className={rootClass}
       style={style}
       aria-label={`${displayName}: ${status}`}
@@ -248,6 +324,7 @@ function VideoTileInner({
       )}
       {showClip && (
         <video
+          ref={clipRef}
           key={videoSrc}
           className={styles['video-tile__media']}
           src={videoSrc}
@@ -255,8 +332,7 @@ function VideoTileInner({
           muted
           loop
           playsInline
-          autoPlay
-          preload="auto"
+          preload={playClip ? 'auto' : 'metadata'}
           aria-hidden="true"
         />
       )}
