@@ -46,12 +46,13 @@ Video calling and phone calling are server settings. The DM header shows:
 
 | Video | Phone | DM header                                                                                                               |
 | ----- | ----- | ----------------------------------------------------------------------------------------------------------------------- |
-| Off   | Off   | Start call button with no chevron or menu (audio only, as the plugin today)                                             |
-| On    | Off   | Start call menu: Start video call, Start audio call (Camera off)                                                        |
-| Off   | On    | Start call menu: group "Mattermost call" with Start audio call, group "Phone call" with the number                      |
-| On    | On    | Start call menu: group "Mattermost call" with Start video call and Start audio call, group "Phone call" with the number |
+| Off   | Off   | Start call menu: Start audio call, Copy call link (audio only, as the plugin today)                                     |
+| On    | Off   | Start call menu: Start video call, Start audio call (Camera off), Copy call link                                        |
+| Off   | On    | Start call menu: group "Mattermost call" with Start audio call and Copy call link, group "Phone call" with the number   |
+| On    | On    | Start call menu: group "Mattermost call" with Start video call, Start audio call and Copy call link, group "Phone call" |
 
 - Group headings appear only when both groups are present.
+- Copy call link is the last row of the Mattermost call group, below a divider. It is not offered in the Phone call group. See Entry points for what it does.
 - GM and channel headers never show a Phone call group. Phone calls are 1:1.
 - Each phone number the person can be called on is its own row: "Call <label>" with the number as the secondary label. Numbers that cannot be dialled from this network are not listed.
 - The same menu is what the profile popover's Call button opens. The popover's own phone number rows are defined in the outbound specs.
@@ -180,15 +181,17 @@ _Design questions for video (what the plugin does not settle):_
 
 ### Entry points
 
-**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. With more than one way to call the button has the chevron and menu (see Server settings and the Start call menu); with only one way (video off, no phone) it has no chevron, and a click starts the call.
+**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"), and below a divider Copy call link. Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. The menu is always there when there is no call, so the chevron always shows (see Server settings and the Start call menu for what it lists).
+
+Copy call link copies the call link for a Mattermost call and shows a "Call link copied" toast under the button for about 3 seconds (a "Couldn't copy call link" toast if the browser blocks the copy). It does not start or join a call. It is offered in DM, GM and channel headers, only when there is no call: not in the Join call or In call states (Call info already has the link during a call).
 
 The same button follows the conversation's call state:
 
-| Call state                                | Button                                                         | Tooltip    | Click                               |
-| ----------------------------------------- | -------------------------------------------------------------- | ---------- | ----------------------------------- |
-| No call                                   | Phone icon with chevron (no chevron with a single way to call) | Start call | Opens the menu (or starts the call) |
-| Ongoing (GM / channel, you are not in it) | Green phone icon, no chevron                                   | Join call  | Opens pre-join in join mode         |
-| Ringing, pre-join or in the call (yours)  | Green phone icon, pressed state, no chevron                    | In call    | None                                |
+| Call state                                | Button                                      | Tooltip    | Click                       |
+| ----------------------------------------- | ------------------------------------------- | ---------- | --------------------------- |
+| No call                                   | Phone icon with chevron                     | Start call | Opens the menu              |
+| Ongoing (GM / channel, you are not in it) | Green phone icon, no chevron                | Join call  | Opens pre-join in join mode |
+| Ringing, pre-join or in the call (yours)  | Green phone icon, pressed state, no chevron | In call    | None                        |
 
 _Question: should clicking the In call state bring the call widget forward (for example when it has been dragged away or the window is open)?_
 
@@ -395,7 +398,8 @@ The prototype wins. Differences found so far (structure only; a pixel comparison
 8. _Resolved:_ sounds follow mattermost-plugin-calls v2 (see Sounds). The prototype now plays join-self, join-user and leave; the 8-participant join limit and leave-on-disconnect are still to do.
 9. _Resolved:_ GM and channel calls have no incoming call notice, so there is no Audio only choice there; people join from the Ongoing banner, header Join call or call card. Remaining question: should the 1:1 DM incoming widget offer Audio only? (The unused `IncomingCallCard` component has it; the widget does not.)
 10. Where should the Figma board be refreshed so it matches the prototype?
-11. Phone calls (see Outbound phone calls alongside video): no pre-join, DM anchoring when the number is not a Mattermost user, and whether phone calls get their own sidebar glyph.
+11. What does the call link open, and does copying it before a call exists reserve a call? The prototype copies the existing demo link and creates nothing. Should Copy call link also be offered during an ongoing or active call (for example from the Join call state)?
+12. Phone calls (see Outbound phone calls alongside video): no pre-join, DM anchoring when the number is not a Mattermost user, and whether phone calls get their own sidebar glyph.
 
 ## References and Resources
 

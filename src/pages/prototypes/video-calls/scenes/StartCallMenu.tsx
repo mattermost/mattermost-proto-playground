@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import HeadphonesIcon from '@mattermost/compass-icons/components/headphones';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Toast } from '@mattermost/compass-ui/components/toast';
+import { INTERNAL_LINK } from '@/fixtures/calls/callConstants';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { CallHeaderButton } from '../components/CallHeaderButton';
 import {
@@ -11,6 +15,7 @@ import {
 } from '../components/StartCallButton';
 import { useVideoCall } from '../videoCallContext';
 import { PHONE_NUMBER } from '../videoCallsData';
+import styles from './StartCallMenu.module.scss';
 
 const VIDEO_OPTION: StartCallOption = {
   id: 'video',
@@ -24,6 +29,19 @@ const AUDIO_OPTION: StartCallOption = {
   icon: <Icon size="16" glyph={<HeadphonesIcon />} />,
 };
 
+/** Copies the call link without starting a call. Mattermost calls only. */
+const COPY_LINK_OPTION: StartCallOption = {
+  id: 'copy-link',
+  label: 'Copy call link',
+  icon: <Icon size="16" glyph={<ContentCopyIcon />} />,
+  dividerBefore: true,
+};
+
+/** How long the "Call link copied" toast stays. */
+const TOAST_MS = 3000;
+/** Matches `--duration-quick` (the toast's fade). */
+const TOAST_EXIT_MS = 150;
+
 const PHONE_OPTION: StartCallOption = {
   id: 'phone',
   label: `Call ${PHONE_NUMBER.label}`,
@@ -36,10 +54,9 @@ const PHONE_OPTION: StartCallOption = {
  * The header call button: an icon-only phone that follows the conversation's
  * call state.
  *
- * - No call: "Start call". With video or phone on it opens a menu (Start video
- *   call, Start audio call; in a DM a "Phone call" group with the number). With
- *   only one way to call (video off, no phone) there is no chevron or menu and
- *   a click starts the call.
+ * - No call: "Start call", always a menu: Start video call (video on), Start
+ *   audio call, Copy call link (copies the link, starts nothing), and in a DM
+ *   a "Phone call" group with the number.
  * - A group / channel call is running without you: a green "Join call".
  * - You are ringing, setting up or in the call: a green, pressed "In call"
  *   (no action).
@@ -63,6 +80,28 @@ export default function StartCallMenu() {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
+  // "Call link copied" confirmation. The call notice stack only renders inside
+  // the call window, so the conversation shows its own toast under the button.
+  const [toast, setToast] = useState<{ ok: boolean } | null>(null);
+  const [toastOpen, setToastOpen] = useState(false);
+  const toastAnim = useExitAnimation(toastOpen, TOAST_EXIT_MS);
+  useEffect(() => {
+    if (!toastOpen) return;
+    const t = window.setTimeout(() => setToastOpen(false), TOAST_MS);
+    return () => window.clearTimeout(t);
+  }, [toastOpen]);
+
+  const copyLink = async () => {
+    let ok = true;
+    try {
+      await navigator.clipboard.writeText(INTERNAL_LINK);
+    } catch {
+      ok = false;
+    }
+    setToast({ ok });
+    setToastOpen(true);
+  };
+
   const withPhone = features.phone && callContext === 'dm';
   const options = useMemo<StartCallOption[]>(() => {
     // Group headings only appear once there are two groups to tell apart.
@@ -76,12 +115,16 @@ export default function StartCallMenu() {
           mattermost({ ...AUDIO_OPTION, secondaryLabel: 'Camera off' }),
         ]
       : [mattermost({ ...AUDIO_OPTION })];
-    return withPhone ? [...rows, PHONE_OPTION] : rows;
+    // Copy call link closes the Mattermost call group (below a divider); the
+    // phone group follows it.
+    const link = mattermost({ ...COPY_LINK_OPTION });
+    return withPhone ? [...rows, link, PHONE_OPTION] : [...rows, link];
   }, [features.video, withPhone]);
 
   const start = (id: string) => {
     setOpen(false);
-    if (id === 'phone') actions.startCall({ phone: true });
+    if (id === 'copy-link') void copyLink();
+    else if (id === 'phone') actions.startCall({ phone: true });
     else
       actions.startCall({
         audioOnly: id === 'audio',
@@ -105,25 +148,30 @@ export default function StartCallMenu() {
     return <CallHeaderButton state="in-call" label="In call" />;
   }
 
-  // One way to call (video off, no phone): no menu, just Start call.
-  if (options.length === 1) {
-    return (
-      <CallHeaderButton
-        state="start"
-        label="Start call"
-        onClick={() => start(options[0].id)}
-      />
-    );
-  }
-
   return (
-    <div ref={ref}>
+    <div ref={ref} className={styles['start-call-menu']}>
       <StartCallButton
         options={options}
         open={open}
         onOpenChange={setOpen}
         onSelect={start}
       />
+      {toastAnim.rendered && toast && (
+        <div
+          className={[
+            styles['start-call-menu__toast'],
+            toastAnim.exiting && styles['start-call-menu__toast--exiting'],
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          role="status"
+        >
+          <Toast
+            type={toast.ok ? 'success' : 'danger'}
+            message={toast.ok ? 'Call link copied' : "Couldn't copy call link"}
+          />
+        </div>
+      )}
     </div>
   );
 }

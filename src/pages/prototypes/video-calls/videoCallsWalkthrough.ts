@@ -43,6 +43,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       bullets: [
         'Start video call turns your camera on in the next step.',
         'Start audio call keeps the camera off.',
+        'Copy call link copies the link to share; it does not start a call.',
       ],
       scene: 'dm',
       focus: {
@@ -269,7 +270,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       lookFor: ['Start call button', 'Mattermost call and Phone call groups'],
       bullets: [
         'The phone number is a fixed demo number here; the full outbound flow lives in the Outbound Calls prototype.',
-        'With phone calling off the menu is just video and audio. With video calling off it is today’s audio-only Start call.',
+        'With phone calling off the menu is video, audio and Copy call link. With video calling off it offers Start audio call and Copy call link.',
         'Use the video and phone toggles in the prototype header to try each combination.',
       ],
       scene: 'dm',
