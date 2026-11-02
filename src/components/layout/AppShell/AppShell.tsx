@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import TopNav from '@/components/layout/TopNav/TopNav';
 import PrototypeTopNav from '@/components/layout/PrototypeTopNav/PrototypeTopNav';
@@ -21,9 +21,9 @@ function PrototypeChrome() {
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
   const isEmbedded = window.self !== window.top;
 
-  useEffect(() => {
-    setPrototypeCenterSlot(null);
-  }, [pathname]);
+  // Do not reset the center slot here in an effect: child effects run before
+  // parent effects, so on initial load/refresh it would wipe the slot the
+  // prototype just set. Prototypes clear it in their own effect cleanup.
 
   const title =
     active && document
