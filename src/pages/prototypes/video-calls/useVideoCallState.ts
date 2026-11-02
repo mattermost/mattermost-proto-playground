@@ -223,7 +223,7 @@ export function useVideoCallState() {
 
   /** Roster slice for the current count with overrides and self media applied. */
   const participants = useMemo<VideoParticipant[]>(() => {
-    return ROSTER.slice(0, state.count)
+    const list = ROSTER.slice(0, state.count)
       .filter((p) => !state.removedIds.includes(p.id))
       .map((p) => {
         const merged = { ...p, ...state.overrides[p.id] };
@@ -242,6 +242,15 @@ export function useVideoCallState() {
         }
         return cameraAvailable ? merged : { ...merged, cameraOn: false };
       });
+    // One active speaker at a time: you while your microphone hears you,
+    // otherwise the first person marked as talking.
+    let haveSpeaker = state.selfSpeaking && state.media.micOn;
+    return list.map((p) => {
+      if (p.self || !p.talking) return p;
+      if (haveSpeaker) return { ...p, talking: false };
+      haveSpeaker = true;
+      return p;
+    });
   }, [
     state.mode,
     state.selfSpeaking,
