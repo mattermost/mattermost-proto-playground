@@ -3,40 +3,26 @@ import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
 import { WithTooltip } from '@mattermost/compass-proto';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
-import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import type { PreJoinPreference } from '@/types/videoCall';
 import styles from './PreJoinChrome.module.scss';
 
 export interface PreJoinChromeProps {
-  /** System Console default: skip the pre-join interstitial when starting a call. */
-  adminSkip: boolean;
-  onAdminSkipChange: (skip: boolean) => void;
-  /** The person's own Calls plugin setting. */
-  preference: PreJoinPreference;
-  onPreferenceChange: (preference: PreJoinPreference) => void;
+  /** The Calls plugin setting: skip the pre-join interstitial when starting a call. */
+  skipPreJoin: boolean;
+  onSkipPreJoinChange: (skip: boolean) => void;
   /** Simulates opening a call link. */
   onOpenCallLink: () => void;
   canOpenCallLink: boolean;
 }
 
-const PREFERENCES: { id: PreJoinPreference; label: string }[] = [
-  { id: 'default', label: 'Admin default' },
-  { id: 'skip', label: 'Skip' },
-  { id: 'show', label: 'Show' },
-];
-
 /**
  * Prototype chrome (not product UI) for the pre-join interstitial. It shows
- * by default when starting a call. The System Console sets a default for
- * everyone (the cog), and a person overrides it in the Calls plugin settings
- * (the switcher). Opening a call link always shows the interstitial, whatever
- * these say (the link button simulates it).
+ * by default when starting a call. The cog stands in for the Calls plugin
+ * setting that skips it. Opening a call link always shows the interstitial,
+ * whatever the setting says (the link button simulates it).
  */
 export default function PreJoinChrome({
-  adminSkip,
-  onAdminSkipChange,
-  preference,
-  onPreferenceChange,
+  skipPreJoin,
+  onSkipPreJoinChange,
   onOpenCallLink,
   canOpenCallLink,
 }: PreJoinChromeProps) {
@@ -48,24 +34,17 @@ export default function PreJoinChrome({
     >
       <WithTooltip
         placement="bottom"
-        label={`System Console default: ${adminSkip ? 'skip' : 'show'} pre-join`}
+        label={`Calls settings: skip pre-join ${skipPreJoin ? 'on' : 'off'}`}
       >
         <IconButton
           size="x-small"
-          aria-label="System Console default: skip pre-join"
-          active={adminSkip}
-          aria-pressed={adminSkip}
+          aria-label="Skip pre-join"
+          active={skipPreJoin}
+          aria-pressed={skipPreJoin}
           icon={<Icon size="12" glyph={<CogOutlineIcon />} />}
-          onClick={() => onAdminSkipChange(!adminSkip)}
+          onClick={() => onSkipPreJoinChange(!skipPreJoin)}
         />
       </WithTooltip>
-      <SceneSwitcher
-        label="You"
-        scenes={PREFERENCES}
-        activeId={preference}
-        onChange={(id) => onPreferenceChange(id as PreJoinPreference)}
-        ariaLabel="Your pre-join setting"
-      />
       <WithTooltip
         placement="bottom"
         label="Open a call link (always shows pre-join)"

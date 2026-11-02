@@ -103,13 +103,6 @@ export interface CallNotice {
  */
 export type CallMode = 'video' | 'audio' | 'phone';
 
-/**
- * The person's own pre-join setting in the Calls plugin settings: follow the
- * System Console default, or override it to always skip or always show the
- * interstitial.
- */
-export type PreJoinPreference = 'default' | 'skip' | 'show';
-
 /** Server settings that decide which ways to call the conversation offers. */
 export interface CallFeatures {
   /** Video calling is enabled. When off, Mattermost calls are audio-only. */

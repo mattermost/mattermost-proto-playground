@@ -135,10 +135,8 @@ export default function VideoCalls() {
           onSoundChange={actions.setSoundOn}
         />
         <PreJoinChrome
-          adminSkip={state.adminSkipPreJoin}
-          onAdminSkipChange={actions.setAdminSkipPreJoin}
-          preference={state.preJoinPreference}
-          onPreferenceChange={actions.setPreJoinPreference}
+          skipPreJoin={state.skipPreJoin}
+          onSkipPreJoinChange={actions.setSkipPreJoin}
           onOpenCallLink={() => actions.startCall({ fromLink: true })}
           canOpenCallLink={phase === 'idle' || phase === 'ongoing'}
         />
@@ -148,8 +146,7 @@ export default function VideoCalls() {
   }, [
     features,
     state.soundOn,
-    state.adminSkipPreJoin,
-    state.preJoinPreference,
+    state.skipPreJoin,
     phase,
     actions,
     setStartSlot,
