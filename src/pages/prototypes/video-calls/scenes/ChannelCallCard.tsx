@@ -28,7 +28,7 @@ interface CallPostModel {
  * Joined. Returns null when there is no call to show.
  */
 function useCallPost(): CallPostModel | null {
-  const { state, actions } = useVideoCall();
+  const { state, actions, participants } = useVideoCall();
   const { callContext, phase } = state;
   const inCall = phase === 'calling' || phase === 'active';
   // How long the call already running in a group / channel has been going
@@ -37,8 +37,10 @@ function useCallPost(): CallPostModel | null {
     callContext !== 'dm' ? state.ongoingStartedAt : null,
   );
 
+  // Follows the call itself (the participant count and anyone a host removed),
+  // while the messages around the card stay fixed.
   const people = (joined: boolean) =>
-    ROSTER.slice(0, state.count)
+    participants
       .filter((p) => joined || p.id !== SELF_ID)
       .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
 

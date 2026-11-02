@@ -57,9 +57,6 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
   }, [noCall]);
   // Stays mounted through its slide-off after a dismiss or when you join.
   const banner = useExitAnimation(ongoing && !bannerDismissed, BANNER_EXIT_MS);
-  // A group DM only has its own members; a channel shows everyone.
-  const allowed =
-    kind === 'gm' ? ROSTER.slice(0, state.count).map((p) => p.id) : undefined;
   const chatName = kind === 'gm' ? groupChatName(state.count) : CHANNEL_NAME;
 
   return (
@@ -104,9 +101,10 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
         </>
       }
     >
+      {/* The messages stay fixed when the participant count changes; only the
+          call card and banner follow it. */}
       <ChatThread
         posts={GROUP_POSTS}
-        allowedAuthors={allowed}
         callPostAtEnd={state.callerId === SELF_ID}
       />
       <div className={layoutStyles['channel-shell__message-input']}>

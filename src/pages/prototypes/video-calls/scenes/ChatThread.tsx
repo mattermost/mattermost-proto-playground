@@ -18,12 +18,9 @@ const byId = (id: string) => ROSTER.find((p) => p.id === id) ?? ROSTER[0];
 export default function ChatThread({
   posts,
   callPostAtEnd = false,
-  allowedAuthors,
 }: {
   posts: SamplePost[];
   callPostAtEnd?: boolean;
-  /** Only show posts from these people (e.g. who is in a group DM). */
-  allowedAuthors?: readonly string[];
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -56,9 +53,7 @@ export default function ChatThread({
     };
   }, []);
 
-  const shown = allowedAuthors
-    ? posts.filter((p) => allowedAuthors.includes(p.authorId))
-    : posts;
+  const shown = posts;
   return (
     <div ref={rootRef} className={layoutStyles['channel-shell__messages']}>
       <Scrollbar>
