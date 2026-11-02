@@ -1,15 +1,6 @@
-// The server settings and sound toggle side by side in one pill, like the
-// People counter next to it.
+// The server settings and the sound toggle side by side, with no container.
 .call-settings {
-  // Same height as the scene switchers beside it: stretch to their row (which
-  // includes each switcher's own 4px of padding) minus that padding.
-  align-self: stretch;
-  box-sizing: border-box;
-  margin-block: var(--spacing-xxxs);
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xxxxs);
-  padding: var(--spacing-xxxxs);
-  border-radius: var(--radius-pill);
-  background: rgba(var(--center-channel-color-rgb), 0.08);
 }
