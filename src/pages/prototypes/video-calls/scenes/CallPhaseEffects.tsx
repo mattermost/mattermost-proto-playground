@@ -16,7 +16,7 @@ const INCOMING_RING_MS = 30000;
  */
 export default function CallPhaseEffects() {
   const { state, participants, actions } = useVideoCall();
-  const { phase, soundOn } = state;
+  const { phase, soundOn, removedIds } = state;
 
   useEffect(() => {
     setSoundsEnabled(soundOn);
@@ -79,6 +79,52 @@ export default function CallPhaseEffects() {
       playSound('join-user');
     }
   }, [phase, participants]);
+
+  // Join / leave notices when the call size changes, whichever surface is
+  // showing. Leave notices are window-only (the plugin's widget never announces
+  // a leave). A person the host removed already has a "was removed" notice.
+  const prevPeople = useRef<{ id: string; name: string }[] | null>(null);
+  useEffect(() => {
+    if (phase !== 'active') {
+      prevPeople.current = null;
+      return;
+    }
+    const people = participants.map((p) => ({ id: p.id, name: p.name }));
+    const before = prevPeople.current;
+    prevPeople.current = people;
+    if (!before) return;
+    for (const added of people.filter(
+      (p) => !before.some((q) => q.id === p.id),
+    )) {
+      actions.pushNotice({ kind: 'joined', text: `${added.name} joined` });
+    }
+    for (const left of before.filter(
+      (p) => !people.some((q) => q.id === p.id),
+    )) {
+      if (removedIds.includes(left.id)) continue;
+      actions.pushNotice({
+        kind: 'left',
+        text: `${left.name} left`,
+        surface: 'window',
+      });
+    }
+  }, [phase, participants, removedIds, actions]);
+
+  // On joining: a short hint about your mic, widget only (as the plugin does).
+  const micOnRef = useRef(state.media.micOn);
+  useEffect(() => {
+    micOnRef.current = state.media.micOn;
+  });
+  useEffect(() => {
+    if (phase !== 'active') return;
+    actions.pushNotice({
+      kind: 'info',
+      surface: 'widget',
+      text: micOnRef.current
+        ? "You're unmuted. Select the mic to mute."
+        : "You're muted. Select the mic to unmute.",
+    });
+  }, [phase, actions]);
 
   // Leave cue when you hang up (a Leave sets `endedAt`; cancel and decline do not).
   const prevEndedAt = useRef(state.endedAt);

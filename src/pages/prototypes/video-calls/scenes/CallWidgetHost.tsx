@@ -13,6 +13,7 @@ import {
   INTERNAL_LINK,
 } from '@/fixtures/calls/callConstants';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
+import { CallNotice } from '../components/CallNotice';
 import { DeviceMenu } from '../components/DeviceMenu';
 import { VideoCallWidget } from '../components/VideoCallWidget';
 import { WidgetIncoming } from '../components/WidgetIncoming';
@@ -190,6 +191,12 @@ function CardWidget({
     speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
     speakers[0].label;
 
+  // Notices stack above the card like a menu, so they step aside while a menu
+  // is open. A leave is window-only: the plugin's widget never announces one.
+  const widgetNotices = state.notices.filter(
+    (n) => n.surface !== 'window' && n.kind !== 'left',
+  );
+
   const people = participants
     .filter((p) => !p.self)
     .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
@@ -276,6 +283,14 @@ function CardWidget({
         />
       }
       recording={state.recording}
+      notices={
+        overlay === null && widgetNotices.length > 0 ? (
+          <CallNotice
+            notices={widgetNotices}
+            onDismiss={actions.dismissNotice}
+          />
+        ) : undefined
+      }
       extraPopovers={
         <>
           <DeviceMenu

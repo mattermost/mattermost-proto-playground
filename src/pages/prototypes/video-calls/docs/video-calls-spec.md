@@ -326,6 +326,11 @@ Only the host sees host controls, on other people's tiles. Hover or focus the ti
 - Joined / left / host use the proto call-notice pill; others use Compass Toast; "Recording stopped" uses a compact popover with a record icon.
 - "Recording and transcription has started" is a persistent popover notice (record icon, title, the body "Consider letting everyone know that this meeting is being recorded and transcribed.", a primary Dismiss button and a close button). It stays until dismissed and is not dropped when the stack is full.
 - Every pill shows the same muted-microphone icon, including "joined" and "left" (see Deviations).
+- **In the widget.** The same stack shows above the widget card, the way its menus do (same 302px width, newest at the bottom, up to 5). It steps aside while a widget menu is open and returns when it closes. Same kinds and timings as the window, with these differences, which follow mattermost-plugin-calls:
+  - Shown: joined, host changes, recording started and stopped, and device, permission and network warnings.
+  - Not shown: left. A leave is announced in the window only.
+  - On joining, a short "You're muted. Select the mic to unmute." (or "You're unmuted. Select the mic to mute.") hint shows in the widget only.
+  - Reactions are not notices in either surface. In the plugin's widget a reaction shows next to the person in the participants list; this widget has no reaction control yet.
 - The stack sits over the bottom-left of the stage and can overlap tile name labels when a side pane narrows the stage (seen with the chat pane open at 4 people). _Question: reserve space or move the stack when a pane is open._
 - When many people join at once (for example 4 to 10), up to 5 notices stack and the oldest transient one drops first.
 - Recording: Record call in More toggles it, posts "Recording and transcription has started" / "Recording stopped", shows the recording indicator in the window header (with Stop) and a dot in the widget header. The ended call card lists the number of recordings.

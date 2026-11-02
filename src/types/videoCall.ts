@@ -82,6 +82,12 @@ export interface CallNotice {
   id: string;
   kind: CallNoticeKind;
   text: string;
+  /**
+   * Which call surface shows it. Omit for both. A leave notice is
+   * window-only, and the "You're muted" hint on joining is widget-only,
+   * as in mattermost-plugin-calls.
+   */
+  surface?: 'widget' | 'window';
 }
 
 /**

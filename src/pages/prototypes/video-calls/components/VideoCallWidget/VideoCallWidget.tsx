@@ -173,6 +173,8 @@ export interface VideoCallWidgetProps {
   moreMenu?: ReactNode;
   /** Additional host-rendered popovers (e.g. output picker, call info). */
   extraPopovers?: ReactNode;
+  /** Host-rendered notice stack (joined, recording, host changes…), shown above the card like a menu. */
+  notices?: ReactNode;
   /** Shows a small recording dot in the header. */
   recording?: boolean;
   onLeave?: () => void;
@@ -268,6 +270,7 @@ export function VideoCallWidget({
   onToggleMore,
   moreMenu,
   extraPopovers,
+  notices,
   recording = false,
   onLeave,
   labels,
@@ -570,6 +573,11 @@ export function VideoCallWidget({
           {cameraMenu}
           {moreMenu}
           {extraPopovers}
+          {notices && (
+            <div className={styles['video-call-widget__notices']}>
+              {notices}
+            </div>
+          )}
         </>
       }
     >

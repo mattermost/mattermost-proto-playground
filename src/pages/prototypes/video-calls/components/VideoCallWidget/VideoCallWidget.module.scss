@@ -177,6 +177,13 @@
     text-align: center;
   }
 
+  // Notice stack above the card (the host's CallNotice, which is otherwise
+  // pinned bottom-left of a stage). Doubled block class beats its own rule.
+  #{&} &__notices > * {
+    position: static;
+    max-width: 100%;
+  }
+
   // Phone call: the dialed number under the name.
   &__sub {
     font-family: var(--font-family-body);

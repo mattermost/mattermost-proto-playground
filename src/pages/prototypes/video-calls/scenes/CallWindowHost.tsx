@@ -135,29 +135,6 @@ export default function CallWindowHost({
     speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
     speakers[0].label;
 
-  // Join / leave notices when the call size changes ------------------------
-  const prevParticipants = useRef(participants);
-  const removedByHost = useRef<string | null>(null);
-  useEffect(() => {
-    const prev = prevParticipants.current;
-    prevParticipants.current = participants;
-    for (const added of participants.filter(
-      (p) => !prev.some((q) => q.id === p.id),
-    )) {
-      actions.pushNotice({ kind: 'joined', text: `${added.name} joined` });
-    }
-    for (const left of prev.filter(
-      (p) => !participants.some((q) => q.id === p.id),
-    )) {
-      // The host's own removal already posted "was removed".
-      if (left.id === removedByHost.current) {
-        removedByHost.current = null;
-        continue;
-      }
-      actions.pushNotice({ kind: 'left', text: `${left.name} left` });
-    }
-  }, [participants, actions]);
-
   // Reactions ----------------------------------------------------------------
   useEffect(
     () => () => {
@@ -236,7 +213,6 @@ export default function CallWindowHost({
               text: `${target.name} is now a host`,
             });
           } else if (item === 'remove') {
-            removedByHost.current = id;
             actions.removeParticipant(id);
             actions.pushNotice({
               kind: 'info',
@@ -316,7 +292,7 @@ export default function CallWindowHost({
               ? 'You are presenting'
               : `${name} is presenting`,
         }}
-        notices={state.notices}
+        notices={state.notices.filter((n) => n.surface !== 'widget')}
         onDismissNotice={actions.dismissNotice}
         burst={burst}
         banner={banner}
