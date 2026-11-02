@@ -106,14 +106,14 @@ export default function PrototypeSettings({
     <div ref={ref} className={styles['prototype-settings']}>
       <WithTooltip placement="bottom" label="Prototype settings">
         <IconButton
-          size="x-small"
+          size="small"
           padding="compact"
           rounded
           aria-label="Prototype settings"
           aria-haspopup="menu"
           aria-expanded={open}
           active={open}
-          icon={<Icon size="12" glyph={<CogOutlineIcon />} />}
+          icon={<Icon size="16" glyph={<CogOutlineIcon />} />}
           onClick={() => setOpen((o) => !o)}
         />
       </WithTooltip>
