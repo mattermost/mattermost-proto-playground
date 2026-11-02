@@ -5,8 +5,8 @@ Sample remote-participant loops for the Video Calls prototype
 is generated, not a real customer or colleague.
 
 Clips are muted, about 8 seconds, 640x360 H.264 (`ffmpeg`, `-an`,
-`+faststart`), with the last second cross-faded into the first so the loop has
-no visible seam. Each has a `-poster.jpg` still used while paused, for
+`+faststart`), trimmed from the generated source with no blending, so the loop
+restarts with a hard cut. Each has a `-poster.jpg` still used while paused, for
 `prefers-reduced-motion`, and before the clip loads.
 
 | File                            | Used for                    | Source                               | Author                                                      | Licence                                 |
