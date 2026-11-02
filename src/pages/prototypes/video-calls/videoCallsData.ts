@@ -7,6 +7,16 @@ import avatarEmmaNovak from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
+import aikoClip from '@/assets/video/aiko.mp4';
+import aikoPoster from '@/assets/video/aiko-poster.jpg';
+import danielleClip from '@/assets/video/danielle.mp4';
+import daniellePoster from '@/assets/video/danielle-poster.jpg';
+import sofiaClip from '@/assets/video/sofia.mp4';
+import sofiaPoster from '@/assets/video/sofia-poster.jpg';
+import arjunClip from '@/assets/video/arjun.mp4';
+import arjunPoster from '@/assets/video/arjun-poster.jpg';
+import dariusClip from '@/assets/video/darius.mp4';
+import dariusPoster from '@/assets/video/darius-poster.jpg';
 import marcoClip from '@/assets/video/marco.mp4';
 import marcoPoster from '@/assets/video/marco-poster.jpg';
 import type { VideoStageClip } from './components/VideoStage';
@@ -22,12 +32,17 @@ export const GROUP_STARTER_ID = 'sofia';
 /**
  * Remote video loops, keyed by `VideoParticipant.clipId` (one entry per
  * participant). Clips are generated placeholders, see src/assets/video/README.md.
- * Several participants can point at the same file with a different `offset`
- * and `mirrored` so a 10-tile grid never shows two identical neighbours. A
+ * `offset` staggers each loop's start so tiles never move in lockstep; a clip can
+ * be shared between participants with a different `offset` / `mirrored`. A
  * participant with `cameraOn` but no entry here falls back to the avatar.
  */
 export const CLIPS: Record<string, VideoStageClip> = {
   marco: { src: marcoClip, poster: marcoPoster },
+  sofia: { src: sofiaClip, poster: sofiaPoster, offset: 0 },
+  aiko: { src: aikoClip, poster: aikoPoster, offset: 3 },
+  arjun: { src: arjunClip, poster: arjunPoster, offset: 6 },
+  danielle: { src: danielleClip, poster: daniellePoster, offset: 1.5 },
+  darius: { src: dariusClip, poster: dariusPoster, offset: 4.5 },
 };
 
 /**
@@ -66,8 +81,9 @@ export const ROSTER: VideoParticipant[] = [
     id: 'aiko',
     name: 'Aiko Tan',
     avatarSrc: avatarAikoTan,
-    cameraOn: false,
+    cameraOn: true,
     muted: true,
+    clipId: 'aiko',
   },
   {
     id: 'arjun',
@@ -89,24 +105,23 @@ export const ROSTER: VideoParticipant[] = [
     id: 'darius',
     name: 'Darius Cole',
     avatarSrc: avatarDariusCole,
-    cameraOn: false,
+    cameraOn: true,
     muted: true,
+    clipId: 'darius',
   },
   {
     id: 'david',
     name: 'David Liang',
     avatarSrc: avatarDavidLiang,
-    cameraOn: true,
+    cameraOn: false,
     muted: true,
-    clipId: 'david',
   },
   {
     id: 'emma',
     name: 'Emma Novak',
     avatarSrc: avatarEmmaNovak,
-    cameraOn: true,
+    cameraOn: false,
     muted: true,
-    clipId: 'emma',
   },
   {
     id: 'ethan',
