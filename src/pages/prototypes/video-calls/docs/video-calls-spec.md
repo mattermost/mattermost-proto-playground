@@ -52,7 +52,7 @@ Video calling and phone calling are server settings. The DM header shows:
 | On    | On    | Start call menu: group "Mattermost call" with Start video call, Start audio call and Copy call link, group "Phone call" |
 
 - Group headings appear only when both groups are present.
-- Copy call link is the last row of the Mattermost call group, below a divider. It is not offered in the Phone call group. See Entry points for what it does.
+- Copy call link is the last row of the Mattermost call group, directly under the start options (no divider). It is not offered in the Phone call group. See Entry points for what it does.
 - GM and channel headers never show a Phone call group. Phone calls are 1:1.
 - Each phone number the person can be called on is its own row: "Call <label>" with the number as the secondary label. Numbers that cannot be dialled from this network are not listed.
 - The same menu is what the profile popover's Call button opens. The popover's own phone number rows are defined in the outbound specs.
@@ -181,7 +181,7 @@ _Design questions for video (what the plugin does not settle):_
 
 ### Entry points
 
-**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"), and below a divider Copy call link. Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. The menu is always there when there is no call, so the chevron always shows (see Server settings and the Start call menu for what it lists).
+**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"), and Copy call link (no divider; it is grouped with the start options). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. The menu is always there when there is no call, so the chevron always shows (see Server settings and the Start call menu for what it lists).
 
 Copy call link copies the call link for a Mattermost call and shows a "Call link copied" toast under the button for about 3 seconds (a "Couldn't copy call link" toast if the browser blocks the copy). It does not start or join a call. It is offered in DM, GM and channel headers, only when there is no call: not in the Join call or In call states (Call info already has the link during a call).
 

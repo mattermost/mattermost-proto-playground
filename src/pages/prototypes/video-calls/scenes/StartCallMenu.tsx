@@ -34,7 +34,6 @@ const COPY_LINK_OPTION: StartCallOption = {
   id: 'copy-link',
   label: 'Copy call link',
   icon: <Icon size="16" glyph={<ContentCopyIcon />} />,
-  dividerBefore: true,
 };
 
 /** How long the "Call link copied" toast stays. */
@@ -115,8 +114,8 @@ export default function StartCallMenu() {
           mattermost({ ...AUDIO_OPTION, secondaryLabel: 'Camera off' }),
         ]
       : [mattermost({ ...AUDIO_OPTION })];
-    // Copy call link closes the Mattermost call group (below a divider); the
-    // phone group follows it.
+    // Copy call link closes the Mattermost call group, directly under the
+    // start options; the phone group follows it.
     const link = mattermost({ ...COPY_LINK_OPTION });
     return withPhone ? [...rows, link, PHONE_OPTION] : [...rows, link];
   }, [features.video, withPhone]);
