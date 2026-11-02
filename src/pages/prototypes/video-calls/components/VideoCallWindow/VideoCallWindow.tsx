@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { RecordingIndicator } from '@mattermost/compass-proto';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import type { StageLayout } from '../../layout/computeStageLayout';
@@ -133,6 +133,32 @@ export function VideoCallWindow({
 }: VideoCallWindowProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
   const paneSlot = usePaneTransition(pane);
+  const paneOpen = !!paneSlot.node && !paneSlot.exiting;
+  const stageElRef = useRef<HTMLDivElement>(null);
+  const [settledStageWidth, setSettledStageWidth] = useState<
+    number | undefined
+  >(undefined);
+
+  // The room width once the pane slide finishes. The stage's own width does
+  // not animate (only its end padding does), so project the target from it;
+  // the speaker strip decides paging against this, not the in-flight width.
+  useEffect(() => {
+    const el = stageElRef.current;
+    if (!el) return undefined;
+    const read = () => {
+      const cs = getComputedStyle(el);
+      const inset = paneOpen
+        ? (parseFloat(cs.getPropertyValue('--video-call-window-pane-w')) || 0) +
+          (parseFloat(cs.getPropertyValue('--spacing-s')) || 0)
+        : 0;
+      setSettledStageWidth(Math.round(el.clientWidth - inset));
+    };
+    read();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [paneOpen]);
   const shortcutRef = useRef({
     mic: controls.onToggleMic,
     camera: controls.onToggleCamera,
@@ -201,11 +227,10 @@ export function VideoCallWindow({
     >
       <div className={styles['video-call-window']}>
         <div
+          ref={stageElRef}
           className={cx(
             styles['video-call-window__stage'],
-            !!paneSlot.node &&
-              !paneSlot.exiting &&
-              styles['video-call-window__stage--pane-open'],
+            paneOpen && styles['video-call-window__stage--pane-open'],
           )}
         >
           <div
@@ -220,6 +245,7 @@ export function VideoCallWindow({
               shareContent={shareContent}
               labels={stageLabels}
               getTileMenu={getTileMenu}
+              settledWidth={settledStageWidth}
             />
             {onDismissNotice && (
               <CallNotice notices={notices} onDismiss={onDismissNotice} />

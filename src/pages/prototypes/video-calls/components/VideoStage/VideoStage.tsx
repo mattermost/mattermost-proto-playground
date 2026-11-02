@@ -107,6 +107,13 @@ export interface VideoStageProps {
   compact?: boolean;
   /** Pause every tile (e.g. stage covered); shows poster frames only. */
   paused?: boolean;
+  /**
+   * Width (px) the stage will have once a host transition (e.g. a side pane
+   * sliding in) finishes. Strip pagination is decided against it, so the
+   * paging controls do not flicker while the stage animates. Defaults to the
+   * measured width.
+   */
+  settledWidth?: number;
   labels?: VideoStageLabels;
   className?: string;
 }
@@ -329,6 +336,7 @@ export function VideoStage({
   filmstripPosition = 'side',
   compact = false,
   paused = false,
+  settledWidth,
   labels,
   className,
 }: VideoStageProps) {
@@ -344,8 +352,14 @@ export function VideoStage({
     if (!canvas) return undefined;
     const read = () => {
       const cs = getComputedStyle(canvas);
+      // Project the animating canvas onto its settled width.
+      const root = canvas.parentElement;
+      const delta =
+        settledWidth !== undefined && root
+          ? settledWidth - root.clientWidth
+          : 0;
       const next: StripBox = {
-        width: canvas.clientWidth,
+        width: Math.round(canvas.clientWidth + delta),
         gap: parseFloat(cs.rowGap) || 0,
         min: parseFloat(cs.getPropertyValue('--video-stage-strip-min')) || 0,
         nav: parseFloat(cs.getPropertyValue('--video-stage-strip-nav')) || 0,
@@ -365,7 +379,7 @@ export function VideoStage({
     const ro = new ResizeObserver(read);
     ro.observe(canvas);
     return () => ro.disconnect();
-  }, [compact]);
+  }, [compact, settledWidth]);
 
   // Speaker strip pagination, only when the tiles would drop below the
   // minimum size (e.g. a side pane narrows the stage). Self stays on every

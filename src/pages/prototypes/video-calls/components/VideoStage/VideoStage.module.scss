@@ -26,6 +26,14 @@
   }
 }
 
+// Typed so the room reserved for the page buttons animates with the stage
+// instead of snapping when a side pane opens or closes.
+@property --video-stage-strip-reserve {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+
 .video-stage {
   --video-stage-gap: var(--spacing-m);
   --video-stage-edge: var(--spacing-xs);
@@ -317,6 +325,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .video-stage__canvas,
     .video-stage__content,
     .video-stage__overflow-body {
       transition: none;
