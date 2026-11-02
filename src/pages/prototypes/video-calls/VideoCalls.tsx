@@ -14,6 +14,7 @@ import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
 import PrototypeSettings from './chrome/PrototypeSettings';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
+import SelfVoiceActivity from './scenes/SelfVoiceActivity';
 import CallWindowScene from './scenes/CallWindowScene';
 import ChatScene from './scenes/ChatScene';
 import { useScreenShare } from './useScreenShare';
@@ -151,6 +152,7 @@ export default function VideoCalls() {
   return (
     <VideoCallContext.Provider value={value}>
       <CallPhaseEffects />
+      <SelfVoiceActivity walkthroughActive={walkthroughActive} />
       <div className={styles['video-calls']}>
         <div ref={setFrameEl} className={styles['video-calls__frame']}>
           {/* The conversation stays visible behind the popout window. */}

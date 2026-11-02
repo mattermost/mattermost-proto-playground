@@ -44,6 +44,8 @@ export interface VideoCallState {
    * interstitial and start a call immediately (off by default).
    */
   skipPreJoin: boolean;
+  /** Your microphone is picking up your voice (set from the real mic while in a call). */
+  selfSpeaking: boolean;
   /** Where the user is in the call lifecycle. */
   phase: CallPhase;
   /** Widget (small card over the sidebar) or the expanded window. */
@@ -97,6 +99,7 @@ const INITIAL_STATE: VideoCallState = {
   features: { video: true, phone: true },
   mode: 'video',
   skipPreJoin: false,
+  selfSpeaking: false,
   callContext: 'dm',
   phase: 'idle',
   surface: 'widget',
@@ -161,6 +164,7 @@ function countFor(context: CallContext, current: number) {
 
 /** Per-call state that never carries over into a new call. */
 const PER_CALL_RESET: Partial<VideoCallState> = {
+  selfSpeaking: false,
   recording: false,
   handRaised: false,
   removedIds: [],
@@ -229,6 +233,8 @@ export function useVideoCallState() {
           return {
             ...merged,
             muted: !state.media.micOn,
+            // Highlighted when your microphone detects your voice (never while muted).
+            talking: state.selfSpeaking && state.media.micOn,
             cameraOn: cameraAvailable && state.media.cameraOn,
             handRaised: state.handRaised,
             sharing: state.sharing,
@@ -238,6 +244,7 @@ export function useVideoCallState() {
       });
   }, [
     state.mode,
+    state.selfSpeaking,
     state.count,
     state.removedIds,
     state.overrides,
@@ -569,6 +576,11 @@ export function useVideoCallState() {
             ]),
           };
         }),
+      /** Voice activity from your real microphone; only transitions change state. */
+      setSelfSpeaking: (selfSpeaking: boolean) =>
+        setState((s) =>
+          s.selfSpeaking === selfSpeaking ? s : { ...s, selfSpeaking },
+        ),
       /** The person's Calls plugin setting: skip the pre-join interstitial when starting a call. */
       setSkipPreJoin: (skipPreJoin: boolean) =>
         setState((s) => ({ ...s, skipPreJoin })),
