@@ -42,7 +42,8 @@ export function mattermostModeFor(features: CallFeatures): CallMode {
 
 /**
  * A phone call is a 1:1 DM call that dials straight away: no pre-join, and it
- * is never incoming, joining or ongoing (outbound only).
+ * is never incoming, joining or ongoing (outbound only). An audio-only call
+ * (video off) has no pre-join either.
  */
 export function phaseAvailableForMode(
   mode: CallMode,
@@ -55,6 +56,9 @@ export function phaseAvailableForMode(
       (phase === 'idle' || phase === 'calling' || phase === 'active')
     );
   }
+  // With video off there is no camera to check, so no pre-join: a DM rings
+  // straight away and a group / channel call connects straight away.
+  if (mode === 'audio' && phase === 'pre-join') return false;
   return phaseAvailable(context, phase);
 }
 

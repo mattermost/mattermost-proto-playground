@@ -274,6 +274,8 @@ export function useVideoCallState() {
             phaseAvailableForMode(s.mode, s.callContext, phase)
               ? s.mode
               : mattermostModeFor(s.features);
+          // Audio-only calls have no pre-join (no camera to check).
+          if (mode === 'audio' && phase === 'pre-join') return s;
           const surface = surfaceAvailable(phase, s.surface, mode)
             ? s.surface
             : 'widget';
@@ -400,6 +402,29 @@ export function useVideoCallState() {
             };
           }
           const mode = mattermostModeFor(s.features);
+          // Video off: no camera to check, so skip pre-join. A DM rings
+          // straight away; a group / channel call connects straight away.
+          if (mode === 'audio') {
+            const dm = s.callContext === 'dm';
+            return {
+              ...s,
+              ...PER_CALL_RESET,
+              mode,
+              phase: dm ? 'calling' : 'active',
+              surface: 'widget',
+              joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
+              missedCall: false,
+              declinedCall: false,
+              canceledCall: false,
+              endedDurationSec: 0,
+              endedAt: null,
+              recordingsMade: 0,
+              callStartedAt: dm ? null : Date.now(),
+              // Joining a call that is already running means someone else started it.
+              callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
+              media: releaseCamera(s.media),
+            };
+          }
           return {
             ...s,
             ...PER_CALL_RESET,
@@ -418,12 +443,11 @@ export function useVideoCallState() {
             // Audio-only starts with the camera off (and releases the webcam);
             // "Start video call" turns it on, which also asks the browser for the
             // webcam (the menu pick is the user gesture).
-            media:
-              opts?.audioOnly || mode === 'audio'
-                ? releaseCamera(s.media)
-                : opts?.video
-                  ? { ...s.media, cameraOn: true, useWebcam: true }
-                  : s.media,
+            media: opts?.audioOnly
+              ? releaseCamera(s.media)
+              : opts?.video
+                ? { ...s.media, cameraOn: true, useWebcam: true }
+                : s.media,
           };
         }),
       /** Pre-join primary action: a 1:1 call rings; group/channel joins directly. */

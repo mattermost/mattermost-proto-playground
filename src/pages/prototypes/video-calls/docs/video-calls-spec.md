@@ -71,7 +71,7 @@ A phone call uses the call widget (302px, same card across calling and in call),
 
 **Compact live widget (Audio and Phone modes).** With no video to show, the live call has no 16:9 area. It follows the compass-proto call widget and the outbound softphone: a header with a 32px avatar of the person talking (the first other person when nobody is), "<name> is talking" over "<elapsed> · <conversation name>" (the conversation name alone, with the time under it, when nobody is talking), the expand button at the right (not in Phone mode), and the controls row below (microphone, participants in group calls, share screen, More, Leave). A recording dot sits after the time. A Phone call shows the person's name with the Phone badge, and the number under the time. While you share your screen the sharing state takes the media area as in Video mode.
 
-**Compact calling and joining (Audio and Phone modes).** Calling and joining use the same compact header, so the card does not change height when the call connects. Calling shows the 32px avatar of the person called (no pulse ring), "Calling <name>…" with the text fading in and out between full and about half opacity (not under reduced motion), and under it the number and label for a phone call (nothing for an audio call). Joining shows "Joining call with <name>…". Below it the controls row has the microphone and a red Cancel, as in Video mode. Video mode keeps its avatar-with-pulse calling card. Pre-join is unchanged except that Audio mode has no self preview.
+**Compact calling and joining (Audio and Phone modes).** Calling and joining use the same compact header, so the card does not change height when the call connects. Calling shows the 32px avatar of the person called (no pulse ring), "Calling <name>…" with the text fading in and out between full and about half opacity (not under reduced motion), and under it the number and label for a phone call (nothing for an audio call). Joining shows "Joining call with <name>…". Below it the controls row has the microphone and a red Cancel, as in Video mode. Video mode keeps its avatar-with-pulse calling card. Audio mode has no pre-join (see Pre-join).
 
 The Audio mode widget otherwise matches the Video widget without the camera control and self view, and Start audio call is the only way to start. In the call window the camera control, device menu and Ctrl/Cmd+E are omitted.
 
@@ -139,6 +139,7 @@ Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 
 - Starting from No call: pre-join in start mode; confirming goes straight to In call (nobody is rung).
 - Joining from Ongoing: pre-join in join mode; confirming goes to In call.
+- Audio mode (video disabled) skips pre-join in every case above: a DM goes straight to Calling and a group / channel call straight to In call.
 - Ongoing and Incoming/Calling/Joining are mutually exclusive by conversation type: Ongoing exists only in GM and channel; Calling, Incoming and Joining only in DM.
 
 **Leaving and ending a call (product rule).**
@@ -191,11 +192,11 @@ Copy call link copies the call link for a Mattermost call and shows a "Call link
 
 The same button follows the conversation's call state:
 
-| Call state                                | Button                                              | Tooltip    | Click                       |
-| ----------------------------------------- | --------------------------------------------------- | ---------- | --------------------------- |
-| No call                                   | Phone icon with chevron                             | Start call | Opens the menu              |
-| Ongoing (GM / channel, you are not in it) | Green in-call phone icon, no chevron                | Join call  | Opens pre-join in join mode |
-| Ringing, pre-join or in the call (yours)  | Green in-call phone icon, pressed state, no chevron | In call    | None                        |
+| Call state                                | Button                                              | Tooltip    | Click                                                           |
+| ----------------------------------------- | --------------------------------------------------- | ---------- | --------------------------------------------------------------- |
+| No call                                   | Phone icon with chevron                             | Start call | Opens the menu                                                  |
+| Ongoing (GM / channel, you are not in it) | Green in-call phone icon, no chevron                | Join call  | Opens pre-join in join mode (joins straight away in Audio mode) |
+| Ringing, pre-join or in the call (yours)  | Green in-call phone icon, pressed state, no chevron | In call    | None                                                            |
 
 The in-call phone icon is the same glyph as the sidebar's in-call icon (`phone-in-talk`), so the header and the conversation row read as one signal.
 
@@ -223,6 +224,8 @@ _Question: should clicking the In call state bring the call widget forward (for 
 **Call card (post in the message list).** The card's states and copy (Calling, Connected, Canceled call, No answer, Declined, Ended) are defined in the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec and are not repeated here. Max width 700px; it stacks below about 480px (Figma Narrow); hover adds a shadow. In a GM or channel the card shows Active with Join call while you are not in the call, and Joined with Leave once you are; its "N minutes ago by [name]" uses the same start time as the call banner.
 
 ### Pre-join
+
+**Audio mode (video disabled) has no pre-join.** There is no camera to check, so Start call rings a DM straight away (Calling), and in a GM or channel it connects straight away; Join call from the banner, header or call card also joins straight away. The microphone is picked from the widget's mic control. Phone calls skip pre-join too. The rest of this section describes Video mode. _Question: confirm there is no microphone check for audio-only calls._
 
 Opens in the widget (default) or the window. Never touches camera or microphone on load.
 
@@ -410,7 +413,7 @@ The prototype wins. Differences found so far (structure only; a pixel comparison
 9. _Resolved:_ GM and channel calls have no incoming call notice, so there is no Audio only choice there; people join from the Ongoing banner, header Join call or call card. Remaining question: should the 1:1 DM incoming widget offer Audio only? (The unused `IncomingCallCard` component has it; the widget does not.)
 10. Where should the Figma board be refreshed so it matches the prototype?
 11. What does the call link open, and does copying it before a call exists reserve a call? The prototype copies the existing demo link and creates nothing. Should Copy call link also be offered during an ongoing or active call (for example from the Join call state)?
-12. Phone calls (see Outbound phone calls alongside video): no pre-join, DM anchoring when the number is not a Mattermost user, and whether phone calls get their own sidebar glyph.
+12. Phone calls (see Outbound phone calls alongside video): no pre-join (and none for Audio mode, with no microphone check), DM anchoring when the number is not a Mattermost user, and whether phone calls get their own sidebar glyph.
 
 ## References and Resources
 

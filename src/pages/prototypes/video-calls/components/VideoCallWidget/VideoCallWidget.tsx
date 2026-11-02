@@ -302,8 +302,6 @@ export function VideoCallWidget({
     (phase === 'calling' ||
       phase === 'joining' ||
       (phase === 'active' && !sharing));
-  // Audio-only pre-join has no camera to preview, so no 16:9 self preview.
-  const noPreview = phase === 'pre-join' && mode !== 'video';
 
   const region =
     phase === 'pre-join'
@@ -417,19 +415,17 @@ export function VideoCallWidget({
   const media =
     phase === 'pre-join' ? (
       <div className={styles['video-call-widget__pre-join']}>
-        {!noPreview && (
-          <div className={styles['video-call-widget__preview']}>
-            <VideoTile
-              name={selfName}
-              avatarSrc={selfAvatarSrc}
-              stream={selfStream}
-              cameraOn={cameraOn}
-              muted={!micOn}
-              mirrored
-              selfLabel={l.self}
-            />
-          </div>
-        )}
+        <div className={styles['video-call-widget__preview']}>
+          <VideoTile
+            name={selfName}
+            avatarSrc={selfAvatarSrc}
+            stream={selfStream}
+            cameraOn={cameraOn}
+            muted={!micOn}
+            mirrored
+            selfLabel={l.self}
+          />
+        </div>
         {showPeople && (
           <div className={styles['video-call-widget__people']}>
             <UserAvatarGroup
@@ -680,7 +676,6 @@ export function VideoCallWidget({
           styles['video-call-widget__media'],
           styles[`video-call-widget__media--${phase}`],
           compact && styles['video-call-widget__media--compact'],
-          noPreview && styles['video-call-widget__media--no-preview'],
           showPeople && styles['video-call-widget__media--people'],
         )}
       >

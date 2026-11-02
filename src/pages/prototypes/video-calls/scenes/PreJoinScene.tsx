@@ -147,11 +147,7 @@ export default function PreJoinScene() {
           <PreJoinPanel
             appearance="dark"
             title={title}
-            subtitle={
-              state.mode === 'video'
-                ? 'Check your camera and microphone first.'
-                : 'Check your microphone first.'
-            }
+            subtitle="Check your camera and microphone first."
             ariaLabel={title}
             preview={
               <>
@@ -197,7 +193,6 @@ export default function PreJoinScene() {
                 onSelectCamera={(id) =>
                   actions.setMedia({ cameraDeviceId: id })
                 }
-                hideCamera={state.mode !== 'video'}
                 openMenu={openMenu}
                 onOpenMenuChange={setOpenMenu}
               />
