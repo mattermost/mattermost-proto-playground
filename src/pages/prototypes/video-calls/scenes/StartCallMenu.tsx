@@ -4,7 +4,7 @@ import HeadphonesIcon from '@mattermost/compass-icons/components/headphones';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import { Toast } from '@mattermost/compass-ui/components/toast';
+import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
 import { INTERNAL_LINK } from '@/fixtures/calls/callConstants';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
@@ -36,10 +36,10 @@ const COPY_LINK_OPTION: StartCallOption = {
   icon: <Icon size="16" glyph={<ContentCopyIcon />} />,
 };
 
-/** How long the "Call link copied" toast stays. */
-const TOAST_MS = 3000;
-/** Matches `--duration-quick` (the toast's fade). */
-const TOAST_EXIT_MS = 150;
+/** How long the "Call link copied" notice stays. */
+const NOTICE_MS = 3000;
+/** Matches `--duration-quick` (the notice's fade). */
+const NOTICE_EXIT_MS = 150;
 
 const PHONE_OPTION: StartCallOption = {
   id: 'phone',
@@ -80,15 +80,15 @@ export default function StartCallMenu() {
   }, [open]);
 
   // "Call link copied" confirmation. The call notice stack only renders inside
-  // the call window, so the conversation shows its own toast under the button.
-  const [toast, setToast] = useState<{ ok: boolean } | null>(null);
-  const [toastOpen, setToastOpen] = useState(false);
-  const toastAnim = useExitAnimation(toastOpen, TOAST_EXIT_MS);
+  // the call window, so the conversation shows its own notice under the button.
+  const [notice, setNotice] = useState<{ ok: boolean } | null>(null);
+  const [noticeOpen, setNoticeOpen] = useState(false);
+  const noticeAnim = useExitAnimation(noticeOpen, NOTICE_EXIT_MS);
   useEffect(() => {
-    if (!toastOpen) return;
-    const t = window.setTimeout(() => setToastOpen(false), TOAST_MS);
+    if (!noticeOpen) return;
+    const t = window.setTimeout(() => setNoticeOpen(false), NOTICE_MS);
     return () => window.clearTimeout(t);
-  }, [toastOpen]);
+  }, [noticeOpen]);
 
   const copyLink = async () => {
     let ok = true;
@@ -97,8 +97,8 @@ export default function StartCallMenu() {
     } catch {
       ok = false;
     }
-    setToast({ ok });
-    setToastOpen(true);
+    setNotice({ ok });
+    setNoticeOpen(true);
   };
 
   const withPhone = features.phone && callContext === 'dm';
@@ -155,19 +155,20 @@ export default function StartCallMenu() {
         onOpenChange={setOpen}
         onSelect={start}
       />
-      {toastAnim.rendered && toast && (
+      {noticeAnim.rendered && notice && (
         <div
           className={[
-            styles['start-call-menu__toast'],
-            toastAnim.exiting && styles['start-call-menu__toast--exiting'],
+            styles['start-call-menu__notice'],
+            noticeAnim.exiting && styles['start-call-menu__notice--exiting'],
           ]
             .filter(Boolean)
             .join(' ')}
           role="status"
         >
-          <Toast
-            type={toast.ok ? 'success' : 'danger'}
-            message={toast.ok ? 'Call link copied' : "Couldn't copy call link"}
+          <CallNoticePill
+            type="other"
+            size="medium"
+            message={notice.ok ? 'Call link copied' : "Couldn't copy call link"}
           />
         </div>
       )}

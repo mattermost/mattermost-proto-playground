@@ -183,7 +183,7 @@ _Design questions for video (what the plugin does not settle):_
 
 **Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"), and Copy call link (no divider; it is grouped with the start options). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. The menu is always there when there is no call, so the chevron always shows (see Server settings and the Start call menu for what it lists).
 
-Copy call link copies the call link for a Mattermost call and shows a "Call link copied" toast under the button for about 3 seconds (a "Couldn't copy call link" toast if the browser blocks the copy). It does not start or join a call. It is offered in DM, GM and channel headers, only when there is no call: not in the Join call or In call states (Call info already has the link during a call).
+Copy call link copies the call link for a Mattermost call and shows a "Call link copied" call notice under the button for about 3 seconds (a "Couldn't copy call link" notice if the browser blocks the copy). It does not start or join a call. It is offered in DM, GM and channel headers, only when there is no call: not in the Join call or In call states (Call info already has the link during a call).
 
 The same button follows the conversation's call state:
 
@@ -323,7 +323,7 @@ Only the host sees host controls, on other people's tiles. Hover or focus the ti
 
 - Notices stack bottom-left of the stage above the controls, up to 5, newest at the bottom.
 - Transient (joined, left, host, info, recording) fade after 3 seconds (200ms fade-off). Persistent until dismissed: network (warning), device (danger), permission (danger), and "Recording and transcription has started". When the stack is full the oldest transient notice drops first so warnings are not pushed off.
-- Joined / left / host use the proto call-notice pill; others use Compass Toast; "Recording stopped" uses a compact popover with a record icon.
+- Every notice is the proto call-notice pill, except the two recording notices: "Recording stopped" uses a compact popover with a record icon, and "Recording and transcription has started" is the popover notice below. Notices are not Toasts. The pill has no dismiss button, so a notice that stays until dismissed (network, device, permission) is dismissed by pressing the pill (its trailing close icon is the affordance; Enter and Space also dismiss).
 - "Recording and transcription has started" is a persistent popover notice (record icon, title, the body "Consider letting everyone know that this meeting is being recorded and transcribed.", a primary Dismiss button and a close button). It stays until dismissed and is not dropped when the stack is full.
 - Every pill shows the same muted-microphone icon, including "joined" and "left" (see Deviations).
 - **In the widget.** The same stack shows above the widget card, the way its menus do (same 302px width, newest at the bottom, up to 5). It steps aside while a widget menu is open and returns when it closes. Same kinds and timings as the window, with these differences, which follow mattermost-plugin-calls:
@@ -380,7 +380,7 @@ Compass durations and easings only: quick (150ms) with entrance / exit easings f
 
 ## Components Used / New Components
 
-Existing (Compass UI): Button, IconButton, Icon, UserAvatar, UserAvatarGroup, Tag, Toast, PopoverMenu, MenuItem, ModalOverlay.
+Existing (Compass UI): Button, IconButton, Icon, UserAvatar, UserAvatarGroup, Tag, PopoverMenu, MenuItem, ModalOverlay.
 Existing (Compass proto): ChannelShell, ChannelHeader, Message, MessageInput, CallNotice pill, RecordingIndicator, CallInfoPanel, ParticipantsPanel.
 New in the prototype (candidates for the design system): CallCard, CallBanner, VideoCallWidget, VideoCallWindow, VideoStage and VideoTile, SelfViewPip, CallControlsBar, SegmentedIconButton, DeviceMenu, WidgetIncoming, PreJoinPanel, MicLevelMeter, ViewToggle.
 

@@ -68,6 +68,11 @@
     }
   }
 
+  // A pill that stays until pressed (network, permission, device).
+  &__pill--dismissible {
+    cursor: pointer;
+  }
+
   // Compact popover surface for recording stopped.
   &__popover {
     display: flex;

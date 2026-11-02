@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 import RecordIcon from '@mattermost/compass-icons/components/record-circle-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
 import { PopoverNotice } from '@mattermost/compass-ui/components/popover-notice';
-import {
-  Toast,
-  type ToastProps,
-} from '@mattermost/compass-ui/components/toast';
 import styles from './CallNotice.module.scss';
 
 export type CallNoticeItemKind =
@@ -62,23 +64,21 @@ const DEFAULT_LABELS: Required<CallNoticeLabels> = {
   recordingStartedAction: 'Dismiss',
 };
 
-const TOAST_TYPE: Record<
-  CallNoticeItemKind,
-  NonNullable<ToastProps['type']>
-> = {
-  joined: 'general',
-  left: 'general',
-  host: 'general',
-  info: 'info',
-  recording: 'info',
-  'recording-started': 'info',
-  network: 'warning',
-  device: 'danger',
-  permission: 'danger',
-};
-
-/** Join / leave / new host use the proto call-notice pill; the rest stay Toasts. */
-const PILL_KINDS: readonly CallNoticeItemKind[] = ['joined', 'left', 'host'];
+/**
+ * Everything except the two recording notices is the proto call-notice pill.
+ * The pill has no dismiss button, so one that stays until dismissed (network,
+ * permission, device) is dismissed by pressing the pill; its trailing close
+ * icon is the affordance.
+ */
+const PILL_KINDS: readonly CallNoticeItemKind[] = [
+  'joined',
+  'left',
+  'host',
+  'info',
+  'network',
+  'device',
+  'permission',
+];
 
 interface ItemProps {
   notice: CallNoticeItem;
@@ -127,7 +127,26 @@ function NoticeItem({
   let content: ReactNode;
   if (PILL_KINDS.includes(notice.kind)) {
     content = (
-      <CallNoticePill type="other" size="medium" message={notice.text} />
+      <CallNoticePill
+        type="other"
+        size="medium"
+        message={notice.text}
+        className={persistent ? styles['call-notice__pill--dismissible'] : ''}
+        {...(persistent
+          ? {
+              role: 'button',
+              tabIndex: 0,
+              'aria-label': `${dismissLabel}: ${notice.text}`,
+              onClick: () => onDismiss(id),
+              onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onDismiss(id);
+                }
+              },
+            }
+          : { role: 'status' })}
+      />
     );
   } else if (notice.kind === 'recording-started') {
     content = (
@@ -160,14 +179,8 @@ function NoticeItem({
       </div>
     );
   } else {
-    content = (
-      <Toast
-        type={TOAST_TYPE[notice.kind]}
-        message={notice.text}
-        dismissLabel={dismissLabel}
-        onDismiss={() => onDismiss(id)}
-      />
-    );
+    // 'recording-started' and 'recording' are handled above; nothing else is left.
+    content = null;
   }
 
   return (
@@ -185,7 +198,7 @@ function NoticeItem({
 }
 
 /**
- * Stack of dismissible call notices (proto `CallNotice` pill for join/leave, Compass `Toast` otherwise) for the bottom-left of a
+ * Stack of dismissible call notices (the proto `CallNotice` pill for everything but recording) for the bottom-left of a
  * stage (above the controls bar). `recording` renders as a compact popover. Each Toast is its own polite live region. Transient kinds auto-dismiss
  * (timers are cleared on dismiss/unmount); network / permission / device persist.
  */

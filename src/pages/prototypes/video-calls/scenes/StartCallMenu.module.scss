@@ -1,16 +1,16 @@
-// Wrapper that anchors the "Call link copied" toast under the header button.
+// Wrapper that anchors the "Call link copied" notice under the header button.
 .start-call-menu {
   position: relative;
   display: inline-flex;
 
-  &__toast {
+  &__notice {
     position: absolute;
     top: calc(100% + var(--spacing-xxs));
     right: 0;
     z-index: 30;
     width: max-content;
     transform-origin: top right;
-    animation: start-call-menu-toast-in var(--duration-quick)
+    animation: start-call-menu-notice-in var(--duration-quick)
       var(--ease-entrance);
 
     &--exiting {
@@ -25,7 +25,7 @@
   }
 }
 
-@keyframes start-call-menu-toast-in {
+@keyframes start-call-menu-notice-in {
   from {
     opacity: 0;
   }
