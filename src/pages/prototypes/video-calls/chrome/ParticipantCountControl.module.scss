@@ -1,8 +1,8 @@
 .participant-count {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xxs);
-  padding: var(--spacing-xxs) var(--spacing-xs);
+  gap: var(--spacing-xxxxs);
+  padding: var(--spacing-xxxxs) var(--spacing-xxxs);
   border-radius: var(--radius-pill);
   background: rgba(var(--center-channel-color-rgb), 0.08);
   color: var(--center-channel-color);
@@ -10,7 +10,7 @@
   font-weight: var(--font-weight-semibold);
 
   &__label {
-    padding-inline: var(--spacing-xxs);
+    padding-inline: var(--spacing-xxxs);
   }
 
   &__value {
