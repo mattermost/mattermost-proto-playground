@@ -107,6 +107,6 @@ export type CallMode = 'video' | 'audio' | 'phone';
 export interface CallFeatures {
   /** Video calling is enabled. When off, Mattermost calls are audio-only. */
   video: boolean;
-  /** Outbound phone calling is enabled. */
+  /** Outbound SIP phone calling is enabled. */
   phone: boolean;
 }

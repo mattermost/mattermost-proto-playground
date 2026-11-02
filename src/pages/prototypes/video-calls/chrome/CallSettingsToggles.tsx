@@ -16,7 +16,7 @@ export interface CallSettingsTogglesProps {
 
 /**
  * Prototype chrome (not product UI): the server call settings (video calling,
- * phone calling) and the prototype's call sounds, grouped side by side. Video
+ * SIP phone calling) and the prototype's call sounds, grouped side by side. Video
  * off gives today's audio-only calls plugin; phone on adds outbound phone
  * calling to the DM Start call menu. Sounds are a prototype convenience (the
  * product uses the person's calls sound setting). Each button has a tooltip
@@ -50,11 +50,11 @@ export default function CallSettingsToggles({
       </WithTooltip>
       <WithTooltip
         placement="bottom"
-        label={`Phone calls: ${state(features.phone)}`}
+        label={`SIP phone calls: ${state(features.phone)}`}
       >
         <IconButton
           size="x-small"
-          aria-label="Phone calls"
+          aria-label="SIP phone calls"
           active={features.phone}
           aria-pressed={features.phone}
           icon={<Icon size="12" glyph={<PhoneIcon />} />}

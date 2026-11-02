@@ -24,9 +24,9 @@ Outbound SIP calling is covered in [Outbound phone calls alongside video](#outbo
 
 ## Outbound phone calls alongside video
 
-This spec does not describe outbound phone (SIP) calling. It states how phone calls and Mattermost calls live together in the calls plugin, so the outbound specs can be aligned later. Nothing in the outbound specs or the Outbound Calls prototype has been changed; where they differ from this section, this section is the proposal for the combined experience.
+This spec does not describe outbound SIP phone calling. It states how phone calls and Mattermost calls live together in the calls plugin, so the outbound specs can be aligned later. Nothing in the outbound specs or the Outbound Calls prototype has been changed; where they differ from this section, this section is the proposal for the combined experience.
 
-A phone call is a different kind of call from a Mattermost call: it carries audio only, so a phone call cannot become a video call. It shares the call shell (Start call menu, widget, call card, sidebar icon, sounds) and nothing else.
+A SIP phone call is a different kind of call from a Mattermost call: it carries audio only, so it cannot become a video call. The interface calls it a phone call ("Phone call" group, Phone badge); SIP is the name of the server setting and of this spec's terms, not something people see. It shares the call shell (Start call menu, widget, call card, sidebar icon, sounds) and nothing else.
 
 ### Call modes
 
@@ -36,20 +36,20 @@ A call has one mode, chosen when it starts and kept until it ends.
 | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------------- |
 | Video | Mattermost call on a server with video calling enabled. A call started with Start audio call is still Video (camera off; it can be turned on at any time). | Yes    | Yes              |
 | Audio | Mattermost call on a server with video calling disabled (today's calls plugin).                                                                            | No     | Yes              |
-| Phone | Outbound phone call. 1:1 and audio only.                                                                                                                   | No     | No (widget only) |
+| Phone | Outbound SIP phone call. 1:1 and audio only.                                                                                                               | No     | No (widget only) |
 
 "Audio" means video is not available on the server. It does not mean "camera currently off": on a server with video, Start audio call is a Video call.
 
 ### Server settings and the Start call menu
 
-Video calling and phone calling are server settings. The DM header shows:
+Video calling and SIP phone calling are server settings. The DM header shows:
 
-| Video | Phone | DM header                                                                                                               |
-| ----- | ----- | ----------------------------------------------------------------------------------------------------------------------- |
-| Off   | Off   | Start call menu: Start audio call, Copy call link (audio only, as the plugin today)                                     |
-| On    | Off   | Start call menu: Start video call, Start audio call (Camera off), Copy call link                                        |
-| Off   | On    | Start call menu: group "Mattermost call" with Start audio call and Copy call link, group "Phone call" with the number   |
-| On    | On    | Start call menu: group "Mattermost call" with Start video call, Start audio call and Copy call link, group "Phone call" |
+| Video | SIP phone | DM header                                                                                                               |
+| ----- | --------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Off   | Off       | Start call menu: Start audio call, Copy call link (audio only, as the plugin today)                                     |
+| On    | Off       | Start call menu: Start video call, Start audio call (Camera off), Copy call link                                        |
+| Off   | On        | Start call menu: group "Mattermost call" with Start audio call and Copy call link, group "Phone call" with the number   |
+| On    | On        | Start call menu: group "Mattermost call" with Start video call, Start audio call and Copy call link, group "Phone call" |
 
 - Group headings appear only when both groups are present.
 - Copy call link is the last row of the Mattermost call group, directly under the start options (no divider). It is not offered in the Phone call group. See Entry points for what it does.
