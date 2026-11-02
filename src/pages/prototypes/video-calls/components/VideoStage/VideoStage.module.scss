@@ -26,6 +26,32 @@
   }
 }
 
+// Strip page flips: the new page slides in from the direction of travel while
+// the old one slides out the other way (shift set per cell by a modifier).
+@keyframes video-stage-page-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--video-stage-page-shift));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes video-stage-page-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--video-stage-page-shift)));
+  }
+}
+
 // Typed so the room reserved for the page buttons animates with the stage
 // instead of snapping when a side pane opens or closes.
 @property --video-stage-strip-reserve {
@@ -153,6 +179,26 @@
       z-index: 5;
       padding: 0;
       pointer-events: none;
+    }
+
+    // Strip page flip (see VideoStage): forward = content travels left.
+    &--page-forward {
+      --video-stage-page-shift: var(--video-stage-strip-cell);
+    }
+
+    &--page-back {
+      --video-stage-page-shift: calc(-1 * var(--video-stage-strip-cell));
+    }
+
+    &--page-enter {
+      animation: video-stage-page-in var(--duration-moderate)
+        var(--ease-transition) both;
+    }
+
+    &--page-leave {
+      pointer-events: none;
+      animation: video-stage-page-out var(--duration-moderate)
+        var(--ease-transition) both;
     }
 
     // Strip / filmstrip cells: a centred tile of the strip aspect.
@@ -354,6 +400,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .video-stage__canvas,
+    .video-stage__cell--page-enter,
+    .video-stage__cell--page-leave,
     .video-stage__content,
     .video-stage__overflow-body {
       transition: none;

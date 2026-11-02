@@ -2,6 +2,7 @@ import {
   Component,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -155,6 +156,15 @@ interface StripBox {
   nav: number;
 }
 
+interface PageFlow {
+  /** 1 = next page (content moves left), -1 = previous page. */
+  dir: 1 | -1;
+  /** Strip tiles entering from the page flip. */
+  entering: string[];
+  /** Strip tiles of the old page, kept mounted while they animate out. */
+  leaving: { id: string; place: Placement }[];
+}
+
 interface StagePlan {
   canvas: CSSProperties & Record<string, string | number>;
   cells: Map<string, Placement>;
@@ -215,13 +225,13 @@ function planStage(
     // centres exactly), featured speaker below in the largest 16:9 box that fits (centred).
     const rows = layout.stripRows;
     // A paged strip sizes cells for a full page, so a shorter last page keeps
-    // the same tile size (its tiles are centred).
+    // the same tile size and its tiles stay left-aligned (self never moves).
     const k = Math.max(1, stripSlots, ...rows.map((r) => r.length));
     rows.forEach((row, r) => {
       row.forEach((id, i) => {
         cells.set(id, {
           role: 'strip',
-          column: `${2 + (k - row.length) + 2 * i} / span 2`,
+          column: `${2 + (stripSlots ? 0 : k - row.length) + 2 * i} / span 2`,
           row: `${r + 1}`,
         });
       });
@@ -422,6 +432,44 @@ export function VideoStage({
   );
   const plan = planStage(layout, filmstripPosition, paged?.slots);
 
+  // Page flips slide the strip tiles in the direction of travel: the new page
+  // enters from that side while the old one leaves the other way. The leaving
+  // tiles stay mounted in their old cells until their exit animation ends.
+  const [pageFlow, setPageFlow] = useState<PageFlow | null>(null);
+  const prevStrip = useRef<{
+    page: number;
+    ids: string[];
+    cells: Map<string, Placement>;
+  } | null>(null);
+  useLayoutEffect(() => {
+    const cur = paged
+      ? { page: paged.page, ids: paged.layout.stripIds, cells: plan.cells }
+      : null;
+    const prev = prevStrip.current;
+    prevStrip.current = cur;
+    if (!cur) {
+      setPageFlow(null);
+      return;
+    }
+    if (!prev || prev.page === cur.page || prefersReducedMotion()) return;
+    setPageFlow({
+      dir: cur.page > prev.page ? 1 : -1,
+      entering: cur.ids.filter((id) => !prev.ids.includes(id)),
+      leaving: prev.ids
+        .filter((id) => !cur.ids.includes(id))
+        .flatMap((id) => {
+          const place = prev.cells.get(id);
+          return place ? [{ id, place }] : [];
+        }),
+    });
+  }, [paged, plan]);
+  useEffect(() => {
+    if (!pageFlow) return undefined;
+    // Safety net if an exit animation never reports its end.
+    const t = window.setTimeout(() => setPageFlow(null), 1000);
+    return () => window.clearTimeout(t);
+  }, [pageFlow]);
+
   const rootRef = useRef<HTMLElement | null>(null);
   const nodes = useRef(new Map<string, HTMLElement>()).current;
   const refCache = useRef(
@@ -442,11 +490,14 @@ export function VideoStage({
     [nodes, refCache],
   );
 
+  // A paged strip's membership is left out of the key: page flips have their
+  // own slide, and FLIP would otherwise move tiles (self included) on its own.
   const flipKey = `${layout.kind}|${filmstripPosition}|${compact ? 1 : 0}|${[
     ...plan.cells,
   ]
+    .filter(([, p]) => !(paged && p.role === 'strip'))
     .map(([id, p]) => `${id}@${p.role}:${p.column ?? ''}/${p.row ?? ''}`)
-    .join(',')}`;
+    .join(',')}${paged ? `|strip:${paged.slots}` : ''}`;
 
   const renderTile = (p: VideoStageParticipant, size: VideoTileSize) => {
     const clip = p.clipId ? clips[p.clipId] : undefined;
@@ -484,6 +535,18 @@ export function VideoStage({
   const cellClass = (place: Placement) =>
     cx(styles['video-stage__cell'], styles[`video-stage__cell--${place.role}`]);
 
+  const pageClass = (id: string) =>
+    pageFlow?.entering.includes(id)
+      ? cx(
+          styles['video-stage__cell--page-enter'],
+          styles[
+            pageFlow.dir > 0
+              ? 'video-stage__cell--page-forward'
+              : 'video-stage__cell--page-back'
+          ],
+        )
+      : undefined;
+
   // Visible participants, in participant (DOM) order.
   const tiles = participants
     .filter((p) => plan.cells.has(p.id))
@@ -517,7 +580,7 @@ export function VideoStage({
       return (
         <div
           key={p.id}
-          className={cellClass(place)}
+          className={cx(cellClass(place), pageClass(p.id))}
           style={placementStyle(place)}
         >
           {/* Pointer clicks select the tile; the button below is the keyboard
@@ -549,6 +612,37 @@ export function VideoStage({
         </div>
       );
     });
+
+  const leavingTiles = pageFlow?.leaving.map(({ id, place }) => {
+    const p = byId.get(id);
+    if (!p) return null;
+    return (
+      <div
+        key={`leaving-${id}`}
+        className={cx(
+          cellClass(place),
+          styles['video-stage__cell--page-leave'],
+          styles[
+            pageFlow.dir > 0
+              ? 'video-stage__cell--page-forward'
+              : 'video-stage__cell--page-back'
+          ],
+        )}
+        style={placementStyle(place)}
+        aria-hidden="true"
+        onAnimationEnd={(e) => {
+          if (e.target !== e.currentTarget) return;
+          setPageFlow((f) =>
+            f ? { ...f, leaving: f.leaving.filter((x) => x.id !== id) } : f,
+          );
+        }}
+      >
+        <div className={styles['video-stage__frame']}>
+          {renderTile(p, 'compact')}
+        </div>
+      </div>
+    );
+  });
 
   const renderOverflow = () => {
     const place = plan.cells.get(OVERFLOW_CELL);
@@ -660,6 +754,7 @@ export function VideoStage({
         >
           {renderShareContent()}
           {tiles}
+          {leavingTiles}
           {renderOverflow()}
           {paged && (
             <>
