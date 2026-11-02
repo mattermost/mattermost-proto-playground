@@ -82,15 +82,19 @@ export default function VideoCalls() {
           ariaLabel="Conversation"
         />
         <SceneSwitcher
-          scenes={PHASES.filter((p) =>
-            phaseAvailableForMode(mode, callContext, p.id),
-          )}
+          scenes={PHASES.map((p) => ({
+            ...p,
+            disabled: !phaseAvailableForMode(mode, callContext, p.id),
+          }))}
           activeId={phase}
           onChange={(id) => actions.setPhase(id as CallPhase)}
           ariaLabel="Call phase"
         />
         <SceneSwitcher
-          scenes={SURFACES.filter((s) => surfaceAvailable(phase, s.id, mode))}
+          scenes={SURFACES.map((s) => ({
+            ...s,
+            disabled: !surfaceAvailable(phase, s.id, mode),
+          }))}
           activeId={surface}
           onChange={(id) => actions.setSurface(id as CallSurface)}
           ariaLabel="Call surface"
