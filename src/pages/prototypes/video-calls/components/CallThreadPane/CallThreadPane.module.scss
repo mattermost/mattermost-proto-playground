@@ -12,7 +12,10 @@
 
   // No outer border: the elevation shadow separates the pane. Reset the proto
   // ParticipantsPanel / RightSidebar root chrome (border, own shadow).
+  // The proto ParticipantsPanel is `flex: 0 0 320px`, which in this column fixes
+  // its height at 320px, so its list never filled the pane. Let it fill.
   > :first-child {
+    flex: 1 1 auto;
     border: 0;
     box-shadow: none;
   }

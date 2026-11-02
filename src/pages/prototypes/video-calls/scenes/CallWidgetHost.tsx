@@ -35,6 +35,12 @@ import { useConversationName } from './useConversationName';
 import { useWidgetDrag } from './useWidgetDrag';
 import styles from './CallWidgetHost.module.scss';
 
+/**
+ * From this many people the participants popover gets a fixed height so its
+ * list scrolls (rows are about 32px; the popover tops out at 260px).
+ */
+const PARTICIPANTS_SCROLL_FROM = 5;
+
 type Overlay =
   'participants' | 'more' | 'mic' | 'camera' | 'output' | 'info' | null;
 
@@ -236,7 +242,14 @@ function CardWidget({
       participantsOpen={overlay === 'participants'}
       onToggleParticipants={() => toggle('participants')}
       participantsPopover={
-        <ExitingPopover open={overlay === 'participants'}>
+        <ExitingPopover
+          open={overlay === 'participants'}
+          className={
+            participants.length >= PARTICIPANTS_SCROLL_FROM
+              ? styles['call-widget-host__participants--scroll']
+              : undefined
+          }
+        >
           <ParticipantsPanel
             variant="widget"
             participants={participants}

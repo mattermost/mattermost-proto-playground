@@ -45,6 +45,14 @@
     user-select: none;
   }
 
+  // Participants popover with a long list. The proto panel's own height is
+  // auto with a 260px cap, so its Scrollbar (height: 100%) never gets a real
+  // height and the list is clipped, not scrollable. A definite height (the
+  // panel's own cap) fixes it; short lists keep sizing to their content.
+  &__participants--scroll > * {
+    height: 260px;
+  }
+
   // Mirrors the outbound-calls PiP exit.
   &--exiting {
     animation: call-widget-host-exit var(--duration-quick) var(--ease-exit)
