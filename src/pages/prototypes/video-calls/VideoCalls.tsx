@@ -34,7 +34,7 @@ import { stampVideoCallsWalkthroughFocus } from './videoCallsWalkthroughFocus';
 import styles from './VideoCalls.module.scss';
 
 export default function VideoCalls() {
-  const { setCenterSlot } = usePrototypeChrome();
+  const { setCenterSlot, setStartSlot } = usePrototypeChrome();
   const { active: walkthroughActive } = useWalkthrough();
   const { state, participants, actions } = useVideoCallState();
   const { callContext, phase, surface, count, mode, features } = state;
@@ -104,12 +104,6 @@ export default function VideoCalls() {
           onChange={actions.setCount}
           disabled={callContext === 'dm'}
         />
-        <CallSettingsToggles
-          features={features}
-          onFeaturesChange={actions.setFeatures}
-          soundOn={state.soundOn}
-          onSoundChange={actions.setSoundOn}
-        />
       </div>,
     );
     return () => setCenterSlot(null);
@@ -119,12 +113,28 @@ export default function VideoCalls() {
     surface,
     count,
     mode,
-    features,
-    state.soundOn,
     actions,
     setCenterSlot,
     walkthroughActive,
   ]);
+
+  // The call settings (server settings and sounds) sit on the left, next to
+  // the prototype title. Hidden during the walkthrough like the rest of the chrome.
+  useEffect(() => {
+    if (walkthroughActive) {
+      setStartSlot(null);
+      return () => setStartSlot(null);
+    }
+    setStartSlot(
+      <CallSettingsToggles
+        features={features}
+        onFeaturesChange={actions.setFeatures}
+        soundOn={state.soundOn}
+        onSoundChange={actions.setSoundOn}
+      />,
+    );
+    return () => setStartSlot(null);
+  }, [features, state.soundOn, actions, setStartSlot, walkthroughActive]);
 
   const value = useMemo(
     () => ({ state, participants, actions, selfCamera, screenShare }),
