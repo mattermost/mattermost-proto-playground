@@ -78,6 +78,8 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   micLevel?: string;
   /** "Calling Name…". */
   calling?: (name: string) => string;
+  /** Compact header title while someone speaks: "Name is talking". */
+  isTalking?: (name: string) => string;
   /** Phone badge text. */
   phone?: string;
   keypad?: string;
@@ -196,6 +198,7 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   cancel: 'Cancel',
   micLevel: 'Microphone level',
   calling: (name) => `Calling ${name}…`,
+  isTalking: (name) => `${name} is talking`,
   phone: 'Phone',
   keypad: 'Keypad',
   joining: (name) => `Joining call with ${name}…`,
@@ -289,6 +292,11 @@ export function VideoCallWidget({
   // remote people who are not shown.
   const speaker = remote.find((p) => p.talking && !p.muted) ?? remote[0];
   const extra = Math.max(0, remote.length - 1);
+  // Audio-only and phone calls have no video to show, so the live call drops
+  // the 16:9 area and reads like the compass-proto call widget: a speaker
+  // avatar with "Name is talking", the time under it, then the controls. While
+  // sharing, the media row still shows what you share.
+  const compact = phase === 'active' && mode !== 'video' && !sharing;
 
   const region =
     phase === 'pre-join'
@@ -306,20 +314,59 @@ export function VideoCallWidget({
           ? l.titleStart(channelName)
           : l.titleJoin(channelName)}
       </h2>
+    ) : compact ? (
+      (() => {
+        const talking = !isPhone && !!speaker?.talking && !speaker.muted;
+        const name = isPhone ? peerName : (speaker?.name ?? channelName);
+        const src = isPhone ? peerAvatarSrc : speaker?.avatarSrc;
+        const title = isPhone
+          ? peerName
+          : talking
+            ? l.isTalking(speaker!.name)
+            : channelName;
+        const sub = isPhone
+          ? `${elapsedLabel} · ${phoneLabel}`
+          : talking
+            ? `${elapsedLabel} · ${channelName}`
+            : elapsedLabel;
+        return (
+          <span className={styles['video-call-widget__lead-compact']}>
+            <UserAvatar size="32" src={src} alt="" name={name} />
+            <span className={styles['video-call-widget__lead-text']}>
+              <span className={styles['video-call-widget__lead-title']}>
+                <span className={styles['video-call-widget__lead-title-text']}>
+                  {title}
+                </span>
+                {isPhone && (
+                  <Tag
+                    label={l.phone}
+                    type="default"
+                    size="x-small"
+                    casing="all-caps"
+                  />
+                )}
+              </span>
+              <span className={styles['video-call-widget__lead-sub']}>
+                {sub}
+                {recording && (
+                  <span
+                    className={styles['video-call-widget__rec']}
+                    role="img"
+                    aria-label="Recording"
+                    title="Recording"
+                  />
+                )}
+              </span>
+            </span>
+          </span>
+        );
+      })()
     ) : phase === 'active' ? (
       <>
         <span className={styles['video-call-widget__channel']}>
           <span className={styles['video-call-widget__channel-name']}>
             {channelName}
           </span>
-          {isPhone && (
-            <Tag
-              label={l.phone}
-              type="default"
-              size="x-small"
-              casing="all-caps"
-            />
-          )}
         </span>
         <span className={styles['video-call-widget__elapsed']}>
           &middot; {elapsedLabel}
@@ -385,13 +432,7 @@ export function VideoCallWidget({
           {l.joining(peerName)}
         </p>
       </div>
-    ) : isPhone ? (
-      <div className={styles['video-call-widget__peer']} aria-live="polite">
-        <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
-        <p className={styles['video-call-widget__status']}>{peerName}</p>
-        <p className={styles['video-call-widget__sub']}>{phoneLabel}</p>
-      </div>
-    ) : sharing ? (
+    ) : compact ? null : sharing ? (
       <div className={styles['video-call-widget__sharing']}>
         <ShareThumb stream={shareStream} />
         <div className={styles['video-call-widget__sharing-body']}>
@@ -604,7 +645,7 @@ export function VideoCallWidget({
         className={cx(
           styles['video-call-widget__media'],
           styles[`video-call-widget__media--${phase}`],
-          isPhone && styles['video-call-widget__media--phone'],
+          compact && styles['video-call-widget__media--compact'],
           showPeople && styles['video-call-widget__media--people'],
         )}
       >

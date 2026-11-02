@@ -64,12 +64,14 @@ A phone call uses the call widget (302px, same card across calling and in call),
 
 - Hidden: camera control, screen share, reactions, raise hand, participants, More menu, expand to window, self view.
 - Kept: the microphone control (toggle and device chevron), Leave (hang up, no confirmation).
-- Added: a Phone badge next to the name, the dialed number and its label ("312-555-0174 · Office") under the name, and a keypad button. The keypad itself is defined in the outbound specs; the prototype shows the button disabled.
+- Added: a Phone badge next to the name, the dialed number and its label under the time ("0:42 · 312-555-0174 · Office"), and a keypad button. The keypad itself is defined in the outbound specs; the prototype shows the button disabled.
 - Calling uses the same treatment as a DM video call (avatar pulse, "Calling <name>…", Cancel, 30 second timeout), with the number shown under it.
 - No pre-join: choosing a number dials straight away. _Question: confirm there is no mic check for phone calls._
 - Ringing, join and leave sounds follow the Sounds section. A distinct ringback for phone calls, so people can tell the two apart, is defined in the outbound specs.
 
-The Audio mode widget is the Video widget without the camera control: avatars only, no self view, and Start audio call as the only way to start. In the call window the camera control, device menu and Ctrl/Cmd+E are omitted.
+**Compact live widget (Audio and Phone modes).** With no video to show, the live call has no 16:9 area. It follows the compass-proto call widget and the outbound softphone: a header with a 32px avatar of the person talking (the first other person when nobody is), "<name> is talking" over "<elapsed> · <conversation name>" (the conversation name alone, with the time under it, when nobody is talking), the expand button at the right (not in Phone mode), and the controls row below (microphone, participants in group calls, share screen, More, Leave). A recording dot sits after the time. A Phone call shows the person's name with the Phone badge, and the number under the time. While you share your screen the sharing state takes the media area as in Video mode. Calling, joining and pre-join are unchanged.
+
+The Audio mode widget otherwise matches the Video widget without the camera control and self view, and Start audio call is the only way to start. In the call window the camera control, device menu and Ctrl/Cmd+E are omitted.
 
 ### Shared rules
 
