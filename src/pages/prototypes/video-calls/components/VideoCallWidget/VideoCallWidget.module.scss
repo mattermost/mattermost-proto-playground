@@ -145,6 +145,20 @@
       padding-bottom: var(--spacing-xxxxs);
     }
 
+    // Audio-only pre-join: no self preview. Start mode has nothing to show
+    // (the title, mic and meter, and Start remain); join mode keeps just the
+    // "N people in the call" row.
+    &--pre-join#{&}--no-preview {
+      --video-call-widget-media-h: 0px;
+      padding: 0;
+    }
+
+    &--pre-join#{&}--no-preview#{&}--people {
+      // One-off: the 24px avatar row plus a little breathing room.
+      --video-call-widget-media-h: calc(24px + var(--spacing-xs));
+      padding: 0 var(--spacing-s);
+    }
+
     // Audio-only and phone calls: no media row at all while the call is live;
     // the speaker avatar and the time sit in the header.
     &--compact#{&}--active {
