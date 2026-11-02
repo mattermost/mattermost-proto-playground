@@ -14,11 +14,11 @@ export interface SoundToggleProps {
 export default function SoundToggle({ on, onChange }: SoundToggleProps) {
   return (
     <IconButton
-      size="small"
+      size="x-small"
       aria-label="Call sounds"
       title={on ? 'Call sounds on' : 'Call sounds off'}
       toggled={on}
-      icon={<Icon glyph={<VolumeHighIcon />} />}
+      icon={<Icon size="12" glyph={<VolumeHighIcon />} />}
       onClick={() => onChange(!on)}
     />
   );

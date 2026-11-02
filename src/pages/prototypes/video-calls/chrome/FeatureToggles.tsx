@@ -21,19 +21,19 @@ export default function FeatureToggles({
   return (
     <div role="group" aria-label="Server call settings">
       <IconButton
-        size="small"
+        size="x-small"
         aria-label="Video calls"
         title={features.video ? 'Video calls on' : 'Video calls off'}
         toggled={features.video}
-        icon={<Icon glyph={<VideoOutlineIcon />} />}
+        icon={<Icon size="12" glyph={<VideoOutlineIcon />} />}
         onClick={() => onChange({ video: !features.video })}
       />
       <IconButton
-        size="small"
+        size="x-small"
         aria-label="Phone calls"
         title={features.phone ? 'Phone calls on' : 'Phone calls off'}
         toggled={features.phone}
-        icon={<Icon glyph={<PhoneIcon />} />}
+        icon={<Icon size="12" glyph={<PhoneIcon />} />}
         onClick={() => onChange({ phone: !features.phone })}
       />
     </div>
