@@ -1,4 +1,9 @@
 .participant-count {
+  // Same height as the scene switchers beside it: stretch to their row (which
+  // includes each switcher's own 4px of padding) minus that padding.
+  align-self: stretch;
+  box-sizing: border-box;
+  margin-block: var(--spacing-xxxs);
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xxxxs);
