@@ -225,13 +225,13 @@ function planStage(
     // centres exactly), featured speaker below in the largest 16:9 box that fits (centred).
     const rows = layout.stripRows;
     // A paged strip sizes cells for a full page, so a shorter last page keeps
-    // the same tile size and its tiles stay left-aligned (self never moves).
+    // the same tile size (its tiles are centred).
     const k = Math.max(1, stripSlots, ...rows.map((r) => r.length));
     rows.forEach((row, r) => {
       row.forEach((id, i) => {
         cells.set(id, {
           role: 'strip',
-          column: `${2 + (stripSlots ? 0 : k - row.length) + 2 * i} / span 2`,
+          column: `${2 + (k - row.length) + 2 * i} / span 2`,
           row: `${r + 1}`,
         });
       });
@@ -395,8 +395,8 @@ export function VideoStage({
   }, [compact, settledWidth]);
 
   // Speaker strip pagination, only when the tiles would drop below the
-  // minimum size (e.g. a side pane narrows the stage). Self stays on every
-  // page; the other tiles are split across pages.
+  // minimum size (e.g. a side pane narrows the stage). Every strip tile,
+  // yours included, belongs to exactly one page (yours is on the first).
   const paged = useMemo(() => {
     if (inputLayout.kind !== 'speaker' || !stripBox || stripBox.min <= 0) {
       return null;
@@ -405,22 +405,17 @@ export function VideoStage({
     const cell = min + gap;
     const ids = inputLayout.stripIds;
     if (ids.length <= Math.floor(width / cell)) return null;
-    const selfId = participants.find((p) => p.self)?.id;
-    const selfInStrip = !!selfId && ids.includes(selfId);
     const capacity = Math.max(2, Math.floor((width - 2 * nav) / cell));
-    const perPage = Math.max(1, capacity - (selfInStrip ? 1 : 0));
-    const others = ids.filter((id) => id !== selfId);
-    const pageCount = Math.max(1, Math.ceil(others.length / perPage));
+    const pageCount = Math.max(1, Math.ceil(ids.length / capacity));
     const page = Math.min(stripPage, pageCount - 1);
-    const onPage = new Set(others.slice(page * perPage, (page + 1) * perPage));
-    const visible = ids.filter((id) => id === selfId || onPage.has(id));
+    const visible = ids.slice(page * capacity, (page + 1) * capacity);
     return {
       page,
       pageCount,
-      slots: perPage + (selfInStrip ? 1 : 0),
+      slots: capacity,
       layout: { ...inputLayout, stripIds: visible, stripRows: [visible] },
     };
-  }, [inputLayout, stripBox, participants, stripPage]);
+  }, [inputLayout, stripBox, stripPage]);
   const layout: StageLayout = paged?.layout ?? inputLayout;
 
   const byId = new Map(participants.map((p) => [p.id, p]));
@@ -559,7 +554,7 @@ export function VideoStage({
         return (
           <div
             key={p.id}
-            className={cellClass(place)}
+            className={cx(cellClass(place), pageClass(p.id))}
             style={placementStyle(place)}
           >
             <SelfViewPip
