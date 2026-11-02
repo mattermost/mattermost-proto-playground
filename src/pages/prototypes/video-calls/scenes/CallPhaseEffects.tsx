@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { startRingback, stopRingback } from '@/utils/phoneSounds';
 import { playSound, setSoundsEnabled, stopSound } from '../callSounds';
 import { useVideoCall } from '../videoCallContext';
 
@@ -16,7 +17,7 @@ const INCOMING_RING_MS = 30000;
  */
 export default function CallPhaseEffects() {
   const { state, participants, actions } = useVideoCall();
-  const { phase, soundOn, removedIds } = state;
+  const { phase, soundOn, removedIds, mode } = state;
 
   useEffect(() => {
     setSoundsEnabled(soundOn);
@@ -31,9 +32,16 @@ export default function CallPhaseEffects() {
   // Toggling sounds restarts only the ring, never the lifecycle timer.
   useEffect(() => {
     if (phase !== 'calling') return;
+    // An outbound SIP phone call dials with the phone ringback from the Outbound
+    // Calls prototype (the US two-tone cadence); Mattermost calls use the call ringback.
+    if (mode === 'phone') {
+      if (!soundOn) return;
+      startRingback();
+      return () => stopRingback();
+    }
     playSound('ring-outgoing', { loop: true });
     return () => stopSound('ring-outgoing');
-  }, [phase, soundOn]);
+  }, [phase, soundOn, mode]);
 
   useEffect(() => {
     if (phase !== 'incoming') return;
