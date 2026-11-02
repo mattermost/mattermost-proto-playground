@@ -57,7 +57,7 @@ Video calling and SIP phone calling are server settings. The DM header shows:
 - GM and channel headers never show a Phone call group. Phone calls are 1:1.
 - Each phone number the person can be called on is its own row: "Call <label>" with the number as the secondary label. Numbers that cannot be dialled from this network are not listed.
 - The same menu is what the profile popover's Call button opens. The popover's own phone number rows are defined in the outbound specs.
-- The prototype shows one fixed demo number and has toggles for both settings in the prototype chrome (not product UI).
+- The prototype shows one fixed demo number and has both settings in its prototype settings menu (prototype chrome, not product UI).
 
 ### Phone call widget
 
@@ -110,6 +110,9 @@ Out of scope for this spec: mobile; System Console configuration other than the 
 ## User Flows
 
 - Starting a call from a DM, GM or channel header
+- Starting an audio-only call (video disabled) or an outbound SIP phone call
+- Copying a call link, and opening one
+- Skipping the pre-join screen in the Calls plugin settings
 - Receiving, accepting and declining a DM call
 - Receiving a new call while in an active call
 - Joining a call someone else started in a GM or channel
@@ -205,6 +208,8 @@ _Question: should clicking the In call state bring the call widget forward (for 
 
 ![Header Start call menu: Start video call and Start audio call](shots/final/01-header-start-call-menu.png)
 
+_The screenshot above shows the earlier text button and menu; it needs retaking for the icon-only button, the Mattermost call and Phone call groups, Copy call link and Call settings._
+
 **Sidebar in-call icon.** A conversation row with a running call shows the in-call icon.
 
 - The open conversation's row shows it while a call runs there: DM when calling, incoming, joining or active; GM / channel from the moment a call runs (Ongoing) through pre-join (join mode) and In call.
@@ -257,19 +262,22 @@ Opens in the widget (default) or the window. Never touches camera or microphone 
 
 ![Window pre-join (DM)](shots/final/14-window-prejoin.png)
 
+_The pre-join screenshots predate the new button order (Start call left, in green, and Cancel right) and need retaking._
+
 ### Call widget
 
 302px wide, over the sidebar bottom-left. One card stays mounted across pre-join, calling, joining and active; content crossfades (quick duration) and the media row animates height.
 
 - Draggable anywhere inside the channel area; releasing snaps to the nearest corner with equal insets in all corners. The chosen corner stays pinned when the card changes height. Presses on buttons and menus do not start a drag.
 - Title is the conversation name: the peer (DM), the group (GM: first names of up to three members) or the channel.
-- Persistent segmented mic and camera controls with device chevrons; the menus match the widget width.
-- Active: elapsed time, recording dot when recording, a 16:9 video area, participant count (opens a participants popover), share screen, More, Expand, Leave (square hang-up). While you share, the video area gives way to the sharing state (see Screen share).
-- The widget video is always speaker view: the person talking (otherwise the first remote person) fills the 16:9 area with their mic state and name bottom-left, and you sit in a small self picture-in-picture (no mute indicator there, since the mic control already shows it; a smaller avatar on a lighter fill when your camera is off). A "+N" chip counts other remote people who are not shown. There is no grid view in the widget.
+- Persistent segmented mic and camera controls with device chevrons; the menus match the widget width. (Video mode. Audio and Phone modes show the microphone control only.)
+- Active (Video mode): elapsed time, recording dot when recording, a 16:9 video area, participant count (opens a participants popover), share screen, More, Expand, Leave (square hang-up). While you share, the video area gives way to the sharing state (see Screen share).
+- In Video mode the widget video is always speaker view: the person talking (otherwise the first remote person) fills the 16:9 area with their mic state and name bottom-left, and you sit in a small self picture-in-picture (no mute indicator there, since the mic control already shows it; a smaller avatar on a lighter fill when your camera is off). A "+N" chip counts other remote people who are not shown. There is no grid view in the widget.
 - Calling and joining are compact in Video mode (a small avatar block, no large video area), and more compact in Audio and Phone modes (see below); the card resizes for each state and keeps the widget's corner pinned. Calling, joining and live share one 302px width.
+- Participants popover: opens above the card, up to 260px tall, and scrolls once the list is longer than it (from about five people).
 - More menu: Audio output, Raise / Lower hand, Record call / Stop recording, Show chat thread (expands to the window with the chat pane), Call info. Escape or an outside click closes menus; one menu is open at a time.
 - Incoming: caller avatar (48px) with a small call-type badge (video icon), "Incoming video call", Decline (tertiary) and Accept (green, the same green as Start call and Join call). Accept goes straight into the call with no pre-join step. The component also supports an audio variant (phone badge, "Incoming audio call"), which the prototype shows in Audio mode (video disabled). _Question: should an incoming audio-started call on a server with video show the audio variant, and does Accept then join with the camera off?_
-- Joining (after Accept): "Joining call with <name>…" over the caller's avatar, with mic and camera controls and a red Cancel. The chat card reads "Joining <name>…" / "Connecting…".
+- Joining (after Accept): "Joining call with <name>…" over the caller's avatar, with mic and camera controls (the microphone only in Audio mode) and a red Cancel. The chat card reads "Joining <name>…" / "Connecting…".
 - Button colours: the DM Calls UX spec plans a red Decline and a green Accept for 1:1 incoming calls (marked deferred to a next phase). The prototype now shows a green Accept (the same green as Start call and the Join call card) with a tertiary Decline. _Question: adopt a red Decline as well?_
 - People button: hidden in a 1:1 DM, where it is not meaningful, per the DM Calls UX spec (widget and call window). It stays in group and channel calls.
 - Enter and exit are quick fades; exit plays after Leave, Cancel or Decline.
@@ -286,9 +294,11 @@ _Known gap, out of scope: the widget More menu still repeats Microphone and Came
 
 ![Widget: active call, channel (+N chip, participant count 4)](shots/final/18-widget-active-group.png)
 
+_The widget screenshots above predate the green Accept, the hang-up icon on ringing Cancel and the notice stack. There are no screenshots yet for the Audio and Phone widgets, the audio room window or the header button states._
+
 ### Call window (popout)
 
-Dark surface floating inset over the conversation, which stays visible; a scrim covers the channels frame only. Phases that expand: pre-join, calling, active. Incoming, joining, No call and Ongoing are widget-only.
+Dark surface floating inset over the conversation, which stays visible; a scrim covers the channels frame only. Phases that expand: pre-join, calling, active. Incoming, joining, No call and Ongoing are widget-only, and a Phone call never expands (widget only).
 
 - Title bar: "Call · <conversation name>". Header: elapsed time and participant count ("12:40 • 4 participants"), recording indicator when recording, share pill when sharing (Stop), view toggle (Speaker / Grid) at right.
 - Controls bar (three zones): participants; mic and camera (segmented, with device menus), share, reactions, raise hand; chat (blue unread dot), More, Leave.
@@ -396,7 +406,7 @@ Sounds are on by default in the prototype with a toggle in the prototype chrome 
 
 ## Motion
 
-Compass durations and easings only: quick (150ms) with entrance / exit easings for banner, crossfade, notices, panes and widget enter / exit; moderate (300ms) with the transition easing for widget media-row height and corner snapping. Under `prefers-reduced-motion`, these animations are disabled; corner snapping is a position change without easing. The self-view picture-in-picture uses a spring (stiffness 420) when settling after a drag. _Verify reduced motion for the PiP spring._
+Compass durations and easings only: quick (150ms) with entrance / exit easings for banner, crossfade, notices, panes and widget enter / exit; moderate (300ms) with the transition easing for widget media-row height and corner snapping. Under `prefers-reduced-motion`, these animations are disabled; corner snapping is a position change without easing. The header button's tooltip and the Call link copied notice fade with the quick duration, and the menu chevron rotates 180° with the quick duration while the menu is open. The "Calling…" title in the compact widget fades between full and about half opacity on a loop of about 1.6 seconds (a looping pulse has no motion token, and it dips below the 72% text opacity floor; see Open Questions). All of these are off under reduced motion. The self-view picture-in-picture uses a spring (stiffness 420) when settling after a drag. _Verify reduced motion for the PiP spring._
 
 ## Accessibility
 
@@ -407,22 +417,26 @@ Compass durations and easings only: quick (150ms) with entrance / exit easings f
 - The window's View button shows the text "View" but its accessible name is "Change call layout", so the visible label is not part of the name (WCAG 2.5.3 Label in Name). _Question: rename to "View" or "View: change call layout"._
 - A participant with no avatar image shows initials on a green disc (for example "Et"); the name label stays the accessible name.
 - Contrast: white text on green-600 is 3.54:1, which passes only for large text or UI components; green-700 is 5.2:1 and passes for body text. _Question: which surfaces use green-600 for small white text (Join banner, Start call button)? Move small text to green-700 or enlarge._
+- The header call button is an icon-only button named "Start call", "Join call" or "In call"; the menu button reports its popup and expanded state, and the In call button reports pressed. Its tooltip shows on hover and on keyboard focus, and is hidden while the menu is open.
+- A pill notice that stays until dismissed (network, device, permission) is a button named "Dismiss notification: <message>" and also responds to Enter and Space; warning and error pills keep the severity ("Warning" / "Error") in that name.
+- The audio room is a group named "Participants in the call"; each person is an avatar with their name, and mute, host and speaking state are exposed as on video tiles. Your own tile exposes "speaking" while your microphone hears you.
+- The compact widget header is a live region while calling and joining, so "Calling <name>…" is announced.
 - Reduced motion: see Motion.
 
 ---
 
 ## Components Used / New Components
 
-Existing (Compass UI): Button, IconButton, Icon, UserAvatar, UserAvatarGroup, Tag, PopoverMenu, MenuItem, ModalOverlay.
-Existing (Compass proto): ChannelShell, ChannelHeader, Message, MessageInput, CallNotice pill, RecordingIndicator, CallInfoPanel, ParticipantsPanel.
-New in the prototype (candidates for the design system): CallCard, CallBanner, VideoCallWidget, VideoCallWindow, VideoStage and VideoTile, SelfViewPip, CallControlsBar, SegmentedIconButton, DeviceMenu, WidgetIncoming, PreJoinPanel, MicLevelMeter, ViewToggle.
+Existing (Compass UI): Button, IconButton, Icon, UserAvatar, UserAvatarGroup, Tag, PopoverMenu (with group titles and dividers), MenuItem, MenuGroupHeading, Tooltip, ModalOverlay.
+Existing (Compass proto): ChannelShell, ChannelHeader, Message, MessageInput, CallNotice pill (with the `appearance` and `tone` props from compass-design PR #180), CallParticipantAvatar, WithTooltip, RecordingIndicator, CallInfoPanel, ParticipantsPanel.
+New in the prototype (candidates for the design system): CallHeaderButton, AudioRoom, CallCard, CallBanner, VideoCallWidget, VideoCallWindow, VideoStage and VideoTile, SelfViewPip, CallControlsBar, SegmentedIconButton, DeviceMenu, WidgetIncoming, PreJoinPanel, MicLevelMeter, ViewToggle.
 
 ## Deviations from Figma
 
 The prototype wins. Differences found so far (structure only; a pixel comparison was not possible because Figma image export was blocked in this session):
 
 1. The Call Card Figma file predates the states in the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec (Calling, No answer, Declined, Canceled) and should gain variants for them. The Call back action on declined and missed cards is prototype-only and is not in that spec. _Question: is Call back intended?_
-2. The Video-Calling board (1335:418726) shows an older widget and call room (participant grid, screen share grid, widget controls). The prototype's widget (persistent segmented controls, one card across phases), window, banner and sidebar icon have no matching frames.
+2. The Video-Calling board (1335:418726) shows an older widget and call room (participant grid, screen share grid, widget controls). The prototype's widget (persistent segmented controls, one card across phases), window, banner and sidebar icon have no matching frames. Neither do the icon-only header button, the Start call menu groups, the Audio and Phone widgets, the audio room window or the widget notices.
 3. Prototype-only decisions to confirm with design: remote tiles play generated placeholder loops, not real video; the widget More menu still has duplicate Microphone and Camera rows; the neutral notice pills still use the mic-off icon for every message (only warnings, errors and Call link copied differ); the Speaker and Grid view glyphs are a custom SVG and a compass-icons `apps` glyph because the compass-icons set is missing a view glyph and Wi-Fi icons.
 
 ## Open Questions
@@ -440,6 +454,12 @@ The prototype wins. Differences found so far (structure only; a pixel comparison
 10. Where should the Figma board be refreshed so it matches the prototype?
 11. What does the call link open, and does copying it before a call exists reserve a call? The prototype copies the existing demo link and creates nothing. Should Copy call link also be offered during an ongoing or active call (for example from the Join call state)?
 12. Phone calls (see Outbound phone calls alongside video): no pre-join for phone calls (and no microphone check), DM anchoring when the number is not a Mattermost user, and whether phone calls get their own sidebar glyph.
+13. Should clicking the In call header button bring the call widget forward (for example when it has been dragged away or the window is open)?
+14. Where does the host menu (Mute, Make host, Remove from call) live in the audio room: the avatar overflow, or only the participants pane?
+15. Is there a microphone check for audio-only calls when pre-join is skipped, and for phone calls?
+16. Contrast of the warning and error pill tones (both below 4.5:1, matching the Toast) and of the green in-call header icon on a light surface.
+17. The "Calling…" title fade dips to about 55% opacity, below the 72% text floor, and uses no motion token. Keep it, or change it?
+18. Does the skip-pre-join setting also apply to Join call on a call that is already running? The prototype says no.
 
 ## References and Resources
 
