@@ -18,6 +18,17 @@
     font-weight: var(--font-weight-semibold);
   }
 
+  // Compact header (audio-only and phone: calling, joining, live): one fixed
+  // height for every phase so the card does not change size when the call
+  // connects. It fits the two text lines of the live call (title and time) with
+  // tighter vertical padding, so calling, which has a single line, matches it.
+  &__header--compact {
+    min-height: calc(
+      var(--line-height-100) + var(--line-height-75) + 2 * var(--spacing-xxxs)
+    );
+    padding-block: var(--spacing-xxxs);
+  }
+
   &__lead {
     display: flex;
     flex: 1 1 auto;

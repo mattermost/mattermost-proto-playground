@@ -652,7 +652,12 @@ export function VideoCallWidget({
         </>
       }
     >
-      <div className={styles['video-call-widget__header']}>
+      <div
+        className={cx(
+          styles['video-call-widget__header'],
+          compact && styles['video-call-widget__header--compact'],
+        )}
+      >
         <PhaseCrossfade phaseKey={phase} align="fill">
           <div className={styles['video-call-widget__lead']}>{lead}</div>
         </PhaseCrossfade>
