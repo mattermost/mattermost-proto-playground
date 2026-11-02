@@ -168,6 +168,9 @@ export default function StartCallMenu() {
           <CallNoticePill
             type="other"
             size="medium"
+            appearance="center-channel"
+            tone={notice.ok ? 'default' : 'error'}
+            icon={notice.ok ? <ContentCopyIcon /> : undefined}
             message={notice.ok ? 'Call link copied' : "Couldn't copy call link"}
           />
         </div>

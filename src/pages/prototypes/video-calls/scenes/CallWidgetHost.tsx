@@ -300,6 +300,7 @@ function CardWidget({
         overlay === null && widgetNotices.length > 0 ? (
           <CallNotice
             notices={widgetNotices}
+            appearance="center-channel"
             onDismiss={actions.dismissNotice}
           />
         ) : undefined

@@ -45,6 +45,11 @@ export interface CallNoticeProps {
   autoDismissMs?: number;
   /** Kinds that stay until dismissed. Default network, permission, device. */
   persistentKinds?: readonly CallNoticeItemKind[];
+  /**
+   * Surface the notices sit on: `default` is the dark pill for the call stage;
+   * `center-channel` is the light pill for light surfaces such as the widget.
+   */
+  appearance?: 'default' | 'center-channel';
   labels?: CallNoticeLabels;
   className?: string;
 }
@@ -80,8 +85,17 @@ const PILL_KINDS: readonly CallNoticeItemKind[] = [
   'permission',
 ];
 
+/** Severity of a notice: warnings and errors get a solid fill and an alert icon. */
+const TONE: Partial<Record<CallNoticeItemKind, 'warning' | 'error'>> = {
+  network: 'warning',
+  device: 'error',
+  permission: 'error',
+};
+const TONE_WORD = { warning: 'Warning', error: 'Error' } as const;
+
 interface ItemProps {
   notice: CallNoticeItem;
+  appearance: 'default' | 'center-channel';
   persistent: boolean;
   autoDismissMs: number;
   dismissLabel: string;
@@ -95,6 +109,7 @@ const FADE_OUT_MS = 200;
 
 function NoticeItem({
   notice,
+  appearance,
   persistent,
   autoDismissMs,
   dismissLabel,
@@ -126,17 +141,22 @@ function NoticeItem({
 
   let content: ReactNode;
   if (PILL_KINDS.includes(notice.kind)) {
+    const tone = TONE[notice.kind];
     content = (
       <CallNoticePill
         type="other"
         size="medium"
+        appearance={appearance}
+        tone={tone}
         message={notice.text}
         className={persistent ? styles['call-notice__pill--dismissible'] : ''}
         {...(persistent
           ? {
               role: 'button',
               tabIndex: 0,
-              'aria-label': `${dismissLabel}: ${notice.text}`,
+              // The label replaces the pill's own content, so it carries the
+              // severity the hidden tone text would have read.
+              'aria-label': `${dismissLabel}: ${tone ? `${TONE_WORD[tone]}: ` : ''}${notice.text}`,
               onClick: () => onDismiss(id),
               onKeyDown: (e: KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -207,6 +227,7 @@ export function CallNotice({
   onDismiss,
   autoDismissMs = 3000,
   persistentKinds = DEFAULT_PERSISTENT,
+  appearance = 'default',
   labels,
   className,
 }: CallNoticeProps) {
@@ -222,6 +243,7 @@ export function CallNotice({
         <NoticeItem
           key={n.id}
           notice={n}
+          appearance={appearance}
           persistent={persistentKinds.includes(n.kind)}
           autoDismissMs={autoDismissMs}
           dismissLabel={l.dismiss}
