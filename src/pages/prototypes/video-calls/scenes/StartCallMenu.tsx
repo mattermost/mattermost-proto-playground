@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
 import ContentCopyIcon from '@mattermost/compass-icons/components/content-copy';
 import HeadphonesIcon from '@mattermost/compass-icons/components/headphones';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
@@ -41,6 +49,17 @@ const NOTICE_MS = 3000;
 /** Matches `--duration-quick` (the notice's fade). */
 const NOTICE_EXIT_MS = 150;
 
+/**
+ * Opens the Calls plugin settings, where the pre-join setting lives. Below a
+ * separator because it is not a way to call.
+ */
+const CALL_SETTINGS_OPTION: StartCallOption = {
+  id: 'call-settings',
+  label: 'Call settings',
+  icon: <Icon size="16" glyph={<CogOutlineIcon />} />,
+  dividerBefore: true,
+};
+
 const PHONE_OPTION: StartCallOption = {
   id: 'phone',
   label: `Call ${PHONE_NUMBER.label}`,
@@ -81,7 +100,11 @@ export default function StartCallMenu() {
 
   // "Call link copied" confirmation. The call notice stack only renders inside
   // the call window, so the conversation shows its own notice under the button.
-  const [notice, setNotice] = useState<{ ok: boolean } | null>(null);
+  const [notice, setNotice] = useState<{
+    message: string;
+    tone: 'default' | 'error';
+    icon?: ReactNode;
+  } | null>(null);
   const [noticeOpen, setNoticeOpen] = useState(false);
   const noticeAnim = useExitAnimation(noticeOpen, NOTICE_EXIT_MS);
   useEffect(() => {
@@ -97,7 +120,26 @@ export default function StartCallMenu() {
     } catch {
       ok = false;
     }
-    setNotice({ ok });
+    setNotice(
+      ok
+        ? {
+            message: 'Call link copied',
+            tone: 'default',
+            icon: <ContentCopyIcon />,
+          }
+        : { message: "Couldn't copy call link", tone: 'error' },
+    );
+    setNoticeOpen(true);
+  };
+
+  // The Calls plugin settings are not part of this prototype, so the item
+  // only says where it would go.
+  const openCallSettings = () => {
+    setNotice({
+      message: 'Opens Calls plugin settings (not in this prototype)',
+      tone: 'default',
+      icon: <CogOutlineIcon />,
+    });
     setNoticeOpen(true);
   };
 
@@ -117,12 +159,15 @@ export default function StartCallMenu() {
     // Copy call link closes the Mattermost call group, directly under the
     // start options; the phone group follows it.
     const link = mattermost({ ...COPY_LINK_OPTION });
-    return withPhone ? [...rows, link, PHONE_OPTION] : [...rows, link];
+    return withPhone
+      ? [...rows, link, PHONE_OPTION, CALL_SETTINGS_OPTION]
+      : [...rows, link, CALL_SETTINGS_OPTION];
   }, [features.video, withPhone]);
 
   const start = (id: string) => {
     setOpen(false);
     if (id === 'copy-link') void copyLink();
+    else if (id === 'call-settings') openCallSettings();
     else if (id === 'phone') actions.startCall({ phone: true });
     else
       actions.startCall({
@@ -169,9 +214,9 @@ export default function StartCallMenu() {
             type="other"
             size="medium"
             appearance="center-channel"
-            tone={notice.ok ? 'default' : 'error'}
-            icon={notice.ok ? <ContentCopyIcon /> : undefined}
-            message={notice.ok ? 'Call link copied' : "Couldn't copy call link"}
+            tone={notice.tone}
+            icon={notice.icon}
+            message={notice.message}
           />
         </div>
       )}

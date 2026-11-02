@@ -24,9 +24,11 @@
   // tighter vertical padding, so calling, which has a single line, matches it.
   &__header--compact {
     min-height: calc(
-      var(--line-height-100) + var(--line-height-75) + 2 * var(--spacing-xxxs)
+      var(--line-height-100) + var(--line-height-75) + var(--spacing-xxs) +
+        var(--spacing-xxxs)
     );
-    padding-block: var(--spacing-xxxs);
+    // Same top spacing as every other phase's header; tight below, to the controls.
+    padding-block: var(--spacing-xxs) var(--spacing-xxxs);
   }
 
   &__lead {
@@ -164,6 +166,20 @@
         var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xxxxs)
       );
       padding-bottom: var(--spacing-xxxxs);
+    }
+
+    // Audio-only pre-join: no self preview. Start mode has nothing to show
+    // (the title, mic and meter, and Start remain); join mode keeps just the
+    // "N people in the call" row.
+    &--pre-join#{&}--no-preview {
+      --video-call-widget-media-h: 0px;
+      padding: 0;
+    }
+
+    &--pre-join#{&}--no-preview#{&}--people {
+      // One-off: the 24px avatar row plus a little breathing room.
+      --video-call-widget-media-h: calc(24px + var(--spacing-xs));
+      padding: 0 var(--spacing-s);
     }
 
     // Audio-only and phone calls: no media row at all while the call is live;
@@ -407,6 +423,15 @@
     min-height: calc(var(--spacing-xxs) + 32px + var(--spacing-s));
     padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-s);
     transition: padding-bottom var(--duration-moderate) var(--ease-transition);
+
+    // Compact (audio-only and phone): the buttons end the same distance from the
+    // bottom edge as from the sides (10px: 28px buttons centred in a 32px row
+    // plus 8px). The row keeps the height of the 32px Cancel so calling and the
+    // live call match.
+    &--compact {
+      min-height: calc(var(--spacing-xxs) + 32px + var(--spacing-xs));
+      padding-bottom: var(--spacing-xs);
+    }
 
     // Pre-join: the actions row below supplies the bottom inset.
     &--with-actions {

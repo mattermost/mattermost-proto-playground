@@ -5,6 +5,7 @@ import {
   type CallFeatures,
   type CallMode,
   type CallNotice,
+  type PreJoinPreference,
   type CallPane,
   type CallPhase,
   type CallSurface,
@@ -39,6 +40,13 @@ export interface VideoCallState {
   features: CallFeatures;
   /** How the current call looks (video, audio-only, phone). Fixed for the call. */
   mode: CallMode;
+  /**
+   * System Console default for skipping the pre-join interstitial when starting
+   * a call. A default only: a person's own setting overrides it.
+   */
+  adminSkipPreJoin: boolean;
+  /** The person's own setting in the Calls plugin settings. */
+  preJoinPreference: PreJoinPreference;
   /** Where the user is in the call lifecycle. */
   phase: CallPhase;
   /** Widget (small card over the sidebar) or the expanded window. */
@@ -91,6 +99,8 @@ const DEFAULT_GROUP_COUNT = 4;
 const INITIAL_STATE: VideoCallState = {
   features: { video: true, phone: true },
   mode: 'video',
+  adminSkipPreJoin: false,
+  preJoinPreference: 'default',
   callContext: 'dm',
   phase: 'idle',
   surface: 'widget',
@@ -274,8 +284,6 @@ export function useVideoCallState() {
             phaseAvailableForMode(s.mode, s.callContext, phase)
               ? s.mode
               : mattermostModeFor(s.features);
-          // Audio-only calls have no pre-join (no camera to check).
-          if (mode === 'audio' && phase === 'pre-join') return s;
           const surface = surfaceAvailable(phase, s.surface, mode)
             ? s.surface
             : 'widget';
@@ -380,6 +388,8 @@ export function useVideoCallState() {
         video?: boolean;
         /** Dial the DM peer's phone number: no pre-join, rings straight away. */
         phone?: boolean;
+        /** Started by opening a call link: always shows the pre-join interstitial. */
+        fromLink?: boolean;
       }) =>
         setState((s) => {
           if (opts?.phone) {
@@ -402,9 +412,28 @@ export function useVideoCallState() {
             };
           }
           const mode = mattermostModeFor(s.features);
-          // Video off: no camera to check, so skip pre-join. A DM rings
-          // straight away; a group / channel call connects straight away.
-          if (mode === 'audio') {
+          // The pre-join interstitial is the default when starting a call. A
+          // person can skip it in the Calls plugin settings (or follow the
+          // System Console default). Joining a running call and opening a call
+          // link always show it, because nothing in the link or the menu says it
+          // will start a call.
+          const skip =
+            !opts?.fromLink &&
+            s.phase !== 'ongoing' &&
+            (s.preJoinPreference === 'default'
+              ? s.adminSkipPreJoin
+              : s.preJoinPreference === 'skip');
+          // Audio-only starts with the camera off (and releases the webcam);
+          // "Start video call" turns it on, which also asks the browser for the
+          // webcam (the menu pick is the user gesture).
+          const media =
+            opts?.audioOnly || mode === 'audio'
+              ? releaseCamera(s.media)
+              : opts?.video
+                ? { ...s.media, cameraOn: true, useWebcam: true }
+                : s.media;
+          if (skip) {
+            // A DM rings straight away; a group / channel call connects.
             const dm = s.callContext === 'dm';
             return {
               ...s,
@@ -412,7 +441,7 @@ export function useVideoCallState() {
               mode,
               phase: dm ? 'calling' : 'active',
               surface: 'widget',
-              joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
+              joinMode: 'start',
               missedCall: false,
               declinedCall: false,
               canceledCall: false,
@@ -420,9 +449,8 @@ export function useVideoCallState() {
               endedAt: null,
               recordingsMade: 0,
               callStartedAt: dm ? null : Date.now(),
-              // Joining a call that is already running means someone else started it.
-              callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
-              media: releaseCamera(s.media),
+              callerId: SELF_ID,
+              media,
             };
           }
           return {
@@ -440,14 +468,7 @@ export function useVideoCallState() {
             recordingsMade: 0,
             // Joining a call that is already running means someone else started it.
             callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
-            // Audio-only starts with the camera off (and releases the webcam);
-            // "Start video call" turns it on, which also asks the browser for the
-            // webcam (the menu pick is the user gesture).
-            media: opts?.audioOnly
-              ? releaseCamera(s.media)
-              : opts?.video
-                ? { ...s.media, cameraOn: true, useWebcam: true }
-                : s.media,
+            media,
           };
         }),
       /** Pre-join primary action: a 1:1 call rings; group/channel joins directly. */
@@ -557,6 +578,12 @@ export function useVideoCallState() {
             ]),
           };
         }),
+      /** System Console default: skip the pre-join interstitial when starting a call. */
+      setAdminSkipPreJoin: (adminSkipPreJoin: boolean) =>
+        setState((s) => ({ ...s, adminSkipPreJoin })),
+      /** The person's own Calls plugin setting (overrides the admin default). */
+      setPreJoinPreference: (preJoinPreference: PreJoinPreference) =>
+        setState((s) => ({ ...s, preJoinPreference })),
       setExternalEnabled: (externalEnabled: boolean) =>
         setState((s) => ({ ...s, externalEnabled })),
       setView: (view: StageView) => setState((s) => ({ ...s, view })),

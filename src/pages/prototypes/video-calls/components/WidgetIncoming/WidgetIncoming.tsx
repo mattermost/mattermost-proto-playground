@@ -87,7 +87,10 @@ export default function WidgetIncoming({
           {l.decline}
         </Button>
         <Button
-          className={styles['widget-incoming__action']}
+          className={[
+            styles['widget-incoming__action'],
+            styles['widget-incoming__accept'],
+          ].join(' ')}
           emphasis="primary"
           size="small"
           onClick={onAccept}

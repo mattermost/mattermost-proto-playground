@@ -297,6 +297,8 @@ export function VideoCallWidget({
   // and the compass-proto call widget: a 32px avatar with a title and a line
   // under it in the header, then the controls. While sharing, the media row
   // still shows what you share.
+  // Audio-only pre-join has no camera to preview, so no 16:9 self preview.
+  const noPreview = phase === 'pre-join' && mode !== 'video';
   const compact =
     mode !== 'video' &&
     (phase === 'calling' ||
@@ -415,17 +417,19 @@ export function VideoCallWidget({
   const media =
     phase === 'pre-join' ? (
       <div className={styles['video-call-widget__pre-join']}>
-        <div className={styles['video-call-widget__preview']}>
-          <VideoTile
-            name={selfName}
-            avatarSrc={selfAvatarSrc}
-            stream={selfStream}
-            cameraOn={cameraOn}
-            muted={!micOn}
-            mirrored
-            selfLabel={l.self}
-          />
-        </div>
+        {!noPreview && (
+          <div className={styles['video-call-widget__preview']}>
+            <VideoTile
+              name={selfName}
+              avatarSrc={selfAvatarSrc}
+              stream={selfStream}
+              cameraOn={cameraOn}
+              muted={!micOn}
+              mirrored
+              selfLabel={l.self}
+            />
+          </div>
+        )}
         {showPeople && (
           <div className={styles['video-call-widget__people']}>
             <UserAvatarGroup
@@ -557,7 +561,19 @@ export function VideoCallWidget({
         showIcon={false}
       />
     ) : phase === 'calling' || phase === 'joining' ? (
-      <Button emphasis="primary" destructive size="small" onClick={onCancel}>
+      <Button
+        emphasis="primary"
+        destructive
+        size="small"
+        leadingIcon={
+          // Ringing: Cancel carries the hang-up icon, like the end-call control
+          // once connected. Joining keeps the plain label.
+          phase === 'calling' ? (
+            <Icon size="12" glyph={<PhoneHangupIcon />} />
+          ) : undefined
+        }
+        onClick={onCancel}
+      >
         {l.cancel}
       </Button>
     ) : isPhone ? (
@@ -681,6 +697,7 @@ export function VideoCallWidget({
           styles['video-call-widget__media'],
           styles[`video-call-widget__media--${phase}`],
           compact && styles['video-call-widget__media--compact'],
+          noPreview && styles['video-call-widget__media--no-preview'],
           showPeople && styles['video-call-widget__media--people'],
         )}
       >
@@ -692,6 +709,7 @@ export function VideoCallWidget({
       <div
         className={cx(
           styles['video-call-widget__controls'],
+          compact && styles['video-call-widget__controls--compact'],
           phase === 'pre-join' &&
             styles['video-call-widget__controls--with-actions'],
         )}
@@ -728,9 +746,6 @@ export function VideoCallWidget({
       >
         <div className={styles['video-call-widget__actions-clip']}>
           <div className={styles['video-call-widget__actions-row']}>
-            <Button emphasis="tertiary" size="small" onClick={onCancel}>
-              {l.cancel}
-            </Button>
             <Button
               className={styles['video-call-widget__start']}
               emphasis="primary"
@@ -739,6 +754,9 @@ export function VideoCallWidget({
               onClick={onPrimary}
             >
               {joinMode === 'start' ? l.start : l.join}
+            </Button>
+            <Button emphasis="tertiary" size="small" onClick={onCancel}>
+              {l.cancel}
             </Button>
           </div>
         </div>

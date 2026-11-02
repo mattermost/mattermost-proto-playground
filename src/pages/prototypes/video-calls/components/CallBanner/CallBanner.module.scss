@@ -5,6 +5,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
+  // A little wider than its text so the buttons sit apart; one-off width.
+  min-width: min(100%, 400px);
   max-width: 100%;
   box-sizing: border-box;
   height: 40px; // one-off layout height, matches Toast
@@ -22,6 +24,8 @@
   }
 
   &__text {
+    // Takes the spare width so Join and Close sit at the right.
+    flex: 1 1 auto;
     min-width: 0;
     margin: 0;
     overflow: hidden;
@@ -46,7 +50,9 @@
     --button-fg: var(--color-green-600);
   }
 
+  // Extra space between Join and Close, on top of the banner's own gap.
   &__dismiss {
     flex: 0 0 auto;
+    margin-inline-start: var(--spacing-xs);
   }
 }

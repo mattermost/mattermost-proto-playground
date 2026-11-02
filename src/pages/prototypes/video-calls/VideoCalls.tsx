@@ -12,6 +12,7 @@ import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
 import CallSettingsToggles from './chrome/CallSettingsToggles';
+import PreJoinChrome from './chrome/PreJoinChrome';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import CallWindowScene from './scenes/CallWindowScene';
@@ -126,15 +127,34 @@ export default function VideoCalls() {
       return () => setStartSlot(null);
     }
     setStartSlot(
-      <CallSettingsToggles
-        features={features}
-        onFeaturesChange={actions.setFeatures}
-        soundOn={state.soundOn}
-        onSoundChange={actions.setSoundOn}
-      />,
+      <>
+        <CallSettingsToggles
+          features={features}
+          onFeaturesChange={actions.setFeatures}
+          soundOn={state.soundOn}
+          onSoundChange={actions.setSoundOn}
+        />
+        <PreJoinChrome
+          adminSkip={state.adminSkipPreJoin}
+          onAdminSkipChange={actions.setAdminSkipPreJoin}
+          preference={state.preJoinPreference}
+          onPreferenceChange={actions.setPreJoinPreference}
+          onOpenCallLink={() => actions.startCall({ fromLink: true })}
+          canOpenCallLink={phase === 'idle' || phase === 'ongoing'}
+        />
+      </>,
     );
     return () => setStartSlot(null);
-  }, [features, state.soundOn, actions, setStartSlot, walkthroughActive]);
+  }, [
+    features,
+    state.soundOn,
+    state.adminSkipPreJoin,
+    state.preJoinPreference,
+    phase,
+    actions,
+    setStartSlot,
+    walkthroughActive,
+  ]);
 
   const value = useMemo(
     () => ({ state, participants, actions, selfCamera, screenShare }),

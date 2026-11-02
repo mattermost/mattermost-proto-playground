@@ -97,4 +97,11 @@
       transform: scale(1.18);
     }
   }
+
+  // Accept: the same green-600 as Start call and Join call (white text needs
+  // the contrast). The primary Button reads --button-bg (hover and active tints
+  // derive from it), so override the variable.
+  &__accept {
+    --button-bg: var(--color-green-600);
+  }
 }

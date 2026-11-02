@@ -1,7 +1,10 @@
 import { Fragment, type ReactNode } from 'react';
 import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
-import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
+import {
+  PopoverMenu,
+  PopoverMenuDivider,
+} from '@mattermost/compass-ui/components/popover-menu';
 import { CallHeaderButton } from '../CallHeaderButton';
 import styles from './StartCallButton.module.scss';
 
@@ -13,6 +16,8 @@ export interface StartCallOption {
   icon: ReactNode;
   /** Heading shown above the first option of each group, e.g. "Phone call". */
   group?: string;
+  /** Draws a divider above the row, e.g. before settings that are not a way to call. */
+  dividerBefore?: boolean;
 }
 
 export interface StartCallButtonProps {
@@ -60,6 +65,7 @@ export default function StartCallButton({
         <PopoverMenu open={open} role="menu" aria-label={menuLabel}>
           {options.map((o, i) => (
             <Fragment key={o.id}>
+              {o.dividerBefore && <PopoverMenuDivider />}
               {o.group && o.group !== options[i - 1]?.group && (
                 <MenuGroupHeading label={o.group} />
               )}

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
+import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
 import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { CallingPulse } from '../CallingPulse';
 import { VideoCallWindowFrame } from '../VideoCallWindow';
@@ -79,7 +81,12 @@ export function WindowCalling({
         </div>
         <div className={styles['window-calling__actions']}>
           {controls}
-          <Button emphasis="primary" destructive onClick={onCancel}>
+          <Button
+            emphasis="primary"
+            destructive
+            leadingIcon={<Icon size="16" glyph={<PhoneHangupIcon />} />}
+            onClick={onCancel}
+          >
             {l.cancel}
           </Button>
         </div>
