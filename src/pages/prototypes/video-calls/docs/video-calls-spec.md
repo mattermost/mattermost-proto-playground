@@ -237,6 +237,8 @@ The skip setting never applies to starts from a call link. Opening a call link t
 
 Audio mode (video disabled) uses the same interstitial without a camera: no self preview in the widget, a microphone-only check, and the window subtitle reads "Check your microphone first." The rest of this section describes Video mode.
 
+The prototype has only the person's setting (a prototype control standing in for the Calls plugin settings) and a control that simulates opening a call link. The System Console default is not prototyped.
+
 _Question: does the skip setting also apply to Join call on a call that is already running? The prototype says no: joining always shows the interstitial._
 
 Opens in the widget (default) or the window. Never touches camera or microphone on load.
