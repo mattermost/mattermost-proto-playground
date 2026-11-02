@@ -35,7 +35,10 @@ export default function CallSettingsToggles({
       role="group"
       aria-label="Call settings"
     >
-      <WithTooltip label={`Video calls: ${state(features.video)}`}>
+      <WithTooltip
+        placement="bottom"
+        label={`Video calls: ${state(features.video)}`}
+      >
         <IconButton
           size="x-small"
           aria-label="Video calls"
@@ -45,7 +48,10 @@ export default function CallSettingsToggles({
           onClick={() => onFeaturesChange({ video: !features.video })}
         />
       </WithTooltip>
-      <WithTooltip label={`Phone calls: ${state(features.phone)}`}>
+      <WithTooltip
+        placement="bottom"
+        label={`Phone calls: ${state(features.phone)}`}
+      >
         <IconButton
           size="x-small"
           aria-label="Phone calls"
@@ -55,7 +61,7 @@ export default function CallSettingsToggles({
           onClick={() => onFeaturesChange({ phone: !features.phone })}
         />
       </WithTooltip>
-      <WithTooltip label={`Call sounds: ${state(soundOn)}`}>
+      <WithTooltip placement="bottom" label={`Call sounds: ${state(soundOn)}`}>
         <IconButton
           size="x-small"
           aria-label="Call sounds"
