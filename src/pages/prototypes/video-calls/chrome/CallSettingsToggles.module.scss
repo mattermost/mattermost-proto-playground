@@ -1,0 +1,10 @@
+// The server settings and sound toggle side by side in one pill, like the
+// People counter next to it.
+.call-settings {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxxxs);
+  padding: var(--spacing-xxxxs);
+  border-radius: var(--radius-pill);
+  background: rgba(var(--center-channel-color-rgb), 0.08);
+}

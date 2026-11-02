@@ -11,9 +11,8 @@ import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
-import FeatureToggles from './chrome/FeatureToggles';
+import CallSettingsToggles from './chrome/CallSettingsToggles';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
-import SoundToggle from './chrome/SoundToggle';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import CallWindowScene from './scenes/CallWindowScene';
 import ChatScene from './scenes/ChatScene';
@@ -101,8 +100,12 @@ export default function VideoCalls() {
           onChange={actions.setCount}
           disabled={callContext === 'dm'}
         />
-        <FeatureToggles features={features} onChange={actions.setFeatures} />
-        <SoundToggle on={state.soundOn} onChange={actions.setSoundOn} />
+        <CallSettingsToggles
+          features={features}
+          onFeaturesChange={actions.setFeatures}
+          soundOn={state.soundOn}
+          onSoundChange={actions.setSoundOn}
+        />
       </div>,
     );
     return () => setCenterSlot(null);
