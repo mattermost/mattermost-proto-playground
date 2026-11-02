@@ -11,8 +11,7 @@ import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
-import CallSettingsToggles from './chrome/CallSettingsToggles';
-import PreJoinChrome from './chrome/PreJoinChrome';
+import PrototypeSettings from './chrome/PrototypeSettings';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import CallWindowScene from './scenes/CallWindowScene';
@@ -35,7 +34,7 @@ import { stampVideoCallsWalkthroughFocus } from './videoCallsWalkthroughFocus';
 import styles from './VideoCalls.module.scss';
 
 export default function VideoCalls() {
-  const { setCenterSlot, setStartSlot } = usePrototypeChrome();
+  const { setCenterSlot } = usePrototypeChrome();
   const { active: walkthroughActive } = useWalkthrough();
   const { state, participants, actions } = useVideoCallState();
   const { callContext, phase, surface, count, mode, features } = state;
@@ -105,6 +104,16 @@ export default function VideoCalls() {
           onChange={actions.setCount}
           disabled={callContext === 'dm'}
         />
+        <PrototypeSettings
+          skipPreJoin={state.skipPreJoin}
+          onSkipPreJoinChange={actions.setSkipPreJoin}
+          features={features}
+          onFeaturesChange={actions.setFeatures}
+          soundOn={state.soundOn}
+          onSoundChange={actions.setSoundOn}
+          onOpenCallLink={() => actions.startCall({ fromLink: true })}
+          canOpenCallLink={phase === 'idle' || phase === 'ongoing'}
+        />
       </div>,
     );
     return () => setCenterSlot(null);
@@ -114,42 +123,11 @@ export default function VideoCalls() {
     surface,
     count,
     mode,
+    features,
+    state.skipPreJoin,
+    state.soundOn,
     actions,
     setCenterSlot,
-    walkthroughActive,
-  ]);
-
-  // The call settings (server settings and sounds) sit on the left, next to
-  // the prototype title. Hidden during the walkthrough like the rest of the chrome.
-  useEffect(() => {
-    if (walkthroughActive) {
-      setStartSlot(null);
-      return () => setStartSlot(null);
-    }
-    setStartSlot(
-      <>
-        <CallSettingsToggles
-          features={features}
-          onFeaturesChange={actions.setFeatures}
-          soundOn={state.soundOn}
-          onSoundChange={actions.setSoundOn}
-        />
-        <PreJoinChrome
-          skipPreJoin={state.skipPreJoin}
-          onSkipPreJoinChange={actions.setSkipPreJoin}
-          onOpenCallLink={() => actions.startCall({ fromLink: true })}
-          canOpenCallLink={phase === 'idle' || phase === 'ongoing'}
-        />
-      </>,
-    );
-    return () => setStartSlot(null);
-  }, [
-    features,
-    state.soundOn,
-    state.skipPreJoin,
-    phase,
-    actions,
-    setStartSlot,
     walkthroughActive,
   ]);
 
