@@ -32,6 +32,7 @@ export default function ParticipantCountControl({
       <span className={styles['participant-count__label']}>People</span>
       <IconButton
         size="x-small"
+        padding="compact"
         aria-label="Fewer participants"
         icon={<Icon size="12" glyph={<MinusIcon />} />}
         disabled={disabled || count <= MIN_PARTICIPANTS}
@@ -46,6 +47,7 @@ export default function ParticipantCountControl({
       </output>
       <IconButton
         size="x-small"
+        padding="compact"
         aria-label="More participants"
         icon={<Icon size="12" glyph={<PlusIcon />} />}
         disabled={disabled || count >= MAX_PARTICIPANTS}
