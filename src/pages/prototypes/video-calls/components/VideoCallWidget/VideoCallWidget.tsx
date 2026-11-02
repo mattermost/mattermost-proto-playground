@@ -292,11 +292,16 @@ export function VideoCallWidget({
   // remote people who are not shown.
   const speaker = remote.find((p) => p.talking && !p.muted) ?? remote[0];
   const extra = Math.max(0, remote.length - 1);
-  // Audio-only and phone calls have no video to show, so the live call drops
-  // the 16:9 area and reads like the compass-proto call widget: a speaker
-  // avatar with "Name is talking", the time under it, then the controls. While
-  // sharing, the media row still shows what you share.
-  const compact = phase === 'active' && mode !== 'video' && !sharing;
+  // Audio-only and phone calls have no video to show, so calling, joining and
+  // the live call drop the media area. They read like the outbound softphone
+  // and the compass-proto call widget: a 32px avatar with a title and a line
+  // under it in the header, then the controls. While sharing, the media row
+  // still shows what you share.
+  const compact =
+    mode !== 'video' &&
+    (phase === 'calling' ||
+      phase === 'joining' ||
+      (phase === 'active' && !sharing));
   // Audio-only pre-join has no camera to preview, so no 16:9 self preview.
   const noPreview = phase === 'pre-join' && mode !== 'video';
 
@@ -318,28 +323,51 @@ export function VideoCallWidget({
       </h2>
     ) : compact ? (
       (() => {
-        const talking = !isPhone && !!speaker?.talking && !speaker.muted;
-        const name = isPhone ? peerName : (speaker?.name ?? channelName);
-        const src = isPhone ? peerAvatarSrc : speaker?.avatarSrc;
-        const title = isPhone
-          ? peerName
-          : talking
-            ? l.isTalking(speaker!.name)
-            : channelName;
-        const sub = isPhone
-          ? `${elapsedLabel} · ${phoneLabel}`
-          : talking
-            ? `${elapsedLabel} · ${channelName}`
-            : elapsedLabel;
+        const ringing = phase === 'calling' || phase === 'joining';
+        const talking =
+          !ringing && !isPhone && !!speaker?.talking && !speaker.muted;
+        const name =
+          isPhone || ringing ? peerName : (speaker?.name ?? channelName);
+        const src = isPhone || ringing ? peerAvatarSrc : speaker?.avatarSrc;
+        // Calling: "Calling <name>…" (it fades in and out) with the number
+        // under it for a phone call. Joining: "Joining call with <name>…".
+        const title =
+          phase === 'calling'
+            ? l.calling(peerName)
+            : phase === 'joining'
+              ? l.joining(peerName)
+              : isPhone
+                ? peerName
+                : talking
+                  ? l.isTalking(speaker!.name)
+                  : channelName;
+        const sub = ringing
+          ? isPhone && phase === 'calling'
+            ? phoneLabel
+            : ''
+          : isPhone
+            ? `${elapsedLabel} · ${phoneLabel}`
+            : talking
+              ? `${elapsedLabel} · ${channelName}`
+              : elapsedLabel;
         return (
           <span className={styles['video-call-widget__lead-compact']}>
             <UserAvatar size="32" src={src} alt="" name={name} />
             <span className={styles['video-call-widget__lead-text']}>
-              <span className={styles['video-call-widget__lead-title']}>
+              <span
+                className={[
+                  styles['video-call-widget__lead-title'],
+                  phase === 'calling' &&
+                    styles['video-call-widget__lead-title--pulsing'],
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                aria-live={ringing ? 'polite' : undefined}
+              >
                 <span className={styles['video-call-widget__lead-title-text']}>
                   {title}
                 </span>
-                {isPhone && (
+                {isPhone && !ringing && (
                   <Tag
                     label={l.phone}
                     type="default"
@@ -348,17 +376,19 @@ export function VideoCallWidget({
                   />
                 )}
               </span>
-              <span className={styles['video-call-widget__lead-sub']}>
-                {sub}
-                {recording && (
-                  <span
-                    className={styles['video-call-widget__rec']}
-                    role="img"
-                    aria-label="Recording"
-                    title="Recording"
-                  />
-                )}
-              </span>
+              {sub && (
+                <span className={styles['video-call-widget__lead-sub']}>
+                  {sub}
+                  {recording && !ringing && (
+                    <span
+                      className={styles['video-call-widget__rec']}
+                      role="img"
+                      aria-label="Recording"
+                      title="Recording"
+                    />
+                  )}
+                </span>
+              )}
             </span>
           </span>
         );
@@ -417,7 +447,7 @@ export function VideoCallWidget({
           </div>
         )}
       </div>
-    ) : phase === 'calling' ? (
+    ) : compact ? null : phase === 'calling' ? (
       <div className={styles['video-call-widget__peer']} aria-live="polite">
         <CallingPulse>
           <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
@@ -436,7 +466,7 @@ export function VideoCallWidget({
           {l.joining(peerName)}
         </p>
       </div>
-    ) : compact ? null : sharing ? (
+    ) : sharing ? (
       <div className={styles['video-call-widget__sharing']}>
         <ShareThumb stream={shareStream} />
         <div className={styles['video-call-widget__sharing-body']}>

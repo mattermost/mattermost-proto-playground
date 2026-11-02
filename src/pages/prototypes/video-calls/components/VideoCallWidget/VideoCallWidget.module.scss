@@ -88,6 +88,16 @@
     white-space: nowrap;
   }
 
+  // Calling: the title fades in and out while it rings, like the outbound
+  // softphone. A one-off cycle (no motion token covers a looping pulse).
+  &__lead-title--pulsing {
+    animation: video-call-widget-title-pulse 1.6s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
   &__lead-sub {
     display: inline-flex;
     align-items: center;
@@ -161,7 +171,9 @@
 
     // Audio-only and phone calls: no media row at all while the call is live;
     // the speaker avatar and the time sit in the header.
-    &--compact#{&}--active {
+    &--compact#{&}--active,
+    &--compact#{&}--calling,
+    &--compact#{&}--joining {
       --video-call-widget-media-h: 0px;
       padding: 0;
     }
@@ -513,5 +525,16 @@
     height: var(--spacing-xs);
     border-radius: var(--radius-pill);
     background: var(--error-text, var(--color-danger));
+  }
+}
+
+@keyframes video-call-widget-title-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
   }
 }
