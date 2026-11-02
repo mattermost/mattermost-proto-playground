@@ -5,12 +5,15 @@ import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizo
 import MonitorOffIcon from '@mattermost/compass-icons/components/monitor-off';
 import MonitorShareIcon from '@mattermost/compass-icons/components/monitor-share';
 import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
+import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Tag } from '@mattermost/compass-ui/components/tag';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
+import type { CallMode } from '@/types/videoCall';
 import { CallingPulse } from '../CallingPulse';
 import { MicLevelMeter } from '../MicLevelMeter';
 import { PhaseCrossfade } from '../PhaseCrossfade';
@@ -75,6 +78,9 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   micLevel?: string;
   /** "Calling Name…". */
   calling?: (name: string) => string;
+  /** Phone badge text. */
+  phone?: string;
+  keypad?: string;
   /** "Joining call with Name…" after accepting an incoming call. */
   joining?: (name: string) => string;
   /** "N people in the call". */
@@ -97,6 +103,14 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
 export interface VideoCallWidgetProps {
   /** Which step of the call the card shows; the card itself stays mounted. */
   phase: VideoCallWidgetPhase;
+  /**
+   * `video` (default) is the full card. `audio` drops the camera control and
+   * self view. `phone` is audio-only plus a phone badge and keypad button,
+   * with no participants, share, More or expand.
+   */
+  mode?: CallMode;
+  /** Phone mode: the dialed number and its label, e.g. "312-555-0174 · Office". */
+  phoneLabel?: string;
 
   // --- Shared -------------------------------------------------------------
   micOn: boolean;
@@ -180,6 +194,8 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   cancel: 'Cancel',
   micLevel: 'Microphone level',
   calling: (name) => `Calling ${name}…`,
+  phone: 'Phone',
+  keypad: 'Keypad',
   joining: (name) => `Joining call with ${name}…`,
   peopleInCall: (n) => `${n} ${n === 1 ? 'person' : 'people'} in the call`,
   participants: (n) => `Participants (${n})`,
@@ -212,6 +228,8 @@ const cx = (...names: (string | false | undefined)[]) =>
  */
 export function VideoCallWidget({
   phase,
+  mode = 'video',
+  phoneLabel = '',
   micOn,
   onToggleMic,
   onOpenMicMenu,
@@ -256,6 +274,8 @@ export function VideoCallWidget({
   className,
 }: VideoCallWidgetProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
+  const isPhone = mode === 'phone';
+  const hideCamera = mode !== 'video';
   const showPeople =
     phase === 'pre-join' && joinMode === 'join' && people.length > 0;
 
@@ -289,6 +309,14 @@ export function VideoCallWidget({
           <span className={styles['video-call-widget__channel-name']}>
             {channelName}
           </span>
+          {isPhone && (
+            <Tag
+              label={l.phone}
+              type="default"
+              size="x-small"
+              casing="all-caps"
+            />
+          )}
         </span>
         <span className={styles['video-call-widget__elapsed']}>
           &middot; {elapsedLabel}
@@ -343,6 +371,9 @@ export function VideoCallWidget({
         <p className={styles['video-call-widget__status']}>
           {l.calling(peerName)}
         </p>
+        {isPhone && (
+          <p className={styles['video-call-widget__sub']}>{phoneLabel}</p>
+        )}
       </div>
     ) : phase === 'joining' ? (
       <div className={styles['video-call-widget__peer']} aria-live="polite">
@@ -350,6 +381,12 @@ export function VideoCallWidget({
         <p className={styles['video-call-widget__status']}>
           {l.joining(peerName)}
         </p>
+      </div>
+    ) : isPhone ? (
+      <div className={styles['video-call-widget__peer']} aria-live="polite">
+        <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
+        <p className={styles['video-call-widget__status']}>{peerName}</p>
+        <p className={styles['video-call-widget__sub']}>{phoneLabel}</p>
       </div>
     ) : sharing ? (
       <div className={styles['video-call-widget__sharing']}>
@@ -413,7 +450,7 @@ export function VideoCallWidget({
             {l.overflow(extra)}
           </span>
         )}
-        {self && (
+        {self && mode === 'video' && (
           <div className={styles['video-call-widget__pip']}>
             <VideoTile
               className={styles['video-call-widget__pip-tile']}
@@ -449,6 +486,26 @@ export function VideoCallWidget({
       <Button emphasis="primary" destructive size="small" onClick={onCancel}>
         {l.cancel}
       </Button>
+    ) : isPhone ? (
+      <>
+        <IconButton
+          size="small"
+          padding="compact"
+          disabled
+          aria-label={l.keypad}
+          title={l.keypad}
+          icon={<Icon size="16" glyph={<DialpadIcon />} />}
+        />
+        <button
+          type="button"
+          className={styles['video-call-widget__hangup']}
+          aria-label={l.leave}
+          title={l.leave}
+          onClick={onLeave}
+        >
+          <Icon size="16" glyph={<PhoneHangupIcon />} />
+        </button>
+      </>
     ) : (
       <>
         {!hideParticipants && (
@@ -520,22 +577,26 @@ export function VideoCallWidget({
         <PhaseCrossfade phaseKey={phase} align="fill">
           <div className={styles['video-call-widget__lead']}>{lead}</div>
         </PhaseCrossfade>
-        <IconButton
-          size="small"
-          padding="compact"
-          className={styles['video-call-widget__expand']}
-          aria-label={l.expand}
-          title={l.expand}
-          icon={<Icon size="16" glyph={<ArrowExpandIcon />} />}
-          disabled={phase === 'joining'}
-          onClick={onExpand}
-        />
+        {/* A phone call has no window to expand to. */}
+        {!isPhone && (
+          <IconButton
+            size="small"
+            padding="compact"
+            className={styles['video-call-widget__expand']}
+            aria-label={l.expand}
+            title={l.expand}
+            icon={<Icon size="16" glyph={<ArrowExpandIcon />} />}
+            disabled={phase === 'joining'}
+            onClick={onExpand}
+          />
+        )}
       </div>
 
       <div
         className={cx(
           styles['video-call-widget__media'],
           styles[`video-call-widget__media--${phase}`],
+          isPhone && styles['video-call-widget__media--phone'],
           showPeople && styles['video-call-widget__media--people'],
         )}
       >
@@ -560,6 +621,7 @@ export function VideoCallWidget({
           onToggleCamera={onToggleCamera}
           onOpenCameraMenu={onOpenCameraMenu}
           cameraMenuOpen={cameraMenuOpen}
+          hideCamera={hideCamera}
           labels={labels}
         />
         <div className={styles['video-call-widget__trailing']}>

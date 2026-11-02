@@ -30,6 +30,15 @@ export const DM_PEER_ID = 'marco';
 export const GROUP_STARTER_ID = 'sofia';
 
 /**
+ * The phone number a phone call dials (the DM peer's office line). Fixed demo
+ * data: the prototype only shows how a phone call sits next to a video call.
+ */
+export const PHONE_NUMBER = {
+  label: 'Office',
+  number: '312-555-0174',
+};
+
+/**
  * Remote video loops, keyed by `VideoParticipant.clipId` (one entry per
  * participant). Clips are generated placeholders, see src/assets/video/README.md.
  * `offset` staggers each loop's start so tiles never move in lockstep; a clip can

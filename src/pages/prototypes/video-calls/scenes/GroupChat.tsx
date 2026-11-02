@@ -1,8 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
-import { Button } from '@mattermost/compass-ui/components/button';
-import { Icon } from '@mattermost/compass-ui/components/icon';
-import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import {
   ChannelHeader,
   MessageInput,
@@ -80,24 +77,9 @@ export default function GroupChat({ kind, floating }: GroupChatProps) {
             }
             memberCount={kind === 'gm' ? state.count : 24}
             pinnedCount={kind === 'channel' ? 2 : undefined}
-            callButton={
-              ongoing ? (
-                <Button
-                  emphasis="quaternary"
-                  size="small"
-                  leadingIcon={<Icon glyph={<VideoOutlineIcon />} />}
-                  onClick={() => actions.startCall()}
-                >
-                  Join call
-                </Button>
-              ) : noCall ? (
-                <StartCallMenu />
-              ) : (
-                // In a call: no start/join button (an empty node, since `undefined`
-                // would bring back the header's own "Start a Call" default).
-                <></>
-              )
-            }
+            // One button for every state (start / join / in call); passing a node
+            // also replaces the header's own default call button.
+            callButton={<StartCallMenu />}
           />
           {banner.rendered && (
             <div

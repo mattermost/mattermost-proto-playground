@@ -83,3 +83,24 @@ export interface CallNotice {
   kind: CallNoticeKind;
   text: string;
 }
+
+/**
+ * How a call looks and which controls it has. Chosen when the call starts and
+ * kept for the whole call.
+ *
+ * - `video`: a Mattermost call on a server with video enabled. A call started
+ *   with "Start audio call" is still `video` (camera off; it can be turned on
+ *   at any time).
+ * - `audio`: a Mattermost call on a server with video disabled (today's calls
+ *   plugin). No camera controls, no self view.
+ * - `phone`: an outbound phone (SIP) call. 1:1, audio only, widget only.
+ */
+export type CallMode = 'video' | 'audio' | 'phone';
+
+/** Server settings that decide which ways to call the conversation offers. */
+export interface CallFeatures {
+  /** Video calling is enabled. When off, Mattermost calls are audio-only. */
+  video: boolean;
+  /** Outbound phone calling is enabled. */
+  phone: boolean;
+}

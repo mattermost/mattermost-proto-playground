@@ -59,6 +59,7 @@ function CallingWindow() {
             cameras={cameras.map((c) => ({ id: c.deviceId, label: c.label }))}
             cameraDeviceId={media.cameraDeviceId}
             onSelectCamera={(id) => actions.setMedia({ cameraDeviceId: id })}
+            hideCamera={state.mode !== 'video'}
             openMenu={openMenu}
             onOpenMenuChange={setOpenMenu}
           />

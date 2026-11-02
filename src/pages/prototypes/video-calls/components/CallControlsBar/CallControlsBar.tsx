@@ -59,6 +59,8 @@ export interface CallControlsBarProps {
   onOpenCameraMenu?: () => void;
   cameraMenuOpen?: boolean;
   cameraMenu?: ReactNode;
+  /** Audio-only calls have no camera: omit the camera control. */
+  hideCamera?: boolean;
 
   sharing: boolean;
   onToggleShare: () => void;
@@ -129,6 +131,7 @@ export function CallControlsBar({
   onOpenCameraMenu,
   cameraMenuOpen = false,
   cameraMenu,
+  hideCamera = false,
   sharing,
   onToggleShare,
   reactionsOpen = false,
@@ -205,37 +208,39 @@ export function CallControlsBar({
           )}
         </div>
 
-        <div className={styles['call-controls-bar__slot']} data-menu-anchor>
-          <SegmentedIconButton
-            size="medium"
-            style="inverted"
-            className={styles['call-controls-bar__segment']}
-            mainClassName={cx(
-              styles['call-controls-bar__toggle'],
-              cameraOn
-                ? styles['call-controls-bar__toggle--on']
-                : styles['call-controls-bar__toggle--off'],
+        {!hideCamera && (
+          <div className={styles['call-controls-bar__slot']} data-menu-anchor>
+            <SegmentedIconButton
+              size="medium"
+              style="inverted"
+              className={styles['call-controls-bar__segment']}
+              mainClassName={cx(
+                styles['call-controls-bar__toggle'],
+                cameraOn
+                  ? styles['call-controls-bar__toggle--on']
+                  : styles['call-controls-bar__toggle--off'],
+              )}
+              menuOpen={cameraMenuOpen}
+              label={cameraLabel}
+              chevronLabel={l.cameraOptions}
+              icon={
+                <Icon
+                  size="20"
+                  glyph={
+                    cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />
+                  }
+                />
+              }
+              onClick={onToggleCamera}
+              onChevronClick={onOpenCameraMenu}
+            />
+            {cameraMenu && (
+              <div className={styles['call-controls-bar__popover']}>
+                {cameraMenu}
+              </div>
             )}
-            menuOpen={cameraMenuOpen}
-            label={cameraLabel}
-            chevronLabel={l.cameraOptions}
-            icon={
-              <Icon
-                size="20"
-                glyph={
-                  cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />
-                }
-              />
-            }
-            onClick={onToggleCamera}
-            onChevronClick={onOpenCameraMenu}
-          />
-          {cameraMenu && (
-            <div className={styles['call-controls-bar__popover']}>
-              {cameraMenu}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <IconButton
           size="medium"

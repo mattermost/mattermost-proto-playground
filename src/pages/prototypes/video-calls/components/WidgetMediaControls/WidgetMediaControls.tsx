@@ -27,6 +27,8 @@ export interface WidgetMediaControlsProps {
   /** Device-menu chevron next to the camera; omit for a plain toggle. */
   onOpenCameraMenu?: () => void;
   cameraMenuOpen?: boolean;
+  /** Audio-only and phone calls have no camera: show the microphone alone. */
+  hideCamera?: boolean;
   labels?: WidgetMediaControlsLabels;
   className?: string;
 }
@@ -57,6 +59,7 @@ export default function WidgetMediaControls({
   onToggleCamera,
   onOpenCameraMenu,
   cameraMenuOpen = false,
+  hideCamera = false,
   labels,
   className,
 }: WidgetMediaControlsProps) {
@@ -105,7 +108,7 @@ export default function WidgetMediaControls({
           onClick={onToggleMic}
         />
       )}
-      {onOpenCameraMenu ? (
+      {hideCamera ? null : onOpenCameraMenu ? (
         <SegmentedIconButton
           size="small"
           padding="compact"

@@ -1,5 +1,7 @@
 import type {
   CallContext,
+  CallFeatures,
+  CallMode,
   CallPhase,
   CallSurface,
   JoinMode,
@@ -33,6 +35,29 @@ export const SURFACES: { id: CallSurface; label: string }[] = [
   { id: 'window', label: 'Window' },
 ];
 
+/** The mode a Mattermost call gets: video when the server has it, otherwise audio. */
+export function mattermostModeFor(features: CallFeatures): CallMode {
+  return features.video ? 'video' : 'audio';
+}
+
+/**
+ * A phone call is a 1:1 DM call that dials straight away: no pre-join, and it
+ * is never incoming, joining or ongoing (outbound only).
+ */
+export function phaseAvailableForMode(
+  mode: CallMode,
+  context: CallContext,
+  phase: CallPhase,
+) {
+  if (mode === 'phone') {
+    return (
+      context === 'dm' &&
+      (phase === 'idle' || phase === 'calling' || phase === 'active')
+    );
+  }
+  return phaseAvailable(context, phase);
+}
+
 /**
  * Only 1:1 DM calls ring (and so show `joining` after Accept); groups and
  * channels go pre-join -> active. A call
@@ -64,8 +89,16 @@ export function joinModeFor(
   return current;
 }
 
-/** Incoming and joining cards cannot be expanded; the window hosts the other phases. */
-export function surfaceAvailable(phase: CallPhase, surface: CallSurface) {
+/**
+ * Incoming and joining cards cannot be expanded; the window hosts the other
+ * phases. A phone call has no window at all: it stays in the widget.
+ */
+export function surfaceAvailable(
+  phase: CallPhase,
+  surface: CallSurface,
+  mode: CallMode = 'video',
+) {
+  if (mode === 'phone') return surface === 'widget';
   if (
     phase === 'idle' ||
     phase === 'ongoing' ||
@@ -89,7 +122,9 @@ export type DemoSceneId =
   | 'joining'
   | 'call-widget'
   | 'call-window'
-  | 'screen-share';
+  | 'screen-share'
+  | 'phone-calling'
+  | 'phone-call';
 
 export interface DemoScene {
   id: DemoSceneId;
@@ -98,6 +133,8 @@ export interface DemoScene {
   phase: CallPhase;
   surface: CallSurface;
   sharing?: boolean;
+  /** Set for scenes that need a specific mode; others use the server features. */
+  mode?: CallMode;
 }
 
 /** Named combinations of the three axes (used by the walkthrough). */
@@ -174,5 +211,21 @@ export const DEMO_SCENES: DemoScene[] = [
     phase: 'active',
     surface: 'window',
     sharing: true,
+  },
+  {
+    id: 'phone-calling',
+    label: 'Phone: calling',
+    context: 'dm',
+    phase: 'calling',
+    surface: 'widget',
+    mode: 'phone',
+  },
+  {
+    id: 'phone-call',
+    label: 'Phone: in call',
+    context: 'dm',
+    phase: 'active',
+    surface: 'widget',
+    mode: 'phone',
   },
 ];

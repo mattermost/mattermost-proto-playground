@@ -14,6 +14,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
     { id: 'start', label: 'Starting a call' },
     { id: 'receive', label: 'Receiving a call' },
     { id: 'in-call', label: 'In the call' },
+    { id: 'phone', label: 'Phone calls' },
   ],
   steps: [
     {
@@ -87,7 +88,11 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Before you join',
       title: 'Check your setup first',
       lead: 'Before anyone is rung, a small setup card lets you check your microphone and camera.',
-      lookFor: ['Microphone and camera toggles', 'Level meter', 'Start / Join button'],
+      lookFor: [
+        'Microphone and camera toggles',
+        'Level meter',
+        'Start / Join button',
+      ],
       bullets: [
         'The chevrons next to the toggles pick which device to use.',
         'Cancel leaves without ringing anyone.',
@@ -112,7 +117,9 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       title: 'The same setup, expanded',
       lead: 'Expanding moves the setup into a larger window over the conversation, with a bigger preview of your camera.',
       lookFor: ['Window floating over the conversation', 'Collapse control'],
-      bullets: ['Collapse returns to the small widget without losing your choices.'],
+      bullets: [
+        'Collapse returns to the small widget without losing your choices.',
+      ],
       scene: 'prejoin-window',
     },
     {
@@ -168,7 +175,9 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       title: 'Connecting after accepting',
       lead: 'After Accept, the same card shows a joining state while the connection is set up, then the call goes live.',
       lookFor: ['Joining call card'],
-      bullets: ['The caller is named in the card so it is clear who you are joining.'],
+      bullets: [
+        'The caller is named in the card so it is clear who you are joining.',
+      ],
       scene: 'joining',
       focus: {
         id: 'call-widget',
@@ -248,6 +257,56 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
         note: {
           title: 'Stop sharing here',
           points: ['The share control in the bar shows that you are sharing.'],
+        },
+      },
+    },
+    {
+      id: 'phone-start',
+      section: 'phone',
+      railGroup: 'Phone',
+      title: 'Phone calls sit next to video calls',
+      lead: 'When phone calling is on, a message header adds a Phone call group under the video and audio options. It is not offered in group messages or channels.',
+      lookFor: ['Start call button', 'Mattermost call and Phone call groups'],
+      bullets: [
+        'The phone number is a fixed demo number here; the full outbound flow lives in the Outbound Calls prototype.',
+        'With phone calling off the menu is just video and audio. With video calling off it is today’s audio-only Start call.',
+        'Use the video and phone toggles in the prototype header to try each combination.',
+      ],
+      scene: 'dm',
+      focus: {
+        id: 'start-call',
+        emphasis: 'ring',
+        note: {
+          title: 'One menu, two kinds of call',
+          points: [
+            'Mattermost calls: video or audio.',
+            'Phone call: dials the number straight away, with no pre-join.',
+          ],
+        },
+      },
+    },
+    {
+      id: 'phone-call',
+      section: 'phone',
+      railGroup: 'Phone',
+      title: 'A phone call uses the same widget',
+      lead: 'A phone call is audio only. It keeps the widget but drops what a phone line cannot do.',
+      lookFor: ['Phone badge and number', 'No camera, share or expand'],
+      bullets: [
+        'The widget only: a phone call has no call window.',
+        'A phone call cannot become a video call.',
+        'Hang up ends the call at once, like a one-to-one video call.',
+      ],
+      scene: 'phone-call',
+      focus: {
+        id: 'call-widget',
+        emphasis: 'ring',
+        note: {
+          title: 'Same card, fewer controls',
+          points: [
+            'Microphone, keypad and hang up.',
+            'Camera, share, participants and expand are hidden.',
+          ],
         },
       },
     },

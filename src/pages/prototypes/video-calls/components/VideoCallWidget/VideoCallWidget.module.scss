@@ -98,6 +98,13 @@
       padding-bottom: var(--spacing-xxxxs);
     }
 
+    // Phone call: compact like calling, with room for the name and number.
+    // One-off layout height (avatar, name, number).
+    &--phone#{&}--active {
+      --video-call-widget-media-h: 112px;
+      padding-bottom: var(--spacing-xs);
+    }
+
     // Join mode adds the "N people in the call" row under the preview.
     // No bottom padding here: the controls row below already has its own top
     // padding, so the avatars sit close to it.
@@ -167,6 +174,18 @@
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
+    text-align: center;
+  }
+
+  // Phone call: the dialed number under the name.
+  &__sub {
+    font-family: var(--font-family-body);
+    margin: 0;
+    margin-top: calc(var(--spacing-xs) * -1);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
     text-align: center;
   }
 

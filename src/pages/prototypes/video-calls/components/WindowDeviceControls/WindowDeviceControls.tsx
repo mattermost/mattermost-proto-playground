@@ -34,6 +34,8 @@ export interface WindowDeviceControlsProps {
   cameras: DeviceMenuDevice[];
   cameraDeviceId?: string;
   onSelectCamera: (id: string) => void;
+  /** Audio-only calls have no camera: show the microphone alone. */
+  hideCamera?: boolean;
 
   /** Host-owned: which device menu is open. */
   openMenu: WindowDeviceMenuId | null;
@@ -75,6 +77,7 @@ export function WindowDeviceControls({
   cameras,
   cameraDeviceId,
   onSelectCamera,
+  hideCamera = false,
   openMenu,
   onOpenMenuChange,
   menuPlacement = 'top',
@@ -146,25 +149,26 @@ export function WindowDeviceControls({
           onClose={close}
         />,
       )}
-      {slot(
-        'camera',
-        cameraOn,
-        cameraOn ? l.cameraOff : l.cameraOn,
-        l.cameraOptions,
-        cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />,
-        onToggleCamera,
-        <DeviceMenu
-          open={openMenu === 'camera'}
-          title={l.cameraMenuTitle}
-          devices={cameras}
-          selectedId={cameraDeviceId}
-          onSelect={(id) => {
-            onSelectCamera(id);
-            close();
-          }}
-          onClose={close}
-        />,
-      )}
+      {!hideCamera &&
+        slot(
+          'camera',
+          cameraOn,
+          cameraOn ? l.cameraOff : l.cameraOn,
+          l.cameraOptions,
+          cameraOn ? <VideoOutlineIcon /> : <VideoOffOutlineIcon />,
+          onToggleCamera,
+          <DeviceMenu
+            open={openMenu === 'camera'}
+            title={l.cameraMenuTitle}
+            devices={cameras}
+            selectedId={cameraDeviceId}
+            onSelect={(id) => {
+              onSelectCamera(id);
+              close();
+            }}
+            onClose={close}
+          />,
+        )}
     </div>
   );
 }

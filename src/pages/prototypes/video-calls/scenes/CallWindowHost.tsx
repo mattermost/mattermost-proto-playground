@@ -351,6 +351,7 @@ export default function CallWindowHost({
             />
           ),
           cameraOn: state.media.cameraOn,
+          hideCamera: state.mode !== 'video',
           onToggleCamera: selfCamera.toggle,
           onOpenCameraMenu: () => toggleMenu('camera'),
           cameraMenuOpen: openMenu === 'camera',

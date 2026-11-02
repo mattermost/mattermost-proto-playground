@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState } from 'react';
 import {
   MAX_PARTICIPANTS,
   type CallContext,
+  type CallFeatures,
+  type CallMode,
   type CallNotice,
   type CallPane,
   type CallPhase,
@@ -23,7 +25,9 @@ import {
 import {
   DEMO_SCENES,
   joinModeFor,
+  mattermostModeFor,
   phaseAvailable,
+  phaseAvailableForMode,
   surfaceAvailable,
   type DemoSceneId,
 } from './videoCalls.scenes';
@@ -31,6 +35,10 @@ import {
 export interface VideoCallState {
   /** Where the conversation is: 1:1 DM, group DM, or channel. */
   callContext: CallContext;
+  /** Server settings: which ways to call the conversation offer (prototype chrome). */
+  features: CallFeatures;
+  /** How the current call looks (video, audio-only, phone). Fixed for the call. */
+  mode: CallMode;
   /** Where the user is in the call lifecycle. */
   phase: CallPhase;
   /** Widget (small card over the sidebar) or the expanded window. */
@@ -81,6 +89,8 @@ export interface VideoCallState {
 const DEFAULT_GROUP_COUNT = 4;
 
 const INITIAL_STATE: VideoCallState = {
+  features: { video: true, phone: true },
+  mode: 'video',
   callContext: 'dm',
   phase: 'idle',
   surface: 'widget',
@@ -183,6 +193,7 @@ function endCall(s: VideoCallState, leaving = false): VideoCallState {
   return {
     ...s,
     ...CALL_RESET,
+    mode: mattermostModeFor(s.features),
     phase: continues ? 'ongoing' : 'idle',
     // The running call keeps the time it started, so the banner and card agree.
     ongoingStartedAt:
@@ -206,18 +217,21 @@ export function useVideoCallState() {
       .filter((p) => !state.removedIds.includes(p.id))
       .map((p) => {
         const merged = { ...p, ...state.overrides[p.id] };
+        // Audio-only and phone calls never show a camera.
+        const cameraAvailable = state.mode === 'video';
         if (p.id === SELF_ID) {
           return {
             ...merged,
             muted: !state.media.micOn,
-            cameraOn: state.media.cameraOn,
+            cameraOn: cameraAvailable && state.media.cameraOn,
             handRaised: state.handRaised,
             sharing: state.sharing,
           };
         }
-        return merged;
+        return cameraAvailable ? merged : { ...merged, cameraOn: false };
       });
   }, [
+    state.mode,
     state.count,
     state.removedIds,
     state.overrides,
@@ -234,7 +248,7 @@ export function useVideoCallState() {
       /** Switch the conversation. Ends any call that cannot exist there. */
       setContext: (context: CallContext) =>
         setState((s) => {
-          const keepPhase = phaseAvailable(context, s.phase);
+          const keepPhase = phaseAvailableForMode(s.mode, context, s.phase);
           return {
             ...s,
             callContext: context,
@@ -242,19 +256,31 @@ export function useVideoCallState() {
             joinMode: joinModeFor(context, s.phase, s.joinMode),
             ...(keepPhase
               ? {}
-              : { ...CALL_RESET, media: releaseCamera(s.media) }),
+              : {
+                  ...CALL_RESET,
+                  mode: mattermostModeFor(s.features),
+                  media: releaseCamera(s.media),
+                }),
           };
         }),
       /** Jump to a phase (chrome switcher). Sets the state a real flow would. */
       setPhase: (phase: CallPhase) =>
         setState((s) => {
           if (!phaseAvailable(s.callContext, phase)) return s;
-          const surface = surfaceAvailable(phase, s.surface)
+          // A phone call only has calling and in-call; any other phase is a
+          // Mattermost call, and no call at all returns to the server default.
+          const mode =
+            phase !== 'idle' &&
+            phaseAvailableForMode(s.mode, s.callContext, phase)
+              ? s.mode
+              : mattermostModeFor(s.features);
+          const surface = surfaceAvailable(phase, s.surface, mode)
             ? s.surface
             : 'widget';
           return {
             ...s,
             ...PER_CALL_RESET,
+            mode,
             media: phase === 'idle' ? releaseCamera(s.media) : s.media,
             phase,
             surface,
@@ -280,16 +306,46 @@ export function useVideoCallState() {
         }),
       setSurface: (surface: CallSurface) =>
         setState((s) =>
-          surfaceAvailable(s.phase, surface) ? { ...s, surface } : s,
+          surfaceAvailable(s.phase, surface, s.mode) ? { ...s, surface } : s,
         ),
+      /** Prototype-chrome control: server settings (video / phone calling on or off). */
+      setFeatures: (next: Partial<CallFeatures>) =>
+        setState((s) => {
+          const features = { ...s.features, ...next };
+          // Turning phone calling off ends a phone call in progress.
+          if (s.mode === 'phone' && !features.phone) {
+            return {
+              ...endCall(s),
+              features,
+              mode: mattermostModeFor(features),
+            };
+          }
+          if (s.mode === 'phone') return { ...s, features };
+          const mode = mattermostModeFor(features);
+          return {
+            ...s,
+            features,
+            mode,
+            media: mode === 'audio' ? releaseCamera(s.media) : s.media,
+          };
+        }),
       /** Named combination (walkthrough, tests). */
       goToDemo: (id: DemoSceneId) =>
         setState((s) => {
           const demo = DEMO_SCENES.find((d) => d.id === id);
           if (!demo) return s;
+          // A phone scene needs phone calling on; other scenes need video for
+          // the camera-on look, so the walkthrough restores both.
+          const features =
+            demo.mode === 'phone'
+              ? { ...s.features, phone: true }
+              : { ...s.features, video: true };
+          const mode = demo.mode ?? mattermostModeFor(features);
           return {
             ...s,
             ...PER_CALL_RESET,
+            features,
+            mode,
             media: demo.phase === 'idle' ? releaseCamera(s.media) : s.media,
             callContext: demo.context,
             count: countFor(demo.context, s.count),
@@ -317,30 +373,59 @@ export function useVideoCallState() {
 
       // --- Real flow -------------------------------------------------------
       /** Header "Start call" / banner "Join": opens the widget at pre-join. */
-      startCall: (opts?: { audioOnly?: boolean; video?: boolean }) =>
-        setState((s) => ({
-          ...s,
-          ...PER_CALL_RESET,
-          phase: 'pre-join',
-          surface: 'widget',
-          joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
-          missedCall: false,
-          declinedCall: false,
-          canceledCall: false,
-          endedDurationSec: 0,
-          endedAt: null,
-          recordingsMade: 0,
-          // Joining a call that is already running means someone else started it.
-          callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
-          // Audio-only starts with the camera off (and releases the webcam);
-          // "Start video call" turns it on, which also asks the browser for the
-          // webcam (the menu pick is the user gesture).
-          media: opts?.audioOnly
-            ? releaseCamera(s.media)
-            : opts?.video
-              ? { ...s.media, cameraOn: true, useWebcam: true }
-              : s.media,
-        })),
+      startCall: (opts?: {
+        audioOnly?: boolean;
+        video?: boolean;
+        /** Dial the DM peer's phone number: no pre-join, rings straight away. */
+        phone?: boolean;
+      }) =>
+        setState((s) => {
+          if (opts?.phone) {
+            if (!s.features.phone || s.callContext !== 'dm') return s;
+            return {
+              ...s,
+              ...PER_CALL_RESET,
+              mode: 'phone',
+              phase: 'calling',
+              surface: 'widget',
+              joinMode: 'start',
+              missedCall: false,
+              declinedCall: false,
+              canceledCall: false,
+              endedDurationSec: 0,
+              endedAt: null,
+              recordingsMade: 0,
+              callerId: SELF_ID,
+              media: releaseCamera(s.media),
+            };
+          }
+          const mode = mattermostModeFor(s.features);
+          return {
+            ...s,
+            ...PER_CALL_RESET,
+            mode,
+            phase: 'pre-join',
+            surface: 'widget',
+            joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
+            missedCall: false,
+            declinedCall: false,
+            canceledCall: false,
+            endedDurationSec: 0,
+            endedAt: null,
+            recordingsMade: 0,
+            // Joining a call that is already running means someone else started it.
+            callerId: s.phase === 'ongoing' ? GROUP_STARTER_ID : SELF_ID,
+            // Audio-only starts with the camera off (and releases the webcam);
+            // "Start video call" turns it on, which also asks the browser for the
+            // webcam (the menu pick is the user gesture).
+            media:
+              opts?.audioOnly || mode === 'audio'
+                ? releaseCamera(s.media)
+                : opts?.video
+                  ? { ...s.media, cameraOn: true, useWebcam: true }
+                  : s.media,
+          };
+        }),
       /** Pre-join primary action: a 1:1 call rings; group/channel joins directly. */
       confirmPreJoin: () =>
         setState((s) =>
@@ -398,12 +483,24 @@ export function useVideoCallState() {
           media: { ...s.media, micOn: !s.media.micOn },
         })),
       toggleCamera: () =>
+        setState((s) =>
+          // Audio-only and phone calls have no camera.
+          s.mode === 'video'
+            ? { ...s, media: { ...s.media, cameraOn: !s.media.cameraOn } }
+            : s,
+        ),
+      setMedia: (next: Partial<MediaPrefs>) =>
         setState((s) => ({
           ...s,
-          media: { ...s.media, cameraOn: !s.media.cameraOn },
+          // Audio-only and phone calls have no camera, whoever asks for one.
+          media: {
+            ...s.media,
+            ...next,
+            ...(s.mode === 'video'
+              ? {}
+              : { cameraOn: false, useWebcam: false }),
+          },
         })),
-      setMedia: (next: Partial<MediaPrefs>) =>
-        setState((s) => ({ ...s, media: { ...s.media, ...next } })),
       toggleHand: () => setState((s) => ({ ...s, handRaised: !s.handRaised })),
       /** Sharing started (the capture, or the stand-in, is running). */
       startShare: (source: ShareSource) =>

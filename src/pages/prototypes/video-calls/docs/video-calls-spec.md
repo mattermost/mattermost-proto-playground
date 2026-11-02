@@ -18,7 +18,76 @@ Related specs affected by the introduction of video calling:
 - [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls)
 - Outbound SIP calling: [UX Spec: Outbound Calls — Implementation Tiers](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4647059458/UX+Spec+Outbound+Calls+Implementation+Tiers) and [Phase 1 — Basic Outbound SIP Calling](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4646993930/Phase+1+Basic+Outbound+SIP+Calling)
 
-_TODO: state what changes in each of those specs once video is introduced (for example the widget, incoming call and call card states they define). Not yet reviewed against this spec._
+_TODO: state what changes in the Calls UX Improvements for DM Calls spec once video is introduced (the widget, incoming call and call card states it defines). Not yet reviewed against this spec._
+
+Outbound SIP calling is covered in [Outbound phone calls alongside video](#outbound-phone-calls-alongside-video). That section lists only what has to be true when both ship together; the outbound flows themselves stay in the outbound specs and their own prototype.
+
+## Outbound phone calls alongside video
+
+This spec does not describe outbound phone (SIP) calling. It states how phone calls and Mattermost calls live together in the calls plugin, so the outbound specs can be aligned later. Nothing in the outbound specs or the Outbound Calls prototype has been changed; where they differ from this section, this section is the proposal for the combined experience.
+
+A phone call is a different kind of call from a Mattermost call: it carries audio only, so a phone call cannot become a video call. It shares the call shell (Start call menu, widget, call card, sidebar icon, sounds) and nothing else.
+
+### Call modes
+
+A call has one mode, chosen when it starts and kept until it ends.
+
+| Mode  | What it is                                                                                                                                                 | Camera | Window           |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------------- |
+| Video | Mattermost call on a server with video calling enabled. A call started with Start audio call is still Video (camera off; it can be turned on at any time). | Yes    | Yes              |
+| Audio | Mattermost call on a server with video calling disabled (today's calls plugin).                                                                            | No     | Yes              |
+| Phone | Outbound phone call. 1:1 and audio only.                                                                                                                   | No     | No (widget only) |
+
+"Audio" means video is not available on the server. It does not mean "camera currently off": on a server with video, Start audio call is a Video call.
+
+### Server settings and the Start call menu
+
+Video calling and phone calling are server settings. The DM header shows:
+
+| Video | Phone | DM header                                                                                                               |
+| ----- | ----- | ----------------------------------------------------------------------------------------------------------------------- |
+| Off   | Off   | Start call button with no chevron or menu (audio only, as the plugin today)                                             |
+| On    | Off   | Start call menu: Start video call, Start audio call (Camera off)                                                        |
+| Off   | On    | Start call menu: group "Mattermost call" with Start audio call, group "Phone call" with the number                      |
+| On    | On    | Start call menu: group "Mattermost call" with Start video call and Start audio call, group "Phone call" with the number |
+
+- Group headings appear only when both groups are present.
+- GM and channel headers never show a Phone call group. Phone calls are 1:1.
+- Each phone number the person can be called on is its own row: "Call <label>" with the number as the secondary label. Numbers that cannot be dialled from this network are not listed.
+- The same menu is what the profile popover's Call button opens. The popover's own phone number rows are defined in the outbound specs.
+- The prototype shows one fixed demo number and has toggles for both settings in the prototype chrome (not product UI).
+
+### Phone call widget
+
+A phone call uses the call widget (302px, same card across calling and in call), with:
+
+- Hidden: camera control, screen share, reactions, raise hand, participants, More menu, expand to window, self view.
+- Kept: the microphone control (toggle and device chevron), Leave (hang up, no confirmation).
+- Added: a Phone badge next to the name, the dialed number and its label ("312-555-0174 · Office") under the name, and a keypad button. The keypad itself is defined in the outbound specs; the prototype shows the button disabled.
+- Calling uses the same treatment as a DM video call (avatar pulse, "Calling <name>…", Cancel, 30 second timeout), with the number shown under it.
+- No pre-join: choosing a number dials straight away. _Question: confirm there is no mic check for phone calls._
+- Ringing, join and leave sounds follow the Sounds section. A distinct ringback for phone calls, so people can tell the two apart, is defined in the outbound specs.
+
+The Audio mode widget is the Video widget without the camera control: avatars only, no self view, and Start audio call as the only way to start. In the call window the camera control, device menu and Ctrl/Cmd+E are omitted.
+
+### Shared rules
+
+- **One call at a time.** Starting a phone call while in a Mattermost call, or the reverse, uses the same "You're already in a call… Leave and join new call" confirmation as a new call while in a call. No hold.
+- **Call card.** A phone call posts the same call card states as a DM call (Calling, Connected, Canceled, No answer, Ended). The outbound specs add Call failed.
+- **Where the card lives.** In the DM with the person whose number was dialled. _Question: when the number does not belong to a Mattermost user, the outbound spec anchors the call to the Calls bot DM; confirm that stays._
+- **Sidebar icon.** The in-call icon (green pill) shows on the DM while a phone call runs, same as a Mattermost call. _Question: should phone calls get a phone glyph instead?_
+- **Leaving.** Hang up leaves immediately and ends the call, same as a 1:1 video call.
+- **Not covered here.** Dial pad, recents, conference bridge, adding a phone party to a Mattermost call, and any number formats, trunks or admin configuration. Adding a phone party to a Mattermost call would be an audio-only participant, a later outbound tier.
+
+### What the outbound specs need to align on
+
+For whoever updates the outbound specs when both ship together:
+
+1. The audio option in the DM header menu is "Start audio call", under a "Mattermost call" group, instead of "Start an Audio call / Mattermost Call" with a headset subtitle.
+2. "Phone mode" of the widget is defined against the widget in this spec (one card across phases, segmented microphone control) with the hidden controls listed above.
+3. The "connecting" state asked for in standard DM and GM calls is the Calling state of this spec.
+4. The call card states match the DM Calls spec used here.
+5. The outbound widget's "Call ended" state with Dismiss gives way to the call card, as this spec does for video (the widget closes on end).
 
 ## Phases and Scope
 
@@ -28,7 +97,7 @@ Phase 2: multi-party video, up to 10 participants, in GMs and channels. Adds Ong
 
 Phase 3: support for large numbers of participants, for all-company call scenarios. Not designed or prototyped yet; the prototype caps at 10. _TODO: layouts beyond 10, host and moderation controls, and attendee roles are open and need design._
 
-Both phases: desktop web and desktop app; voice-started and video-started calls; recording indicator. Sections below say "Phase 2" where behavior applies only to group calls.
+Both phases: desktop web and desktop app; voice-started and video-started calls; audio-only servers (video calling disabled); recording indicator. Sections below say "Phase 2" where behavior applies only to group calls.
 
 Out of scope for this spec: mobile; System Console configuration; real remote video (remote tiles play generated placeholder loops); popout window focus handling; promotion of components to compass-design.
 
@@ -55,7 +124,7 @@ Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 
 **DM (1:1).** A DM call rings.
 
-1. No call. The header shows Start call.
+1. No call. The header shows the Start call button.
 2. Pre-join (start mode). Starting from the menu opens the widget at pre-join.
 3. Calling. Confirming pre-join rings the other person. The widget shows "Calling <name>…" with Cancel. The timer starts only when the other person joins, and no talking indicators show while calling. After 30 seconds without an answer the call times out and hangs up, and the call card becomes No answer (per the DM Calls UX spec). In the prototype an unanswered incoming call becomes a missed call after 30 seconds, but the outgoing call is answered after 6 seconds (a demo timer) and has no 30 second timeout. _TODO: the outgoing No answer timeout needs a way to run without the demo auto-answer._
 4. In call.
@@ -111,10 +180,17 @@ _Design questions for video (what the plugin does not settle):_
 
 ### Entry points
 
-**Header.** DM, GM and channel headers show a Start call split button with a menu: Start video call, Start audio call (secondary label "Camera off"). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off.
+**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. With more than one way to call the button has the chevron and menu (see Server settings and the Start call menu); with only one way (video off, no phone) it has no chevron, and a click starts the call.
 
-- GM / channel with an Ongoing call: the header shows Join call (quaternary) instead of Start call.
-- During your own call the header shows no start/join control.
+The same button follows the conversation's call state:
+
+| Call state                                | Button                                                         | Tooltip    | Click                               |
+| ----------------------------------------- | -------------------------------------------------------------- | ---------- | ----------------------------------- |
+| No call                                   | Phone icon with chevron (no chevron with a single way to call) | Start call | Opens the menu (or starts the call) |
+| Ongoing (GM / channel, you are not in it) | Green phone icon, no chevron                                   | Join call  | Opens pre-join in join mode         |
+| Ringing, pre-join or in the call (yours)  | Green phone icon, pressed state, no chevron                    | In call    | None                                |
+
+_Question: should clicking the In call state bring the call widget forward (for example when it has been dragged away or the window is open)?_
 
 ![Header Start call menu: Start video call and Start audio call](shots/final/01-header-start-call-menu.png)
 
@@ -319,6 +395,7 @@ The prototype wins. Differences found so far (structure only; a pixel comparison
 8. _Resolved:_ sounds follow mattermost-plugin-calls v2 (see Sounds). The prototype now plays join-self, join-user and leave; the 8-participant join limit and leave-on-disconnect are still to do.
 9. _Resolved:_ GM and channel calls have no incoming call notice, so there is no Audio only choice there; people join from the Ongoing banner, header Join call or call card. Remaining question: should the 1:1 DM incoming widget offer Audio only? (The unused `IncomingCallCard` component has it; the widget does not.)
 10. Where should the Figma board be refreshed so it matches the prototype?
+11. Phone calls (see Outbound phone calls alongside video): no pre-join, DM anchoring when the number is not a Mattermost user, and whether phone calls get their own sidebar glyph.
 
 ## References and Resources
 

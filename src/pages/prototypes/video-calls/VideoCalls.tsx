@@ -11,6 +11,7 @@ import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
+import FeatureToggles from './chrome/FeatureToggles';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
 import SoundToggle from './chrome/SoundToggle';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
@@ -25,7 +26,7 @@ import {
   DEMO_SCENES,
   PHASES,
   SURFACES,
-  phaseAvailable,
+  phaseAvailableForMode,
   surfaceAvailable,
   type DemoSceneId,
 } from './videoCalls.scenes';
@@ -37,7 +38,7 @@ export default function VideoCalls() {
   const { setCenterSlot } = usePrototypeChrome();
   const { active: walkthroughActive } = useWalkthrough();
   const { state, participants, actions } = useVideoCallState();
-  const { callContext, phase, surface, count } = state;
+  const { callContext, phase, surface, count, mode, features } = state;
   const selfCamera = useSelfCamera(state.media, actions, walkthroughActive);
   const screenShare = useScreenShare(state.sharing, actions, walkthroughActive);
 
@@ -82,13 +83,15 @@ export default function VideoCalls() {
           ariaLabel="Conversation"
         />
         <SceneSwitcher
-          scenes={PHASES.filter((p) => phaseAvailable(callContext, p.id))}
+          scenes={PHASES.filter((p) =>
+            phaseAvailableForMode(mode, callContext, p.id),
+          )}
           activeId={phase}
           onChange={(id) => actions.setPhase(id as CallPhase)}
           ariaLabel="Call phase"
         />
         <SceneSwitcher
-          scenes={SURFACES.filter((s) => surfaceAvailable(phase, s.id))}
+          scenes={SURFACES.filter((s) => surfaceAvailable(phase, s.id, mode))}
           activeId={surface}
           onChange={(id) => actions.setSurface(id as CallSurface)}
           ariaLabel="Call surface"
@@ -98,6 +101,7 @@ export default function VideoCalls() {
           onChange={actions.setCount}
           disabled={callContext === 'dm'}
         />
+        <FeatureToggles features={features} onChange={actions.setFeatures} />
         <SoundToggle on={state.soundOn} onChange={actions.setSoundOn} />
       </div>,
     );
@@ -107,6 +111,8 @@ export default function VideoCalls() {
     phase,
     surface,
     count,
+    mode,
+    features,
     state.soundOn,
     actions,
     setCenterSlot,

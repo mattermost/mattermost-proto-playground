@@ -19,7 +19,13 @@ import { WidgetIncoming } from '../components/WidgetIncoming';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useMicLevel } from '../hooks/useMicLevel';
 import { useVideoCall } from '../videoCallContext';
-import { CLIPS, DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
+import {
+  CLIPS,
+  DM_PEER_ID,
+  PHONE_NUMBER,
+  ROSTER,
+  SELF_ID,
+} from '../videoCallsData';
 import CallMoreMenu from './CallMoreMenu';
 import ExitingPopover from './ExitingPopover';
 import { PhaseCrossfade } from '../components/PhaseCrossfade';
@@ -137,9 +143,10 @@ function useDeviceMenus(ov: WidgetOverlay) {
 }
 
 function IncomingWidget() {
-  const { actions } = useVideoCall();
+  const { state, actions } = useVideoCall();
   return (
     <WidgetIncoming
+      callType={state.mode === 'audio' ? 'audio' : 'video'}
       callerName={PEER.name}
       callerAvatarSrc={PEER.avatarSrc}
       onAccept={() => actions.accept()}
@@ -190,6 +197,8 @@ function CardWidget({
   return (
     <VideoCallWidget
       phase={phase}
+      mode={state.mode}
+      phoneLabel={`${PHONE_NUMBER.number} · ${PHONE_NUMBER.label}`}
       micOn={state.media.micOn}
       onToggleMic={actions.toggleMic}
       onOpenMicMenu={() => toggle('mic')}
@@ -250,7 +259,9 @@ function CardWidget({
           micLabel={micLabel}
           onShowMic={() => toggle('mic')}
           cameraLabel={cameraLabel}
-          onShowCamera={() => toggle('camera')}
+          onShowCamera={
+            state.mode === 'video' ? () => toggle('camera') : undefined
+          }
           onShowOutput={() => toggle('output')}
           onToggleRecording={() => {
             actions.toggleRecording();

@@ -24,13 +24,8 @@ export function stampVideoCallsWalkthroughFocus(): () => void {
 
   stampShell(document.querySelector('[class*="channel-shell"]'));
 
-  // Header Start call button (the menu trigger, not the whole header).
-  stamp(
-    Array.from(
-      document.querySelectorAll<HTMLElement>('button[aria-haspopup="menu"]'),
-    ).find((el) => el.textContent?.trim() === 'Start call'),
-    'start-call',
-  );
+  // Header Start call button (icon-only; the menu trigger, not the whole header).
+  stamp(byLabel('Start call'), 'start-call');
 
   // The widget card: setup, outgoing, joining or active (only one is mounted).
   stamp(

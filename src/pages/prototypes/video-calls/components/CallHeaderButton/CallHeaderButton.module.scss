@@ -1,0 +1,54 @@
+.call-header-button {
+  position: relative;
+  display: inline-flex;
+
+  // Icon-only: no label gap, so the phone and chevron sit together.
+  &__trigger {
+    gap: var(--spacing-xxxs);
+
+    // A call is running (join) or you are in it: the phone reads as live.
+    &--live {
+      color: var(--online-indicator, var(--color-success));
+    }
+
+    &--in-call {
+      background: rgba(
+        var(--online-indicator-rgb, var(--color-success-rgb)),
+        0.12
+      );
+    }
+  }
+
+  // Under the button, centered on it. Visual only; pointer events pass through.
+  &__tooltip {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 50%;
+    z-index: 30;
+    transform: translateX(-50%);
+    transform-origin: top center;
+    pointer-events: none;
+    animation: call-header-button-tip-in var(--duration-quick)
+      var(--ease-entrance);
+
+    &--exiting {
+      opacity: 0;
+      transition: opacity var(--duration-quick) var(--ease-exit);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      transition: none;
+    }
+  }
+}
+
+@keyframes call-header-button-tip-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
