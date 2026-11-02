@@ -1,12 +1,18 @@
 import {
   Component,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
+  useState,
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
+import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import {
   OVERFLOW_CELL,
   type StageLayout,
@@ -65,6 +71,9 @@ export interface VideoStageLabels {
   overflowAria?: (count: number) => string;
   /** Accessible name of the per-tile select button. */
   selectTile?: (name: string) => string;
+  /** Speaker strip pagination: previous / next page buttons (1-based page). */
+  prevPage?: (page: number, total: number) => string;
+  nextPage?: (page: number, total: number) => string;
   /** Chip over shared content. */
   presenting?: (name: string) => string;
   /** Self-view PiP copy. */
@@ -108,6 +117,8 @@ const DEFAULT_LABELS: Required<VideoStageLabels> = {
   overflow: (n) => `+${n}`,
   overflowAria: (n) => `${n} more ${n === 1 ? 'participant' : 'participants'}`,
   selectTile: (name) => `Focus ${name}`,
+  prevPage: (page, total) => `Previous participants, page ${page} of ${total}`,
+  nextPage: (page, total) => `Next participants, page ${page} of ${total}`,
   presenting: (name) => `${name} is presenting`,
   pipRegion: 'Your video. Drag or use arrow keys to move it to another corner.',
   pipHide: 'Hide self view',
@@ -124,6 +135,17 @@ interface Placement {
   role: CellRole;
   column?: string;
   row?: string;
+}
+
+interface StripBox {
+  /** Canvas width (px). */
+  width: number;
+  /** Gap between strip tiles (px). */
+  gap: number;
+  /** Minimum strip tile width (px) before the strip paginates. */
+  min: number;
+  /** Width reserved for each page button (px). */
+  nav: number;
 }
 
 interface StagePlan {
@@ -292,7 +314,7 @@ class FlipBoundary extends Component<FlipBoundaryProps> {
  * most the visible tiles decode video.
  */
 export function VideoStage({
-  layout,
+  layout: inputLayout,
   participants,
   clips = {},
   selfStream,
@@ -311,6 +333,68 @@ export function VideoStage({
   className,
 }: VideoStageProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
+  const canvasRef = useRef<HTMLDivElement | null>(null);
+  const [stripBox, setStripBox] = useState<StripBox | null>(null);
+  const [stripPage, setStripPage] = useState(0);
+
+  // Measure the strip's room: canvas width, gap and the minimum tile / nav
+  // widths (CSS custom properties), so paging follows the stage, not a guess.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+    const read = () => {
+      const cs = getComputedStyle(canvas);
+      const next: StripBox = {
+        width: canvas.clientWidth,
+        gap: parseFloat(cs.rowGap) || 0,
+        min: parseFloat(cs.getPropertyValue('--video-stage-strip-min')) || 0,
+        nav: parseFloat(cs.getPropertyValue('--video-stage-strip-nav')) || 0,
+      };
+      setStripBox((prev) =>
+        prev &&
+        prev.width === next.width &&
+        prev.gap === next.gap &&
+        prev.min === next.min &&
+        prev.nav === next.nav
+          ? prev
+          : next,
+      );
+    };
+    read();
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(read);
+    ro.observe(canvas);
+    return () => ro.disconnect();
+  }, [compact]);
+
+  // Speaker strip pagination, only when the tiles would drop below the
+  // minimum size (e.g. a side pane narrows the stage). Self stays on every
+  // page; the other tiles are split across pages.
+  const paged = useMemo(() => {
+    if (inputLayout.kind !== 'speaker' || !stripBox || stripBox.min <= 0) {
+      return null;
+    }
+    const { width, gap, min, nav } = stripBox;
+    const cell = min + gap;
+    const ids = inputLayout.stripIds;
+    if (ids.length <= Math.floor(width / cell)) return null;
+    const selfId = participants.find((p) => p.self)?.id;
+    const selfInStrip = !!selfId && ids.includes(selfId);
+    const capacity = Math.max(2, Math.floor((width - 2 * nav) / cell));
+    const perPage = Math.max(1, capacity - (selfInStrip ? 1 : 0));
+    const others = ids.filter((id) => id !== selfId);
+    const pageCount = Math.max(1, Math.ceil(others.length / perPage));
+    const page = Math.min(stripPage, pageCount - 1);
+    const onPage = new Set(others.slice(page * perPage, (page + 1) * perPage));
+    const visible = ids.filter((id) => id === selfId || onPage.has(id));
+    return {
+      page,
+      pageCount,
+      layout: { ...inputLayout, stripIds: visible, stripRows: [visible] },
+    };
+  }, [inputLayout, stripBox, participants, stripPage]);
+  const layout: StageLayout = paged?.layout ?? inputLayout;
+
   const byId = new Map(participants.map((p) => [p.id, p]));
   // Stable per-tile menu objects so memoised tiles skip the timer's re-renders.
   const tileMenus = useMemo(
@@ -548,15 +632,53 @@ export function VideoStage({
     <section ref={rootRef} className={rootClass} aria-label={l.stage}>
       <FlipBoundary flipKey={flipKey} nodes={nodes} rootRef={rootRef}>
         <div
+          ref={canvasRef}
           className={cx(
             styles['video-stage__canvas'],
             layout.kind === 'grid' && styles['video-stage__canvas--grid'],
+            !!paged && styles['video-stage__canvas--paged'],
           )}
           style={plan.canvas}
         >
           {renderShareContent()}
           {tiles}
           {renderOverflow()}
+          {paged && (
+            <>
+              <div
+                className={cx(
+                  styles['video-stage__nav'],
+                  styles['video-stage__nav--prev'],
+                )}
+              >
+                <IconButton
+                  icon={<Icon size="16" glyph={<ChevronLeftIcon />} />}
+                  size="small"
+                  padding="compact"
+                  style="inverted"
+                  aria-label={l.prevPage(paged.page + 1, paged.pageCount)}
+                  disabled={paged.page === 0}
+                  onClick={() => setStripPage(paged.page - 1)}
+                />
+              </div>
+              <div
+                className={cx(
+                  styles['video-stage__nav'],
+                  styles['video-stage__nav--next'],
+                )}
+              >
+                <IconButton
+                  icon={<Icon size="16" glyph={<ChevronRightIcon />} />}
+                  size="small"
+                  padding="compact"
+                  style="inverted"
+                  aria-label={l.nextPage(paged.page + 1, paged.pageCount)}
+                  disabled={paged.page >= paged.pageCount - 1}
+                  onClick={() => setStripPage(paged.page + 1)}
+                />
+              </div>
+            </>
+          )}
         </div>
       </FlipBoundary>
     </section>

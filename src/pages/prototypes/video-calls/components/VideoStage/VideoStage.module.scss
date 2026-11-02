@@ -32,6 +32,10 @@
   --video-stage-film: 200px;
   --video-stage-strip-max: 240px;
   --video-stage-strip-aspect: calc(16 / 9);
+  // Speaker strip paginates when tiles would be narrower than this. One-off
+  // layout widths (read by VideoStage to decide paging).
+  --video-stage-strip-min: 96px;
+  --video-stage-strip-nav: 40px;
 
   position: relative;
   width: 100%;
@@ -44,10 +48,14 @@
 
   &__canvas {
     // Speaker strip cell (incl. its gap padding) sized from the stage width.
+    --video-stage-strip-reserve: 0px;
     --video-stage-strip-cell: min(
       calc(var(--video-stage-strip-max) + var(--video-stage-gap)),
       calc(
-        (100cqw - 2 * var(--video-stage-edge) + var(--video-stage-gap)) /
+        (
+            100cqw - 2 * var(--video-stage-edge) +
+              var(--video-stage-gap) - var(--video-stage-strip-reserve)
+          ) /
           var(--video-stage-strip-count, 1)
       )
     );
@@ -304,6 +312,8 @@
     --video-stage-film: 120px;
     --video-stage-strip-max: 120px;
     --video-stage-strip-aspect: 1;
+    --video-stage-strip-min: 72px;
+    --video-stage-strip-nav: 32px;
   }
 
   @media (prefers-reduced-motion: reduce) {
