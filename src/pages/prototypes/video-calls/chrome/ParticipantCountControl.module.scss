@@ -9,7 +9,10 @@
   font-size: var(--font-size-75);
   font-weight: var(--font-weight-semibold);
 
-  &__label {
+  // The People icon in place of a text label (the group's aria-label names it).
+  &__icon {
+    display: inline-flex;
+    align-items: center;
     padding-inline: var(--spacing-xxxs);
   }
 

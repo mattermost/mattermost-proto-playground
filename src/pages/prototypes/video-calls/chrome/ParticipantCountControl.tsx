@@ -1,5 +1,6 @@
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
 import MinusIcon from '@mattermost/compass-icons/components/minus';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import { MAX_PARTICIPANTS } from '@/types/videoCall';
@@ -29,7 +30,9 @@ export default function ParticipantCountControl({
       role="group"
       aria-label="Participants in call"
     >
-      <span className={styles['participant-count__label']}>People</span>
+      <span className={styles['participant-count__icon']} aria-hidden="true">
+        <Icon size="12" glyph={<AccountMultipleOutlineIcon />} />
+      </span>
       <IconButton
         size="x-small"
         padding="compact"
