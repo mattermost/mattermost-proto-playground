@@ -267,9 +267,25 @@ Multi-scene prototypes under `src/pages/prototypes/<slug>/`:
 <Slug>.module.scss    # Shared styles
 components/           # Prototype-only shared UI (not design-system)
 scenes/               # One file per scene-switcher entry
+docs/                 # Input references: requirements, PRFAQ/PRD, UX spec, shots, README index
 ```
 
 - Orchestrator stays thin; persistent cross-scene state lives there.
 - Use **`scenes/`**, not `views/`.
 - Compass UI / proto pieces come from those packages — do not reimplement them under prototype `components/`. Playground `src/components/` is catalog chrome only.
 - Single-scene / tiny prototypes may stay flat until a second scene or the file grows past roughly one screen of JSX.
+
+## Prototype docs
+
+Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It holds the inputs the prototype is built from, so agents in later sessions can read them instead of asking again.
+
+- Requirements, PRFAQ / PRD links or excerpts, and other input references.
+- UX spec source markdown as `<slug>-spec.md`.
+- Screenshots under `docs/shots/`, referenced with **relative** image paths.
+- `docs/README.md` — an index of Confluence, Figma, Jira, and PR links. Label every item **requirement** or **background**. An engineering brief is background: never quote it as design requirements.
+
+Rules:
+
+- **Read `docs/` first** when starting work on a prototype.
+- When the user provides a new input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
+- No absolute local paths. Link rather than paste anything confidential.
