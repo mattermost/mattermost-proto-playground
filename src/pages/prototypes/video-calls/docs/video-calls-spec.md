@@ -21,7 +21,7 @@ Related specs affected by the introduction of video calling:
 
 ## Phases and Scope
 
-Phase 1: 1:1 video calls in DMs. Covers ringing (calling, incoming, joining), pre-join, widget, call window, screen share, call card states and sounds.
+Phase 1: 1:1 video calls in DMs. Covers ringing (calling, incoming, joining), pre-join, widget, call window, screen share and sounds.
 
 Phase 2: multi-party video, up to 10 participants, in GMs and channels. Adds Ongoing calls, the call banner, join-mode pre-join, grid and speaker layouts for 3-10 people, host controls and the participants pane. Cap of 10 confirmed for this phase.
 
@@ -125,35 +125,7 @@ Per the DM Calls UX spec: in a DM, hang up leaves immediately with no confirmati
 
 ![Channel call banner for an ongoing call](shots/final/15-channel-call-banner.png)
 
-**Call card (post in the message list).** Max width 700px; stacks below about 480px (Figma Narrow). Hover adds a shadow. States:
-
-| State | Where | Title / meta | Action |
-| --- | --- | --- | --- |
-| Calling | DM, you are ringing | "Calling <name>…" / "Waiting for them to answer" | Cancel |
-| Active | DM incoming/joining; GM/channel Ongoing and pre-join (join mode) | DM incoming: "<name> is calling you" / "Video call · just now"; joining: "Joining <name>…" / "Connecting…"; group: "Call started" / "<when> by <name>" | Join call (only when you can act) |
-| Joined | You are in the call | "Call started" / "just now by <name>"; avatars | Leave |
-| Ended | Call over | "Call ended" / "Ended at <time> · Lasted <m:ss>"; "N recording(s)" when recorded | none |
-| Declined | DM, you declined | "Call declined" / "You declined a call from <name> · <time>" | Call back |
-| Missed | DM, ring timed out | "Missed call" / "<name> · <time>" | Call back |
-
-The DM Calls UX spec defines the card for both people (caller and callee): Calling, Connected, Canceled call, No answer (callee: No answer / missed call), Declined, Ended. The prototype shows one card per state, including Canceled call ("Call canceled" / "You canceled the call to [name] · [time]"). *TODO: caller versus callee copy.*
-
-![Call card: Calling](shots/final/04-call-card-calling.png)
-
-![Call card: incoming call (Active)](shots/final/10-call-card-incoming.png)
-
-![Call card: Joined](shots/final/06-call-card-joined.png)
-
-![Call card: ongoing group call (Active)](shots/final/16-call-card-active-group.png)
-
-![Call card: Ended](shots/final/08-call-card-ended.png)
-
-![Call card: Declined](shots/final/11-call-card-declined.png)
-
-![Call card: Canceled](shots/final/25-call-card-canceled.png)
-
-The caller is named as the post author: joining or receiving a DM call names the DM peer as caller; a call joined in a group names its starter.
-In a GM, only that group's members' messages appear; a channel shows everyone.
+**Call card (post in the message list).** The card's states and copy (Calling, Connected, Canceled call, No answer, Declined, Ended) are defined in the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec and are not repeated here. Max width 700px; it stacks below about 480px (Figma Narrow); hover adds a shadow. In a GM or channel the card shows Active with Join call while you are not in the call, and Joined with Leave once you are; its "N minutes ago by [name]" uses the same start time as the call banner.
 
 ### Pre-join
 
@@ -311,7 +283,7 @@ New in the prototype (candidates for the design system): CallCard, CallBanner, V
 
 The prototype wins. Differences found so far (structure only; a pixel comparison was not possible because Figma image export was blocked in this session):
 
-1. The Call Card Figma file defines Active, Active + Joined and Inactive, each Default / Hover × Default / Narrow (12 variants). The Calling, Declined and No answer / missed states come from the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec, so the Call Card file predates them rather than the prototype inventing them. The prototype implements those states, including Canceled call. The Call back action on declined and missed cards is not listed in that spec's states table. *Question: is Call back intended, and should the Call Card file gain variants for the new states?*
+1. The Call Card Figma file predates the states in the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec (Calling, No answer, Declined, Canceled) and should gain variants for them. The Call back action on declined and missed cards is prototype-only and is not in that spec. *Question: is Call back intended?*
 2. The Video-Calling board (1335:418726) shows an older widget and call room (participant grid, screen share grid, widget controls). The prototype's widget (persistent segmented controls, one card across phases), window, banner and sidebar icon have no matching frames.
 3. Prototype-only decisions to confirm with design: remote video tiles are avatar-only placeholders; the widget More menu still has duplicate Microphone and Camera rows; the notice pill uses a fixed mic-off icon for every message; the Speaker and Grid view glyphs are a custom SVG and a compass-icons `apps` glyph because the compass-icons set is missing a view glyph and Wi-Fi icons.
 
@@ -323,7 +295,7 @@ The prototype wins. Differences found so far (structure only; a pixel comparison
 3. Should the call banner dismissal persist across sessions or only for the current visit?
 4. *Resolved:* the banner live-updates (elapsed time and participant count). The prototype now ticks the elapsed time; the count follows the People control.
 5. Green-600 versus green-700 for small white text (3.54:1 versus 5.2:1).
-6. *Resolved:* for DM calls the caller already sees declined, no answer and canceled outcomes on the call card (see Calls UX Improvements for DM Calls). The prototype shows one Declined / Missed card post; confirm the caller's wording differs from the callee's as that spec's caller and callee columns imply.
+6. *Resolved:* the call card states for DM calls, including what the caller sees on decline, no answer and cancel, are defined in the Calls UX Improvements for DM Calls spec.
 7. Which events produce persistent network warnings, and what is the copy?
 8. *Resolved:* sounds follow mattermost-plugin-calls v2 (see Sounds). The prototype now plays join-self, join-user and leave; the 8-participant join limit and leave-on-disconnect are still to do.
 9. *Resolved:* GM and channel calls have no incoming call notice, so there is no Audio only choice there; people join from the Ongoing banner, header Join call or call card. Remaining question: should the 1:1 DM incoming widget offer Audio only? (The unused `IncomingCallCard` component has it; the widget does not.)
