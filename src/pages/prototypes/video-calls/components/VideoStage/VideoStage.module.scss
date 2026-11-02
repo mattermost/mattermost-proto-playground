@@ -86,6 +86,8 @@
     column-gap: 0;
     row-gap: var(--video-stage-gap);
     align-content: center;
+    transition: --video-stage-strip-reserve var(--duration-moderate)
+      var(--ease-transition);
 
     // Grid view: shrink the canvas to the largest block of 16:9 tiles that
     // fits, centred, so tiles stay grouped instead of drifting apart.
@@ -107,6 +109,32 @@
         )
       );
       translate: -50% 0;
+    }
+
+    // Paged speaker strip: room for the previous / next buttons on both
+    // sides. The reserve is a typed length so it animates with the stage.
+    &--paged {
+      --video-stage-strip-reserve: calc(2 * var(--video-stage-strip-nav));
+    }
+  }
+
+  // Page buttons sit in the empty side margins, centred on the strip row.
+  &__nav {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    height: var(--video-stage-strip-row);
+    width: var(--video-stage-strip-nav);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--prev {
+      left: 0;
+    }
+
+    &--next {
+      right: 0;
     }
   }
 
