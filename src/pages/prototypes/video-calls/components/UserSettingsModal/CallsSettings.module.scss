@@ -173,6 +173,13 @@
     gap: var(--spacing-s);
   }
 
+  // The column left-aligns its children, and the meter's bars have no intrinsic
+  // width, so it must stretch or it collapses to nothing.
+  &__meter {
+    align-self: stretch;
+    max-width: 320px;
+  }
+
   &__field-label {
     font-size: var(--font-size-100);
     line-height: var(--line-height-100);

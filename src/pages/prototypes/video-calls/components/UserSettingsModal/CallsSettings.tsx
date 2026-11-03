@@ -164,7 +164,10 @@ export default function CallsSettings({
             </Field>
             <Field label="Input level" top>
               <div className={styles['calls-settings__field-stack']}>
-                <MicLevelMeter level={micLevel} />
+                <MicLevelMeter
+                  level={micLevel}
+                  className={styles['calls-settings__meter']}
+                />
                 {!micCheck && (
                   <Button
                     emphasis="tertiary"
