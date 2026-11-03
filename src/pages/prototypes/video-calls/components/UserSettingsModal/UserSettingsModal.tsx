@@ -68,10 +68,11 @@ export default function UserSettingsModal({
       container={container}
       lockScroll={false}
       onClose={onClose}
-      onExited={handleExited}
       style={{ position: 'absolute' }}
     >
       <Modal
+        open={open}
+        onExited={handleExited}
         title="Settings"
         size="large"
         className={styles['user-settings-modal']}
