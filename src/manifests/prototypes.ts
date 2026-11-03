@@ -2,7 +2,6 @@ import type { ComponentType } from 'react';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
-import UserSettings from '@/pages/prototypes/user-settings/UserSettings';
 import VideoCalls from '@/pages/prototypes/video-calls/VideoCalls';
 
 export type PrototypeEntry = {
@@ -32,12 +31,6 @@ export const PROTOTYPES: PrototypeEntry[] = [
     component: OutboundCalls,
   },
   {
-    id: 'user-settings',
-    label: 'User Settings',
-    path: '/prototypes/user-settings',
-    component: UserSettings,
-  },
-  {
     id: 'video-calls',
     label: 'Video Calls',
     path: '/prototypes/video-calls',
@@ -45,8 +38,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
   },
 ];
 
-export function getPrototypeByPath(pathname: string): PrototypeEntry | undefined {
+export function getPrototypeByPath(
+  pathname: string,
+): PrototypeEntry | undefined {
   const normalized =
-    pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+    pathname.length > 1 && pathname.endsWith('/')
+      ? pathname.slice(0, -1)
+      : pathname;
   return PROTOTYPES.find((p) => p.path === normalized);
 }

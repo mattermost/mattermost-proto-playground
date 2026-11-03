@@ -14,7 +14,7 @@ import {
   SPEAKER_OPTIONS,
   type CallsSectionId,
   type CallsSettingsValues,
-} from '../userSettingsData';
+} from './userSettingsData';
 import styles from './CallsSettings.module.scss';
 
 type Props = {

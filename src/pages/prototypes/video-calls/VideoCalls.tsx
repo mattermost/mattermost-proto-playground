@@ -14,6 +14,7 @@ import type { WalkthroughSceneState } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
 import PrototypeSettings from './chrome/PrototypeSettings';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
+import { UserSettingsModal } from './components/UserSettingsModal';
 import CallPhaseEffects from './scenes/CallPhaseEffects';
 import SelfVoiceActivity from './scenes/SelfVoiceActivity';
 import CallWindowScene from './scenes/CallWindowScene';
@@ -139,6 +140,8 @@ export default function VideoCalls() {
     walkthroughActive,
   ]);
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   const value = useMemo(
     () => ({
       state,
@@ -147,8 +150,18 @@ export default function VideoCalls() {
       selfCamera,
       screenShare,
       startCallMenuOpen,
+      settingsOpen,
+      setSettingsOpen,
     }),
-    [state, participants, actions, selfCamera, screenShare, startCallMenuOpen],
+    [
+      state,
+      participants,
+      actions,
+      selfCamera,
+      screenShare,
+      startCallMenuOpen,
+      settingsOpen,
+    ],
   );
 
   // The window hosts every phase except idle, incoming and joining (those are widget-only).
@@ -191,6 +204,11 @@ export default function VideoCalls() {
               </div>
             )}
           </ModalOverlay>
+          <UserSettingsModal
+            open={settingsOpen}
+            onClose={() => setSettingsOpen(false)}
+            container={frameEl}
+          />
         </div>
       </div>
     </VideoCallContext.Provider>

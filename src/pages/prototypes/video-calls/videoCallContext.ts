@@ -15,6 +15,9 @@ export interface VideoCallContextValue {
   screenShare: ScreenShare;
   /** Walkthrough keeps the header Start call menu open for a step. */
   startCallMenuOpen: boolean;
+  /** User Settings modal: open state and the header cog handler. */
+  settingsOpen: boolean;
+  setSettingsOpen: (open: boolean) => void;
 }
 
 export const VideoCallContext = createContext<VideoCallContextValue | null>(

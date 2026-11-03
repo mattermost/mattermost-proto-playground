@@ -63,13 +63,3 @@ export const EXPANDED_TITLES: Record<CallsSectionId, string> = {
   screen: 'Share sound with screen',
   video: 'Video devices',
 };
-
-export type UserSettingsSceneId = 'collapsed' | 'expanded';
-
-export const USER_SETTINGS_SCENES: {
-  id: UserSettingsSceneId;
-  label: string;
-}[] = [
-  { id: 'collapsed', label: 'Collapsed' },
-  { id: 'expanded', label: 'All expanded' },
-];

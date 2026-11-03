@@ -137,7 +137,7 @@ export default function VideoCallChannelShell({
   overlay,
   trailing,
 }: VideoCallChannelShellProps) {
-  const { state } = useVideoCall();
+  const { state, settingsOpen, setSettingsOpen } = useVideoCall();
   const model = useMemo(
     () =>
       buildSidebarModel(
@@ -151,6 +151,10 @@ export default function VideoCallChannelShell({
   return (
     <ChannelShell
       channelsSidebarModel={model}
+      globalHeaderProps={{
+        onSettingsClick: () => setSettingsOpen(true),
+        settingsActive: settingsOpen,
+      }}
       channelHeader={header}
       floating={floating}
       overlay={overlay}
