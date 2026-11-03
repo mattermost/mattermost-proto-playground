@@ -13,6 +13,7 @@ import {
   type DeviceOption,
 } from './userSettingsData';
 import { useLocalCamera } from '../../hooks/useLocalCamera';
+import { useMicPermissionGranted } from '../../hooks/useMicPermission';
 import { useMicLevel, useMicStream } from '../../hooks/useMicLevel';
 import { useVideoCall } from '../../videoCallContext';
 import { ROSTER, SELF_ID } from '../../videoCallsData';
@@ -81,30 +82,10 @@ export default function CallsSettings({
   // meter goes live on its own and the button is not shown.
   const audioOpen = expanded.has('audio');
   const [micRequested, setMicRequested] = useState(false);
-  const [micGranted, setMicGranted] = useState(false);
   useEffect(() => {
     if (!audioOpen) setMicRequested(false);
   }, [audioOpen]);
-  useEffect(() => {
-    if (!audioOpen || !navigator.permissions?.query) return;
-    let status: PermissionStatus | null = null;
-    let cancelled = false;
-    const sync = () => setMicGranted(status?.state === 'granted');
-    // Browsers without a 'microphone' permission name reject; the button covers them.
-    navigator.permissions
-      .query({ name: 'microphone' as PermissionName })
-      .then((result) => {
-        if (cancelled) return;
-        status = result;
-        sync();
-        result.addEventListener('change', sync);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-      status?.removeEventListener('change', sync);
-    };
-  }, [audioOpen]);
+  const micGranted = useMicPermissionGranted(audioOpen);
   const micCheck = micRequested || micGranted;
   const micStream = useMicStream({
     enabled: audioOpen && micCheck,

@@ -20,6 +20,7 @@ import {
 import { playSound, setSoundsEnabled, stopSound } from '../callSounds';
 import { useMediaDevices } from '../hooks/useMediaDevices';
 import { useMicLevel, useMicStream } from '../hooks/useMicLevel';
+import { useMicPermissionGranted } from '../hooks/useMicPermission';
 import { useVideoCall } from '../videoCallContext';
 import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
 import { describePeople } from './callCopy';
@@ -57,7 +58,10 @@ export default function PreJoinScene() {
   const calling = state.phase === 'calling';
   const conversationName = useConversationName();
   const [openMenu, setOpenMenu] = useState<WindowDeviceMenuId | null>(null);
-  const [micCheck, setMicCheck] = useState(false);
+  const [micRequested, setMicRequested] = useState(false);
+  // Already granted: the meter goes live on its own and the button is not needed.
+  const micGranted = useMicPermissionGranted(true);
+  const micCheck = micRequested || micGranted;
   const [testing, setTesting] = useState(false);
   const testTimer = useRef<number | null>(null);
 
@@ -234,7 +238,7 @@ export default function PreJoinScene() {
                         appearance="inverted"
                         size="small"
                         disabled={!media.micOn}
-                        onClick={() => setMicCheck(true)}
+                        onClick={() => setMicRequested(true)}
                       >
                         Check my microphone
                       </Button>
