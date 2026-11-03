@@ -36,7 +36,7 @@ export default function SettingsSidebar({
     <MenuItem
       key={tab.id}
       label={tab.label}
-      leadingVisual={<Icon glyph={tab.glyph} size="20" />}
+      leadingVisual={<Icon glyph={tab.glyph} size="16" />}
       active={tab.id === activeId}
       className={[
         styles['settings-sidebar__item'],
