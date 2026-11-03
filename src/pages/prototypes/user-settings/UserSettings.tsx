@@ -116,20 +116,29 @@ export default function UserSettings() {
     collapse(id);
   };
 
-  // GlobalHeader has no settings callback, so listen for its cog (aria-label
-  // "Settings") by delegation instead of reaching into its DOM.
+  // GlobalHeader has no settings callback, so detect a click on its cog by
+  // delegation. The cog is the button just before the account avatar; the
+  // "Settings" label is only a fallback (it comes from the tooltip wrapper and
+  // is not on the button in every compass-proto build).
   const handleHeaderClick = (e: MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest('button[aria-label="Settings"]'))
-      setOpen(true);
+    const button = (e.target as HTMLElement).closest('button');
+    if (!button) return;
+    const buttons = Array.from(e.currentTarget.querySelectorAll('button'));
+    const accountIndex = buttons.findIndex((b) =>
+      b.getAttribute('aria-label')?.toLowerCase().includes('account'),
+    );
+    const isCog =
+      (accountIndex > 0 && buttons[accountIndex - 1] === button) ||
+      button.getAttribute('aria-label') === 'Settings';
+    if (isCog) setOpen(true);
   };
 
   return (
     <div className={styles['user-settings']}>
       <div ref={setFrameEl} className={styles['user-settings__shell']}>
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div
           className={styles['user-settings__global-header']}
-          onClick={handleHeaderClick}
+          onClickCapture={handleHeaderClick}
         >
           <GlobalHeader
             product="channels"
