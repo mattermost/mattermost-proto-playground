@@ -39,7 +39,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
         'Start video call opens setup with your camera on.',
         'Start audio call opens setup with the camera off. You can turn the camera on during the call.',
         'Copy call link copies a link to share. It does not start a call, and a notice confirms the copy.',
-        'Call settings, below a divider, is where call preferences live. Here it only says where that screen would be.',
+        'Call settings, below a divider, opens User Settings on the Calls tab, where call preferences live.',
         'When phone calling is also on, these rows sit under Mattermost call, and a Phone call group follows. That is later in this walkthrough.',
       ],
       scene: 'dm',

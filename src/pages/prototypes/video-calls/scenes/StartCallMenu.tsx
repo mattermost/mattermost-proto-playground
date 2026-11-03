@@ -50,7 +50,7 @@ const NOTICE_MS = 3000;
 const NOTICE_EXIT_MS = 150;
 
 /**
- * Opens the Calls plugin settings, where the pre-join setting lives. Below a
+ * Opens User Settings on the Calls tab, where the pre-join setting lives. Below a
  * separator because it is not a way to call.
  */
 const CALL_SETTINGS_OPTION: StartCallOption = {
@@ -83,7 +83,7 @@ const PHONE_OPTION: StartCallOption = {
  * starts the call.
  */
 export default function StartCallMenu() {
-  const { state, actions, startCallMenuOpen } = useVideoCall();
+  const { state, actions, startCallMenuOpen, setSettingsOpen } = useVideoCall();
   const { features, callContext } = state;
   const [open, setOpen] = useState(false);
   // A walkthrough step can hold the menu open; outside click and Escape stay off then.
@@ -134,17 +134,6 @@ export default function StartCallMenu() {
     setNoticeOpen(true);
   };
 
-  // The Calls plugin settings are not part of this prototype, so the item
-  // only says where it would go.
-  const openCallSettings = () => {
-    setNotice({
-      message: 'Opens Calls plugin settings (not in this prototype)',
-      tone: 'default',
-      icon: <CogOutlineIcon />,
-    });
-    setNoticeOpen(true);
-  };
-
   const withPhone = features.phone && callContext === 'dm';
   const options = useMemo<StartCallOption[]>(() => {
     // Group headings only appear once there are two groups to tell apart.
@@ -169,7 +158,7 @@ export default function StartCallMenu() {
   const start = (id: string) => {
     setOpen(false);
     if (id === 'copy-link') void copyLink();
-    else if (id === 'call-settings') openCallSettings();
+    else if (id === 'call-settings') setSettingsOpen(true);
     else if (id === 'phone') actions.startCall({ phone: true });
     else
       actions.startCall({
