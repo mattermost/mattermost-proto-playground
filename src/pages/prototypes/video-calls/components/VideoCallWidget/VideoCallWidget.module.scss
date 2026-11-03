@@ -150,7 +150,9 @@
     clip-path: inset(calc(var(--spacing-m) * -1) 0 0 0);
     transition: height var(--duration-moderate) var(--ease-transition);
 
-    &--pre-join {
+    // Calling (video) keeps the pre-join media: callee area plus self view.
+    &--pre-join,
+    &--calling {
       --video-call-widget-media-h: calc(
         var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
       );

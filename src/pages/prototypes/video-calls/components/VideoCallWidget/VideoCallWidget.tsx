@@ -321,6 +321,14 @@ export function VideoCallWidget({
           ? l.titleStart(channelName)
           : l.titleJoin(channelName)}
       </h2>
+    ) : phase === 'calling' && !compact ? (
+      <h2
+        className={styles['video-call-widget__title']}
+        role="status"
+        aria-live="polite"
+      >
+        {l.calling(peerName)}
+      </h2>
     ) : compact ? (
       (() => {
         const ringing = phase === 'calling' || phase === 'joining';
@@ -414,40 +422,40 @@ export function VideoCallWidget({
       </>
     ) : null;
 
+  // Same layout as the live call: the person being called in the video area
+  // (their avatar keeps the calling animation, on a light background) and
+  // your self view picture-in-picture. Pre-join (start) and calling share it.
+  const calleeArea = (
+    // Same layout as the live call: the person you are about to call in
+    // the video area (their avatar keeps the calling animation, on a
+    // light background) and your self view picture-in-picture.
+    <div className={styles['video-call-widget__speaker']}>
+      <div className={styles['video-call-widget__pre-join-peer']}>
+        <CallingPulse>
+          <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
+        </CallingPulse>
+      </div>
+      <div className={styles['video-call-widget__pip']}>
+        <VideoTile
+          className={styles['video-call-widget__pip-tile']}
+          name={selfName}
+          avatarSrc={selfAvatarSrc}
+          stream={selfStream}
+          cameraOn={cameraOn}
+          muted={!micOn}
+          mirrored
+          size="thumbnail"
+          showLabel={false}
+          selfLabel={l.self}
+        />
+      </div>
+    </div>
+  );
+
   const media =
     phase === 'pre-join' ? (
       <div className={styles['video-call-widget__pre-join']}>
-        {!noPreview && joinMode === 'start' && (
-          // Same layout as the live call: the person you are about to call in
-          // the video area (their avatar keeps the calling animation, on a
-          // light background) and your self view picture-in-picture.
-          <div className={styles['video-call-widget__speaker']}>
-            <div className={styles['video-call-widget__pre-join-peer']}>
-              <CallingPulse>
-                <UserAvatar
-                  src={peerAvatarSrc}
-                  alt=""
-                  name={peerName}
-                  size="48"
-                />
-              </CallingPulse>
-            </div>
-            <div className={styles['video-call-widget__pip']}>
-              <VideoTile
-                className={styles['video-call-widget__pip-tile']}
-                name={selfName}
-                avatarSrc={selfAvatarSrc}
-                stream={selfStream}
-                cameraOn={cameraOn}
-                muted={!micOn}
-                mirrored
-                size="thumbnail"
-                showLabel={false}
-                selfLabel={l.self}
-              />
-            </div>
-          </div>
-        )}
+        {!noPreview && joinMode === 'start' && calleeArea}
         {!noPreview && joinMode !== 'start' && (
           <div className={styles['video-call-widget__preview']}>
             <VideoTile
@@ -479,17 +487,7 @@ export function VideoCallWidget({
         )}
       </div>
     ) : compact ? null : phase === 'calling' ? (
-      <div className={styles['video-call-widget__peer']} aria-live="polite">
-        <CallingPulse>
-          <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
-        </CallingPulse>
-        <p className={styles['video-call-widget__status']}>
-          {l.calling(peerName)}
-        </p>
-        {isPhone && (
-          <p className={styles['video-call-widget__sub']}>{phoneLabel}</p>
-        )}
-      </div>
+      <div className={styles['video-call-widget__pre-join']}>{calleeArea}</div>
     ) : phase === 'joining' ? (
       <div className={styles['video-call-widget__peer']} aria-live="polite">
         <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
