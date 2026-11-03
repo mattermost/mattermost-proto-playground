@@ -149,10 +149,13 @@ function useDeviceMenus(ov: WidgetOverlay) {
   return { micMenu, cameraMenu, micLabel, cameraLabel };
 }
 
-function IncomingWidget() {
+/** Incoming, and Joining after Accept (same card, so the height holds). */
+function IncomingWidget({ joining = false }: { joining?: boolean }) {
   const { state, actions } = useVideoCall();
   return (
     <WidgetIncoming
+      joining={joining}
+      onCancel={actions.cancelCall}
       callType={state.mode === 'audio' ? 'audio' : 'video'}
       callerName={PEER.name}
       callerAvatarSrc={PEER.avatarSrc}
@@ -387,9 +390,13 @@ export default function CallWidgetHost({
       onPointerDownCapture={ov.onPointerDownCapture}
       {...widgetDrag.handlers}
     >
-      <PhaseCrossfade phaseKey={phase === 'incoming' ? 'incoming' : 'card'}>
-        {phase === 'incoming' ? (
-          <IncomingWidget />
+      <PhaseCrossfade
+        phaseKey={
+          phase === 'incoming' || phase === 'joining' ? 'incoming' : 'card'
+        }
+      >
+        {phase === 'incoming' || phase === 'joining' ? (
+          <IncomingWidget joining={phase === 'joining'} />
         ) : (
           <CardWidget ov={ov} phase={phase} />
         )}

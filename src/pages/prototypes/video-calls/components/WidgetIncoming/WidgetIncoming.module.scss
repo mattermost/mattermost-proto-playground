@@ -24,6 +24,11 @@
     flex: 0 0 auto;
     border-radius: var(--radius-pill);
 
+    // Joining: the call was accepted, so the ring stops.
+    &--still::after {
+      display: none;
+    }
+
     &::after {
       content: '';
       position: absolute;
