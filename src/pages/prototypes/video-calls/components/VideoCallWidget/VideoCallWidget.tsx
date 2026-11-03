@@ -455,7 +455,7 @@ export function VideoCallWidget({
           muted={!micOn}
           mirrored
           size="thumbnail"
-          showLabel={selfLarge}
+          showLabel={false}
           selfLabel={l.self}
         />
       </div>
@@ -481,6 +481,7 @@ export function VideoCallWidget({
               cameraOn={cameraOn}
               muted={!micOn}
               mirrored
+              showLabel={false}
               selfLabel={l.self}
             />
           </div>
