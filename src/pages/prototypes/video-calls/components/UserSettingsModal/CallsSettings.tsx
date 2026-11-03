@@ -166,7 +166,6 @@ export default function CallsSettings({
                     ? 'Say something to see the meter move.'
                     : 'The meter is simulated until you check your microphone.'}
             </p>
-            <p className={styles['calls-settings__hint']}>{description}</p>
           </>
         );
       case 'screen':
