@@ -25,7 +25,8 @@
   }
 
   // The heading's text lines up with the items' icons (same inset as the item padding).
-  :global([class*='menu-group-heading']) {
+  // Not the inner label, which also matches [class*='menu-group-heading'].
+  :global([class*='menu-group-heading']:not([class*='menu-group-heading__'])) {
     padding: var(--spacing-xxs) var(--spacing-xs);
   }
 
