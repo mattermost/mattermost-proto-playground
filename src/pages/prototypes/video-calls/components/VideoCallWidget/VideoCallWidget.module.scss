@@ -150,10 +150,14 @@
     clip-path: inset(calc(var(--spacing-m) * -1) 0 0 0);
     transition: height var(--duration-moderate) var(--ease-transition);
 
+    // Pre-join: the controls row sits 2px closer to its buttons than the live
+    // call's does, so this padding is 2px larger and the video-to-button gap
+    // (10px) matches the live call's.
     &--pre-join {
       --video-call-widget-media-h: calc(
-        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xxxs)
       );
+      padding-bottom: var(--spacing-xxxs);
     }
 
     // Live call: the same 16:9 as the pre-join preview. The gap from the video
