@@ -26,6 +26,11 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       column-gap: var(--spacing-m);
+      transition: background var(--duration-quick) var(--ease-transition);
+
+      &:hover {
+        background: rgba(var(--center-channel-color-rgb), 0.04);
+      }
     }
 
     &--expanded {
