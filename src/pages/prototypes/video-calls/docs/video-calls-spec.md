@@ -107,6 +107,14 @@ In scope but not yet specified: _TODO: System Console configuration for video ca
 
 Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 
+The header call button shows the phase: a phone with a chevron when there is no call (it opens the Start call menu), a green phone to join a running call (Ongoing, group and channel only), and a green pressed phone while you are ringing, in pre-join or in the call.
+
+![Header call button, no call: phone with chevron](shots/final/32-header-button-no-call.png)
+
+![Header call button, a call is running without you: green phone, Join call](shots/final/33-header-button-join-call.png)
+
+![Header call button, you are in the call: green pressed phone](shots/final/34-header-button-in-call.png)
+
 **DM (1:1).** A DM call rings.
 
 1. No call. The header shows the Start call button.
@@ -114,10 +122,22 @@ Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 3. In call.
    Receiving: Incoming (widget with Decline / Accept; rings up to 30 seconds, then becomes a missed call) → Joining → In call. Joining is the brief connecting state after Accept and is used only for incoming calls (about 1.8 seconds in the prototype). It is widget-only and not expandable.
 
+The call card in the conversation follows the call: Calling while it rings, then Call started while you are in it, then Call ended (when it ends: the time it ended and how long it lasted). The other card states are defined in the Calls UX Improvements for DM Calls spec (see Entry points).
+
+![Call card while calling](shots/final/35-call-card-calling.png)
+
+![Call card after the call ended](shots/final/38-call-card-ended.png)
+
 **GM and channel.** These do not ring. Phases are No call or Ongoing (someone else's call is running and you are not in it), then Pre-join, then In call.
 
 - Starting from No call: pre-join in start mode (unless skipped in the Calls plugin settings); confirming, or skipping, goes straight to In call (nobody is rung).
-- Joining from Ongoing: pre-join in join mode; confirming goes to In call.
+- Joining from Ongoing: pre-join in join mode; confirming goes to In call. While the call runs without you, the call card shows Active with a Join call button; once you are in it, the card shows Joined with Leave.
+
+![Call card in a channel while the call runs without you: Active, Join call](shots/final/36-call-card-active.png)
+
+![Call card in a channel once you have joined: Joined, Leave](shots/final/37-call-card-joined.png)
+
+![Widget pre-join in join mode (channel)](shots/final/17-widget-prejoin-join.png)
 - Audio mode (video disabled) follows the same rules, with a microphone-only pre-join.
 - Phone calls never use pre-join.
 - Ongoing and Incoming/Calling/Joining are mutually exclusive by conversation type: Ongoing exists only in GM and channel; Calling, Incoming and Joining only in DM.
@@ -131,16 +151,9 @@ Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 
 Per the DM Calls UX spec: in a DM, hang up leaves immediately with no confirmation and ends the call for both. In a GM or channel, a non-host leaves immediately with no menu. A host sees End call for everyone, Leave and Cancel; End call for everyone has a subtitle to prevent misclicks, shows no confirmation modal, and updates the call card to the ended state at once.
 
+_Not prototyped, so no screenshots yet: the host's End call for everyone / Leave / Cancel menu and the new-host notice._
+
 ### Receiving a new call while in an active call
-
-**Current behavior**
-
-- No ring. If you are connected to a call, the plugin marks the incoming call as "already rung" and never plays the ring for it (it also does not ring for a second call while another is already ringing).
-- No notification for a call you are already in or started yourself.
-- Where the notification shows: when you are on a call in the browser without the global widget, the full incoming card is hidden and a condensed notification, "Call from <caller>" (with "with <others>" in a group message), appears above the call widget, with Join and dismiss actions. Otherwise the standard incoming card ("<caller> is inviting you to a call", Ignore / Join) shows bottom-left.
-- Join while in a call: opens a modal, "You're already in a call in <channel>. Do you want to leave and join a call with <user>?", with Cancel and "Leave and join new call". Confirming disconnects from the current call and connects to the new one. In the desktop app the join request is sent to the desktop app instead. There is no hold and no call waiting.
-- Ignore dismisses the notification only; the caller is not told.
-- Scope: the plugin sends incoming notifications for DM and GM calls. This design has an incoming call notice for 1:1 DMs only; GM and channel calls do not have one (join from the banner, header or call card).
 
 **Decisions for video: no change from the plugin.**
 
@@ -155,6 +168,8 @@ Per the DM Calls UX spec: in a DM, hang up leaves immediately with no confirmati
 **Where the notification appears when the call window is open.** The plugin today shows incoming calls in the expanded call view's top row, at the right of the header (a condensed "Call from [caller]" notice with Join and dismiss, stacked when there are several), not over the video. In the call window the notice appears at the top middle of the call header. It never covers video tiles or the controls bar, and it fits the no-ring, no-hold behavior.
 
 **Style of that notice.** Use the call notice component with the success (green) variant: a small avatar, the text "Call from **[caller]**" (a group message adds "with [others]"), a Join button and a dismiss X. The whole notice is clickable and opens the conversation. This replaces the plugin's own styled notice, so the banner and the in-call notice read as one family built from Compass components and tokens.
+
+_Not prototyped, so no screenshots yet: the condensed "Call from <caller>" notice (above the widget and at the top of the call window), the "Leave and join new call" confirmation, and the "<name> is on another call" status in the DM header and the calling widget._
 
 ### Entry points
 
