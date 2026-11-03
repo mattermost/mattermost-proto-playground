@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
+import UserSettings from '@/pages/prototypes/user-settings/UserSettings';
 import VideoCalls from '@/pages/prototypes/video-calls/VideoCalls';
 
 export type PrototypeEntry = {
@@ -29,6 +30,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'user-settings',
+    label: 'User Settings',
+    path: '/prototypes/user-settings',
+    component: UserSettings,
   },
   {
     id: 'video-calls',

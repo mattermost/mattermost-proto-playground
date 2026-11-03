@@ -1,0 +1,29 @@
+.settings-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  flex-shrink: 0;
+  min-height: 0;
+  padding: var(--spacing-l) var(--spacing-m);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  // MenuItem defaults to a menu-surface fill; the settings sidebar is transparent.
+  :global([class*='menu-group-heading']),
+  :global([class*='menu-item']:not([class*='menu-item--active'])) {
+    background: transparent;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__rule {
+    width: 100%;
+    margin: var(--spacing-m) 0;
+    border: 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+}

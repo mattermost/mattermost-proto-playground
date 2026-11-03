@@ -6,7 +6,7 @@
   align-items: center;
   gap: var(--spacing-xs);
   // A little wider than its text so the buttons sit apart; one-off width.
-  min-width: min(100%, 400px);
+  min-width: min(100%, 320px);
   max-width: 100%;
   box-sizing: border-box;
   height: 40px; // one-off layout height, matches Toast

@@ -1,0 +1,102 @@
+.calls-settings {
+  padding: var(--spacing-xl) var(--spacing-xxl);
+
+  &__title {
+    margin: 0 0 var(--spacing-xl);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__list {
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-l) var(--spacing-xl);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+
+    &--expanded {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      border-bottom-color: transparent;
+    }
+  }
+
+  &__section-title {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__section--expanded &__section-title {
+    font-weight: var(--font-weight-regular);
+  }
+
+  &__description,
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__section-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-l) 0 var(--spacing-xs) var(--spacing-xxxl);
+  }
+
+  &__field {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__field-label {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__choices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__hint {
+    padding-bottom: var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    width: 220px;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-m);
+    background: var(--color-neutral-900, #1c1c1c);
+    color: rgba(255, 255, 255, 0.72);
+    font-size: var(--font-size-75);
+    overflow: hidden;
+    transition: filter var(--duration-quick) var(--ease-transition);
+
+    &[data-blurred] {
+      filter: blur(1.5px);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-xs);
+  }
+}
