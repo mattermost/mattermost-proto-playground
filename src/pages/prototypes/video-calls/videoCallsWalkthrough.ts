@@ -21,14 +21,11 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       id: 'why',
       section: 'overview',
       title: 'Video calls where the conversation is',
-      lead: 'Calls start from the conversation you are already in, so people never leave the thread to talk face to face.',
-      lookFor: [
-        'Call button (a phone icon) in the channel header',
-        'The conversation staying visible while a call runs',
-      ],
+      lead: 'Customers expect self-sovereign, multi-party video calling in a zero-trust collaboration platform. After Calls v2 ships with SIP and 1:1 video calling, FY28 expands with multi-party video calling built on Livekit.',
+      lookFor: ['Revised start call button in the channel header'],
       bullets: [
-        'The same call works in a one-to-one message, a group message and a channel.',
-        'A call lives in a small widget by default and can expand into its own window.',
+        'The same call button is available in 1:1 messages, group messages, and channels.',
+        'A call initiates in a small widget by default and can expand into its own window.',
         'Use Jump to skip around; Back and Next step in order. Exit returns to free exploration.',
       ],
       scene: 'dm',
