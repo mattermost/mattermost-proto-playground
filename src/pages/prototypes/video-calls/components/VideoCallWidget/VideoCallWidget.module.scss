@@ -374,8 +374,8 @@
     border-radius: var(--radius-s);
   }
 
-  // Pre-join, start mode: the callee's area on a light background (8% of the
-  // center channel color) instead of the dark call surface.
+  // Calling (and the pre-join stage behind your self view): the callee's area on
+  // the dark call surface, like the live call's video.
   &__pre-join-peer {
     position: absolute;
     inset: 0;
@@ -383,7 +383,7 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-s);
-    background: rgba(var(--center-channel-color-rgb), 0.08);
+    background: var(--calls-video-bg, #080c14);
     opacity: 1;
     transition: opacity var(--duration-moderate) var(--ease-transition);
 

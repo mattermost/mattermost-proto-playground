@@ -425,7 +425,7 @@ export function VideoCallWidget({
   // One stage for pre-join (start) and calling: your self view is large while
   // you check it, then shrinks into the picture-in-picture corner as the call
   // rings, and the person being called fades in behind it (their avatar keeps
-  // the calling animation, on a light background). The same elements stay
+  // the calling animation, on the dark call background). The same elements stay
   // mounted across both phases (see `mediaKey`) so the change animates.
   const selfLarge = phase === 'pre-join';
   const stage = (
