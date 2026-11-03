@@ -66,10 +66,14 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--spacing-xxxs) var(--spacing-m);
     padding: var(--spacing-l);
-    transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
-  &__section--expanded &__summary {
+  // Titles sit at the same spot in both views (same padding and type), so they
+  // stay put while only the rest of each view fades.
+  &__section--expanded &__edit,
+  &__section--expanded:hover &__edit,
+  &__section--expanded:focus-within &__edit,
+  &__section--expanded &__description {
     opacity: 0;
   }
 
@@ -77,12 +81,15 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    padding: var(--spacing-l) var(--spacing-xl);
+    padding: var(--spacing-l);
+  }
+
+  &__section-body {
     opacity: 0;
     transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
-  &__section--expanded &__panel {
+  &__section--expanded &__section-body {
     opacity: 1;
   }
 
@@ -107,6 +114,26 @@
     line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    // Same text in both views: the panel copy stays invisible (but is still the
+    // heading for assistive tech) and the summary copy never fades.
+    &--hidden {
+      opacity: 0;
+    }
+
+    // Different text (Screen sharing): crossfade the two titles in place.
+    &--in {
+      opacity: 0;
+    }
+  }
+
+  &__section--expanded &__section-title--in {
+    opacity: 1;
+  }
+
+  &__section--expanded &__section-title--out {
+    opacity: 0;
   }
 
   &__description,
@@ -115,6 +142,7 @@
     font-size: var(--font-size-75);
     line-height: 16px; // Body 75
     color: rgba(var(--center-channel-color-rgb), 0.72);
+    transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
   &__section-body {
@@ -205,8 +233,9 @@
   @media (prefers-reduced-motion: reduce) {
     &__section,
     &__collapse,
-    &__summary,
-    &__panel {
+    &__description,
+    &__section-title,
+    &__section-body {
       transition: none;
     }
   }

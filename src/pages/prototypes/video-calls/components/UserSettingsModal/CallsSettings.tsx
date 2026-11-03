@@ -304,6 +304,7 @@ export default function CallsSettings({
       <div className={styles['calls-settings__list']}>
         {CALLS_SECTIONS.map(({ id, title, description }) => {
           const isOpen = expanded.has(id);
+          const sameTitle = EXPANDED_TITLES[id] === title;
           return (
             // Row click is a pointer shortcut; the Edit button is the keyboard path.
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events
@@ -319,7 +320,9 @@ export default function CallsSettings({
                   className={styles['calls-settings__summary']}
                   inert={isOpen}
                 >
-                  <h3 className={styles['calls-settings__section-title']}>
+                  <h3
+                    className={`${styles['calls-settings__section-title']} ${sameTitle ? '' : styles['calls-settings__section-title--out']}`}
+                  >
                     {title}
                   </h3>
                   <Button
@@ -343,7 +346,9 @@ export default function CallsSettings({
                 >
                   <div className={styles['calls-settings__collapse-inner']}>
                     <div className={styles['calls-settings__panel']}>
-                      <h3 className={styles['calls-settings__section-title']}>
+                      <h3
+                        className={`${styles['calls-settings__section-title']} ${sameTitle ? styles['calls-settings__section-title--hidden'] : styles['calls-settings__section-title--in']}`}
+                      >
                         {EXPANDED_TITLES[id]}
                       </h3>
                       <div className={styles['calls-settings__section-body']}>
