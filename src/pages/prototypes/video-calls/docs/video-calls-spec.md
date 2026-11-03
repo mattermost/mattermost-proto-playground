@@ -107,13 +107,9 @@ In scope but not yet specified: _TODO: System Console configuration for video ca
 
 Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 
-The header call button shows the phase: a phone with a chevron when there is no call (it opens the Start call menu), a green phone to join a running call (Ongoing, group and channel only), and a green pressed phone while you are ringing, in pre-join or in the call.
-
 ![Header call button, no call: phone with chevron](shots/final/32-header-button-no-call.png)
 
 ![Header call button, a call is running without you: green phone, Join call](shots/final/33-header-button-join-call.png)
-
-![Header call button, you are in the call: green pressed phone](shots/final/34-header-button-in-call.png)
 
 **DM (1:1).** A DM call rings.
 

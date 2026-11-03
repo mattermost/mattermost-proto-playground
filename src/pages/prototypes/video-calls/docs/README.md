@@ -21,7 +21,7 @@ Inputs the prototype is built from. Read these before changing the prototype.
 - `01a`-`01d`: the Start call menu by server setup (video and SIP phone on or off)
 - `02`, `14`, `17`, `27`: pre-join and calling in the widget and the window
 - `28`-`31`: User settings, Calls tab (collapsed, Audio, Video, Screen sharing open)
-- `32`-`34`: the header call button (no call, Join call, In call)
+- `32`, `33`: the header call button (no call, Join call)
 - `35`-`38`: the call card (calling, Active, Joined, ended)
 - The rest cover the calling, incoming, active, stage and host states
 
