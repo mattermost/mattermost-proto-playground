@@ -4,8 +4,10 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
 import VolumeHighIcon from '@mattermost/compass-icons/components/volume-high';
 import type { JoinMode } from '@/types/videoCall';
+import { CallingPulse } from '../components/CallingPulse';
 import { CallNotice } from '../components/CallNotice';
 import { MicLevelMeter } from '../components/MicLevelMeter';
 import { PreJoinPanel } from '../components/PreJoinPanel';
@@ -42,13 +44,17 @@ const titleFor = (joinMode: JoinMode, name: string) =>
   `${joinMode === 'start' ? 'Start' : 'Join'} call with ${name}`;
 
 /**
- * Large "ready to join" check inside the dark call window. Camera and mic are
+ * Large "ready to join" check inside the dark call window. While the call is
+ * ringing (`phase === 'calling'`) the same layout stays on screen: the self
+ * preview and mic / camera controls remain, the details column shows who is
+ * being called with the shared pulse, and the actions collapse to Cancel. Camera and mic are
  * never requested without a click: the camera button IS the opt-in
  * (`selfCamera.toggle`).
  */
 export default function PreJoinScene() {
   const { state, participants, actions, selfCamera } = useVideoCall();
   const { media, joinMode, soundOn } = state;
+  const calling = state.phase === 'calling';
   const conversationName = useConversationName();
   const [openMenu, setOpenMenu] = useState<WindowDeviceMenuId | null>(null);
   const [micCheck, setMicCheck] = useState(false);
@@ -96,11 +102,23 @@ export default function PreJoinScene() {
 
   const others = participants.filter((p) => !p.self);
   const isStart = joinMode === 'start';
-  const title = titleFor(joinMode, conversationName);
+  const title = calling
+    ? `Calling ${PEER.name}…`
+    : titleFor(joinMode, conversationName);
 
   const startingGroup = isStart && state.callContext !== 'dm';
 
-  const who = startingGroup ? (
+  const who = calling ? (
+    <div className={styles['pre-join-scene__who']}>
+      <CallingPulse>
+        <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
+      </CallingPulse>
+      <p className={styles['pre-join-scene__who-text']}>
+        <span className={styles['pre-join-scene__who-name']}>{PEER.name}</span>{' '}
+        is being called
+      </p>
+    </div>
+  ) : startingGroup ? (
     <div className={styles['pre-join-scene__who']}>
       <p className={styles['pre-join-scene__who-text']}>
         {others.length > 0
@@ -148,9 +166,11 @@ export default function PreJoinScene() {
             appearance="dark"
             title={title}
             subtitle={
-              state.mode === 'video'
-                ? 'Check your camera and microphone first.'
-                : 'Check your microphone first.'
+              calling
+                ? 'Waiting for them to answer.'
+                : state.mode === 'video'
+                  ? 'Check your camera and microphone first.'
+                  : 'Check your microphone first.'
             }
             ariaLabel={title}
             preview={
@@ -204,62 +224,76 @@ export default function PreJoinScene() {
             }
             participants={who}
             checks={
-              <>
-                <MicLevelMeter level={level} muted={!media.micOn} />
-                <div className={styles['pre-join-scene__check-row']}>
-                  {!micCheck && (
+              calling ? undefined : (
+                <>
+                  <MicLevelMeter level={level} muted={!media.micOn} />
+                  <div className={styles['pre-join-scene__check-row']}>
+                    {!micCheck && (
+                      <Button
+                        emphasis="tertiary"
+                        appearance="inverted"
+                        size="small"
+                        disabled={!media.micOn}
+                        onClick={() => setMicCheck(true)}
+                      >
+                        Check my microphone
+                      </Button>
+                    )}
                     <Button
                       emphasis="tertiary"
                       appearance="inverted"
                       size="small"
-                      disabled={!media.micOn}
-                      onClick={() => setMicCheck(true)}
+                      leadingIcon={<Icon glyph={<VolumeHighIcon />} />}
+                      disabled={!soundOn || testing}
+                      onClick={testSpeakers}
                     >
-                      Check my microphone
+                      {testing ? 'Playing…' : 'Test speakers'}
                     </Button>
-                  )}
-                  <Button
-                    emphasis="tertiary"
-                    appearance="inverted"
-                    size="small"
-                    leadingIcon={<Icon glyph={<VolumeHighIcon />} />}
-                    disabled={!soundOn || testing}
-                    onClick={testSpeakers}
-                  >
-                    {testing ? 'Playing…' : 'Test speakers'}
-                  </Button>
-                </div>
-                <p className={styles['pre-join-scene__helper']} role="status">
-                  {micCheck && micStream.status === 'denied'
-                    ? 'Microphone access is blocked. Allow it in your browser to check it.'
-                    : micCheck && micStream.status === 'unavailable'
-                      ? 'We could not find a working microphone.'
-                      : micCheck
-                        ? 'Say something to see the meter move.'
-                        : 'The meter is simulated until you check your microphone.'}
-                  {!soundOn &&
-                    ' Turn on sounds in the prototype controls to hear the speaker test.'}
-                </p>
-              </>
+                  </div>
+                  <p className={styles['pre-join-scene__helper']} role="status">
+                    {micCheck && micStream.status === 'denied'
+                      ? 'Microphone access is blocked. Allow it in your browser to check it.'
+                      : micCheck && micStream.status === 'unavailable'
+                        ? 'We could not find a working microphone.'
+                        : micCheck
+                          ? 'Say something to see the meter move.'
+                          : 'The meter is simulated until you check your microphone.'}
+                    {!soundOn &&
+                      ' Turn on sounds in the prototype controls to hear the speaker test.'}
+                  </p>
+                </>
+              )
             }
             actions={
-              <>
+              calling ? (
                 <Button
                   className={styles['pre-join-scene__start']}
                   emphasis="primary"
-                  leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
-                  onClick={actions.confirmPreJoin}
-                >
-                  {isStart ? 'Start call' : 'Join call'}
-                </Button>
-                <Button
-                  emphasis="tertiary"
-                  appearance="inverted"
+                  destructive
+                  leadingIcon={<Icon size="16" glyph={<PhoneHangupIcon />} />}
                   onClick={actions.cancelCall}
                 >
                   Cancel
                 </Button>
-              </>
+              ) : (
+                <>
+                  <Button
+                    className={styles['pre-join-scene__start']}
+                    emphasis="primary"
+                    leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+                    onClick={actions.confirmPreJoin}
+                  >
+                    {isStart ? 'Start call' : 'Join call'}
+                  </Button>
+                  <Button
+                    emphasis="tertiary"
+                    appearance="inverted"
+                    onClick={actions.cancelCall}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )
             }
           />
         </div>
