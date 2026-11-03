@@ -201,6 +201,7 @@ export default function CallsSettings({
                   <Button
                     emphasis="link"
                     size="small"
+                    className={styles['calls-settings__edit']}
                     leadingIcon={
                       <Icon glyph={<PencilOutlineIcon />} size="16" />
                     }

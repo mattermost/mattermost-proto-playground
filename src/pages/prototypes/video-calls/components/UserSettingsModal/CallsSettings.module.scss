@@ -21,10 +21,31 @@
     padding: var(--spacing-l) var(--spacing-xl);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
 
+    // Collapsed: title and description on the left, Edit on the right.
+    &:not(#{&}--expanded) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: var(--spacing-m);
+    }
+
     &--expanded {
       background: rgba(var(--center-channel-color-rgb), 0.04);
       border-bottom-color: transparent;
     }
+  }
+
+  // Shown on row hover; stays reachable by keyboard via focus-within.
+  &__edit {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__section:hover #{&}__edit,
+  &__section:focus-within #{&}__edit {
+    opacity: 1;
   }
 
   &__section-title {
