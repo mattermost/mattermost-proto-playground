@@ -1,4 +1,4 @@
-// Figma "Settings Sidebar Menu": 232px column, 8px gap (padding is --spacing-l); items are
+// Figma "Settings Sidebar Menu": 232px column, 8px gap (padding is --spacing-xxxs --spacing-m); items are
 // 8px 12px, 4px radius, semibold 14px. Inactive text and icons use 72% (the
 // repo text floor; Figma draws 56%). The active row is a tinted button-bg fill.
 .settings-sidebar {
@@ -8,7 +8,7 @@
   flex-shrink: 0;
   box-sizing: border-box;
   min-height: 0;
-  padding: var(--spacing-l);
+  padding: var(--spacing-xxxs) var(--spacing-m);
   background: rgba(var(--center-channel-color-rgb), 0.04);
   border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
 
@@ -54,6 +54,12 @@
     &--active:hover {
       background: rgba(var(--button-bg-rgb), 0.08);
       color: var(--button-bg);
+
+      // MenuItem's active state sets its own icon color (with :not(:disabled)
+      // specificity); match it so the icon follows the label.
+      &:not(:disabled) :global([class*='menu-item__leading-visual']) {
+        color: var(--button-bg);
+      }
     }
   }
 }
