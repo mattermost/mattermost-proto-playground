@@ -199,7 +199,7 @@ export default function CallsSettings({
                     {title}
                   </h3>
                   <Button
-                    emphasis="link"
+                    emphasis="quaternary"
                     size="small"
                     className={styles['calls-settings__edit']}
                     leadingIcon={
