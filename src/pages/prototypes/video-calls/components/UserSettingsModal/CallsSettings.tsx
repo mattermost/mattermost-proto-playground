@@ -136,14 +136,6 @@ export default function CallsSettings({
                 onChange={(microphone) => onChange({ microphone })}
               />
             </Field>
-            <Field label="Speaker output" htmlFor={`${uid}-speaker`}>
-              <Select
-                id={`${uid}-speaker`}
-                options={speakers}
-                value={values.speaker}
-                onChange={(speaker) => onChange({ speaker })}
-              />
-            </Field>
             <Field label="Input level">
               <MicLevelMeter level={micLevel} />
             </Field>
@@ -166,6 +158,14 @@ export default function CallsSettings({
                     ? 'Say something to see the meter move.'
                     : 'The meter is simulated until you check your microphone.'}
             </p>
+            <Field label="Speaker output" htmlFor={`${uid}-speaker`}>
+              <Select
+                id={`${uid}-speaker`}
+                options={speakers}
+                value={values.speaker}
+                onChange={(speaker) => onChange({ speaker })}
+              />
+            </Field>
           </>
         );
       case 'screen':
