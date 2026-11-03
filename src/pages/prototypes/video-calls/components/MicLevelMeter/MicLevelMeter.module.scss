@@ -20,7 +20,7 @@
   &__bar {
     flex: 1 1 0;
     min-width: 0;
-    height: var(--spacing-s);
+    height: var(--spacing-xxs);
     border-radius: var(--radius-xs);
     background: rgba(var(--center-channel-color-rgb), 0.12);
     transition: background-color var(--duration-quick) var(--ease-transition);
