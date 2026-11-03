@@ -173,7 +173,8 @@
   }
 
   &__field-label {
-    font-size: var(--font-size-75);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
   }
