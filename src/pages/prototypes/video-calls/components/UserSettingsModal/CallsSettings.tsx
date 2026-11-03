@@ -203,7 +203,7 @@ export default function CallsSettings({
         return (
           <>
             <div
-              className={`${styles['calls-settings__choices']} ${styles['calls-settings__choices--radios']}`}
+              className={styles['calls-settings__choices']}
               role="radiogroup"
               aria-label="Share sound with screen"
             >
