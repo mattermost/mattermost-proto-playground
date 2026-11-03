@@ -380,6 +380,17 @@
     justify-content: center;
     border-radius: var(--radius-s);
     background: rgba(var(--center-channel-color-rgb), 0.08);
+    opacity: 1;
+    transition: opacity var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: your large self view covers this; it fades in as it shrinks.
+    &--hidden {
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
 
   &__pip {
@@ -391,10 +402,34 @@
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-s);
     box-shadow: var(--elevation-3);
+    transition:
+      width var(--duration-moderate) var(--ease-transition),
+      right var(--duration-moderate) var(--ease-transition),
+      bottom var(--duration-moderate) var(--ease-transition),
+      box-shadow var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: the self view fills the video area.
+    &--large {
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      box-shadow: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
 
   // Camera off: a smaller avatar that fits the PiP, on a slightly lighter fill
   // so it reads apart from the speaker's tile when theirs is off too.
+  // Large (pre-join): the avatar keeps its full size.
+  &__pip--large
+    &__pip-tile#{&}__pip-tile
+    :global([class*='video-tile__avatar-image']) {
+    transform: none;
+  }
+
   &__pip-tile#{&}__pip-tile {
     --video-tile-bg: color-mix(
       in srgb,
@@ -407,6 +442,7 @@
 
     :global([class*='video-tile__avatar-image']) {
       transform: scale(0.7); // 40px avatar -> 28px; no 28px avatar size exists
+      transition: transform var(--duration-moderate) var(--ease-transition);
     }
   }
 

@@ -422,20 +422,30 @@ export function VideoCallWidget({
       </>
     ) : null;
 
-  // Same layout as the live call: the person being called in the video area
-  // (their avatar keeps the calling animation, on a light background) and
-  // your self view picture-in-picture. Pre-join (start) and calling share it.
-  const calleeArea = (
-    // Same layout as the live call: the person you are about to call in
-    // the video area (their avatar keeps the calling animation, on a
-    // light background) and your self view picture-in-picture.
+  // One stage for pre-join (start) and calling: your self view is large while
+  // you check it, then shrinks into the picture-in-picture corner as the call
+  // rings, and the person being called fades in behind it (their avatar keeps
+  // the calling animation, on a light background). The same elements stay
+  // mounted across both phases (see `mediaKey`) so the change animates.
+  const selfLarge = phase === 'pre-join';
+  const stage = (
     <div className={styles['video-call-widget__speaker']}>
-      <div className={styles['video-call-widget__pre-join-peer']}>
+      <div
+        className={cx(
+          styles['video-call-widget__pre-join-peer'],
+          selfLarge && styles['video-call-widget__pre-join-peer--hidden'],
+        )}
+      >
         <CallingPulse>
           <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
         </CallingPulse>
       </div>
-      <div className={styles['video-call-widget__pip']}>
+      <div
+        className={cx(
+          styles['video-call-widget__pip'],
+          selfLarge && styles['video-call-widget__pip--large'],
+        )}
+      >
         <VideoTile
           className={styles['video-call-widget__pip-tile']}
           name={selfName}
@@ -445,17 +455,23 @@ export function VideoCallWidget({
           muted={!micOn}
           mirrored
           size="thumbnail"
-          showLabel={false}
+          showLabel={selfLarge}
           selfLabel={l.self}
         />
       </div>
     </div>
   );
+  const stageKey =
+    !compact &&
+    !noPreview &&
+    joinMode === 'start' &&
+    (phase === 'pre-join' || phase === 'calling');
+  const mediaKey = stageKey ? 'self-stage' : phase;
 
   const media =
     phase === 'pre-join' ? (
       <div className={styles['video-call-widget__pre-join']}>
-        {!noPreview && joinMode === 'start' && calleeArea}
+        {!noPreview && joinMode === 'start' && stage}
         {!noPreview && joinMode !== 'start' && (
           <div className={styles['video-call-widget__preview']}>
             <VideoTile
@@ -487,7 +503,7 @@ export function VideoCallWidget({
         )}
       </div>
     ) : compact ? null : phase === 'calling' ? (
-      <div className={styles['video-call-widget__pre-join']}>{calleeArea}</div>
+      <div className={styles['video-call-widget__pre-join']}>{stage}</div>
     ) : phase === 'joining' ? (
       <div className={styles['video-call-widget__peer']} aria-live="polite">
         <UserAvatar src={peerAvatarSrc} alt="" name={peerName} size="48" />
@@ -730,7 +746,7 @@ export function VideoCallWidget({
           showPeople && styles['video-call-widget__media--people'],
         )}
       >
-        <PhaseCrossfade phaseKey={phase} align="fill">
+        <PhaseCrossfade phaseKey={mediaKey} align="fill">
           {media}
         </PhaseCrossfade>
       </div>
