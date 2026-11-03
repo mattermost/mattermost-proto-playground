@@ -41,7 +41,13 @@ export function stampVideoCallsWalkthroughFocus(): () => void {
     'incoming-call',
   );
 
+  // Ongoing group/channel banner (the join pill under the header).
+  stamp(byLabel('Ongoing call'), 'call-banner');
+
   stamp(byLabel('Call controls'), 'call-controls');
+
+  // Window header layout switch (visible label is "View").
+  stamp(byLabel('Change call layout'), 'call-layout');
 
   return () => cleanups.forEach((fn) => fn());
 }

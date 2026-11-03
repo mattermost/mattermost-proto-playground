@@ -114,6 +114,7 @@ export type DemoSceneId =
   | 'dm'
   | 'gm'
   | 'channel'
+  | 'channel-ongoing'
   | 'prejoin-widget'
   | 'prejoin-window'
   | 'calling-widget'
@@ -122,6 +123,7 @@ export type DemoSceneId =
   | 'joining'
   | 'call-widget'
   | 'call-window'
+  | 'channel-window'
   | 'screen-share'
   | 'phone-calling'
   | 'phone-call';
@@ -146,6 +148,13 @@ export const DEMO_SCENES: DemoScene[] = [
     label: 'Channel',
     context: 'channel',
     phase: 'idle',
+    surface: 'widget',
+  },
+  {
+    id: 'channel-ongoing',
+    label: 'Channel: ongoing',
+    context: 'channel',
+    phase: 'ongoing',
     surface: 'widget',
   },
   {
@@ -201,6 +210,13 @@ export const DEMO_SCENES: DemoScene[] = [
     id: 'call-window',
     label: 'In call (window)',
     context: 'dm',
+    phase: 'active',
+    surface: 'window',
+  },
+  {
+    id: 'channel-window',
+    label: 'Channel: in call (window)',
+    context: 'channel',
     phase: 'active',
     surface: 'window',
   },

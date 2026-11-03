@@ -10,6 +10,7 @@ import { useExitAnimation } from '@/hooks/useExitAnimation';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
+import type { WalkthroughSceneState } from '@/walkthrough';
 import type { CallContext, CallPhase, CallSurface } from '@/types/videoCall';
 import PrototypeSettings from './chrome/PrototypeSettings';
 import ParticipantCountControl from './chrome/ParticipantCountControl';
@@ -39,15 +40,17 @@ export default function VideoCalls() {
   const { active: walkthroughActive } = useWalkthrough();
   const { state, participants, actions } = useVideoCallState();
   const { callContext, phase, surface, count, mode, features } = state;
+  const [startCallMenuOpen, setStartCallMenuOpen] = useState(false);
   const selfCamera = useSelfCamera(state.media, actions, walkthroughActive);
   const screenShare = useScreenShare(state.sharing, actions, walkthroughActive);
 
   // Each walkthrough step names a demo scene (a combination of the three axes).
   const onWalkthroughScene = useCallback(
-    (next: string) => {
+    (next: string, sceneState?: WalkthroughSceneState) => {
       if (DEMO_SCENES.some((d) => d.id === next)) {
         actions.goToDemo(next as DemoSceneId);
       }
+      setStartCallMenuOpen(sceneState?.startCallMenu === true);
     },
     [actions],
   );
@@ -68,6 +71,10 @@ export default function VideoCalls() {
       cleanup();
     };
   }, [walkthroughActive, callContext, phase, surface, state.sharing]);
+
+  useEffect(() => {
+    if (!walkthroughActive) setStartCallMenuOpen(false);
+  }, [walkthroughActive]);
 
   useEffect(() => {
     if (walkthroughActive) {
@@ -133,8 +140,15 @@ export default function VideoCalls() {
   ]);
 
   const value = useMemo(
-    () => ({ state, participants, actions, selfCamera, screenShare }),
-    [state, participants, actions, selfCamera, screenShare],
+    () => ({
+      state,
+      participants,
+      actions,
+      selfCamera,
+      screenShare,
+      startCallMenuOpen,
+    }),
+    [state, participants, actions, selfCamera, screenShare, startCallMenuOpen],
   );
 
   // The window hosts every phase except idle, incoming and joining (those are widget-only).

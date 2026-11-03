@@ -83,20 +83,22 @@ const PHONE_OPTION: StartCallOption = {
  * starts the call.
  */
 export default function StartCallMenu() {
-  const { state, actions } = useVideoCall();
+  const { state, actions, startCallMenuOpen } = useVideoCall();
   const { features, callContext } = state;
   const [open, setOpen] = useState(false);
+  // A walkthrough step can hold the menu open; outside click and Escape stay off then.
+  const menuOpen = startCallMenuOpen || open;
   const ref = useRef<HTMLDivElement>(null);
   const close = useCallback(() => setOpen(false), []);
-  useOutsideClose(ref, open, close);
+  useOutsideClose(ref, menuOpen && !startCallMenuOpen, close);
   useEffect(() => {
-    if (!open) return;
+    if (!menuOpen || startCallMenuOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
+  }, [menuOpen, startCallMenuOpen]);
 
   // "Call link copied" confirmation, a Toast under the button (the call notice
   // stack only renders inside the call and is not used here).
@@ -196,9 +198,10 @@ export default function StartCallMenu() {
     <div ref={ref} className={styles['start-call-menu']}>
       <StartCallButton
         options={options}
-        open={open}
+        open={menuOpen}
         onOpenChange={setOpen}
         onSelect={start}
+        menuFocusId={menuOpen ? 'start-call-menu' : undefined}
       />
       {noticeAnim.rendered && notice && (
         <div

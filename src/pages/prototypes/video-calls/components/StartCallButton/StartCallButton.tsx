@@ -30,6 +30,8 @@ export interface StartCallButtonProps {
   onSelect: (id: string) => void;
   /** Accessible name of the menu. */
   menuLabel?: string;
+  /** Walkthrough anchor on the open menu surface. */
+  menuFocusId?: string;
   className?: string;
 }
 
@@ -46,6 +48,7 @@ export default function StartCallButton({
   onOpenChange,
   onSelect,
   menuLabel = 'Start call options',
+  menuFocusId,
   className,
 }: StartCallButtonProps) {
   return (
@@ -61,7 +64,10 @@ export default function StartCallButton({
         menuOpen={open}
         onClick={() => onOpenChange(!open)}
       />
-      <div className={styles['start-call-button__menu']}>
+      <div
+        className={styles['start-call-button__menu']}
+        {...(open && menuFocusId ? { 'data-wt-focus': menuFocusId } : {})}
+      >
         <PopoverMenu open={open} role="menu" aria-label={menuLabel}>
           {options.map((o, i) => (
             <Fragment key={o.id}>

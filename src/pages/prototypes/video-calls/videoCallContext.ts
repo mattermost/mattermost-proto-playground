@@ -13,6 +13,8 @@ export interface VideoCallContextValue {
   selfCamera: SelfCamera;
   /** The shared screen capture (the widget and the window both read this). */
   screenShare: ScreenShare;
+  /** Walkthrough keeps the header Start call menu open for a step. */
+  startCallMenuOpen: boolean;
 }
 
 export const VideoCallContext = createContext<VideoCallContextValue | null>(

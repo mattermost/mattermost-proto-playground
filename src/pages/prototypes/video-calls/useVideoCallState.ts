@@ -376,6 +376,7 @@ export function useVideoCallState() {
             surface: demo.surface,
             sharing: Boolean(demo.sharing),
             shareSource: demo.sharing ? DEFAULT_SHARE_SOURCE : null,
+            view: 'speaker',
             pane: null,
             missedCall: false,
             declinedCall: false,
@@ -385,7 +386,9 @@ export function useVideoCallState() {
             callerId:
               demo.phase === 'incoming' || demo.phase === 'joining'
                 ? DM_PEER_ID
-                : SELF_ID,
+                : demo.phase === 'ongoing'
+                  ? GROUP_STARTER_ID
+                  : SELF_ID,
             callStartedAt: demo.phase === 'active' ? Date.now() : null,
           };
         }),
