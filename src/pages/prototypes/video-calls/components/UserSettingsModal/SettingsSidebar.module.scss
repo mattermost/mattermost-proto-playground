@@ -1,29 +1,59 @@
+// Figma "Settings Sidebar Menu": 232px column, 24px padding, 8px gap; items are
+// 8px 12px, 4px radius, semibold 14px. Inactive text and icons use 72% (the
+// repo text floor; Figma draws 56%). The active row is a tinted button-bg fill.
 .settings-sidebar {
   display: flex;
   flex-direction: column;
-  width: 260px;
+  width: 232px;
   flex-shrink: 0;
+  box-sizing: border-box;
   min-height: 0;
-  padding: var(--spacing-l) var(--spacing-m);
+  padding: var(--spacing-xxl);
   background: rgba(var(--center-channel-color-rgb), 0.04);
   border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
 
-  // MenuItem defaults to a menu-surface fill; the settings sidebar is transparent.
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__rule {
+    width: 100%;
+    margin: var(--spacing-l) 0;
+    border: 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  // The sidebar is transparent; MenuItem defaults to a menu-surface fill.
   :global([class*='menu-group-heading']),
   :global([class*='menu-item']:not([class*='menu-item--active'])) {
     background: transparent;
   }
 
-  &__group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xxxs);
-  }
+  &__item {
+    padding: var(--spacing-xs) var(--spacing-m);
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
 
-  &__rule {
-    width: 100%;
-    margin: var(--spacing-m) 0;
-    border: 0;
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    :global([class*='menu-item__label']) {
+      font-size: var(--font-size-100);
+      font-weight: var(--font-weight-semibold);
+      color: inherit;
+    }
+
+    :global([class*='menu-item__leading-visual']) {
+      color: inherit;
+    }
+
+    &:hover:not(#{&}--active) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--active,
+    &--active:hover {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
   }
 }

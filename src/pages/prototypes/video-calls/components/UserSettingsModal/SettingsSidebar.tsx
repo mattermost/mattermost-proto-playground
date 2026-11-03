@@ -38,6 +38,12 @@ export default function SettingsSidebar({
       label={tab.label}
       leadingVisual={<Icon glyph={tab.glyph} size="20" />}
       active={tab.id === activeId}
+      className={[
+        styles['settings-sidebar__item'],
+        tab.id === activeId && styles['settings-sidebar__item--active'],
+      ]
+        .filter(Boolean)
+        .join(' ')}
       aria-current={tab.id === activeId ? 'page' : undefined}
     />
   );

@@ -1,5 +1,7 @@
 .calls-settings {
-  padding: var(--spacing-xl) var(--spacing-xxl);
+  // Figma content inset: 28px top, 32px sides and bottom.
+  padding: calc(var(--spacing-xxl) + var(--spacing-xxxs)) var(--spacing-xxxl)
+    var(--spacing-xxxl);
 
   &__title {
     margin: 0 0 var(--spacing-xl);
@@ -27,19 +29,18 @@
 
   &__section-title {
     margin: 0;
-    font-size: var(--font-size-100);
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200, 24px);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
-  }
-
-  &__section--expanded &__section-title {
-    font-weight: var(--font-weight-regular);
   }
 
   &__description,
   &__hint {
     margin: 0;
-    font-size: var(--font-size-100);
+    font-size: var(--font-size-75);
+    line-height: 16px; // Body 75
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
@@ -59,14 +60,15 @@
   }
 
   &__field-label {
-    font-size: var(--font-size-100);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
   }
 
   &__choices {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-m);
   }
 
   &__hint {
