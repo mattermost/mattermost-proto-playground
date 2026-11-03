@@ -89,8 +89,7 @@ export default function CallPhaseEffects() {
   }, [phase, participants]);
 
   // Join / leave notices when the call size changes, whichever surface is
-  // showing. Leave notices are window-only (the plugin's widget never announces
-  // a leave). A person the host removed already has a "was removed" notice.
+  // showing. A person the host removed already has a "was removed" notice.
   const prevPeople = useRef<{ id: string; name: string }[] | null>(null);
   useEffect(() => {
     if (phase !== 'active') {
@@ -113,12 +112,11 @@ export default function CallPhaseEffects() {
       actions.pushNotice({
         kind: 'left',
         text: `${left.name} left`,
-        surface: 'window',
       });
     }
   }, [phase, participants, removedIds, actions]);
 
-  // On joining: a short hint about your mic, widget only (as the plugin does).
+  // On joining: a short hint about your mic, in the widget and the window.
   const micOnRef = useRef(state.media.micOn);
   useEffect(() => {
     micOnRef.current = state.media.micOn;
@@ -127,12 +125,20 @@ export default function CallPhaseEffects() {
     if (phase !== 'active') return;
     actions.pushNotice({
       kind: 'info',
-      surface: 'widget',
       text: micOnRef.current
         ? "You're unmuted. Select the mic to mute."
         : "You're muted. Select the mic to unmute.",
     });
   }, [phase, actions]);
+
+  // Raising your hand posts a notice on both surfaces.
+  const prevHand = useRef(state.handRaised);
+  useEffect(() => {
+    if (state.handRaised === prevHand.current) return;
+    prevHand.current = state.handRaised;
+    if (phase !== 'active' || !state.handRaised) return;
+    actions.pushNotice({ kind: 'raised-hand', text: 'You' });
+  }, [state.handRaised, phase, actions]);
 
   // Leave cue when you hang up (a Leave sets `endedAt`; cancel and decline do not).
   const prevEndedAt = useRef(state.endedAt);

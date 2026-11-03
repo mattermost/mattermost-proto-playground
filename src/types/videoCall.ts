@@ -76,16 +76,19 @@ export type CallNoticeKind =
   | 'recording-started'
   | 'device'
   | 'permission'
+  | 'raised-hand'
+  | 'reaction'
   | 'info';
 
 export interface CallNotice {
   id: string;
   kind: CallNoticeKind;
   text: string;
+  /** Emoji shown by a `reaction` notice. */
+  emoji?: string;
   /**
-   * Which call surface shows it. Omit for both. A leave notice is
-   * window-only, and the "You're muted" hint on joining is widget-only,
-   * as in mattermost-plugin-calls.
+   * Which call surface shows it. Omit for both: the widget and the window
+   * show the same notices.
    */
   surface?: 'widget' | 'window';
 }

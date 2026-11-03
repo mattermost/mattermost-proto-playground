@@ -35,6 +35,8 @@ export interface VideoCallWindowProps {
   /** Optional recording pill (hidden when undefined). */
   recording?: 'initializing' | 'recording';
   onStopRecording?: () => void;
+  /** Shortcut target (Ctrl/Cmd+Alt+R). */
+  onToggleRecording?: () => void;
   view: ViewToggleValue;
   onViewChange: (view: ViewToggleValue) => void;
   viewMenuOpen: boolean;
@@ -90,6 +92,13 @@ const cx = (...names: (string | false | undefined)[]) =>
 /** Matches `--duration-quick`; the pane is unmounted after its exit. */
 const PANE_EXIT_MS = 150;
 
+/** Warnings sit at the top, in the call header, instead of the notice stack. */
+const HEADER_NOTICE_KINDS: readonly CallNoticeItem['kind'][] = [
+  'network',
+  'device',
+  'permission',
+];
+
 /**
  * Keeps the last pane mounted through its exit animation (`useExitAnimation`).
  * Reduced motion is handled in CSS (animation off); the unmount delay is moot.
@@ -108,7 +117,7 @@ function usePaneTransition(pane: ReactNode) {
 /**
  * Windowed call popout hosting `VideoStage` (mirrors compass-proto `CallPopout`
  * chrome via `VideoCallWindowFrame`: title bar, header row, dark stage, 3-zone controls). Plain props; the
- * scene wires state. Owns only the Meet-style shortcuts (Ctrl/Cmd+D mute, Ctrl/Cmd+E camera) while mounted.
+ * scene wires state. Owns only the plugin-style call shortcuts while mounted.
  */
 export function VideoCallWindow({
   variant = 'windowed',
@@ -116,6 +125,7 @@ export function VideoCallWindow({
   participantCount,
   recording,
   onStopRecording,
+  onToggleRecording,
   view,
   onViewChange,
   viewMenuOpen,
@@ -167,22 +177,21 @@ export function VideoCallWindow({
     ro.observe(el);
     return () => ro.disconnect();
   }, [paneOpen]);
-  const shortcutRef = useRef({
-    mic: controls.onToggleMic,
-    camera: controls.onToggleCamera,
+  // Call shortcuts follow mattermost-plugin-calls (the plugin has no camera
+  // shortcut): Ctrl/Cmd+Shift+Space mute, +Y hand, +X reactions, +E share,
+  // +P or Alt+P participants, +L leave, Ctrl/Cmd+Alt+R recording.
+  const shortcutRef = useRef({ controls, onToggleRecording });
+  useEffect(() => {
+    shortcutRef.current = { controls, onToggleRecording };
   });
 
-  useEffect(() => {
-    shortcutRef.current = {
-      mic: controls.onToggleMic,
-      camera: controls.onToggleCamera,
-    };
-  });
+  const headerNotices = notices.filter((n) =>
+    HEADER_NOTICE_KINDS.includes(n.kind),
+  );
 
   // Document-level call shortcuts while the window is mounted.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return;
       const t = e.target;
       if (
         t instanceof HTMLElement &&
@@ -190,14 +199,25 @@ export function VideoCallWindow({
       ) {
         return;
       }
+      const mod = e.ctrlKey || e.metaKey;
       const key = e.key.toLowerCase();
-      if (key === 'd') {
-        e.preventDefault();
-        shortcutRef.current.mic();
-      } else if (key === 'e') {
-        e.preventDefault();
-        shortcutRef.current.camera();
+      const { controls: c, onToggleRecording: rec } = shortcutRef.current;
+      let run: (() => void) | undefined;
+      if (e.altKey && !mod && !e.shiftKey && key === 'p') {
+        run = c.onToggleParticipants;
+      } else if (mod && e.altKey && !e.shiftKey && e.code === 'KeyR') {
+        run = rec;
+      } else if (mod && e.shiftKey && !e.altKey) {
+        if (e.code === 'Space') run = c.onToggleMic;
+        else if (e.code === 'KeyY') run = c.onToggleHand;
+        else if (e.code === 'KeyX') run = c.onToggleReactions;
+        else if (e.code === 'KeyE') run = c.onToggleShare;
+        else if (e.code === 'KeyP') run = c.onToggleParticipants;
+        else if (e.code === 'KeyL') run = c.onLeave;
       }
+      if (!run) return;
+      e.preventDefault();
+      run();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
@@ -223,7 +243,20 @@ export function VideoCallWindow({
           </span>
         </>
       }
-      headerCenter={banner}
+      headerCenter={
+        banner || headerNotices.length > 0 ? (
+          <>
+            {banner}
+            {onDismissNotice && headerNotices.length > 0 && (
+              <CallNotice
+                className={styles['video-call-window__header-notices']}
+                notices={headerNotices}
+                onDismiss={onDismissNotice}
+              />
+            )}
+          </>
+        ) : undefined
+      }
       headerRight={
         audioOnly ? undefined : (
           <ViewToggle
@@ -262,7 +295,12 @@ export function VideoCallWindow({
               />
             )}
             {onDismissNotice && (
-              <CallNotice notices={notices} onDismiss={onDismissNotice} />
+              <CallNotice
+                notices={notices.filter(
+                  (n) => !HEADER_NOTICE_KINDS.includes(n.kind),
+                )}
+                onDismiss={onDismissNotice}
+              />
             )}
             <ReactionBurst emoji={burst?.emoji} burstKey={burst?.key} />
           </div>

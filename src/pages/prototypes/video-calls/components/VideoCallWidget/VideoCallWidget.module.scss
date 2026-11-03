@@ -369,6 +369,18 @@
     border-radius: var(--radius-s);
   }
 
+  // Pre-join, start mode: the callee's area on a light background (8% of the
+  // center channel color) instead of the dark call surface.
+  &__pre-join-peer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
   &__pip {
     position: absolute;
     right: var(--spacing-xs);

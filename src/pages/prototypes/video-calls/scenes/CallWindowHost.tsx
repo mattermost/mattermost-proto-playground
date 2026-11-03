@@ -148,6 +148,7 @@ export default function CallWindowHost({
   const react = useCallback(
     (emoji: string) => {
       actions.patchParticipant(SELF_ID, { reaction: emoji });
+      actions.pushNotice({ kind: 'reaction', text: 'You', emoji });
       burstSeq.current += 1;
       setBurst({ emoji, key: burstSeq.current });
       setOpenMenu(null);
@@ -302,6 +303,7 @@ export default function CallWindowHost({
         getTileMenu={getTileMenu}
         recording={state.recording ? 'recording' : undefined}
         onStopRecording={actions.toggleRecording}
+        onToggleRecording={actions.toggleRecording}
         controls={{
           participantCount: participants.length,
           hideParticipants: state.callContext === 'dm',

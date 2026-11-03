@@ -24,10 +24,13 @@
   padding: var(--spacing-xxl);
   gap: var(--spacing-m);
 
-  // The sidebar's in-call icon (the same icon while ringing or active) sits on a
-  // green pill; compass-design draws it without a background. green-600 keeps
-  // the white glyph readable.
-  :global([class*='channel-sidebar-item__call']) {
+  // The sidebar's in-call icon sits on a green pill only for an incoming call
+  // to you or the call you are in (the open row while data-call-pill is set).
+  // Any other running call shows the plain icon. compass-design draws the icon
+  // without a background. green-600 keeps the white glyph readable.
+  &[data-call-pill='true']
+    :global([class*='channel-sidebar-item--active'])
+    :global([class*='channel-sidebar-item__call']) {
     padding: var(--spacing-xxxs) var(--spacing-xs);
     border-radius: var(--radius-pill);
     background: var(--color-green-600);

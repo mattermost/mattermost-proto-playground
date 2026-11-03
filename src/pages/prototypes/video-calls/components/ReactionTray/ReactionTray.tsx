@@ -1,4 +1,8 @@
+import { useEffect, useState } from 'react';
+import PlusIcon from '@mattermost/compass-icons/components/plus';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
+import { EmojiPopover } from '@mattermost/compass-proto';
 import styles from './ReactionTray.module.scss';
 
 export interface ReactionTrayLabels {
@@ -6,6 +10,8 @@ export interface ReactionTrayLabels {
   tray?: string;
   /** Accessible name of one emoji button. */
   react?: (emoji: string) => string;
+  /** Accessible name of the button that opens the full emoji picker. */
+  more?: string;
 }
 
 export interface ReactionTrayProps {
@@ -23,6 +29,7 @@ export interface ReactionTrayProps {
 const DEFAULT_LABELS: Required<ReactionTrayLabels> = {
   tray: 'Reactions',
   react: (emoji) => `React with ${emoji}`,
+  more: 'Choose another emoji',
 };
 
 /** Emoji row on a `PopoverMenu` surface. Host owns open state, anchoring and dismissal. */
@@ -35,6 +42,11 @@ export function ReactionTray({
   className,
 }: ReactionTrayProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
+  // The quick row is a shortcut; the plus button swaps it for the full emoji picker.
+  const [picking, setPicking] = useState(false);
+  useEffect(() => {
+    if (!open) setPicking(false);
+  }, [open]);
   return (
     <PopoverMenu
       open={open}
@@ -43,19 +55,31 @@ export function ReactionTray({
       aria-label={l.tray}
       className={[styles['reaction-tray'], className].filter(Boolean).join(' ')}
     >
-      <div className={styles['reaction-tray__row']}>
-        {emojis.map((emoji) => (
+      {picking ? (
+        <EmojiPopover onEmojiSelect={onSelect} />
+      ) : (
+        <div className={styles['reaction-tray__row']}>
+          {emojis.map((emoji) => (
+            <button
+              key={emoji}
+              type="button"
+              className={styles['reaction-tray__emoji']}
+              aria-label={l.react(emoji)}
+              onClick={() => onSelect(emoji)}
+            >
+              <span aria-hidden>{emoji}</span>
+            </button>
+          ))}
           <button
-            key={emoji}
             type="button"
             className={styles['reaction-tray__emoji']}
-            aria-label={l.react(emoji)}
-            onClick={() => onSelect(emoji)}
+            aria-label={l.more}
+            onClick={() => setPicking(true)}
           >
-            <span aria-hidden>{emoji}</span>
+            <Icon glyph={<PlusIcon />} size="20" />
           </button>
-        ))}
-      </div>
+        </div>
+      )}
     </PopoverMenu>
   );
 }

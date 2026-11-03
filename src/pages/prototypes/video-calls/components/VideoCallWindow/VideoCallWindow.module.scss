@@ -96,3 +96,12 @@
     }
   }
 }
+
+// Warnings in the call header: same notice pills, laid out in the header row
+// instead of the bottom-left stack.
+.video-call-window__header-notices.video-call-window__header-notices {
+  position: static;
+  max-width: 100%;
+  align-items: center;
+  pointer-events: auto;
+}

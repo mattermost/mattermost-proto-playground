@@ -417,7 +417,38 @@ export function VideoCallWidget({
   const media =
     phase === 'pre-join' ? (
       <div className={styles['video-call-widget__pre-join']}>
-        {!noPreview && (
+        {!noPreview && joinMode === 'start' && (
+          // Same layout as the live call: the person you are about to call in
+          // the video area (their avatar keeps the calling animation, on a
+          // light background) and your self view picture-in-picture.
+          <div className={styles['video-call-widget__speaker']}>
+            <div className={styles['video-call-widget__pre-join-peer']}>
+              <CallingPulse>
+                <UserAvatar
+                  src={peerAvatarSrc}
+                  alt=""
+                  name={peerName}
+                  size="48"
+                />
+              </CallingPulse>
+            </div>
+            <div className={styles['video-call-widget__pip']}>
+              <VideoTile
+                className={styles['video-call-widget__pip-tile']}
+                name={selfName}
+                avatarSrc={selfAvatarSrc}
+                stream={selfStream}
+                cameraOn={cameraOn}
+                muted={!micOn}
+                mirrored
+                size="thumbnail"
+                showLabel={false}
+                selfLabel={l.self}
+              />
+            </div>
+          </div>
+        )}
+        {!noPreview && joinMode !== 'start' && (
           <div className={styles['video-call-widget__preview']}>
             <VideoTile
               name={selfName}

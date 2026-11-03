@@ -198,10 +198,8 @@ function CardWidget({
     speakers[0].label;
 
   // Notices stack above the card like a menu, so they step aside while a menu
-  // is open. A leave is window-only: the plugin's widget never announces one.
-  const widgetNotices = state.notices.filter(
-    (n) => n.surface !== 'window' && n.kind !== 'left',
-  );
+  // is open. The widget and the window show the same notices.
+  const widgetNotices = state.notices.filter((n) => n.surface !== 'window');
 
   const people = participants
     .filter((p) => !p.self)

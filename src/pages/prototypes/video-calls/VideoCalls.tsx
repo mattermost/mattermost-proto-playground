@@ -153,7 +153,14 @@ export default function VideoCalls() {
     <VideoCallContext.Provider value={value}>
       <CallPhaseEffects />
       <SelfVoiceActivity walkthroughActive={walkthroughActive} />
-      <div className={styles['video-calls']}>
+      <div
+        className={styles['video-calls']}
+        data-call-pill={
+          phase === 'incoming' || phase === 'joining' || phase === 'active'
+            ? 'true'
+            : undefined
+        }
+      >
         <div ref={setFrameEl} className={styles['video-calls__frame']}>
           {/* The conversation stays visible behind the popout window. */}
           <ChatScene widgetHidden={showWindow} />

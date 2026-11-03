@@ -20,12 +20,16 @@ export type CallNoticeItemKind =
   | 'recording-started'
   | 'device'
   | 'permission'
+  | 'raised-hand'
+  | 'reaction'
   | 'info';
 
 export interface CallNoticeItem {
   id: string;
   kind: CallNoticeItemKind;
   text: string;
+  /** Emoji shown by a `reaction` notice. */
+  emoji?: string;
 }
 
 export interface CallNoticeLabels {
@@ -79,6 +83,8 @@ const PILL_KINDS: readonly CallNoticeItemKind[] = [
   'joined',
   'left',
   'host',
+  'raised-hand',
+  'reaction',
   'info',
   'network',
   'device',
@@ -90,6 +96,13 @@ const TONE: Partial<Record<CallNoticeItemKind, 'warning' | 'error'>> = {
   network: 'warning',
   device: 'error',
   permission: 'error',
+};
+/** Reactions and raised hands use the pill's own types; everything else is `other`. */
+const PILL_TYPE: Partial<
+  Record<CallNoticeItemKind, 'reaction' | 'hand-raise'>
+> = {
+  reaction: 'reaction',
+  'raised-hand': 'hand-raise',
 };
 const TONE_WORD = { warning: 'Warning', error: 'Error' } as const;
 
@@ -144,11 +157,13 @@ function NoticeItem({
     const tone = TONE[notice.kind];
     content = (
       <CallNoticePill
-        type="other"
+        type={PILL_TYPE[notice.kind] ?? 'other'}
         size="medium"
         appearance={appearance}
         tone={tone}
-        message={notice.text}
+        {...(PILL_TYPE[notice.kind]
+          ? { label: notice.text, emoji: notice.emoji }
+          : { message: notice.text })}
         className={persistent ? styles['call-notice__pill--dismissible'] : ''}
         {...(persistent
           ? {

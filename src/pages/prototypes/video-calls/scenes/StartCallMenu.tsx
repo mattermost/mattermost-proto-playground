@@ -12,7 +12,7 @@ import HeadphonesIcon from '@mattermost/compass-icons/components/headphones';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
-import { CallNotice as CallNoticePill } from '@mattermost/compass-proto';
+import { Toast } from '@mattermost/compass-ui/components/toast';
 import { INTERNAL_LINK } from '@/fixtures/calls/callConstants';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
@@ -98,8 +98,8 @@ export default function StartCallMenu() {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
-  // "Call link copied" confirmation. The call notice stack only renders inside
-  // the call window, so the conversation shows its own notice under the button.
+  // "Call link copied" confirmation, a Toast under the button (the call notice
+  // stack only renders inside the call and is not used here).
   const [notice, setNotice] = useState<{
     message: string;
     tone: 'default' | 'error';
@@ -210,13 +210,11 @@ export default function StartCallMenu() {
             .join(' ')}
           role="status"
         >
-          <CallNoticePill
-            type="other"
-            size="medium"
-            appearance="center-channel"
-            tone={notice.tone}
-            icon={notice.icon}
+          <Toast
+            type={notice.tone === 'error' ? 'danger' : 'success'}
+            icon={notice.icon ? <Icon glyph={notice.icon} /> : undefined}
             message={notice.message}
+            onDismiss={() => setNoticeOpen(false)}
           />
         </div>
       )}
