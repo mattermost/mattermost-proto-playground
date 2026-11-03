@@ -179,10 +179,11 @@ export default function CallsSettings({
         {CALLS_SECTIONS.map(({ id, title, description }) => {
           const isOpen = expanded.has(id);
           return (
+            // Row click is a pointer shortcut; the Edit button is the keyboard path.
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events
             <div
               key={id}
               className={`${styles['calls-settings__section']} ${isOpen ? styles['calls-settings__section--expanded'] : ''}`}
-              // The whole collapsed row opens; the Edit button is the keyboard path.
               onClick={isOpen ? undefined : () => onEdit(id)}
             >
               {isOpen ? (
