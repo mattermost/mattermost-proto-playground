@@ -3,7 +3,6 @@ import DockLeftIcon from '@mattermost/compass-icons/components/dock-left';
 import EyeOutlineIcon from '@mattermost/compass-icons/components/eye-outline';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
 import TuneIcon from '@mattermost/compass-icons/components/tune';
-import ViewGridPlusOutlineIcon from '@mattermost/compass-icons/components/view-grid-plus-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
@@ -16,9 +15,7 @@ const CORE_TABS = [
   { id: 'advanced', label: 'Advanced', glyph: <TuneIcon /> },
 ];
 
-// Compass has no Microsoft Teams glyph; a generic plugin glyph stands in.
 const PLUGIN_TABS = [
-  { id: 'ms-teams', label: 'MS Teams', glyph: <ViewGridPlusOutlineIcon /> },
   { id: 'calls', label: 'Calls', glyph: <PhoneInTalkIcon /> },
 ];
 
