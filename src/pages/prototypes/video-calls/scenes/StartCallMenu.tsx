@@ -66,6 +66,8 @@ const PHONE_OPTION: StartCallOption = {
   secondaryLabel: PHONE_NUMBER.number,
   icon: <Icon size="16" glyph={<PhoneIcon />} />,
   group: 'Phone call',
+  // Separates the two groups, above the "Phone call" heading.
+  dividerBefore: true,
 };
 
 /**

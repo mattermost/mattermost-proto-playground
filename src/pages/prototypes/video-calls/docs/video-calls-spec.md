@@ -51,7 +51,7 @@ Video calling and SIP phone calling are server settings. The DM header shows:
 | Off   | On        | Start call menu: group "Mattermost call" with Start audio call and Copy call link, group "Phone call" with the number   |
 | On    | On        | Start call menu: group "Mattermost call" with Start video call, Start audio call and Copy call link, group "Phone call" |
 
-- Group headings appear only when both groups are present.
+- Group headings appear only when both groups are present. A divider separates the two groups, above the "Phone call" heading.
 - Copy call link is the last row of the Mattermost call group, directly under the start options (no divider). It is not offered in the Phone call group. See Entry points for what it does.
 - Call settings is the last row of every menu, below a separator, whatever the server settings are. It is not a way to call, so it is not in either group. The prototype shows only a placeholder notice, since the Calls plugin settings are not part of it.
 - GM and channel headers never show a Phone call group. Phone calls are 1:1.
