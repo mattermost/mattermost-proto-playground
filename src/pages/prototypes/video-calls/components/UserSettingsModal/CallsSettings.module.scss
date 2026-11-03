@@ -27,6 +27,7 @@
       grid-template-columns: minmax(0, 1fr) auto;
       column-gap: var(--spacing-m);
       padding: var(--spacing-m);
+      cursor: pointer;
       transition: background var(--duration-quick) var(--ease-transition);
 
       &:hover {

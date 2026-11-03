@@ -182,6 +182,8 @@ export default function CallsSettings({
             <div
               key={id}
               className={`${styles['calls-settings__section']} ${isOpen ? styles['calls-settings__section--expanded'] : ''}`}
+              // The whole collapsed row opens; the Edit button is the keyboard path.
+              onClick={isOpen ? undefined : () => onEdit(id)}
             >
               {isOpen ? (
                 <>
@@ -205,7 +207,6 @@ export default function CallsSettings({
                     leadingIcon={
                       <Icon glyph={<PencilOutlineIcon />} size="16" />
                     }
-                    onClick={() => onEdit(id)}
                     aria-label={`Edit ${title}`}
                   >
                     Edit
