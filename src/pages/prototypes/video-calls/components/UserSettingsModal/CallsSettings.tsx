@@ -12,6 +12,7 @@ import {
   type CallsSettingsValues,
   type DeviceOption,
 } from './userSettingsData';
+import { useLocalCamera } from '../../hooks/useLocalCamera';
 import { useMicLevel, useMicStream } from '../../hooks/useMicLevel';
 import { useVideoCall } from '../../videoCallContext';
 import { ROSTER, SELF_ID } from '../../videoCallsData';
@@ -116,6 +117,26 @@ export default function CallsSettings({
     enabled: audioOpen,
     simulated: !micStream.stream,
   });
+
+  // The call's camera follows the saved device. While a different device is
+  // picked but unsaved, preview it with its own short-lived stream instead.
+  const videoOpen = expanded.has('video');
+  const savedCamera = state.media.cameraDeviceId ?? cameras[0]?.value;
+  const previewingDraft = videoOpen && values.camera !== savedCamera;
+  const draftCamera = useLocalCamera({
+    enabled:
+      previewingDraft &&
+      state.media.useWebcam &&
+      state.media.cameraOn &&
+      !values.camera.startsWith('fallback-'),
+    deviceId: values.camera,
+  });
+  const previewStream = previewingDraft
+    ? draftCamera.stream
+    : selfCamera.stream;
+  const previewStatus = previewingDraft
+    ? draftCamera.status
+    : selfCamera.status;
 
   const actions = (id: CallsSectionId) => (
     <div className={styles['calls-settings__actions']}>
@@ -223,12 +244,12 @@ export default function CallsSettings({
                     name={SELF.name}
                     avatarSrc={SELF.avatarSrc}
                     cameraOn={state.media.cameraOn}
-                    stream={selfCamera.stream}
+                    stream={previewStream}
                     muted={!state.media.micOn}
                     showLabel={false}
                     mirrored={values.mirrorVideo}
                   />
-                  {selfCamera.status === 'requesting' && (
+                  {previewStatus === 'requesting' && (
                     <p
                       className={styles['calls-settings__preview-status']}
                       role="status"
