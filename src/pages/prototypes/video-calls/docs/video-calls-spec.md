@@ -1,7 +1,7 @@
 # UX Specs: Video Calls
 
 Figma: [Video-Calling](https://www.figma.com/design/WcvNikeYFxnW15IaZU9JM0) (board 1335:418726, may be stale) · [Call Card](https://www.figma.com/design/uHkbu1krioaScJ3AfxLPg2?node-id=2801-2389) (frame 2801:2389)
-Prototype: mattermost-proto-playground, "Video Calls" (PR #84, branch `claude/practical-goodall-ac0d7b`)
+Prototype: [Video Calls](https://video-calls-prototype.vercel.app/prototypes/video-calls) (mattermost-proto-playground, PR #84, branch `claude/practical-goodall-ac0d7b`)
 
 ---
 
@@ -463,7 +463,7 @@ The prototype wins. Differences found so far (structure only; a pixel comparison
 
 ## References and Resources
 
-- Prototype: mattermost-proto-playground, Video Calls (PR #84)
+- Prototype: [Video Calls](https://video-calls-prototype.vercel.app/prototypes/video-calls) (mattermost-proto-playground, PR #84)
 - Figma: Video-Calling (WcvNikeYFxnW15IaZU9JM0), Call Card (uHkbu1krioaScJ3AfxLPg2)
 - RHS overlay pattern: docs/RHS-OVERLAY-PATTERN.md in the prototype repo
 - Related UX specs: Calls UX Improvements for DM Calls; UX Spec: Outbound Calls — Implementation Tiers; Phase 1 — Basic Outbound SIP Calling (links under Overview)
