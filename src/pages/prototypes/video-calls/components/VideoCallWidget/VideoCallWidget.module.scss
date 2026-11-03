@@ -150,9 +150,7 @@
     clip-path: inset(calc(var(--spacing-m) * -1) 0 0 0);
     transition: height var(--duration-moderate) var(--ease-transition);
 
-    // Calling (video) keeps the pre-join media: callee area plus self view.
-    &--pre-join,
-    &--calling {
+    &--pre-join {
       --video-call-widget-media-h: calc(
         var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xs)
       );
@@ -161,9 +159,10 @@
     // Live call: the same 16:9 as the pre-join preview. The gap from the video
     // to the control buttons (this padding plus the controls row's own 8px above
     // the buttons) equals the buttons' side padding (--spacing-s), so the video
-    // and the controls are spaced evenly. Calling and joining stay compact: the
-    // card grows when the call connects.
-    &--active {
+    // and the controls are spaced evenly. Calling (video) uses the same values so
+    // the card keeps its height when the call connects.
+    &--active,
+    &--calling {
       --video-call-widget-media-h: calc(
         var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xxxxs)
       );
