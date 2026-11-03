@@ -68,7 +68,7 @@
   --video-stage-strip-aspect: calc(16 / 9);
   // Speaker strip paginates when tiles would be narrower than this. One-off
   // layout widths (read by VideoStage to decide paging).
-  --video-stage-strip-min: 140px;
+  --video-stage-strip-min: 160px;
   --video-stage-strip-nav: 40px;
 
   position: relative;
