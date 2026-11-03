@@ -26,6 +26,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       column-gap: var(--spacing-m);
+      padding: var(--spacing-m);
       transition: background var(--duration-quick) var(--ease-transition);
 
       &:hover {
