@@ -1,5 +1,5 @@
 // Figma "Settings Sidebar Menu": 232px column, 8px gap (padding is --spacing-l); items are
-// --spacing-xxxs --spacing-m, 4px radius, semibold 14px. Inactive text and icons use 72% (the
+// --spacing-xxxs --spacing-xs, 4px radius, semibold 14px. Inactive text and icons use 72% (the
 // repo text floor; Figma draws 56%). The active row is a tinted button-bg fill.
 .settings-sidebar {
   display: flex;
@@ -32,7 +32,7 @@
   }
 
   &__item {
-    padding: var(--spacing-xxxs) var(--spacing-m);
+    padding: var(--spacing-xxxs) var(--spacing-xs);
     border-radius: var(--radius-s);
     color: rgba(var(--center-channel-color-rgb), 0.72);
 
