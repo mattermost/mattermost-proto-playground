@@ -427,6 +427,16 @@
 
   // Camera off: a smaller avatar that fits the PiP, on a slightly lighter fill
   // so it reads apart from the speaker's tile when theirs is off too.
+  // Large (pre-join): camera off uses the dark call background, a touch
+  // lighter than the calling area's, and the avatar keeps its full size.
+  &__pip--large &__pip-tile#{&}__pip-tile {
+    --video-tile-bg: color-mix(
+      in srgb,
+      var(--neutral-0) 7%,
+      var(--calls-video-bg, #080c14)
+    );
+  }
+
   // Large (pre-join): the avatar keeps its full size.
   &__pip--large
     &__pip-tile#{&}__pip-tile
