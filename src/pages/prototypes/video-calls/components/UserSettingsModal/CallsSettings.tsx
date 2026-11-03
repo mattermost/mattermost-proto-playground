@@ -71,11 +71,35 @@ export default function CallsSettings({
 
   // Same opt-in mic check as pre-join: the meter is simulated until the user
   // asks for the real microphone, and the request stops when the section closes.
+  // If the browser already granted access, there is nothing to ask, so the
+  // meter goes live on its own and the button is not shown.
   const audioOpen = expanded.has('audio');
-  const [micCheck, setMicCheck] = useState(false);
+  const [micRequested, setMicRequested] = useState(false);
+  const [micGranted, setMicGranted] = useState(false);
   useEffect(() => {
-    if (!audioOpen) setMicCheck(false);
+    if (!audioOpen) setMicRequested(false);
   }, [audioOpen]);
+  useEffect(() => {
+    if (!audioOpen || !navigator.permissions?.query) return;
+    let status: PermissionStatus | null = null;
+    let cancelled = false;
+    const sync = () => setMicGranted(status?.state === 'granted');
+    // Browsers without a 'microphone' permission name reject; the button covers them.
+    navigator.permissions
+      .query({ name: 'microphone' as PermissionName })
+      .then((result) => {
+        if (cancelled) return;
+        status = result;
+        sync();
+        result.addEventListener('change', sync);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      status?.removeEventListener('change', sync);
+    };
+  }, [audioOpen]);
+  const micCheck = micRequested || micGranted;
   const micStream = useMicStream({
     enabled: audioOpen && micCheck,
     deviceId: values.microphone.startsWith('fallback-')
@@ -128,7 +152,7 @@ export default function CallsSettings({
                 emphasis="tertiary"
                 size="small"
                 className={styles['calls-settings__check']}
-                onClick={() => setMicCheck(true)}
+                onClick={() => setMicRequested(true)}
               >
                 Check my microphone
               </Button>
