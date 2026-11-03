@@ -138,6 +138,7 @@ The call card in the conversation follows the call: Calling while it rings, then
 ![Call card in a channel once you have joined: Joined, Leave](shots/final/37-call-card-joined.png)
 
 ![Widget pre-join in join mode (channel)](shots/final/17-widget-prejoin-join.png)
+
 - Audio mode (video disabled) follows the same rules, with a microphone-only pre-join.
 - Phone calls never use pre-join.
 - Ongoing and Incoming/Calling/Joining are mutually exclusive by conversation type: Ongoing exists only in GM and channel; Calling, Incoming and Joining only in DM.
