@@ -6,6 +6,7 @@ import TuneIcon from '@mattermost/compass-icons/components/tune';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { PopoverMenuDivider } from '@mattermost/compass-ui/components/popover-menu';
 import styles from './SettingsSidebar.module.scss';
 
 const CORE_TABS = [
@@ -50,7 +51,7 @@ export default function SettingsSidebar({
       <div className={styles['settings-sidebar__group']}>
         {CORE_TABS.map(renderTab)}
       </div>
-      <hr className={styles['settings-sidebar__rule']} />
+      <PopoverMenuDivider />
       <MenuGroupHeading label="PLUGIN PREFERENCES" />
       <div className={styles['settings-sidebar__group']}>
         {PLUGIN_TABS.map(renderTab)}

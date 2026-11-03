@@ -18,11 +18,9 @@
     gap: var(--spacing-xs);
   }
 
-  &__rule {
-    width: 100%;
-    margin: var(--spacing-l) 0;
-    border: 0;
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  // The heading's text lines up with the items' icons (same inset as the item padding).
+  :global([class*='menu-group-heading']) {
+    padding: var(--spacing-xxs) var(--spacing-xs);
   }
 
   // The sidebar is transparent; MenuItem defaults to a menu-surface fill.
