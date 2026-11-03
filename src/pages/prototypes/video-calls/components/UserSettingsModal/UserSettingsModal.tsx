@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { Modal, ModalOverlay } from '@mattermost/compass-ui/components/modal';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import { useMediaDevices } from '../../hooks/useMediaDevices';
+import { useVideoCall } from '../../videoCallContext';
 import CallsSettings from './CallsSettings';
 import SettingsSidebar from './SettingsSidebar';
 import {
-  DEFAULT_CALLS_SETTINGS,
+  DEFAULT_LOCAL_SETTINGS,
+  FALLBACK_CAMERAS,
+  FALLBACK_MICROPHONES,
+  FALLBACK_SPEAKERS,
   type CallsSectionId,
   type CallsSettingsValues,
+  type DeviceField,
+  type DeviceOption,
 } from './userSettingsData';
 import styles from './UserSettingsModal.module.scss';
 
@@ -33,9 +40,33 @@ export default function UserSettingsModal({
   onClose,
   container,
 }: UserSettingsModalProps) {
+  const { state, actions } = useVideoCall();
+  const { media } = state;
+  const devices = useMediaDevices({ enabled: open });
+  const toOptions = (
+    list: { deviceId: string; label: string }[],
+    fallback: DeviceOption[],
+  ): DeviceOption[] =>
+    list.length
+      ? list.map((d) => ({ value: d.deviceId, label: d.label }))
+      : fallback;
+  const microphones = toOptions(devices.microphones, FALLBACK_MICROPHONES);
+  const speakers = toOptions(devices.speakers, FALLBACK_SPEAKERS);
+  const cameras = toOptions(devices.cameras, FALLBACK_CAMERAS);
+
   const [expanded, setExpanded] = useState<Set<CallsSectionId>>(new Set());
-  const [values, setValues] = useState(DEFAULT_CALLS_SETTINGS);
-  const [saved, setSaved] = useState(DEFAULT_CALLS_SETTINGS);
+  // Non-device fields persist here; device ids persist in the call's media prefs.
+  const [saved, setSaved] = useState(DEFAULT_LOCAL_SETTINGS);
+  // Unsaved edits layered over the saved values, per field.
+  const [draft, setDraft] = useState<Partial<CallsSettingsValues>>({});
+
+  const values: CallsSettingsValues = {
+    ...saved,
+    microphone: media.micDeviceId ?? microphones[0].value,
+    speaker: media.speakerDeviceId ?? speakers[0].value,
+    camera: media.cameraDeviceId ?? cameras[0].value,
+    ...draft,
+  };
 
   const collapse = (id: CallsSectionId) =>
     setExpanded((prev) => {
@@ -44,22 +75,37 @@ export default function UserSettingsModal({
       return next;
     });
 
-  const copyFields = (
-    id: CallsSectionId,
-    from: CallsSettingsValues,
-    into: CallsSettingsValues,
-  ): CallsSettingsValues => {
-    const next = { ...into };
-    SECTION_FIELDS[id].forEach((key) =>
-      Object.assign(next, { [key]: from[key] }),
-    );
-    return next;
+  const clearDraft = (id: CallsSectionId) =>
+    setDraft((prev) => {
+      const next = { ...prev };
+      SECTION_FIELDS[id].forEach((key) => delete next[key]);
+      return next;
+    });
+
+  const handleSave = (id: CallsSectionId) => {
+    const deviceIds: Record<
+      DeviceField,
+      'micDeviceId' | 'speakerDeviceId' | 'cameraDeviceId'
+    > = {
+      microphone: 'micDeviceId',
+      speaker: 'speakerDeviceId',
+      camera: 'cameraDeviceId',
+    };
+    SECTION_FIELDS[id].forEach((key) => {
+      if (key === 'microphone' || key === 'speaker' || key === 'camera') {
+        actions.setMedia({ [deviceIds[key]]: values[key] });
+      } else {
+        setSaved((prev) => ({ ...prev, [key]: values[key] }));
+      }
+    });
+    clearDraft(id);
+    collapse(id);
   };
 
   // Reopening starts collapsed with unsaved edits discarded.
   const handleExited = () => {
     setExpanded(new Set());
-    setValues(saved);
+    setDraft({});
   };
 
   return (
@@ -85,15 +131,15 @@ export default function UserSettingsModal({
           <Scrollbar className={styles['user-settings-modal__pane']}>
             <CallsSettings
               values={values}
-              onChange={(patch) => setValues((prev) => ({ ...prev, ...patch }))}
+              microphones={microphones}
+              speakers={speakers}
+              cameras={cameras}
+              onChange={(patch) => setDraft((prev) => ({ ...prev, ...patch }))}
               expanded={expanded}
               onEdit={(id) => setExpanded((prev) => new Set(prev).add(id))}
-              onSave={(id) => {
-                setSaved((prev) => copyFields(id, values, prev));
-                collapse(id);
-              }}
+              onSave={handleSave}
               onCancel={(id) => {
-                setValues((prev) => copyFields(id, saved, prev));
+                clearDraft(id);
                 collapse(id);
               }}
             />

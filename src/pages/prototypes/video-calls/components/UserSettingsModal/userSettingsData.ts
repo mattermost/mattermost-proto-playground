@@ -9,30 +9,31 @@ export type CallsSettingsValues = {
   blurBackground: boolean;
 };
 
-export const DEFAULT_CALLS_SETTINGS: CallsSettingsValues = {
-  microphone: 'yeti',
-  speaker: 'default',
+/** Fields stored locally; device ids live in the call's MediaPrefs. */
+export type DeviceField = 'microphone' | 'speaker' | 'camera';
+
+export const DEFAULT_LOCAL_SETTINGS: Omit<CallsSettingsValues, DeviceField> = {
   shareSound: 'on',
-  camera: 'webcam',
   mirrorVideo: true,
   blurBackground: false,
 };
 
-export const MICROPHONE_OPTIONS = [
-  { value: 'yeti', label: 'Yeti Stereo Microphone (046d:0ab7)' },
-  { value: 'macbook', label: 'MacBook Pro Microphone' },
-  { value: 'airpods', label: 'AirPods Pro' },
+export type DeviceOption = { value: string; label: string };
+
+/** Used when the browser lists no devices (no permission, or no hardware). */
+export const FALLBACK_MICROPHONES: DeviceOption[] = [
+  { value: 'fallback-mic-1', label: 'Default microphone' },
+  { value: 'fallback-mic-2', label: 'External USB microphone' },
 ];
 
-export const SPEAKER_OPTIONS = [
-  { value: 'default', label: 'Default - MacBook Pro Speakers' },
-  { value: 'airpods', label: 'AirPods Pro' },
-  { value: 'jabra', label: 'Jabra Evolve2 65' },
+export const FALLBACK_SPEAKERS: DeviceOption[] = [
+  { value: 'fallback-speaker-1', label: 'Default speakers' },
+  { value: 'fallback-speaker-2', label: 'External speakers' },
 ];
 
-export const CAMERA_OPTIONS = [
-  { value: 'webcam', label: 'Full HD webcam (1bcf:2284)' },
-  { value: 'facetime', label: 'FaceTime HD Camera' },
+export const FALLBACK_CAMERAS: DeviceOption[] = [
+  { value: 'fallback-camera-1', label: 'Built-in camera' },
+  { value: 'fallback-camera-2', label: 'External webcam' },
 ];
 
 export const CALLS_SECTIONS: {

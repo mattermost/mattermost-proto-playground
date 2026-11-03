@@ -8,17 +8,18 @@ import { Radio } from '@mattermost/compass-ui/components/radio';
 import { Select } from '@mattermost/compass-ui/components/select';
 import {
   CALLS_SECTIONS,
-  CAMERA_OPTIONS,
   EXPANDED_TITLES,
-  MICROPHONE_OPTIONS,
-  SPEAKER_OPTIONS,
   type CallsSectionId,
   type CallsSettingsValues,
+  type DeviceOption,
 } from './userSettingsData';
 import styles from './CallsSettings.module.scss';
 
 type Props = {
   values: CallsSettingsValues;
+  microphones: DeviceOption[];
+  speakers: DeviceOption[];
+  cameras: DeviceOption[];
   onChange: (patch: Partial<CallsSettingsValues>) => void;
   expanded: ReadonlySet<CallsSectionId>;
   onEdit: (id: CallsSectionId) => void;
@@ -50,6 +51,9 @@ function Field({
 
 export default function CallsSettings({
   values,
+  microphones,
+  speakers,
+  cameras,
   onChange,
   expanded,
   onEdit,
@@ -77,7 +81,7 @@ export default function CallsSettings({
             <Field label="Microphone input" htmlFor={`${uid}-mic`}>
               <Select
                 id={`${uid}-mic`}
-                options={MICROPHONE_OPTIONS}
+                options={microphones}
                 value={values.microphone}
                 onChange={(microphone) => onChange({ microphone })}
               />
@@ -85,7 +89,7 @@ export default function CallsSettings({
             <Field label="Speaker output" htmlFor={`${uid}-speaker`}>
               <Select
                 id={`${uid}-speaker`}
-                options={SPEAKER_OPTIONS}
+                options={speakers}
                 value={values.speaker}
                 onChange={(speaker) => onChange({ speaker })}
               />
@@ -128,7 +132,7 @@ export default function CallsSettings({
             <Field label="Camera input" htmlFor={`${uid}-camera`}>
               <Select
                 id={`${uid}-camera`}
-                options={CAMERA_OPTIONS}
+                options={cameras}
                 value={values.camera}
                 onChange={(camera) => onChange({ camera })}
               />
