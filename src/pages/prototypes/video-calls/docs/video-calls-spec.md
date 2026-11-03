@@ -59,18 +59,9 @@ Video calling and SIP phone calling are server settings. The DM header shows:
 - The same menu is what the profile popover's Call button opens. The popover's own phone number rows are defined in the outbound specs.
 - The prototype shows one fixed demo number and has both settings in its prototype settings menu (prototype chrome, not product UI).
 
-### Phone call widget
-
-A phone call uses the call widget in its compact Phone mode. The widget content, calling state, timeout, sounds and the absence of pre-join are all specified in the outbound specs ([Implementation Tiers](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4647059458/UX+Spec+Outbound+Calls+Implementation+Tiers), [Phase 1 — Basic Outbound SIP Calling](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4646993930/Phase+1+Basic+Outbound+SIP+Calling)) and are not repeated here. This spec adds one thing: the microphone control keeps its device dropdown (a new addition for phone calls), so people can switch microphones during a phone call.
-
-**Compact live widget (Audio and Phone modes).** With no video to show, the live call has no video area or thumbnail. It follows the compass-proto call widget and the outbound softphone: a header with an avatar of the person talking (the first other person when nobody is), "<name> is talking" over "<elapsed> · <conversation name>" (the conversation name alone, with the time under it, when nobody is talking), the expand button at the right (not in Phone mode), and the controls row below (microphone, participants in group calls, share screen, More, Leave). A recording dot sits after the time. A Phone call shows the person's name with the Phone badge, and the number under the time. While you share your screen the sharing state takes the media area as in Video mode.
-
-**Compact calling and joining (Audio and Phone modes).** Calling, joining and the live call use the same compact header at one fixed height (the two text lines of the live call, with the same top spacing as every other phase's header), so the widget does not change height when the call connects. The controls row below it keeps its buttons the same distance from the bottom edge as from the sides. Calling shows the avatar of the person called (no pulse ring), "Calling <name>…" with the text fading in and out between full and about half opacity (not under reduced motion), and under it the number and label for a phone call (nothing for an audio call). Joining shows "Joining call with <name>…". Below it the controls row has the microphone and a red Cancel with the hang-up icon (calling only; joining keeps the plain label), as in Video mode. Video mode keeps the pre-join layout while calling (see Widget).
-
-The Audio mode widget otherwise matches the Video widget without the camera control and self view, and Start audio call is the only way to start. In the call window the camera control and device menu are omitted.
-
 ### Shared rules
 
+- **Phone call widget.** A phone call uses the call widget in its compact Phone mode (see Call widget). The widget content, calling state, timeout, sounds and the absence of pre-join are specified in the outbound specs ([Implementation Tiers](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4647059458/UX+Spec+Outbound+Calls+Implementation+Tiers), [Phase 1 — Basic Outbound SIP Calling](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4646993930/Phase+1+Basic+Outbound+SIP+Calling)) and are not repeated here. This spec adds one thing: the microphone control keeps its device dropdown (a new addition for phone calls), so people can switch microphones during a phone call.
 - **One call at a time.** Starting a phone call while in a Mattermost call, or the reverse, uses the same "You're already in a call… Leave and join new call" confirmation as a new call while in a call. No hold.
 - **Call card.** No change from the call card states defined in the [Calls UX Improvements for DM Calls](https://mattermost.atlassian.net/wiki/spaces/DES/pages/4653645825/Calls+UX+Improvements+for+DM+Calls) spec.
 - **Where the card lives.** In the DM with the person whose number was dialled. _Question: when the number does not belong to a Mattermost user, the outbound spec anchors the call to the Calls bot DM; confirm that stays._
@@ -285,6 +276,14 @@ Over the sidebar bottom-left. One widget stays mounted across pre-join, calling,
 - Button colours: the DM Calls UX spec plans a red Decline and a green Accept for 1:1 incoming calls (marked deferred to a next phase). The prototype now shows a green Accept (the same green as Start call and the Join call card) with a tertiary Decline. _Question: adopt a red Decline as well?_
 - People button: hidden in a 1:1 DM, where it is not meaningful, per the DM Calls UX spec (widget and call window). It stays in group and channel calls.
 - Enter and exit are quick fades; exit plays after Leave, Cancel or Decline.
+
+#### Compact widget (Audio and Phone modes)
+
+**Live.** With no video to show, the live call has no video area or thumbnail. It follows the compass-proto call widget and the outbound softphone: a header with an avatar of the person talking (the first other person when nobody is), "<name> is talking" over "<elapsed> · <conversation name>" (the conversation name alone, with the time under it, when nobody is talking), the expand button at the right (not in Phone mode), and the controls row below (microphone, participants in group calls, share screen, More, Leave). A recording dot sits after the time. A Phone call shows the person's name with the Phone badge, and the number under the time. While you share your screen the sharing state takes the media area as in Video mode.
+
+**Calling and joining.** Calling, joining and the live call use the same compact header at one fixed height (the two text lines of the live call, with the same top spacing as every other phase's header), so the widget does not change height when the call connects. The controls row below it keeps its buttons the same distance from the bottom edge as from the sides. Calling shows the avatar of the person called (no pulse ring), "Calling <name>…" with the text fading in and out between full and about half opacity (not under reduced motion), and under it the number and label for a phone call (nothing for an audio call). Joining shows "Joining call with <name>…". Below it the controls row has the microphone and a red Cancel with the hang-up icon (calling only; joining keeps the plain label), as in Video mode. Video mode keeps the pre-join layout while calling (see above).
+
+The Audio mode widget otherwise matches the Video widget without the camera control and self view, and Start audio call is the only way to start. In the call window the camera control and device menu are omitted.
 
 _Known gap, out of scope: the widget More menu still repeats Microphone and Camera rows next to the segmented controls._
 
