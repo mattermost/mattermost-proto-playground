@@ -136,7 +136,8 @@
     align-items: start;
   }
 
-  &__stack {
+  // A field's control column: preview or meter with its button and helper.
+  &__field-stack {
     display: flex;
     flex-direction: column;
     align-items: flex-start;

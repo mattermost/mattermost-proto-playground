@@ -163,7 +163,7 @@ export default function CallsSettings({
               />
             </Field>
             <Field label="Input level" top>
-              <div className={styles['calls-settings__stack']}>
+              <div className={styles['calls-settings__field-stack']}>
                 <MicLevelMeter level={micLevel} />
                 {!micCheck && (
                   <Button
@@ -237,7 +237,7 @@ export default function CallsSettings({
               />
             </Field>
             <Field label="Preview" top>
-              <div className={styles['calls-settings__stack']}>
+              <div className={styles['calls-settings__field-stack']}>
                 <div
                   className={styles['calls-settings__preview']}
                   data-blurred={values.blurBackground || undefined}
