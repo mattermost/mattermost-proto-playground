@@ -280,11 +280,27 @@ Over the sidebar bottom-left. One widget stays mounted across pre-join, calling,
 - Persistent segmented mic and camera controls with device chevrons; the menus match the widget width. (Video mode. Audio and Phone modes show the microphone control only.)
 - Active (Video mode): elapsed time, recording dot when recording, a 16:9 video area, participant count (opens a participants popover), share screen, More, Expand, Leave (square hang-up). While you share, the video area gives way to the sharing state (see Screen share).
 - In Video mode the widget video is always speaker view: the person talking (otherwise the first remote person) fills the 16:9 area with their mic state and name bottom-left, and you sit in a small self picture-in-picture (no mute indicator there, since the mic control already shows it; a smaller avatar on a lighter fill when your camera is off). A "+N" chip counts other remote people who are not shown. There is no grid view in the widget.
+
+![Widget: active call, DM (speaker view with self picture-in-picture)](shots/final/05-widget-active-dm.png)
+
+![Widget: active call, channel (+N chip, participant count 4)](shots/final/18-widget-active-group.png)
+
 - Calling in Video mode keeps the pre-join controls and the live call's video layout, and the widget has the same height as the live call (video area and the gap to the controls included): the title reads "Calling <name>…", the video area shows the person called (avatar with the calling pulse on the dark call background) with your self view picture-in-picture, the microphone and camera controls stay, and Cancel replaces the meter. The widget does not change size between pre-join and calling. In the call window, calling keeps the pre-join window: your large self preview with the microphone and camera controls under it, and the details column shows "Calling <name>…", the person called with the pulse, and Cancel in place of Start call and the device checks. Calling and joining are more compact in Audio and Phone modes (see below). The widget keeps its corner pinned when its height changes, and pre-join, calling, joining and live share one width.
+
+![Widget: calling](shots/final/03-widget-calling.png)
+
+![Call window: calling (the pre-join window stays; Cancel replaces Start call)](shots/final/27-window-calling.png)
+
 - Participants popover: opens above the widget, and scrolls once the list is longer than it (from about five people).
 - More menu: Audio output, Raise / Lower hand, Record call / Stop recording, Show chat thread (expands to the window with the chat pane), Call info. Escape or an outside click closes menus; one menu is open at a time.
 - Incoming: caller avatar with a small call-type badge (video icon), "Incoming video call", Decline (tertiary) and Accept (green, the same green as Start call and Join call). Accept goes straight into the call with no pre-join step. The component also supports an audio variant (phone badge, "Incoming audio call"), which the prototype shows in Audio mode (video disabled). _Question: should an incoming audio-started call on a server with video show the audio variant, and does Accept then join with the camera off?_
+
+![Widget: incoming call](shots/final/09-widget-incoming.png)
+
 - Joining (after Accept): the incoming card stays, with the same layout and height so the widget does not resize when you accept: the caller's avatar (no ring), the name, "Joining call…" and a single Cancel in place of Decline and Accept. The widget grows to the live call when the call connects. The chat card reads "Joining <name>…" / "Connecting…".
+
+![Widget: joining](shots/final/12-widget-joining.png)
+
 - Button colours: the DM Calls UX spec plans a red Decline and a green Accept for 1:1 incoming calls (marked deferred to a next phase). The prototype now shows a green Accept (the same green as Start call and the Join call card) with a tertiary Decline. _Question: adopt a red Decline as well?_
 - People button: hidden in a 1:1 DM, where it is not meaningful, per the DM Calls UX spec (widget and call window). It stays in group and channel calls.
 - Enter and exit are quick fades; exit plays after Leave, Cancel or Decline.
@@ -297,21 +313,9 @@ Over the sidebar bottom-left. One widget stays mounted across pre-join, calling,
 
 The Audio mode widget otherwise matches the Video widget without the camera control and self view, and Start audio call is the only way to start. In the call window the camera control and device menu are omitted.
 
+_There are no screenshots yet for the Audio and Phone widgets or the audio room window._
+
 _Known gap, out of scope: the widget More menu still repeats Microphone and Camera rows next to the segmented controls._
-
-![Widget: calling](shots/final/03-widget-calling.png)
-
-![Call window: calling (the pre-join window stays; Cancel replaces Start call)](shots/final/27-window-calling.png)
-
-![Widget: incoming call](shots/final/09-widget-incoming.png)
-
-![Widget: joining](shots/final/12-widget-joining.png)
-
-![Widget: active call, DM (speaker view with self picture-in-picture)](shots/final/05-widget-active-dm.png)
-
-![Widget: active call, channel (+N chip, participant count 4)](shots/final/18-widget-active-group.png)
-
-_There are no screenshots yet for the Audio and Phone widgets, the audio room window or the header button states._
 
 ### Call window (popout)
 
