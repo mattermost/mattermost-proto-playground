@@ -15,20 +15,11 @@
   }
 
   &__section {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: var(--spacing-l) var(--spacing-xl);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    transition: background var(--duration-moderate) var(--ease-transition);
 
-    // Collapsed: title and description on the left, Edit on the right.
     &:not(#{&}--expanded) {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: var(--spacing-xxxs) var(--spacing-m);
-      padding: var(--spacing-l);
       cursor: pointer;
-      transition: background var(--duration-quick) var(--ease-transition);
 
       &:hover {
         background: rgba(var(--center-channel-color-rgb), 0.04);
@@ -38,6 +29,51 @@
     &--expanded {
       background: rgba(var(--center-channel-color-rgb), 0.04);
     }
+  }
+
+  // The collapsed summary and the expanded panel swap by animating grid rows
+  // 1fr <-> 0fr. Padding lives on the content, not the clipped inner, so a
+  // closed view collapses to zero height.
+  &__collapse {
+    display: grid;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--summary {
+      grid-template-rows: 1fr;
+    }
+
+    &--panel {
+      grid-template-rows: 0fr;
+    }
+  }
+
+  &__section--expanded &__collapse--summary {
+    grid-template-rows: 0fr;
+  }
+
+  &__section--expanded &__collapse--panel {
+    grid-template-rows: 1fr;
+  }
+
+  &__collapse-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  // Collapsed: title and description on the left, Edit on the right.
+  &__summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--spacing-xxxs) var(--spacing-m);
+    padding: var(--spacing-l);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-l) var(--spacing-xl);
   }
 
   // Shown on row hover; stays reachable by keyboard via focus-within.
@@ -153,5 +189,12 @@
     display: flex;
     gap: var(--spacing-s);
     padding-top: var(--spacing-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__section,
+    &__collapse {
+      transition: none;
+    }
   }
 }
