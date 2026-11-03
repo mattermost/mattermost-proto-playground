@@ -256,7 +256,7 @@ export default function PreJoinScene() {
                       : micCheck && micStream.status === 'unavailable'
                         ? 'We could not find a working microphone.'
                         : micCheck
-                          ? 'Say something to see the meter move.'
+                          ? "Say something, to check your microphone's level."
                           : 'The meter is simulated until you check your microphone.'}
                     {!soundOn &&
                       ' Turn on sounds in the prototype controls to hear the speaker test.'}

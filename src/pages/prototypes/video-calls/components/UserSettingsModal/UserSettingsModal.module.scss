@@ -2,6 +2,17 @@
   height: min(720px, calc(100% - var(--spacing-xxl)));
   max-height: 100%;
 
+  // The body is wrapped in the modal's own Scrollbar, so its content is auto
+  // height and the layout's 100% never resolves. Pass the body's height down
+  // so the pane scrolls on its own instead of the whole body.
+  :global(
+      [class*='modal__scroll'] > .simplebar-wrapper > .simplebar-mask >
+        .simplebar-offset > .simplebar-content-wrapper > .simplebar-content
+    ),
+  :global([class*='modal__body-inner']) {
+    height: 100%;
+  }
+
   &__layout {
     display: flex;
     height: 100%;

@@ -162,28 +162,30 @@ export default function CallsSettings({
                 onChange={(microphone) => onChange({ microphone })}
               />
             </Field>
-            <Field label="Input level">
-              <MicLevelMeter level={micLevel} />
+            <Field label="Input level" top>
+              <div className={styles['calls-settings__stack']}>
+                <MicLevelMeter level={micLevel} />
+                {!micCheck && (
+                  <Button
+                    emphasis="tertiary"
+                    size="small"
+                    className={styles['calls-settings__check']}
+                    onClick={() => setMicRequested(true)}
+                  >
+                    Check my microphone
+                  </Button>
+                )}
+                <p className={styles['calls-settings__helper']} role="status">
+                  {micCheck && micStream.status === 'denied'
+                    ? 'Microphone access is blocked. Allow it in your browser to check it.'
+                    : micCheck && micStream.status === 'unavailable'
+                      ? 'We could not find a working microphone.'
+                      : micCheck
+                        ? "Say something, to check your microphone's level."
+                        : 'The meter is simulated until you check your microphone.'}
+                </p>
+              </div>
             </Field>
-            {!micCheck && (
-              <Button
-                emphasis="tertiary"
-                size="small"
-                className={styles['calls-settings__check']}
-                onClick={() => setMicRequested(true)}
-              >
-                Check my microphone
-              </Button>
-            )}
-            <p className={styles['calls-settings__helper']} role="status">
-              {micCheck && micStream.status === 'denied'
-                ? 'Microphone access is blocked. Allow it in your browser to check it.'
-                : micCheck && micStream.status === 'unavailable'
-                  ? 'We could not find a working microphone.'
-                  : micCheck
-                    ? 'Say something to see the meter move.'
-                    : 'The meter is simulated until you check your microphone.'}
-            </p>
             <Field label="Speaker output" htmlFor={`${uid}-speaker`}>
               <Select
                 id={`${uid}-speaker`}
