@@ -1,0 +1,251 @@
+.calls-settings {
+  // Figma content inset: 28px top, 32px sides and bottom.
+  padding: calc(var(--spacing-xxl) + var(--spacing-xxxs)) var(--spacing-xxxl)
+    var(--spacing-xxxl);
+
+  &__title {
+    margin: 0 0 var(--spacing-xl);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__list {
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__section {
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    transition: background var(--duration-moderate) var(--ease-transition);
+
+    &:not(#{&}--expanded) {
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(var(--center-channel-color-rgb), 0.04);
+      }
+    }
+
+    &--expanded {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  // The summary and the panel share one grid cell. The panel reveals by
+  // clipping (grid rows 0fr <-> 1fr), so its content never moves; the summary
+  // crossfades out underneath. Padding lives on the content, not the clipped
+  // inner, so a closed panel collapses to zero height.
+  &__stack {
+    display: grid;
+
+    > * {
+      grid-area: 1 / 1;
+      align-self: start;
+    }
+  }
+
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+  }
+
+  &__section--expanded &__collapse {
+    grid-template-rows: 1fr;
+  }
+
+  &__collapse-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  // Collapsed: title and description on the left, Edit on the right.
+  &__summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--spacing-xxxs) var(--spacing-m);
+    padding: var(--spacing-l);
+  }
+
+  // Titles sit at the same spot in both views (same padding and type), so they
+  // stay put while only the rest of each view fades.
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-l);
+  }
+
+  &__section-body {
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__section--expanded &__section-body {
+    opacity: 1;
+  }
+
+  // Shown on row hover; stays reachable by keyboard via focus-within.
+  &__edit {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__section:hover #{&}__edit,
+  &__section:focus-within #{&}__edit {
+    opacity: 1;
+  }
+
+  // After the hover rule so an open section hides Edit even while hovered.
+  &__section--expanded &__edit,
+  &__section--expanded:hover &__edit,
+  &__section--expanded:focus-within &__edit,
+  &__section--expanded &__description {
+    opacity: 0;
+  }
+
+  &__section-title {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    // Same text in both views: the panel copy stays invisible (but is still the
+    // heading for assistive tech) and the summary copy never fades.
+    &--hidden {
+      opacity: 0;
+    }
+
+    // Different text (Screen sharing): crossfade the two titles in place.
+    &--in {
+      opacity: 0;
+    }
+  }
+
+  &__section--expanded &__section-title--in {
+    opacity: 1;
+  }
+
+  &__section--expanded &__section-title--out {
+    opacity: 0;
+  }
+
+  &__description,
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: 16px; // Body 75
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__section-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding: var(--spacing-l) 0 var(--spacing-xs) var(--spacing-xxxl);
+  }
+
+  &__field {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  &__field--top {
+    align-items: start;
+  }
+
+  // A field's control column: preview or meter with its button and helper.
+  &__field-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
+  // The column left-aligns its children, and the meter's bars have no intrinsic
+  // width, so it must stretch or it collapses to nothing.
+  &__meter {
+    align-self: stretch;
+    max-width: 320px;
+  }
+
+  &__field-label {
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__choices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__hint {
+    padding-bottom: var(--spacing-m);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+  }
+
+  &__preview {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-s);
+    background: var(--color-neutral-900, #1c1c1c);
+    overflow: hidden;
+    transition: filter var(--duration-quick) var(--ease-transition);
+
+    &[data-blurred] {
+      filter: blur(1.5px);
+    }
+  }
+
+  &__preview-status {
+    position: absolute;
+    inset: auto 0 var(--spacing-s);
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size-75);
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  &__check {
+    align-self: flex-start;
+  }
+
+  &__helper {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__section,
+    &__collapse,
+    &__description,
+    &__section-title,
+    &__section-body {
+      transition: none;
+    }
+  }
+}

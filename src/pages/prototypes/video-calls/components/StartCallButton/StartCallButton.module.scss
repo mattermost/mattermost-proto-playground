@@ -1,0 +1,14 @@
+.start-call-button {
+  position: relative;
+  display: inline-flex;
+
+  // Anchored under the button, right-aligned so it stays inside the header.
+  &__menu {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxxs));
+    right: 0;
+    z-index: 20;
+    min-width: max-content;
+    transform-origin: top right;
+  }
+}

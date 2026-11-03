@@ -1,0 +1,15 @@
+.prototype-settings {
+  position: relative;
+  display: inline-flex;
+
+  // Under the cog; the host positions, PopoverMenu owns the surface and motion.
+  &__popover {
+    position: absolute;
+    top: calc(100% + var(--spacing-xs));
+    left: 0;
+    z-index: 30;
+    width: 320px; // one-off popover width
+    max-width: 90vw;
+    transform-origin: top left;
+  }
+}

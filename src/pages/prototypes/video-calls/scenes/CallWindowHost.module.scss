@@ -1,0 +1,17 @@
+// Fills the orchestrator frame; the window inside is 100% x 100%.
+.call-window-host {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+
+  // Call info popover, top-right under the window header (like CallPopout's).
+  &__info {
+    position: absolute;
+    top: calc(var(--spacing-xxxxl) + var(--spacing-m));
+    right: var(--spacing-l);
+    z-index: 6;
+    transform-origin: top right;
+  }
+}

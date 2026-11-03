@@ -1,0 +1,36 @@
+// Wrapper that anchors the "Call link copied" notice under the header button.
+.start-call-menu {
+  position: relative;
+  display: inline-flex;
+
+  &__notice {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    right: 0;
+    z-index: 30;
+    width: max-content;
+    transform-origin: top right;
+    animation: start-call-menu-notice-in var(--duration-quick)
+      var(--ease-entrance);
+
+    &--exiting {
+      opacity: 0;
+      transition: opacity var(--duration-quick) var(--ease-exit);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      transition: none;
+    }
+  }
+}
+
+@keyframes start-call-menu-notice-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

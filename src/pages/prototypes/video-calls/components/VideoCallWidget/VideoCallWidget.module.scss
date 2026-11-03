@@ -1,0 +1,625 @@
+// ONE card for pre-join, calling and the live call (302px frame from
+// WidgetFrame). The frame is a size container so the pre-join preview height
+// can be expressed in cqw; the media row animates its height between phases.
+.video-call-widget {
+  container-type: inline-size;
+  // Inner content width: card minus the side padding and the 1px borders.
+  --video-call-widget-inner: calc(100cqw - 2 * var(--spacing-s) - 2px);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-height: 40px; // one-off layout height
+    padding: var(--spacing-xxs) var(--spacing-xs) var(--spacing-xxs)
+      var(--spacing-s);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // Compact header (audio-only and phone: calling, joining, live): one fixed
+  // height for every phase so the card does not change size when the call
+  // connects. It fits the two text lines of the live call (title and time) with
+  // tighter vertical padding, so calling, which has a single line, matches it.
+  &__header--compact {
+    min-height: calc(
+      var(--line-height-100) + var(--line-height-75) + var(--spacing-xxs) +
+        var(--spacing-xxxs)
+    );
+    // Same top spacing as every other phase's header; tight below, to the controls.
+    padding-block: var(--spacing-xxs) var(--spacing-xxxs);
+  }
+
+  &__lead {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__title {
+    font-family: var(--font-family-body);
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__channel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__channel-name {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Compact live call (audio-only and phone): speaker avatar, name and time.
+  &__lead-compact {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__lead-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__lead-title {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__lead-title-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Calling: the title fades in and out while it rings, like the outbound
+  // softphone. A one-off cycle (no motion token covers a looping pulse).
+  &__lead-title--pulsing {
+    animation: video-call-widget-title-pulse 1.6s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__lead-sub {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-regular);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__elapsed {
+    flex: 1 1 auto;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  &__expand {
+    flex: 0 0 auto;
+  }
+
+  // Media row: fixed height per phase so the change animates (auto heights
+  // cannot transition). Content crossfades inside via PhaseCrossfade.
+  &__media {
+    --video-call-widget-media-h: 88px; // one-off layout height
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: var(--video-call-widget-media-h);
+    padding: 0 var(--spacing-s) var(--spacing-xs);
+    // Clip the sides and bottom (phase content that outgrows the row), but let
+    // the calling ring pulse past the top into the header's empty space.
+    clip-path: inset(calc(var(--spacing-m) * -1) 0 0 0);
+    transition: height var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: the controls row sits 2px closer to its buttons than the live
+    // call's does, so this padding is 2px larger and the video-to-button gap
+    // (10px) matches the live call's.
+    &--pre-join {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xxxs)
+      );
+      padding-bottom: var(--spacing-xxxs);
+    }
+
+    // Live call: the same 16:9 as the pre-join preview. The gap from the video
+    // to the control buttons (this padding plus the controls row's own 8px above
+    // the buttons) equals the buttons' side padding (--spacing-s), so the video
+    // and the controls are spaced evenly. Calling (video) uses the same values so
+    // the card keeps its height when the call connects.
+    &--active,
+    &--calling {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-xxxxs)
+      );
+      padding-bottom: var(--spacing-xxxxs);
+    }
+
+    // Audio-only pre-join: no self preview. Start mode has nothing to show
+    // (the title, mic and meter, and Start remain); join mode keeps just the
+    // "N people in the call" row.
+    &--pre-join#{&}--no-preview {
+      --video-call-widget-media-h: 0px;
+      padding: 0;
+    }
+
+    &--pre-join#{&}--no-preview#{&}--people {
+      // One-off: the 24px avatar row plus a little breathing room.
+      --video-call-widget-media-h: calc(24px + var(--spacing-xs));
+      padding: 0 var(--spacing-s);
+    }
+
+    // Audio-only and phone calls: no media row at all while the call is live;
+    // the speaker avatar and the time sit in the header.
+    &--compact#{&}--active,
+    &--compact#{&}--calling,
+    &--compact#{&}--joining {
+      --video-call-widget-media-h: 0px;
+      padding: 0;
+    }
+
+    // Join mode adds the "N people in the call" row under the preview.
+    // No bottom padding here: the controls row below already has its own top
+    // padding, so the avatars sit close to it.
+    &--pre-join#{&}--people {
+      --video-call-widget-media-h: calc(
+        var(--video-call-widget-inner) * 9 / 16 + var(--spacing-s) + 24px
+      );
+      padding-bottom: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__pre-join {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__preview {
+    display: flex;
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-s);
+    overflow: hidden;
+
+    > * {
+      width: 100%;
+      height: 100%;
+      // Widget tiles use the small radius (the tile's default is radius-m).
+      border-radius: var(--radius-s);
+    }
+  }
+
+  &__people {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__people-label {
+    min-width: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  // Calling: peer avatar with the shared pulse, and status text.
+  &__peer {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__status {
+    font-family: var(--font-family-body);
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    text-align: center;
+  }
+
+  // Notice stack above the card (the host's CallNotice, which is otherwise
+  // pinned bottom-left of a stage). Doubled block class beats its own rule.
+  #{&} &__notices > * {
+    position: static;
+    max-width: 100%;
+  }
+
+  // Phone call: the dialed number under the name.
+  &__sub {
+    font-family: var(--font-family-body);
+    margin: 0;
+    margin-top: calc(var(--spacing-xs) * -1);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  // Sharing state of the media row: live thumbnail, what you share + a clear Stop.
+  &__sharing {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__share-thumb {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 96px; // one-off thumbnail width (16:9 inside the 88px media row)
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__share-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000; // letterbox behind a captured surface, not a theme colour
+  }
+
+  &__sharing-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__sharing-text {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__sharing-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__sharing-dot {
+    flex: 0 0 auto;
+    width: var(--spacing-s);
+    height: var(--spacing-s);
+    border-radius: var(--radius-pill);
+    background: var(--color-danger);
+  }
+
+  // Speaker view: the speaker fills the card, a small self PiP sits bottom-right.
+  // 16:9 from the card width (the parent is a row, so pin the width and let the
+  // height follow instead of stretching).
+  &__speaker {
+    position: relative;
+    flex: 0 0 auto;
+    align-self: flex-start;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-width: 0;
+  }
+
+  // VideoTile 'thumbnail' is a fixed 120x136; fill the card instead. Doubled
+  // selector beats the tile's size rule.
+  &__speaker-tile#{&}__speaker-tile {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-s);
+  }
+
+  // Calling (and the pre-join stage behind your self view): the callee's area on
+  // the dark call surface, like the live call's video.
+  &__pre-join-peer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-s);
+    background: var(--calls-video-bg, #080c14);
+    opacity: 1;
+    transition: opacity var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: your large self view covers this; it fades in as it shrinks.
+    &--hidden {
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__pip {
+    position: absolute;
+    right: var(--spacing-xs);
+    bottom: var(--spacing-xs);
+    z-index: 4;
+    width: 88px; // one-off PiP width (16:9)
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-s);
+    box-shadow: var(--elevation-3);
+    transition:
+      width var(--duration-moderate) var(--ease-transition),
+      right var(--duration-moderate) var(--ease-transition),
+      bottom var(--duration-moderate) var(--ease-transition),
+      box-shadow var(--duration-moderate) var(--ease-transition);
+
+    // Pre-join: the self view fills the video area.
+    &--large {
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      box-shadow: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  // Camera off: a smaller avatar that fits the PiP, on a slightly lighter fill
+  // so it reads apart from the speaker's tile when theirs is off too.
+  // Large (pre-join): camera off uses the dark call background, a touch
+  // lighter than the calling area's, and the avatar keeps its full size.
+  &__pip--large &__pip-tile#{&}__pip-tile {
+    --video-tile-bg: color-mix(
+      in srgb,
+      var(--neutral-0) 7%,
+      var(--calls-video-bg, #080c14)
+    );
+  }
+
+  // Large (pre-join): the avatar keeps its full size.
+  &__pip--large
+    &__pip-tile#{&}__pip-tile
+    :global([class*='video-tile__avatar-image']) {
+    transform: none;
+  }
+
+  &__pip-tile#{&}__pip-tile {
+    --video-tile-bg: color-mix(
+      in srgb,
+      var(--neutral-0) 14%,
+      var(--calls-video-bg, #080c14)
+    );
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-s);
+
+    :global([class*='video-tile__avatar-image']) {
+      transform: scale(0.7); // 40px avatar -> 28px; no 28px avatar size exists
+      transition: transform var(--duration-moderate) var(--ease-transition);
+    }
+  }
+
+  &__overflow {
+    position: absolute;
+    top: var(--spacing-xxxs);
+    left: var(--spacing-xxxs);
+    z-index: 4;
+    padding: 0 var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--neutral-0);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  // Controls row: mic / camera stay put in every phase; the trailing group
+  // changes (meter, Cancel, or participants / share / more / hang up).
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-top: auto;
+    box-sizing: border-box;
+    // Tall enough for the small Cancel button, so calling and active match.
+    min-height: calc(var(--spacing-xxs) + 32px + var(--spacing-s));
+    padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-s);
+    transition: padding-bottom var(--duration-moderate) var(--ease-transition);
+
+    // Compact (audio-only and phone): the buttons end the same distance from the
+    // bottom edge as from the sides (10px: 28px buttons centred in a 32px row
+    // plus 8px). The row keeps the height of the 32px Cancel so calling and the
+    // live call match.
+    &--compact {
+      min-height: calc(var(--spacing-xxs) + 32px + var(--spacing-xs));
+      padding-bottom: var(--spacing-xs);
+    }
+
+    // Pre-join: the actions row below supplies the bottom inset.
+    &--with-actions {
+      min-height: 0;
+      padding-bottom: var(--spacing-xs);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  &__trailing {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__trailing-inner {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__meter {
+    flex: 1 1 auto;
+  }
+
+  // Pre-join Cancel / Start: stays mounted, collapses (grid 0fr -> 1fr) once
+  // the call is on.
+  &__actions {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--open {
+      grid-template-rows: 1fr;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  // The clip has no padding: padding would stay visible at 0fr.
+  &__actions-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__actions-row {
+    display: flex;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s) var(--spacing-s);
+  }
+
+  // Start / Join call: green-600 (white text needs the contrast). The primary Button reads --button-bg
+  // (hover and active tints derive from it), so override the variable.
+  &__start {
+    --button-bg: var(--color-green-600);
+    // Takes the width left beside Cancel.
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  &__hangup {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    // A regular small IconButton square, no extra width.
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-s);
+    background: var(--error-text, var(--color-danger));
+    color: var(--neutral-0);
+    cursor: pointer;
+    transition: background-color var(--duration-quick) var(--ease-transition);
+
+    // Same tints as the compass destructive Button: darken the red, never
+    // drop the fill.
+    &:hover {
+      background: color-mix(
+        in srgb,
+        black 8%,
+        var(--error-text, var(--color-danger))
+      );
+    }
+
+    &:active {
+      background: color-mix(
+        in srgb,
+        black 16%,
+        var(--error-text, var(--color-danger))
+      );
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 2px;
+    }
+  }
+
+  &__rec {
+    flex: 0 0 auto;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
+    border-radius: var(--radius-pill);
+    background: var(--error-text, var(--color-danger));
+  }
+}
+
+@keyframes video-call-widget-title-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}

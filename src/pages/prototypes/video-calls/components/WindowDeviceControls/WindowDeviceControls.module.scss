@@ -1,0 +1,60 @@
+// Same inverted chrome as the in-call controls bar (8% white fill, green tint when
+// on, red glyph when off), scoped to this block's own buttons so it never leaks
+// into the device menus.
+.window-device-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  &__slot {
+    position: relative;
+    display: flex;
+  }
+
+  &__popover {
+    position: absolute;
+    bottom: calc(100% + var(--spacing-s));
+    left: 50%;
+    z-index: 6;
+    transform: translateX(-50%);
+
+    &--bottom {
+      top: calc(100% + var(--spacing-s));
+      bottom: auto;
+    }
+  }
+
+  &__segment button {
+    background-color: color-mix(in srgb, var(--neutral-0) 8%, transparent);
+    color: color-mix(in srgb, var(--neutral-0) 72%, transparent);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
+    }
+
+    &:active:not(:disabled):not([data-active='true']) {
+      background-color: color-mix(in srgb, var(--neutral-0) 24%, transparent);
+    }
+
+    &[aria-pressed='true']:not(:disabled),
+    &[data-active='true']:not(:disabled) {
+      background-color: color-mix(in srgb, var(--neutral-0) 16%, transparent);
+      color: var(--neutral-0);
+    }
+  }
+
+  &__segment button:first-child {
+    border-start-start-radius: var(--radius-m);
+    border-end-start-radius: var(--radius-m);
+  }
+
+  &__segment button:last-child {
+    border-start-end-radius: var(--radius-m);
+    border-end-end-radius: var(--radius-m);
+  }
+
+  #{&}__toggle#{&}__toggle--off {
+    color: var(--error-text, var(--color-danger));
+  }
+}

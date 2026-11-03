@@ -1,0 +1,112 @@
+@keyframes widget-incoming-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.56;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.widget-incoming {
+  &__caller {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+    padding: var(--spacing-s) var(--spacing-s) var(--spacing-m);
+  }
+
+  &__avatar {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    border-radius: var(--radius-pill);
+
+    // Joining: the call was accepted, so the ring stops.
+    &--still::after {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-pill);
+      border: var(--spacing-xxxxs) solid var(--online-indicator);
+      animation: widget-incoming-ring calc(var(--duration-moderate) * 5)
+        var(--ease-exit) infinite;
+      pointer-events: none;
+    }
+  }
+
+  // Call-type badge on the avatar's corner (video camera / phone).
+  &__badge {
+    position: absolute;
+    right: calc(var(--spacing-xxxs) * -1);
+    bottom: calc(var(--spacing-xxxs) * -1);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; // one-off badge size
+    height: 20px;
+    box-sizing: border-box;
+    border: 2px solid var(--center-channel-bg);
+    border-radius: var(--radius-pill);
+    background: var(--online-indicator);
+    color: var(--neutral-0);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s) var(--spacing-s);
+  }
+
+  // Ignore and Accept split the row evenly.
+  &__action {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__avatar::after {
+      animation: none;
+      opacity: 0.4;
+      transform: scale(1.18);
+    }
+  }
+
+  // Accept: the same green-600 as Start call and Join call (white text needs
+  // the contrast). The primary Button reads --button-bg (hover and active tints
+  // derive from it), so override the variable.
+  &__accept {
+    --button-bg: var(--color-green-600);
+  }
+}
