@@ -53,7 +53,7 @@ Video calling and SIP phone calling are server settings. The DM header shows:
 
 - Group headings appear only when both groups are present. A divider separates the two groups, above the "Phone call" heading.
 - Copy call link is the last row of the Mattermost call group, directly under the start options (no divider). It is not offered in the Phone call group. See Entry points for what it does.
-- Call settings is the last row of every menu, below a separator, whatever the server settings are. It is not a way to call, so it is not in either group. The prototype shows only a placeholder notice, since the Calls plugin settings are not part of it.
+- Call settings is the last row of every menu, below a separator, whatever the server settings are. It is not a way to call, so it is not in either group. It opens User settings on the Calls tab (see User settings: Calls).
 - GM and channel headers never show a Phone call group. Phone calls are 1:1.
 - Each phone number the person can be called on is its own row: "Call <label>" with the number as the secondary label. Numbers that cannot be dialled from this network are not listed.
 - The same menu is what the profile popover's Call button opens. The popover's own phone number rows are defined in the outbound specs.
@@ -89,7 +89,7 @@ Both phases: web and desktop app; voice-started and video-started calls; audio-o
 
 Out of scope for this spec: mobile (to follow once the core video capabilities are agreed); dial pad, recents, conference bridge, adding a phone party to a Mattermost call (it would be an audio-only participant, a later outbound tier), and phone number formats, trunks or admin configuration; real remote video (remote tiles play generated placeholder loops); popout window focus handling; promotion of components to compass-design.
 
-In scope but not yet specified: _TODO: System Console configuration for video calling (including the pre-join default, see Pre-join) and user settings for video calling in the Calls plugin settings._
+In scope but not yet specified: _TODO: System Console configuration for video calling (including the pre-join default, see Pre-join). The person's own settings for calls are specified in User settings: Calls; the skip-pre-join setting is not in that tab yet._
 
 ## User Flows
 
@@ -97,6 +97,7 @@ In scope but not yet specified: _TODO: System Console configuration for video ca
 - Starting an audio-only call (video disabled) or an outbound SIP phone call
 - Copying a call link, and opening one
 - Skipping the pre-join screen in the Calls plugin settings
+- Opening call settings (header cog or the call menu's Call settings row) and changing audio, screen sharing and video options
 - Receiving, accepting and declining a DM call
 - Receiving a new call while in an active call
 - Joining a call someone else started in a GM or channel
@@ -166,7 +167,7 @@ Per the DM Calls UX spec: in a DM, hang up leaves immediately with no confirmati
 
 ### Entry points
 
-**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"), and Copy call link (no divider; it is grouped with the start options). Below a separator, the last row is Call settings, which links to the Calls plugin settings section (where the pre-join setting lives). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. If the person has chosen to skip pre-join, both start the call immediately, with the camera as the menu item set it. The menu is always there when there is no call, so the chevron always shows (see Server settings and the Start call menu for what it lists).
+**Header.** DM, GM and channel headers show one icon-only call button: a phone icon with a chevron, and a "Start call" tooltip on hover and keyboard focus (the tooltip is hidden while the menu is open). It opens a menu: Start video call, Start audio call (secondary label "Camera off"), and Copy call link (no divider; it is grouped with the start options). Below a separator, the last row is Call settings, which opens User settings on the Calls tab (see User settings: Calls; the pre-join setting belongs with the Calls plugin settings). Picking Start video call opens pre-join with the camera already on (this is the user gesture that triggers the browser camera prompt). Start audio call opens pre-join with the camera off. If the person has chosen to skip pre-join, both start the call immediately, with the camera as the menu item set it. The menu is always there when there is no call, so the chevron always shows (see Server settings and the Start call menu for what it lists).
 
 Copy call link stays in the menu. It copies the call link for a Mattermost call and shows a "Call link copied" Toast for about 3 seconds (a "Couldn't copy call link" Toast if the browser blocks the copy). It does not start or join a call. It is offered in DM, GM and channel headers, only when there is no call: not in the Join call or In call states (Call info already has the link during a call).
 
@@ -182,9 +183,17 @@ The in-call phone icon is the same glyph as the sidebar's in-call icon (`phone-i
 
 _Question: should clicking the In call state bring the call widget forward (for example when it has been dragged away or the window is open)?_
 
-![Header Start call menu: Start video call and Start audio call](shots/final/01-header-start-call-menu.png)
+The Start call menu depends on the server settings (DM header, no call running; see Server settings and the Start call menu). A divider separates the Mattermost call and Phone call groups, above the "Phone call" heading, and another sits above Call settings.
 
-_The screenshot above shows the earlier text button and menu; it needs retaking for the icon-only button, the Mattermost call and Phone call groups, Copy call link and Call settings._
+![Start call menu, video off and SIP phone off: Start audio call, Copy call link, Call settings](shots/final/01a-menu-video-off-phone-off.png)
+
+![Start call menu, video on and SIP phone off: Start video call, Start audio call (Camera off), Copy call link, Call settings](shots/final/01b-menu-video-on-phone-off.png)
+
+![Start call menu, video off and SIP phone on: Mattermost call group (Start audio call, Copy call link), divider, Phone call group with the number, Call settings](shots/final/01c-menu-video-off-phone-on.png)
+
+![Start call menu, video on and SIP phone on: Mattermost call group (Start video call, Start audio call, Copy call link), divider, Phone call group with the number, Call settings](shots/final/01d-menu-video-on-phone-on.png)
+
+GM and channel headers never show the Phone call group, so their menu matches the first two screenshots whatever the SIP phone setting is.
 
 **Sidebar in-call icon.** A conversation row with a running call shows the in-call icon.
 
@@ -208,7 +217,7 @@ _The screenshot above shows the earlier text button and menu; it needs retaking 
 
 **The interstitial is the default when starting a call** (DM, GM and channel, in Video and Audio mode). Two settings control it:
 
-- **Calls plugin settings (the person):** a setting to skip the interstitial and start immediately. The header call menu's "Call settings" row links to it.
+- **Calls plugin settings (the person):** a setting to skip the interstitial and start immediately. The header call menu's "Call settings" row opens User settings, the home for it (see User settings: Calls).
 - **System Console (admin):** the default for everyone. It is a default only, not a lock: a person's own setting overrides it, either way (skip when the admin shows it, show when the admin skips it).
 
 With skip on, Start call rings a DM, or connects a group or channel call, straight away. The camera is as the menu item set it (Start video call: on, with the browser prompt; Start audio call: off).
@@ -217,7 +226,7 @@ The skip setting never applies to starts from a call link. Opening a call link t
 
 Audio mode (video disabled) uses the same interstitial without a camera: no self preview in the widget, a microphone-only check, and the window subtitle reads "Check your microphone first." The rest of this section describes Video mode.
 
-The prototype has only the person's setting (a prototype control standing in for the Calls plugin settings) and a control that simulates opening a call link. The System Console default is not prototyped.
+The prototype has only the person's setting (a prototype control standing in for the Calls plugin settings; the Calls tab in User settings does not include it yet) and a control that simulates opening a call link. The System Console default is not prototyped.
 
 The pre-join interstitial always shows when you join through a link. In every other case, including Join call on a call that is already running, it follows the person's preference.
 
@@ -225,7 +234,7 @@ Opens in the widget (default) or the window. Never touches camera or microphone 
 
 - Camera is off by default, unless Start video call was chosen from the header menu. In that case video is enabled by default in pre-join: the camera is on when pre-join opens and the browser prompt appears at that moment (the menu pick is the user gesture). Start audio call, Join call from the banner or header, and Call back all open pre-join with the camera off. In any pre-join the camera icon turns the camera on and triggers the browser prompt; nothing is requested on page load. While the camera starts the preview shows "Starting camera…".
 - Title (widget and window): "Start call with <name>" (start) or "Join call with <name>" (join), where <name> is the peer, the group or the channel (for example "Start call with Marco Rinaldi", "Join call with UX Design"). The window adds the subtitle "Check your camera and microphone first."
-- Mic level meter: simulated until the person selects Check my microphone (not shown when the browser has already granted the microphone, where the meter is live straight away), which requests the microphone and drives the meter from real input. Helper text explains the state: simulated, "Say something, to check your microphone's level", blocked, or no working microphone.
+- Mic level meter (slim segmented bars, shared with User settings: Calls): simulated until the person selects Check my microphone (not shown when the browser has already granted the microphone, where the meter is live straight away), which requests the microphone and drives the meter from real input. Helper text explains the state: simulated, "Say something, to check your microphone's level", blocked, or no working microphone.
 - Test speakers plays the join chime for 1.5s and the button reads "Playing…". Disabled when sounds are off (helper text points to the prototype sound toggle).
 - Who copy (window only): DM start "<name> will be called"; group start "<names> will be notified" (or "Everyone here will be notified" when the member list is empty); group join: avatars plus "<names> are in the call". The widget pre-join shows no "will be notified" copy: in start mode it shows only your self view, controls and Start call / Cancel (in that order). The self view fills the video area, with no mic-state label on it (the microphone control already shows it); with the camera off it shows your avatar on the dark call background, slightly lighter. Pressing Start call shrinks the self view into the picture-in-picture corner while the person called fades in behind it (see Call widget); in join mode it adds "N people in the call" with avatars. _Verified in the running prototype (widget). Window copy read from code._
 - Buttons: Start call (or Join call) on the left, in green (the same green as Join call on the call card), and Cancel on the right, text only with no hang-up icon (it returns to the conversation and releases the camera). Call surfaces follow the in-call layout, where Leave and Cancel sit at the right, rather than the standard modal convention (Cancel left, primary right). This is deliberate; do not flag it as an inconsistency.
@@ -236,6 +245,28 @@ Opens in the widget (default) or the window. Never touches camera or microphone 
 ![Widget pre-join, join mode (channel)](shots/final/17-widget-prejoin-join.png)
 
 ![Window pre-join (DM)](shots/final/14-window-prejoin.png)
+
+### User settings: Calls
+
+The Calls tab of User settings is where a person sets up their devices for calls. It opens from the global header's settings (cog) and from the Start call menu's Call settings row. It is a modal over the app with a left navigation and a content pane. Only the Calls tab (under Plugin preferences) is designed; Notifications, Display, Sidebar and Advanced are inert in the prototype. The Figma for the wider modal ([Settings Modal Revamp](https://www.figma.com/design/dUGxJk4lfo38lXzoRZf3YP/MM-12122-Settings-Modal-Revamp?node-id=1384-56121)) shows a floating "unsaved changes" footer and a search field; the Calls tab does not use either. It follows the webapp's pattern of sections that open in place.
+
+- Close with the X, Escape or a click on the backdrop. Closing discards unsaved edits, and the next open starts with every section collapsed.
+- Only the content pane scrolls; the navigation and the modal header stay put.
+- Each section is a row with its title and a one-line description. The Edit button sits at the right and shows on hover or keyboard focus; clicking anywhere on the row also opens it. The row tints on hover.
+- An open section hides Edit, keeps its title where it was, and reveals the form below it with a short height animation (the collapsed row fades out underneath, so nothing moves). Save keeps the edits and collapses the section; Cancel reverts that section's edits and collapses it. More than one section can be open at once.
+- **Audio devices:** Microphone input, Input level and Speaker output. Input level is the same segmented meter as pre-join, simulated until the person selects Check my microphone, which uses the microphone chosen above. If the browser has already granted microphone access, the meter is live straight away and the button is not shown. The helper text under the meter explains the state. Device names come from the browser (generic names such as "Microphone 1" until access is granted; placeholder devices when none are listed). Save sets the call's microphone and speaker, which are the same choices the pre-join and in-call device menus use.
+- **Screen sharing settings** (the open section is titled "Share sound with screen"): an On / Off choice with a note that browser tab or system audio is included with the shared screen. The prototype does not act on it.
+- **Video devices:** Camera input, Preview and Options. The preview is the same self view as pre-join: with the camera off it shows the person's avatar, and Turn on camera starts the real camera (the user gesture that triggers the browser prompt; nothing is requested before). Picking a different camera previews that camera before Save; Cancel discards the choice. Options are Mirror video (mirrors the preview) and Blur background (a placeholder effect on the preview in the prototype).
+
+_Not prototyped: the Notifications, Display, Sidebar and Advanced tabs, the skip-pre-join setting and the System Console default; saved Mirror video, Blur background and Share sound values are not used by the call._
+
+![User settings, Calls tab: all sections collapsed](shots/final/28-settings-calls-collapsed.png)
+
+![Audio devices open: microphone, input level meter with Check my microphone, speaker](shots/final/29-settings-audio-expanded.png)
+
+![Video devices open, pane scrolled to the bottom: camera, preview, Mirror video and Blur background, Save and Cancel](shots/final/30-settings-video-expanded.png)
+
+![Screen sharing settings open: Share sound with screen On / Off](shots/final/31-settings-screen-sharing-expanded.png)
 
 ### Call widget
 
@@ -393,7 +424,7 @@ Compass durations and easings only: quick (150ms) with entrance / exit easings f
 
 Existing (Compass UI): Button, IconButton, Icon, UserAvatar, UserAvatarGroup, Tag, Toast, PopoverMenu (with group titles and dividers), MenuItem, MenuGroupHeading, Tooltip, ModalOverlay.
 Existing (Compass proto): ChannelShell, ChannelHeader, Message, MessageInput, CallNotice pill (with the `appearance` and `tone` props from compass-design PR #180), CallParticipantAvatar, WithTooltip, RecordingIndicator, CallInfoPanel, ParticipantsPanel.
-New in the prototype (candidates for the design system): CallHeaderButton, AudioRoom, CallCard, CallBanner, VideoCallWidget, VideoCallWindow, VideoStage and VideoTile, SelfViewPip, CallControlsBar, SegmentedIconButton, DeviceMenu, WidgetIncoming, PreJoinPanel, MicLevelMeter, ViewToggle.
+New in the prototype (candidates for the design system): UserSettingsModal (Calls tab, with its settings navigation), MicLevelMeter, CallHeaderButton, AudioRoom, CallCard, CallBanner, VideoCallWidget, VideoCallWindow, VideoStage and VideoTile, SelfViewPip, CallControlsBar, SegmentedIconButton, DeviceMenu, WidgetIncoming, PreJoinPanel, MicLevelMeter, ViewToggle.
 
 ## Open Questions
 
@@ -423,4 +454,5 @@ New in the prototype (candidates for the design system): CallHeaderButton, Audio
 - Figma: Video-Calling (WcvNikeYFxnW15IaZU9JM0), Call Card (uHkbu1krioaScJ3AfxLPg2)
 - RHS overlay pattern: docs/RHS-OVERLAY-PATTERN.md in the prototype repo
 - Related UX specs: Calls UX Improvements for DM Calls; UX Spec: Outbound Calls — Implementation Tiers; Phase 1 — Basic Outbound SIP Calling (links under Overview)
+- Figma: [Settings Modal Revamp](https://www.figma.com/design/dUGxJk4lfo38lXzoRZf3YP/MM-12122-Settings-Modal-Revamp?node-id=1384-56121) (the User settings modal; reference for the Calls tab)
 - Related: FY28 Multi-party Video two-pager (background only)
