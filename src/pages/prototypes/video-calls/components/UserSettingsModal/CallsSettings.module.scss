@@ -86,6 +86,17 @@
     gap: var(--spacing-m);
   }
 
+  &__field--top {
+    align-items: start;
+  }
+
+  &__stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
   &__field-label {
     font-size: var(--font-size-75);
     font-weight: var(--font-weight-semibold);

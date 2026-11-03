@@ -36,14 +36,19 @@ type Props = {
 function Field({
   label,
   htmlFor,
+  top,
   children,
 }: {
   label: string;
   htmlFor?: string;
+  /** Align the label to the top of a tall control (preview, checkbox list). */
+  top?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <div className={styles['calls-settings__field']}>
+    <div
+      className={`${styles['calls-settings__field']} ${top ? styles['calls-settings__field--top'] : ''}`}
+    >
       <label
         className={styles['calls-settings__field-label']}
         htmlFor={htmlFor}
@@ -123,7 +128,7 @@ export default function CallsSettings({
     </div>
   );
 
-  const body = (id: CallsSectionId, description: string) => {
+  const body = (id: CallsSectionId) => {
     switch (id) {
       case 'audio':
         return (
@@ -208,51 +213,58 @@ export default function CallsSettings({
                 onChange={(camera) => onChange({ camera })}
               />
             </Field>
-            <div
-              className={styles['calls-settings__preview']}
-              data-blurred={values.blurBackground || undefined}
-            >
-              <VideoTile
-                name={SELF.name}
-                avatarSrc={SELF.avatarSrc}
-                cameraOn={state.media.cameraOn}
-                stream={selfCamera.stream}
-                muted={!state.media.micOn}
-                showLabel={false}
-                mirrored={values.mirrorVideo}
-              />
-              {selfCamera.status === 'requesting' && (
-                <p
-                  className={styles['calls-settings__preview-status']}
-                  role="status"
+            <Field label="Preview" top>
+              <div className={styles['calls-settings__stack']}>
+                <div
+                  className={styles['calls-settings__preview']}
+                  data-blurred={values.blurBackground || undefined}
                 >
-                  Starting camera…
-                </p>
-              )}
-            </div>
-            <Button
-              emphasis="tertiary"
-              size="small"
-              className={styles['calls-settings__check']}
-              onClick={selfCamera.toggle}
-            >
-              {state.media.cameraOn ? 'Turn off camera' : 'Turn on camera'}
-            </Button>
-            <div className={styles['calls-settings__choices']}>
-              <Checkbox
-                checked={values.mirrorVideo}
-                onChange={(e) => onChange({ mirrorVideo: e.target.checked })}
-              >
-                Mirror video
-              </Checkbox>
-              <Checkbox
-                checked={values.blurBackground}
-                onChange={(e) => onChange({ blurBackground: e.target.checked })}
-              >
-                Blur background
-              </Checkbox>
-            </div>
-            <p className={styles['calls-settings__hint']}>{description}</p>
+                  <VideoTile
+                    name={SELF.name}
+                    avatarSrc={SELF.avatarSrc}
+                    cameraOn={state.media.cameraOn}
+                    stream={selfCamera.stream}
+                    muted={!state.media.micOn}
+                    showLabel={false}
+                    mirrored={values.mirrorVideo}
+                  />
+                  {selfCamera.status === 'requesting' && (
+                    <p
+                      className={styles['calls-settings__preview-status']}
+                      role="status"
+                    >
+                      Starting camera…
+                    </p>
+                  )}
+                </div>
+                <Button
+                  emphasis="tertiary"
+                  size="small"
+                  className={styles['calls-settings__check']}
+                  onClick={selfCamera.toggle}
+                >
+                  {state.media.cameraOn ? 'Turn off camera' : 'Turn on camera'}
+                </Button>
+              </div>
+            </Field>
+            <Field label="Options" top>
+              <div className={styles['calls-settings__choices']}>
+                <Checkbox
+                  checked={values.mirrorVideo}
+                  onChange={(e) => onChange({ mirrorVideo: e.target.checked })}
+                >
+                  Mirror video
+                </Checkbox>
+                <Checkbox
+                  checked={values.blurBackground}
+                  onChange={(e) =>
+                    onChange({ blurBackground: e.target.checked })
+                  }
+                >
+                  Blur background
+                </Checkbox>
+              </div>
+            </Field>
           </>
         );
     }
@@ -283,7 +295,7 @@ export default function CallsSettings({
                     {EXPANDED_TITLES[id]}
                   </h3>
                   <div className={styles['calls-settings__section-body']}>
-                    {body(id, description)}
+                    {body(id)}
                     {actions(id)}
                   </div>
                 </>
