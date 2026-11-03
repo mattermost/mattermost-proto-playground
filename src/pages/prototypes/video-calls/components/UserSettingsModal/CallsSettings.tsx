@@ -310,45 +310,44 @@ export default function CallsSettings({
               className={`${styles['calls-settings__section']} ${isOpen ? styles['calls-settings__section--expanded'] : ''}`}
               onClick={isOpen ? undefined : () => onEdit(id)}
             >
-              {/* Both views stay mounted so the swap can animate; the hidden one is inert. */}
-              <div
-                className={`${styles['calls-settings__collapse']} ${styles['calls-settings__collapse--summary']}`}
-                inert={isOpen}
-              >
-                <div className={styles['calls-settings__collapse-inner']}>
-                  <div className={styles['calls-settings__summary']}>
-                    <h3 className={styles['calls-settings__section-title']}>
-                      {title}
-                    </h3>
-                    <Button
-                      emphasis="quaternary"
-                      size="small"
-                      className={styles['calls-settings__edit']}
-                      leadingIcon={
-                        <Icon glyph={<PencilOutlineIcon />} size="16" />
-                      }
-                      aria-label={`Edit ${title}`}
-                    >
-                      Edit
-                    </Button>
-                    <p className={styles['calls-settings__description']}>
-                      {description}
-                    </p>
-                  </div>
+              {/* Both views stay mounted in one grid cell so the swap can animate
+                  without moving content; the hidden one is inert. */}
+              <div className={styles['calls-settings__stack']}>
+                <div
+                  className={styles['calls-settings__summary']}
+                  inert={isOpen}
+                >
+                  <h3 className={styles['calls-settings__section-title']}>
+                    {title}
+                  </h3>
+                  <Button
+                    emphasis="quaternary"
+                    size="small"
+                    className={styles['calls-settings__edit']}
+                    leadingIcon={
+                      <Icon glyph={<PencilOutlineIcon />} size="16" />
+                    }
+                    aria-label={`Edit ${title}`}
+                  >
+                    Edit
+                  </Button>
+                  <p className={styles['calls-settings__description']}>
+                    {description}
+                  </p>
                 </div>
-              </div>
-              <div
-                className={`${styles['calls-settings__collapse']} ${styles['calls-settings__collapse--panel']}`}
-                inert={!isOpen}
-              >
-                <div className={styles['calls-settings__collapse-inner']}>
-                  <div className={styles['calls-settings__panel']}>
-                    <h3 className={styles['calls-settings__section-title']}>
-                      {EXPANDED_TITLES[id]}
-                    </h3>
-                    <div className={styles['calls-settings__section-body']}>
-                      {body(id)}
-                      {actions(id)}
+                <div
+                  className={styles['calls-settings__collapse']}
+                  inert={!isOpen}
+                >
+                  <div className={styles['calls-settings__collapse-inner']}>
+                    <div className={styles['calls-settings__panel']}>
+                      <h3 className={styles['calls-settings__section-title']}>
+                        {EXPANDED_TITLES[id]}
+                      </h3>
+                      <div className={styles['calls-settings__section-body']}>
+                        {body(id)}
+                        {actions(id)}
+                      </div>
                     </div>
                   </div>
                 </div>
