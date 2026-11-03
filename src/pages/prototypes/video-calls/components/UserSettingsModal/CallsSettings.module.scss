@@ -105,23 +105,38 @@
   }
 
   &__preview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    width: 220px;
+    position: relative;
+    width: 100%;
+    max-width: 320px;
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-m);
     background: var(--color-neutral-900, #1c1c1c);
-    color: rgba(255, 255, 255, 0.72);
-    font-size: var(--font-size-75);
     overflow: hidden;
     transition: filter var(--duration-quick) var(--ease-transition);
 
     &[data-blurred] {
       filter: blur(1.5px);
     }
+  }
+
+  &__preview-status {
+    position: absolute;
+    inset: auto 0 var(--spacing-s);
+    margin: 0;
+    text-align: center;
+    font-size: var(--font-size-75);
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  &__check {
+    align-self: flex-start;
+  }
+
+  &__helper {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
   &__actions {

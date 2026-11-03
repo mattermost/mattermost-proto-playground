@@ -1,6 +1,5 @@
-import { useId } from 'react';
+import { useEffect, useId, useState } from 'react';
 import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outline';
-import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -13,7 +12,14 @@ import {
   type CallsSettingsValues,
   type DeviceOption,
 } from './userSettingsData';
+import { useMicLevel, useMicStream } from '../../hooks/useMicLevel';
+import { useVideoCall } from '../../videoCallContext';
+import { ROSTER, SELF_ID } from '../../videoCallsData';
+import { MicLevelMeter } from '../MicLevelMeter';
+import { VideoTile } from '../VideoTile';
 import styles from './CallsSettings.module.scss';
+
+const SELF = ROSTER.find((p) => p.id === SELF_ID) ?? ROSTER[0];
 
 type Props = {
   values: CallsSettingsValues;
@@ -61,6 +67,26 @@ export default function CallsSettings({
   onCancel,
 }: Props) {
   const uid = useId();
+  const { state, selfCamera } = useVideoCall();
+
+  // Same opt-in mic check as pre-join: the meter is simulated until the user
+  // asks for the real microphone, and the request stops when the section closes.
+  const audioOpen = expanded.has('audio');
+  const [micCheck, setMicCheck] = useState(false);
+  useEffect(() => {
+    if (!audioOpen) setMicCheck(false);
+  }, [audioOpen]);
+  const micStream = useMicStream({
+    enabled: audioOpen && micCheck,
+    deviceId: values.microphone.startsWith('fallback-')
+      ? undefined
+      : values.microphone,
+  });
+  const micLevel = useMicLevel({
+    stream: micStream.stream,
+    enabled: audioOpen,
+    simulated: !micStream.stream,
+  });
 
   const actions = (id: CallsSectionId) => (
     <div className={styles['calls-settings__actions']}>
@@ -94,6 +120,28 @@ export default function CallsSettings({
                 onChange={(speaker) => onChange({ speaker })}
               />
             </Field>
+            <Field label="Input level">
+              <MicLevelMeter level={micLevel} />
+            </Field>
+            {!micCheck && (
+              <Button
+                emphasis="tertiary"
+                size="small"
+                className={styles['calls-settings__check']}
+                onClick={() => setMicCheck(true)}
+              >
+                Check my microphone
+              </Button>
+            )}
+            <p className={styles['calls-settings__helper']} role="status">
+              {micCheck && micStream.status === 'denied'
+                ? 'Microphone access is blocked. Allow it in your browser to check it.'
+                : micCheck && micStream.status === 'unavailable'
+                  ? 'We could not find a working microphone.'
+                  : micCheck
+                    ? 'Say something to see the meter move.'
+                    : 'The meter is simulated until you check your microphone.'}
+            </p>
             <p className={styles['calls-settings__hint']}>{description}</p>
           </>
         );
@@ -139,14 +187,34 @@ export default function CallsSettings({
             </Field>
             <div
               className={styles['calls-settings__preview']}
-              data-mirrored={values.mirrorVideo || undefined}
               data-blurred={values.blurBackground || undefined}
-              role="img"
-              aria-label="Camera preview"
             >
-              <Icon glyph={<VideoOutlineIcon />} size="52" />
-              <span>Camera preview</span>
+              <VideoTile
+                name={SELF.name}
+                avatarSrc={SELF.avatarSrc}
+                cameraOn={state.media.cameraOn}
+                stream={selfCamera.stream}
+                muted={!state.media.micOn}
+                showLabel={false}
+                mirrored={values.mirrorVideo}
+              />
+              {selfCamera.status === 'requesting' && (
+                <p
+                  className={styles['calls-settings__preview-status']}
+                  role="status"
+                >
+                  Starting camera…
+                </p>
+              )}
             </div>
+            <Button
+              emphasis="tertiary"
+              size="small"
+              className={styles['calls-settings__check']}
+              onClick={selfCamera.toggle}
+            >
+              {state.media.cameraOn ? 'Turn off camera' : 'Turn on camera'}
+            </Button>
             <div className={styles['calls-settings__choices']}>
               <Checkbox
                 checked={values.mirrorVideo}
