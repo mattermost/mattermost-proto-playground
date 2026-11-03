@@ -70,13 +70,6 @@
 
   // Titles sit at the same spot in both views (same padding and type), so they
   // stay put while only the rest of each view fades.
-  &__section--expanded &__edit,
-  &__section--expanded:hover &__edit,
-  &__section--expanded:focus-within &__edit,
-  &__section--expanded &__description {
-    opacity: 0;
-  }
-
   &__panel {
     display: flex;
     flex-direction: column;
@@ -105,6 +98,14 @@
   &__section:hover #{&}__edit,
   &__section:focus-within #{&}__edit {
     opacity: 1;
+  }
+
+  // After the hover rule so an open section hides Edit even while hovered.
+  &__section--expanded &__edit,
+  &__section--expanded:hover &__edit,
+  &__section--expanded:focus-within &__edit,
+  &__section--expanded &__description {
+    opacity: 0;
   }
 
   &__section-title {
