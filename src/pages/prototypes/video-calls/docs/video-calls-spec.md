@@ -227,7 +227,7 @@ Opens in the widget (default) or the window. Never touches camera or microphone 
 - Title (widget and window): "Start call with <name>" (start) or "Join call with <name>" (join), where <name> is the peer, the group or the channel (for example "Start call with Marco Rinaldi", "Join call with UX Design"). The window adds the subtitle "Check your camera and microphone first."
 - Mic level meter: simulated until the person selects Check my microphone, which requests the microphone and drives the meter from real input. Helper text explains the state: simulated, "Say something to see the meter move", blocked, or no working microphone.
 - Test speakers plays the join chime for 1.5s and the button reads "Playing…". Disabled when sounds are off (helper text points to the prototype sound toggle).
-- Who copy (window only): DM start "<name> will be called"; group start "<names> will be notified" (or "Everyone here will be notified" when the member list is empty); group join: avatars plus "<names> are in the call". The widget pre-join shows no "will be notified" copy: in start mode it shows only the self preview, controls and Start call / Cancel (in that order); in join mode it adds "N people in the call" with avatars. _Verified in the running prototype (widget). Window copy read from code._
+- Who copy (window only): DM start "<name> will be called"; group start "<names> will be notified" (or "Everyone here will be notified" when the member list is empty); group join: avatars plus "<names> are in the call". The widget pre-join shows no "will be notified" copy: in start mode it shows only your self view, controls and Start call / Cancel (in that order). The self view fills the video area, with no mic-state label on it (the microphone control already shows it); with the camera off it shows your avatar on the dark call background, slightly lighter. Pressing Start call shrinks the self view into the picture-in-picture corner while the person called fades in behind it (see Call widget); in join mode it adds "N people in the call" with avatars. _Verified in the running prototype (widget). Window copy read from code._
 - Buttons: Start call (or Join call) on the left, in green (the same green as Join call on the call card), and Cancel on the right, text only with no hang-up icon (it returns to the conversation and releases the camera). Call surfaces follow the in-call layout, where Leave and Cancel sit at the right, rather than the standard modal convention (Cancel left, primary right). This is deliberate; do not flag it as an inconsistency.
 - Mic and camera controls are segmented: toggle plus a chevron that opens the device list.
 
@@ -236,8 +236,6 @@ Opens in the widget (default) or the window. Never touches camera or microphone 
 ![Widget pre-join, join mode (channel)](shots/final/17-widget-prejoin-join.png)
 
 ![Window pre-join (DM)](shots/final/14-window-prejoin.png)
-
-_The pre-join screenshots predate the new button order (Start call left, in green, and Cancel right) and need retaking._
 
 ### Call widget
 
@@ -248,7 +246,7 @@ Over the sidebar bottom-left. One widget stays mounted across pre-join, calling,
 - Persistent segmented mic and camera controls with device chevrons; the menus match the widget width. (Video mode. Audio and Phone modes show the microphone control only.)
 - Active (Video mode): elapsed time, recording dot when recording, a 16:9 video area, participant count (opens a participants popover), share screen, More, Expand, Leave (square hang-up). While you share, the video area gives way to the sharing state (see Screen share).
 - In Video mode the widget video is always speaker view: the person talking (otherwise the first remote person) fills the 16:9 area with their mic state and name bottom-left, and you sit in a small self picture-in-picture (no mute indicator there, since the mic control already shows it; a smaller avatar on a lighter fill when your camera is off). A "+N" chip counts other remote people who are not shown. There is no grid view in the widget.
-- Calling in Video mode keeps the pre-join controls and the live call's video layout: the title reads "Calling <name>…", the video area shows the person called (avatar with the calling pulse on the dark call background) with your self view picture-in-picture, the microphone and camera controls stay, and Cancel replaces the meter. The widget does not change size between pre-join and calling. In the call window, calling keeps the pre-join window: your large self preview with the microphone and camera controls under it, and the details column shows "Calling <name>…", the person called with the pulse, and Cancel in place of Start call and the device checks. Joining is compact in Video mode, and calling and joining are more compact in Audio and Phone modes (see below); the widget resizes for each state and keeps the widget's corner pinned. Calling, joining and live share one width.
+- Calling in Video mode keeps the pre-join controls and the live call's video layout, and the widget has the same height as the live call (video area and the gap to the controls included): the title reads "Calling <name>…", the video area shows the person called (avatar with the calling pulse on the dark call background) with your self view picture-in-picture, the microphone and camera controls stay, and Cancel replaces the meter. The widget does not change size between pre-join and calling. In the call window, calling keeps the pre-join window: your large self preview with the microphone and camera controls under it, and the details column shows "Calling <name>…", the person called with the pulse, and Cancel in place of Start call and the device checks. Calling and joining are more compact in Audio and Phone modes (see below). The widget keeps its corner pinned when its height changes, and pre-join, calling, joining and live share one width.
 - Participants popover: opens above the widget, and scrolls once the list is longer than it (from about five people).
 - More menu: Audio output, Raise / Lower hand, Record call / Stop recording, Show chat thread (expands to the window with the chat pane), Call info. Escape or an outside click closes menus; one menu is open at a time.
 - Incoming: caller avatar with a small call-type badge (video icon), "Incoming video call", Decline (tertiary) and Accept (green, the same green as Start call and Join call). Accept goes straight into the call with no pre-join step. The component also supports an audio variant (phone badge, "Incoming audio call"), which the prototype shows in Audio mode (video disabled). _Question: should an incoming audio-started call on a server with video show the audio variant, and does Accept then join with the camera off?_
@@ -261,6 +259,8 @@ _Known gap, out of scope: the widget More menu still repeats Microphone and Came
 
 ![Widget: calling](shots/final/03-widget-calling.png)
 
+![Call window: calling (the pre-join window stays; Cancel replaces Start call)](shots/final/27-window-calling.png)
+
 ![Widget: incoming call](shots/final/09-widget-incoming.png)
 
 ![Widget: joining](shots/final/12-widget-joining.png)
@@ -269,7 +269,7 @@ _Known gap, out of scope: the widget More menu still repeats Microphone and Came
 
 ![Widget: active call, channel (+N chip, participant count 4)](shots/final/18-widget-active-group.png)
 
-_The widget screenshots above predate the green Accept, the hang-up icon on ringing Cancel and the notice stack. There are no screenshots yet for the Audio and Phone widgets, the audio room window or the header button states._
+_There are no screenshots yet for the Audio and Phone widgets, the audio room window or the header button states._
 
 ### Call window (popout)
 
@@ -297,7 +297,7 @@ Video mode only.
 
 **Grid.** Equal tiles in rows chosen for near 16:9 tiles: 2 → [2]; 3 → [2,1]; 4 → [2,2]; 5 → [3,2]; 6 → [3,3]; 7 → [4,3]; 8 → [4,4]; 9 → [3,3,3]; 10 → [4,3,3]. A short last row is centred. Grid order is join order; speaking never reorders it. More tiles than cells collapse into a "+N" chip while keeping you, the presenter and the active speaker visible.
 
-**Speaker.** 2 people: remote tile fills the stage with self-view picture-in-picture. 3+: the active speaker is featured in a large tile below one strip of everyone else, which runs along the top (you stay in the strip, never featured). When the speaker changes, the old featured tile swaps into the new speaker's strip slot. The strip pages when its tiles would drop below a minimum width (for example when a side pane narrows the stage): Previous and Next buttons (labelled "Previous participants, page N of M" and "Next participants, page N of M") flip between pages, tile size stays the same on every page, a shorter last page centres its tiles, and you are always on the first page. A page flip slides the tiles in the direction of travel. Paging is decided against the width the stage will have once a pane finishes sliding in, so the buttons do not flicker while it animates.
+**Speaker.** 2 people: remote tile fills the stage with self-view picture-in-picture. 3+: the active speaker is featured in a large tile below one strip of everyone else, which runs along the top (you stay in the strip, never featured). When the speaker changes, the old featured tile swaps into the new speaker's strip slot. The strip pages when its tiles would drop below a minimum width (for example when a side pane narrows the stage). The number of pages follows from the stage width: each page keeps room for its Previous and Next buttons and fits as many minimum-width tiles as it can (at least 2), so a narrower stage, such as with a pane open, means fewer tiles per page and more pages. Previous and Next buttons (labelled "Previous participants, page N of M" and "Next participants, page N of M") flip between pages, tile size stays the same on every page, a shorter last page centres its tiles, and you are always on the first page. A page flip slides the tiles in the direction of travel. Paging is decided against the width the stage will have once a pane finishes sliding in, so the buttons do not flicker while it animates.
 
 ![Speaker view with 4 people (strip on top, featured speaker below)](shots/final/19-window-speaker-4.png)
 
