@@ -402,7 +402,8 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-s);
-  padding: var(--spacing-s) var(--spacing-xxl);
+  // Sits inside the composer wrapper, which already supplies the side padding.
+  padding: var(--spacing-s) 0;
   font-size: var(--font-size-75);
   line-height: var(--line-height-75);
   color: rgba(var(--center-channel-color-rgb), 0.75);
