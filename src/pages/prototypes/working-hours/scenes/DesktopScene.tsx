@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import {
   buildDefaultChannelsSidebarModel,
   ChannelHeader,
@@ -38,6 +38,8 @@ type Props = {
   status: EffectiveStatus;
   dndUntil: string | null;
   /** Channel backdrop, or the DM with a teammate (shows the late-hours notice). */
+  /** Custom status auto-set outside working hours, shown in the header like the webapp. */
+  customStatus: { emoji: string; text: string } | null;
   view: 'channel' | 'dm';
   /** The DM partner's simulated local time, in minutes from midnight. */
   teammateLocalTime: number;
@@ -75,7 +77,21 @@ export function DesktopScene(p: Props) {
 
   return (
     <div className={styles['shell']} ref={setShellEl}>
-      <div className={styles['shell__global-header']}>
+      <div
+        className={[
+          styles['shell__global-header'],
+          p.customStatus && styles['shell__global-header--custom-status'],
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        style={
+          p.customStatus
+            ? ({
+                '--custom-status-emoji': JSON.stringify(p.customStatus.emoji),
+              } as CSSProperties)
+            : undefined
+        }
+      >
         <GlobalHeader
           product="channels"
           userAvatarSrc={avatarLeonard}

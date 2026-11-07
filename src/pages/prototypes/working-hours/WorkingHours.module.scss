@@ -58,6 +58,15 @@
   &__global-header {
     position: relative;
     flex: 0 0 auto;
+
+    // Webapp parity: the custom status emoji sits just before the avatar in the
+    // account button. GlobalHeader has no slot for it, so draw it on the button.
+    &--custom-status :global([class*='global-header__account'])::before {
+      content: var(--custom-status-emoji);
+      margin-right: var(--spacing-xs);
+      font-size: 16px;
+      line-height: 1;
+    }
   }
 
   // GlobalHeader always paints an "online" badge on the account avatar. Cover it
@@ -66,8 +75,8 @@
   &__status {
     position: absolute;
     top: 50%;
-    right: 8px;
-    margin-top: 2px;
+    right: 16px;
+    margin-top: 0;
     width: 14px;
     height: 14px;
     display: flex;

@@ -19,4 +19,4 @@ Mobile lives in its own prototype: `../../working-hours-mobile/`.
 
 ## Prototype screenshots
 
-Captured from the prototype (not design sources) in `shots/`: `01-settings-collapsed` … `11-dm-no-notice-in-hours` (includes close-ups of the account menu and the DM notice). **background**
+Captured from the prototype (not design sources) in `shots/`: `01-settings-collapsed` … `12-header-custom-status` (includes close-ups of the account menu, the DM notice and the header custom status). **background**

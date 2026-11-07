@@ -7,6 +7,7 @@ import {
   formatTime,
   INITIAL_SCHEDULE,
   isWithinSchedule,
+  OUTSIDE_HOURS_STATUS,
   TEAMMATE,
   NOW_INSIDE,
   NOW_OUTSIDE,
@@ -20,7 +21,11 @@ import { DesktopScene } from './scenes/DesktopScene';
 import styles from './WorkingHours.module.scss';
 
 /** A schedule that is already on, used to show the "in action" scenes. */
-const ENABLED_SCHEDULE: ScheduleState = { ...INITIAL_SCHEDULE, enabled: true };
+const ENABLED_SCHEDULE: ScheduleState = {
+  ...INITIAL_SCHEDULE,
+  enabled: true,
+  statusOutside: true,
+};
 
 export default function WorkingHours() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -51,6 +56,8 @@ export default function WorkingHours() {
   const scheduleDnd = outsideHours && schedule.dndOutside && !manualOverride;
   const status: EffectiveStatus = scheduleDnd ? 'do-not-disturb' : manualStatus;
   const dndUntil = scheduleDnd ? untilLabel(schedule, now, clock24) : null;
+  const customStatus =
+    outsideHours && schedule.statusOutside ? OUTSIDE_HOURS_STATUS : null;
 
   const setClockOutside = useCallback((next: boolean) => {
     setOutside(next);
@@ -179,6 +186,7 @@ export default function WorkingHours() {
         submenuInitiallyOpen={submenuInitiallyOpen}
         settingsOpen={settingsOpen}
         settingsExpanded={settingsExpanded}
+        customStatus={customStatus}
         view={scene === 'dm' ? 'dm' : 'channel'}
         teammateLocalTime={
           teammateOutside ? TEAMMATE.localOutside : TEAMMATE.localInside
