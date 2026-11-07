@@ -8,25 +8,39 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { StatusBadge } from '@mattermost/compass-ui/components/status-badge';
 import { Switch } from '@mattermost/compass-ui/components/switch';
+import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import {
   MobileMenuItem,
+  MobileMessage,
+  MobileMessageInput,
   MobileModal,
+  MobileNavigationBar,
   MobileProfile,
   MobileTabBar,
+  mobileMessageStyles,
 } from '@mattermost/compass-proto';
 import { DEVICE_SAFE_TOP } from '@/components/layout/DeviceFrame';
+import avatarAiko from '@/assets/avatars/Aiko Tan.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import { LateHoursNotice } from './LateHoursNotice';
 import { MobileScheduleForm } from './MobileScheduleForm';
 import {
+  formatTime,
+  isWithinRange,
   MANUAL_STATUS_LABEL,
+  OUTSIDE_HOURS_STATUS,
+  TEAMMATE,
   type EffectiveStatus,
   scheduleSummary,
   type ManualStatus,
   type ScheduleState,
-} from '@/pages/prototypes/notification-schedule/notificationScheduleData';
-import styles from '../NotificationScheduleMobile.module.scss';
+} from '@/pages/prototypes/working-hours/workingHoursData';
+import styles from '../WorkingHoursMobile.module.scss';
 
-export type MobilePage = 'profile' | 'settings' | 'notifications' | 'schedule';
+export type MobilePage =
+  'profile' | 'settings' | 'notifications' | 'schedule' | 'dm';
+
+const bodyTextClass = mobileMessageStyles['mobile-message__body-text'];
 
 type Props = {
   page: MobilePage;
@@ -36,12 +50,16 @@ type Props = {
   clock24: boolean;
   status: EffectiveStatus;
   dndUntil: string | null;
+  /** Custom status auto-set outside working hours. */
+  customStatus: { emoji: string; text: string } | null;
+  /** The DM partner's simulated local time, in minutes from midnight. */
+  teammateLocalTime: number;
   onPickStatus: (s: ManualStatus) => void;
 };
 
 const chevron = <Icon glyph={<ChevronRightIcon />} size="20" />;
 
-/** In-frame mobile navigation: Profile → Settings → Notifications → Notifications schedule. */
+/** In-frame mobile navigation: Profile → Settings → Notifications → Working hours, plus a DM. */
 export function MobileFlow({
   page,
   onPageChange,
@@ -50,6 +68,8 @@ export function MobileFlow({
   clock24,
   status,
   dndUntil,
+  customStatus,
+  teammateLocalTime,
   onPickStatus,
 }: Props) {
   // Keep Select menus inside the device frame.
@@ -93,6 +113,15 @@ export function MobileFlow({
                 trailingElement={status === 'offline'}
                 onClick={() => onPickStatus('offline')}
               />
+              {customStatus && (
+                <MobileMenuItem
+                  label={customStatus.text}
+                  customStatusEmoji={customStatus.emoji}
+                  leadingVisual={
+                    <Icon size="20" glyph={<ClockOutlineIcon />} />
+                  }
+                />
+              )}
               <div
                 className={styles['mobile-menu__divider']}
                 role="separator"
@@ -154,7 +183,7 @@ export function MobileFlow({
           trailingVisual={chevron}
         />
         <MobileMenuItem
-          label="Notifications schedule"
+          label="Working hours"
           secondaryLabel={scheduleSummary(schedule, clock24)}
           leadingVisual={<Icon size="20" glyph={<ClockOutlineIcon />} />}
           trailingElement
@@ -163,10 +192,57 @@ export function MobileFlow({
         />
       </MobileModal>
     );
+  } else if (page === 'dm') {
+    const late = !isWithinRange(teammateLocalTime, TEAMMATE.hours);
+    body = (
+      <div className={styles['mobile-dm']}>
+        <MobileNavigationBar
+          variant="dm"
+          name={TEAMMATE.name}
+          onBackClick={() => onPageChange('profile')}
+        />
+        <div className={styles['mobile-dm__body']}>
+          <Scrollbar>
+            <div className={styles['mobile-dm__messages']}>
+              <MessageSeparator type="date" label="Today" />
+              <MobileMessage
+                avatarSrc={avatarAiko}
+                avatarAlt={TEAMMATE.name}
+                username={TEAMMATE.name}
+                timestamp="9:12 AM"
+              >
+                <p className={bodyTextClass}>
+                  Pushed the new settings layouts to Figma. Feedback welcome.
+                </p>
+              </MobileMessage>
+              <MobileMessage
+                avatarSrc={avatarLeonard}
+                avatarAlt="Leonard Riley"
+                username="Leonard Riley"
+                timestamp="9:40 AM"
+              >
+                <p className={bodyTextClass}>
+                  Thanks Aiko, I will take a look after the stand-up.
+                </p>
+              </MobileMessage>
+            </div>
+          </Scrollbar>
+        </div>
+        <div className={styles['mobile-dm__composer']}>
+          {late && (
+            <LateHoursNotice
+              name={TEAMMATE.name}
+              time={formatTime(teammateLocalTime, clock24)}
+            />
+          )}
+          <MobileMessageInput placeholder={`Message ${TEAMMATE.name}`} />
+        </div>
+      </div>
+    );
   } else {
     body = (
       <MobileModal
-        title="Schedule"
+        title="Working hours"
         variant="child"
         onBackClick={() => onPageChange('notifications')}
       >
@@ -176,9 +252,9 @@ export function MobileFlow({
             onChange={(e) =>
               onScheduleChange({ ...schedule, enabled: e.target.checked })
             }
-            secondaryLabel="Outside these hours your status is set to Do Not Disturb."
+            secondaryLabel="Teammates see when it is outside your working hours."
           >
-            Enable notifications schedule
+            Enable working hours
           </Switch>
         </div>
         {schedule.enabled && (
@@ -189,13 +265,38 @@ export function MobileFlow({
             portalContainer={frameEl}
           />
         )}
+        {schedule.enabled && (
+          <div className={styles['mobile-form__options']}>
+            <Switch
+              checked={schedule.dndOutside}
+              onChange={(e) =>
+                onScheduleChange({ ...schedule, dndOutside: e.target.checked })
+              }
+              secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+            >
+              Do Not Disturb outside working hours
+            </Switch>
+            <Switch
+              checked={schedule.statusOutside}
+              onChange={(e) =>
+                onScheduleChange({
+                  ...schedule,
+                  statusOutside: e.target.checked,
+                })
+              }
+              secondaryLabel={`Sets ${OUTSIDE_HOURS_STATUS.emoji} “${OUTSIDE_HOURS_STATUS.text}” as your custom status.`}
+            >
+              Set a custom status outside working hours
+            </Switch>
+          </div>
+        )}
       </MobileModal>
     );
   }
 
   return (
     <div className={styles['mobile-flow']} ref={setFrameEl}>
-      {page === 'profile' ? (
+      {page === 'profile' || page === 'dm' ? (
         body
       ) : (
         // MobileModal doesn't own the status-bar spacer; inset it below the Dynamic Island.

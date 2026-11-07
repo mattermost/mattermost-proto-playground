@@ -5,9 +5,9 @@ import {
   DAYS_MODE_OPTIONS,
   type DaysMode,
   type ScheduleState,
-} from '../notificationScheduleData';
+} from '../workingHoursData';
 import { TimeRangeSelects } from './TimeRangeSelects';
-import styles from '../NotificationSchedule.module.scss';
+import styles from '../WorkingHours.module.scss';
 
 type Props = {
   schedule: ScheduleState;

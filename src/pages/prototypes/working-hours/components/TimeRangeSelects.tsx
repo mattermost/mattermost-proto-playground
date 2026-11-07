@@ -4,8 +4,8 @@ import {
   rangeError,
   timeOptions,
   type TimeRange,
-} from '@/pages/prototypes/notification-schedule/notificationScheduleData';
-import styles from '../NotificationScheduleMobile.module.scss';
+} from '../workingHoursData';
+import styles from '../WorkingHours.module.scss';
 
 type Props = {
   idPrefix: string;

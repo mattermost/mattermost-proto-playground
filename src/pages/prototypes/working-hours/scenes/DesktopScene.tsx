@@ -20,19 +20,28 @@ import avatarDavid from '@/assets/avatars/David Liang.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
 import { AccountMenu } from '../components/AccountMenu';
+import { LateHoursNotice } from '../components/LateHoursNotice';
 import { SettingsModal } from '../components/SettingsModal';
-import type {
-  EffectiveStatus,
-  ManualStatus,
-  ScheduleState,
-} from '../notificationScheduleData';
-import styles from '../NotificationSchedule.module.scss';
+import {
+  formatTime,
+  isWithinRange,
+  TEAMMATE,
+  type EffectiveStatus,
+  type ManualStatus,
+  type ScheduleState,
+} from '../workingHoursData';
+import styles from '../WorkingHours.module.scss';
 
 type Props = {
   schedule: ScheduleState;
   clock24: boolean;
   status: EffectiveStatus;
   dndUntil: string | null;
+  customStatus: { emoji: string; text: string } | null;
+  /** Channel backdrop, or the DM with a teammate (shows the late-hours notice). */
+  view: 'channel' | 'dm';
+  /** The DM partner's simulated local time, in minutes from midnight. */
+  teammateLocalTime: number;
   menuOpen: boolean;
   submenuInitiallyOpen: boolean;
   settingsOpen: boolean;
@@ -47,6 +56,7 @@ type Props = {
 
 /** Desktop webapp shell: Global header, sidebars and a channel as the backdrop. */
 export function DesktopScene(p: Props) {
+  const isDm = p.view === 'dm';
   // Scope the Settings scrim to the shell so the prototype chrome stays usable.
   const [shellEl, setShellEl] = useState<HTMLDivElement | null>(null);
   const sidebarModel = useMemo(
@@ -87,6 +97,7 @@ export function DesktopScene(p: Props) {
             status={p.status}
             dndUntil={p.dndUntil}
             scheduleOn={p.schedule.enabled}
+            customStatus={p.customStatus}
             submenuInitiallyOpen={p.submenuInitiallyOpen}
             onPickStatus={p.onPickStatus}
             onOpenSchedule={() => p.onOpenSettings(true)}
@@ -109,16 +120,25 @@ export function DesktopScene(p: Props) {
               teamName="Contributors"
               showFilter
               model={sidebarModel}
-              activeChannelName="UX Design"
+              activeChannelName={isDm ? TEAMMATE.name : 'UX Design'}
             />
           </div>
           <div className={styles['shell__center']}>
-            <ChannelHeader
-              type="channel"
-              name="UX Design"
-              memberCount={12}
-              pinnedCount={1}
-            />
+            {isDm ? (
+              <ChannelHeader
+                type="dm"
+                name={TEAMMATE.name}
+                avatarSrc={avatarAiko}
+                avatarStatus
+              />
+            ) : (
+              <ChannelHeader
+                type="channel"
+                name="UX Design"
+                memberCount={12}
+                pinnedCount={1}
+              />
+            )}
             <div className={layoutStyles['channel-shell__messages']}>
               <MessageSeparator type="date" label="Today" />
               <Message
@@ -132,19 +152,40 @@ export function DesktopScene(p: Props) {
                   before the end of the day.
                 </p>
               </Message>
-              <Message
-                avatarSrc={avatarDavid}
-                avatarAlt="David Liang"
-                username="David Liang"
-                timestamp="9:40 AM"
-              >
-                <p className={layoutStyles['channel-shell__post-text']}>
-                  Looks great. I will go through it after the stand-up.
-                </p>
-              </Message>
+              {isDm ? (
+                <Message
+                  avatarSrc={avatarLeonard}
+                  avatarAlt="Leonard Riley"
+                  username="Leonard Riley"
+                  timestamp="9:40 AM"
+                >
+                  <p className={layoutStyles['channel-shell__post-text']}>
+                    Thanks Aiko, I will take a look after the stand-up.
+                  </p>
+                </Message>
+              ) : (
+                <Message
+                  avatarSrc={avatarDavid}
+                  avatarAlt="David Liang"
+                  username="David Liang"
+                  timestamp="9:40 AM"
+                >
+                  <p className={layoutStyles['channel-shell__post-text']}>
+                    Looks great. I will go through it after the stand-up.
+                  </p>
+                </Message>
+              )}
             </div>
             <div className={layoutStyles['channel-shell__message-input']}>
-              <MessageInput placeholder="Message UX Design" />
+              {isDm && !isWithinRange(p.teammateLocalTime, TEAMMATE.hours) && (
+                <LateHoursNotice
+                  name={TEAMMATE.name}
+                  time={formatTime(p.teammateLocalTime, p.clock24)}
+                />
+              )}
+              <MessageInput
+                placeholder={`Message ${isDm ? TEAMMATE.name : 'UX Design'}`}
+              />
             </div>
           </div>
         </div>

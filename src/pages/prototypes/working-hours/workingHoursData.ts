@@ -34,6 +34,10 @@ export type ScheduleState = {
   range: TimeRange;
   /** Per-day config used by Custom Schedule. */
   perDay: PerDay;
+  /** Switch to Do Not Disturb outside working hours. */
+  dndOutside: boolean;
+  /** Auto-set a custom status outside working hours. */
+  statusOutside: boolean;
 };
 
 export function buildInitialPerDay(): PerDay {
@@ -50,6 +54,8 @@ export const INITIAL_SCHEDULE: ScheduleState = {
   mode: 'weekdays',
   range: { ...DEFAULT_RANGE },
   perDay: buildInitialPerDay(),
+  dndOutside: true,
+  statusOutside: false,
 };
 
 /** Half-hour increments, 00:00 – 23:30, matching the custom-time DND modal. */
@@ -100,7 +106,7 @@ export function isWithinSchedule(s: ScheduleState, now: SimulatedNow): boolean {
   return !!r && now.minutes >= r.start && now.minutes < r.end;
 }
 
-/** Next moment (day + minutes) when notifications resume, or null if no active days. */
+/** Next moment (day + minutes) when working hours resume, or null if no active days. */
 export function nextWindowStart(
   s: ScheduleState,
   now: SimulatedNow,
@@ -163,3 +169,19 @@ export const MANUAL_STATUS_LABEL: Record<ManualStatus, string> = {
 };
 
 export type EffectiveStatus = ManualStatus | 'do-not-disturb';
+
+/** Custom status applied automatically outside working hours (when enabled). */
+export const OUTSIDE_HOURS_STATUS = { emoji: '🌙', text: 'Outside work hours' };
+
+export function isWithinRange(minutes: number, r: TimeRange): boolean {
+  return minutes >= r.start && minutes < r.end;
+}
+
+/** A DM partner, used by the late-hours notice above the message input. */
+export const TEAMMATE = {
+  name: 'Aiko Tan',
+  hours: { start: 9 * 60, end: 17 * 60 } as TimeRange,
+  /** Simulated local times for the teammate. */
+  localInside: 14 * 60 + 20,
+  localOutside: 60 + 20,
+};

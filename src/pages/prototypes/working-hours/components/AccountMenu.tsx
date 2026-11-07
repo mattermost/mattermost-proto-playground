@@ -11,11 +11,8 @@ import {
   PopoverMenuTitle,
 } from '@mattermost/compass-ui/components/popover-menu';
 import { StatusBadge } from '@mattermost/compass-ui/components/status-badge';
-import type {
-  EffectiveStatus,
-  ManualStatus,
-} from '../notificationScheduleData';
-import styles from '../NotificationSchedule.module.scss';
+import type { EffectiveStatus, ManualStatus } from '../workingHoursData';
+import styles from '../WorkingHours.module.scss';
 
 type Props = {
   open: boolean;
@@ -24,6 +21,8 @@ type Props = {
   /** e.g. "until Monday 9:00 AM" when DND comes from the schedule. */
   dndUntil: string | null;
   scheduleOn: boolean;
+  /** Custom status auto-set outside working hours. */
+  customStatus: { emoji: string; text: string } | null;
   onPickStatus: (s: ManualStatus) => void;
   onOpenSchedule: () => void;
   onOpenSettings: () => void;
@@ -47,6 +46,7 @@ export function AccountMenu({
   status,
   dndUntil,
   scheduleOn,
+  customStatus,
   onPickStatus,
   onOpenSchedule,
   onOpenSettings,
@@ -88,6 +88,11 @@ export function AccountMenu({
           <span className={styles['account-menu__name']}>
             <StatusBadge size="x-small" status={status} /> Leonard Riley
           </span>
+          {customStatus && (
+            <span className={styles['account-menu__custom-status']}>
+              {customStatus.emoji} {customStatus.text}
+            </span>
+          )}
         </PopoverMenuTitle>
         <PopoverMenuGroup>
           {STATUS_ROWS.map((r) => (
@@ -145,7 +150,7 @@ export function AccountMenu({
                   </PopoverMenuGroup>
                   <PopoverMenuGroup>
                     <MenuItem
-                      label="Notification Schedule"
+                      label="Working Hours"
                       secondaryLabel={scheduleOn ? 'On' : 'Off'}
                       secondaryLabelPosition="inline"
                       leadingElement={false}

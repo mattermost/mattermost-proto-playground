@@ -33,3 +33,13 @@ Profile tab → **Settings → Notifications** → menu item `Notifications sche
 - Once set, the status icon automatically becomes Do Not Disturb during the off period, regardless of current activity status.
 - Clicking the profile icon shows Do Not Disturb selected and until when it will remain, like a manual DND with expiry.
 - The user can manually change status at any time; it then does not auto-switch to DND until the next cycle starts.
+
+## Working Hours changes (not in the Confluence page)
+
+Requested after the original spec; recorded here until the spec is updated.
+
+- The feature is renamed from Notification Schedule to **Working Hours**.
+- Working hours also drive the webapp's DM notice: when the person you are in a DM with is outside their working hours, show "The time for {name} is {time}" above the message input (screenshot in `shots/`).
+- New config options, each independent:
+  - Do Not Disturb outside working hours (the original behavior; on by default).
+  - Auto-set a custom status outside working hours: `Outside work hours`.

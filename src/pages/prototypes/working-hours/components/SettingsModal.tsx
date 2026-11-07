@@ -4,21 +4,22 @@ import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { Modal, ModalOverlay } from '@mattermost/compass-ui/components/modal';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Switch } from '@mattermost/compass-ui/components/switch';
+import { OUTSIDE_HOURS_STATUS } from '../workingHoursData';
 import { ScheduleForm } from './ScheduleForm';
 import {
   rangeError,
   scheduleSummary,
   activeWindows,
   type ScheduleState,
-} from '../notificationScheduleData';
-import styles from '../NotificationSchedule.module.scss';
+} from '../workingHoursData';
+import styles from '../WorkingHours.module.scss';
 
 type Props = {
   open: boolean;
   /** Element the scrim is staged in (keeps it inside the prototype shell). */
   container: HTMLElement | null;
   onClose: () => void;
-  /** Open with the Notification Schedule section expanded (profile-menu entry). */
+  /** Open with the Working Hours section expanded (profile-menu entry). */
   startExpanded: boolean;
   schedule: ScheduleState;
   clock24: boolean;
@@ -125,7 +126,7 @@ export function SettingsModal({
               <section
                 className={styles['settings__section']}
                 aria-labelledby="ns-section-title"
-                data-testid="notification-schedule-section"
+                data-testid="working-hours-section"
               >
                 <div className={styles['settings__row']}>
                   <div>
@@ -133,7 +134,7 @@ export function SettingsModal({
                       id="ns-section-title"
                       className={styles['settings__section-title']}
                     >
-                      Notification Schedule
+                      Working Hours
                     </h3>
                     {!expanded && (
                       <p className={styles['settings__summary']}>
@@ -162,9 +163,9 @@ export function SettingsModal({
                       onChange={(e) =>
                         setDraft({ ...draft, enabled: e.target.checked })
                       }
-                      secondaryLabel="Outside these hours your status is set to Do Not Disturb and notifications are silenced."
+                      secondaryLabel="Teammates see when it is outside your working hours."
                     >
-                      Enable notification schedule
+                      Enable working hours
                     </Switch>
 
                     {draft.enabled && (
@@ -173,6 +174,31 @@ export function SettingsModal({
                         clock24={clock24}
                         onChange={setDraft}
                       />
+                    )}
+                    {draft.enabled && (
+                      <div className={styles['settings__options']}>
+                        <Switch
+                          checked={draft.dndOutside}
+                          onChange={(e) =>
+                            setDraft({ ...draft, dndOutside: e.target.checked })
+                          }
+                          secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+                        >
+                          Do Not Disturb outside working hours
+                        </Switch>
+                        <Switch
+                          checked={draft.statusOutside}
+                          onChange={(e) =>
+                            setDraft({
+                              ...draft,
+                              statusOutside: e.target.checked,
+                            })
+                          }
+                          secondaryLabel={`Sets ${OUTSIDE_HOURS_STATUS.emoji} “${OUTSIDE_HOURS_STATUS.text}” as your custom status.`}
+                        >
+                          Set a custom status outside working hours
+                        </Switch>
+                      </div>
                     )}
                     {noDays && (
                       <p className={styles['time-range__error']} role="alert">
