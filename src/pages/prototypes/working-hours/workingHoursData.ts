@@ -64,20 +64,25 @@ export const TIME_STEPS: number[] = Array.from(
   (_, i) => i * 30,
 );
 
-export function formatTime(minutes: number, clock24: boolean): string {
+/** `padHour` zero-pads the 12-hour clock (09:00 AM), as the settings design shows. */
+export function formatTime(
+  minutes: number,
+  clock24: boolean,
+  padHour = false,
+): string {
   const h = Math.floor(minutes / 60) % 24;
   const m = minutes % 60;
   const mm = String(m).padStart(2, '0');
   if (clock24) return `${String(h).padStart(2, '0')}:${mm}`;
   const suffix = h >= 12 ? 'PM' : 'AM';
   const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${h12}:${mm} ${suffix}`;
+  return `${padHour ? String(h12).padStart(2, '0') : h12}:${mm} ${suffix}`;
 }
 
-export function timeOptions(clock24: boolean) {
+export function timeOptions(clock24: boolean, padHour = false) {
   return TIME_STEPS.map((m) => ({
     value: String(m),
-    label: formatTime(m, clock24),
+    label: formatTime(m, clock24, padHour),
   }));
 }
 

@@ -29,7 +29,7 @@ export function TimeRangeSelects({
   compact = false,
   disabled = false,
 }: Props) {
-  const options = timeOptions(clock24);
+  const options = timeOptions(clock24, true);
   const error = rangeError(range);
   const icon = <Icon glyph={<ClockOutlineIcon />} />;
   return (
@@ -44,7 +44,7 @@ export function TimeRangeSelects({
       <div className={styles['time-range__fields']}>
         <Select
           id={`${idPrefix}-start`}
-          aria-label={`Start time, ${formatTime(range.start, clock24)}`}
+          aria-label={`Start time, ${formatTime(range.start, clock24, true)}`}
           leadingIcon={icon}
           options={options}
           value={String(range.start)}
@@ -55,7 +55,7 @@ export function TimeRangeSelects({
         <span className={styles['time-range__to']}>to</span>
         <Select
           id={`${idPrefix}-end`}
-          aria-label={`End time, ${formatTime(range.end, clock24)}`}
+          aria-label={`End time, ${formatTime(range.end, clock24, true)}`}
           leadingIcon={icon}
           options={options}
           value={String(range.end)}
