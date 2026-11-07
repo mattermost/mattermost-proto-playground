@@ -106,6 +106,54 @@ export type SimulatedNow = { day: DayId; minutes: number };
 export const NOW_INSIDE: SimulatedNow = { day: 'wed', minutes: 11 * 60 };
 export const NOW_OUTSIDE: SimulatedNow = { day: 'fri', minutes: 18 * 60 + 30 };
 
+/**
+ * Simulated moments for the prototype's time controls, derived from the saved
+ * schedule so "in hours" and "off hours" are always what they say. `inside` is
+ * null when the schedule has no working day at all.
+ */
+export function simulatedTimes(s: ScheduleState): {
+  inside: SimulatedNow | null;
+  outside: SimulatedNow;
+} {
+  const rotate = (from: DayId) => {
+    const i = DAYS.findIndex((d) => d.id === from);
+    return [...DAYS.slice(i), ...DAYS.slice(0, i)];
+  };
+
+  // Off hours: prefer Friday evening, then try other days and times.
+  const outsideMinutes = [18 * 60 + 30, 22 * 60, 6 * 60, 23 * 60 + 45];
+  let outside: SimulatedNow = NOW_OUTSIDE;
+  search: for (const d of rotate('fri')) {
+    for (const minutes of outsideMinutes) {
+      const candidate = { day: d.id, minutes };
+      if (!isWithinSchedule(s, candidate)) {
+        outside = candidate;
+        break search;
+      }
+    }
+  }
+
+  // In hours: prefer Wednesday, two hours into the first working window.
+  const windows = activeWindows(s);
+  let inside: SimulatedNow | null = null;
+  for (const d of rotate('wed')) {
+    const r = windows[d.id];
+    if (r && r.end > r.start) {
+      inside = {
+        day: d.id,
+        minutes: Math.max(r.start, Math.min(r.start + 120, r.end - 30)),
+      };
+      break;
+    }
+  }
+  return { inside, outside };
+}
+
+export function formatMoment(m: SimulatedNow, clock24: boolean): string {
+  const day = DAYS.find((d) => d.id === m.day)?.short ?? '';
+  return `${day} ${formatTime(m.minutes, clock24)}`;
+}
+
 export function isWithinSchedule(s: ScheduleState, now: SimulatedNow): boolean {
   const r = activeWindows(s)[now.day];
   return !!r && now.minutes >= r.start && now.minutes < r.end;

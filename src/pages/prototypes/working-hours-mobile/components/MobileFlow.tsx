@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
@@ -76,6 +76,17 @@ export function MobileFlow({
   // Keep Select menus inside the device frame.
   const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null);
   const dnd = status === 'do-not-disturb';
+
+  // Mobile has no Save step, so a custom schedule with every day off stays here as
+  // editable state and is only applied once at least one day is selected.
+  const [draft, setDraft] = useState(schedule);
+  useEffect(() => setDraft(schedule), [schedule, page]);
+  const changeSchedule = (next: ScheduleState) => {
+    setDraft(next);
+    if (!next.enabled || Object.keys(activeWindows(next)).length > 0) {
+      onScheduleChange(next);
+    }
+  };
 
   let body;
   if (page === 'profile') {
@@ -249,45 +260,44 @@ export function MobileFlow({
       >
         <div className={styles['mobile-form__switch']}>
           <Switch
-            checked={schedule.enabled}
+            checked={draft.enabled}
             onChange={(e) =>
-              onScheduleChange({ ...schedule, enabled: e.target.checked })
+              changeSchedule({ ...draft, enabled: e.target.checked })
             }
             secondaryLabel="Teammates see when it is outside your working hours."
           >
             Enable working hours
           </Switch>
         </div>
-        {schedule.enabled && (
+        {draft.enabled && (
           <MobileScheduleForm
-            schedule={schedule}
+            schedule={draft}
             clock24={clock24}
-            onChange={onScheduleChange}
+            onChange={changeSchedule}
             portalContainer={frameEl}
           />
         )}
-        {schedule.enabled &&
-          Object.keys(activeWindows(schedule)).length === 0 && (
-            <p className={styles['mobile-form__error']} role="alert">
-              Select at least one day.
-            </p>
-          )}
-        {schedule.enabled && (
+        {draft.enabled && Object.keys(activeWindows(draft)).length === 0 && (
+          <p className={styles['mobile-form__error']} role="alert">
+            Select at least one day.
+          </p>
+        )}
+        {draft.enabled && (
           <div className={styles['mobile-form__options']}>
             <Switch
-              checked={schedule.dndOutside}
+              checked={draft.dndOutside}
               onChange={(e) =>
-                onScheduleChange({ ...schedule, dndOutside: e.target.checked })
+                changeSchedule({ ...draft, dndOutside: e.target.checked })
               }
               secondaryLabel="Silence notifications and set your status to Do Not Disturb."
             >
               Do Not Disturb outside working hours
             </Switch>
             <Switch
-              checked={schedule.statusOutside}
+              checked={draft.statusOutside}
               onChange={(e) =>
-                onScheduleChange({
-                  ...schedule,
+                changeSchedule({
+                  ...draft,
                   statusOutside: e.target.checked,
                 })
               }

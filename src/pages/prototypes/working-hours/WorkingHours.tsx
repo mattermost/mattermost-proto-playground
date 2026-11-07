@@ -9,8 +9,8 @@ import {
   isWithinSchedule,
   OUTSIDE_HOURS_STATUS,
   TEAMMATE,
-  NOW_INSIDE,
-  NOW_OUTSIDE,
+  formatMoment,
+  simulatedTimes,
   untilLabel,
   type EffectiveStatus,
   type ManualStatus,
@@ -47,7 +47,11 @@ export default function WorkingHours() {
   // DM partner's simulated local time (drives the late-hours notice).
   const [teammateOutside, setTeammateOutside] = useState(true);
 
-  const now = outside ? NOW_OUTSIDE : NOW_INSIDE;
+  // Simulated moments come from the saved schedule so "off hours" is really off hours.
+  const sim = useMemo(() => simulatedTimes(schedule), [schedule]);
+  // With no working day there is no in-hours moment, so stay on off hours.
+  const effectiveOutside = outside || !sim.inside;
+  const now = (!effectiveOutside && sim.inside) || sim.outside;
 
   // Outside working hours: optionally switch to DND (unless the user manually
   // picked a status — that sticks until the next cycle) and optionally set a
@@ -124,19 +128,22 @@ export default function WorkingHours() {
         <span className={styles['controls__label']}>Simulated time</span>
         <Button
           size="small"
-          emphasis={outside ? 'tertiary' : 'secondary'}
-          aria-pressed={!outside}
+          emphasis={effectiveOutside ? 'tertiary' : 'secondary'}
+          aria-pressed={!effectiveOutside}
+          disabled={!sim.inside}
           onClick={() => setClockOutside(false)}
         >
-          Wed 11:00 AM (in hours)
+          {sim.inside
+            ? `${formatMoment(sim.inside, clock24)} (in hours)`
+            : 'In hours (no working days)'}
         </Button>
         <Button
           size="small"
-          emphasis={outside ? 'secondary' : 'tertiary'}
-          aria-pressed={outside}
+          emphasis={effectiveOutside ? 'secondary' : 'tertiary'}
+          aria-pressed={effectiveOutside}
           onClick={() => setClockOutside(true)}
         >
-          Fri 6:30 PM (off hours)
+          {formatMoment(sim.outside, clock24)} (off hours)
         </Button>
         <div className={styles['controls__switch-wrap']}>
           <Switch
@@ -172,7 +179,7 @@ export default function WorkingHours() {
         )}
       </div>
     ),
-    [outside, clock24, scene, teammateOutside, setClockOutside],
+    [effectiveOutside, sim, clock24, scene, teammateOutside, setClockOutside],
   );
 
   return (
