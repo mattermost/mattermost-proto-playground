@@ -1,4 +1,11 @@
-import { useMemo, useState, type CSSProperties } from 'react';
+import {
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import {
   buildDefaultChannelsSidebarModel,
   ChannelHeader,
@@ -60,6 +67,29 @@ export function DesktopScene(p: Props) {
   const isDm = p.view === 'dm';
   // Scope the Settings scrim to the shell so the prototype chrome stays usable.
   const [shellEl, setShellEl] = useState<HTMLDivElement | null>(null);
+
+  // The header draws the custom status emoji with CSS, which carries no text. Describe
+  // the account button with the status text and give sighted users a hover tooltip,
+  // as the webapp does. GlobalHeader has no prop for either, so set them on its button.
+  const headerRef = useRef<HTMLDivElement>(null);
+  const statusDescId = useId();
+  const statusText = p.customStatus
+    ? `Custom status: ${p.customStatus.emoji} ${p.customStatus.text}`
+    : null;
+  useLayoutEffect(() => {
+    const btn = headerRef.current?.querySelector<HTMLElement>(
+      '[aria-label="Account menu"]',
+    );
+    if (!btn) return;
+    if (statusText) {
+      btn.setAttribute('aria-describedby', statusDescId);
+      btn.setAttribute('title', statusText);
+    }
+    return () => {
+      btn.removeAttribute('aria-describedby');
+      btn.removeAttribute('title');
+    };
+  }, [statusText, statusDescId]);
   const sidebarModel = useMemo(
     () =>
       buildDefaultChannelsSidebarModel({
@@ -78,6 +108,7 @@ export function DesktopScene(p: Props) {
   return (
     <div className={styles['shell']} ref={setShellEl}>
       <div
+        ref={headerRef}
         className={[
           styles['shell__global-header'],
           p.customStatus && styles['shell__global-header--custom-status'],
@@ -101,6 +132,11 @@ export function DesktopScene(p: Props) {
           onSettingsClick={() => p.onOpenSettings(false)}
           settingsActive={p.settingsOpen}
         />
+        {statusText && (
+          <span id={statusDescId} className={styles['shell__sr-only']}>
+            {statusText}
+          </span>
+        )}
         {/* GlobalHeader always draws "online"; mirror the real status over it. */}
         <span className={styles['shell__status']} aria-hidden>
           <StatusBadge size="x-small" status={p.status} />
