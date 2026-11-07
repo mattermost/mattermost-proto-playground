@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Select } from '@mattermost/compass-ui/components/select';
 import {
   formatTime,
@@ -19,7 +20,13 @@ type Props = {
   showLabels?: boolean;
 };
 
-/** Start / end Select pair using half-hour steps and the user's clock display. */
+/**
+ * Start / end Select pair using half-hour steps and the user's clock display.
+ *
+ * Mobile has no Save step, so an invalid range (end not after start) stays here
+ * as editable local state with its error and is only passed to `onChange` once
+ * it is valid. That keeps the live schedule from silently going Do Not Disturb.
+ */
 export function TimeRangeSelects({
   idPrefix,
   range,
@@ -30,32 +37,42 @@ export function TimeRangeSelects({
   showLabels = false,
 }: Props) {
   const options = timeOptions(clock24);
-  const error = rangeError(range);
+  // `range` is the committed value; `draft` is what the Selects show.
+  const [draft, setDraft] = useState(range);
+  useEffect(
+    () => setDraft({ start: range.start, end: range.end }),
+    [range.start, range.end],
+  );
+  const error = rangeError(draft);
+  const update = (next: TimeRange) => {
+    setDraft(next);
+    if (!rangeError(next)) onChange(next);
+  };
   return (
     <div className={styles['time-range']}>
       <div className={styles['time-range__fields']}>
         <Select
           id={`${idPrefix}-start`}
-          aria-label={`Start time, ${formatTime(range.start, clock24)}`}
+          aria-label={`Start time, ${formatTime(draft.start, clock24)}`}
           label={showLabels ? 'Start time' : undefined}
           size={size}
           options={options}
-          value={String(range.start)}
+          value={String(draft.start)}
           invalid={!!error}
           portalContainer={portalContainer}
-          onChange={(v) => onChange({ ...range, start: Number(v) })}
+          onChange={(v) => update({ ...draft, start: Number(v) })}
         />
         {!showLabels && <span className={styles['time-range__to']}>to</span>}
         <Select
           id={`${idPrefix}-end`}
-          aria-label={`End time, ${formatTime(range.end, clock24)}`}
+          aria-label={`End time, ${formatTime(draft.end, clock24)}`}
           label={showLabels ? 'End time' : undefined}
           size={size}
           options={options}
-          value={String(range.end)}
+          value={String(draft.end)}
           invalid={!!error}
           portalContainer={portalContainer}
-          onChange={(v) => onChange({ ...range, end: Number(v) })}
+          onChange={(v) => update({ ...draft, end: Number(v) })}
         />
       </div>
       {error && (
