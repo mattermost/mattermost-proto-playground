@@ -1,11 +1,4 @@
-import {
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from 'react';
+import { useMemo, useState } from 'react';
 import {
   buildDefaultChannelsSidebarModel,
   ChannelHeader,
@@ -17,7 +10,6 @@ import {
   TeamSidebar,
 } from '@mattermost/compass-proto';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { StatusBadge } from '@mattermost/compass-ui/components/status-badge';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarAiko from '@/assets/avatars/Aiko Tan.png';
 import avatarArjun from '@/assets/avatars/Arjun Patel.png';
@@ -59,6 +51,7 @@ type Props = {
   onOpenSettings: (expanded: boolean) => void;
   onCloseSettings: () => void;
   onPickStatus: (s: ManualStatus) => void;
+  onClearCustomStatus: () => void;
   onSaveSchedule: (next: ScheduleState) => void;
 };
 
@@ -68,28 +61,6 @@ export function DesktopScene(p: Props) {
   // Scope the Settings scrim to the shell so the prototype chrome stays usable.
   const [shellEl, setShellEl] = useState<HTMLDivElement | null>(null);
 
-  // The header draws the custom status emoji with CSS, which carries no text. Describe
-  // the account button with the status text and give sighted users a hover tooltip,
-  // as the webapp does. GlobalHeader has no prop for either, so set them on its button.
-  const headerRef = useRef<HTMLDivElement>(null);
-  const statusDescId = useId();
-  const statusText = p.customStatus
-    ? `Custom status: ${p.customStatus.emoji} ${p.customStatus.text}`
-    : null;
-  useLayoutEffect(() => {
-    const btn = headerRef.current?.querySelector<HTMLElement>(
-      '[aria-label="Account menu"]',
-    );
-    if (!btn) return;
-    if (statusText) {
-      btn.setAttribute('aria-describedby', statusDescId);
-      btn.setAttribute('title', statusText);
-    }
-    return () => {
-      btn.removeAttribute('aria-describedby');
-      btn.removeAttribute('title');
-    };
-  }, [statusText, statusDescId]);
   const sidebarModel = useMemo(
     () =>
       buildDefaultChannelsSidebarModel({
@@ -107,46 +78,26 @@ export function DesktopScene(p: Props) {
 
   return (
     <div className={styles['shell']} ref={setShellEl}>
-      <div
-        ref={headerRef}
-        className={[
-          styles['shell__global-header'],
-          p.customStatus && styles['shell__global-header--custom-status'],
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        style={
-          p.customStatus
-            ? ({
-                '--custom-status-emoji': JSON.stringify(p.customStatus.emoji),
-              } as CSSProperties)
-            : undefined
-        }
-      >
+      <div className={styles['shell__global-header']}>
         <GlobalHeader
           product="channels"
           userAvatarSrc={avatarLeonard}
           userAvatarAlt="Leonard Riley"
+          status={p.status}
+          customStatus={p.customStatus ?? undefined}
           onAccountClick={p.onToggleMenu}
           accountActive={p.menuOpen}
           onSettingsClick={() => p.onOpenSettings(false)}
           settingsActive={p.settingsOpen}
         />
-        {statusText && (
-          <span id={statusDescId} className={styles['shell__sr-only']}>
-            {statusText}
-          </span>
-        )}
-        {/* GlobalHeader always draws "online"; mirror the real status over it. */}
-        <span className={styles['shell__status']} aria-hidden>
-          <StatusBadge size="x-small" status={p.status} />
-        </span>
         <div className={styles['shell__menu-anchor']}>
           <AccountMenu
             open={p.menuOpen}
             onClose={p.onCloseMenu}
             status={p.status}
             dndUntil={p.dndUntil}
+            customStatus={p.customStatus}
+            onClearCustomStatus={p.onClearCustomStatus}
             scheduleOn={p.schedule.enabled}
             submenuInitiallyOpen={p.submenuInitiallyOpen}
             onPickStatus={p.onPickStatus}

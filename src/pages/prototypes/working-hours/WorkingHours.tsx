@@ -37,6 +37,8 @@ export default function WorkingHours() {
   const [outside, setOutside] = useState(false);
   const [manualStatus, setManualStatus] = useState<ManualStatus>('online');
   const [manualOverride, setManualOverride] = useState(false);
+  // The user cleared the auto-set custom status; it stays cleared until the next cycle.
+  const [statusCleared, setStatusCleared] = useState(false);
 
   // Desktop UI.
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,11 +63,14 @@ export default function WorkingHours() {
   const status: EffectiveStatus = scheduleDnd ? 'do-not-disturb' : manualStatus;
   const dndUntil = scheduleDnd ? untilLabel(schedule, now, clock24) : null;
   const customStatus =
-    outsideHours && schedule.statusOutside ? OUTSIDE_HOURS_STATUS : null;
+    outsideHours && schedule.statusOutside && !statusCleared
+      ? OUTSIDE_HOURS_STATUS
+      : null;
 
   const setClockOutside = useCallback((next: boolean) => {
     setOutside(next);
     setManualOverride(false); // a new cycle starts
+    setStatusCleared(false);
   }, []);
 
   const pickStatus = useCallback((s: ManualStatus) => {
@@ -198,6 +203,7 @@ export default function WorkingHours() {
         teammateLocalTime={
           teammateOutside ? TEAMMATE.localOutside : TEAMMATE.localInside
         }
+        onClearCustomStatus={() => setStatusCleared(true)}
         onToggleMenu={() => setMenuOpen((o) => !o)}
         onCloseMenu={() => {
           setMenuOpen(false);

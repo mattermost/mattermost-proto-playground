@@ -11,6 +11,9 @@ type Props = {
   /** e.g. "until Monday 9:00 AM" when DND comes from working hours. */
   dndUntil: string | null;
   scheduleOn: boolean;
+  /** Custom status auto-set outside working hours. */
+  customStatus: { emoji: string; text: string } | null;
+  onClearCustomStatus: () => void;
   onPickStatus: (s: ManualStatus) => void;
   onOpenSchedule: () => void;
   /** Hover-open the DND submenu on first render (for the "Profile menu" scene). */
@@ -27,6 +30,8 @@ export function AccountMenu({
   status,
   dndUntil,
   scheduleOn,
+  customStatus,
+  onClearCustomStatus,
   onPickStatus,
   onOpenSchedule,
   submenuInitiallyOpen,
@@ -63,6 +68,9 @@ export function AccountMenu({
         status={status}
         dndUntil={dndUntil ?? undefined}
         scheduleOn={scheduleOn}
+        scheduleLabel="Working Hours"
+        customStatus={customStatus ?? undefined}
+        onClearCustomStatus={onClearCustomStatus}
         submenuInitiallyOpen={submenuInitiallyOpen}
         onPickStatus={onPickStatus}
         onOpenSchedule={onOpenSchedule}
