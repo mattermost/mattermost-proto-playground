@@ -1,6 +1,8 @@
 import type { ComponentType } from 'react';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
+import NotificationSchedule from '@/pages/prototypes/notification-schedule/NotificationSchedule';
+import NotificationScheduleMobile from '@/pages/prototypes/notification-schedule-mobile/NotificationScheduleMobile';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 
 export type PrototypeEntry = {
@@ -22,6 +24,18 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Mobile sample',
     path: '/prototypes/mobile-home-channel',
     component: MobileHomeChannel,
+  },
+  {
+    id: 'notification-schedule',
+    label: 'Notification Schedule',
+    path: '/prototypes/notification-schedule',
+    component: NotificationSchedule,
+  },
+  {
+    id: 'notification-schedule-mobile',
+    label: 'Notification Schedule (mobile)',
+    path: '/prototypes/notification-schedule-mobile',
+    component: NotificationScheduleMobile,
   },
   {
     id: 'outbound-calls',

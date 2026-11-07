@@ -1,0 +1,311 @@
+@use '@/styles/tokens.scss' as *;
+@use '@/styles/mixins.scss' as *;
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+.page {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-xxl);
+  box-sizing: border-box;
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+}
+
+.controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-m);
+  color: var(--center-channel-color);
+
+  &__label {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__switch-wrap {
+    width: 180px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Desktop shell (mirrors the composed layout used by other prototypes)
+// ---------------------------------------------------------------------------
+.shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 1440px;
+  max-height: 800px;
+  overflow: hidden;
+  background: var(--sidebar-bg);
+  color: var(--center-channel-color);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: var(--elevation-6);
+
+  &__global-header {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  // GlobalHeader always paints an "online" badge on the account avatar. Cover it
+  // with the real status. Offsets match the header's right padding (8px) and the
+  // 24px avatar inside the 40px account button.
+  &__status {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    margin-top: 2px;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--sidebar-header-bg);
+    pointer-events: none;
+  }
+
+  &__menu-anchor {
+    position: absolute;
+    top: 100%;
+    right: var(--spacing-s);
+    z-index: 20;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: stretch;
+    padding: 0 4px 4px;
+    background: var(--sidebar-header-bg);
+  }
+
+  &__outer-panel {
+    flex: 1 1 auto;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: var(--sidebar-bg);
+  }
+
+  &__channels-sidebar {
+    flex: 0 0 auto;
+    display: flex;
+    min-height: 0;
+
+    > * {
+      height: 100%;
+    }
+  }
+
+  &__center {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+    border-radius: var(--radius-l);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Account menu (host-owned positioning; Compass PopoverMenu is chrome only)
+// ---------------------------------------------------------------------------
+.account-menu {
+  position: relative;
+  width: 264px;
+
+  &__name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__dnd {
+    position: relative;
+  }
+
+  // Child menu opens to the left because the account button sits on the right edge.
+  &__submenu {
+    position: absolute;
+    top: calc(-1 * var(--spacing-s));
+    right: calc(100% - var(--spacing-xxs));
+    padding-right: var(--spacing-xxs);
+    width: 240px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Settings modal
+// ---------------------------------------------------------------------------
+.settings-modal {
+  height: 600px;
+  max-height: calc(100vh - 64px);
+}
+
+.settings {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+
+  &__nav {
+    flex: 0 0 200px;
+    padding: var(--spacing-m) var(--spacing-s);
+    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__content {
+    padding: var(--spacing-xl) var(--spacing-xxl);
+  }
+
+  &__title {
+    margin: 0 0 var(--spacing-l);
+    font-size: var(--font-size-400);
+    line-height: var(--line-height-400);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__section {
+    padding: var(--spacing-l) 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+  }
+
+  &__section-title {
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__summary {
+    margin: var(--spacing-xxs) 0 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    margin-top: var(--spacing-l);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-s);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Schedule form (desktop)
+// ---------------------------------------------------------------------------
+.schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__label {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__days {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+  }
+
+  &__day {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: start;
+    gap: var(--spacing-m);
+    padding: var(--spacing-xs) 0;
+    min-height: 40px;
+  }
+
+  &__day-range {
+    min-width: 0;
+  }
+
+  &__off {
+    display: inline-block;
+    padding-top: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+}
+
+.time-range {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+
+  &__fields {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-s);
+
+    > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  &__to {
+    flex: 0 0 auto;
+    align-self: center;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__error {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: var(--error-text);
+  }
+}

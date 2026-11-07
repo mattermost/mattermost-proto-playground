@@ -1,0 +1,165 @@
+export type DayId = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+export type DaysMode = 'every-day' | 'weekdays' | 'custom';
+export type ManualStatus = 'online' | 'away' | 'offline';
+
+export type TimeRange = { start: number; end: number };
+
+/** Minutes from midnight. */
+export const DEFAULT_RANGE: TimeRange = { start: 9 * 60, end: 17 * 60 };
+
+export const DAYS: { id: DayId; label: string; short: string }[] = [
+  { id: 'mon', label: 'Monday', short: 'Mon' },
+  { id: 'tue', label: 'Tuesday', short: 'Tue' },
+  { id: 'wed', label: 'Wednesday', short: 'Wed' },
+  { id: 'thu', label: 'Thursday', short: 'Thu' },
+  { id: 'fri', label: 'Friday', short: 'Fri' },
+  { id: 'sat', label: 'Saturday', short: 'Sat' },
+  { id: 'sun', label: 'Sunday', short: 'Sun' },
+];
+
+const WEEKDAY_IDS: DayId[] = ['mon', 'tue', 'wed', 'thu', 'fri'];
+
+export const DAYS_MODE_OPTIONS: { value: DaysMode; label: string }[] = [
+  { value: 'every-day', label: 'Every day' },
+  { value: 'weekdays', label: 'Weekdays (Monday - Friday)' },
+  { value: 'custom', label: 'Custom Schedule' },
+];
+
+export type PerDay = Record<DayId, { enabled: boolean; range: TimeRange }>;
+
+export type ScheduleState = {
+  enabled: boolean;
+  mode: DaysMode;
+  /** Single range used by Every day / Weekdays. */
+  range: TimeRange;
+  /** Per-day config used by Custom Schedule. */
+  perDay: PerDay;
+};
+
+export function buildInitialPerDay(): PerDay {
+  return Object.fromEntries(
+    DAYS.map((d) => [
+      d.id,
+      { enabled: WEEKDAY_IDS.includes(d.id), range: { ...DEFAULT_RANGE } },
+    ]),
+  ) as PerDay;
+}
+
+export const INITIAL_SCHEDULE: ScheduleState = {
+  enabled: false,
+  mode: 'weekdays',
+  range: { ...DEFAULT_RANGE },
+  perDay: buildInitialPerDay(),
+};
+
+/** Half-hour increments, 00:00 – 23:30, matching the custom-time DND modal. */
+export const TIME_STEPS: number[] = Array.from(
+  { length: 48 },
+  (_, i) => i * 30,
+);
+
+export function formatTime(minutes: number, clock24: boolean): string {
+  const h = Math.floor(minutes / 60) % 24;
+  const m = minutes % 60;
+  const mm = String(m).padStart(2, '0');
+  if (clock24) return `${String(h).padStart(2, '0')}:${mm}`;
+  const suffix = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${mm} ${suffix}`;
+}
+
+export function timeOptions(clock24: boolean) {
+  return TIME_STEPS.map((m) => ({
+    value: String(m),
+    label: formatTime(m, clock24),
+  }));
+}
+
+/** Active day ids and their ranges for the current schedule. */
+export function activeWindows(
+  s: ScheduleState,
+): Partial<Record<DayId, TimeRange>> {
+  const out: Partial<Record<DayId, TimeRange>> = {};
+  for (const d of DAYS) {
+    if (s.mode === 'every-day') out[d.id] = s.range;
+    else if (s.mode === 'weekdays') {
+      if (WEEKDAY_IDS.includes(d.id)) out[d.id] = s.range;
+    } else if (s.perDay[d.id].enabled) out[d.id] = s.perDay[d.id].range;
+  }
+  return out;
+}
+
+/** Simulated "now" — a fixed moment so the in-action scenes are deterministic. */
+export type SimulatedNow = { day: DayId; minutes: number };
+
+export const NOW_INSIDE: SimulatedNow = { day: 'wed', minutes: 11 * 60 };
+export const NOW_OUTSIDE: SimulatedNow = { day: 'fri', minutes: 18 * 60 + 30 };
+
+export function isWithinSchedule(s: ScheduleState, now: SimulatedNow): boolean {
+  const r = activeWindows(s)[now.day];
+  return !!r && now.minutes >= r.start && now.minutes < r.end;
+}
+
+/** Next moment (day + minutes) when notifications resume, or null if no active days. */
+export function nextWindowStart(
+  s: ScheduleState,
+  now: SimulatedNow,
+): {
+  day: DayId;
+  minutes: number;
+  isToday: boolean;
+  isTomorrow: boolean;
+} | null {
+  const windows = activeWindows(s);
+  const startIdx = DAYS.findIndex((d) => d.id === now.day);
+  for (let offset = 0; offset <= 7; offset++) {
+    const day = DAYS[(startIdx + offset) % 7].id;
+    const r = windows[day];
+    if (!r) continue;
+    if (offset === 0 && r.start <= now.minutes) continue;
+    return {
+      day,
+      minutes: r.start,
+      isToday: offset === 0,
+      isTomorrow: offset === 1,
+    };
+  }
+  return null;
+}
+
+export function untilLabel(
+  s: ScheduleState,
+  now: SimulatedNow,
+  clock24: boolean,
+): string {
+  const next = nextWindowStart(s, now);
+  if (!next) return 'Do Not Disturb';
+  const time = formatTime(next.minutes, clock24);
+  if (next.isToday) return `until ${time}`;
+  if (next.isTomorrow) return `until tomorrow ${time}`;
+  const label = DAYS.find((d) => d.id === next.day)?.label ?? '';
+  return `until ${label} ${time}`;
+}
+
+/** One-line summary shown on the collapsed section / mobile row. */
+export function scheduleSummary(s: ScheduleState, clock24: boolean): string {
+  if (!s.enabled) return 'Off';
+  if (s.mode === 'custom') {
+    const n = DAYS.filter((d) => s.perDay[d.id].enabled).length;
+    return `Custom · ${n} ${n === 1 ? 'day' : 'days'}`;
+  }
+  const days = s.mode === 'every-day' ? 'Every day' : 'Weekdays';
+  return `${days}, ${formatTime(s.range.start, clock24)} – ${formatTime(s.range.end, clock24)}`;
+}
+
+export function rangeError(r: TimeRange): string | null {
+  return r.end <= r.start ? 'End time must be after start time.' : null;
+}
+
+export const MANUAL_STATUS_LABEL: Record<ManualStatus, string> = {
+  online: 'Online',
+  away: 'Away',
+  offline: 'Offline',
+};
+
+export type EffectiveStatus = ManualStatus | 'do-not-disturb';
