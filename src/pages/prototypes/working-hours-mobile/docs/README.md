@@ -13,4 +13,4 @@ Feature renamed to Working Hours and extended with DM notice + custom-status opt
 
 ## Prototype screenshots
 
-Captured from the prototype (not design sources) in `shots/`: `01-notifications` … `06-dm-late-hours`. **background**
+Captured from the prototype (not design sources) in `shots/`: `01-notifications` … `07-dm-notice-closeup`. **background**
