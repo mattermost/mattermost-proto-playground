@@ -135,7 +135,7 @@
 }
 
 // ---------------------------------------------------------------------------
-// Settings modal
+// Settings modal (Figma: Account Settings Modal, 842 x 600)
 // ---------------------------------------------------------------------------
 .settings-modal {
   height: 600px;
@@ -148,34 +148,65 @@
   min-height: 0;
 
   &__nav {
-    flex: 0 0 200px;
-    padding: var(--spacing-m) var(--spacing-s);
-    border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    flex: 0 0 232px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xxl);
     background: rgba(var(--center-channel-color-rgb), 0.04);
+
+    // Figma: items sit transparent on the grey rail; the active one is a blue tint.
+    :global([class*='menu-item']),
+    :global([class*='menu-group-heading']) {
+      background: transparent;
+    }
+
+    :global([class*='menu-item--active']) {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+    }
   }
 
   &__content {
-    padding: var(--spacing-xl) var(--spacing-xxl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-l);
   }
 
   &__title {
-    margin: 0 0 var(--spacing-l);
-    font-size: var(--font-size-400);
-    line-height: var(--line-height-400);
+    margin: 0;
+    font-family: var(--font-family-heading, inherit);
+    font-size: var(--font-size-500, 20px);
+    line-height: var(--line-height-500, 28px);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
   }
 
+  &__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Expanded editor: grey sheet inside the list (Figma "…-section").
   &__section {
-    padding: var(--spacing-l) 0;
+    padding: var(--spacing-l) var(--spacing-xl) var(--spacing-xl);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   }
 
-  &__row {
+  &__section-header {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--spacing-l);
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-l);
   }
 
   &__section-title {
@@ -186,32 +217,75 @@
     color: var(--center-channel-color);
   }
 
-  &__summary {
-    margin: var(--spacing-xxs) 0 0;
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &__editor {
+  // The design indents the body 132px, aligning it under the setting's value column.
+  &__section-body {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-l);
-    margin-top: var(--spacing-l);
+    gap: var(--spacing-xl);
+    padding-left: 132px;
+  }
+
+  &__description {
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    color: var(--center-channel-color);
+  }
+
+  // Figma puts the toggle before its label; Compass Switch renders the label first.
+  &__switch {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: var(--spacing-m);
   }
 
   &__options {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-l);
-    padding-top: var(--spacing-l);
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
   }
 
   &__actions {
     display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-s);
+    gap: var(--spacing-l);
+  }
+}
+
+.setting-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-l);
+  padding: var(--spacing-m);
+  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+
+  &:last-child {
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__value {
+    margin: 0;
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
+    color: rgba(var(--center-channel-color-rgb), 0.64);
   }
 }
 
@@ -223,16 +297,10 @@
   flex-direction: column;
   gap: var(--spacing-l);
 
-  &__group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
   &__label {
     margin: 0;
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
+    font-size: var(--font-size-200);
+    line-height: var(--line-height-200);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
   }
@@ -240,30 +308,55 @@
   &__days {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: var(--spacing-s) 0 0;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-s);
+    gap: var(--spacing-xs);
   }
 
   &__day {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    align-items: start;
-    gap: var(--spacing-m);
-    padding: var(--spacing-xs) 0;
-    min-height: 40px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxl);
+  }
+}
+
+.day-toggle {
+  flex: 0 0 auto;
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size-200);
+  line-height: var(--line-height-200);
+  font-weight: var(--font-weight-semibold);
+  background: rgba(var(--center-channel-color-rgb), 0.08);
+  color: rgba(var(--center-channel-color-rgb), 0.56);
+  transition:
+    background-color var(--duration-quick) var(--ease-transition),
+    color var(--duration-quick) var(--ease-transition);
+
+  &:hover {
+    background: rgba(var(--center-channel-color-rgb), 0.12);
   }
 
-  &__day-range {
-    min-width: 0;
+  &:focus-visible {
+    outline: 2px solid var(--button-bg);
+    outline-offset: 2px;
   }
 
-  &__off {
-    display: inline-block;
-    padding-top: var(--spacing-xs);
-    font-size: var(--font-size-100);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+  &--on {
+    background: var(--button-bg);
+    color: var(--button-color);
+
+    &:hover {
+      background: var(--button-bg);
+      filter: brightness(0.92);
+    }
   }
 }
 
@@ -274,8 +367,8 @@
 
   &__fields {
     display: flex;
-    align-items: flex-end;
-    gap: var(--spacing-s);
+    align-items: center;
+    gap: var(--spacing-m);
 
     > * {
       flex: 1 1 0;
@@ -285,9 +378,13 @@
 
   &__to {
     flex: 0 0 auto;
-    align-self: center;
-    font-size: var(--font-size-100);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-200);
+    color: var(--center-channel-color);
+  }
+
+  // Per-day rows in a custom schedule use fixed-width fields.
+  &--compact &__fields > :not(.time-range__to) {
+    flex: 0 0 146px;
   }
 
   &__error {

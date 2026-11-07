@@ -1,3 +1,5 @@
+import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Select } from '@mattermost/compass-ui/components/select';
 import {
   formatTime,
@@ -12,11 +14,10 @@ type Props = {
   range: TimeRange;
   clock24: boolean;
   onChange: (next: TimeRange) => void;
-  /** Keep the menus inside a device frame. */
-  portalContainer?: HTMLElement | null;
-  size?: 'small' | 'medium' | 'large';
-  /** Show "Start time" / "End time" labels above each field. */
-  showLabels?: boolean;
+  /** Fixed-width fields for the per-day rows of a custom schedule. */
+  compact?: boolean;
+  /** Greyed out and not interactive (day switched off). */
+  disabled?: boolean;
 };
 
 /** Start / end Select pair using half-hour steps and the user's clock display. */
@@ -25,36 +26,41 @@ export function TimeRangeSelects({
   range,
   clock24,
   onChange,
-  portalContainer,
-  size = 'medium',
-  showLabels = false,
+  compact = false,
+  disabled = false,
 }: Props) {
   const options = timeOptions(clock24);
   const error = rangeError(range);
+  const icon = <Icon glyph={<ClockOutlineIcon />} />;
   return (
-    <div className={styles['time-range']}>
+    <div
+      className={[
+        styles['time-range'],
+        compact && styles['time-range--compact'],
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div className={styles['time-range__fields']}>
         <Select
           id={`${idPrefix}-start`}
           aria-label={`Start time, ${formatTime(range.start, clock24)}`}
-          label={showLabels ? 'Start time' : undefined}
-          size={size}
+          leadingIcon={icon}
           options={options}
           value={String(range.start)}
           invalid={!!error}
-          portalContainer={portalContainer}
+          disabled={disabled}
           onChange={(v) => onChange({ ...range, start: Number(v) })}
         />
-        {!showLabels && <span className={styles['time-range__to']}>to</span>}
+        <span className={styles['time-range__to']}>to</span>
         <Select
           id={`${idPrefix}-end`}
           aria-label={`End time, ${formatTime(range.end, clock24)}`}
-          label={showLabels ? 'End time' : undefined}
-          size={size}
+          leadingIcon={icon}
           options={options}
           value={String(range.end)}
           invalid={!!error}
-          portalContainer={portalContainer}
+          disabled={disabled}
           onChange={(v) => onChange({ ...range, end: Number(v) })}
         />
       </div>
