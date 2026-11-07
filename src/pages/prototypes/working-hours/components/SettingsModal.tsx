@@ -73,11 +73,14 @@ function SettingRow({
   value,
   tag,
   onEdit,
+  expanded,
 }: {
   title: string;
   value: ReactNode;
   tag?: boolean;
   onEdit?: () => void;
+  /** Set when Edit expands this setting in place. */
+  expanded?: boolean;
 }) {
   return (
     <div className={styles['setting-row']}>
@@ -94,6 +97,7 @@ function SettingRow({
         emphasis="link"
         size="small"
         leadingIcon={<Icon glyph={<PencilOutlineIcon />} />}
+        aria-expanded={expanded}
         onClick={onEdit}
       >
         Edit
@@ -205,119 +209,141 @@ export function SettingsModal({
                   <SettingRow key={r.title} title={r.title} value={r.value} />
                 ))}
 
-                {expanded ? (
-                  <section
-                    ref={sectionRef}
-                    className={styles['settings__section']}
-                    aria-labelledby="wh-section-title"
-                    data-testid="working-hours-section"
-                  >
-                    <div className={styles['settings__section-header']}>
-                      <h3
-                        id="wh-section-title"
-                        className={styles['settings__section-title']}
-                      >
-                        Working hours
-                      </h3>
-                      <Tag
-                        label="New"
-                        type="success"
-                        casing="all-caps"
-                        size="x-small"
-                      />
-                    </div>
-
-                    <div className={styles['settings__section-body']}>
-                      <p className={styles['settings__description']}>
-                        Set the days and times you work. Teammates are told when
-                        it is outside your working hours, and you can choose to
-                        pause notifications and set a custom status.
-                      </p>
-
-                      <Switch
-                        className={styles['settings__switch']}
-                        checked={draft.enabled}
-                        onChange={(e) =>
-                          setDraft({ ...draft, enabled: e.target.checked })
-                        }
-                      >
-                        Enable working hours
-                      </Switch>
-
-                      {draft.enabled && (
-                        <>
-                          <ScheduleForm
-                            schedule={draft}
-                            clock24={clock24}
-                            onChange={setDraft}
-                          />
-                          {noDays && (
-                            <p
-                              className={styles['time-range__error']}
-                              role="alert"
-                            >
-                              Select at least one day.
-                            </p>
-                          )}
-                          <div className={styles['settings__options']}>
-                            <Switch
-                              className={styles['settings__switch']}
-                              checked={draft.dndOutside}
-                              onChange={(e) =>
-                                setDraft({
-                                  ...draft,
-                                  dndOutside: e.target.checked,
-                                })
-                              }
-                              secondaryLabel="Silence notifications and set your status to Do Not Disturb."
-                            >
-                              Do Not Disturb outside working hours
-                            </Switch>
-                            <Switch
-                              className={styles['settings__switch']}
-                              checked={draft.statusOutside}
-                              onChange={(e) =>
-                                setDraft({
-                                  ...draft,
-                                  statusOutside: e.target.checked,
-                                })
-                              }
-                              secondaryLabel={`Sets ${OUTSIDE_HOURS_STATUS.emoji} “${OUTSIDE_HOURS_STATUS.text}” as your custom status.`}
-                            >
-                              Set a custom status outside working hours
-                            </Switch>
-                          </div>
-                        </>
-                      )}
-
-                      <Divider />
-                      <div className={styles['settings__actions']}>
-                        <Button
-                          emphasis="primary"
-                          size="large"
-                          onClick={save}
-                          disabled={isInvalid(draft)}
+                <div
+                  className={[
+                    styles['settings__collapse'],
+                    !expanded && styles['settings__collapse--expanded'],
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  inert={expanded}
+                >
+                  <div className={styles['settings__collapse-inner']}>
+                    <SettingRow
+                      title="Working hours"
+                      value={scheduleSummary(schedule, clock24)}
+                      tag
+                      onEdit={startEditing}
+                      expanded={expanded}
+                    />
+                  </div>
+                </div>
+                <div
+                  className={[
+                    styles['settings__collapse'],
+                    expanded && styles['settings__collapse--expanded'],
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  inert={!expanded}
+                >
+                  <div className={styles['settings__collapse-inner']}>
+                    <section
+                      ref={sectionRef}
+                      className={styles['settings__section']}
+                      aria-labelledby="wh-section-title"
+                      data-testid="working-hours-section"
+                    >
+                      <div className={styles['settings__section-header']}>
+                        <h3
+                          id="wh-section-title"
+                          className={styles['settings__section-title']}
                         >
-                          Save
-                        </Button>
-                        <Button
-                          emphasis="tertiary"
-                          size="large"
-                          onClick={cancel}
-                        >
-                          Cancel
-                        </Button>
+                          Working hours
+                        </h3>
+                        <Tag
+                          label="New"
+                          type="success"
+                          casing="all-caps"
+                          size="x-small"
+                        />
                       </div>
-                    </div>
-                  </section>
-                ) : (
-                  <SettingRow
-                    title="Working hours"
-                    value={scheduleSummary(schedule, clock24)}
-                    tag
-                    onEdit={startEditing}
-                  />
-                )}
+
+                      <div className={styles['settings__section-body']}>
+                        <p className={styles['settings__description']}>
+                          Set the days and times you work. Teammates are told
+                          when it is outside your working hours, and you can
+                          choose to pause notifications and set a custom status.
+                        </p>
+
+                        <Switch
+                          className={styles['settings__switch']}
+                          checked={draft.enabled}
+                          onChange={(e) =>
+                            setDraft({ ...draft, enabled: e.target.checked })
+                          }
+                        >
+                          Enable working hours
+                        </Switch>
+
+                        {draft.enabled && (
+                          <>
+                            <ScheduleForm
+                              schedule={draft}
+                              clock24={clock24}
+                              onChange={setDraft}
+                            />
+                            {noDays && (
+                              <p
+                                className={styles['time-range__error']}
+                                role="alert"
+                              >
+                                Select at least one day.
+                              </p>
+                            )}
+                            <div className={styles['settings__options']}>
+                              <Switch
+                                className={styles['settings__switch']}
+                                checked={draft.dndOutside}
+                                onChange={(e) =>
+                                  setDraft({
+                                    ...draft,
+                                    dndOutside: e.target.checked,
+                                  })
+                                }
+                                secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+                              >
+                                Do Not Disturb outside working hours
+                              </Switch>
+                              <Switch
+                                className={styles['settings__switch']}
+                                checked={draft.statusOutside}
+                                onChange={(e) =>
+                                  setDraft({
+                                    ...draft,
+                                    statusOutside: e.target.checked,
+                                  })
+                                }
+                                secondaryLabel={`Sets ${OUTSIDE_HOURS_STATUS.emoji} “${OUTSIDE_HOURS_STATUS.text}” as your custom status.`}
+                              >
+                                Set a custom status outside working hours
+                              </Switch>
+                            </div>
+                          </>
+                        )}
+
+                        <Divider />
+                        <div className={styles['settings__actions']}>
+                          <Button
+                            emphasis="primary"
+                            size="large"
+                            onClick={save}
+                            disabled={isInvalid(draft)}
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            emphasis="tertiary"
+                            size="large"
+                            onClick={cancel}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
 
                 <SettingRow
                   title="Automatic direct message replies"

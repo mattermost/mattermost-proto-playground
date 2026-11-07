@@ -143,6 +143,14 @@
     }
   }
 
+  &__error {
+    margin: 0;
+    padding: 0 var(--spacing-l) var(--spacing-m);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: var(--error-text);
+  }
+
   &__options {
     display: flex;
     flex-direction: column;

@@ -25,6 +25,7 @@ import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import { LateHoursNotice } from './LateHoursNotice';
 import { MobileScheduleForm } from './MobileScheduleForm';
 import {
+  activeWindows,
   formatTime,
   isWithinRange,
   MANUAL_STATUS_LABEL,
@@ -265,6 +266,12 @@ export function MobileFlow({
             portalContainer={frameEl}
           />
         )}
+        {schedule.enabled &&
+          Object.keys(activeWindows(schedule)).length === 0 && (
+            <p className={styles['mobile-form__error']} role="alert">
+              Select at least one day.
+            </p>
+          )}
         {schedule.enabled && (
           <div className={styles['mobile-form__options']}>
             <Switch
