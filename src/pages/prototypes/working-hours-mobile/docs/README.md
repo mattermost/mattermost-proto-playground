@@ -10,3 +10,7 @@ Mobile counterpart of the desktop prototype in `../../working-hours/`. Pure sche
 Note: the Figma file was not opened when the prototype was built; layout follows the spec text and Compass mobile components. Compare against Figma when reviewing.
 
 Feature renamed to Working Hours and extended with DM notice + custom-status option: see `../../working-hours/docs/working-hours-spec.md` ("Working Hours changes") and the screenshot in `../../working-hours/docs/shots/`.
+
+## Prototype screenshots
+
+Captured from the prototype (not design sources) in `shots/`: `01-notifications` … `06-dm-late-hours`. **background**

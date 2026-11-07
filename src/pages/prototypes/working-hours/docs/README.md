@@ -16,3 +16,7 @@ Mobile lives in its own prototype: `../../working-hours-mobile/`.
 ![Current DM late-hours notice, shown above the message input](shots/dm-late-hours-notice.png)
 
 `shots/dm-late-hours-notice.png` — the existing webapp notice (moon icon + "The time for {name} is {time}") above the message input in a DM. **requirement** (reference for the notice the prototype recreates).
+
+## Prototype screenshots
+
+Captured from the prototype (not design sources) in `shots/`: `01-settings-collapsed` … `07-dm-late-hours`. **background**
