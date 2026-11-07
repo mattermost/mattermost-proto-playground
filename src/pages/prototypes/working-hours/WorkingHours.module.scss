@@ -128,37 +128,10 @@
 }
 
 // ---------------------------------------------------------------------------
-// Account menu (host-owned positioning; Compass PopoverMenu is chrome only)
+// Account menu host (UserAccountMenu is chrome only)
 // ---------------------------------------------------------------------------
 .account-menu {
   position: relative;
-  width: 264px;
-
-  &__name {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-  }
-
-  &__custom-status {
-    display: block;
-    margin-top: var(--spacing-xxs);
-    font-weight: var(--font-weight-regular);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &__dnd {
-    position: relative;
-  }
-
-  // Child menu opens to the left because the account button sits on the right edge.
-  &__submenu {
-    position: absolute;
-    top: calc(-1 * var(--spacing-s));
-    right: calc(100% - var(--spacing-xxs));
-    padding-right: var(--spacing-xxs);
-    width: 240px;
-  }
 }
 
 // ---------------------------------------------------------------------------

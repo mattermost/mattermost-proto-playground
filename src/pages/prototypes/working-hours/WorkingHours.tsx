@@ -7,7 +7,6 @@ import {
   formatTime,
   INITIAL_SCHEDULE,
   isWithinSchedule,
-  OUTSIDE_HOURS_STATUS,
   TEAMMATE,
   NOW_INSIDE,
   NOW_OUTSIDE,
@@ -50,8 +49,6 @@ export default function WorkingHours() {
   // custom status.
   const outsideHours = schedule.enabled && !isWithinSchedule(schedule, now);
   const scheduleDnd = outsideHours && schedule.dndOutside && !manualOverride;
-  const customStatus =
-    outsideHours && schedule.statusOutside ? OUTSIDE_HOURS_STATUS : null;
   const status: EffectiveStatus = scheduleDnd ? 'do-not-disturb' : manualStatus;
   const dndUntil = scheduleDnd ? untilLabel(schedule, now, clock24) : null;
 
@@ -182,7 +179,6 @@ export default function WorkingHours() {
         submenuInitiallyOpen={submenuInitiallyOpen}
         settingsOpen={settingsOpen}
         settingsExpanded={settingsExpanded}
-        customStatus={customStatus}
         view={scene === 'dm' ? 'dm' : 'channel'}
         teammateLocalTime={
           teammateOutside ? TEAMMATE.localOutside : TEAMMATE.localInside

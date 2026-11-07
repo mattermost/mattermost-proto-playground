@@ -37,7 +37,6 @@ type Props = {
   clock24: boolean;
   status: EffectiveStatus;
   dndUntil: string | null;
-  customStatus: { emoji: string; text: string } | null;
   /** Channel backdrop, or the DM with a teammate (shows the late-hours notice). */
   view: 'channel' | 'dm';
   /** The DM partner's simulated local time, in minutes from midnight. */
@@ -97,11 +96,9 @@ export function DesktopScene(p: Props) {
             status={p.status}
             dndUntil={p.dndUntil}
             scheduleOn={p.schedule.enabled}
-            customStatus={p.customStatus}
             submenuInitiallyOpen={p.submenuInitiallyOpen}
             onPickStatus={p.onPickStatus}
             onOpenSchedule={() => p.onOpenSettings(true)}
-            onOpenSettings={() => p.onOpenSettings(false)}
           />
         </div>
       </div>
