@@ -66,6 +66,7 @@ export function AccountMenu({
         status={status}
         dndUntil={dndUntil ?? undefined}
         scheduleLabel="Working Hours"
+        scheduleOn
         customStatus={customStatus ?? undefined}
         onClearCustomStatus={onClearCustomStatus}
         submenuInitiallyOpen={submenuInitiallyOpen}

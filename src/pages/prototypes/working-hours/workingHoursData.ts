@@ -5,7 +5,7 @@ export type ManualStatus = 'online' | 'away' | 'offline';
 export type TimeRange = { start: number; end: number };
 
 /** Minutes from midnight. */
-export const DEFAULT_RANGE: TimeRange = { start: 9 * 60, end: 17 * 60 };
+export const DEFAULT_RANGE: TimeRange = { start: 8 * 60, end: 20 * 60 };
 
 export const DAYS: { id: DayId; label: string; short: string }[] = [
   { id: 'mon', label: 'Monday', short: 'Mon' },

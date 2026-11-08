@@ -18,7 +18,7 @@ Two entry points:
 1. **Days of week** — `Every day`, `Weekdays (Monday - Friday)`, `Custom Schedule`. Custom expands the UI to show all days of the week; click a day to enable/disable notifications on that day.
 2. **Time** — a time range in which the user receives notifications. Unless Custom, a single range applies to all active days. With Custom, a different range per day. Any time outside, status is Do Not Disturb.
    - Time fields respect the user's `Clock Display` setting (12h / 24h).
-   - Default range 9:00 AM – 5:00 PM (09:00 – 17:00).
+   - Default range 8:00 AM – 8:00 PM (08:00 – 20:00). (The Confluence page says 9:00 AM – 5:00 PM; changed on request.)
    - Increments are half-hour, matching the custom-time Do Not Disturb modal.
 
 ## Mobile
@@ -43,5 +43,5 @@ Requested after the original spec; recorded here until the spec is updated.
 - New config options, each independent:
   - Do Not Disturb outside working hours (the original behavior; on by default).
   - Auto-set a custom status outside working hours (on by default). The person picks the emoji (compass-proto `EmojiPopover`) and the text; default `🌙 Outside work hours`. The message is required while this option is on.
-- There is no "enable working hours" switch: the hours are always set (default Weekdays, 9:00 AM – 5:00 PM). The two options above decide what happens outside them.
+- There is no "enable working hours" switch: the hours are always set (default Weekdays, 8:00 AM – 8:00 PM). The two options above decide what happens outside them.
 - Custom Schedule uses a checkbox per day, with a time range beside each.
