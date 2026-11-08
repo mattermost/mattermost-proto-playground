@@ -26,7 +26,7 @@ export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
   const uid = useId();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = usePopoverTransition(pickerOpen);
 
@@ -75,17 +75,6 @@ export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
     >
       <div className={styles['custom-status__inner']}>
         <div className={styles['custom-status__row']}>
-          <div ref={triggerRef} className={styles['custom-status__emoji']}>
-            <EmojiButton
-              size="large"
-              emoji={emoji}
-              aria-label="Choose status emoji"
-              aria-haspopup="dialog"
-              aria-expanded={pickerOpen}
-              active={pickerOpen}
-              onClick={() => setPickerOpen((v) => !v)}
-            />
-          </div>
           <TextInput
             id={`${uid}-text`}
             className={styles['custom-status__text']}
@@ -98,6 +87,19 @@ export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
             invalid={open && text.trim() === ''}
             message={
               open && text.trim() === '' ? 'Enter a status message.' : undefined
+            }
+            leadingIcon={
+              <span ref={triggerRef} className={styles['custom-status__emoji']}>
+                <EmojiButton
+                  size="medium"
+                  emoji={emoji}
+                  aria-label="Choose status emoji"
+                  aria-haspopup="dialog"
+                  aria-expanded={pickerOpen}
+                  active={pickerOpen}
+                  onClick={() => setPickerOpen((v) => !v)}
+                />
+              </span>
             }
           />
         </div>
