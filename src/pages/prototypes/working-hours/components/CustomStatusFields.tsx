@@ -92,6 +92,7 @@ export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
               <span ref={triggerRef} className={styles['custom-status__emoji']}>
                 <EmojiButton
                   size="small"
+                  padding="compact"
                   emoji={emoji}
                   aria-label="Choose status emoji"
                   aria-haspopup="dialog"
