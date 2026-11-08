@@ -117,178 +117,18 @@
 }
 
 // ---------------------------------------------------------------------------
-// Settings modal (Figma: Account Settings Modal, 842 x 600)
 // ---------------------------------------------------------------------------
-.settings-modal {
-  height: 600px;
-  max-height: calc(100vh - 64px);
-}
-
+// Settings form helpers (modal shell and rows live in components/*.module.scss)
+// ---------------------------------------------------------------------------
 .settings {
-  display: flex;
-  height: 100%;
-  min-height: 0;
-
-  &__nav {
-    flex: 0 0 232px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xxl);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-
-    // Figma: items sit transparent on the grey rail; the active one is a blue tint.
-    :global([class*='menu-item']),
-    :global([class*='menu-group-heading']) {
-      background: transparent;
-    }
-
-    :global([class*='menu-item--active']) {
-      background: rgba(var(--button-bg-rgb), 0.08);
-      color: var(--button-bg);
-    }
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-    padding: var(--spacing-xl);
-  }
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-l);
-  }
-
-  &__title {
-    margin: 0;
-    font-family: var(--font-family-heading, inherit);
-    font-size: var(--font-size-500, 20px);
-    line-height: var(--line-height-500, 28px);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__list {
-    display: flex;
-    flex-direction: column;
-  }
-
-  // Expanded editor: grey sheet inside the list (Figma "…-section").
-  // In-place expand/collapse animates with the grid 0fr -> 1fr pattern (styling rule).
-  &__collapse {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--duration-moderate)
-      var(--ease-transition);
-
-    &--expanded {
-      grid-template-rows: 1fr;
-    }
-  }
-
-  &__collapse-inner {
-    overflow: hidden;
-    min-height: 0;
-  }
-
-  &__section {
-    padding: var(--spacing-l) var(--spacing-xl) var(--spacing-xl);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  }
-
-  &__section-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    margin-bottom: var(--spacing-l);
-  }
-
-  &__section-title {
-    margin: 0;
-    font-size: var(--font-size-200);
-    line-height: var(--line-height-200);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  // The design indents the body 132px, aligning it under the setting's value column.
-  &__section-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-    padding-left: 132px;
-  }
-
-  &__description {
-    margin: 0;
-    font-size: var(--font-size-200);
-    line-height: var(--line-height-200);
-    color: var(--center-channel-color);
-  }
-
   // Figma puts the toggle before its label; Compass Switch renders the label first.
   &__switch {
     flex-direction: row-reverse;
     justify-content: flex-end;
-    gap: var(--spacing-m);
-  }
-
-  &__options {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-l);
-  }
-
-  &__actions {
-    display: flex;
-    gap: var(--spacing-l);
+    gap: var(--spacing-s);
   }
 }
 
-.setting-row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-l);
-  padding: var(--spacing-m);
-  border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-
-  &:last-child {
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-  }
-
-  &__text {
-    flex: 1 1 auto;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    margin: 0;
-    font-size: var(--font-size-200);
-    line-height: var(--line-height-200);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
-
-  &__value {
-    margin: 0;
-    font-size: var(--font-size-200);
-    line-height: var(--line-height-200);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-}
-
-// ---------------------------------------------------------------------------
 // Schedule form (desktop)
 // ---------------------------------------------------------------------------
 .schedule-form {
@@ -298,8 +138,8 @@
 
   &__label {
     margin: 0;
-    font-size: var(--font-size-200);
-    line-height: var(--line-height-200);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
     font-weight: var(--font-weight-semibold);
     color: var(--center-channel-color);
   }
@@ -330,8 +170,8 @@
   border-radius: var(--radius-pill);
   cursor: pointer;
   font-family: inherit;
-  font-size: var(--font-size-200);
-  line-height: var(--line-height-200);
+  font-size: var(--font-size-100);
+  line-height: var(--line-height-100);
   font-weight: var(--font-weight-semibold);
   background: rgba(var(--center-channel-color-rgb), 0.08);
   color: rgba(var(--center-channel-color-rgb), 0.72);
@@ -377,7 +217,7 @@
 
   &__to {
     flex: 0 0 auto;
-    font-size: var(--font-size-200);
+    font-size: var(--font-size-100);
     color: var(--center-channel-color);
   }
 
