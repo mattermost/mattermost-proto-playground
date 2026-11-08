@@ -6,6 +6,7 @@ import SettingsSidebar from './SettingsSidebar';
 import {
   activeWindows,
   rangeError,
+  statusInvalid,
   type ScheduleState,
 } from '../workingHoursData';
 import styles from './SettingsModal.module.scss';
@@ -23,8 +24,8 @@ type Props = {
 };
 
 function isInvalid(s: ScheduleState): boolean {
-  if (!s.enabled) return false;
   const ranges = Object.values(activeWindows(s));
+  if (statusInvalid(s)) return true;
   if (ranges.length === 0) return true; // custom with no days selected
   return ranges.some((r) => !!r && rangeError(r) !== null);
 }
@@ -51,8 +52,7 @@ export function SettingsModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, startExpanded]);
 
-  const noDays =
-    draft.enabled && Object.keys(activeWindows(draft)).length === 0;
+  const noDays = Object.keys(activeWindows(draft)).length === 0;
 
   return (
     <ModalOverlay

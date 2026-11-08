@@ -98,7 +98,6 @@ export function DesktopScene(p: Props) {
             dndUntil={p.dndUntil}
             customStatus={p.customStatus}
             onClearCustomStatus={p.onClearCustomStatus}
-            scheduleOn={p.schedule.enabled}
             submenuInitiallyOpen={p.submenuInitiallyOpen}
             onPickStatus={p.onPickStatus}
             onOpenSchedule={() => p.onOpenSettings(true)}

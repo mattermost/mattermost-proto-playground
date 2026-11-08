@@ -7,7 +7,7 @@ import {
   formatTime,
   INITIAL_SCHEDULE,
   isWithinSchedule,
-  OUTSIDE_HOURS_STATUS,
+  outsideHoursStatus,
   TEAMMATE,
   formatMoment,
   simulatedTimes,
@@ -19,13 +19,6 @@ import {
 import { SCENES, type SceneId } from './workingHours.scenes';
 import { DesktopScene } from './scenes/DesktopScene';
 import styles from './WorkingHours.module.scss';
-
-/** A schedule that is already on, used to show the "in action" scenes. */
-const ENABLED_SCHEDULE: ScheduleState = {
-  ...INITIAL_SCHEDULE,
-  enabled: true,
-  statusOutside: true,
-};
 
 export default function WorkingHours() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -58,13 +51,13 @@ export default function WorkingHours() {
   // Outside working hours: optionally switch to DND (unless the user manually
   // picked a status — that sticks until the next cycle) and optionally set a
   // custom status.
-  const outsideHours = schedule.enabled && !isWithinSchedule(schedule, now);
+  const outsideHours = !isWithinSchedule(schedule, now);
   const scheduleDnd = outsideHours && schedule.dndOutside && !manualOverride;
   const status: EffectiveStatus = scheduleDnd ? 'do-not-disturb' : manualStatus;
   const dndUntil = scheduleDnd ? untilLabel(schedule, now, clock24) : null;
   const customStatus =
     outsideHours && schedule.statusOutside && !statusCleared
-      ? OUTSIDE_HOURS_STATUS
+      ? outsideHoursStatus(schedule)
       : null;
 
   const setClockOutside = useCallback((next: boolean) => {
@@ -97,7 +90,10 @@ export default function WorkingHours() {
           setTeammateOutside(true);
           break;
         case 'in-action':
-          setSchedule((s) => (s.enabled ? s : ENABLED_SCHEDULE));
+          // Show the custom status too, even if it was switched off in settings.
+          setSchedule((s) =>
+            s.statusOutside ? s : { ...s, statusOutside: true },
+          );
           setClockOutside(true);
           setMenuOpen(true);
           break;

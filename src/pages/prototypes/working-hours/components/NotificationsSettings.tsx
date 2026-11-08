@@ -4,12 +4,9 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Switch } from '@mattermost/compass-ui/components/switch';
 import { Tag } from '@mattermost/compass-ui/components/tag';
+import { CustomStatusFields } from './CustomStatusFields';
 import { ScheduleForm } from './ScheduleForm';
-import {
-  OUTSIDE_HOURS_STATUS,
-  scheduleSummary,
-  type ScheduleState,
-} from '../workingHoursData';
+import { scheduleSummary, type ScheduleState } from '../workingHoursData';
 import styles from './NotificationsSettings.module.scss';
 import formStyles from '../WorkingHours.module.scss';
 
@@ -181,64 +178,67 @@ export default function NotificationsSettings({
                   <div
                     className={styles['notifications-settings__section-body']}
                   >
-                    <Switch
-                      size="medium"
-                      checked={draft.enabled}
-                      onChange={(e) =>
-                        onDraftChange({ ...draft, enabled: e.target.checked })
-                      }
-                      secondaryLabel="Teammates are told when it is outside your working hours."
-                    >
-                      Enable working hours
-                    </Switch>
+                    <p className={styles['notifications-settings__intro']}>
+                      Teammates are told when it is outside your working hours.
+                    </p>
 
-                    {draft.enabled && (
-                      <>
-                        <ScheduleForm
-                          schedule={draft}
-                          clock24={clock24}
-                          onChange={onDraftChange}
-                        />
-                        {noDays && (
-                          <p
-                            className={formStyles['time-range__error']}
-                            role="alert"
-                          >
-                            Select at least one day.
-                          </p>
-                        )}
-                        <div
-                          className={styles['notifications-settings__options']}
+                    <>
+                      <ScheduleForm
+                        schedule={draft}
+                        clock24={clock24}
+                        onChange={onDraftChange}
+                      />
+                      {noDays && (
+                        <p
+                          className={formStyles['time-range__error']}
+                          role="alert"
                         >
-                          <Switch
-                            size="medium"
-                            checked={draft.dndOutside}
-                            onChange={(e) =>
-                              onDraftChange({
-                                ...draft,
-                                dndOutside: e.target.checked,
-                              })
-                            }
-                            secondaryLabel="Silence notifications and set your status to Do Not Disturb."
-                          >
-                            Do Not Disturb outside working hours
-                          </Switch>
-                          <Switch
-                            size="medium"
-                            checked={draft.statusOutside}
-                            onChange={(e) =>
-                              onDraftChange({
-                                ...draft,
-                                statusOutside: e.target.checked,
-                              })
-                            }
-                            secondaryLabel={`Sets ${OUTSIDE_HOURS_STATUS.emoji} “${OUTSIDE_HOURS_STATUS.text}” as your custom status.`}
-                          >
-                            Set a custom status outside working hours
-                          </Switch>
-                        </div>
-                      </>
-                    )}
+                          Select at least one day.
+                        </p>
+                      )}
+                      <div
+                        className={styles['notifications-settings__options']}
+                      >
+                        <Switch
+                          size="medium"
+                          checked={draft.dndOutside}
+                          onChange={(e) =>
+                            onDraftChange({
+                              ...draft,
+                              dndOutside: e.target.checked,
+                            })
+                          }
+                          secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+                        >
+                          Do Not Disturb outside working hours
+                        </Switch>
+                        <Switch
+                          size="medium"
+                          checked={draft.statusOutside}
+                          onChange={(e) =>
+                            onDraftChange({
+                              ...draft,
+                              statusOutside: e.target.checked,
+                            })
+                          }
+                          secondaryLabel="Sets a custom status while you are outside your working hours."
+                        >
+                          Set a custom status outside working hours
+                        </Switch>
+                        <CustomStatusFields
+                          open={draft.statusOutside}
+                          emoji={draft.statusEmoji}
+                          text={draft.statusText}
+                          onChange={({ emoji, text }) =>
+                            onDraftChange({
+                              ...draft,
+                              statusEmoji: emoji,
+                              statusText: text,
+                            })
+                          }
+                        />
+                      </div>
+                    </>
 
                     <div className={styles['notifications-settings__actions']}>
                       <Button

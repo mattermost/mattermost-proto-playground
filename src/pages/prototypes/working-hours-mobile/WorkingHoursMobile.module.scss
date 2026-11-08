@@ -159,8 +159,12 @@
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 
-  &__switch {
+  &__intro {
+    margin: 0;
     padding: var(--spacing-l);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
 }
@@ -217,7 +221,7 @@
 .late-notice {
   display: flex;
   align-items: center;
-  gap: var(--spacing-s);
+  gap: var(--spacing-xxxxs);
   padding: var(--spacing-s) var(--spacing-l);
   font-size: var(--font-size-100);
   line-height: var(--line-height-100);

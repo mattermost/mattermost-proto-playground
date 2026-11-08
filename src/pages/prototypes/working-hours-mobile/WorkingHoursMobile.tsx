@@ -10,7 +10,7 @@ import {
   isWithinSchedule,
   formatMoment,
   simulatedTimes,
-  OUTSIDE_HOURS_STATUS,
+  outsideHoursStatus,
   TEAMMATE,
   untilLabel,
   type EffectiveStatus,
@@ -20,9 +20,6 @@ import {
 import { MobileFlow, type MobilePage } from './components/MobileFlow';
 import { SCENES, type SceneId } from './workingHoursMobile.scenes';
 import styles from './WorkingHoursMobile.module.scss';
-
-/** A schedule that is already on, used to show the "in action" scene. */
-const ENABLED_SCHEDULE: ScheduleState = { ...INITIAL_SCHEDULE, enabled: true };
 
 export default function WorkingHoursMobile() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -48,10 +45,12 @@ export default function WorkingHoursMobile() {
   // Outside working hours: optionally switch to DND (unless the user manually
   // picked a status — that sticks until the next cycle) and optionally set a
   // custom status.
-  const outsideHours = schedule.enabled && !isWithinSchedule(schedule, now);
+  const outsideHours = !isWithinSchedule(schedule, now);
   const scheduleDnd = outsideHours && schedule.dndOutside && !manualOverride;
   const customStatus =
-    outsideHours && schedule.statusOutside ? OUTSIDE_HOURS_STATUS : null;
+    outsideHours && schedule.statusOutside
+      ? outsideHoursStatus(schedule)
+      : null;
   const status: EffectiveStatus = scheduleDnd ? 'do-not-disturb' : manualStatus;
   const dndUntil = scheduleDnd ? untilLabel(schedule, now, clock24) : null;
 
@@ -74,7 +73,10 @@ export default function WorkingHoursMobile() {
         setTeammateOutside(true);
         setPage('dm');
       } else {
-        setSchedule((s) => (s.enabled ? s : ENABLED_SCHEDULE));
+        // Show the custom status too, even if it was switched off in settings.
+        setSchedule((s) =>
+          s.statusOutside ? s : { ...s, statusOutside: true },
+        );
         setClockOutside(true);
         setPage('profile');
       }

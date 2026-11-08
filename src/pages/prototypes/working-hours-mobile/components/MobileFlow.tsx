@@ -22,6 +22,7 @@ import {
 import { DEVICE_SAFE_TOP } from '@/components/layout/DeviceFrame';
 import avatarAiko from '@/assets/avatars/Aiko Tan.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import { CustomStatusFields } from '@/pages/prototypes/working-hours/components/CustomStatusFields';
 import { LateHoursNotice } from './LateHoursNotice';
 import { MobileScheduleForm } from './MobileScheduleForm';
 import {
@@ -29,7 +30,7 @@ import {
   formatTime,
   isWithinRange,
   MANUAL_STATUS_LABEL,
-  OUTSIDE_HOURS_STATUS,
+  statusInvalid,
   TEAMMATE,
   type EffectiveStatus,
   scheduleSummary,
@@ -83,7 +84,7 @@ export function MobileFlow({
   useEffect(() => setDraft(schedule), [schedule, page]);
   const changeSchedule = (next: ScheduleState) => {
     setDraft(next);
-    if (!next.enabled || Object.keys(activeWindows(next)).length > 0) {
+    if (Object.keys(activeWindows(next)).length > 0 && !statusInvalid(next)) {
       onScheduleChange(next);
     }
   };
@@ -258,55 +259,55 @@ export function MobileFlow({
         variant="child"
         onBackClick={() => onPageChange('notifications')}
       >
-        <div className={styles['mobile-form__switch']}>
-          <Switch
-            checked={draft.enabled}
-            onChange={(e) =>
-              changeSchedule({ ...draft, enabled: e.target.checked })
-            }
-            secondaryLabel="Teammates see when it is outside your working hours."
-          >
-            Enable working hours
-          </Switch>
-        </div>
-        {draft.enabled && (
-          <MobileScheduleForm
-            schedule={draft}
-            clock24={clock24}
-            onChange={changeSchedule}
-            portalContainer={frameEl}
-          />
-        )}
-        {draft.enabled && Object.keys(activeWindows(draft)).length === 0 && (
+        <p className={styles['mobile-form__intro']}>
+          Teammates see when it is outside your working hours.
+        </p>
+        <MobileScheduleForm
+          schedule={draft}
+          clock24={clock24}
+          onChange={changeSchedule}
+          portalContainer={frameEl}
+        />
+        {Object.keys(activeWindows(draft)).length === 0 && (
           <p className={styles['mobile-form__error']} role="alert">
             Select at least one day.
           </p>
         )}
-        {draft.enabled && (
-          <div className={styles['mobile-form__options']}>
-            <Switch
-              checked={draft.dndOutside}
-              onChange={(e) =>
-                changeSchedule({ ...draft, dndOutside: e.target.checked })
-              }
-              secondaryLabel="Silence notifications and set your status to Do Not Disturb."
-            >
-              Do Not Disturb outside working hours
-            </Switch>
-            <Switch
-              checked={draft.statusOutside}
-              onChange={(e) =>
-                changeSchedule({
-                  ...draft,
-                  statusOutside: e.target.checked,
-                })
-              }
-              secondaryLabel={`Sets ${OUTSIDE_HOURS_STATUS.emoji} “${OUTSIDE_HOURS_STATUS.text}” as your custom status.`}
-            >
-              Set a custom status outside working hours
-            </Switch>
-          </div>
-        )}
+        <div className={styles['mobile-form__options']}>
+          <Switch
+            checked={draft.dndOutside}
+            onChange={(e) =>
+              changeSchedule({ ...draft, dndOutside: e.target.checked })
+            }
+            secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+          >
+            Do Not Disturb outside working hours
+          </Switch>
+          <Switch
+            checked={draft.statusOutside}
+            onChange={(e) =>
+              changeSchedule({
+                ...draft,
+                statusOutside: e.target.checked,
+              })
+            }
+            secondaryLabel="Sets a custom status while you are outside your working hours."
+          >
+            Set a custom status outside working hours
+          </Switch>
+          <CustomStatusFields
+            open={draft.statusOutside}
+            emoji={draft.statusEmoji}
+            text={draft.statusText}
+            onChange={({ emoji, text }) =>
+              changeSchedule({
+                ...draft,
+                statusEmoji: emoji,
+                statusText: text,
+              })
+            }
+          />
+        </div>
       </MobileModal>
     );
   }

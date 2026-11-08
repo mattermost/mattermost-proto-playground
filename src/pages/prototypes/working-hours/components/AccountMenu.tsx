@@ -10,7 +10,6 @@ type Props = {
   status: EffectiveStatus;
   /** e.g. "until Monday 9:00 AM" when DND comes from working hours. */
   dndUntil: string | null;
-  scheduleOn: boolean;
   /** Custom status auto-set outside working hours. */
   customStatus: { emoji: string; text: string } | null;
   onClearCustomStatus: () => void;
@@ -29,7 +28,6 @@ export function AccountMenu({
   onClose,
   status,
   dndUntil,
-  scheduleOn,
   customStatus,
   onClearCustomStatus,
   onPickStatus,
@@ -67,7 +65,6 @@ export function AccountMenu({
         avatarSrc={avatarLeonard}
         status={status}
         dndUntil={dndUntil ?? undefined}
-        scheduleOn={scheduleOn}
         scheduleLabel="Working Hours"
         customStatus={customStatus ?? undefined}
         onClearCustomStatus={onClearCustomStatus}

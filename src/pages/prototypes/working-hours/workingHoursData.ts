@@ -28,7 +28,6 @@ export const DAYS_MODE_OPTIONS: { value: DaysMode; label: string }[] = [
 export type PerDay = Record<DayId, { enabled: boolean; range: TimeRange }>;
 
 export type ScheduleState = {
-  enabled: boolean;
   mode: DaysMode;
   /** Single range used by Every day / Weekdays. */
   range: TimeRange;
@@ -38,6 +37,9 @@ export type ScheduleState = {
   dndOutside: boolean;
   /** Auto-set a custom status outside working hours. */
   statusOutside: boolean;
+  /** Emoji and text of that custom status. */
+  statusEmoji: string;
+  statusText: string;
 };
 
 export function buildInitialPerDay(): PerDay {
@@ -49,13 +51,17 @@ export function buildInitialPerDay(): PerDay {
   ) as PerDay;
 }
 
+/** Custom status applied automatically outside working hours (the default; the user can change it). */
+export const OUTSIDE_HOURS_STATUS = { emoji: '🌙', text: 'Outside work hours' };
+
 export const INITIAL_SCHEDULE: ScheduleState = {
-  enabled: false,
   mode: 'weekdays',
   range: { ...DEFAULT_RANGE },
   perDay: buildInitialPerDay(),
   dndOutside: true,
-  statusOutside: false,
+  statusOutside: true,
+  statusEmoji: OUTSIDE_HOURS_STATUS.emoji,
+  statusText: OUTSIDE_HOURS_STATUS.text,
 };
 
 /** Half-hour increments, 00:00 – 23:30, matching the custom-time DND modal. */
@@ -202,7 +208,6 @@ export function untilLabel(
 
 /** One-line summary shown on the collapsed section / mobile row. */
 export function scheduleSummary(s: ScheduleState, clock24: boolean): string {
-  if (!s.enabled) return 'Off';
   if (s.mode === 'custom') {
     const n = DAYS.filter((d) => s.perDay[d.id].enabled).length;
     return `Custom · ${n} ${n === 1 ? 'day' : 'days'}`;
@@ -223,9 +228,6 @@ export const MANUAL_STATUS_LABEL: Record<ManualStatus, string> = {
 
 export type EffectiveStatus = ManualStatus | 'do-not-disturb';
 
-/** Custom status applied automatically outside working hours (when enabled). */
-export const OUTSIDE_HOURS_STATUS = { emoji: '🌙', text: 'Outside work hours' };
-
 export function isWithinRange(minutes: number, r: TimeRange): boolean {
   return minutes >= r.start && minutes < r.end;
 }
@@ -238,3 +240,13 @@ export const TEAMMATE = {
   localInside: 14 * 60 + 20,
   localOutside: 60 + 20,
 };
+
+/** The custom status switched on outside working hours. */
+export function outsideHoursStatus(s: ScheduleState) {
+  return { emoji: s.statusEmoji, text: s.statusText.trim() };
+}
+
+/** The custom status option is on but has no message. */
+export function statusInvalid(s: ScheduleState): boolean {
+  return s.statusOutside && s.statusText.trim() === '';
+}
