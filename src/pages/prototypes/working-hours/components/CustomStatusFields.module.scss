@@ -27,9 +27,11 @@
   &__emoji {
     flex: 0 0 auto;
     display: inline-flex;
-    // The field pads 10px 16px; pull the button in by the difference so the gap
-    // to the border is 10px on the left, top and bottom.
-    margin-left: calc(-1 * var(--spacing-xxs));
+    // The field is 40px tall and pads 10px 16px, but the 28px button needs 28px of
+    // height. Cancel the extra 8px vertically so the field does not grow, and pull
+    // the button in from the left padding to match: 6px to the border all round.
+    margin: calc(-1 * var(--spacing-xxxs)) 0 calc(-1 * var(--spacing-xxxs))
+      calc(-1 * var(--spacing-s));
   }
 
   &__text {
