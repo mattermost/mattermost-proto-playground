@@ -182,8 +182,7 @@ export default function NotificationsSettings({
                     className={styles['notifications-settings__section-body']}
                   >
                     <Switch
-                      size="large"
-                      className={formStyles['settings__switch']}
+                      size="medium"
                       checked={draft.enabled}
                       onChange={(e) =>
                         onDraftChange({ ...draft, enabled: e.target.checked })
@@ -212,8 +211,7 @@ export default function NotificationsSettings({
                           className={styles['notifications-settings__options']}
                         >
                           <Switch
-                            size="large"
-                            className={formStyles['settings__switch']}
+                            size="medium"
                             checked={draft.dndOutside}
                             onChange={(e) =>
                               onDraftChange({
@@ -226,8 +224,7 @@ export default function NotificationsSettings({
                             Do Not Disturb outside working hours
                           </Switch>
                           <Switch
-                            size="large"
-                            className={formStyles['settings__switch']}
+                            size="medium"
                             checked={draft.statusOutside}
                             onChange={(e) =>
                               onDraftChange({

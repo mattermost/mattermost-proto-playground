@@ -117,18 +117,6 @@
 }
 
 // ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// Settings form helpers (modal shell and rows live in components/*.module.scss)
-// ---------------------------------------------------------------------------
-.settings {
-  // Figma puts the toggle before its label; Compass Switch renders the label first.
-  &__switch {
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    gap: var(--spacing-s);
-  }
-}
-
 // Schedule form (desktop)
 // ---------------------------------------------------------------------------
 .schedule-form {
