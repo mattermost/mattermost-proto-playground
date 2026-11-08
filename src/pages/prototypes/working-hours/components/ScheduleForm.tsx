@@ -1,3 +1,4 @@
+import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
 import { Select } from '@mattermost/compass-ui/components/select';
 import {
   DAYS,
@@ -5,7 +6,6 @@ import {
   type DaysMode,
   type ScheduleState,
 } from '../workingHoursData';
-import { DayToggle } from './DayToggle';
 import { TimeRangeSelects } from './TimeRangeSelects';
 import styles from '../WorkingHours.module.scss';
 
@@ -17,7 +17,7 @@ type Props = {
 
 /**
  * Desktop configuration (Figma "Schedule"): a days Select, then one time range,
- * or — for Custom Schedule — a day toggle and time range for every day.
+ * or — for Custom Schedule — a day checkbox and time range for every day.
  */
 export function ScheduleForm({ schedule, clock24, onChange }: Props) {
   return (
@@ -47,20 +47,22 @@ export function ScheduleForm({ schedule, clock24, onChange }: Props) {
             const cfg = schedule.perDay[d.id];
             return (
               <li key={d.id} className={styles['schedule-form__day']}>
-                <DayToggle
-                  label={d.label}
-                  letter={d.label[0]}
+                <Checkbox
+                  className={styles['schedule-form__day-check']}
                   checked={cfg.enabled}
-                  onChange={(enabled) =>
+                  onChange={(e) => {
+                    const enabled = e.target.checked;
                     onChange({
                       ...schedule,
                       perDay: {
                         ...schedule.perDay,
                         [d.id]: { ...cfg, enabled },
                       },
-                    })
-                  }
-                />
+                    });
+                  }}
+                >
+                  {d.label}
+                </Checkbox>
                 <TimeRangeSelects
                   idPrefix={`wh-${d.id}`}
                   range={cfg.range}

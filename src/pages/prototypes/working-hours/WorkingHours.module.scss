@@ -146,44 +146,10 @@
     align-items: center;
     gap: var(--spacing-xxl);
   }
-}
 
-.day-toggle {
-  flex: 0 0 auto;
-  appearance: none;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  font-family: inherit;
-  font-size: var(--font-size-100);
-  line-height: var(--line-height-100);
-  font-weight: var(--font-weight-semibold);
-  background: rgba(var(--center-channel-color-rgb), 0.08);
-  color: rgba(var(--center-channel-color-rgb), 0.72);
-  transition:
-    background-color var(--duration-quick) var(--ease-transition),
-    color var(--duration-quick) var(--ease-transition);
-
-  &:hover {
-    background: rgba(var(--center-channel-color-rgb), 0.12);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--button-bg);
-    outline-offset: 2px;
-  }
-
-  &--on {
-    background: var(--button-bg);
-    color: var(--button-color);
-
-    &:hover {
-      background: var(--button-bg);
-      filter: brightness(0.92);
-    }
+  // Fixed-width label column so every row's time range lines up.
+  &__day-check {
+    flex: 0 0 120px;
   }
 }
 
