@@ -68,6 +68,16 @@ function StaticSection({
         <h3 className={styles['notifications-settings__section-title']}>
           {title}
         </h3>
+        {/* Inert: only Working hours is built, but the row reads like the real one. */}
+        <Button
+          emphasis="quaternary"
+          size="small"
+          className={styles['notifications-settings__edit']}
+          leadingIcon={<Icon glyph={<PencilOutlineIcon />} size="16" />}
+          aria-label={`Edit ${title}`}
+        >
+          Edit
+        </Button>
         <p className={styles['notifications-settings__description']}>
           {description}
         </p>

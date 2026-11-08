@@ -22,12 +22,12 @@
     border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
     transition: background var(--duration-moderate) var(--ease-transition);
 
+    &:not(#{&}--expanded):hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
     &--editable:not(#{&}--expanded) {
       cursor: pointer;
-
-      &:hover {
-        background: rgba(var(--center-channel-color-rgb), 0.04);
-      }
     }
 
     &--expanded {
