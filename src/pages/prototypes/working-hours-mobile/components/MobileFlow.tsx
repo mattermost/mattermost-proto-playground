@@ -259,9 +259,6 @@ export function MobileFlow({
         variant="child"
         onBackClick={() => onPageChange('notifications')}
       >
-        <p className={styles['mobile-form__intro']}>
-          Teammates see when it is outside your working hours.
-        </p>
         <MobileScheduleForm
           schedule={draft}
           clock24={clock24}

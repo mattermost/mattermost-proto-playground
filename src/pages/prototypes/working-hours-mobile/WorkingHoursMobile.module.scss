@@ -158,15 +158,6 @@
     padding: var(--spacing-l);
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
   }
-
-  &__intro {
-    margin: 0;
-    padding: var(--spacing-l);
-    font-size: var(--font-size-75);
-    line-height: var(--line-height-75);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
-  }
 }
 
 .mobile-dm {

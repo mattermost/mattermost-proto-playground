@@ -178,10 +178,6 @@ export default function NotificationsSettings({
                   <div
                     className={styles['notifications-settings__section-body']}
                   >
-                    <p className={styles['notifications-settings__intro']}>
-                      Teammates are told when it is outside your working hours.
-                    </p>
-
                     <>
                       <ScheduleForm
                         schedule={draft}
