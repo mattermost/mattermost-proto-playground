@@ -132,7 +132,9 @@ export default function WalkthroughNarrative({
 
       <div className={styles['wt-narrative__body']}>
         <Scrollbar className={styles['wt-narrative__scroll']}>
-          <p className={styles['wt-narrative__tag']}>{sectionLabel(walkthrough, step)}</p>
+          <p className={styles['wt-narrative__tag']}>
+            {sectionLabel(walkthrough, step)}
+          </p>
           <h2 className={styles['wt-narrative__title']}>{step.title}</h2>
           {step.lead != null &&
             step.lead
@@ -146,7 +148,9 @@ export default function WalkthroughNarrative({
               ))}
           {lookFor.length > 0 && (
             <div className={styles['wt-narrative__look-for']}>
-              <p className={styles['wt-narrative__look-for-label']}>On screen</p>
+              <p className={styles['wt-narrative__look-for-label']}>
+                On screen
+              </p>
               <ul className={styles['wt-narrative__look-for-list']}>
                 {lookFor.map((item) => (
                   <li key={item}>{item}</li>

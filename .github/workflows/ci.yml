@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Sibling layout so file:../compass-design resolves from the playground root.
+      - uses: actions/checkout@v4
+        with:
+          path: mattermost-proto-playground
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: mattermost/compass-design
+          path: compass-design
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: mattermost-proto-playground/.nvmrc
+          cache: npm
+          cache-dependency-path: |
+            mattermost-proto-playground/package-lock.json
+            compass-design/package-lock.json
+
+      - name: Build compass-design packages
+        working-directory: compass-design
+        run: |
+          npm ci
+          npm run build:ui
+          npm run build:proto
+
+      - name: Install
+        working-directory: mattermost-proto-playground
+        run: npm ci
+
+      - name: Lint
+        working-directory: mattermost-proto-playground
+        run: npm run lint
+
+      - name: Format check
+        working-directory: mattermost-proto-playground
+        run: npm run format:check
+
+      # Runs tsc -b (type-check) and vite build.
+      - name: Build
+        working-directory: mattermost-proto-playground
+        run: npm run build

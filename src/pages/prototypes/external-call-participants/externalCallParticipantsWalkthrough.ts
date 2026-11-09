@@ -34,7 +34,11 @@ export const externalCallParticipantsWalkthrough: WalkthroughDocument = {
       railGroup: 'Call widget',
       title: 'In-channel call widget',
       lead: 'While the call is active, the docked widget stays on the channel so coordination continues underneath.',
-      lookFor: ['Floating call widget', 'Participant count on the widget', 'More (•••) control'],
+      lookFor: [
+        'Floating call widget',
+        'Participant count on the widget',
+        'More (•••) control',
+      ],
       bullets: [
         'Expand opens the full popout.',
         'The participant count opens the roster, including external guests.',
@@ -84,7 +88,10 @@ export const externalCallParticipantsWalkthrough: WalkthroughDocument = {
       railGroup: 'Call info',
       title: 'Enable external participants',
       lead: 'Call info is where the host turns on guest access for this call.',
-      lookFor: ['Call info panel on the widget', 'Enable external participants switch'],
+      lookFor: [
+        'Call info panel on the widget',
+        'Enable external participants switch',
+      ],
       bullets: [
         'Off by default until the host opts in for this call.',
         'Turning it on reveals the guest link and dial-in details.',
@@ -227,7 +234,11 @@ export const externalCallParticipantsWalkthrough: WalkthroughDocument = {
       section: 'guest',
       title: 'Guest call view',
       lead: 'After joining, the guest gets a fullscreen call stage focused on the room — not the host channel shell.',
-      lookFor: ['Fullscreen call', 'Guest shown as a participant', 'EXTERNAL labels on guests'],
+      lookFor: [
+        'Fullscreen call',
+        'Guest shown as a participant',
+        'EXTERNAL labels on guests',
+      ],
       bullets: [
         'Guest Call info omits the host toggle and internal link.',
         'Leave returns to the welcome gate in this prototype.',

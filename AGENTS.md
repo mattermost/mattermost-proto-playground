@@ -4,10 +4,10 @@ Shared instructions for Cursor, Claude Code, and other agents. `CLAUDE.md` impor
 
 ## Repositories
 
-| Repo | Role |
-| ---- | ---- |
+| Repo                                                                        | Role                                                                         |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | [`mattermost/compass-design`](https://github.com/mattermost/compass-design) | `@mattermost/compass-ui`, `@mattermost/compass-proto`, guidelines, Storybook |
-| **`mattermost/mattermost-proto-playground` (this repo)** | Multi-scene prototype flows + playground chrome only |
+| **`mattermost/mattermost-proto-playground` (this repo)**                    | Multi-scene prototype flows + playground chrome only                         |
 
 ## Design system layers
 
@@ -67,8 +67,8 @@ Never put absolute local paths (a home directory, `~/.claude/...`, session memor
 - [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) — Prototypes
 - [src/pages/prototypes/AGENTS.md#prototype-docs](src/pages/prototypes/AGENTS.md#prototype-docs) — Per-prototype `docs/` (requirements, PRFAQ, specs); read first
 - [docs/COMPASS-REPO-SPLIT.md](docs/COMPASS-REPO-SPLIT.md) — Split plan
-- [.cursor/skills/scaffold-prototype/SKILL.md](.cursor/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype
-- [.cursor/skills/guided-walkthrough/SKILL.md](.cursor/skills/guided-walkthrough/SKILL.md) — Guided walkthrough mode for a prototype
+- [.agents/skills/scaffold-prototype/SKILL.md](.agents/skills/scaffold-prototype/SKILL.md) — Scaffolding a multi-scene prototype
+- [.agents/skills/guided-walkthrough/SKILL.md](.agents/skills/guided-walkthrough/SKILL.md) — Guided walkthrough mode for a prototype
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
 
 For guidelines, Storybook, and package work, use the **compass-design** repo.

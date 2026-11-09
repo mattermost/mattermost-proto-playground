@@ -1,10 +1,5 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useState,
-  type ReactNode,
-} from 'react';
-import {useExitAnimation} from '@/hooks/useExitAnimation';
+import { useEffect, useLayoutEffect, useState, type ReactNode } from 'react';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
 import styles from './MobileModalStage.module.scss';
 
 /** Matches `--duration-moderate` (300ms). */
@@ -38,7 +33,7 @@ export default function MobileModalStage({
   animate = true,
   className = '',
 }: MobileModalStageProps) {
-  const {rendered, exiting} = useExitAnimation(open, MOBILE_MODAL_STAGE_MS);
+  const { rendered, exiting } = useExitAnimation(open, MOBILE_MODAL_STAGE_MS);
   const [entered, setEntered] = useState(!animate && open);
 
   useLayoutEffect(() => {

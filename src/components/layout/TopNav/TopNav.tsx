@@ -28,7 +28,11 @@ interface TopNavProps {
 export default function TopNav({ onOpenQuickSwitcher }: TopNavProps) {
   return (
     <div className={styles['top-nav']}>
-      <NavLink to="/" className={styles['top-nav__logo']} aria-label="Prototype catalog home">
+      <NavLink
+        to="/"
+        className={styles['top-nav__logo']}
+        aria-label="Prototype catalog home"
+      >
         <MattermostIcon size={28} />
         <span className={styles['top-nav__wordmark']}>Proto Playground</span>
       </NavLink>

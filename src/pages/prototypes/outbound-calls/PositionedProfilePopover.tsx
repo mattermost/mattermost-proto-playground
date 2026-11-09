@@ -2,7 +2,13 @@
  * Outbound-only (not for `main`): positions {@link ProfilePopover} from a
  * channel/DM anchor. See root CLAUDE.md (Profile popover + positioning).
  */
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { ProfilePopover } from '@mattermost/compass-ui/components/profile-popover';
 import { phoneGlyphFor } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
 import { PopoverCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
@@ -59,11 +65,14 @@ export function PositionedProfilePopover({
   useLayoutEffect(() => {
     if (!ref.current) return;
     const h = ref.current.offsetHeight;
-    const spaceBelow = window.innerHeight - anchorRect.bottom - POPOVER_GAP - 16;
+    const spaceBelow =
+      window.innerHeight - anchorRect.bottom - POPOVER_GAP - 16;
     const spaceAbove = anchorRect.top - POPOVER_GAP - 16;
     const placeAbove = h > spaceBelow && spaceAbove >= h;
     setTop(
-      placeAbove ? anchorRect.top - h - POPOVER_GAP : anchorRect.bottom + POPOVER_GAP,
+      placeAbove
+        ? anchorRect.top - h - POPOVER_GAP
+        : anchorRect.bottom + POPOVER_GAP,
     );
     setMeasured(true);
   }, [anchorRect]);

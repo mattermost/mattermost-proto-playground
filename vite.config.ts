@@ -29,9 +29,13 @@ function resolveCompassUiFromNpm(): Plugin {
         source === '@mattermost/compass-ui' ||
         source.startsWith('@mattermost/compass-ui/')
       ) {
-        return this.resolve(source, path.join(compassUiPackageRoot, 'package.json'), {
-          skipSelf: true,
-        });
+        return this.resolve(
+          source,
+          path.join(compassUiPackageRoot, 'package.json'),
+          {
+            skipSelf: true,
+          },
+        );
       }
     },
   };
@@ -75,8 +79,7 @@ function compassPackageDistReload(): Plugin {
         if (
           (file.startsWith(compassUiDist) &&
             /\/(index\.(js|css)|compass-ui\.css)$/.test(file)) ||
-          (file.startsWith(compassProtoDist) &&
-            /\/index\.(js|css)$/.test(file))
+          (file.startsWith(compassProtoDist) && /\/index\.(js|css)$/.test(file))
         ) {
           scheduleReload(server);
         }
