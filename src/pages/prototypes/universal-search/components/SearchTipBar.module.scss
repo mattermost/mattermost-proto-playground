@@ -1,0 +1,33 @@
+.search-tip-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  min-width: 0;
+  color: rgba(var(--center-channel-color-rgb), 0.72);
+  font-size: var(--font-size-75);
+  line-height: var(--line-height-75);
+
+  &__label {
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  &__modifiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+
+  &__text {
+    margin: 0;
+  }
+
+  &__shortcuts {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+  }
+}

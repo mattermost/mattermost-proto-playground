@@ -1,0 +1,67 @@
+.universal-search-modal {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    width: 100%;
+  }
+
+  &__search-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  &__field {
+    position: relative;
+    width: 100%;
+  }
+
+  &__enter-hint {
+    position: absolute;
+    right: var(--spacing-xxl);
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    pointer-events: none;
+  }
+
+  &__field--with-hint :global([class*='search-input']) {
+    // Leave room for the Enter hint beside the clear control.
+    padding-right: calc(var(--spacing-xxxxl) + var(--spacing-xxxxl));
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  &__removable {
+    position: relative;
+
+    .universal-search-modal__remove {
+      position: absolute;
+      top: 50%;
+      right: var(--spacing-s);
+      transform: translateY(-50%);
+      opacity: 0;
+      z-index: 1;
+    }
+
+    &:hover .universal-search-modal__remove,
+    &:focus-within .universal-search-modal__remove {
+      opacity: 1;
+    }
+  }
+}
