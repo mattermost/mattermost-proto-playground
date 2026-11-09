@@ -6,4 +6,7 @@ export {
   DEVICE_SAFE_BOTTOM,
   DEVICE_STATUS_BAR_HEIGHT,
 } from './DeviceFrame';
-export type {DeviceFrameProps, DeviceFrameStatusBarStyle} from './DeviceFrame';
+export type {
+  DeviceFrameProps,
+  DeviceFrameStatusBarStyle,
+} from './DeviceFrame';

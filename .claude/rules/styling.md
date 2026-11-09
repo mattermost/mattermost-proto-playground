@@ -1,8 +1,8 @@
 ---
 paths:
-  - "**/*.module.scss"
-  - "**/tokens.scss"
-  - "src/styles/**/*.scss"
+  - '**/*.module.scss'
+  - '**/tokens.scss'
+  - 'src/styles/**/*.scss'
 ---
 
 # Styling
@@ -23,7 +23,9 @@ One root block per component module; nest elements and modifiers under it.
 Compound modifiers on one element — interpolate (Sass requires `&` at the start only):
 
 ```scss
-#{&}--destructive#{&}--emphasis-primary { /* ... */ }
+#{&}--destructive#{&}--emphasis-primary {
+  /* ... */
+}
 ```
 
 Do not write `&--destructive&--emphasis-primary`. Keyframes may stay at file top; the component lives under the single block.
@@ -32,7 +34,9 @@ Do not write `&--destructive&--emphasis-primary`. Keyframes may stay at file top
 .button {
   display: inline-flex;
 
-  &__label { line-height: 1; }
+  &__label {
+    line-height: 1;
+  }
 
   &--size-small {
     padding: var(--spacing-xxs) var(--spacing-l);
@@ -45,15 +49,15 @@ Do not write `&--destructive&--emphasis-primary`. Keyframes may stay at file top
 
 ## Prefer design tokens over hardcoded values
 
-| Concern | Tokens |
-| --- | --- |
-| Spacing | `--spacing-xxxxs` (2px) … `--spacing-xxxxxl` (48px) |
-| Font size | `--font-size-25` (10px) … `--font-size-1000` (40px) |
+| Concern     | Tokens                                                                                                         |
+| ----------- | -------------------------------------------------------------------------------------------------------------- |
+| Spacing     | `--spacing-xxxxs` (2px) … `--spacing-xxxxxl` (48px)                                                            |
+| Font size   | `--font-size-25` (10px) … `--font-size-1000` (40px)                                                            |
 | Font weight | `--font-weight-regular` / `--font-weight-semibold` (prefer semibold over bold/`700` unless Figma requires 700) |
-| Line height | `--line-height-*` |
-| Radius | `--radius-xs` … `--radius-xl`; pills → `--radius-pill` (not `--radius-full`) |
-| Shadow | `--elevation-1` … `--elevation-6` |
-| Icon boxes | `--icon-size-10` … `--icon-size-104` |
+| Line height | `--line-height-*`                                                                                              |
+| Radius      | `--radius-xs` … `--radius-xl`; pills → `--radius-pill` (not `--radius-full`)                                   |
+| Shadow      | `--elevation-1` … `--elevation-6`                                                                              |
+| Icon boxes  | `--icon-size-10` … `--icon-size-104`                                                                           |
 
 ```scss
 // ❌ BAD
@@ -83,12 +87,12 @@ color: var(--color-info);
 
 Never hard-code durations or easing keywords — use tokens:
 
-| Scenario | Easing | Duration |
-| --- | --- | --- |
-| On-screen, small movement | `--ease-transition` | `--duration-quick` |
+| Scenario                  | Easing              | Duration              |
+| ------------------------- | ------------------- | --------------------- |
+| On-screen, small movement | `--ease-transition` | `--duration-quick`    |
 | On-screen, large movement | `--ease-transition` | `--duration-moderate` |
-| Entrance | `--ease-entrance` | `--duration-quick` |
-| Exit | `--ease-exit` | `--duration-quick` |
+| Entrance                  | `--ease-entrance`   | `--duration-quick`    |
+| Exit                      | `--ease-exit`       | `--duration-quick`    |
 
 “Large movement” = significant travel across the viewport (e.g. panel from off-screen).
 
@@ -107,11 +111,11 @@ background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.08);
 
 **Presence** is not semantic: use `--online-indicator`, `--away-indicator`, `--dnd-indicator` (optional `--color-*` fallback). Do not use `--color-success|warning|danger` alone for StatusBadge / presence.
 
-| Token | Role |
-| --- | --- |
-| `--semantic-color-info\|success\|warning\|danger` | Shared RGB with webapp (source of truth for fixed semantics) |
-| `--color-info\|success\|warning\|danger` (+ `-rgb`) | Convenience wrappers → `rgb(var(--semantic-color-*))` |
-| `--error-text` / `--error-text-color-rgb` | Themeable error role (prefer in error/destructive components) |
+| Token                                               | Role                                                          |
+| --------------------------------------------------- | ------------------------------------------------------------- |
+| `--semantic-color-info\|success\|warning\|danger`   | Shared RGB with webapp (source of truth for fixed semantics)  |
+| `--color-info\|success\|warning\|danger` (+ `-rgb`) | Convenience wrappers → `rgb(var(--semantic-color-*))`         |
+| `--error-text` / `--error-text-color-rgb`           | Themeable error role (prefer in error/destructive components) |
 
 Toasts / global banners: use `rgb(var(--semantic-color-*))` directly for type fills.
 
@@ -149,7 +153,9 @@ In-place expand/collapse must animate — never snap. Prefer CSS grid `0fr`↔`1
   grid-template-rows: 0fr;
   transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
 
-  &--expanded { grid-template-rows: 1fr; }
+  &--expanded {
+    grid-template-rows: 1fr;
+  }
 }
 
 .collapse__inner {

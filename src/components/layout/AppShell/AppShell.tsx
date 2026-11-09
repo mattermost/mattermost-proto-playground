@@ -17,7 +17,8 @@ function PrototypeChrome() {
   const { pathname } = useLocation();
   const prototypeEntry = getPrototypeByPath(pathname);
   const { document, active } = useWalkthrough();
-  const [prototypeCenterSlot, setPrototypeCenterSlot] = useState<ReactNode>(null);
+  const [prototypeCenterSlot, setPrototypeCenterSlot] =
+    useState<ReactNode>(null);
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
   const isEmbedded = window.self !== window.top;
 
@@ -43,7 +44,10 @@ function PrototypeChrome() {
         <TopNav onOpenQuickSwitcher={() => setQuickSwitcherOpen(true)} />
       )}
       {!isEmbedded && (
-        <QuickSwitcher open={quickSwitcherOpen} onOpenChange={setQuickSwitcherOpen} />
+        <QuickSwitcher
+          open={quickSwitcherOpen}
+          onOpenChange={setQuickSwitcherOpen}
+        />
       )}
       <div className={styles['app-shell__content']}>
         <PrototypeChromeProvider setCenterSlot={setPrototypeCenterSlot}>

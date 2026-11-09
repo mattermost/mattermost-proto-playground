@@ -9,7 +9,10 @@ import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { KeypadGrid } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
 import { CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
-import { formatRecentDuration, sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
+import {
+  formatRecentDuration,
+  sanitizeDigits,
+} from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import type { Recent } from '@/types/outboundCall';
 import styles from '../OutboundCalls.module.scss';
 
@@ -50,7 +53,9 @@ export function DialerScene({
             className={styles['dialer__phone-field']}
             size="large"
             value={typed}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setTyped(sanitizeDigits(e.target.value))}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setTyped(sanitizeDigits(e.target.value))
+            }
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -123,10 +128,14 @@ export function DialerScene({
                       >
                         {c.name}
                       </div>
-                      <div className={styles['dialer__recent-meta']}>{p.number}</div>
+                      <div className={styles['dialer__recent-meta']}>
+                        {p.number}
+                      </div>
                     </div>
                     <div className={styles['dialer__recent-right']}>
-                      <div className={styles['dialer__recent-time']}>{r.timestamp}</div>
+                      <div className={styles['dialer__recent-time']}>
+                        {r.timestamp}
+                      </div>
                       <div className={styles['dialer__recent-duration']}>
                         {r.durationSec !== undefined
                           ? formatRecentDuration(r.durationSec)

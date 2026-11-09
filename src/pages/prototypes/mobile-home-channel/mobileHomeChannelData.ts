@@ -43,10 +43,10 @@ export type ChannelMeta = {
 
 export function getChannelMeta(name: string): ChannelMeta {
   if (DM_NAMES.has(name)) {
-    return {name, variant: 'dm'};
+    return { name, variant: 'dm' };
   }
   if (name.includes(',')) {
-    return {name, variant: 'gm', memberCount: 2};
+    return { name, variant: 'gm', memberCount: 2 };
   }
-  return {name, variant: 'channel', memberCount: 124};
+  return { name, variant: 'channel', memberCount: 124 };
 }

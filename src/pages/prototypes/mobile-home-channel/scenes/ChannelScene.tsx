@@ -1,9 +1,14 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { MobileMessage, MobileMessageInput, MobileNavigationBar, mobileMessageStyles } from '@mattermost/compass-proto';
+import {
+  MobileMessage,
+  MobileMessageInput,
+  MobileNavigationBar,
+  mobileMessageStyles,
+} from '@mattermost/compass-proto';
 import MobileKeyboard from '../components/MobileKeyboard';
-import {avatars, type ChannelMeta} from '../mobileHomeChannelData';
+import { avatars, type ChannelMeta } from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';
 
 const bodyTextClass = mobileMessageStyles['mobile-message__body-text'];
@@ -47,13 +52,13 @@ export default function ChannelScene({
       <div className={styles['mobile-home-channel__channel-body']}>
         <Scrollbar>
           <div className={styles['mobile-home-channel__messages']}>
-            <MessageSeparator type='date' label='Today' />
+            <MessageSeparator type="date" label="Today" />
 
             <MobileMessage
               avatarSrc={avatars.sofia}
-              avatarAlt='Sofia Bauer'
-              username='Sofia Bauer'
-              timestamp='9:02 AM'
+              avatarAlt="Sofia Bauer"
+              username="Sofia Bauer"
+              timestamp="9:02 AM"
             >
               <p className={bodyTextClass}>
                 Morning everyone! Reminder that the Q2 roadmap review is at
@@ -63,9 +68,9 @@ export default function ChannelScene({
 
             <MobileMessage
               avatarSrc={avatars.marco}
-              avatarAlt='Marco Rinaldi'
-              username='Marco Rinaldi'
-              timestamp='9:14 AM'
+              avatarAlt="Marco Rinaldi"
+              username="Marco Rinaldi"
+              timestamp="9:14 AM"
             >
               <p className={bodyTextClass}>
                 Just pushed the updated onboarding flow to staging — would love
@@ -75,22 +80,22 @@ export default function ChannelScene({
 
             <MobileMessage
               avatarSrc={avatars.aikoTan}
-              avatarAlt='Aiko Tan'
-              username='Aiko Tan'
-              timestamp='9:33 AM'
+              avatarAlt="Aiko Tan"
+              username="Aiko Tan"
+              timestamp="9:33 AM"
             >
               <p className={bodyTextClass}>
                 Nice work Marco. I can take a pass after standup.
               </p>
             </MobileMessage>
 
-            <MessageSeparator type='new-messages' />
+            <MessageSeparator type="new-messages" />
 
             <MobileMessage
               avatarSrc={avatars.leonard}
-              avatarAlt='Leonard Riley'
-              username='Leonard Riley'
-              timestamp='10:12 AM'
+              avatarAlt="Leonard Riley"
+              username="Leonard Riley"
+              timestamp="10:12 AM"
             >
               <p className={bodyTextClass}>
                 Design review is bumped to 2:00 PM today — conflict with the
@@ -104,8 +109,7 @@ export default function ChannelScene({
       <div
         className={[
           styles['mobile-home-channel__composer'],
-          composerExpanded &&
-            styles['mobile-home-channel__composer--expanded'],
+          composerExpanded && styles['mobile-home-channel__composer--expanded'],
         ]
           .filter(Boolean)
           .join(' ')}
@@ -113,7 +117,7 @@ export default function ChannelScene({
         <div className={styles['mobile-home-channel__composer-spacer']} />
         <div className={styles['mobile-home-channel__composer-sheet']}>
           <MobileMessageInput
-            variant='Root'
+            variant="Root"
             placeholder={`Write to ${channel.name}…`}
             value={draft}
             onChange={setDraft}
