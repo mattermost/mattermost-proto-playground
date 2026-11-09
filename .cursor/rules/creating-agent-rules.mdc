@@ -16,7 +16,7 @@ Use when adding or changing project agent instructions. Prefer **conditional** c
 | Area-nested | [src/pages/prototypes/AGENTS.md](../../src/pages/prototypes/AGENTS.md) (+ tiny `CLAUDE.md` with `@AGENTS.md`) | Prototype handbook |
 | Path-scoped styling | [.claude/rules/styling.md](../../.claude/rules/styling.md) **and** [.cursor/rules/styling.mdc](styling.mdc) | BEM, tokens, motion, opacity, Scrollbar — **keep both bodies in sync** |
 
-Playbooks (multi-step how-tos) → [.cursor/skills/](../skills/) (e.g. `scaffold-prototype`), not always-on AGENTS.
+Procedural how-tos (multi-step workflows) → [.agents/skills/](../../.agents/skills/) (e.g. `scaffold-prototype`), not always-on AGENTS.
 
 Claude path nudges (thin): `.claude/rules/prototypes.md` — point at nested AGENTS; do not duplicate full handbooks.
 
@@ -34,5 +34,5 @@ Guidelines, Storybook, and the `add-docs-topic` skill live in **compass-design**
 - [ ] Root AGENTS stayed thin (or only gained an index link)
 - [ ] Area content landed in the right nested `AGENTS.md`
 - [ ] Styling changes updated **both** `.claude/rules/styling.md` and `.cursor/rules/styling.mdc`
-- [ ] Playbooks are skills when procedural
+- [ ] Procedural how-tos are skills
 - [ ] No duplicated full tables across tiers
