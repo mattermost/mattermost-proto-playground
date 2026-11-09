@@ -7,7 +7,11 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 
 ## Steps
 
-1. Create a git branch from up-to-date `main` before adding files. Name it `prototype/<slug>` (for example `prototype/universal-search`). Do this even when the current checkout looks unrelated — that branch may hold other work. If the working tree has uncommitted changes, stop and ask before switching branches.
+1. Work on a `prototype/<slug>` branch (for example `prototype/universal-search`) before adding files. Do this even when the current checkout looks unrelated — that branch may hold other work.
+   - If the working tree has uncommitted changes, stop and ask before switching branches.
+   - When splitting an existing prototype into `scenes/`, check that `src/pages/prototypes/<slug>/` exists on `main`. If it does not, stop and ask how to carry its commits onto the new branch.
+   - If a branch named `prototype/<slug>` already exists, reuse it only after checking that it is based on up-to-date `main` and that its contents are the prototype you intend to change. Otherwise stop and ask how to resolve the name conflict. Do not reset or recreate the branch.
+   - Otherwise create `prototype/<slug>` from up-to-date `main`.
 2. Add a folder `src/pages/prototypes/<slug>/` with:
    - `<Slug>.tsx` — thin orchestrator (scene state, chrome, switch)
    - `<slug>Data.ts` / `<slug>Scenes.ts` — optional fixtures and scene config
