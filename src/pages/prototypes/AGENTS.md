@@ -2,7 +2,7 @@
 
 Follow this when working under `src/pages/prototypes/`.
 
-For scaffolding a new multi-scene prototype end-to-end, use [.agents/skills/scaffold-prototype/SKILL.md](../../../.agents/skills/scaffold-prototype/SKILL.md).
+For scaffolding a new multi-scene prototype end-to-end, use [.agents/skills/scaffold-prototype/SKILL.md](../../../.agents/skills/scaffold-prototype/SKILL.md). Scene UI follows [compass-build](https://github.com/mattermost/compass-design/blob/main/skills/compass-build/SKILL.md) (local path `.agents/skills/compass-build/SKILL.md`, prototype context). Audit it with [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-review/SKILL.md) (local path `.agents/skills/compass-review/SKILL.md`) before calling the work done.
 
 For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.agents/skills/guided-walkthrough/SKILL.md](../../../.agents/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
 
@@ -187,7 +187,7 @@ For a secondary panel (thread, etc.) that slides in over the primary, see the [R
 ### Prototype-only UI
 
 **Before writing any custom element, ask: does a Compass component cover this structure?**
-If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components.
+If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components. This is looser than `compass-build`, and it wins for prototype scene UI. When the override fills a gap that belongs in Compass, open a follow-up issue in the compass-design repo.
 
 The threshold for "close enough to use Compass" is low. A `Chip` that needs a blue tint, a `Button` that needs `align-self: flex-start`, a `Checkbox` with an extra margin — all still use the Compass component with a className override. Only reach for custom HTML when Compass has nothing structurally close.
 
@@ -284,6 +284,7 @@ docs/                 # Input references: requirements, PRFAQ/PRD, UX spec, shot
 
 Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It holds the inputs the prototype is built from, so agents in later sessions can read them instead of asking again.
 
+- The user prompt, saved as `<slug>-prompt.md`, is a requirement source.
 - Requirements, PRFAQ / PRD links or excerpts, and other input references.
 - UX spec source markdown as `<slug>-spec.md`.
 - Screenshots under `docs/shots/`, referenced with **relative** image paths.
@@ -292,5 +293,5 @@ Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It 
 Rules:
 
 - **Read `docs/` first** when starting work on a prototype.
-- When the user provides a new input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
+- When the user provides a prompt or another input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
 - No absolute local paths. Link rather than paste anything confidential.
