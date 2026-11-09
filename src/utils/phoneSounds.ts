@@ -1,13 +1,33 @@
 // Lightweight phone-sound synthesis using Web Audio API.
 // DTMF, ringback, and hangup tones — no bundled assets.
 
-type DtmfKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '*' | '#';
+type DtmfKey =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | '*'
+  | '#';
 
 const DTMF_FREQS: Record<DtmfKey, [number, number]> = {
-  '1': [697, 1209], '2': [697, 1336], '3': [697, 1477],
-  '4': [770, 1209], '5': [770, 1336], '6': [770, 1477],
-  '7': [852, 1209], '8': [852, 1336], '9': [852, 1477],
-  '*': [941, 1209], '0': [941, 1336], '#': [941, 1477],
+  '1': [697, 1209],
+  '2': [697, 1336],
+  '3': [697, 1477],
+  '4': [770, 1209],
+  '5': [770, 1336],
+  '6': [770, 1477],
+  '7': [852, 1209],
+  '8': [852, 1336],
+  '9': [852, 1477],
+  '*': [941, 1209],
+  '0': [941, 1336],
+  '#': [941, 1477],
 };
 
 let ctx: AudioContext | null = null;
@@ -15,7 +35,10 @@ let masterGain: GainNode | null = null;
 
 function getCtx(): AudioContext {
   if (!ctx) {
-    const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AC =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
     ctx = new AC();
     masterGain = ctx.createGain();
     masterGain.gain.value = 0.3;
@@ -53,7 +76,11 @@ export function playDtmf(key: string, durationMs = 120) {
   });
 }
 
-let ringbackNodes: { oscA: OscillatorNode; oscB: OscillatorNode; gain: GainNode } | null = null;
+let ringbackNodes: {
+  oscA: OscillatorNode;
+  oscB: OscillatorNode;
+  gain: GainNode;
+} | null = null;
 let ringbackTimer: number | null = null;
 
 export function startRingback() {

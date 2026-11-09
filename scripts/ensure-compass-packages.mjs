@@ -167,7 +167,9 @@ if (!linkExists) {
       '      compass-design/\n' +
       '      mattermost-proto-playground/   ← run npm install here\n' +
       `  Package path: ${expectedFileDep}\n` +
-      (fs.existsSync(expectedFileDep) ? '' : '  (that path does not exist yet)\n') +
+      (fs.existsSync(expectedFileDep)
+        ? ''
+        : '  (that path does not exist yet)\n') +
       '  Then: rm -rf node_modules && npm install && npm run dev',
   );
   process.exit(1);

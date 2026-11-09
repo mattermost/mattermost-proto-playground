@@ -31,10 +31,10 @@ Turn an existing playground prototype into a **walkthrough viewing mode**: Jump-
 
 Pick **one** mode before writing files. Infer from the user prompt; if unclear, ask once.
 
-| Mode | Prompt cues | Source of truth |
-| --- | --- | --- |
-| **Create** | “create”, “new”, “add a walkthrough”, `/guided-walkthrough create …` | Prototype scenes / code |
-| **Update** | “update”, “fix”, “add a step”, “stale anchors”, `/guided-walkthrough update …` | Existing `*Walkthrough.ts` + current scenes |
+| Mode                  | Prompt cues                                                                                           | Source of truth                                                 |
+| --------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **Create**            | “create”, “new”, “add a walkthrough”, `/guided-walkthrough create …`                                  | Prototype scenes / code                                         |
+| **Update**            | “update”, “fix”, “add a step”, “stale anchors”, `/guided-walkthrough update …`                        | Existing `*Walkthrough.ts` + current scenes                     |
 | **Reshape from spec** | “from the UX spec”, “align to Confluence”, “Phase 1/2”, spec URL/doc, `/guided-walkthrough reshape …` | UX/Confluence spec **plus** what the prototype already supports |
 
 Shared for all modes: content schema, focus/TourPoint rules, overlay ownership, validation — do not skip the [Runtime contract](#runtime-contract) or checklist.
@@ -43,12 +43,12 @@ Shared for all modes: content schema, focus/TourPoint rules, overlay ownership, 
 
 **Outbound Calls** is the proof implementation. Prefer copying patterns from there over inventing new chrome:
 
-| Concern | Path |
-| --- | --- |
-| Content document | `src/pages/prototypes/outbound-calls/outboundCallsWalkthrough.ts` |
+| Concern                    | Path                                                              |
+| -------------------------- | ----------------------------------------------------------------- |
+| Content document           | `src/pages/prototypes/outbound-calls/outboundCallsWalkthrough.ts` |
 | `sceneState` parse + apply | `src/pages/prototypes/outbound-calls/outboundWalkthroughApply.ts` |
-| Registration / `onScene` | `src/pages/prototypes/outbound-calls/OutboundCalls.tsx` |
-| Shared runtime | `src/walkthrough/` |
+| Registration / `onScene`   | `src/pages/prototypes/outbound-calls/OutboundCalls.tsx`           |
+| Shared runtime             | `src/walkthrough/`                                                |
 
 ## Inputs (content file)
 
@@ -75,7 +75,9 @@ export const exampleWalkthrough: WalkthroughDocument = {
       bullets: ['…', { text: '…', sub: ['…'] }],
       scene: 'existing-scene-id',
       // Optional — freeform bag; keys are per-prototype
-      sceneState: { /* … */ },
+      sceneState: {
+        /* … */
+      },
       focus: {
         id: 'anchor-id', // matches data-wt-focus
         emphasis: 'lightbox', // 'ring' | 'lightbox' (lightbox includes ring); omit → ring
@@ -173,7 +175,7 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
 - Prefer: a button, menu row, toggle, list **group container**, floating widget, or info panel — not the full stage that contains them
 - **Ring vs lightbox — one question: does the viewer need context to understand this target?**
   - **Ring** — Yes, context matters. Use for specific interactive controls (button, toggle, tab, row, input) within a surface that's already visible; any target whose purpose only makes sense when you can see what surrounds it; sequential callouts on the same surface.
-  - **Lightbox** — No, the target stands alone. Use for a floating, docked, or overlaid surface the step is *introducing as a whole* (a popover, panel, sheet, or widget that appears over content); a content section inside a panel where new information just appeared and dimming isolates what changed.
+  - **Lightbox** — No, the target stands alone. Use for a floating, docked, or overlaid surface the step is _introducing as a whole_ (a popover, panel, sheet, or widget that appears over content); a content section inside a panel where new information just appeared and dimming isolates what changed.
   - When in doubt, prefer ring and promote to lightbox only if the target is hard to find or the surrounding layout actively competes with it.
 - **One ring per step callout:** stamp `data-wt-focus="<id>"` on a single parent. Nested or per-child stamps with the same id cause overlapping rings (runtime draws one ring per match)
 - **Scroll before ring:** focus targets inside overflow/SimpleBar lists (e.g. participants roster) are scrolled into the nested scrollport before measure. Prefer group containers at the **start** of a clipped section; the layer re-scrolls on delayed place passes so restamped overlays (~180ms) do not leave the ring on clipped rows.
@@ -184,12 +186,12 @@ Shared chrome lives under `src/walkthrough/`. New walkthroughs should reuse it, 
 
   **Set `focus.notePlacement`** when auto would **cover the thing being taught** or a related open surface. Values: `'below'` | `'above'` | `'left'` | `'right'`. Runtime uses that side when it fits; otherwise falls back to auto. If no side fits → docks (pointer `none`).
 
-  | Prefer | When | Pointer (set by runtime) |
-  | --- | --- | --- |
+  | Prefer    | When                                                                                                                  | Pointer (set by runtime)                           |
+  | --------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
   | `'right'` | Target is a **menu / popover / sheet** on the left half of the stage, or a floating panel you must keep fully visible | `left-center` (card to the right, tip on the left) |
-  | `'left'` | Same, but the surface sits on the **right** half of the stage | `right-center` |
-  | `'below'` | Compact control in a **header / toolbar**; open space under it | `top-*` (tip on top of card) |
-  | `'above'` | Control near the **bottom** (composer, docked widget, team-rail foot) | `bottom-*` |
+  | `'left'`  | Same, but the surface sits on the **right** half of the stage                                                         | `right-center`                                     |
+  | `'below'` | Compact control in a **header / toolbar**; open space under it                                                        | `top-*` (tip on top of card)                       |
+  | `'above'` | Control near the **bottom** (composer, docked widget, team-rail foot)                                                 | `bottom-*`                                         |
 
   **Overlap checks (author these when writing `focus.note`):**
   1. Mentally place a ~320×180 card on each side of the **focus box** (not the whole stage).

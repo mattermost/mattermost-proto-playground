@@ -130,7 +130,11 @@ function scrollFocusTargetIntoView(el: HTMLElement): boolean {
     }
     node = node.parentElement;
   }
-  el.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+  el.scrollIntoView({
+    block: 'nearest',
+    inline: 'nearest',
+    behavior: 'instant',
+  });
   return moved;
 }
 
@@ -147,7 +151,11 @@ function alignHorizontal(
   const minLeft = MARGIN;
   const maxLeft = Math.max(minLeft, stageW - noteW - MARGIN);
 
-  const options: { left: number; pointer: TourPointPointerPosition; tip: number }[] = [
+  const options: {
+    left: number;
+    pointer: TourPointPointerPosition;
+    tip: number;
+  }[] = [
     {
       left: clamp(targetCx - noteW / 2, minLeft, maxLeft),
       pointer: `${edge}-center`,
@@ -166,16 +174,17 @@ function alignHorizontal(
   ];
 
   for (const opt of options) {
-    const tipOffset =
-      opt.pointer.endsWith('-center')
-        ? noteW / 2
-        : opt.pointer.endsWith('-left')
-          ? POINTER_EDGE_INSET
-          : noteW - POINTER_EDGE_INSET;
+    const tipOffset = opt.pointer.endsWith('-center')
+      ? noteW / 2
+      : opt.pointer.endsWith('-left')
+        ? POINTER_EDGE_INSET
+        : noteW - POINTER_EDGE_INSET;
     opt.tip = opt.left + tipOffset;
   }
 
-  options.sort((a, b) => Math.abs(a.tip - targetCx) - Math.abs(b.tip - targetCx));
+  options.sort(
+    (a, b) => Math.abs(a.tip - targetCx) - Math.abs(b.tip - targetCx),
+  );
   return { left: options[0].left, pointer: options[0].pointer };
 }
 
@@ -210,7 +219,12 @@ function placeNote(
 
   const spaceAbove = target.top - MARGIN;
   if (spaceAbove >= height + GAP) {
-    const { left, pointer } = alignHorizontal(targetCx, width, stageW, 'bottom');
+    const { left, pointer } = alignHorizontal(
+      targetCx,
+      width,
+      stageW,
+      'bottom',
+    );
     candidates.push({
       top: target.top - GAP - height,
       left,
@@ -223,7 +237,11 @@ function placeNote(
   const spaceRight = stageW - (target.left + target.width) - MARGIN;
   if (spaceRight >= width + GAP) {
     candidates.push({
-      top: clamp(targetCy - height / 2, MARGIN, Math.max(MARGIN, stageH - height - MARGIN)),
+      top: clamp(
+        targetCy - height / 2,
+        MARGIN,
+        Math.max(MARGIN, stageH - height - MARGIN),
+      ),
       left: target.left + target.width + GAP,
       pointer: 'left-center',
       score: spaceRight,
@@ -234,7 +252,11 @@ function placeNote(
   const spaceLeft = target.left - MARGIN;
   if (spaceLeft >= width + GAP) {
     candidates.push({
-      top: clamp(targetCy - height / 2, MARGIN, Math.max(MARGIN, stageH - height - MARGIN)),
+      top: clamp(
+        targetCy - height / 2,
+        MARGIN,
+        Math.max(MARGIN, stageH - height - MARGIN),
+      ),
       left: target.left - GAP - width,
       pointer: 'right-center',
       score: spaceLeft,
@@ -247,7 +269,11 @@ function placeNote(
   if (preferred) {
     const preferredHit = candidates.find((c) => c.side === preferred);
     if (preferredHit) {
-      return { top: preferredHit.top, left: preferredHit.left, pointer: preferredHit.pointer };
+      return {
+        top: preferredHit.top,
+        left: preferredHit.left,
+        pointer: preferredHit.pointer,
+      };
     }
   }
 
@@ -255,7 +281,13 @@ function placeNote(
   candidates.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     const rank = (p: TourPointPointerPosition | 'none') =>
-      p.startsWith('top') ? 0 : p.startsWith('bottom') ? 1 : p.startsWith('left') ? 2 : 3;
+      p.startsWith('top')
+        ? 0
+        : p.startsWith('bottom')
+          ? 1
+          : p.startsWith('left')
+            ? 2
+            : 3;
     return rank(a.pointer) - rank(b.pointer);
   });
 
@@ -278,7 +310,9 @@ function dockedPos(
   };
 }
 
-function transformOriginFor(pointer: TourPointPointerPosition | 'none'): string {
+function transformOriginFor(
+  pointer: TourPointPointerPosition | 'none',
+): string {
   switch (pointer) {
     case 'top-center':
       return 'top center';
@@ -395,7 +429,9 @@ export default function WalkthroughFocusLayer({
         return;
       }
       const stageRect = stage.getBoundingClientRect();
-      const shellEl = stage.querySelector('[data-wt-shell]') as HTMLElement | null;
+      const shellEl = stage.querySelector(
+        '[data-wt-shell]',
+      ) as HTMLElement | null;
       setShellLocal(
         shellEl
           ? toStageLocal(shellEl.getBoundingClientRect(), stageRect)
@@ -415,7 +451,9 @@ export default function WalkthroughFocusLayer({
         if (focus.note && noteMode === 'docked') {
           const noteW = noteRef.current?.offsetWidth || TOUR_POINT_WIDTH;
           const noteH = noteRef.current?.offsetHeight || 180;
-          setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+          setNotePos(
+            dockedPos(noteW, noteH, stageRect.width, stageRect.height),
+          );
         }
         return;
       }
@@ -486,7 +524,8 @@ export default function WalkthroughFocusLayer({
       220,
     );
     const t3 = window.setTimeout(
-      () => measure({ forcePlace: true, bringIntoView: true, commitScroll: true }),
+      () =>
+        measure({ forcePlace: true, bringIntoView: true, commitScroll: true }),
       400,
     );
 
@@ -564,9 +603,9 @@ export default function WalkthroughFocusLayer({
 
   const noteOpen = Boolean(
     focus?.note &&
-      noteMode !== 'dismissed' &&
-      notePos != null &&
-      (noteMode === 'docked' || noteMode === 'anchored'),
+    noteMode !== 'dismissed' &&
+    notePos != null &&
+    (noteMode === 'docked' || noteMode === 'anchored'),
   );
 
   if (noteOpen && focus?.note && notePos) {
@@ -624,7 +663,10 @@ export default function WalkthroughFocusLayer({
   const pointerPosition = display?.pos.pointer ?? 'none';
 
   return (
-    <div className={styles['wt-focus']} aria-hidden={!noteRendered || noteExiting}>
+    <div
+      className={styles['wt-focus']}
+      aria-hidden={!noteRendered || noteExiting}
+    >
       {showLightbox && cutout && shellLocal && (
         <div
           className={styles['wt-focus__lightbox']}
@@ -642,7 +684,9 @@ export default function WalkthroughFocusLayer({
                 const stageRect = stage.getBoundingClientRect();
                 const noteW = noteRef.current?.offsetWidth || TOUR_POINT_WIDTH;
                 const noteH = noteRef.current?.offsetHeight || 180;
-                setNotePos(dockedPos(noteW, noteH, stageRect.width, stageRect.height));
+                setNotePos(
+                  dockedPos(noteW, noteH, stageRect.width, stageRect.height),
+                );
               }
             }
           }}

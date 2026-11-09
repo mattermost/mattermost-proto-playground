@@ -10,37 +10,37 @@ type ModalSceneProps = {
   onClose: () => void;
 };
 
-export default function ModalScene({onClose}: ModalSceneProps) {
+export default function ModalScene({ onClose }: ModalSceneProps) {
   const chevron = (
     <Icon
-      size='20'
+      size="20"
       className={styles['mobile-home-channel__modal-chevron']}
       glyph={<ChevronRightIcon />}
     />
   );
 
   return (
-    <MobileModal title='Channel info' onCloseClick={onClose}>
+    <MobileModal title="Channel info" onCloseClick={onClose}>
       <div className={styles['mobile-home-channel__modal-body']}>
         <MobileMenuItem
-          label='Notification Preferences'
+          label="Notification Preferences"
           divider
           trailingElement
           trailingVisual={chevron}
-          leadingVisual={<Icon size='20' glyph={<BellOutlineIcon />} />}
+          leadingVisual={<Icon size="20" glyph={<BellOutlineIcon />} />}
         />
         <MobileMenuItem
-          label='Channel Settings'
+          label="Channel Settings"
           divider
           trailingElement
           trailingVisual={chevron}
-          leadingVisual={<Icon size='20' glyph={<CogOutlineIcon />} />}
+          leadingVisual={<Icon size="20" glyph={<CogOutlineIcon />} />}
         />
         <MobileMenuItem
-          label='View Info'
+          label="View Info"
           trailingElement
           trailingVisual={chevron}
-          leadingVisual={<Icon size='20' glyph={<InformationOutlineIcon />} />}
+          leadingVisual={<Icon size="20" glyph={<InformationOutlineIcon />} />}
         />
       </div>
     </MobileModal>
