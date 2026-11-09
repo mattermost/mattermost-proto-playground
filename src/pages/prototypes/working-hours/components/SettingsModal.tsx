@@ -22,6 +22,8 @@ type Props = {
   schedule: ScheduleState;
   clock24: boolean;
   onSave: (next: ScheduleState) => void;
+  /** Walkthrough mode: sit below the walkthrough focus layer so rings and notes show over the modal. */
+  walkthroughActive?: boolean;
 };
 
 function isInvalid(s: ScheduleState): boolean {
@@ -42,6 +44,7 @@ export function SettingsModal({
   schedule,
   clock24,
   onSave,
+  walkthroughActive = false,
 }: Props) {
   const [expanded, setExpanded] = useState(startExpanded);
   const [draft, setDraft] = useState<ScheduleState>(schedule);
@@ -63,6 +66,7 @@ export function SettingsModal({
       onClose={onClose}
       container={container}
       lockScroll={false}
+      zIndex={walkthroughActive ? 40 : undefined}
       style={{ position: 'absolute' }}
     >
       <Modal

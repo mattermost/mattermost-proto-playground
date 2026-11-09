@@ -118,6 +118,7 @@ export default function NotificationsSettings({
             .join(' ')}
           onClick={expanded ? undefined : onEdit}
           data-testid="working-hours-section"
+          data-wt-focus="wh-row"
         >
           {/* Both views stay mounted in one grid cell so the swap can animate
               without moving content; the hidden one is inert. */}
@@ -157,9 +158,7 @@ export default function NotificationsSettings({
                   <div
                     className={styles['notifications-settings__section-body']}
                   >
-                    <div
-                      className={styles['notifications-settings__editor']}
-                    >
+                    <div className={styles['notifications-settings__editor']}>
                       <Switch
                         size="medium"
                         checked={draft.enabled}
@@ -214,6 +213,7 @@ export default function NotificationsSettings({
                               className={
                                 styles['notifications-settings__options']
                               }
+                              data-wt-focus="wh-outside"
                             >
                               <Switch
                                 size="medium"

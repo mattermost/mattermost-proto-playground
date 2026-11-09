@@ -11,7 +11,11 @@ export function LateHoursNotice({
   time: string;
 }) {
   return (
-    <div className={styles['late-notice']} data-testid="late-hours-notice">
+    <div
+      className={styles['late-notice']}
+      data-testid="late-hours-notice"
+      data-wt-focus="wh-notice"
+    >
       <span className={styles['late-notice__icon']}>
         <Icon glyph={<PowerSleepIcon />} size="16" />
       </span>

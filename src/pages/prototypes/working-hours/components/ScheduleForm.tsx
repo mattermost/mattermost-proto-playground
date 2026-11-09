@@ -21,7 +21,7 @@ type Props = {
  */
 export function ScheduleForm({ schedule, clock24, onChange }: Props) {
   return (
-    <div className={styles['schedule-form']}>
+    <div className={styles['schedule-form']} data-wt-focus="wh-schedule">
       <Select
         id="wh-days-mode"
         label="Days of the week"

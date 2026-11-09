@@ -20,3 +20,7 @@ Mobile lives in its own prototype: `../../working-hours-mobile/`.
 ## Prototype screenshots
 
 Captured from the prototype (not design sources) in `shots/`: `01-settings-collapsed` … `12-header-custom-status` (includes close-ups of the account menu, the DM notice and the header custom status). **background**
+
+## Guided walkthrough
+
+`../workingHoursWalkthrough.ts` — seven steps (overview, two ways in, choose days and hours, what happens outside the hours, off hours, teammates), built from the UX spec prose above and the prototype scenes. Open it with **Start walkthrough** in the top bar, or `?walkthrough=1&step=<id>`. **background**

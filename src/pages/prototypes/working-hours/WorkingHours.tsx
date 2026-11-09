@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { TimeSwitch } from './components/TimeSwitch';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
+import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
+import type { WalkthroughSceneState } from '@/walkthrough';
 import {
   formatTime,
   INITIAL_SCHEDULE,
@@ -17,11 +19,14 @@ import {
   type ScheduleState,
 } from './workingHoursData';
 import { SCENES, type SceneId } from './workingHours.scenes';
+import { workingHoursWalkthrough } from './workingHoursWalkthrough';
+import { parseWorkingHoursWalkthroughApply } from './workingHoursWalkthroughApply';
 import { DesktopScene } from './scenes/DesktopScene';
 import styles from './WorkingHours.module.scss';
 
 export default function WorkingHours() {
   const { setCenterSlot } = usePrototypeChrome();
+  const { active: walkthroughActive } = useWalkthrough();
   const [scene, setScene] = useState<SceneId>('settings');
   const [schedule, setSchedule] = useState<ScheduleState>(INITIAL_SCHEDULE);
   const clock24 = false;
@@ -38,6 +43,8 @@ export default function WorkingHours() {
   const [submenuInitiallyOpen, setSubmenuInitiallyOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(true);
   const [settingsExpanded, setSettingsExpanded] = useState(false);
+  // Bumped per walkthrough step so Settings remounts into the state the step asks for.
+  const [settingsKey, setSettingsKey] = useState(0);
 
   // DM partner's simulated local time (drives the late-hours notice).
   const [teammateOutside, setTeammateOutside] = useState(true);
@@ -106,7 +113,29 @@ export default function WorkingHours() {
     [setClockOutside],
   );
 
+  const onWalkthroughScene = useCallback(
+    (next: string, state?: WalkthroughSceneState) => {
+      if (!SCENES.some((s) => s.id === next)) return;
+      goToScene(next as SceneId);
+      setSettingsKey((k) => k + 1);
+      const apply = parseWorkingHoursWalkthroughApply(state);
+      if (next === 'settings') {
+        setSettingsOpen(true);
+        setSettingsExpanded(apply.settings === 'editing');
+      }
+    },
+    [goToScene],
+  );
+
+  useRegisterWalkthrough(workingHoursWalkthrough, {
+    onScene: onWalkthroughScene,
+  });
+
   useEffect(() => {
+    if (walkthroughActive) {
+      setCenterSlot(null);
+      return () => setCenterSlot(null);
+    }
     setCenterSlot(
       <SceneSwitcher
         scenes={SCENES}
@@ -116,7 +145,7 @@ export default function WorkingHours() {
       />,
     );
     return () => setCenterSlot(null);
-  }, [scene, goToScene, setCenterSlot]);
+  }, [scene, goToScene, setCenterSlot, walkthroughActive]);
 
   const openSettings = useCallback((expanded: boolean) => {
     setSettingsExpanded(expanded);
@@ -196,6 +225,8 @@ export default function WorkingHours() {
         onCloseSettings={() => setSettingsOpen(false)}
         onPickStatus={pickStatus}
         onSaveSchedule={setSchedule}
+        walkthroughActive={walkthroughActive}
+        settingsKey={settingsKey}
       />
       {controls}
     </div>

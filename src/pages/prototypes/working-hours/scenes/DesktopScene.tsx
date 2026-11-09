@@ -54,6 +54,10 @@ type Props = {
   onPickStatus: (s: ManualStatus) => void;
   onClearCustomStatus: () => void;
   onSaveSchedule: (next: ScheduleState) => void;
+  /** Walkthrough mode is on. */
+  walkthroughActive?: boolean;
+  /** Remounts the Settings modal so a walkthrough step starts from a clean editor. */
+  settingsKey?: number;
 };
 
 /** Desktop webapp shell: Global header, sidebars and a channel as the backdrop. */
@@ -117,6 +121,7 @@ export function DesktopScene(p: Props) {
             customStatus={p.customStatus}
             onClearCustomStatus={p.onClearCustomStatus}
             submenuInitiallyOpen={p.submenuInitiallyOpen}
+            walkthroughActive={p.walkthroughActive}
             onPickStatus={p.onPickStatus}
             onOpenSchedule={() => p.onOpenSettings(true)}
           />
@@ -215,6 +220,7 @@ export function DesktopScene(p: Props) {
       </div>
 
       <SettingsModal
+        key={p.settingsKey}
         open={p.settingsOpen}
         container={shellEl}
         onClose={p.onCloseSettings}
@@ -222,6 +228,7 @@ export function DesktopScene(p: Props) {
         schedule={p.schedule}
         clock24={p.clock24}
         onSave={p.onSaveSchedule}
+        walkthroughActive={p.walkthroughActive}
       />
     </div>
   );
