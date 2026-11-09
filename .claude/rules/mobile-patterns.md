@@ -1,9 +1,9 @@
 ---
 paths:
-  - "**/mobile*/**/*.{tsx,scss}"
-  - "**/Mobile*/**/*.{tsx,scss}"
-  - "src/components/layout/DeviceFrame/**"
-  - "src/components/layout/MobileModalStage/**"
+  - '**/mobile*/**/*.{tsx,scss}'
+  - '**/Mobile*/**/*.{tsx,scss}'
+  - 'src/components/layout/DeviceFrame/**'
+  - 'src/components/layout/MobileModalStage/**'
 ---
 
 # Mobile patterns
