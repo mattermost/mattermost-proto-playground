@@ -22,10 +22,9 @@ type Props = {
 export function ScheduleForm({ schedule, clock24, onChange }: Props) {
   return (
     <div className={styles['schedule-form']}>
-      <p className={styles['schedule-form__label']}>Working days</p>
       <Select
         id="wh-days-mode"
-        aria-label="Working days"
+        label="Days of the week"
         options={DAYS_MODE_OPTIONS}
         value={schedule.mode}
         onChange={(v) => onChange({ ...schedule, mode: v as DaysMode })}

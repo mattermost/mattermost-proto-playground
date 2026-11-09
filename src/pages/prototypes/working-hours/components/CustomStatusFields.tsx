@@ -13,6 +13,8 @@ type Props = {
   emoji: string;
   text: string;
   onChange: (next: { emoji: string; text: string }) => void;
+  /** Mobile forms use large. Default matches the desktop settings field. */
+  size?: 'medium' | 'large';
 };
 
 const MAX_LENGTH = 100;
@@ -22,7 +24,13 @@ const MAX_LENGTH = 100;
  * picker is compass-proto's EmojiPopover; this host owns open/close, the portal
  * and positioning, as for every overlay.
  */
-export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
+export function CustomStatusFields({
+  open,
+  emoji,
+  text,
+  onChange,
+  size = 'medium',
+}: Props) {
   const uid = useId();
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
@@ -68,6 +76,7 @@ export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
       className={[
         styles['custom-status'],
         open && styles['custom-status--open'],
+        size === 'large' && styles['custom-status--large'],
       ]
         .filter(Boolean)
         .join(' ')}
@@ -78,6 +87,7 @@ export function CustomStatusFields({ open, emoji, text, onChange }: Props) {
           <TextInput
             id={`${uid}-text`}
             className={styles['custom-status__text']}
+            size={size}
             label="Custom status"
             value={text}
             maxLength={MAX_LENGTH}

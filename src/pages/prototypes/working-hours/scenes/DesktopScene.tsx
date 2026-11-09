@@ -8,6 +8,7 @@ import {
   Message,
   MessageInput,
   TeamSidebar,
+  WithTooltip,
 } from '@mattermost/compass-proto';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
@@ -24,6 +25,7 @@ import { SettingsModal } from '../components/SettingsModal';
 import {
   formatTime,
   isWithinRange,
+  OUTSIDE_HOURS_STATUS,
   TEAMMATE,
   type EffectiveStatus,
   type ManualStatus,
@@ -58,23 +60,44 @@ type Props = {
 /** Desktop webapp shell: Global header, sidebars and a channel as the backdrop. */
 export function DesktopScene(p: Props) {
   const isDm = p.view === 'dm';
+  const teammateOffHours = !isWithinRange(p.teammateLocalTime, TEAMMATE.hours);
   // Scope the Settings scrim to the shell so the prototype chrome stays usable.
   const [shellEl, setShellEl] = useState<HTMLDivElement | null>(null);
 
-  const sidebarModel = useMemo(
-    () =>
-      buildDefaultChannelsSidebarModel({
-        showUnreadsCategory: false,
-        avatarAikoTan: avatarAiko,
-        avatarArjunPatel: avatarArjun,
-        avatarDanielleOkoro: avatarDanielle,
-        avatarDariusCole: avatarDarius,
-        avatarDavidLiang: avatarDavid,
-        avatarEmmaNovak: avatarEmma,
-        avatarEthanBrooks: avatarEthan,
-      }),
-    [],
-  );
+  const sidebarModel = useMemo(() => {
+    const model = buildDefaultChannelsSidebarModel({
+      showUnreadsCategory: false,
+      avatarAikoTan: avatarAiko,
+      avatarArjunPatel: avatarArjun,
+      avatarDanielleOkoro: avatarDanielle,
+      avatarDariusCole: avatarDarius,
+      avatarDavidLiang: avatarDavid,
+      avatarEmmaNovak: avatarEmma,
+      avatarEthanBrooks: avatarEthan,
+    });
+    if (!teammateOffHours) return model;
+    const withStatus = <T extends { name: string }>(row: T) =>
+      row.name === TEAMMATE.name
+        ? {
+            ...row,
+            customStatusEmoji: (
+              <WithTooltip
+                label={`${OUTSIDE_HOURS_STATUS.emoji} ${OUTSIDE_HOURS_STATUS.text}`}
+              >
+                <span>{OUTSIDE_HOURS_STATUS.emoji}</span>
+              </WithTooltip>
+            ),
+          }
+        : row;
+    return {
+      ...model,
+      topGroupItems: model.topGroupItems.map(withStatus),
+      groups: model.groups.map((group) => ({
+        ...group,
+        items: group.items.map(withStatus),
+      })),
+    };
+  }, [teammateOffHours]);
 
   return (
     <div className={styles['shell']} ref={setShellEl}>
@@ -95,6 +118,8 @@ export function DesktopScene(p: Props) {
             open={p.menuOpen}
             onClose={p.onCloseMenu}
             status={p.status}
+            schedule={p.schedule}
+            clock24={p.clock24}
             dndUntil={p.dndUntil}
             customStatus={p.customStatus}
             onClearCustomStatus={p.onClearCustomStatus}
@@ -129,6 +154,9 @@ export function DesktopScene(p: Props) {
                 name={TEAMMATE.name}
                 avatarSrc={avatarAiko}
                 avatarStatus
+                customStatus={
+                  teammateOffHours ? OUTSIDE_HOURS_STATUS : undefined
+                }
               />
             ) : (
               <ChannelHeader
@@ -145,6 +173,9 @@ export function DesktopScene(p: Props) {
                 avatarAlt="Aiko Tan"
                 username="Aiko Tan"
                 timestamp="9:12 AM"
+                customStatus={
+                  isDm && teammateOffHours ? OUTSIDE_HOURS_STATUS : undefined
+                }
               >
                 <p className={layoutStyles['channel-shell__post-text']}>
                   Pushed the new settings layouts to Figma. Feedback welcome

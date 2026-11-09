@@ -6,6 +6,7 @@ import SettingsSidebar from './SettingsSidebar';
 import {
   activeWindows,
   rangeError,
+  scheduleDraft,
   statusInvalid,
   type ScheduleState,
 } from '../workingHoursData';
@@ -24,6 +25,8 @@ type Props = {
 };
 
 function isInvalid(s: ScheduleState): boolean {
+  // Turning the feature off can always be saved; the setup is kept as-is.
+  if (!s.enabled) return false;
   const ranges = Object.values(activeWindows(s));
   if (statusInvalid(s)) return true;
   if (ranges.length === 0) return true; // custom with no days selected
@@ -47,7 +50,7 @@ export function SettingsModal({
   useEffect(() => {
     if (open) {
       setExpanded(startExpanded);
-      setDraft(schedule);
+      setDraft(startExpanded ? scheduleDraft(schedule) : schedule);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, startExpanded]);
@@ -72,7 +75,7 @@ export function SettingsModal({
         onClose={onClose}
       >
         <div className={styles['settings-modal__layout']}>
-          <SettingsSidebar activeId="notifications" />
+          <SettingsSidebar activeId="availability" />
           <Scrollbar className={styles['settings-modal__pane']}>
             <NotificationsSettings
               schedule={schedule}
@@ -83,7 +86,7 @@ export function SettingsModal({
               invalid={isInvalid(draft)}
               noDays={noDays}
               onEdit={() => {
-                setDraft(schedule);
+                setDraft(scheduleDraft(schedule));
                 setExpanded(true);
               }}
               onSave={() => {

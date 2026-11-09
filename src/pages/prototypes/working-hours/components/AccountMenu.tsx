@@ -1,13 +1,21 @@
 import { useEffect, useRef } from 'react';
 import { UserAccountMenu } from '@mattermost/compass-proto';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import type { EffectiveStatus, ManualStatus } from '../workingHoursData';
+import {
+  scheduleSummary,
+  type EffectiveStatus,
+  type ManualStatus,
+  type ScheduleState,
+} from '../workingHoursData';
 import styles from '../WorkingHours.module.scss';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   status: EffectiveStatus;
+  /** Saved schedule, summarized under Working hours in the DND submenu. */
+  schedule: ScheduleState;
+  clock24: boolean;
   /** e.g. "until Monday 9:00 AM" when DND comes from working hours. */
   dndUntil: string | null;
   /** Custom status auto-set outside working hours. */
@@ -27,6 +35,8 @@ export function AccountMenu({
   open,
   onClose,
   status,
+  schedule,
+  clock24,
   dndUntil,
   customStatus,
   onClearCustomStatus,
@@ -65,8 +75,8 @@ export function AccountMenu({
         avatarSrc={avatarLeonard}
         status={status}
         dndUntil={dndUntil ?? undefined}
-        scheduleLabel="Working Hours"
-        scheduleOn
+        scheduleLabel="Working hours"
+        scheduleSummary={scheduleSummary(schedule, clock24)}
         customStatus={customStatus ?? undefined}
         onClearCustomStatus={onClearCustomStatus}
         submenuInitiallyOpen={submenuInitiallyOpen}

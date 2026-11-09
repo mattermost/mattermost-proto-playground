@@ -10,30 +10,13 @@ import { scheduleSummary, type ScheduleState } from '../workingHoursData';
 import styles from './NotificationsSettings.module.scss';
 import formStyles from '../WorkingHours.module.scss';
 
-/** Other Notifications rows are shown for context only; Working hours is the one built. */
-const STATIC_BEFORE = [
-  {
-    title: 'Desktop and mobile notifications',
-    description: 'Mentions, direct messages, and group messages',
-  },
-  {
-    title: 'Desktop notification sounds',
-    description: 'Bing for messages, Calm for calls',
-  },
-  { title: 'Email notifications', description: 'Never' },
-  {
-    title: 'Keywords that trigger mentions',
-    description:
-      '“@leonard.riley”, “leonard.riley”, “@channel”, “@all”, “@here”',
-  },
-  {
-    title: 'Keywords that get highlighted (without notifications)',
-    description:
-      '“@leonard.riley”, “leonard.riley”, “@channel”, “@all”, “@here”',
-  },
-];
+/** Shown for context only; Working hours is the section that is built. */
 const STATIC_AFTER = [
-  { title: 'Automatic direct message replies', description: 'Off' },
+  {
+    title: 'Out of office',
+    description: 'Automatic direct message replies are off',
+  },
+  { title: 'Share last active time', description: 'On' },
 ];
 
 type Props = {
@@ -119,13 +102,9 @@ export default function NotificationsSettings({
         className={styles['notifications-settings__title']}
         id={`${uid}-title`}
       >
-        Notifications
+        Availability
       </h2>
       <div className={styles['notifications-settings__list']}>
-        {STATIC_BEFORE.map((s) => (
-          <StaticSection key={s.title} {...s} />
-        ))}
-
         {/* Row click is a pointer shortcut; the Edit button is the keyboard path. */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
         <div
@@ -178,63 +157,107 @@ export default function NotificationsSettings({
                   <div
                     className={styles['notifications-settings__section-body']}
                   >
-                    <>
-                      <ScheduleForm
-                        schedule={draft}
-                        clock24={clock24}
-                        onChange={onDraftChange}
-                      />
-                      {noDays && (
-                        <p
-                          className={formStyles['time-range__error']}
-                          role="alert"
-                        >
-                          Select at least one day.
-                        </p>
-                      )}
-                      <div
-                        className={styles['notifications-settings__options']}
+                    <div
+                      className={styles['notifications-settings__editor']}
+                    >
+                      <Switch
+                        size="medium"
+                        checked={draft.enabled}
+                        aria-expanded={draft.enabled}
+                        aria-controls={`${uid}-hours`}
+                        onChange={(e) =>
+                          onDraftChange({
+                            ...draft,
+                            enabled: e.target.checked,
+                          })
+                        }
+                        secondaryLabel="Applies this schedule. Off keeps the setup and pauses every effect."
                       >
-                        <Switch
-                          size="medium"
-                          checked={draft.dndOutside}
-                          onChange={(e) =>
-                            onDraftChange({
-                              ...draft,
-                              dndOutside: e.target.checked,
-                            })
+                        Enable working hours
+                      </Switch>
+                      <div
+                        id={`${uid}-hours`}
+                        className={[
+                          styles['notifications-settings__details'],
+                          draft.enabled &&
+                            styles['notifications-settings__details--expanded'],
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        inert={!draft.enabled}
+                        aria-hidden={!draft.enabled}
+                      >
+                        <div
+                          className={
+                            styles['notifications-settings__details-inner']
                           }
-                          secondaryLabel="Silence notifications and set your status to Do Not Disturb."
                         >
-                          Do Not Disturb outside working hours
-                        </Switch>
-                        <Switch
-                          size="medium"
-                          checked={draft.statusOutside}
-                          onChange={(e) =>
-                            onDraftChange({
-                              ...draft,
-                              statusOutside: e.target.checked,
-                            })
-                          }
-                          secondaryLabel="Sets a custom status while you are outside your working hours."
-                        >
-                          Set a custom status outside working hours
-                        </Switch>
-                        <CustomStatusFields
-                          open={draft.statusOutside}
-                          emoji={draft.statusEmoji}
-                          text={draft.statusText}
-                          onChange={({ emoji, text }) =>
-                            onDraftChange({
-                              ...draft,
-                              statusEmoji: emoji,
-                              statusText: text,
-                            })
-                          }
-                        />
+                          <div
+                            className={
+                              styles['notifications-settings__details-content']
+                            }
+                          >
+                            <ScheduleForm
+                              schedule={draft}
+                              clock24={clock24}
+                              onChange={onDraftChange}
+                            />
+                            {noDays && (
+                              <p
+                                className={formStyles['time-range__error']}
+                                role="alert"
+                              >
+                                Select at least one day.
+                              </p>
+                            )}
+                            <div
+                              className={
+                                styles['notifications-settings__options']
+                              }
+                            >
+                              <Switch
+                                size="medium"
+                                checked={draft.dndOutside}
+                                onChange={(e) =>
+                                  onDraftChange({
+                                    ...draft,
+                                    dndOutside: e.target.checked,
+                                  })
+                                }
+                                secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+                              >
+                                Do Not Disturb outside working hours
+                              </Switch>
+                              <Switch
+                                size="medium"
+                                checked={draft.statusOutside}
+                                onChange={(e) =>
+                                  onDraftChange({
+                                    ...draft,
+                                    statusOutside: e.target.checked,
+                                  })
+                                }
+                                secondaryLabel="Sets a custom status while you are outside your working hours."
+                              >
+                                Set a custom status outside working hours
+                              </Switch>
+                              <CustomStatusFields
+                                open={draft.statusOutside}
+                                emoji={draft.statusEmoji}
+                                text={draft.statusText}
+                                onChange={({ emoji, text }) =>
+                                  onDraftChange({
+                                    ...draft,
+                                    statusEmoji: emoji,
+                                    statusText: text,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </>
+                    </div>
 
                     <div className={styles['notifications-settings__actions']}>
                       <Button

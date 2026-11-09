@@ -28,6 +28,13 @@ export const DAYS_MODE_OPTIONS: { value: DaysMode; label: string }[] = [
 export type PerDay = Record<DayId, { enabled: boolean; range: TimeRange }>;
 
 export type ScheduleState = {
+  /** False until the user saves a schedule. The defaults below are only a starting point. */
+  configured: boolean;
+  /**
+   * Master switch. Off keeps the saved setup and pauses every effect
+   * (Do Not Disturb, custom status, and the direct message notice).
+   */
+  enabled: boolean;
   mode: DaysMode;
   /** Single range used by Every day / Weekdays. */
   range: TimeRange;
@@ -52,9 +59,11 @@ export function buildInitialPerDay(): PerDay {
 }
 
 /** Custom status applied automatically outside working hours (the default; the user can change it). */
-export const OUTSIDE_HOURS_STATUS = { emoji: '🌙', text: 'Outside work hours' };
+export const OUTSIDE_HOURS_STATUS = { emoji: '⏰', text: 'Outside work hours' };
 
 export const INITIAL_SCHEDULE: ScheduleState = {
+  configured: false,
+  enabled: false,
   mode: 'weekdays',
   range: { ...DEFAULT_RANGE },
   perDay: buildInitialPerDay(),
@@ -63,6 +72,20 @@ export const INITIAL_SCHEDULE: ScheduleState = {
   statusEmoji: OUTSIDE_HOURS_STATUS.emoji,
   statusText: OUTSIDE_HOURS_STATUS.text,
 };
+
+/** The saved schedule is on: hours, status, and notices all apply. */
+export function scheduleActive(s: ScheduleState): boolean {
+  return s.configured && s.enabled;
+}
+
+/**
+ * Editor state. An unset schedule opens ready to save (the master switch on,
+ * defaults filled in). Cancel discards this and leaves it unset.
+ */
+export function scheduleDraft(saved: ScheduleState): ScheduleState {
+  if (saved.configured) return saved;
+  return { ...saved, configured: true, enabled: true };
+}
 
 /** Half-hour increments, 00:00 – 23:30, matching the custom-time DND modal. */
 export const TIME_STEPS: number[] = Array.from(
@@ -208,6 +231,8 @@ export function untilLabel(
 
 /** One-line summary shown on the collapsed section / mobile row. */
 export function scheduleSummary(s: ScheduleState, clock24: boolean): string {
+  if (!s.configured) return 'Not set';
+  if (!s.enabled) return 'Off';
   if (s.mode === 'custom') {
     const n = DAYS.filter((d) => s.perDay[d.id].enabled).length;
     return `Custom · ${n} ${n === 1 ? 'day' : 'days'}`;

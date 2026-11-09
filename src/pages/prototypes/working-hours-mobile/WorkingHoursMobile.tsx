@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button } from '@mattermost/compass-ui/components/button';
-import { Switch } from '@mattermost/compass-ui/components/switch';
 import DeviceFrame from '@/components/layout/DeviceFrame';
+import { TimeSwitch } from '@/pages/prototypes/working-hours/components/TimeSwitch';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import {
@@ -11,6 +10,7 @@ import {
   formatMoment,
   simulatedTimes,
   outsideHoursStatus,
+  scheduleActive,
   TEAMMATE,
   untilLabel,
   type EffectiveStatus,
@@ -26,7 +26,7 @@ export default function WorkingHoursMobile() {
   const [scene, setScene] = useState<SceneId>('settings');
   const [page, setPage] = useState<MobilePage>('notifications');
   const [schedule, setSchedule] = useState<ScheduleState>(INITIAL_SCHEDULE);
-  const [clock24, setClock24] = useState(false);
+  const clock24 = false;
 
   // Simulated clock + status.
   const [outside, setOutside] = useState(false);
@@ -45,7 +45,8 @@ export default function WorkingHoursMobile() {
   // Outside working hours: optionally switch to DND (unless the user manually
   // picked a status — that sticks until the next cycle) and optionally set a
   // custom status.
-  const outsideHours = !isWithinSchedule(schedule, now);
+  const outsideHours =
+    scheduleActive(schedule) && !isWithinSchedule(schedule, now);
   const scheduleDnd = outsideHours && schedule.dndOutside && !manualOverride;
   const customStatus =
     outsideHours && schedule.statusOutside
@@ -73,10 +74,13 @@ export default function WorkingHoursMobile() {
         setTeammateOutside(true);
         setPage('dm');
       } else {
-        // Show the custom status too, even if it was switched off in settings.
-        setSchedule((s) =>
-          s.statusOutside ? s : { ...s, statusOutside: true },
-        );
+        // This scene is the schedule in effect, even if it was never saved.
+        setSchedule((s) => ({
+          ...s,
+          configured: true,
+          enabled: true,
+          statusOutside: true,
+        }));
         setClockOutside(true);
         setPage('profile');
       }
@@ -121,57 +125,40 @@ export default function WorkingHoursMobile() {
         role="group"
         aria-label="Prototype controls"
       >
-        <span className={styles['controls__label']}>Simulated time</span>
-        <Button
-          size="small"
-          emphasis={effectiveOutside ? 'tertiary' : 'secondary'}
-          aria-pressed={!effectiveOutside}
-          disabled={!sim.inside}
-          onClick={() => setClockOutside(false)}
-        >
-          {sim.inside
-            ? `${formatMoment(sim.inside, clock24)} (in hours)`
-            : 'In hours (no working days)'}
-        </Button>
-        <Button
-          size="small"
-          emphasis={effectiveOutside ? 'secondary' : 'tertiary'}
-          aria-pressed={effectiveOutside}
-          onClick={() => setClockOutside(true)}
-        >
-          {formatMoment(sim.outside, clock24)} (off hours)
-        </Button>
-        <div className={styles['controls__switch-wrap']}>
-          <Switch
-            size="small"
-            checked={clock24}
-            onChange={(e) => setClock24(e.target.checked)}
-          >
-            24-hour clock
-          </Switch>
-        </div>
+        <TimeSwitch
+          label="Simulated time"
+          value={effectiveOutside ? 'outside' : 'inside'}
+          options={[
+            {
+              id: 'inside',
+              label: sim.inside
+                ? `${formatMoment(sim.inside, clock24)} (in hours)`
+                : 'In hours (no working days)',
+              disabled: !sim.inside,
+            },
+            {
+              id: 'outside',
+              label: `${formatMoment(sim.outside, clock24)} (off hours)`,
+            },
+          ]}
+          onChange={(id) => setClockOutside(id === 'outside')}
+        />
         {scene === 'dm' && (
-          <>
-            <span className={styles['controls__label']}>
-              {TEAMMATE.name}&apos;s local time
-            </span>
-            <Button
-              size="small"
-              emphasis={teammateOutside ? 'tertiary' : 'secondary'}
-              aria-pressed={!teammateOutside}
-              onClick={() => setTeammateOutside(false)}
-            >
-              {formatTime(TEAMMATE.localInside, clock24)} (working hours)
-            </Button>
-            <Button
-              size="small"
-              emphasis={teammateOutside ? 'secondary' : 'tertiary'}
-              aria-pressed={teammateOutside}
-              onClick={() => setTeammateOutside(true)}
-            >
-              {formatTime(TEAMMATE.localOutside, clock24)} (late)
-            </Button>
-          </>
+          <TimeSwitch
+            label={`${TEAMMATE.name}'s local time`}
+            value={teammateOutside ? 'late' : 'working'}
+            options={[
+              {
+                id: 'working',
+                label: `${formatTime(TEAMMATE.localInside, clock24)} (working hours)`,
+              },
+              {
+                id: 'late',
+                label: `${formatTime(TEAMMATE.localOutside, clock24)} (late)`,
+              },
+            ]}
+            onChange={(id) => setTeammateOutside(id === 'late')}
+          />
         )}
       </div>
     </div>

@@ -1,4 +1,10 @@
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ComponentProps,
+} from 'react';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
@@ -42,6 +48,27 @@ import styles from '../WorkingHoursMobile.module.scss';
 export type MobilePage =
   'profile' | 'settings' | 'notifications' | 'schedule' | 'dm';
 
+/** Settings drill-in order. A direct message sits beside the profile, not in this stack. */
+const SCREEN_STACK: MobilePage[] = [
+  'profile',
+  'settings',
+  'notifications',
+  'schedule',
+];
+
+/** Matches `--duration-moderate`. */
+const SCREEN_TRANSITION_MS = 300;
+
+function screenDirection(
+  from: MobilePage,
+  to: MobilePage,
+): 'forward' | 'back' {
+  if (from === 'dm' || to === 'dm') return to === 'dm' ? 'forward' : 'back';
+  return SCREEN_STACK.indexOf(to) > SCREEN_STACK.indexOf(from)
+    ? 'forward'
+    : 'back';
+}
+
 const bodyTextClass = mobileMessageStyles['mobile-message__body-text'];
 
 type Props = {
@@ -61,6 +88,47 @@ type Props = {
 
 const chevron = <Icon glyph={<ChevronRightIcon />} size="20" />;
 
+/** A settings toggle on the mobile menu-item row, with the switch in the trailing slot. */
+function ToggleRow({
+  label,
+  secondaryLabel,
+  checked,
+  onChange,
+  ...rest
+}: {
+  label: string;
+  secondaryLabel: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+} & Pick<
+  ComponentProps<typeof MobileMenuItem>,
+  'aria-expanded' | 'aria-controls' | 'divider'
+>) {
+  return (
+    <MobileMenuItem
+      {...rest}
+      className={styles['mobile-form__toggle']}
+      label={label}
+      secondaryLabel={secondaryLabel}
+      leadingElement={false}
+      trailingElement
+      trailingVisual={
+        <span className={styles['mobile-form__switch']} aria-hidden>
+          <Switch
+            size="large"
+            checked={checked}
+            tabIndex={-1}
+            onChange={() => undefined}
+          />
+        </span>
+      }
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+    />
+  );
+}
+
 /** In-frame mobile navigation: Profile → Settings → Notifications → Working hours, plus a DM. */
 export function MobileFlow({
   page,
@@ -75,7 +143,44 @@ export function MobileFlow({
   onPickStatus,
 }: Props) {
   // Keep Select menus inside the device frame.
+  const hoursId = useId();
   const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null);
+  const [displayed, setDisplayed] = useState(page);
+  const [outgoing, setOutgoing] = useState<MobilePage | null>(null);
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward');
+  const [entered, setEntered] = useState(true);
+  const displayedRef = useRef(displayed);
+  displayedRef.current = displayed;
+
+  // Keep the previous screen mounted so a push can slide it aside.
+  useEffect(() => {
+    if (page === displayedRef.current) return;
+    setDirection(screenDirection(displayedRef.current, page));
+    setOutgoing(displayedRef.current);
+    setDisplayed(page);
+    setEntered(false);
+  }, [page]);
+
+  useEffect(() => {
+    if (entered || !outgoing) return;
+    let innerId = 0;
+    const outerId = requestAnimationFrame(() => {
+      innerId = requestAnimationFrame(() => setEntered(true));
+    });
+    return () => {
+      cancelAnimationFrame(outerId);
+      cancelAnimationFrame(innerId);
+    };
+  }, [displayed, outgoing, entered]);
+
+  useEffect(() => {
+    if (!outgoing) return;
+    const timeoutId = window.setTimeout(
+      () => setOutgoing(null),
+      SCREEN_TRANSITION_MS,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, [outgoing, displayed]);
   const dnd = status === 'do-not-disturb';
 
   // Mobile has no Save step, so a custom schedule with every day off stays here as
@@ -83,15 +188,22 @@ export function MobileFlow({
   const [draft, setDraft] = useState(schedule);
   useEffect(() => setDraft(schedule), [schedule, page]);
   const changeSchedule = (next: ScheduleState) => {
-    setDraft(next);
-    if (Object.keys(activeWindows(next)).length > 0 && !statusInvalid(next)) {
-      onScheduleChange(next);
+    // An unset schedule stays unset until Enable is turned on. Edits before
+    // that stay in the draft. Off keeps a saved setup and pauses every effect.
+    if (!next.enabled && !schedule.configured) {
+      setDraft({ ...next, configured: false, enabled: false });
+      return;
     }
+    const saved = { ...next, configured: true };
+    setDraft(saved);
+    const valid =
+      Object.keys(activeWindows(saved)).length > 0 && !statusInvalid(saved);
+    if (!saved.enabled || valid) onScheduleChange(saved);
   };
 
-  let body;
-  if (page === 'profile') {
-    body = (
+  const renderPage = (current: MobilePage) => {
+    if (current === 'profile') {
+    return (
       <>
         <MobileProfile
           avatarSrc={avatarLeonard}
@@ -129,9 +241,13 @@ export function MobileFlow({
               {customStatus && (
                 <MobileMenuItem
                   label={customStatus.text}
-                  customStatusEmoji={customStatus.emoji}
                   leadingVisual={
-                    <Icon size="20" glyph={<ClockOutlineIcon />} />
+                    <span
+                      className={styles['mobile-menu__status-emoji']}
+                      aria-hidden
+                    >
+                      {customStatus.emoji}
+                    </span>
                   }
                 />
               )}
@@ -160,8 +276,8 @@ export function MobileFlow({
         />
       </>
     );
-  } else if (page === 'settings') {
-    body = (
+    } else if (current === 'settings') {
+    return (
       <MobileModal
         title="Settings"
         variant="child"
@@ -182,8 +298,8 @@ export function MobileFlow({
         />
       </MobileModal>
     );
-  } else if (page === 'notifications') {
-    body = (
+    } else if (current === 'notifications') {
+    return (
       <MobileModal
         title="Notifications"
         variant="child"
@@ -205,9 +321,9 @@ export function MobileFlow({
         />
       </MobileModal>
     );
-  } else if (page === 'dm') {
+    } else if (current === 'dm') {
     const late = !isWithinRange(teammateLocalTime, TEAMMATE.hours);
-    body = (
+    return (
       <div className={styles['mobile-dm']}>
         <MobileNavigationBar
           variant="dm"
@@ -253,75 +369,140 @@ export function MobileFlow({
       </div>
     );
   } else {
-    body = (
+    return (
       <MobileModal
         title="Working hours"
         variant="child"
         onBackClick={() => onPageChange('notifications')}
       >
-        <MobileScheduleForm
-          schedule={draft}
-          clock24={clock24}
-          onChange={changeSchedule}
-          portalContainer={frameEl}
+        <ToggleRow
+          label="Enable working hours"
+          secondaryLabel="Applies this schedule. Off keeps the setup and pauses every effect."
+          checked={draft.enabled}
+          divider
+          aria-expanded={draft.enabled}
+          aria-controls={hoursId}
+          onChange={(enabled) => changeSchedule({ ...draft, enabled })}
         />
-        {Object.keys(activeWindows(draft)).length === 0 && (
-          <p className={styles['mobile-form__error']} role="alert">
-            Select at least one day.
-          </p>
-        )}
-        <div className={styles['mobile-form__options']}>
-          <Switch
-            checked={draft.dndOutside}
-            onChange={(e) =>
-              changeSchedule({ ...draft, dndOutside: e.target.checked })
-            }
-            secondaryLabel="Silence notifications and set your status to Do Not Disturb."
-          >
-            Do Not Disturb outside working hours
-          </Switch>
-          <Switch
-            checked={draft.statusOutside}
-            onChange={(e) =>
-              changeSchedule({
-                ...draft,
-                statusOutside: e.target.checked,
-              })
-            }
-            secondaryLabel="Sets a custom status while you are outside your working hours."
-          >
-            Set a custom status outside working hours
-          </Switch>
-          <CustomStatusFields
-            open={draft.statusOutside}
-            emoji={draft.statusEmoji}
-            text={draft.statusText}
-            onChange={({ emoji, text }) =>
-              changeSchedule({
-                ...draft,
-                statusEmoji: emoji,
-                statusText: text,
-              })
-            }
-          />
+        <div
+          id={hoursId}
+          className={[
+            styles['mobile-form__details'],
+            draft.enabled && styles['mobile-form__details--expanded'],
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          inert={!draft.enabled}
+          aria-hidden={!draft.enabled}
+        >
+          <div className={styles['mobile-form__details-inner']}>
+            <MobileScheduleForm
+              schedule={draft}
+              clock24={clock24}
+              onChange={changeSchedule}
+              portalContainer={frameEl}
+            />
+            {Object.keys(activeWindows(draft)).length === 0 && (
+              <p className={styles['mobile-form__error']} role="alert">
+                Select at least one day.
+              </p>
+            )}
+            <div className={styles['mobile-form__options']}>
+              <ToggleRow
+                label="Do Not Disturb outside working hours"
+                secondaryLabel="Silence notifications and set your status to Do Not Disturb."
+                checked={draft.dndOutside}
+                divider
+                onChange={(dndOutside) =>
+                  changeSchedule({ ...draft, dndOutside })
+                }
+              />
+              <ToggleRow
+                label="Set a custom status outside working hours"
+                secondaryLabel="Sets a custom status while you are outside your working hours."
+                checked={draft.statusOutside}
+                onChange={(statusOutside) =>
+                  changeSchedule({ ...draft, statusOutside })
+                }
+              />
+              <div className={styles['mobile-form__status']}>
+                <CustomStatusFields
+                  size="large"
+                  open={draft.statusOutside}
+                  emoji={draft.statusEmoji}
+                  text={draft.statusText}
+                  onChange={({ emoji, text }) =>
+                    changeSchedule({
+                      ...draft,
+                      statusEmoji: emoji,
+                      statusText: text,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </MobileModal>
     );
   }
+  };
+
+  const layerClass = (role: 'incoming' | 'outgoing') => {
+    const classes = [styles['mobile-flow__layer']];
+    if (!outgoing) return classes.join(' ');
+
+    const above =
+      (role === 'incoming' && direction === 'forward') ||
+      (role === 'outgoing' && direction === 'back');
+    if (above) classes.push(styles['mobile-flow__layer--above']);
+
+    if (role === 'outgoing') {
+      if (entered) {
+        classes.push(
+          direction === 'forward'
+            ? styles['mobile-flow__layer--to-left']
+            : styles['mobile-flow__layer--to-right'],
+        );
+      }
+      return classes.join(' ');
+    }
+
+    if (!entered) {
+      classes.push(
+        direction === 'forward'
+          ? styles['mobile-flow__layer--from-right']
+          : styles['mobile-flow__layer--from-left'],
+      );
+    } else {
+      classes.push(styles['mobile-flow__layer--entered']);
+    }
+    return classes.join(' ');
+  };
+
+  const screen = (id: MobilePage) =>
+    id === 'profile' || id === 'dm' ? (
+      renderPage(id)
+    ) : (
+      // MobileModal doesn't own the status-bar spacer; inset it below the Dynamic Island.
+      <div
+        className={styles['mobile-flow__inset']}
+        style={{ paddingTop: DEVICE_SAFE_TOP }}
+      >
+        {renderPage(id)}
+      </div>
+    );
 
   return (
     <div className={styles['mobile-flow']} ref={setFrameEl}>
-      {page === 'profile' || page === 'dm' ? (
-        body
-      ) : (
-        // MobileModal doesn't own the status-bar spacer; inset it below the Dynamic Island.
-        <div
-          className={styles['mobile-flow__inset']}
-          style={{ paddingTop: DEVICE_SAFE_TOP }}
-        >
-          {body}
-        </div>
-      )}
+      <div className={styles['mobile-flow__stack']}>
+        {outgoing && (
+          <div className={layerClass('outgoing')} aria-hidden>
+            {screen(outgoing)}
+          </div>
+        )}
+        <div className={layerClass('incoming')}>{screen(displayed)}</div>
+      </div>
     </div>
   );
 }

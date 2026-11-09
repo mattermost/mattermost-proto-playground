@@ -21,7 +21,6 @@
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-s);
-    padding-top: var(--spacing-xs);
   }
 
   &__emoji {
@@ -32,6 +31,12 @@
     // the button in from the left padding to match: 6px to the border all round.
     margin: calc(-1 * var(--spacing-xxxs)) 0 calc(-1 * var(--spacing-xxxs))
       calc(-1 * var(--spacing-s));
+  }
+
+  // Large field is 48px with 12px padding; the 28px button needs 2px less on each side.
+  &--large &__emoji {
+    margin-top: calc(-1 * var(--spacing-xxxxs));
+    margin-bottom: calc(-1 * var(--spacing-xxxxs));
   }
 
   &__text {

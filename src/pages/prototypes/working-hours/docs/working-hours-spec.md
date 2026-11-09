@@ -40,8 +40,9 @@ Requested after the original spec; recorded here until the spec is updated.
 
 - The feature is renamed from Notification Schedule to **Working Hours**.
 - Working hours also drive the webapp's DM notice: when the person you are in a DM with is outside their working hours, show "The time for {name} is {time}" above the message input (screenshot in `shots/`).
-- New config options, each independent:
+- New config options, each independent while the schedule is on:
   - Do Not Disturb outside working hours (the original behavior; on by default).
-  - Auto-set a custom status outside working hours (on by default). The person picks the emoji (compass-proto `EmojiPopover`) and the text; default `🌙 Outside work hours`. The message is required while this option is on.
-- There is no "enable working hours" switch: the hours are always set (default Weekdays, 8:00 AM – 8:00 PM). The two options above decide what happens outside them.
+  - Auto-set a custom status outside working hours (on by default). The person picks the emoji (compass-proto `EmojiPopover`) and the text; default `⏰ Outside work hours`. The message is required while this option is on.
+- A schedule does not exist until the user saves one. Until then the collapsed row reads "Not set", and nothing about working hours applies. The editor opens with the default (Weekdays, 8:00 AM – 8:00 PM, both options on) as a starting point; Cancel leaves it unset.
+- **Enable working hours** is the master switch. Off keeps the saved days, times, and status text, hides that setup in the editor, and pauses every effect: Do Not Disturb, the custom status, and the direct message notice. The collapsed row then reads "Off".
 - Custom Schedule uses a checkbox per day, with a time range beside each.

@@ -1,4 +1,5 @@
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
+import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import DockLeftIcon from '@mattermost/compass-icons/components/dock-left';
 import EyeOutlineIcon from '@mattermost/compass-icons/components/eye-outline';
 import PhoneInTalkIcon from '@mattermost/compass-icons/components/phone-in-talk';
@@ -11,6 +12,7 @@ import styles from './SettingsSidebar.module.scss';
 
 const CORE_TABS = [
   { id: 'notifications', label: 'Notifications', glyph: <BellOutlineIcon /> },
+  { id: 'availability', label: 'Availability', glyph: <ClockOutlineIcon /> },
   { id: 'display', label: 'Display', glyph: <EyeOutlineIcon /> },
   { id: 'sidebar', label: 'Sidebar', glyph: <DockLeftIcon /> },
   { id: 'advanced', label: 'Advanced', glyph: <TuneIcon /> },
@@ -20,9 +22,9 @@ const PLUGIN_TABS = [
   { id: 'calls', label: 'Calls', glyph: <PhoneInTalkIcon /> },
 ];
 
-/** Only the Notifications tab is built; every other tab is inert chrome. */
+/** Only the Availability tab is built; every other tab is inert chrome. */
 export default function SettingsSidebar({
-  activeId = 'notifications',
+  activeId = 'availability',
 }: {
   activeId?: string;
 }) {

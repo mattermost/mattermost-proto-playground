@@ -25,15 +25,6 @@
   flex-wrap: wrap;
   gap: var(--spacing-m);
   color: var(--center-channel-color);
-
-  &__label {
-    font-size: var(--font-size-100);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &__switch-wrap {
-    width: 180px;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -122,15 +113,7 @@
 .schedule-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-l);
-
-  &__label {
-    margin: 0;
-    font-size: var(--font-size-100);
-    line-height: var(--line-height-100);
-    font-weight: var(--font-weight-semibold);
-    color: var(--center-channel-color);
-  }
+  gap: var(--spacing-xxl);
 
   &__days {
     list-style: none;
@@ -161,7 +144,7 @@
   &__fields {
     display: flex;
     align-items: center;
-    gap: var(--spacing-m);
+    gap: var(--spacing-xxl);
 
     > * {
       flex: 1 1 0;

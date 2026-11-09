@@ -31,11 +31,6 @@
   gap: var(--spacing-m);
   color: var(--center-channel-color);
 
-  &__label {
-    font-size: var(--font-size-100);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
   // Beside the device frame on mobile scenes, where the frame fills the height.
   &--floating {
     position: absolute;
@@ -43,11 +38,6 @@
     left: var(--spacing-xxl);
     flex-direction: column;
     align-items: flex-start;
-    max-width: 220px;
-  }
-
-  &__switch-wrap {
-    width: 180px;
   }
 }
 
@@ -90,9 +80,72 @@
   min-height: 0;
   background: var(--center-channel-bg);
 
-  > :first-child {
+  &__stack {
+    position: relative;
     flex: 1 1 auto;
     min-height: 0;
+    overflow: hidden;
+  }
+
+  // Push: the next screen slides in from the right while the current one
+  // shifts left. Back reverses the same motion.
+  &__layer {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--center-channel-bg);
+
+    > * {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    &--above {
+      z-index: 1;
+    }
+
+    &--from-right {
+      transform: translateX(100%);
+    }
+
+    &--from-left {
+      transform: translateX(-30%);
+    }
+
+    &--to-left,
+    &--to-right,
+    &--entered {
+      transition: transform var(--duration-moderate) var(--ease-transition);
+    }
+
+    &--to-left {
+      transform: translateX(-30%);
+    }
+
+    &--to-right {
+      transform: translateX(100%);
+    }
+
+    &--entered {
+      transform: translateX(0);
+    }
+
+    &--from-right,
+    &--from-left,
+    &--to-left,
+    &--to-right {
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &--to-left,
+      &--to-right,
+      &--entered {
+        transition: none;
+      }
+    }
   }
 
   &__inset {
@@ -115,12 +168,59 @@
     margin: var(--spacing-xs) 0;
     background: rgba(var(--center-channel-color-rgb), 0.08);
   }
+
+  &__status-emoji {
+    font-size: var(--icon-size-20);
+    line-height: 1;
+  }
 }
 
 .mobile-form {
   display: flex;
   flex-direction: column;
   padding-bottom: var(--spacing-xxl);
+
+  // Setting names are full sentences, so this row wraps instead of truncating.
+  &__toggle {
+    :global([class*='mobile-menu-item__label']) {
+      white-space: normal;
+    }
+  }
+
+  &__switch {
+    display: flex;
+    pointer-events: none;
+  }
+
+  &__details {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  &__details-inner {
+    min-height: 0;
+    overflow: hidden;
+    transition: overflow 0s linear 0s;
+  }
+
+  &__details--expanded &__details-inner {
+    overflow: visible;
+    transition-delay: var(--duration-moderate);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__details,
+    &__details-inner,
+    &__details--expanded &__details-inner {
+      transition: none;
+    }
+  }
 
   &__heading {
     margin: 0;
@@ -154,9 +254,11 @@
   &__options {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-l);
-    padding: var(--spacing-l);
     border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__status {
+    padding: var(--spacing-xs) var(--spacing-xl) var(--spacing-l);
   }
 }
 

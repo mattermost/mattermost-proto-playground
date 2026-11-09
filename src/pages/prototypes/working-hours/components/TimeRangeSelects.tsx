@@ -2,7 +2,6 @@ import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Select } from '@mattermost/compass-ui/components/select';
 import {
-  formatTime,
   rangeError,
   timeOptions,
   type TimeRange,
@@ -44,7 +43,7 @@ export function TimeRangeSelects({
       <div className={styles['time-range__fields']}>
         <Select
           id={`${idPrefix}-start`}
-          aria-label={`Start time, ${formatTime(range.start, clock24, true)}`}
+          label="Start time"
           leadingIcon={icon}
           options={options}
           value={String(range.start)}
@@ -55,7 +54,7 @@ export function TimeRangeSelects({
         <span className={styles['time-range__to']}>to</span>
         <Select
           id={`${idPrefix}-end`}
-          aria-label={`End time, ${formatTime(range.end, clock24, true)}`}
+          label="End time"
           leadingIcon={icon}
           options={options}
           value={String(range.end)}
