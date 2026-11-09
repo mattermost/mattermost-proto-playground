@@ -187,7 +187,7 @@ For a secondary panel (thread, etc.) that slides in over the primary, see the [R
 ### Prototype-only UI
 
 **Before writing any custom element, ask: does a Compass component cover this structure?**
-If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components.
+If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components. This is looser than `compass-build`, and it wins for prototype scene UI. When the override fills a gap that belongs in Compass, open a follow-up issue in the compass-design repo.
 
 The threshold for "close enough to use Compass" is low. A `Chip` that needs a blue tint, a `Button` that needs `align-self: flex-start`, a `Checkbox` with an extra margin — all still use the Compass component with a className override. Only reach for custom HTML when Compass has nothing structurally close.
 
