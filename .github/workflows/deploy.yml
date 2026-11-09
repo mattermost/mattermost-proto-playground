@@ -18,11 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Sibling layout so file:../compass-design resolves from the playground root.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: mattermost-proto-playground
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: mattermost/compass-design
           path: compass-design
