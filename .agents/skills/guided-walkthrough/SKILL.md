@@ -75,9 +75,7 @@ export const exampleWalkthrough: WalkthroughDocument = {
       bullets: ['…', { text: '…', sub: ['…'] }],
       scene: 'existing-scene-id',
       // Optional — freeform bag; keys are per-prototype
-      sceneState: {
-        /* … */
-      },
+      sceneState: {/* … */},
       focus: {
         id: 'anchor-id', // matches data-wt-focus
         emphasis: 'lightbox', // 'ring' | 'lightbox' (lightbox includes ring); omit → ring

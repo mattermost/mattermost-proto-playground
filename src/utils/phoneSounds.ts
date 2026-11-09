@@ -2,18 +2,7 @@
 // DTMF, ringback, and hangup tones — no bundled assets.
 
 type DtmfKey =
-  | '0'
-  | '1'
-  | '2'
-  | '3'
-  | '4'
-  | '5'
-  | '6'
-  | '7'
-  | '8'
-  | '9'
-  | '*'
-  | '#';
+  '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '*' | '#';
 
 const DTMF_FREQS: Record<DtmfKey, [number, number]> = {
   '1': [697, 1209],
