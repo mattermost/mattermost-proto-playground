@@ -11,9 +11,8 @@ type PrototypeChromeContextValue = {
   setCenterSlot: Dispatch<SetStateAction<ReactNode>>;
 };
 
-const PrototypeChromeContext = createContext<PrototypeChromeContextValue | null>(
-  null,
-);
+const PrototypeChromeContext =
+  createContext<PrototypeChromeContextValue | null>(null);
 
 export function PrototypeChromeProvider({
   children,
@@ -34,7 +33,9 @@ export function PrototypeChromeProvider({
 export function usePrototypeChrome() {
   const ctx = useContext(PrototypeChromeContext);
   if (!ctx) {
-    throw new Error('usePrototypeChrome must be used within PrototypeChromeProvider');
+    throw new Error(
+      'usePrototypeChrome must be used within PrototypeChromeProvider',
+    );
   }
   return ctx;
 }

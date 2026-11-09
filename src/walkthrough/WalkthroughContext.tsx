@@ -30,7 +30,9 @@ export type WalkthroughContextValue = {
   unregister: (prototypeId: string) => void;
 };
 
-export const WalkthroughContext = createContext<WalkthroughContextValue | null>(null);
+export const WalkthroughContext = createContext<WalkthroughContextValue | null>(
+  null,
+);
 
 const QUERY_MODE = 'walkthrough';
 const QUERY_STEP = 'step';
@@ -118,7 +120,10 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
   }, [document, goToStep, stepIndex]);
 
   const register = useCallback(
-    (doc: WalkthroughDocument, options?: { onScene?: WalkthroughSceneHandler }) => {
+    (
+      doc: WalkthroughDocument,
+      options?: { onScene?: WalkthroughSceneHandler },
+    ) => {
       setDocument(doc);
       setOnScene(() => options?.onScene ?? null);
     },
@@ -176,6 +181,8 @@ export function WalkthroughProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <WalkthroughContext.Provider value={value}>{children}</WalkthroughContext.Provider>
+    <WalkthroughContext.Provider value={value}>
+      {children}
+    </WalkthroughContext.Provider>
   );
 }

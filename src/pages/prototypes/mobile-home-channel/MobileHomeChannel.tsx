@@ -1,8 +1,8 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import DeviceFrame from '@/components/layout/DeviceFrame';
 import MobileModalStage from '@/components/layout/MobileModalStage';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import {usePrototypeChrome} from '@/contexts/PrototypeChromeContext';
+import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import {
   DEFAULT_CHANNEL_NAME,
   SCENES,
@@ -11,14 +11,14 @@ import {
   type SceneId,
   type TabSceneId,
 } from './mobileHomeChannel.scenes';
-import {getChannelMeta, type ChannelMeta} from './mobileHomeChannelData';
+import { getChannelMeta, type ChannelMeta } from './mobileHomeChannelData';
 import ChannelScene from './scenes/ChannelScene';
 import HomeScene from './scenes/HomeScene';
 import ModalScene from './scenes/ModalScene';
 import styles from './MobileHomeChannel.module.scss';
 
 export default function MobileHomeChannel() {
-  const {setCenterSlot} = usePrototypeChrome();
+  const { setCenterSlot } = usePrototypeChrome();
   const [scene, setScene] = useState<SceneId>('home');
   const [lastTab, setLastTab] = useState<TabSceneId>('home');
   const [modalPeek, setModalPeek] = useState<ModalPeek>('channel');
@@ -76,7 +76,7 @@ export default function MobileHomeChannel() {
             goToTab(next);
           }
         }}
-        ariaLabel='Prototype entry points'
+        ariaLabel="Prototype entry points"
       />,
     );
     return () => setCenterSlot(null);
@@ -89,7 +89,7 @@ export default function MobileHomeChannel() {
 
   return (
     <div className={styles['mobile-home-channel']}>
-      <DeviceFrame insetContent={false} statusBarStyle='light'>
+      <DeviceFrame insetContent={false} statusBarStyle="light">
         <MobileModalStage
           open={modalOpen}
           modal={<ModalScene onClose={closeModal} />}
@@ -99,7 +99,8 @@ export default function MobileHomeChannel() {
               className={[
                 styles['mobile-home-channel__layer'],
                 styles['mobile-home-channel__home-layer'],
-                channelOpen && styles['mobile-home-channel__home-layer--behind'],
+                channelOpen &&
+                  styles['mobile-home-channel__home-layer--behind'],
               ]
                 .filter(Boolean)
                 .join(' ')}

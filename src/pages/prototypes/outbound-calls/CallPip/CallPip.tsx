@@ -16,10 +16,22 @@ import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import { useExitAnimation } from '@/hooks/useExitAnimation';
-import { AUDIO_DEVICES, AUDIO_ICON } from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
-import { KeypadGrid, KeypadInput } from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
-import { CONFERENCE_BRIDGE, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
-import { formatDuration, sanitizeDigits } from '@/pages/prototypes/outbound-calls/outboundCallUtils';
+import {
+  AUDIO_DEVICES,
+  AUDIO_ICON,
+} from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
+import {
+  KeypadGrid,
+  KeypadInput,
+} from '@/pages/prototypes/outbound-calls/OutboundCallKeypad';
+import {
+  CONFERENCE_BRIDGE,
+  CONTACT_MAP,
+} from '@/pages/prototypes/outbound-calls/outboundCallData';
+import {
+  formatDuration,
+  sanitizeDigits,
+} from '@/pages/prototypes/outbound-calls/outboundCallUtils';
 import { playDtmf } from '@/utils/phoneSounds';
 import type {
   ActiveCall,
@@ -100,9 +112,9 @@ export function CallPip({
   const deviceRef = useRef<HTMLDivElement>(null);
 
   const [addDtmf, setAddDtmf] = useState('');
-  const [composeTabLocal, setComposeTabLocal] = useState<'dialpad' | 'recent' | 'conference'>(
-    'dialpad',
-  );
+  const [composeTabLocal, setComposeTabLocal] = useState<
+    'dialpad' | 'recent' | 'conference'
+  >('dialpad');
   const composeTab = composeTabProp ?? composeTabLocal;
   const setComposeTab = (tab: 'dialpad' | 'recent' | 'conference') => {
     if (composeTabProp === undefined) setComposeTabLocal(tab);
@@ -136,8 +148,10 @@ export function CallPip({
   const activeParticipants = call.bridgedParticipants.filter(
     (p) => p.status !== 'ended',
   );
-  const activePartyCount = (call.status !== 'ended' ? 1 : 0) + activeParticipants.length;
-  const showParticipantsBtn = call.bridgedParticipants.length > 0 && !isComposing;
+  const activePartyCount =
+    (call.status !== 'ended' ? 1 : 0) + activeParticipants.length;
+  const showParticipantsBtn =
+    call.bridgedParticipants.length > 0 && !isComposing;
 
   const partyMembers = (() => {
     if (isComposing) return [];
@@ -149,11 +163,11 @@ export function CallPip({
     };
     const others = activeParticipants.map((p) => {
       const pContact = CONTACT_MAP[p.contactId] ?? null;
-      const pPhone = pContact ? pContact.phones[p.phoneIndex] ?? null : null;
+      const pPhone = pContact ? (pContact.phones[p.phoneIndex] ?? null) : null;
       const pName =
         pContact && pContact.avatar
           ? pContact.name
-          : pPhone?.number ?? pContact?.name ?? 'Unknown';
+          : (pPhone?.number ?? pContact?.name ?? 'Unknown');
       return {
         key: p.id,
         name: pName,
@@ -182,19 +196,26 @@ export function CallPip({
 
   const subDuration = (() => {
     if (call.status === 'connected' && call.startedAt) {
-      return formatDuration(Math.max(0, Math.floor((nowTick - call.startedAt) / 1000)));
+      return formatDuration(
+        Math.max(0, Math.floor((nowTick - call.startedAt) / 1000)),
+      );
     }
     if (call.status === 'ended' && call.startedAt && call.endedAt) {
-      return formatDuration(Math.max(0, Math.floor((call.endedAt - call.startedAt) / 1000)));
+      return formatDuration(
+        Math.max(0, Math.floor((call.endedAt - call.startedAt) / 1000)),
+      );
     }
     return null;
   })();
 
-  const subContent = isComposing ? 'Enter a number' : subDuration ?? phone?.number ?? '';
+  const subContent = isComposing
+    ? 'Enter a number'
+    : (subDuration ?? phone?.number ?? '');
 
   const DeviceIcon = AUDIO_ICON[audioDevice.kind];
   const controlsDisabled = call.status === 'ended';
-  const isCallInitiated = call.status === 'dialing' || call.status === 'connected';
+  const isCallInitiated =
+    call.status === 'dialing' || call.status === 'connected';
   const showDtmf = (keypadOpen || isComposing) && call.status !== 'ended';
 
   const dtmfAnim = useExitAnimation(showDtmf, 150);
@@ -235,7 +256,9 @@ export function CallPip({
               <span>{subContent}</span>
               {!isComposing && phone?.sipTrunk && (
                 <>
-                  <span className={styles['pip__sub-sep']} aria-hidden>·</span>
+                  <span className={styles['pip__sub-sep']} aria-hidden>
+                    ·
+                  </span>
                   <span className={styles['pip__trunk']}>{phone.sipTrunk}</span>
                 </>
               )}
@@ -258,9 +281,15 @@ export function CallPip({
               <button
                 type="button"
                 className={`${styles['pip__participants-btn']}${
-                  participantListOpen ? ` ${styles['pip__participants-btn--active']}` : ''
+                  participantListOpen
+                    ? ` ${styles['pip__participants-btn--active']}`
+                    : ''
                 }`}
-                aria-label={participantListOpen ? 'Hide participants' : 'Show participants'}
+                aria-label={
+                  participantListOpen
+                    ? 'Hide participants'
+                    : 'Show participants'
+                }
                 aria-pressed={participantListOpen}
                 onClick={onToggleParticipantList}
               >
@@ -285,7 +314,10 @@ export function CallPip({
                   {devicePickerOpen && (
                     <ul className={styles['pip__device-menu']} role="menu">
                       <li className={styles['pip__device-menu-label']}>
-                        <Icon glyph={<DeviceIcon size={SVG_SIZE_MAP['12']} />} size="12" />
+                        <Icon
+                          glyph={<DeviceIcon size={SVG_SIZE_MAP['12']} />}
+                          size="12"
+                        />
                         <span>Audio output</span>
                       </li>
                       {AUDIO_DEVICES.map((d) => {
@@ -297,14 +329,19 @@ export function CallPip({
                               type="button"
                               role="menuitem"
                               className={`${styles['pip__device-item']} ${
-                                selected ? styles['pip__device-item--selected'] : ''
+                                selected
+                                  ? styles['pip__device-item--selected']
+                                  : ''
                               }`}
                               onClick={() => {
                                 onPickDevice(d.id);
                                 setDevicePickerOpen(false);
                               }}
                             >
-                              <Icon glyph={<DIcon size={SVG_SIZE_MAP['16']} />} size="16" />
+                              <Icon
+                                glyph={<DIcon size={SVG_SIZE_MAP['16']} />}
+                                size="16"
+                              />
                               <span>{d.label}</span>
                               {selected && (
                                 <span className={styles['pip__device-check']}>
@@ -322,7 +359,9 @@ export function CallPip({
 
               const micButton = (
                 <IconButton
-                  aria-label={call.muted ? 'Unmute microphone' : 'Mute microphone'}
+                  aria-label={
+                    call.muted ? 'Unmute microphone' : 'Mute microphone'
+                  }
                   size="small"
                   padding="compact"
                   toggled={call.muted}
@@ -330,7 +369,9 @@ export function CallPip({
                   disabled={controlsDisabled}
                   icon={
                     <Icon
-                      glyph={call.muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />}
+                      glyph={
+                        call.muted ? <MicrophoneOffIcon /> : <MicrophoneIcon />
+                      }
                       size="16"
                     />
                   }
@@ -358,13 +399,21 @@ export function CallPip({
                 <>
                   {canAddParticipant && (
                     <IconButton
-                      aria-label={addingParticipant ? 'Close add participant' : 'Add participant'}
+                      aria-label={
+                        addingParticipant
+                          ? 'Close add participant'
+                          : 'Add participant'
+                      }
                       size="small"
                       padding="compact"
                       active={addingParticipant}
-                      icon={<Icon glyph={<AccountPlusOutlineIcon />} size="16" />}
+                      icon={
+                        <Icon glyph={<AccountPlusOutlineIcon />} size="16" />
+                      }
                       onClick={
-                        addingParticipant ? onCloseAddParticipant : onOpenAddParticipant
+                        addingParticipant
+                          ? onCloseAddParticipant
+                          : onOpenAddParticipant
                       }
                     />
                   )}
@@ -398,11 +447,15 @@ export function CallPip({
       {participantsAnim.rendered && (
         <div
           className={`${styles['pip__participants']}${
-            participantsAnim.exiting ? ` ${styles['pip__participants--exiting']}` : ''
+            participantsAnim.exiting
+              ? ` ${styles['pip__participants--exiting']}`
+              : ''
           }`}
         >
           <div className={styles['pip__participants-header']}>
-            <span className={styles['pip__participants-title']}>Participants</span>
+            <span className={styles['pip__participants-title']}>
+              Participants
+            </span>
             <IconButton
               aria-label="Close participants"
               size="small"
@@ -415,17 +468,19 @@ export function CallPip({
             <CallPipParticipantRow
               avatarSrc={contact?.avatar}
               avatarAlt={contact?.name}
-              name={contact ? contact.name : phone?.number ?? 'Unknown'}
+              name={contact ? contact.name : (phone?.number ?? 'Unknown')}
               number={phone?.number}
               status={call.status === 'dialing' ? 'dialing' : 'connected'}
             />
             {call.bridgedParticipants.map((p) => {
               const pContact = CONTACT_MAP[p.contactId] ?? null;
-              const pPhone = pContact ? pContact.phones[p.phoneIndex] ?? null : null;
+              const pPhone = pContact
+                ? (pContact.phones[p.phoneIndex] ?? null)
+                : null;
               const pName =
                 pContact && pContact.avatar
                   ? pContact.name
-                  : pPhone?.number ?? pContact?.name ?? 'Unknown';
+                  : (pPhone?.number ?? pContact?.name ?? 'Unknown');
               return (
                 <CallPipParticipantRow
                   key={p.id}
@@ -503,7 +558,9 @@ export function CallPip({
                     const c = CONTACT_MAP[r.contactId];
                     if (!c) return null;
                     const p = c.phones[r.phoneIndex];
-                    const [timeDay, timeHour] = r.timestamp.split(',').map((s) => s.trim());
+                    const [timeDay, timeHour] = r.timestamp
+                      .split(',')
+                      .map((s) => s.trim());
                     return (
                       <li key={`${r.contactId}-${i}`}>
                         <MenuItem
@@ -511,10 +568,16 @@ export function CallPip({
                           secondaryLabel={p?.number ?? ''}
                           leadingVisual={
                             c.avatar ? (
-                              <UserAvatar src={c.avatar} alt={c.name} size="32" />
+                              <UserAvatar
+                                src={c.avatar}
+                                alt={c.name}
+                                size="32"
+                              />
                             ) : (
                               <div
-                                className={styles['pip__recent-avatar-fallback']}
+                                className={
+                                  styles['pip__recent-avatar-fallback']
+                                }
                                 aria-hidden
                               >
                                 <Icon glyph={<PhoneIcon />} size="16" />
@@ -528,7 +591,9 @@ export function CallPip({
                               {timeHour && <span>{timeHour}</span>}
                             </span>
                           }
-                          onClick={() => onBridgeContact(r.contactId, r.phoneIndex)}
+                          onClick={() =>
+                            onBridgeContact(r.contactId, r.phoneIndex)
+                          }
                         />
                       </li>
                     );
@@ -589,7 +654,9 @@ export function CallPip({
                   role="tab"
                   aria-selected={composeTab === 'dialpad'}
                   className={`${styles['pip__tab']}${
-                    composeTab === 'dialpad' ? ` ${styles['pip__tab--active']}` : ''
+                    composeTab === 'dialpad'
+                      ? ` ${styles['pip__tab--active']}`
+                      : ''
                   }`}
                   onClick={() => setComposeTab('dialpad')}
                 >
@@ -600,7 +667,9 @@ export function CallPip({
                   role="tab"
                   aria-selected={composeTab === 'recent'}
                   className={`${styles['pip__tab']}${
-                    composeTab === 'recent' ? ` ${styles['pip__tab--active']}` : ''
+                    composeTab === 'recent'
+                      ? ` ${styles['pip__tab--active']}`
+                      : ''
                   }`}
                   onClick={() => setComposeTab('recent')}
                   data-wt-focus="dialpad-recent"
@@ -612,7 +681,9 @@ export function CallPip({
                   role="tab"
                   aria-selected={composeTab === 'conference'}
                   className={`${styles['pip__tab']}${
-                    composeTab === 'conference' ? ` ${styles['pip__tab--active']}` : ''
+                    composeTab === 'conference'
+                      ? ` ${styles['pip__tab--active']}`
+                      : ''
                   }`}
                   onClick={() => setComposeTab('conference')}
                 >
@@ -641,18 +712,26 @@ export function CallPip({
           )}
           {isComposing && composeTab === 'conference' ? (
             <div className={styles['pip__conference']}>
-              <h3 className={styles['pip__conference-title']}>Conference bridge</h3>
+              <h3 className={styles['pip__conference-title']}>
+                Conference bridge
+              </h3>
               <p className={styles['pip__conference-description']}>
-                  The conference bridge is configured by admins for to you can call and join a conference. Use the number and PIN below to join.
+                The conference bridge is configured by admins for to you can
+                call and join a conference. Use the number and PIN below to
+                join.
               </p>
               <dl className={styles['pip__conference-details']}>
                 <div className={styles['pip__conference-row']}>
                   <dt className={styles['pip__conference-label']}>Dial-in:</dt>
-                  <dd className={styles['pip__conference-value']}>{CONFERENCE_BRIDGE.number}</dd>
+                  <dd className={styles['pip__conference-value']}>
+                    {CONFERENCE_BRIDGE.number}
+                  </dd>
                 </div>
                 <div className={styles['pip__conference-row']}>
                   <dt className={styles['pip__conference-label']}>PIN:</dt>
-                  <dd className={styles['pip__conference-value']}>{CONFERENCE_BRIDGE.pin}</dd>
+                  <dd className={styles['pip__conference-value']}>
+                    {CONFERENCE_BRIDGE.pin}
+                  </dd>
                 </div>
               </dl>
               <button
@@ -676,7 +755,9 @@ export function CallPip({
                     const c = CONTACT_MAP[r.contactId];
                     if (!c) return null;
                     const p = c.phones[r.phoneIndex];
-                    const [timeDay, timeHour] = r.timestamp.split(',').map((s) => s.trim());
+                    const [timeDay, timeHour] = r.timestamp
+                      .split(',')
+                      .map((s) => s.trim());
                     return (
                       <li key={`${r.contactId}-${i}`}>
                         <MenuItem
@@ -684,10 +765,16 @@ export function CallPip({
                           secondaryLabel={p?.number ?? ''}
                           leadingVisual={
                             c.avatar ? (
-                              <UserAvatar src={c.avatar} alt={c.name} size="32" />
+                              <UserAvatar
+                                src={c.avatar}
+                                alt={c.name}
+                                size="32"
+                              />
                             ) : (
                               <div
-                                className={styles['pip__recent-avatar-fallback']}
+                                className={
+                                  styles['pip__recent-avatar-fallback']
+                                }
                                 aria-hidden
                               >
                                 <Icon glyph={<PhoneIcon />} size="16" />
@@ -722,7 +809,9 @@ export function CallPip({
                 onEnter={isComposing ? onStartComposingCall : undefined}
                 trailing={
                   isComposing ? (
-                    <span style={{ visibility: call.dtmf ? 'visible' : 'hidden' }}>
+                    <span
+                      style={{ visibility: call.dtmf ? 'visible' : 'hidden' }}
+                    >
                       <IconButton
                         aria-label="Clear number"
                         size="x-small"

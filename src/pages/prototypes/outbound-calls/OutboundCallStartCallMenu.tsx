@@ -10,7 +10,10 @@ import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import { CONFERENCE_BRIDGE } from '@/pages/prototypes/outbound-calls/outboundCallData';
-import { phoneGlyphFor, phoneLabelText } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
+import {
+  phoneGlyphFor,
+  phoneLabelText,
+} from '@/pages/prototypes/outbound-calls/OutboundCallPhoneGlyphs';
 import type { StartCallAction } from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 
@@ -24,7 +27,11 @@ function StartCallMenu({
   audioLabel?: string;
 }) {
   return (
-    <ul className={styles['start-call-menu']} role="menu" aria-label="Start call options">
+    <ul
+      className={styles['start-call-menu']}
+      role="menu"
+      aria-label="Start call options"
+    >
       {actions.map((action, i) => {
         let label: string;
         let secondaryLabel: string | undefined;
@@ -50,7 +57,8 @@ function StartCallMenu({
           icon = <Icon glyph={<DialpadIcon />} size="16" />;
         }
         const next = actions[i + 1];
-        const showDividerAfter = action.type === 'audio' && next && next.type !== 'audio';
+        const showDividerAfter =
+          action.type === 'audio' && next && next.type !== 'audio';
         const focusId =
           action.type === 'phone' && action.kind === 'standard'
             ? 'call-label'
@@ -130,7 +138,13 @@ export function StartCallButton({
       >
         Start call
       </Button>
-      {open && <StartCallMenu actions={actions} onSelect={pick} audioLabel={audioLabel} />}
+      {open && (
+        <StartCallMenu
+          actions={actions}
+          onSelect={pick}
+          audioLabel={audioLabel}
+        />
+      )}
     </div>
   );
 }
@@ -167,7 +181,13 @@ export function PopoverCallButton({
         <Icon glyph={<PhoneIcon />} size="16" />
         <Icon glyph={<ChevronDownIcon />} size="12" />
       </button>
-      {open && <StartCallMenu actions={actions} onSelect={pick} audioLabel={audioLabel} />}
+      {open && (
+        <StartCallMenu
+          actions={actions}
+          onSelect={pick}
+          audioLabel={audioLabel}
+        />
+      )}
     </div>
   );
 }

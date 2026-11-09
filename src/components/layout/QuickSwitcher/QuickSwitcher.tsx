@@ -35,7 +35,9 @@ export interface QuickSwitcherProps {
 
 function useIsMac() {
   return useMemo(
-    () => typeof navigator !== 'undefined' && /Mac|iPhone|iPod|iPad/i.test(navigator.platform),
+    () =>
+      typeof navigator !== 'undefined' &&
+      /Mac|iPhone|iPod|iPad/i.test(navigator.platform),
     [],
   );
 }
@@ -64,18 +66,26 @@ function BreadcrumbSecondary({ crumbs }: { crumbs: string[] }): ReactNode {
       {crumbs.map((crumb, index) => (
         <Fragment key={`${crumb}-${index}`}>
           {index > 0 && (
-            <span className={styles['quick-switcher__breadcrumb-sep']} aria-hidden>
+            <span
+              className={styles['quick-switcher__breadcrumb-sep']}
+              aria-hidden
+            >
               <Icon size="12" glyph={<ChevronRightIcon />} />
             </span>
           )}
-          <span className={styles['quick-switcher__breadcrumb-crumb']}>{crumb}</span>
+          <span className={styles['quick-switcher__breadcrumb-crumb']}>
+            {crumb}
+          </span>
         </Fragment>
       ))}
     </span>
   );
 }
 
-export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps) {
+export default function QuickSwitcher({
+  open,
+  onOpenChange,
+}: QuickSwitcherProps) {
   const navigate = useNavigate();
   const isMac = useIsMac();
   const { rendered, exiting } = useExitAnimation(open, EXIT_MS);
@@ -112,7 +122,9 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
   }, [rendered, animateIn, exiting]);
 
   useEffect(() => {
-    setActiveIndex((i) => (filtered.length === 0 ? 0 : Math.min(i, filtered.length - 1)));
+    setActiveIndex((i) =>
+      filtered.length === 0 ? 0 : Math.min(i, filtered.length - 1),
+    );
   }, [filtered.length, query]);
 
   useEffect(() => {
@@ -155,7 +167,9 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
   function onListKeyDown(e: ReactKeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex((i) => (filtered.length === 0 ? 0 : (i + 1) % filtered.length));
+      setActiveIndex((i) =>
+        filtered.length === 0 ? 0 : (i + 1) % filtered.length,
+      );
       return;
     }
     if (e.key === 'ArrowUp') {
@@ -246,7 +260,9 @@ export default function QuickSwitcher({ open, onOpenChange }: QuickSwitcherProps
 
           <div className={styles['quick-switcher__body']}>
             {filtered.length === 0 ? (
-              <p className={styles['quick-switcher__empty']}>No matching pages</p>
+              <p className={styles['quick-switcher__empty']}>
+                No matching pages
+              </p>
             ) : (
               <Scrollbar className={styles['quick-switcher__scroll']}>
                 <ul

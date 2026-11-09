@@ -4,10 +4,10 @@ Shared instructions for Cursor, Claude Code, and other agents. `CLAUDE.md` impor
 
 ## Repositories
 
-| Repo | Role |
-| ---- | ---- |
+| Repo                                                                        | Role                                                                         |
+| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | [`mattermost/compass-design`](https://github.com/mattermost/compass-design) | `@mattermost/compass-ui`, `@mattermost/compass-proto`, guidelines, Storybook |
-| **`mattermost/mattermost-proto-playground` (this repo)** | Multi-scene prototype flows + playground chrome only |
+| **`mattermost/mattermost-proto-playground` (this repo)**                    | Multi-scene prototype flows + playground chrome only                         |
 
 ## Design system layers
 

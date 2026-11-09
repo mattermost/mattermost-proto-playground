@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
-import { CallPopout, CallWidget, Message, MessageInput } from '@mattermost/compass-proto';
+import {
+  CallPopout,
+  CallWidget,
+  Message,
+  MessageInput,
+} from '@mattermost/compass-proto';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
