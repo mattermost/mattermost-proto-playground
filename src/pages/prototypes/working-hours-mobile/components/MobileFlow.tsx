@@ -97,7 +97,7 @@ function ToggleRow({
   ...rest
 }: {
   label: string;
-  secondaryLabel: string;
+  secondaryLabel?: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
 } & Pick<
@@ -410,7 +410,6 @@ export function MobileFlow({
             <div className={styles['mobile-form__options']}>
               <ToggleRow
                 label="Do Not Disturb outside working hours"
-                secondaryLabel="Silence notifications and set your status to Do Not Disturb."
                 checked={draft.dndOutside}
                 divider
                 onChange={(dndOutside) =>
@@ -419,7 +418,6 @@ export function MobileFlow({
               />
               <ToggleRow
                 label="Set a custom status outside working hours"
-                secondaryLabel="Sets a custom status while you are outside your working hours."
                 checked={draft.statusOutside}
                 onChange={(statusOutside) =>
                   changeSchedule({ ...draft, statusOutside })

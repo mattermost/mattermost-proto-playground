@@ -224,7 +224,6 @@ export default function NotificationsSettings({
                                     dndOutside: e.target.checked,
                                   })
                                 }
-                                secondaryLabel="Silence notifications and set your status to Do Not Disturb."
                               >
                                 Do Not Disturb outside working hours
                               </Switch>
@@ -237,7 +236,6 @@ export default function NotificationsSettings({
                                     statusOutside: e.target.checked,
                                   })
                                 }
-                                secondaryLabel="Sets a custom status while you are outside your working hours."
                               >
                                 Set a custom status outside working hours
                               </Switch>
