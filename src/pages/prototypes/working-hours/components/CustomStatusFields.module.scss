@@ -1,0 +1,70 @@
+// Collapses with the Switch above it (grid 0fr <-> 1fr) rather than snapping.
+.custom-status {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+
+  &--open {
+    grid-template-rows: 1fr;
+  }
+
+  &__inner {
+    min-height: 0;
+    // Clip while collapsed, but not once open so the focus ring and field
+    // message are not cut off.
+    overflow: hidden;
+    padding: var(--spacing-xxxs);
+    margin: calc(-1 * var(--spacing-xxxs));
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+  }
+
+  &__emoji {
+    flex: 0 0 auto;
+    display: inline-flex;
+    // The field is 40px tall and pads 10px 16px, but the 28px button needs 28px of
+    // height. Cancel the extra 8px vertically so the field does not grow, and pull
+    // the button in from the left padding to match: 6px to the border all round.
+    margin: calc(-1 * var(--spacing-xxxs)) 0 calc(-1 * var(--spacing-xxxs))
+      calc(-1 * var(--spacing-s));
+  }
+
+  // Large field is 48px with 12px padding; the 28px button needs 2px less on each side.
+  &--large &__emoji {
+    margin-top: calc(-1 * var(--spacing-xxxxs));
+    margin-bottom: calc(-1 * var(--spacing-xxxxs));
+  }
+
+  &__text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // Above the settings modal scrim; hosts own stacking.
+  &__popover {
+    z-index: calc(var(--z-modal) + 100);
+    transform-origin: top left;
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity var(--duration-quick) var(--ease-entrance),
+      transform var(--duration-quick) var(--ease-entrance);
+
+    &--visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &__popover {
+      transition: none;
+    }
+  }
+}

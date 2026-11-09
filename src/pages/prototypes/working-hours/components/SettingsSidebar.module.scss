@@ -1,0 +1,70 @@
+// Figma "Settings Sidebar Menu": 232px column, 8px gap (padding is --spacing-l); items are
+// --spacing-xxxs --spacing-xs, 4px radius, semibold 14px. Inactive text and icons use 72% (the
+// repo text floor; Figma draws 56%). The active row is a tinted button-bg fill.
+.settings-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  width: 232px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-height: 0;
+  padding: var(--spacing-l);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  border-right: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  // The nav's own gap spaces the divider; drop the divider's built-in padding.
+  :global([class*='popover-menu__divider']) {
+    padding: 0;
+  }
+
+  // The heading's text lines up with the items' icons (same inset as the item padding).
+  // Not the inner label, which also matches [class*='menu-group-heading'].
+  :global([class*='menu-group-heading']:not([class*='menu-group-heading__'])) {
+    padding: var(--spacing-xxs) var(--spacing-xs);
+  }
+
+  // The sidebar is transparent; MenuItem defaults to a menu-surface fill.
+  :global([class*='menu-group-heading']),
+  :global([class*='menu-item']:not([class*='menu-item--active'])) {
+    background: transparent;
+  }
+
+  &__item {
+    padding: var(--spacing-xxxs) var(--spacing-xs);
+    border-radius: var(--radius-s);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    :global([class*='menu-item__label']) {
+      font-size: var(--font-size-100);
+      font-weight: var(--font-weight-semibold);
+      color: inherit;
+    }
+
+    :global([class*='menu-item__leading-visual']) {
+      color: inherit;
+    }
+
+    &:hover:not(#{&}--active) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &--active,
+    &--active:hover {
+      background: rgba(var(--button-bg-rgb), 0.08);
+      color: var(--button-bg);
+
+      // MenuItem's active state sets its own icon color (with :not(:disabled)
+      // specificity); match it so the icon follows the label.
+      &:not(:disabled) :global([class*='menu-item__leading-visual']) {
+        color: var(--button-bg);
+      }
+    }
+  }
+}

@@ -1,0 +1,202 @@
+@use '@/styles/tokens.scss' as *;
+@use '@/styles/mixins.scss' as *;
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+.page {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: safe center;
+  gap: var(--spacing-m);
+  padding: var(--spacing-xxl);
+  box-sizing: border-box;
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+}
+
+.controls {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-m);
+  color: var(--center-channel-color);
+}
+
+// ---------------------------------------------------------------------------
+// Desktop shell (mirrors the composed layout used by other prototypes)
+// ---------------------------------------------------------------------------
+.shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 1440px;
+  max-height: 800px;
+  overflow: hidden;
+  background: var(--sidebar-bg);
+  color: var(--center-channel-color);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: var(--elevation-6);
+
+  &__global-header {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  &__menu-anchor {
+    position: absolute;
+    top: 100%;
+    right: var(--spacing-s);
+    z-index: 20;
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: stretch;
+    padding: 0 4px 4px;
+    background: var(--sidebar-header-bg);
+  }
+
+  &__outer-panel {
+    flex: 1 1 auto;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    background: var(--sidebar-bg);
+  }
+
+  &__channels-sidebar {
+    flex: 0 0 auto;
+    display: flex;
+    min-height: 0;
+
+    > * {
+      height: 100%;
+    }
+  }
+
+  &__center {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+    border-radius: var(--radius-l);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Account menu host (UserAccountMenu is chrome only)
+// ---------------------------------------------------------------------------
+.account-menu {
+  position: relative;
+
+  // The shell is 264px and its right edge matches the account button. The
+  // popover otherwise sizes to its content and sits on the left of that shell.
+  :global([class*='popover-menu--parent']) {
+    width: 100%;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Schedule form (desktop)
+// ---------------------------------------------------------------------------
+.schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxl);
+
+  &__days {
+    list-style: none;
+    margin: 0;
+    padding: var(--spacing-s) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__day {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxl);
+  }
+
+  // Fixed-width label column so every row's time range lines up.
+  &__day-check {
+    flex: 0 0 120px;
+  }
+}
+
+.time-range {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+
+  &__fields {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxl);
+
+    > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+
+  &__to {
+    flex: 0 0 auto;
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  // Per-day rows in a custom schedule use fixed-width fields.
+  &--compact &__fields > :not(.time-range__to) {
+    flex: 0 0 146px;
+  }
+
+  &__error {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: var(--error-text);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Late-hours notice above the message input in a DM
+// ---------------------------------------------------------------------------
+.late-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xxxxs);
+  // Sits inside the composer wrapper, which already supplies the side padding.
+  padding: var(--spacing-s) 0;
+  font-size: var(--font-size-75);
+  line-height: var(--line-height-75);
+  color: rgba(var(--center-channel-color-rgb), 0.75);
+
+  &__icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  strong {
+    font-weight: var(--font-weight-semibold);
+  }
+}
