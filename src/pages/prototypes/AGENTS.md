@@ -2,7 +2,7 @@
 
 Follow this when working under `src/pages/prototypes/`.
 
-For scaffolding a new multi-scene prototype end-to-end, use [.agents/skills/scaffold-prototype/SKILL.md](../../../.agents/skills/scaffold-prototype/SKILL.md). Scene UI follows [compass-build](../../../.agents/skills/compass-build/SKILL.md) (prototype context). Audit it with [compass-review](../../../.agents/skills/compass-review/SKILL.md) before calling the work done.
+For scaffolding a new multi-scene prototype end-to-end, use [.agents/skills/scaffold-prototype/SKILL.md](../../../.agents/skills/scaffold-prototype/SKILL.md). Scene UI follows [compass-build](https://github.com/mattermost/compass-design/blob/main/skills/compass-build/SKILL.md) (local path `.agents/skills/compass-build/SKILL.md`, prototype context). Audit it with [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-review/SKILL.md) (local path `.agents/skills/compass-review/SKILL.md`) before calling the work done.
 
 For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.agents/skills/guided-walkthrough/SKILL.md](../../../.agents/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
 

@@ -9,9 +9,8 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 
 1. Work on a `prototype/<slug>` branch (for example `prototype/universal-search`) before adding files. Do this even when the current checkout looks unrelated — that branch may hold other work.
    - If the working tree has uncommitted changes, stop and ask before switching branches.
-   - When splitting an existing prototype into `scenes/`, check that `src/pages/prototypes/<slug>/` exists on `main`. If it does not, stop and ask how to carry its commits onto the new branch.
-   - If a branch named `prototype/<slug>` already exists, reuse it only after checking that it is based on up-to-date `main` and that its contents are the prototype you intend to change. Otherwise stop and ask how to resolve the name conflict. Do not reset or recreate the branch.
-   - Otherwise create `prototype/<slug>` from up-to-date `main`.
+   - If a branch named `prototype/<slug>` already exists, reuse it when it contains `src/pages/prototypes/<slug>/` and that is the prototype you intend to change. Otherwise, stop and ask how to resolve the name conflict. Do not reset or recreate the branch.
+   - When `prototype/<slug>` does not exist yet, update `main` first, then create the branch from that `main`. When splitting an existing prototype into `scenes/`, confirm `src/pages/prototypes/<slug>/` exists on that `main` and compare it with the prototype on the branch you are leaving. If `main` lacks the directory, or the current branch has prototype commits `main` does not, stop and ask how to carry that work forward. Do not branch from `main` and split the older copy.
 2. Add the shell at `src/pages/prototypes/<slug>/` and register it in `src/manifests/prototypes.ts` (that entry is the route). Include:
    - `<Slug>.tsx` — thin orchestrator (scene state, chrome)
    - `<slug>Data.ts` / `<slug>Scenes.ts` — optional fixtures and scene config
@@ -21,13 +20,14 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
    - `docs/README.md` — index of sources (template below)
 
    Do not mount `SceneSwitcher` until scenes exist. Leave the center slot empty.
-3. Record the requirement source in `docs/README.md` before writing a scene. The user's prompt is enough. A PRFAQ, UX spec, Figma file, or Confluence page also counts when one is provided. Jira and an engineering brief are **background**.
+
+3. Record the requirement source in `docs/README.md` before writing a scene. The user's prompt is enough. A PRFAQ, UX spec, Figma file, or Confluence page also counts when one is provided. When splitting an existing prototype, read its `docs/` first and use a requirement source already listed there. Ask for a source only when the prompt and those docs do not provide one. Jira and an engineering brief are **background**.
    - Save the prompt as `docs/<slug>-prompt.md` and list it as a **requirement**. Save a UX spec as `docs/<slug>-spec.md` and screenshots under `docs/shots/`. Link rather than paste confidential content. No absolute local paths. Conventions: [Prototype docs](../../../src/pages/prototypes/AGENTS.md#prototype-docs).
-   - Derive the scene list from that source. A prompt that only names the prototype does not describe scenes, so leave `scenes/` empty. Do not add a scene, copy, or layout the source does not call for.
-4. Build each scene by following [`compass-build`](../compass-build/SKILL.md) with context **prototype** (`references/context.md`). Read the references that match the screen, then run `references/checklist.md`. Playground chrome, overlays, and mobile motion stay in [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md). Do not restate Compass rules here.
+   - Derive the scene list from that source. A prompt that only names the prototype does not describe scenes. If `docs/` also has no usable requirement source, leave `scenes/` empty. Do not add a scene, copy, or layout the source does not call for.
+4. Build each scene by following [compass-build](https://github.com/mattermost/compass-design/blob/main/skills/compass-build/SKILL.md) (local path `.agents/skills/compass-build/SKILL.md`) with context **prototype** (`references/context.md`). Read the references that match the screen, then run `references/checklist.md`. Playground chrome, overlays, and mobile motion stay in [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md). Do not restate Compass rules here.
    Import Compass pieces from `@mattermost/compass-ui` **subpaths** and `@mattermost/compass-proto` (root). Do not reimplement them under prototype `components/`.
 5. When at least one scene exists, use `usePrototypeChrome()` and a `useEffect` to `setCenterSlot(<SceneSwitcher …/>)`; cleanup with `setCenterSlot(null)`; sync when `activeScene` changes. Give `SceneSwitcher` a clear `ariaLabel`. Do not `position: fixed` the control to the viewport.
-6. Before reporting the prototype ready, follow [`compass-review`](../compass-review/SKILL.md) on the new or changed prototype files. Fix Blockers with `compass-build`'s retrofit steps, then review again. Report anything the review could not verify.
+6. Before reporting the prototype ready, follow [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-review/SKILL.md) (local path `.agents/skills/compass-review/SKILL.md`) on the new or changed prototype files. Fix Blockers with `compass-build`'s retrofit steps, then review again. Report anything the review could not verify.
 
 `compass-build` and `compass-review` live in the sibling compass-design repo and are linked from `.agents/skills/`. If a link does not resolve, read `../compass-design/skills/compass-build/SKILL.md` and `../compass-design/skills/compass-review/SKILL.md`.
 
