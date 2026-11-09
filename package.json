@@ -26,7 +26,7 @@
     "@mattermost/compass-ui": "^0.1.0-alpha.27",
     "react": "^19.0.0",
     "react-dom": "^19.3.1",
-    "react-router-dom": "^6.28.0",
+    "react-router-dom": "^7.18.5",
     "simplebar-react": "^3.3.2"
   },
   "devDependencies": {
