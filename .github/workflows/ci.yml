@@ -21,11 +21,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: mattermost-proto-playground
+          persist-credentials: false
 
       - uses: actions/checkout@v4
         with:
           repository: mattermost/compass-design
           path: compass-design
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
