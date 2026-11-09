@@ -279,6 +279,7 @@ docs/                 # Input references: requirements, PRFAQ/PRD, UX spec, shot
 
 Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It holds the inputs the prototype is built from, so agents in later sessions can read them instead of asking again.
 
+- The user prompt, saved as `<slug>-prompt.md`, is a requirement source.
 - Requirements, PRFAQ / PRD links or excerpts, and other input references.
 - UX spec source markdown as `<slug>-spec.md`.
 - Screenshots under `docs/shots/`, referenced with **relative** image paths.
@@ -287,5 +288,5 @@ Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It 
 Rules:
 
 - **Read `docs/` first** when starting work on a prototype.
-- When the user provides a new input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
+- When the user provides a prompt or another input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
 - No absolute local paths. Link rather than paste anything confidential.

@@ -1,6 +1,6 @@
 ---
 name: scaffold-prototype
-description: Scaffold a multi-scene Compass prototype under src/pages/prototypes with PrototypeTopNav chrome and SceneSwitcher. Use when creating a new multi-scene prototype or splitting a large prototype into scenes/. Requires a requirement source before scene UI, then builds that UI with compass-build and checks it with compass-review.
+description: Scaffold a multi-scene Compass prototype under src/pages/prototypes with PrototypeTopNav chrome and SceneSwitcher. Use when creating a new multi-scene prototype or splitting a large prototype into scenes/. A user prompt is enough of a requirement source to build scene UI with compass-build; check it with compass-review.
 ---
 
 # Scaffold a multi-scene prototype
@@ -21,10 +21,9 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
    - `docs/README.md` — index of sources (template below)
 
    Do not mount `SceneSwitcher` until scenes exist. Leave the center slot empty.
-3. Record sources in `docs/README.md` before writing a scene. A prototype needs at least one **requirement** source: a PRFAQ, a UX spec, Figma, or a Confluence page. Jira and an engineering brief are **background** and do not unlock scene work.
-   - If the request has no requirement source, stop after the shell. Ask for one. Do not invent scenes, copy, or layout.
-   - When a source is present, save the UX spec as `docs/<slug>-spec.md` and screenshots under `docs/shots/`. Link rather than paste confidential content. No absolute local paths. Conventions: [Prototype docs](../../../src/pages/prototypes/AGENTS.md#prototype-docs).
-   - Derive the scene list from that source. Do not add a scene the source does not call for.
+3. Record the requirement source in `docs/README.md` before writing a scene. The user's prompt is enough. A PRFAQ, UX spec, Figma file, or Confluence page also counts when one is provided. Jira and an engineering brief are **background**.
+   - Save the prompt as `docs/<slug>-prompt.md` and list it as a **requirement**. Save a UX spec as `docs/<slug>-spec.md` and screenshots under `docs/shots/`. Link rather than paste confidential content. No absolute local paths. Conventions: [Prototype docs](../../../src/pages/prototypes/AGENTS.md#prototype-docs).
+   - Derive the scene list from that source. A prompt that only names the prototype does not describe scenes, so leave `scenes/` empty. Do not add a scene, copy, or layout the source does not call for.
 4. Build each scene by following [`compass-build`](../compass-build/SKILL.md) with context **prototype** (`references/context.md`). Read the references that match the screen, then run `references/checklist.md`. Playground chrome, overlays, and mobile motion stay in [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md). Do not restate Compass rules here.
    Import Compass pieces from `@mattermost/compass-ui` **subpaths** and `@mattermost/compass-proto` (root). Do not reimplement them under prototype `components/`.
 5. When at least one scene exists, use `usePrototypeChrome()` and a `useEffect` to `setCenterSlot(<SceneSwitcher …/>)`; cleanup with `setCenterSlot(null)`; sync when `activeScene` changes. Give `SceneSwitcher` a clear `ariaLabel`. Do not `position: fixed` the control to the viewport.
@@ -39,6 +38,7 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 
 | Item              | Link                             | Type        |
 | ----------------- | -------------------------------- | ----------- |
+| Prompt            | `<slug>-prompt.md`               | requirement |
 | PRFAQ             | <url>                            | requirement |
 | UX spec           | <url> (source: `<slug>-spec.md`) | requirement |
 | Figma             | <url>                            | requirement |
