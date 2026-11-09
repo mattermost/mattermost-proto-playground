@@ -8,6 +8,18 @@ updates:
     ignore:
       # Unpublished; linked via file:../compass-design (see package.json).
       - dependency-name: '@mattermost/compass-proto'
+      # Held to match the Mattermost webapp: eslint-plugin-jsx-a11y does not
+      # support ESLint 10 yet.
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
+      # typescript-eslint and the Mattermost webapp do not support TypeScript 6+.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      # Keep @types/node on the same major as the Node runtime (engines: ^24).
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       compass:
         patterns:
