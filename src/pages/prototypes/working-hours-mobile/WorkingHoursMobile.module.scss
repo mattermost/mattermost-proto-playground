@@ -235,12 +235,6 @@
 
   &__fields {
     padding: var(--spacing-xs) var(--spacing-l) var(--spacing-m);
-
-    > * > [class*='time-range__fields'],
-    :global([class*='time-range__fields']) {
-      flex-direction: column;
-      align-items: stretch;
-    }
   }
 
   &__error {
@@ -259,6 +253,11 @@
 
   &__status {
     padding: var(--spacing-xs) var(--spacing-xl) var(--spacing-l);
+  }
+
+  // Clears the home indicator, which floats over the scrolling modal.
+  &__safe {
+    flex: 0 0 var(--device-safe-bottom, 34px);
   }
 }
 

@@ -1,5 +1,6 @@
 import CheckIcon from '@mattermost/compass-icons/components/check';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Switch } from '@mattermost/compass-ui/components/switch';
 import { MobileMenuItem } from '@mattermost/compass-proto';
 import {
   DAYS,
@@ -77,9 +78,18 @@ export function MobileScheduleForm({
                     cfg.enabled ? undefined : 'Do Not Disturb all day'
                   }
                   leadingElement={false}
-                  trailingElement={cfg.enabled}
-                  trailingVisual={cfg.enabled ? checkGlyph : undefined}
-                  role="checkbox"
+                  trailingElement
+                  trailingVisual={
+                    <span className={styles['mobile-form__switch']} aria-hidden>
+                      <Switch
+                        size="large"
+                        checked={cfg.enabled}
+                        tabIndex={-1}
+                        onChange={() => undefined}
+                      />
+                    </span>
+                  }
+                  role="switch"
                   aria-checked={cfg.enabled}
                   onClick={() =>
                     onChange({

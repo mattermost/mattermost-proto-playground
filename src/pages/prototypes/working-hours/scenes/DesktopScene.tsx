@@ -8,7 +8,6 @@ import {
   Message,
   MessageInput,
   TeamSidebar,
-  WithTooltip,
 } from '@mattermost/compass-proto';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
@@ -80,13 +79,8 @@ export function DesktopScene(p: Props) {
       row.name === TEAMMATE.name
         ? {
             ...row,
-            customStatusEmoji: (
-              <WithTooltip
-                label={`${OUTSIDE_HOURS_STATUS.emoji} ${OUTSIDE_HOURS_STATUS.text}`}
-              >
-                <span>{OUTSIDE_HOURS_STATUS.emoji}</span>
-              </WithTooltip>
-            ),
+            customStatusEmoji: OUTSIDE_HOURS_STATUS.emoji,
+            customStatusText: OUTSIDE_HOURS_STATUS.text,
           }
         : row;
     return {
@@ -119,7 +113,6 @@ export function DesktopScene(p: Props) {
             onClose={p.onCloseMenu}
             status={p.status}
             schedule={p.schedule}
-            clock24={p.clock24}
             dndUntil={p.dndUntil}
             customStatus={p.customStatus}
             onClearCustomStatus={p.onClearCustomStatus}

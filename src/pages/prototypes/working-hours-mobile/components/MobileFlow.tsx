@@ -443,6 +443,7 @@ export function MobileFlow({
             </div>
           </div>
         </div>
+        <div className={styles['mobile-form__safe']} />
       </MobileModal>
     );
   }
