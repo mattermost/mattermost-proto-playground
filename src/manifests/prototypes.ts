@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
+import UniversalSearch from '@/pages/prototypes/universal-search/UniversalSearch';
 
 export type PrototypeEntry = {
   id: string;
@@ -28,6 +29,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'universal-search',
+    label: 'Universal Search',
+    path: '/prototypes/universal-search',
+    component: UniversalSearch,
   },
 ];
 
