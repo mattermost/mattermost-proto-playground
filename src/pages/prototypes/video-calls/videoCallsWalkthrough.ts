@@ -147,7 +147,9 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
         emphasis: 'lightbox',
         note: {
           title: 'Accept or decline',
-          points: ['The card follows you. It is not tied to the open conversation.'],
+          points: [
+            'The card follows you. It is not tied to the open conversation.',
+          ],
         },
       },
     },
@@ -259,7 +261,9 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
         emphasis: 'ring',
         note: {
           title: 'Same button, no ring',
-          points: ['Start video call or Start audio call, then you are in the call.'],
+          points: [
+            'Start video call or Start audio call, then you are in the call.',
+          ],
         },
       },
     },
@@ -372,7 +376,11 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Phone',
       title: 'On the phone',
       lead: 'A connected phone call keeps the widget and drops what a phone line cannot do.',
-      lookFor: ['Phone badge and number', 'Microphone and hang up', 'No camera, share or expand'],
+      lookFor: [
+        'Phone badge and number',
+        'Microphone and hang up',
+        'No camera, share or expand',
+      ],
       bullets: [
         'You can still switch microphones during the call.',
         'Hang up ends the call at once, the same as a one-to-one video call.',
