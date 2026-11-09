@@ -9,6 +9,8 @@ import {
 
 type PrototypeChromeContextValue = {
   setCenterSlot: Dispatch<SetStateAction<ReactNode>>;
+  /** Controls next to the title, on the left of the prototype header. */
+  setStartSlot: Dispatch<SetStateAction<ReactNode>>;
 };
 
 const PrototypeChromeContext =
@@ -17,11 +19,16 @@ const PrototypeChromeContext =
 export function PrototypeChromeProvider({
   children,
   setCenterSlot,
+  setStartSlot,
 }: {
   children: React.ReactNode;
   setCenterSlot: Dispatch<SetStateAction<ReactNode>>;
+  setStartSlot: Dispatch<SetStateAction<ReactNode>>;
 }) {
-  const value = useMemo(() => ({ setCenterSlot }), [setCenterSlot]);
+  const value = useMemo(
+    () => ({ setCenterSlot, setStartSlot }),
+    [setCenterSlot, setStartSlot],
+  );
 
   return (
     <PrototypeChromeContext.Provider value={value}>

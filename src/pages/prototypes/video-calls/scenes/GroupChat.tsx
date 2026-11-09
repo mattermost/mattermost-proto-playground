@@ -1,0 +1,115 @@
+import { useEffect, useState, type ReactNode } from 'react';
+import { useExitAnimation } from '@/hooks/useExitAnimation';
+import {
+  ChannelHeader,
+  MessageInput,
+  layoutStyles,
+} from '@mattermost/compass-proto';
+import { CallBanner, type CallBannerProps } from '../components/CallBanner';
+import { useCallTimer } from '../hooks/useCallTimer';
+import VideoCallChannelShell from '../VideoCallChannelShell';
+import ChatThread from './ChatThread';
+import { GROUP_POSTS } from './chatSamplesData';
+import styles from './GroupChat.module.scss';
+import StartCallMenu from './StartCallMenu';
+import { useVideoCall } from '../videoCallContext';
+import {
+  CHANNEL_NAME,
+  ROSTER,
+  SELF_ID,
+  groupChatName,
+} from '../videoCallsData';
+
+/** Matches `--duration-quick` (the banner's slide-off). */
+const BANNER_EXIT_MS = 150;
+
+/** The ongoing-call banner with its elapsed time ticking. Re-renders alone each second. */
+function OngoingCallBanner({
+  startedAt,
+  ...props
+}: Omit<CallBannerProps, 'meta'> & { startedAt: number }) {
+  const { label } = useCallTimer(startedAt);
+  return <CallBanner {...props} meta={label} />;
+}
+
+export interface GroupChatProps {
+  kind: 'gm' | 'channel';
+  /** The call widget, floating bottom-left over the sidebar. */
+  floating?: ReactNode;
+}
+
+/**
+ * Group DM or channel. While nobody (including you) is in the call, an ongoing
+ * call banner invites you to join; the participant-count control sets how many
+ * people are in it.
+ */
+export default function GroupChat({ kind, floating }: GroupChatProps) {
+  const { state, actions } = useVideoCall();
+  const others = ROSTER.slice(1, state.count);
+  // A call is running in this conversation and you are not in it.
+  const ongoing = state.phase === 'ongoing';
+  const noCall = state.phase === 'idle';
+  // The banner can be closed; it comes back with the next conversation.
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  // A later call (after an idle phase) shows its banner again.
+  useEffect(() => {
+    if (noCall) setBannerDismissed(false);
+  }, [noCall]);
+  // Stays mounted through its slide-off after a dismiss or when you join.
+  const banner = useExitAnimation(ongoing && !bannerDismissed, BANNER_EXIT_MS);
+  const chatName = kind === 'gm' ? groupChatName(state.count) : CHANNEL_NAME;
+
+  return (
+    <VideoCallChannelShell
+      floating={floating}
+      header={
+        <>
+          <ChannelHeader
+            type={kind}
+            name={chatName}
+            description={
+              kind === 'channel'
+                ? 'Design critiques, specs and shared work.'
+                : ''
+            }
+            memberCount={kind === 'gm' ? state.count : 24}
+            pinnedCount={kind === 'channel' ? 2 : undefined}
+            // One button for every state (start / join / in call); passing a node
+            // also replaces the header's own default call button.
+            callButton={<StartCallMenu />}
+          />
+          {banner.rendered && (
+            <div
+              className={[
+                styles['group-chat__banner-anchor'],
+                banner.exiting && styles['group-chat__banner-anchor--exiting'],
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <OngoingCallBanner
+                startedAt={state.ongoingStartedAt}
+                message={`${others.length} ${
+                  others.length === 1 ? 'person' : 'people'
+                } in a call`}
+                joinLabel="Join"
+                onJoin={() => actions.startCall()}
+                onDismiss={() => setBannerDismissed(true)}
+              />
+            </div>
+          )}
+        </>
+      }
+    >
+      {/* The messages stay fixed when the participant count changes; only the
+          call card and banner follow it. */}
+      <ChatThread
+        posts={GROUP_POSTS}
+        callPostAtEnd={state.callerId === SELF_ID}
+      />
+      <div className={layoutStyles['channel-shell__message-input']}>
+        <MessageInput placeholder={`Message ${chatName}`} />
+      </div>
+    </VideoCallChannelShell>
+  );
+}

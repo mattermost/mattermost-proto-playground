@@ -136,9 +136,16 @@ export default function WalkthroughNarrative({
             {sectionLabel(walkthrough, step)}
           </p>
           <h2 className={styles['wt-narrative__title']}>{step.title}</h2>
-          {step.lead != null && (
-            <p className={styles['wt-narrative__lead']}>{step.lead}</p>
-          )}
+          {step.lead != null &&
+            step.lead
+              .split(/\n\n+/)
+              .map((para) => para.trim())
+              .filter(Boolean)
+              .map((para) => (
+                <p key={para} className={styles['wt-narrative__lead']}>
+                  {para}
+                </p>
+              ))}
           {lookFor.length > 0 && (
             <div className={styles['wt-narrative__look-for']}>
               <p className={styles['wt-narrative__look-for-label']}>

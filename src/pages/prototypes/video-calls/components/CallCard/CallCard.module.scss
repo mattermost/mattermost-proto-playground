@@ -1,0 +1,144 @@
+// Sizing frame: the Figma card is at most 700px wide and stacks (Narrow
+// variant) when its frame gets narrower than ~480px. Container queries only
+// affect descendants, so the container is this wrapper, not the card itself.
+.call-card-frame {
+  width: 100%;
+  max-width: 700px; // one-off layout width, matches the Figma card
+  container-type: inline-size;
+}
+
+.call-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-l);
+  box-sizing: border-box;
+  padding: var(--spacing-l);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+  // 1px ring drawn as a shadow spread (not a border) so the card stays 72px
+  // tall, with the elevation on top.
+  box-shadow:
+    0 0 0 1px rgba(var(--center-channel-color-rgb), 0.12),
+    var(--elevation-1);
+  color: var(--center-channel-color);
+  transition: box-shadow var(--duration-quick) var(--ease-transition);
+
+  // Hover lifts the card a step (Figma "State=Hover").
+  &:hover {
+    box-shadow:
+      0 0 0 1px rgba(var(--center-channel-color-rgb), 0.12),
+      var(--elevation-2);
+  }
+
+  &__left {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size-40, 40px);
+    height: var(--icon-size-40, 40px);
+    border-radius: var(--radius-pill);
+    background: var(--color-green-600);
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
+  &__text {
+    min-width: 0;
+  }
+
+  // Heading 200: Metropolis semibold 16 / 24.
+  &__title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    overflow: hidden;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__right {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--spacing-m);
+  }
+
+  // Join call: green-600 (white text needs more contrast than the theme's
+  // online green). The primary Button reads --button-bg (hover / active tints
+  // derive from it).
+  &__join {
+    --button-bg: var(--color-green-600);
+  }
+
+  // Ended: grey icon disc instead of the online green.
+  &--ended &__icon {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: var(--color-neutral-650);
+  }
+
+  // Calling: the icon disc pulses like the widget's ringing avatar.
+  &--calling &__icon {
+    animation: call-card-ring calc(var(--duration-moderate) * 5)
+      var(--ease-exit) infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  &__recording {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    white-space: nowrap;
+  }
+}
+
+@keyframes call-card-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-green-600-rgb), 0.32);
+  }
+  100% {
+    box-shadow: 0 0 0 var(--spacing-m) rgba(var(--color-green-600-rgb), 0);
+  }
+}
+
+// Narrow (Figma "Width=Narrow"): header on top, then a divider and the avatars
+// with the action underneath. Keyed on the card's own width, not the viewport.
+@container (max-width: 480px) {
+  .call-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-m);
+
+    &__right {
+      justify-content: space-between;
+      padding-top: var(--spacing-m);
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+}

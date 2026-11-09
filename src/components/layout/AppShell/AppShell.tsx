@@ -19,6 +19,7 @@ function PrototypeChrome() {
   const { document, active } = useWalkthrough();
   const [prototypeCenterSlot, setPrototypeCenterSlot] =
     useState<ReactNode>(null);
+  const [prototypeStartSlot, setPrototypeStartSlot] = useState<ReactNode>(null);
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
   const isEmbedded = window.self !== window.top;
 
@@ -36,6 +37,7 @@ function PrototypeChrome() {
       {!isEmbedded && prototypeEntry && (
         <PrototypeTopNav
           title={title}
+          startSlot={active ? null : prototypeStartSlot}
           centerSlot={active ? null : prototypeCenterSlot}
           endSlot={<WalkthroughModeControl />}
         />
@@ -50,7 +52,10 @@ function PrototypeChrome() {
         />
       )}
       <div className={styles['app-shell__content']}>
-        <PrototypeChromeProvider setCenterSlot={setPrototypeCenterSlot}>
+        <PrototypeChromeProvider
+          setCenterSlot={setPrototypeCenterSlot}
+          setStartSlot={setPrototypeStartSlot}
+        >
           <WalkthroughLayout>
             <Outlet />
           </WalkthroughLayout>

@@ -1,0 +1,254 @@
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import { Message } from '@mattermost/compass-proto';
+import { CallCard, type CallCardProps } from '../components/CallCard';
+import { formatCallDuration, useCallTimer } from '../hooks/useCallTimer';
+import { useVideoCall } from '../videoCallContext';
+import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
+
+const byId = (id: string) => ROSTER.find((p) => p.id === id) ?? ROSTER[0];
+
+const clock = (ms: number) =>
+  new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+interface CallPostModel {
+  /** Who the post is from. */
+  authorId: string;
+  timestamp: string;
+  card: CallCardProps;
+}
+
+/**
+ * The call post for the current conversation in whichever Figma Call Card
+ * state fits. In a DM it appears the moment a call starts (you're calling, or
+ * someone is calling you), becomes Active + Joined (Leave) once you're in, and
+ * ends as "Call ended" with the duration. In a group / channel the running
+ * call's post is always there: Active (Join call) until you're in it, then
+ * Joined. Returns null when there is no call to show.
+ */
+function useCallPost(): CallPostModel | null {
+  const { state, actions, participants } = useVideoCall();
+  const { callContext, phase } = state;
+  const inCall = phase === 'calling' || phase === 'active';
+  // How long the call already running in a group / channel has been going
+  // (the same start time as the banner's timer).
+  const { seconds: ongoingSeconds } = useCallTimer(
+    callContext !== 'dm' ? state.ongoingStartedAt : null,
+  );
+
+  // Follows the call itself (the participant count and anyone a host removed),
+  // while the messages around the card stay fixed.
+  const people = (joined: boolean) =>
+    participants
+      .filter((p) => joined || p.id !== SELF_ID)
+      .map((p) => ({ key: p.id, name: p.name, src: p.avatarSrc }));
+
+  if (callContext !== 'dm') {
+    const mine = state.callerId === SELF_ID;
+    const starter = byId(state.callerId);
+    const minutes = Math.floor(ongoingSeconds / 60);
+    const when =
+      mine && phase !== 'ongoing'
+        ? 'just now'
+        : `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+    const timestamp = mine ? clock(Date.now()) : '10:03 AM';
+
+    // A call is running and you are not in it (or are about to join it).
+    if (
+      phase === 'ongoing' ||
+      (phase === 'pre-join' && state.joinMode === 'join-group')
+    ) {
+      return {
+        authorId: starter.id,
+        timestamp,
+        card: {
+          state: 'active',
+          title: 'Call started',
+          meta: `${when} by ${starter.name}`,
+          participants: people(false),
+          onJoin: phase === 'ongoing' ? () => actions.startCall() : undefined,
+        },
+      };
+    }
+
+    if (phase === 'active') {
+      return {
+        authorId: starter.id,
+        timestamp,
+        card: {
+          state: 'joined',
+          title: 'Call started',
+          meta: `${when} by ${starter.name}`,
+          participants: people(true),
+          onLeave: actions.leave,
+        },
+      };
+    }
+
+    // You started a call and hung up: it ended. Otherwise there is no call yet.
+    if (phase === 'idle' && state.endedDurationSec > 0 && state.endedAt) {
+      return {
+        authorId: SELF_ID,
+        timestamp: clock(state.endedAt),
+        card: {
+          state: 'ended',
+          title: 'Call ended',
+          meta: `Ended at ${clock(state.endedAt)} · Lasted ${formatCallDuration(
+            state.endedDurationSec,
+          )}`,
+          recordingLabel:
+            state.recordingsMade > 0
+              ? `${state.recordingsMade} ${
+                  state.recordingsMade === 1 ? 'recording' : 'recordings'
+                }`
+              : undefined,
+        },
+      };
+    }
+
+    return null;
+  }
+
+  const caller = byId(state.callerId);
+  const now = clock(Date.now());
+
+  if (phase === 'calling') {
+    return {
+      authorId: caller.id,
+      timestamp: now,
+      card: {
+        state: 'calling',
+        title: `Calling ${byId(DM_PEER_ID).name}…`,
+        meta: 'Waiting for them to answer',
+        onCancel: actions.cancelCall,
+      },
+    };
+  }
+
+  if (inCall) {
+    return {
+      authorId: caller.id,
+      timestamp: now,
+      card: {
+        state: 'joined',
+        title: 'Call started',
+        meta: `just now by ${caller.name}`,
+        participants: people(true),
+        onLeave: actions.leave,
+      },
+    };
+  }
+
+  if (phase === 'incoming' || phase === 'joining') {
+    return {
+      authorId: caller.id,
+      timestamp: now,
+      card: {
+        state: 'active',
+        title:
+          phase === 'incoming'
+            ? `${caller.name} is calling you`
+            : `Joining ${caller.name}…`,
+        meta: phase === 'incoming' ? 'Video call · just now' : 'Connecting…',
+        participants: people(false),
+        onJoin: phase === 'incoming' ? () => actions.accept() : undefined,
+      },
+    };
+  }
+
+  if (phase === 'idle' && state.declinedCall) {
+    return {
+      authorId: DM_PEER_ID,
+      timestamp: now,
+      card: {
+        state: 'ended',
+        title: 'Call declined',
+        meta: `You declined a call from ${byId(DM_PEER_ID).name} · ${now}`,
+        trailing: (
+          <Button
+            emphasis="tertiary"
+            size="small"
+            leadingIcon={<Icon glyph={<PhoneIcon />} />}
+            onClick={() => actions.startCall()}
+          >
+            Call back
+          </Button>
+        ),
+      },
+    };
+  }
+
+  if (phase === 'idle' && state.canceledCall) {
+    return {
+      authorId: SELF_ID,
+      timestamp: now,
+      card: {
+        state: 'ended',
+        title: 'Call canceled',
+        meta: `You canceled the call to ${byId(DM_PEER_ID).name} · ${now}`,
+      },
+    };
+  }
+
+  if (phase === 'idle' && state.missedCall) {
+    return {
+      authorId: DM_PEER_ID,
+      timestamp: now,
+      card: {
+        state: 'ended',
+        title: 'Missed call',
+        meta: `${byId(DM_PEER_ID).name} · ${now}`,
+        trailing: (
+          <Button
+            emphasis="tertiary"
+            size="small"
+            leadingIcon={<Icon glyph={<PhoneIcon />} />}
+            onClick={() => actions.startCall()}
+          >
+            Call back
+          </Button>
+        ),
+      },
+    };
+  }
+
+  if (phase === 'idle' && state.endedDurationSec > 0 && state.endedAt) {
+    return {
+      authorId: caller.id,
+      timestamp: clock(state.endedAt),
+      card: {
+        state: 'ended',
+        title: 'Call ended',
+        meta: `Ended at ${clock(state.endedAt)} · Lasted ${formatCallDuration(
+          state.endedDurationSec,
+        )}`,
+        recordingLabel:
+          state.recordingsMade > 0
+            ? `${state.recordingsMade} ${
+                state.recordingsMade === 1 ? 'recording' : 'recordings'
+              }`
+            : undefined,
+      },
+    };
+  }
+
+  return null;
+}
+
+/** The call post (author row + Call Card) in the message list; null when no call. */
+export default function ChannelCallPost() {
+  const post = useCallPost();
+  if (!post) return null;
+  const author = byId(post.authorId);
+  return (
+    <Message
+      avatarSrc={author.avatarSrc}
+      avatarAlt={author.name}
+      username={author.name}
+      timestamp={post.timestamp}
+    >
+      <CallCard {...post.card} />
+    </Message>
+  );
+}

@@ -6,6 +6,8 @@ import styles from './PrototypeTopNav.module.scss';
 
 export interface PrototypeTopNavProps {
   title: string;
+  /** Controls next to the title, on the left. */
+  startSlot?: ReactNode;
   centerSlot?: ReactNode;
   /** Extra controls before Theme (e.g. walkthrough mode). */
   endSlot?: ReactNode;
@@ -13,6 +15,7 @@ export interface PrototypeTopNavProps {
 
 export default function PrototypeTopNav({
   title,
+  startSlot,
   centerSlot,
   endSlot,
 }: PrototypeTopNavProps) {
@@ -27,6 +30,7 @@ export default function PrototypeTopNav({
           <ArrowLeftIcon size={20} aria-hidden />
         </Link>
         <h1 className={styles['prototype-top-nav__title']}>{title}</h1>
+        {startSlot}
       </div>
 
       <div className={styles['prototype-top-nav__center']}>{centerSlot}</div>

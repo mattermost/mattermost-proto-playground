@@ -182,7 +182,7 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 
 ### RHS panels
 
-For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md). That doc also defines the standard enter/exit motion for right-hand panels.
 
 ### Prototype-only UI
 

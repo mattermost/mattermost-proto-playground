@@ -1,0 +1,10 @@
+.widget-media-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+
+  // Off reads as the danger tint (muted / camera off); on is the default icon.
+  &__toggle--off {
+    color: var(--error-text, var(--color-danger));
+  }
+}
