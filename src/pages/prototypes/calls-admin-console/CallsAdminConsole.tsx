@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
-import { AdminConsoleSidebar, GlobalHeader } from '@mattermost/compass-proto';
+import { AdminConsoleSidebar } from '@mattermost/compass-proto';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { CALLS_SIDEBAR_GROUPS } from '@/pages/prototypes/calls-admin-console/callsAdminConsoleData';
@@ -30,11 +30,6 @@ export default function CallsAdminConsole() {
   return (
     <div className={styles['calls-admin']}>
       <div className={styles['calls-admin__shell']}>
-        <GlobalHeader
-          product="channels"
-          userAvatarSrc={avatarLeonard}
-          userAvatarAlt="Leonard Riley"
-        />
         <div className={styles['calls-admin__body']}>
           <div className={styles['calls-admin__sidebar']}>
             <AdminConsoleSidebar
