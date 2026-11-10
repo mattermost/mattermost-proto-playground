@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import CallsAdminConsole from '@/pages/prototypes/calls-admin-console/CallsAdminConsole';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
@@ -11,6 +12,12 @@ export type PrototypeEntry = {
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
+  {
+    id: 'calls-admin-console',
+    label: 'Calls Admin Console',
+    path: '/prototypes/calls-admin-console',
+    component: CallsAdminConsole,
+  },
   {
     id: 'external-call-participants',
     label: 'External Call Participants',
