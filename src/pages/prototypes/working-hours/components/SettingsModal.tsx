@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { Modal, ModalOverlay } from '@mattermost/compass-ui/components/modal';
-import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
+import {
+  SettingsModal as SettingsModalShell,
+  SettingsSidebar,
+} from '@mattermost/compass-proto';
 import NotificationsSettings from './NotificationsSettings';
-import SettingsSidebar from './SettingsSidebar';
 import {
   activeWindows,
   rangeError,
   statusInvalid,
   type ScheduleState,
 } from '../workingHoursData';
-import styles from './SettingsModal.module.scss';
 
 type Props = {
   open: boolean;
@@ -55,49 +55,33 @@ export function SettingsModal({
   const noDays = Object.keys(activeWindows(draft)).length === 0;
 
   return (
-    <ModalOverlay
+    <SettingsModalShell
       open={open}
       onClose={onClose}
       container={container}
-      lockScroll={false}
-      style={{ position: 'absolute' }}
+      sidebar={<SettingsSidebar activeId="notifications" />}
     >
-      <Modal
-        open={open}
-        title="Settings"
-        size="large"
-        className={styles['settings-modal']}
-        bodyPadding="none"
-        scrollable={false}
-        onClose={onClose}
-      >
-        <div className={styles['settings-modal__layout']}>
-          <SettingsSidebar activeId="notifications" />
-          <Scrollbar className={styles['settings-modal__pane']}>
-            <NotificationsSettings
-              schedule={schedule}
-              draft={draft}
-              onDraftChange={setDraft}
-              clock24={clock24}
-              expanded={expanded}
-              invalid={isInvalid(draft)}
-              noDays={noDays}
-              onEdit={() => {
-                setDraft(schedule);
-                setExpanded(true);
-              }}
-              onSave={() => {
-                onSave(draft);
-                setExpanded(false);
-              }}
-              onCancel={() => {
-                setDraft(schedule);
-                setExpanded(false);
-              }}
-            />
-          </Scrollbar>
-        </div>
-      </Modal>
-    </ModalOverlay>
+      <NotificationsSettings
+        schedule={schedule}
+        draft={draft}
+        onDraftChange={setDraft}
+        clock24={clock24}
+        expanded={expanded}
+        invalid={isInvalid(draft)}
+        noDays={noDays}
+        onEdit={() => {
+          setDraft(schedule);
+          setExpanded(true);
+        }}
+        onSave={() => {
+          onSave(draft);
+          setExpanded(false);
+        }}
+        onCancel={() => {
+          setDraft(schedule);
+          setExpanded(false);
+        }}
+      />
+    </SettingsModalShell>
   );
 }
