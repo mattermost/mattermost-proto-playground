@@ -21,6 +21,7 @@ import FilesScene from './scenes/FilesScene';
 import MessagesModifiersScene from './scenes/MessagesModifiersScene';
 import MessagesResultsScene from './scenes/MessagesResultsScene';
 import MessagesScene from './scenes/MessagesScene';
+import AgentsSearchScene from './scenes/AgentsSearchScene';
 import PeopleScene from './scenes/PeopleScene';
 import {
   ACTIVE_CHANNEL_NAME,
@@ -28,6 +29,7 @@ import {
   MESSAGE_MODIFIERS,
   RECENT_FILE_SEARCHES,
   RECENT_MESSAGE_SEARCHES,
+  SEARCH_AGENTS,
 } from './universalSearchData';
 import {
   isModalOpen,
@@ -43,7 +45,7 @@ const PLACEHOLDERS: Record<SearchTab, string> = {
   messages: 'Search messages',
   files: 'Search files',
   people: 'Search people',
-  copilot: 'Search by topic or ask AI a question',
+  copilot: 'Search',
 };
 
 function findChannelsRow(target: EventTarget | null): HTMLElement | null {
@@ -91,6 +93,8 @@ export default function UniversalSearch() {
   );
   const [recentFileSearches, setRecentFileSearches] =
     useState(RECENT_FILE_SEARCHES);
+  const [selectedAgentId, setSelectedAgentId] = useState(SEARCH_AGENTS[0].id);
+  const [agentsMenuOpen, setAgentsMenuOpen] = useState(false);
 
   const activeTab = tabForScene(scene);
   const modalOpen = isModalOpen(scene);
@@ -185,12 +189,15 @@ export default function UniversalSearch() {
     }
     if (activeTab === 'copilot') {
       return {
-        kind: 'note',
-        text: 'Agents searches all channels and messages you have access to',
+        kind: 'agents',
+        agents: SEARCH_AGENTS,
+        selectedId: selectedAgentId,
+        onSelect: setSelectedAgentId,
+        onMenuOpenChange: setAgentsMenuOpen,
       };
     }
     return { kind: 'people' };
-  }, [activeTab, chips.length, query]);
+  }, [activeTab, chips.length, query, selectedAgentId]);
 
   const handleTabChange = (tab: SearchTab) => {
     setQuery('');
@@ -214,6 +221,9 @@ export default function UniversalSearch() {
   const handleSubmitQuery = () => {
     if (activeTab === 'messages' && (query.trim() || chips.length > 0)) {
       setScene('messages-results');
+    }
+    if (activeTab === 'copilot' && query.trim()) {
+      setScene('copilot-results');
     }
   };
 
@@ -305,6 +315,12 @@ export default function UniversalSearch() {
                 query={query}
                 onClose={() => setScene('messages')}
               />
+            ) : scene === 'copilot-results' ? (
+              <AgentsSearchScene
+                query={query}
+                agentId={selectedAgentId}
+                onClose={() => setScene('copilot')}
+              />
             ) : undefined
           }
         >
@@ -351,6 +367,7 @@ export default function UniversalSearch() {
           placeholder={PLACEHOLDERS[activeTab]}
           chips={chips}
           tip={tip}
+          agentsMenuOpen={agentsMenuOpen}
           onClose={() => setDismissed(true)}
           onTabChange={handleTabChange}
           onQueryChange={handleQueryChange}

@@ -34,6 +34,7 @@ type UniversalSearchModalProps = {
   placeholder: string;
   chips?: SearchChip[];
   tip: SearchTip;
+  agentsMenuOpen?: boolean;
   children: ReactNode;
   onClose: () => void;
   onTabChange: (tab: SearchTab) => void;
@@ -52,6 +53,7 @@ export default function UniversalSearchModal({
   placeholder,
   chips = [],
   tip,
+  agentsMenuOpen = false,
   children,
   onClose,
   onTabChange,
@@ -230,7 +232,16 @@ export default function UniversalSearchModal({
           generation={listGeneration}
           onActiveIndexChange={setActiveIndex}
         >
-          <div className={styles['universal-search-modal__stage']}>
+          <div
+            className={[
+              styles['universal-search-modal__stage'],
+              activeTab === 'copilot' && agentsMenuOpen
+                ? styles['universal-search-modal__stage--agents']
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+          >
             <div
               key={activeTab}
               ref={listRef}

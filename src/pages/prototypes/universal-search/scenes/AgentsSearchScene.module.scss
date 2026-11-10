@@ -1,0 +1,26 @@
+.agents-search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  min-height: 0;
+  height: 100%;
+  padding: var(--spacing-m) var(--spacing-l) var(--spacing-l);
+
+  &__text {
+    margin: 0;
+
+    p,
+    ul {
+      margin: 0;
+    }
+
+    ul {
+      margin-top: var(--spacing-s);
+      padding-left: var(--spacing-l);
+    }
+
+    li + li {
+      margin-top: var(--spacing-xs);
+    }
+  }
+}

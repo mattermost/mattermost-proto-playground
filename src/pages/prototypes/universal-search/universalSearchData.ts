@@ -147,6 +147,18 @@ export const ACTIVE_CHANNEL_FILTER = {
   value: 'ux-design',
 };
 
+export type SearchAgent = {
+  id: string;
+  name: string;
+  avatarSrc: string;
+};
+
+export const SEARCH_AGENTS: SearchAgent[] = [
+  { id: 'aiko', name: 'Aiko', avatarSrc: avatarAiko },
+  { id: 'arjun', name: 'Arjun', avatarSrc: avatarArjun },
+  { id: 'emma', name: 'Emma', avatarSrc: avatarEmma },
+];
+
 export const MESSAGE_HITS: MessageHit[] = [
   {
     id: 'hit1',
@@ -365,9 +377,6 @@ export function allSearchMatches(query: string) {
       ...RECENT_CHANNELS,
       ...CHANNEL_TYPING_RESULTS,
     ]).filter((channel) => matchesQuery(query, [channel.name])),
-    messages: MESSAGE_HITS.filter((hit) =>
-      matchesQuery(query, [hit.body, hit.username, hit.channelName]),
-    ),
     files: RECENT_FILES.filter((file) =>
       matchesQuery(query, [file.name, file.secondaryLabel]),
     ),

@@ -1,10 +1,10 @@
 # UX Spec: Universal Search
 
-Source: [UX Spec: Universal Search](https://mattermost.atlassian.net/wiki/spaces/DES/pages/2704244738/UX+Spec+Universal+Search) (Confluence, captured for this prototype).
+Working spec for this prototype. It started from [UX Spec: Universal Search](https://mattermost.atlassian.net/wiki/spaces/DES/pages/2704244738/UX+Spec+Universal+Search) on Confluence. Where they disagree, this file wins. Confluence can be updated later.
 
 Related:
 
-- [UX Spec: AI Copilot Search (MVP)](https://mattermost.atlassian.net/wiki/spaces/DES/pages/2713714689/UX+Spec+AI+Copilot+Search+MVP) — AI tab / RHS results (linked from this spec; not in scope for every scene here)
+- [UX Spec: AI Copilot Search (MVP)](https://mattermost.atlassian.net/wiki/spaces/DES/pages/2713714689/UX+Spec+AI+Copilot+Search+MVP) — background for the Agents mode. The mode name here is **Agents**.
 - [Figma Design File](https://www.figma.com/design/3AuDuP8kYDydYMsqbLi9WG/Universal-Search-UX?node-id=2138-60034)
 - [Figma Clickable Prototype](https://www.figma.com/proto/3AuDuP8kYDydYMsqbLi9WG/Universal-Search-UX?page-id=1%3A275&node-id=2138-54672)
 
@@ -36,11 +36,9 @@ This shortcut will open the new search modal with the ‘Channels’ tab active.
 
 If the modal is already open to a different search mode, this shortcut will also switch to channel search.
 
-### Cmd/Ctrl-F - Message search (in active channel)
+### Cmd/Ctrl-F - All
 
-This shortcut will open the new search modal with the ‘Messages’ tab active and the filter for the currently active channel added to the input (like we currently do).
-
-If the modal is already open to a different search mode, this shortcut will also switch to the message search.
+This shortcut opens the search modal on **All**. If the modal is already open on another mode, it switches to All.
 
 ### TBD - Switch search mode/tab
 
@@ -50,6 +48,23 @@ Special characters typed in an empty input
 
 - Typing the `~` character can immediately switch to the ‘Channel’ mode (if not already there)
 - Typing the `@` character can immediately switch to the ‘People’ mode (if not already there)
+
+## All
+
+All is the default mode. Header Search and Cmd/Ctrl-F open here.
+
+### Default state
+
+Before the user types, All shows a short mix of what they can search:
+
+- Unread channels
+- People you chat with most
+- Recent files
+- Recent searches
+
+### Typing state
+
+Channels, files, and people narrow as you type. Message results do not. A message search runs from the Messages mode when the user presses Enter.
 
 ## Channel search
 
@@ -79,11 +94,11 @@ Users can remove recent searches by hovering over the item in the list and click
 
 ### Typing state
 
-In the `Messages` search mode, results *do not* show as users are typing (due to performance concerns).
+In Messages, message results do not appear while typing. Searching messages on each keystroke is too expensive, and it is not quick enough to search on the fly. Recent searches can still narrow. The message search itself waits for Enter.
 
 ### Enter to execute search
 
-Because we can’t show results for messages as you type, a hint `Enter to search` appears on the right side of the search input.
+The footer shows **Enter to search** once there is a query. Enter runs the search and opens the results panel.
 
 ### Modifiers added to search
 
@@ -150,9 +165,16 @@ When users start typing, the default sections and category labels hide and we sh
 
 The tip that is displayed in this tab is to use Command-shift-k to browse for teammates or start a group message.
 
-# AI Copilot Search
+# Agents
 
-The spec for Copilot search is outlined in: [UX Spec: AI Copilot Search (MVP)](https://mattermost.atlassian.net/wiki/spaces/DES/pages/2713714689/UX+Spec+AI+Copilot+Search+MVP).
+The mode is named **Agents**. It follows the search type the agents plugin already registers in the webapp.
+
+- The field placeholder is **Search**.
+- Nothing is listed while typing. The plugin supplies no suggestions.
+- The footer says “Agents searches only content you have access to” and includes **Search with**, which chooses the agent. The menu is titled “Choose an Agent”.
+- Enter posts the query as a message in that agent’s direct message and opens the thread. The search dialog closes. The agent answers from channels and messages the user can already access.
+
+The Confluence page is still titled [UX Spec: AI Copilot Search (MVP)](https://mattermost.atlassian.net/wiki/spaces/DES/pages/2713714689/UX+Spec+AI+Copilot+Search+MVP). That page is background until it is renamed.
 
 # Searching Across Teams
 

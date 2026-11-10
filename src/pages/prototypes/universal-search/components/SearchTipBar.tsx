@@ -1,8 +1,16 @@
+import { useEffect, useRef, useState } from 'react';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import KeyboardReturnIcon from '@mattermost/compass-icons/components/keyboard-return';
 import LightbulbOutlineIcon from '@mattermost/compass-icons/components/lightbulb-outline';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
+import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
 import { ShortcutTag } from '@mattermost/compass-ui/components/shortcut-tag';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { useOutsideClose } from '@/hooks/useOutsideClose';
+import type { SearchAgent } from '../universalSearchData';
 import styles from './SearchTipBar.module.scss';
 
 type BrowseChannelsTip = {
@@ -36,13 +44,22 @@ type EnterSearchTip = {
   kind: 'enter-search';
 };
 
+type AgentsTip = {
+  kind: 'agents';
+  agents: readonly SearchAgent[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  onMenuOpenChange?: (open: boolean) => void;
+};
+
 export type SearchTip =
   | BrowseChannelsTip
   | ModifierTip
   | ShortcutTip
   | PeopleTip
   | NoteTip
-  | EnterSearchTip;
+  | EnterSearchTip
+  | AgentsTip;
 
 type SearchTipBarProps = {
   tip: SearchTip;
@@ -58,7 +75,88 @@ function TipIcon() {
   );
 }
 
+function AgentsTipBar({ tip }: { tip: AgentsTip }) {
+  const [open, setOpen] = useState(false);
+  const selectorRef = useRef<HTMLDivElement>(null);
+  useOutsideClose(selectorRef, open, () => setOpen(false));
+  useEffect(() => {
+    tip.onMenuOpenChange?.(open);
+    return () => tip.onMenuOpenChange?.(false);
+  }, [open, tip.onMenuOpenChange]);
+  const selected =
+    tip.agents.find((agent) => agent.id === tip.selectedId) ?? tip.agents[0];
+
+  return (
+    <div className={`${styles['search-tip-bar']} ${styles['search-tip-bar--agents']}`}>
+      <div className={styles['search-tip-bar__hint']}>
+        <TipIcon />
+        <p className={styles['search-tip-bar__text']}>
+          Agents searches only content you have access to
+        </p>
+      </div>
+      <div className={styles['search-tip-bar__search-with']} ref={selectorRef}>
+        <span className={styles['search-tip-bar__search-with-label']}>
+          Search with
+        </span>
+        <button
+          type="button"
+          className={styles['search-tip-bar__agent']}
+          aria-expanded={open}
+          aria-haspopup="menu"
+          onClick={() => setOpen((current) => !current)}
+        >
+          <span className={styles['search-tip-bar__agent-name']}>
+            {selected?.name}
+          </span>
+          <Icon glyph={<ChevronDownIcon />} size="16" />
+        </button>
+        {open ? (
+          <PopoverMenu
+            className={styles['search-tip-bar__agent-menu']}
+            role="menu"
+            aria-label="Choose an Agent"
+          >
+            <div className={styles['search-tip-bar__agent-menu-header']}>
+              <MenuGroupHeading label="Choose an Agent" />
+              <Button
+                emphasis="link"
+                size="x-small"
+                type="button"
+                onClick={() => setOpen(false)}
+              >
+                Manage
+              </Button>
+            </div>
+            {tip.agents.map((agent) => (
+              <MenuItem
+                key={agent.id}
+                label={agent.name}
+                leadingVisual={
+                  <UserAvatar
+                    src={agent.avatarSrc}
+                    alt={agent.name}
+                    size="24"
+                  />
+                }
+                trailingElement={agent.id === selected?.id}
+                onClick={() => {
+                  tip.onSelect(agent.id);
+                  setOpen(false);
+                }}
+              />
+            ))}
+          </PopoverMenu>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export default function SearchTipBar({ tip }: SearchTipBarProps) {
+  if (tip.kind === 'agents') {
+    return <AgentsTipBar tip={tip} />;
+  }
+
   if (tip.kind === 'browse-channels') {
     return (
       <div className={styles['search-tip-bar']}>

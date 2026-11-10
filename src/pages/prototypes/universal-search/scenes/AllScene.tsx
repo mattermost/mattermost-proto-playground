@@ -2,7 +2,6 @@ import SearchEmptyState from '../components/SearchEmptyState';
 import {
   ChannelRows,
   FileRows,
-  MessageRows,
   PersonRows,
   RecentSearchRows,
   Section,
@@ -53,26 +52,16 @@ export default function AllScene({
   const matches = allSearchMatches(query);
   const hasMatches =
     matches.channels.length > 0 ||
-    matches.messages.length > 0 ||
     matches.files.length > 0 ||
     matches.people.length > 0;
 
-  if (!hasMatches) {
-    return (
-      <SearchEmptyState />
-    );
-  }
+  if (!hasMatches) return <SearchEmptyState />;
 
   return (
     <>
       {matches.channels.length > 0 && (
         <Section label="Channels">
           <ChannelRows channels={matches.channels} />
-        </Section>
-      )}
-      {matches.messages.length > 0 && (
-        <Section label="Messages">
-          <MessageRows messages={matches.messages} />
         </Section>
       )}
       {matches.files.length > 0 && (

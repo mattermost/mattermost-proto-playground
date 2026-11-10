@@ -30,7 +30,7 @@ Published `@mattermost/compass-ui` `^0.1.0-alpha.27` does not export `SegmentedC
 - The close button is hidden in this dialog only (`display: none` on `modal-header__close`). `Modal` has no hide prop. Escape and a scrim click still close it.
 - Typing filters the list for the active mode. Nothing is injected into the field. No matches use `SearchEmptyState`: Compass `EmptyState` plus the search illustration (“No results found”).
 - People, empty query: a row of frequent people (avatar, status, truncated name; first card selected) and a Recent list with `@username`. Footer: “Use ⌘-Shift-K to browse for teammates or start a group message”, with the two actions as link buttons. Portraits are the prototype avatars, not the Figma stock photos.
-- Messages: a query filters recent searches and message hits. Enter opens the right-hand results panel filtered by that query. `from:` opens the people filter and filters those names.
+- Messages: a query filters recent searches only. Message hits wait for Enter, which opens the right-hand results panel. `from:` opens the people filter and filters those names.
 - Header Search opens All. Find channels opens Channels, but only when the dialog is closed — the overlay covers the sidebar while it is open. Find channels is wired in this prototype, not in compass-proto.
 
 ## Uncommitted files
@@ -47,7 +47,7 @@ Published `@mattermost/compass-ui` `^0.1.0-alpha.27` does not export `SegmentedC
 
 ## Still open
 
-- Agents has no results.
+- Agents matches the webapp plugin: no suggestions, a Search with picker, and Enter opens that agent’s thread.
 - “All teams” does not open a menu.
 - People photos do not match the Figma portraits (node `2029:44440` in Universal Search UX).
 - Enter in the search field submits the query. It does not activate the highlighted row.

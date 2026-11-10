@@ -132,6 +132,12 @@
     min-width: 0;
   }
 
+  // The agent menu opens upward from the footer. This keeps it in the
+  // blank results area instead of covering the search field.
+  &__stage--agents {
+    min-height: 168px;
+  }
+
   &__list {
     display: flex;
     flex-direction: column;
