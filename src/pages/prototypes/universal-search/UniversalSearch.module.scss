@@ -1,0 +1,54 @@
+.universal-search {
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+  gap: var(--spacing-m);
+  background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+  &__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-width: 1440px;
+    max-height: 800px;
+    overflow: hidden;
+
+    :global([class*='channels-sidebar__find-channels']):not(
+        [class*='find-channels-icon']
+      ):not([class*='find-channels-label']) {
+      cursor: pointer;
+    }
+  }
+
+  &__frame :global([class*='channel-shell']:not([class*='channel-shell__'])) {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  // Stage inside the frame so PrototypeTopNav stays usable. ModalOverlay
+  // only centers and paints a scrim; this dialog sits 8px from the top
+  // with no scrim, and the overlay still receives the outside click.
+  &__overlay {
+    &#{&} {
+      position: absolute;
+      inset: 0;
+      align-items: flex-start;
+      justify-content: center;
+      padding: var(--spacing-xs) var(--spacing-xl) var(--spacing-xl);
+      background-color: transparent;
+    }
+  }
+}

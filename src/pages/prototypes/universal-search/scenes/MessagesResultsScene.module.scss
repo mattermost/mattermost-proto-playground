@@ -1,0 +1,36 @@
+.messages-results {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+
+  &__query {
+    margin: 0;
+    padding: var(--spacing-m) var(--spacing-l) var(--spacing-s);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    padding: var(--spacing-s) var(--spacing-l) var(--spacing-l);
+  }
+
+  &__meta {
+    margin: 0 0 var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__hit {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+  }
+}

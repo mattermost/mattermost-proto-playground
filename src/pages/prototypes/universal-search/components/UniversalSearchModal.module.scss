@@ -1,0 +1,186 @@
+@keyframes universal-search-modal-enter-forward {
+  from {
+    opacity: 0;
+    transform: translateX(var(--spacing-l));
+  }
+}
+
+@keyframes universal-search-modal-enter-back {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--spacing-l) * -1));
+  }
+}
+
+.universal-search-modal {
+  // Width stays on Modal size medium (704). Height follows the results and
+  // stops at 480px; the body scrolls after that.
+  &#{&} {
+    height: auto;
+    max-height: 480px;
+  }
+
+  // Menu body inset is 16px. 12px lines the row icons up with the search icon.
+  :global([class*='modal__body-inner']) {
+    padding-inline: var(--spacing-m);
+  }
+
+  // Slot top inset is spacing-l (16). The search field sits flush under the tabs.
+  &#{&} :global([class*='modal-header__slot']) {
+    padding-top: 0;
+  }
+
+  // The mode control sits 8px left of the header inset.
+  &#{&} :global([class*='modal-header__leading']) {
+    margin-left: calc(var(--spacing-xs) * -1);
+  }
+
+  // Modal always renders close. This dialog dismisses with Escape or the scrim.
+  &#{&} :global([class*='modal-header__close']) {
+    display: none;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    width: 100%;
+    min-width: 0;
+    // Slot padding sits below this block. The search field already carries
+    // its own inset, so drop that extra space before the divider.
+    margin-bottom: calc(-1 * var(--spacing-xxl));
+  }
+
+  &__search-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    width: 100%;
+    min-width: 0;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  &__field {
+    position: relative;
+    // Header slot insets by spacing-xxxl. Grow back to the dialog edges.
+    width: calc(100% + (var(--spacing-xxxl) * 2));
+    margin-inline: calc(var(--spacing-xxxl) * -1);
+
+    // SearchInput has no underline variant. Its hover and focus rules paint a
+    // full ring, so the field class is repeated until this bottom border wins.
+    :global([class*='search-input'] [class*='search-input__wrapper']) {
+      min-height: 0;
+      background: transparent;
+      border-radius: 0;
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+      box-shadow: none;
+    }
+
+    &#{&}#{&}#{&} :global([class*='search-input']:hover:not(:focus-within) [class*='search-input__wrapper']) {
+      border-bottom-color: rgba(var(--center-channel-color-rgb), 0.24);
+      box-shadow: none;
+    }
+
+    &#{&}#{&}#{&} :global([class*='search-input']:focus-within [class*='search-input__wrapper']) {
+      box-shadow: none;
+    }
+
+    // The hairline runs to the dialog edges. The focus line matches the menu
+    // rows, which sit inside the 12px body inset.
+    &::after {
+      content: '';
+      position: absolute;
+      right: var(--spacing-m);
+      bottom: 0;
+      left: var(--spacing-m);
+      height: var(--spacing-xxxxs);
+      background-color: transparent;
+      pointer-events: none;
+    }
+
+    &:focus-within::after {
+      background-color: var(--focus-ring-color);
+    }
+
+    // Figma field is 68px, full width: 20px above and below the 28px line,
+    // icon 28px from each edge (24 + 4).
+    :global([class*='search-input'] [class*='search-input__inner']) {
+      padding: var(--spacing-xl) calc(var(--spacing-xxl) + var(--spacing-xxxs));
+    }
+
+    :global([class*='search-input'] [class*='search-input__input']) {
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-400);
+      line-height: var(--line-height-400);
+      letter-spacing: var(--letter-spacing-normal);
+
+      &::placeholder {
+        font-family: var(--font-family-heading);
+        color: rgba(var(--center-channel-color-rgb), 0.64);
+      }
+    }
+  }
+
+  // Clips the short slide so it never creates a horizontal scrollbar.
+  &__stage {
+    overflow-x: clip;
+    min-width: 0;
+  }
+
+  // The agent menu opens upward from the footer. This keeps it in the
+  // blank results area instead of covering the search field.
+  &__stage--agents {
+    min-height: 168px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    &--enter-forward {
+      animation: universal-search-modal-enter-forward var(--duration-quick)
+        var(--ease-entrance);
+    }
+
+    &--enter-back {
+      animation: universal-search-modal-enter-back var(--duration-quick)
+        var(--ease-entrance);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__list--enter-forward,
+    &__list--enter-back {
+      animation: none;
+    }
+  }
+
+  // Keyboard highlight uses the same fill as MenuItem hover, not the active fill.
+  &__list :global([class*='menu-item'])#{&}__option--highlighted {
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__removable {
+    position: relative;
+
+    .universal-search-modal__remove {
+      position: absolute;
+      top: 50%;
+      right: var(--spacing-s);
+      transform: translateY(-50%);
+      opacity: 0;
+      z-index: 1;
+    }
+
+    &:hover .universal-search-modal__remove,
+    &:focus-within .universal-search-modal__remove {
+      opacity: 1;
+    }
+  }
+}
