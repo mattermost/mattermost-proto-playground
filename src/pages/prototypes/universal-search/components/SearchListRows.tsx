@@ -1,4 +1,9 @@
-import type { ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useRef,
+  type ReactNode,
+} from 'react';
 import CloseIcon from '@mattermost/compass-icons/components/close';
 import FileGenericOutlineIcon from '@mattermost/compass-icons/components/file-generic-outline';
 import FilePdfOutlineIcon from '@mattermost/compass-icons/components/file-pdf-outline';
@@ -9,11 +14,15 @@ import MagnifyIcon from '@mattermost/compass-icons/components/magnify';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
-import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import {
+  MenuItem,
+  type MenuItemProps,
+} from '@mattermost/compass-ui/components/menu-item';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import type {
   ChannelResult,
   FileResult,
+  MessageHit,
   PersonResult,
   RecentSearch,
 } from '../universalSearchData';
@@ -33,44 +42,100 @@ function fileGlyph(kind: FileResult['kind']) {
   return <Icon glyph={<FileGenericOutlineIcon />} />;
 }
 
-export function ChannelRows({
-  channels,
-  activeId,
+type SearchListContextValue = {
+  activeIndex: number;
+  generation: number;
+  setActiveIndex: (index: number) => void;
+  register: () => number;
+};
+
+const SearchListContext = createContext<SearchListContextValue | null>(null);
+
+export function SearchResults({
+  activeIndex,
+  generation,
+  onActiveIndexChange,
+  children,
 }: {
-  channels: ChannelResult[];
-  activeId?: string;
+  activeIndex: number;
+  generation: number;
+  onActiveIndexChange: (index: number) => void;
+  children: ReactNode;
 }) {
+  const nextIndex = useRef(0);
+  nextIndex.current = 0;
+
+  return (
+    <SearchListContext.Provider
+      value={{
+        activeIndex,
+        generation,
+        setActiveIndex: onActiveIndexChange,
+        register: () => {
+          const index = nextIndex.current;
+          nextIndex.current += 1;
+          return index;
+        },
+      }}
+    >
+      {children}
+    </SearchListContext.Provider>
+  );
+}
+
+export function SearchMenuItem(props: MenuItemProps) {
+  const list = useContext(SearchListContext);
+  const slot = useRef<{ generation: number; index: number } | null>(null);
+  const generation = list?.generation ?? 0;
+  if (list && slot.current?.generation !== generation) {
+    slot.current = { generation, index: list.register() };
+  }
+  const index = slot.current?.index ?? 0;
+  const selected = list ? index === list.activeIndex : false;
+
+  return (
+    <MenuItem
+      {...props}
+      id={`universal-search-option-${index}`}
+      role="option"
+      tabIndex={-1}
+      aria-selected={selected}
+      className={[
+        props.className,
+        selected ? modalStyles['universal-search-modal__option--highlighted'] : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      onMouseEnter={(event) => {
+        props.onMouseEnter?.(event);
+        if (list && list.activeIndex !== index) list.setActiveIndex(index);
+      }}
+    />
+  );
+}
+
+export function ChannelRows({ channels }: { channels: ChannelResult[] }) {
   return (
     <>
       {channels.map((channel) => (
-        <MenuItem
+        <SearchMenuItem
           key={channel.id}
           label={channel.name}
-          secondaryLabel={channel.secondaryLabel}
           leadingVisual={channelGlyph(channel.leadingVisual)}
           mentionCount={channel.mentionCount}
-          active={channel.id === activeId}
         />
       ))}
     </>
   );
 }
 
-export function PersonRows({
-  people,
-  activeId,
-}: {
-  people: PersonResult[];
-  activeId?: string;
-}) {
+export function PersonRows({ people }: { people: PersonResult[] }) {
   return (
     <>
       {people.map((person) => (
-        <MenuItem
+        <SearchMenuItem
           key={person.id}
           label={person.name}
-          secondaryLabel={person.secondaryLabel}
-          active={person.id === activeId}
           leadingVisual={
             <UserAvatar
               src={person.avatarSrc}
@@ -85,14 +150,36 @@ export function PersonRows({
   );
 }
 
+export function MessageRows({ messages }: { messages: MessageHit[] }) {
+  return (
+    <>
+      {messages.map((message) => (
+        <SearchMenuItem
+          key={message.id}
+          label={message.username}
+          secondaryLabel={`${message.channelName} · ${message.body}`}
+          leadingVisual={
+            <UserAvatar
+              src={message.avatarSrc}
+              alt={message.username}
+              size="24"
+            />
+          }
+        />
+      ))}
+    </>
+  );
+}
+
 export function FileRows({ files }: { files: FileResult[] }) {
   return (
     <>
       {files.map((file) => (
-        <MenuItem
+        <SearchMenuItem
           key={file.id}
           label={file.name}
           secondaryLabel={file.secondaryLabel}
+          secondaryLabelPosition="inline"
           leadingVisual={fileGlyph(file.kind)}
         />
       ))}
@@ -114,7 +201,7 @@ export function RecentSearchRows({
           key={search.id}
           className={modalStyles['universal-search-modal__removable']}
         >
-          <MenuItem
+          <SearchMenuItem
             label={search.label}
             leadingVisual={<Icon glyph={<MagnifyIcon />} />}
           />

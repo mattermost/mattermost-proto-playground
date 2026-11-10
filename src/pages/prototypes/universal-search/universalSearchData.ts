@@ -15,14 +15,12 @@ export type ChannelResult = {
   leadingVisual: 'public' | 'private';
   unread?: boolean;
   mentionCount?: number;
-  secondaryLabel?: string;
 };
 
 export type PersonResult = {
   id: string;
   name: string;
   avatarSrc: string;
-  secondaryLabel?: string;
   status?: 'online' | 'away' | 'dnd' | 'offline';
 };
 
@@ -75,7 +73,6 @@ export const RECENT_CHANNELS: ChannelResult[] = [
     id: 'town-square',
     name: 'town-square',
     leadingVisual: 'public',
-    secondaryLabel: 'Team announcements',
   },
   {
     id: 'off-topic',
@@ -86,7 +83,6 @@ export const RECENT_CHANNELS: ChannelResult[] = [
     id: 'design-crit',
     name: 'design-crit',
     leadingVisual: 'private',
-    secondaryLabel: 'Weekly critiques',
   },
   {
     id: 'platform',
@@ -107,19 +103,16 @@ export const CHANNEL_TYPING_RESULTS: ChannelResult[] = [
     id: 'ux-design',
     name: 'ux-design',
     leadingVisual: 'public',
-    secondaryLabel: 'Design reviews and ongoing work',
   },
   {
     id: 'design-crit',
     name: 'design-crit',
     leadingVisual: 'private',
-    secondaryLabel: 'Weekly critiques',
   },
   {
     id: 'design-system',
     name: 'design-system',
     leadingVisual: 'public',
-    secondaryLabel: 'Compass and tokens',
   },
 ];
 
@@ -227,21 +220,18 @@ export const PEOPLE_MOST_CHATTED: PersonResult[] = [
     id: 'sofia',
     name: 'Sofia Bauer',
     avatarSrc: avatarSofia,
-    secondaryLabel: 'Product Design',
     status: 'online',
   },
   {
     id: 'marco',
     name: 'Marco Rinaldi',
     avatarSrc: avatarMarco,
-    secondaryLabel: 'Engineering',
     status: 'away',
   },
   {
     id: 'leonard',
     name: 'Leonard Riley',
     avatarSrc: avatarLeonard,
-    secondaryLabel: 'Product',
     status: 'online',
   },
 ];
@@ -251,35 +241,30 @@ export const PEOPLE_RECENT: PersonResult[] = [
     id: 'emma',
     name: 'Emma Novak',
     avatarSrc: avatarEmma,
-    secondaryLabel: 'Support',
     status: 'dnd',
   },
   {
     id: 'arjun',
     name: 'Arjun Patel',
     avatarSrc: avatarArjun,
-    secondaryLabel: 'Engineering',
     status: 'offline',
   },
   {
     id: 'aiko',
     name: 'Aiko Tan',
     avatarSrc: avatarAiko,
-    secondaryLabel: 'Design',
     status: 'online',
   },
   {
     id: 'danielle',
     name: 'Danielle Okoro',
     avatarSrc: avatarDanielle,
-    secondaryLabel: 'Marketing',
     status: 'away',
   },
   {
     id: 'darius',
     name: 'Darius Cole',
     avatarSrc: avatarDarius,
-    secondaryLabel: 'Sales',
     status: 'online',
   },
 ];
@@ -291,23 +276,58 @@ export const PEOPLE_TYPING_RESULTS: PersonResult[] = [
     id: 'sofia',
     name: 'Sofia Bauer',
     avatarSrc: avatarSofia,
-    secondaryLabel: 'Product Design',
     status: 'online',
   },
   {
     id: 'ethan',
     name: 'Ethan Brooks',
     avatarSrc: avatarEthan,
-    secondaryLabel: 'Solutions',
     status: 'offline',
   },
   {
     id: 'isabella',
     name: 'Isabella Cruz',
     avatarSrc: avatarIsabella,
-    secondaryLabel: 'Customer Success',
     status: 'online',
   },
 ];
 
 export const ACTIVE_CHANNEL_NAME = 'UX Design';
+
+export const ALL_QUERY = 'ux';
+
+function matchesQuery(query: string, values: string[]) {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return false;
+  return values.some((value) => value.toLowerCase().includes(needle));
+}
+
+function uniqueById<T extends { id: string }>(items: T[]) {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
+}
+
+export function allSearchMatches(query: string) {
+  return {
+    channels: uniqueById([
+      ...UNREAD_CHANNELS,
+      ...RECENT_CHANNELS,
+      ...CHANNEL_TYPING_RESULTS,
+    ]).filter((channel) => matchesQuery(query, [channel.name])),
+    messages: MESSAGE_HITS.filter((hit) =>
+      matchesQuery(query, [hit.body, hit.username, hit.channelName]),
+    ),
+    files: RECENT_FILES.filter((file) =>
+      matchesQuery(query, [file.name, file.secondaryLabel]),
+    ),
+    people: uniqueById([
+      ...PEOPLE_MOST_CHATTED,
+      ...PEOPLE_RECENT,
+      ...PEOPLE_TYPING_RESULTS,
+    ]).filter((person) => matchesQuery(query, [person.name])),
+  };
+}

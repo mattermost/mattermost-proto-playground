@@ -1,13 +1,23 @@
 .search-tip-bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-m);
   width: 100%;
   min-width: 0;
+  // X-small modifier buttons are 4 + 16 + 4. Text-only tips use
+  // the same row so the footer does not jump between modes.
+  min-height: calc(var(--line-height-75) + (var(--spacing-xxxs) * 2));
   color: rgba(var(--center-channel-color-rgb), 0.72);
-  font-size: var(--font-size-75);
-  line-height: var(--line-height-75);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-100);
+
+  &__icon {
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+  }
 
   &__label {
     margin: 0;
@@ -16,9 +26,15 @@
 
   &__modifiers {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--spacing-xxs);
     min-width: 0;
+
+    // Dim is clear at rest. These chips need a visible fill before hover.
+    // Match the button only; the label class also contains "button".
+    &#{&} > :global(button) {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
   }
 
   &__text {
@@ -29,5 +45,16 @@
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xxxs);
+  }
+
+  &__enter-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: var(--spacing-xxxxs);
+    border-radius: var(--radius-s);
+    background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 }

@@ -1,6 +1,6 @@
 import { MenuGroupHeading } from '@mattermost/compass-ui/components/menu-group-heading';
-import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { SearchMenuItem } from '../components/SearchListRows';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
@@ -25,10 +25,11 @@ export default function MessagesModifiersScene({
     <>
       <MenuGroupHeading label="From" />
       {MESSAGE_FILTER_OPTIONS.map((option) => (
-        <MenuItem
+        <SearchMenuItem
           key={option.id}
           label={option.label}
           secondaryLabel={option.secondaryLabel}
+          secondaryLabelPosition="inline"
           leadingVisual={
             <UserAvatar
               src={AVATARS[option.id]}

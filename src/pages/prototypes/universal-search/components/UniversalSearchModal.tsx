@@ -1,17 +1,23 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import { Chip } from '@mattermost/compass-ui/components/chip';
+import { Dropdown } from '@mattermost/compass-ui/components/dropdown';
+import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Modal, ModalOverlay } from '@mattermost/compass-ui/components/modal';
 import { SearchInput } from '@mattermost/compass-ui/components/search-input';
-import { Tabs } from '@mattermost/compass-ui/components/tabs';
+import { SegmentedControl } from '@mattermost/compass-ui/components/segmented-control';
 import type { SearchTab } from '../universalSearchScenes';
+import { SearchResults } from './SearchListRows';
 import SearchTipBar, { type SearchTip } from './SearchTipBar';
 import styles from './UniversalSearchModal.module.scss';
 
 const TABS: { key: SearchTab; label: string }[] = [
+  { key: 'all', label: 'All' },
   { key: 'channels', label: 'Channels' },
   { key: 'messages', label: 'Messages' },
   { key: 'files', label: 'Files' },
   { key: 'people', label: 'People' },
+  { key: 'copilot', label: 'Agents' },
 ];
 
 export type SearchChip = {
@@ -26,7 +32,6 @@ type UniversalSearchModalProps = {
   activeTab: SearchTab;
   query: string;
   placeholder: string;
-  showEnterHint?: boolean;
   chips?: SearchChip[];
   tip: SearchTip;
   children: ReactNode;
@@ -45,7 +50,6 @@ export default function UniversalSearchModal({
   activeTab,
   query,
   placeholder,
-  showEnterHint = false,
   chips = [],
   tip,
   children,
@@ -57,12 +61,76 @@ export default function UniversalSearchModal({
   onSubmitQuery,
 }: UniversalSearchModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const listSignature = useRef<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [listGeneration, setListGeneration] = useState(0);
+  const [optionCount, setOptionCount] = useState(0);
+
+  const moveActive = (delta: number) => {
+    const count =
+      listRef.current?.querySelectorAll('[role="option"]').length ?? 0;
+    if (count === 0) return;
+    setActiveIndex((current) => (current + delta + count) % count);
+  };
+
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      moveActive(1);
+      return;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveActive(-1);
+      return;
+    }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      onSubmitQuery?.();
+    }
+  };
+
+  const handleListKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    moveActive(event.key === 'ArrowDown' ? 1 : -1);
+    inputRef.current?.focus();
+  };
 
   useEffect(() => {
     if (open) {
       inputRef.current?.focus();
     }
   }, [open, activeTab]);
+
+  useLayoutEffect(() => {
+    const options = listRef.current?.querySelectorAll('[role="option"]');
+    const count = options?.length ?? 0;
+    const signature = options
+      ? [...options].map((option) => option.textContent ?? '').join('\n')
+      : '';
+    setOptionCount(count);
+    if (listSignature.current === null) {
+      listSignature.current = signature;
+      return;
+    }
+    if (listSignature.current === signature) return;
+    listSignature.current = signature;
+    setActiveIndex(0);
+    setListGeneration((current) => current + 1);
+  }, [activeTab, children, chips, open, query]);
+
+  useEffect(() => {
+    const option =
+      listRef.current?.querySelectorAll<HTMLElement>('[role="option"]')[
+        activeIndex
+      ];
+    option?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex]);
+
+  const activeOptionId =
+    optionCount > 0 ? `universal-search-option-${activeIndex}` : undefined;
 
   return (
     <ModalOverlay
@@ -74,11 +142,28 @@ export default function UniversalSearchModal({
     >
       <Modal
         open={open}
+        className={styles['universal-search-modal']}
         size="medium"
         title="Search"
-        hideTitle
         bodyPadding="menu"
+        headerDivider={false}
         onClose={onClose}
+        initialFocusRef={inputRef}
+        headerLeading={
+          <SegmentedControl
+            aria-label="Search modes"
+            options={TABS.map((tab) => ({
+              ...tab,
+              icon:
+                tab.key === 'copilot' ? (
+                  <Icon glyph={<CreationOutlineIcon />} size="12" />
+                ) : undefined,
+            }))}
+            value={activeTab}
+            onChange={(key) => onTabChange(key as SearchTab)}
+          />
+        }
+        headerAction={<Dropdown size="small">All teams</Dropdown>}
         headerSlot={
           <div className={styles['universal-search-modal__header']}>
             <div className={styles['universal-search-modal__search-row']}>
@@ -99,52 +184,47 @@ export default function UniversalSearchModal({
                   ))}
                 </div>
               )}
-              <div
-                className={[
-                  styles['universal-search-modal__field'],
-                  showEnterHint &&
-                    styles['universal-search-modal__field--with-hint'],
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-              >
+              <div className={styles['universal-search-modal__field']}>
                 <SearchInput
                   ref={inputRef}
+                  size="large"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={optionCount > 0}
+                  aria-controls="universal-search-results"
+                  aria-activedescendant={activeOptionId}
                   value={query}
-                  label={placeholder}
+                  placeholder={placeholder}
+                  aria-label={placeholder}
                   onChange={(event) => onQueryChange(event.target.value)}
                   onClear={onClearQuery}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      onSubmitQuery?.();
-                    }
-                  }}
+                  onKeyDown={handleInputKeyDown}
                 />
-                {showEnterHint && (
-                  <p
-                    className={styles['universal-search-modal__enter-hint']}
-                    aria-hidden
-                  >
-                    Enter to search
-                  </p>
-                )}
               </div>
             </div>
-            <Tabs
-              appearance="underlined"
-              activeKey={activeTab}
-              onChange={(key) => onTabChange(key as SearchTab)}
-              tabs={TABS}
-              aria-label="Search modes"
-            />
           </div>
         }
         footerLeading={<SearchTipBar tip={tip} />}
         footerType="pagination"
         footerDivider
       >
-        <div className={styles['universal-search-modal__list']}>{children}</div>
+        <SearchResults
+          activeIndex={activeIndex}
+          generation={listGeneration}
+          onActiveIndexChange={setActiveIndex}
+        >
+          <div
+            ref={listRef}
+            id="universal-search-results"
+            className={styles['universal-search-modal__list']}
+            role="listbox"
+            tabIndex={-1}
+            aria-label="Search results"
+            onKeyDown={handleListKeyDown}
+          >
+            {children}
+          </div>
+        </SearchResults>
       </Modal>
     </ModalOverlay>
   );

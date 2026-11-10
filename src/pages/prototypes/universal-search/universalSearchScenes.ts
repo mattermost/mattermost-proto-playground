@@ -1,6 +1,14 @@
-export type SearchTab = 'channels' | 'messages' | 'files' | 'people';
+export type SearchTab =
+  | 'all'
+  | 'channels'
+  | 'messages'
+  | 'files'
+  | 'people'
+  | 'copilot';
 
 export type SceneId =
+  | 'all'
+  | 'all-typing'
   | 'channels'
   | 'channels-typing'
   | 'messages'
@@ -8,9 +16,12 @@ export type SceneId =
   | 'messages-results'
   | 'files'
   | 'people'
-  | 'people-typing';
+  | 'people-typing'
+  | 'copilot';
 
 export const SCENES: { id: SceneId; label: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'all-typing', label: 'All · Typing' },
   { id: 'channels', label: 'Channels' },
   { id: 'channels-typing', label: 'Channels · Typing' },
   { id: 'messages', label: 'Messages' },
@@ -19,12 +30,15 @@ export const SCENES: { id: SceneId; label: string }[] = [
   { id: 'files', label: 'Files' },
   { id: 'people', label: 'People' },
   { id: 'people-typing', label: 'People · Typing' },
+  { id: 'copilot', label: 'Agents' },
 ];
 
 export function tabForScene(scene: SceneId): SearchTab {
+  if (scene === 'all' || scene === 'all-typing') return 'all';
   if (scene.startsWith('messages')) return 'messages';
   if (scene.startsWith('files')) return 'files';
   if (scene.startsWith('people')) return 'people';
+  if (scene === 'copilot') return 'copilot';
   return 'channels';
 }
 

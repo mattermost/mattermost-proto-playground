@@ -17,6 +17,7 @@ import UniversalSearchModal, {
   type SearchChip,
 } from './components/UniversalSearchModal';
 import type { SearchTip } from './components/SearchTipBar';
+import AllScene from './scenes/AllScene';
 import ChannelsScene from './scenes/ChannelsScene';
 import ChannelsTypingScene from './scenes/ChannelsTypingScene';
 import FilesScene from './scenes/FilesScene';
@@ -28,6 +29,7 @@ import PeopleTypingScene from './scenes/PeopleTypingScene';
 import {
   ACTIVE_CHANNEL_FILTER,
   ACTIVE_CHANNEL_NAME,
+  ALL_QUERY,
   CHANNEL_QUERY,
   FILE_MODIFIERS,
   MESSAGE_MODIFIERS,
@@ -46,20 +48,42 @@ import {
 import styles from './UniversalSearch.module.scss';
 
 const PLACEHOLDERS: Record<SearchTab, string> = {
-  channels: 'Search channels',
+  all: 'Search channels, messages, files, and people',
+  channels: 'Search channels or direct messages',
   messages: 'Search messages',
   files: 'Search files',
   people: 'Search people',
+  copilot: 'Search by topic or ask AI a question',
 };
+
+function findChannelsRow(target: EventTarget | null): HTMLElement | null {
+  if (!(target instanceof Element)) return null;
+  const match = target.closest<HTMLElement>(
+    '[class*="channels-sidebar__find-channels"]',
+  );
+  if (!match) return null;
+  const className = match.getAttribute('class') ?? '';
+  if (
+    className.includes('find-channels-icon') ||
+    className.includes('find-channels-label')
+  ) {
+    return findChannelsRow(match.parentElement);
+  }
+  return match;
+}
 
 function sceneFromTab(tab: SearchTab): SceneId {
   switch (tab) {
+    case 'all':
+      return 'all';
     case 'messages':
       return 'messages';
     case 'files':
       return 'files';
     case 'people':
       return 'people';
+    case 'copilot':
+      return 'copilot';
     default:
       return 'channels';
   }
@@ -69,7 +93,8 @@ export default function UniversalSearch() {
   const { setCenterSlot } = usePrototypeChrome();
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameEl, setFrameEl] = useState<HTMLElement | null>(null);
-  const [scene, setScene] = useState<SceneId>('channels');
+  const [scene, setScene] = useState<SceneId>('all');
+  const [dismissed, setDismissed] = useState(false);
   const [query, setQuery] = useState('');
   const [chips, setChips] = useState<SearchChip[]>([]);
   const [recentMessageSearches, setRecentMessageSearches] = useState(
@@ -85,8 +110,46 @@ export default function UniversalSearch() {
     setFrameEl(frameRef.current);
   }, []);
 
+  // The shell's Find channels row is a static label. This prototype turns
+  // that row into the control that opens channel search.
+  useEffect(() => {
+    const row = findChannelsRow(
+      frameRef.current?.querySelector(
+        '[class*="channels-sidebar__find-channels"]',
+      ) ?? null,
+    );
+    if (!row) return;
+    const openChannelsSearch = () => {
+      setDismissed(false);
+      setScene('channels');
+    };
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openChannelsSearch();
+    };
+    row.tabIndex = 0;
+    row.setAttribute('role', 'button');
+    row.addEventListener('click', openChannelsSearch);
+    row.addEventListener('keydown', onKeyDown);
+    return () => {
+      row.removeEventListener('click', openChannelsSearch);
+      row.removeEventListener('keydown', onKeyDown);
+      row.removeAttribute('role');
+      row.removeAttribute('tabindex');
+    };
+  }, [frameEl]);
+
   useEffect(() => {
     switch (scene) {
+      case 'all':
+        setQuery('');
+        setChips([]);
+        break;
+      case 'all-typing':
+        setQuery(ALL_QUERY);
+        setChips([]);
+        break;
       case 'channels':
         setQuery('');
         setChips([]);
@@ -125,6 +188,10 @@ export default function UniversalSearch() {
         setQuery(PEOPLE_QUERY);
         setChips([]);
         break;
+      case 'copilot':
+        setQuery('');
+        setChips([]);
+        break;
       default:
         break;
     }
@@ -135,7 +202,10 @@ export default function UniversalSearch() {
       <SceneSwitcher
         scenes={SCENES}
         activeId={scene}
-        onChange={(id) => setScene(id as SceneId)}
+        onChange={(id) => {
+          setDismissed(false);
+          setScene(id as SceneId);
+        }}
         ariaLabel="Universal search entry points"
       />,
     );
@@ -143,8 +213,17 @@ export default function UniversalSearch() {
   }, [scene, setCenterSlot]);
 
   const tip: SearchTip = useMemo(() => {
+    if (activeTab === 'all') {
+      return {
+        kind: 'note',
+        text: 'Results update as you type',
+      };
+    }
     if (activeTab === 'channels') {
       return { kind: 'browse-channels' };
+    }
+    if (activeTab === 'messages' && (query.trim().length > 0 || chips.length > 0)) {
+      return { kind: 'enter-search' };
     }
     if (activeTab === 'messages') {
       return {
@@ -168,17 +247,19 @@ export default function UniversalSearch() {
         modifiers: FILE_MODIFIERS,
       };
     }
+    if (activeTab === 'copilot') {
+      return {
+        kind: 'note',
+        text: 'Agents searches all channels and messages you have access to',
+      };
+    }
     return {
       kind: 'shortcut',
       prefix: 'Tip: Use',
       keys: ['⌘', 'Shift', 'K'],
       suffix: 'to browse teammates or start a group message',
     };
-  }, [activeTab]);
-
-  const showEnterHint =
-    activeTab === 'messages' &&
-    (scene === 'messages-modifiers' || query.trim().length > 0);
+  }, [activeTab, chips.length, query]);
 
   const handleTabChange = (tab: SearchTab) => {
     setScene(sceneFromTab(tab));
@@ -187,6 +268,10 @@ export default function UniversalSearch() {
   const handleQueryChange = (value: string) => {
     setQuery(value);
 
+    if (activeTab === 'all') {
+      if (!value.trim() && scene !== 'all') setScene('all');
+      return;
+    }
     if (activeTab === 'channels') {
       setScene(value.trim() ? 'channels-typing' : 'channels');
       return;
@@ -208,6 +293,19 @@ export default function UniversalSearch() {
 
   const modalBody = (() => {
     switch (scene) {
+      case 'all':
+      case 'all-typing':
+        return (
+          <AllScene
+            query={query}
+            recentSearches={recentMessageSearches}
+            onRemoveSearch={(id) =>
+              setRecentMessageSearches((current) =>
+                current.filter((item) => item.id !== id),
+              )
+            }
+          />
+        );
       case 'channels':
         return <ChannelsScene />;
       case 'channels-typing':
@@ -261,7 +359,10 @@ export default function UniversalSearch() {
         <ChannelShell
           channelsSidebarModel={universalSearchChannelsSidebarModel}
           globalHeaderProps={{
-            onSearchClick: () => setScene('channels'),
+            onSearchClick: () => {
+              setDismissed(false);
+              setScene('all');
+            },
           }}
           channelHeader={
             <ChannelHeader
@@ -313,16 +414,15 @@ export default function UniversalSearch() {
         </ChannelShell>
 
         <UniversalSearchModal
-          open={modalOpen}
+          open={modalOpen && !dismissed}
           container={frameEl}
           overlayClassName={styles['universal-search__overlay']}
           activeTab={activeTab}
           query={query}
           placeholder={PLACEHOLDERS[activeTab]}
-          showEnterHint={showEnterHint}
           chips={chips}
           tip={tip}
-          onClose={() => setScene('channels')}
+          onClose={() => setDismissed(true)}
           onTabChange={handleTabChange}
           onQueryChange={handleQueryChange}
           onClearQuery={() => handleQueryChange('')}

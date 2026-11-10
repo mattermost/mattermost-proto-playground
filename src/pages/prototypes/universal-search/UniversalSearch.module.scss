@@ -21,6 +21,12 @@
     max-width: 1440px;
     max-height: 800px;
     overflow: hidden;
+
+    :global([class*='channels-sidebar__find-channels']):not(
+        [class*='find-channels-icon']
+      ):not([class*='find-channels-label']) {
+      cursor: pointer;
+    }
   }
 
   &__frame :global([class*='channel-shell']:not([class*='channel-shell__'])) {
@@ -32,9 +38,17 @@
     margin: 0 !important;
   }
 
-  // Stage the scrim inside the frame so PrototypeTopNav / SceneSwitcher stay usable.
+  // Stage inside the frame so PrototypeTopNav stays usable. ModalOverlay
+  // only centers and paints a scrim; this dialog sits 8px from the top
+  // with no scrim, and the overlay still receives the outside click.
   &__overlay {
-    position: absolute;
-    inset: 0;
+    &#{&} {
+      position: absolute;
+      inset: 0;
+      align-items: flex-start;
+      justify-content: center;
+      padding: var(--spacing-xs) var(--spacing-xl) var(--spacing-xl);
+      background-color: transparent;
+    }
   }
 }
