@@ -1,6 +1,7 @@
 import { AdminConsoleFooter } from '@mattermost/compass-ui/components/admin-console-footer';
 import { AdminConsoleHeader } from '@mattermost/compass-ui/components/admin-console-header';
 import { AdminPanel } from '@mattermost/compass-ui/components/admin-panel';
+import { PasswordInput } from '@mattermost/compass-ui/components/password-input';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { SectionNotice } from '@mattermost/compass-ui/components/section-notice';
 import { Select } from '@mattermost/compass-ui/components/select';
@@ -35,7 +36,12 @@ export function SettingsScene() {
                 <>
                   Calls plugin enables voice calls with screensharing in
                   channels. See{' '}
-                  <a href={CALLS_DOCS_URL} target="_blank" rel="noreferrer">
+                  <a
+                    className={styles['calls-admin__link']}
+                    href={CALLS_DOCS_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     documentation
                   </a>{' '}
                   to learn more.
@@ -57,11 +63,7 @@ export function SettingsScene() {
                   label="Max call participants"
                   help="The maximum number of participants that can join a call. If left empty, or set to 0, it means unlimited."
                 >
-                  <TextInput
-                    type="number"
-                    defaultValue="0"
-                    aria-label="Max call participants"
-                  />
+                  <TextInput type="number" min={0} step={1} defaultValue="0" />
                 </SettingRow>
                 <BooleanSetting
                   label="Allow screen sharing"
@@ -99,7 +101,6 @@ export function SettingsScene() {
                   <TextInput
                     defaultValue="http://someClientID1:@localhost:8045"
                     type="url"
-                    aria-label="RTCD service URL"
                   />
                 </SettingRow>
               </div>
@@ -114,19 +115,13 @@ export function SettingsScene() {
                   label="RTC Server Address (UDP)"
                   help="The local IP address used by the RTC server to listen on for UDP connections."
                 >
-                  <TextInput
-                    placeholder="127.0.0.1"
-                    aria-label="RTC Server Address (UDP)"
-                  />
+                  <TextInput placeholder="127.0.0.1" />
                 </SettingRow>
                 <SettingRow
                   label="RTC Server Address (TCP)"
                   help="The local IP address used by the RTC server to listen on for TCP connections."
                 >
-                  <TextInput
-                    placeholder="127.0.0.1"
-                    aria-label="RTC Server Address (TCP)"
-                  />
+                  <TextInput placeholder="127.0.0.1" />
                 </SettingRow>
                 <SettingRow
                   label="RTC Server Port (UDP)"
@@ -134,8 +129,10 @@ export function SettingsScene() {
                 >
                   <TextInput
                     type="number"
+                    min={1}
+                    max={65535}
+                    step={1}
                     defaultValue="8443"
-                    aria-label="RTC Server Port (UDP)"
                   />
                 </SettingRow>
                 <SettingRow
@@ -144,8 +141,10 @@ export function SettingsScene() {
                 >
                   <TextInput
                     type="number"
+                    min={1}
+                    max={65535}
+                    step={1}
                     defaultValue="8443"
-                    aria-label="RTC Server Port (TCP)"
                   />
                 </SettingRow>
               </div>
@@ -157,7 +156,7 @@ export function SettingsScene() {
                   label="ICE Host Override"
                   help="(Optional) The IP (or hostname) to be used as the host ICE candidate. If empty, it defaults to resolving via STUN."
                 >
-                  <TextInput aria-label="ICE Host Override" />
+                  <TextInput />
                 </SettingRow>
                 <SettingRow
                   label="ICE Host Port Override"
@@ -171,26 +170,20 @@ export function SettingsScene() {
                     </>
                   }
                 >
-                  <TextInput
-                    type="number"
-                    aria-label="ICE Host Port Override"
-                  />
+                  <TextInput type="number" min={1} max={65535} step={1} />
                 </SettingRow>
                 <SettingRow
                   label="ICE Servers Configurations"
+                  wide
                   help="(Optional) A list of ICE servers (STUN/TURN) configurations to use. This field should contain a valid JSON array."
                 >
-                  <TextArea
-                    defaultValue={DEFAULT_ICE_SERVERS}
-                    rows={3}
-                    aria-label="ICE Servers Configurations"
-                  />
+                  <TextArea defaultValue={DEFAULT_ICE_SERVERS} rows={3} />
                 </SettingRow>
                 <SettingRow
                   label="TURN Static Auth Secret"
                   help="(Optional) The secret key used to generate TURN short-lived authentication credentials."
                 >
-                  <TextInput aria-label="TURN Static Auth Secret" />
+                  <PasswordInput />
                 </SettingRow>
                 <SettingRow
                   label="TURN Credentials Expiration (minutes)"
@@ -198,8 +191,9 @@ export function SettingsScene() {
                 >
                   <TextInput
                     type="number"
+                    min={1}
+                    step={1}
                     defaultValue="1440"
-                    aria-label="TURN Credentials Expiration (minutes)"
                   />
                 </SettingRow>
                 <BooleanSetting
@@ -228,7 +222,6 @@ export function SettingsScene() {
                   <TextInput
                     defaultValue="http://someClientID1:@localhost:8045"
                     type="url"
-                    aria-label="Job service URL"
                   />
                 </SettingRow>
                 <SettingRow
@@ -237,8 +230,10 @@ export function SettingsScene() {
                 >
                   <TextInput
                     type="number"
+                    min={15}
+                    max={180}
+                    step={1}
                     defaultValue="60"
-                    aria-label="Maximum call recording duration"
                   />
                 </SettingRow>
                 <SettingRow
@@ -248,7 +243,6 @@ export function SettingsScene() {
                   <Select
                     options={RECORDING_QUALITY_OPTIONS}
                     defaultValue="low"
-                    aria-label="Call recording quality"
                   />
                 </SettingRow>
               </div>
@@ -272,18 +266,13 @@ export function SettingsScene() {
                   <Select
                     options={TRANSCRIBER_MODEL_OPTIONS}
                     defaultValue="tiny"
-                    aria-label="Call transcriber model size"
                   />
                 </SettingRow>
                 <SettingRow
                   label="Call transcriber threads"
                   help="The number of threads used by the post-call transcriber. This must be in the range [1, numCPUs]."
                 >
-                  <TextInput
-                    type="number"
-                    defaultValue="2"
-                    aria-label="Call transcriber threads"
-                  />
+                  <TextInput type="number" min={1} step={1} defaultValue="2" />
                 </SettingRow>
               </div>
             </AdminPanel>
@@ -306,37 +295,25 @@ export function SettingsScene() {
                   <Select
                     options={TRANSCRIBER_MODEL_OPTIONS}
                     defaultValue="tiny"
-                    aria-label="Live captions model size"
                   />
                 </SettingRow>
                 <SettingRow
                   label="Live captions: Number of transcribers used per call"
                   help="The number of separate live-captions transcribers for each call. Each transcribes one audio stream at a time. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
                 >
-                  <TextInput
-                    type="number"
-                    defaultValue="1"
-                    aria-label="Live captions number of transcribers"
-                  />
+                  <TextInput type="number" min={1} step={1} defaultValue="1" />
                 </SettingRow>
                 <SettingRow
                   label="Live captions: Number of threads per transcriber"
                   help="The number of threads per live-captions transcriber. The product of LiveCaptionsNumTranscribers * LiveCaptionsNumThreadsPerTranscriber must be in the range [1, numCPUs]."
                 >
-                  <TextInput
-                    type="number"
-                    defaultValue="2"
-                    aria-label="Live captions threads per transcriber"
-                  />
+                  <TextInput type="number" min={1} step={1} defaultValue="2" />
                 </SettingRow>
                 <SettingRow
                   label="Live captions language"
                   help="The language passed to the live captions transcriber. Should be a 2-letter ISO 639 Set 1 language code, e.g. 'en'. If blank, will be set to English 'en' as default."
                 >
-                  <TextInput
-                    defaultValue="en"
-                    aria-label="Live captions language"
-                  />
+                  <TextInput defaultValue="en" />
                 </SettingRow>
               </div>
             </AdminPanel>

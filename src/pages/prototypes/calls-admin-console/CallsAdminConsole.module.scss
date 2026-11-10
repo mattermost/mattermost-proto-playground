@@ -78,4 +78,10 @@
     flex-direction: column;
     gap: var(--spacing-xl);
   }
+
+  // Underlined so the link isn't identified by color alone.
+  &__link {
+    color: var(--button-bg);
+    text-decoration: underline;
+  }
 }

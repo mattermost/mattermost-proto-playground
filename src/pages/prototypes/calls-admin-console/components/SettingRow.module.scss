@@ -3,9 +3,13 @@
   align-items: flex-start;
   gap: var(--spacing-l);
 
+  @media (max-width: 720px) {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
   &__label {
     flex: 0 0 290px;
-    padding-top: var(--spacing-xxs);
     font-family: var(--font-family-body);
     font-size: var(--font-size-100);
     font-weight: var(--font-weight-semibold);
@@ -13,7 +17,17 @@
     color: var(--center-channel-color);
 
     @media (max-width: 720px) {
-      flex-basis: 160px;
+      flex-basis: auto;
+    }
+
+    // First line lines up with the control's first line (compass-build,
+    // "Label alignment"): medium input = 10px, radio = 0.
+    &--input {
+      padding-top: var(--spacing-s);
+    }
+
+    &--radio {
+      padding-top: 0;
     }
   }
 
@@ -23,13 +37,22 @@
     flex-direction: column;
     gap: var(--spacing-xs);
     min-width: 0;
+    width: 100%;
+  }
+
+  // Text and select inputs don't stretch across the whole column.
+  &__control {
+    max-width: 400px;
+
+    &--wide {
+      max-width: none;
+    }
   }
 
   &__radios {
     display: flex;
     align-items: center;
     gap: var(--spacing-m);
-    min-height: 34px;
 
     // Radio defaults to width: 100%; shrink so True / False sit side by side.
     > * {
