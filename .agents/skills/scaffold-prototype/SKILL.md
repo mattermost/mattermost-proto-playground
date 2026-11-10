@@ -1,6 +1,6 @@
 ---
 name: scaffold-prototype
-description: Scaffold a multi-scene Compass prototype under src/pages/prototypes with PrototypeTopNav chrome. Mount SceneSwitcher only when the product UI does not already switch modes. Use when creating a new multi-scene prototype or splitting a large prototype into scenes/. A user prompt is enough of a requirement source to build scene UI with compass-build; check it with compass-review.
+description: Scaffold a multi-scene Compass prototype under src/pages/prototypes with PrototypeTopNav chrome. Mount SceneSwitcher only for scenes the product UI does not already switch. Use when creating a new multi-scene prototype or splitting a large prototype into scenes/. A user prompt is enough of a requirement source to build scene UI with compass-build; check it with compass-review.
 ---
 
 # Scaffold a multi-scene prototype
@@ -27,8 +27,8 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 4. Build each scene by following [compass-build](https://github.com/mattermost/compass-design/blob/main/skills/compass-build/SKILL.md) (local path `.agents/skills/compass-build/SKILL.md`) with context **prototype** (`references/context.md`). Read the references that match the screen, then run `references/checklist.md`. Playground chrome, overlays, and mobile motion stay in [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md). Do not restate Compass rules here.
    Compass components are the standard. A prototype may still use a `className` or `:global` override to move faster than Compass, as in the prototype-only UI notes. That is looser than `compass-build`'s ban on deep overrides, and it wins for prototype scene UI. When the override fills a gap that belongs in Compass, open a follow-up issue in the compass-design repo.
    Import Compass pieces from `@mattermost/compass-ui` **subpaths** and `@mattermost/compass-proto` (root). Do not reimplement them under prototype `components/`.
-5. Mount `SceneSwitcher` only when the product UI does not already switch those modes. Tabs, a segmented control, or another control inside the prototype is that switch. Leave the center slot empty in that case. Do not mount both.
-   When the product has no mode control and at least one scene exists, use `usePrototypeChrome()` and a `useEffect` to `setCenterSlot(<SceneSwitcher …/>)`; cleanup with `setCenterSlot(null)`; sync when `activeScene` changes. Give `SceneSwitcher` a clear `ariaLabel`. Do not `position: fixed` the control to the viewport. `SceneSwitcher` is for jumping between prototype states the product does not already switch.
+5. Mount `SceneSwitcher` only for scenes the product UI does not already switch. Tabs, a segmented control, or another control inside the prototype is that switch. If it reaches every scene, leave the center slot empty and do not mount both. If some scenes are unreachable from it (for example guest or entry-point states), mount `SceneSwitcher` alongside it, listing only those scenes.
+   When `SceneSwitcher` is needed and at least one scene exists, use `usePrototypeChrome()` and a `useEffect` to `setCenterSlot(<SceneSwitcher …/>)`; cleanup with `setCenterSlot(null)`; sync when `activeScene` changes. Give `SceneSwitcher` a clear `ariaLabel`. Do not `position: fixed` the control to the viewport. `SceneSwitcher` is for jumping between prototype states the product does not already switch.
 6. Before reporting the prototype ready, follow [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-review/SKILL.md) (local path `.agents/skills/compass-review/SKILL.md`) on the new or changed prototype files. Fix Blockers with `compass-build`'s retrofit steps, then review again. A prototype `className` or `:global` override is not a Blocker. Report anything the review could not verify, including a compass-design issue opened for an upstream gap.
 
 `compass-build` and `compass-review` live in the sibling compass-design repo and are linked from `.agents/skills/`. If a link does not resolve, read `../compass-design/skills/compass-build/SKILL.md` and `../compass-design/skills/compass-review/SKILL.md`.
@@ -50,4 +50,4 @@ description: Scaffold a multi-scene Compass prototype under src/pages/prototypes
 
 ## Invariants
 
-Playground chrome and overlay wiring: [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md). That handbook's center-slot default still applies when the product has no mode control. When the product UI already switches modes, this skill wins: leave the center slot empty. Compass rules for the scene UI: `compass-build`.
+Playground chrome and overlay wiring: [src/pages/prototypes/AGENTS.md](../../../src/pages/prototypes/AGENTS.md). That handbook's center-slot default still applies when the product has no mode control. When the product UI already switches every scene, this skill wins: leave the center slot empty. Compass rules for the scene UI: `compass-build`.
