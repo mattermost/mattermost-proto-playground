@@ -1,3 +1,17 @@
+@keyframes universal-search-modal-enter-forward {
+  from {
+    opacity: 0;
+    transform: translateX(var(--spacing-l));
+  }
+}
+
+@keyframes universal-search-modal-enter-back {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--spacing-l) * -1));
+  }
+}
+
 .universal-search-modal {
   // Width stays on Modal size medium (704). Height follows the results and
   // stops at 480px; the body scrolls after that.
@@ -14,6 +28,16 @@
   // Slot top inset is spacing-l (16). The search field sits flush under the tabs.
   &#{&} :global([class*='modal-header__slot']) {
     padding-top: 0;
+  }
+
+  // The mode control sits 8px left of the header inset.
+  &#{&} :global([class*='modal-header__leading']) {
+    margin-left: calc(var(--spacing-xs) * -1);
+  }
+
+  // Modal always renders close. This dialog dismisses with Escape or the scrim.
+  &#{&} :global([class*='modal-header__close']) {
+    display: none;
   }
 
   &__header {
@@ -102,10 +126,33 @@
     }
   }
 
+  // Clips the short slide so it never creates a horizontal scrollbar.
+  &__stage {
+    overflow-x: clip;
+    min-width: 0;
+  }
+
   &__list {
     display: flex;
     flex-direction: column;
     min-height: 0;
+
+    &--enter-forward {
+      animation: universal-search-modal-enter-forward var(--duration-quick)
+        var(--ease-entrance);
+    }
+
+    &--enter-back {
+      animation: universal-search-modal-enter-back var(--duration-quick)
+        var(--ease-entrance);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__list--enter-forward,
+    &__list--enter-back {
+      animation: none;
+    }
   }
 
   // Keyboard highlight uses the same fill as MenuItem hover, not the active fill.

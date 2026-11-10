@@ -2,10 +2,13 @@ import avatarAiko from '@/assets/avatars/Aiko Tan.png';
 import avatarArjun from '@/assets/avatars/Arjun Patel.png';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import avatarDarius from '@/assets/avatars/Darius Cole.png';
+import avatarDavid from '@/assets/avatars/David Liang.png';
 import avatarEmma from '@/assets/avatars/Emma Novak.png';
 import avatarEthan from '@/assets/avatars/Ethan Brooks.png';
 import avatarIsabella from '@/assets/avatars/Isabella Cruz.png';
+import avatarLeila from '@/assets/avatars/Leila Haddad.png';
 import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
+import avatarLukas from '@/assets/avatars/Lukas Meyer.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
 
@@ -21,6 +24,7 @@ export type PersonResult = {
   id: string;
   name: string;
   avatarSrc: string;
+  username?: string;
   status?: 'online' | 'away' | 'dnd' | 'offline';
 };
 
@@ -96,8 +100,6 @@ export const RECENT_CHANNELS: ChannelResult[] = [
   },
 ];
 
-export const CHANNEL_QUERY = 'des';
-
 export const CHANNEL_TYPING_RESULTS: ChannelResult[] = [
   {
     id: 'ux-design',
@@ -144,8 +146,6 @@ export const ACTIVE_CHANNEL_FILTER = {
   label: 'In:',
   value: 'ux-design',
 };
-
-export const MESSAGE_RESULTS_QUERY = 'launch checklist';
 
 export const MESSAGE_HITS: MessageHit[] = [
   {
@@ -236,40 +236,89 @@ export const PEOPLE_MOST_CHATTED: PersonResult[] = [
   },
 ];
 
-export const PEOPLE_RECENT: PersonResult[] = [
+export const PEOPLE_FREQUENT: PersonResult[] = [
   {
-    id: 'emma',
-    name: 'Emma Novak',
-    avatarSrc: avatarEmma,
-    status: 'dnd',
-  },
-  {
-    id: 'arjun',
-    name: 'Arjun Patel',
-    avatarSrc: avatarArjun,
-    status: 'offline',
-  },
-  {
-    id: 'aiko',
-    name: 'Aiko Tan',
-    avatarSrc: avatarAiko,
-    status: 'online',
-  },
-  {
-    id: 'danielle',
-    name: 'Danielle Okoro',
-    avatarSrc: avatarDanielle,
-    status: 'away',
-  },
-  {
-    id: 'darius',
-    name: 'Darius Cole',
+    id: 'cody',
+    name: 'Cody Fisher',
     avatarSrc: avatarDarius,
     status: 'online',
   },
+  {
+    id: 'arvind',
+    name: 'Arvind Balaram',
+    avatarSrc: avatarArjun,
+    status: 'online',
+  },
+  {
+    id: 'leslie',
+    name: 'Leslie Alexander',
+    avatarSrc: avatarDanielle,
+    status: 'online',
+  },
+  {
+    id: 'devon',
+    name: 'Devon Robinson',
+    avatarSrc: avatarEthan,
+    status: 'away',
+  },
+  {
+    id: 'robert',
+    name: 'Robert Fox',
+    avatarSrc: avatarMarco,
+    status: 'dnd',
+  },
+  {
+    id: 'arlene',
+    name: 'Arlene McCoy',
+    avatarSrc: avatarAiko,
+    status: 'away',
+  },
 ];
 
-export const PEOPLE_QUERY = 'so';
+export const PEOPLE_RECENT: PersonResult[] = [
+  {
+    id: 'wade',
+    name: 'Wade Warren',
+    username: '@Wade.Warren',
+    avatarSrc: avatarLeonard,
+  },
+  {
+    id: 'jenny',
+    name: 'Jenny Wilson',
+    username: '@Jenny.Wilson',
+    avatarSrc: avatarEmma,
+  },
+  {
+    id: 'floyd',
+    name: 'Floyd Miles',
+    username: '@Floyd.Miles',
+    avatarSrc: avatarDavid,
+  },
+  {
+    id: 'jane',
+    name: 'Jane Cooper',
+    username: '@Jane.Cooper',
+    avatarSrc: avatarIsabella,
+  },
+  {
+    id: 'cody-recent',
+    name: 'Cody Fisher',
+    username: '@Cody.Fisher',
+    avatarSrc: avatarDarius,
+  },
+  {
+    id: 'albert',
+    name: 'Albert Flores',
+    username: '@Albert.Flores',
+    avatarSrc: avatarLukas,
+  },
+  {
+    id: 'jacob',
+    name: 'Jacob Jones',
+    username: '@Jacob.Jones',
+    avatarSrc: avatarLeila,
+  },
+];
 
 export const PEOPLE_TYPING_RESULTS: PersonResult[] = [
   {
@@ -294,9 +343,7 @@ export const PEOPLE_TYPING_RESULTS: PersonResult[] = [
 
 export const ACTIVE_CHANNEL_NAME = 'UX Design';
 
-export const ALL_QUERY = 'ux';
-
-function matchesQuery(query: string, values: string[]) {
+export function matchesQuery(query: string, values: string[]) {
   const needle = query.trim().toLowerCase();
   if (!needle) return false;
   return values.some((value) => value.toLowerCase().includes(needle));
@@ -326,8 +373,11 @@ export function allSearchMatches(query: string) {
     ),
     people: uniqueById([
       ...PEOPLE_MOST_CHATTED,
+      ...PEOPLE_FREQUENT,
       ...PEOPLE_RECENT,
       ...PEOPLE_TYPING_RESULTS,
-    ]).filter((person) => matchesQuery(query, [person.name])),
+    ]).filter((person) =>
+      matchesQuery(query, [person.name, person.username ?? '']),
+    ),
   };
 }

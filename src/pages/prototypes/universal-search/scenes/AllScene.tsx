@@ -1,4 +1,4 @@
-import { EmptyState } from '@mattermost/compass-ui/components/empty-state';
+import SearchEmptyState from '../components/SearchEmptyState';
 import {
   ChannelRows,
   FileRows,
@@ -59,11 +59,7 @@ export default function AllScene({
 
   if (!hasMatches) {
     return (
-      <EmptyState
-        title="No results"
-        titleLevel={3}
-        description="Nothing matches that search."
-      />
+      <SearchEmptyState />
     );
   }
 

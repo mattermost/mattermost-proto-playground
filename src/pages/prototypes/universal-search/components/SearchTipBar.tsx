@@ -23,6 +23,10 @@ type ShortcutTip = {
   suffix: string;
 };
 
+type PeopleTip = {
+  kind: 'people';
+};
+
 type NoteTip = {
   kind: 'note';
   text: string;
@@ -36,6 +40,7 @@ export type SearchTip =
   | BrowseChannelsTip
   | ModifierTip
   | ShortcutTip
+  | PeopleTip
   | NoteTip
   | EnterSearchTip;
 
@@ -101,6 +106,24 @@ export default function SearchTipBar({ tip }: SearchTipBarProps) {
       <div className={styles['search-tip-bar']}>
         <TipIcon />
         <p className={styles['search-tip-bar__text']}>{tip.text}</p>
+      </div>
+    );
+  }
+
+  if (tip.kind === 'people') {
+    return (
+      <div className={styles['search-tip-bar']}>
+        <TipIcon />
+        <p className={styles['search-tip-bar__text']}>
+          Use ⌘-Shift-K to{' '}
+          <Button emphasis="link" size="small" type="button">
+            browse for teammates
+          </Button>{' '}
+          or{' '}
+          <Button emphasis="link" size="small" type="button">
+            start a group message
+          </Button>
+        </p>
       </div>
     );
   }

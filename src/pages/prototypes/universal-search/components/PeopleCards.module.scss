@@ -1,0 +1,44 @@
+.people-cards {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--spacing-xxxs) var(--spacing-l);
+
+  &__card {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-s);
+    background-color: transparent;
+    color: var(--center-channel-color);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-75);
+    text-align: center;
+    cursor: pointer;
+
+    &--selected {
+      background-color: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__avatar {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

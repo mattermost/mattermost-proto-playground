@@ -51,6 +51,37 @@ type SearchListContextValue = {
 
 const SearchListContext = createContext<SearchListContextValue | null>(null);
 
+function useSearchOption() {
+  const list = useContext(SearchListContext);
+  const slot = useRef<{ generation: number; index: number } | null>(null);
+  const generation = list?.generation ?? 0;
+  if (list && slot.current?.generation !== generation) {
+    slot.current = { generation, index: list.register() };
+  }
+  const index = slot.current?.index ?? 0;
+  const selected = list ? index === list.activeIndex : false;
+  return { list, index, selected };
+}
+
+export function SearchOption({
+  children,
+}: {
+  children: (option: {
+    index: number;
+    selected: boolean;
+    onMouseEnter: () => void;
+  }) => ReactNode;
+}) {
+  const { list, index, selected } = useSearchOption();
+  return children({
+    index,
+    selected,
+    onMouseEnter: () => {
+      if (list && list.activeIndex !== index) list.setActiveIndex(index);
+    },
+  });
+}
+
 export function SearchResults({
   activeIndex,
   generation,
@@ -84,33 +115,30 @@ export function SearchResults({
 }
 
 export function SearchMenuItem(props: MenuItemProps) {
-  const list = useContext(SearchListContext);
-  const slot = useRef<{ generation: number; index: number } | null>(null);
-  const generation = list?.generation ?? 0;
-  if (list && slot.current?.generation !== generation) {
-    slot.current = { generation, index: list.register() };
-  }
-  const index = slot.current?.index ?? 0;
-  const selected = list ? index === list.activeIndex : false;
-
   return (
-    <MenuItem
-      {...props}
-      id={`universal-search-option-${index}`}
-      role="option"
-      tabIndex={-1}
-      aria-selected={selected}
-      className={[
-        props.className,
-        selected ? modalStyles['universal-search-modal__option--highlighted'] : '',
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      onMouseEnter={(event) => {
-        props.onMouseEnter?.(event);
-        if (list && list.activeIndex !== index) list.setActiveIndex(index);
-      }}
-    />
+    <SearchOption>
+      {({ index, selected, onMouseEnter }) => (
+        <MenuItem
+          {...props}
+          id={`universal-search-option-${index}`}
+          role="option"
+          tabIndex={-1}
+          aria-selected={selected}
+          className={[
+            props.className,
+            selected
+              ? modalStyles['universal-search-modal__option--highlighted']
+              : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          onMouseEnter={(event) => {
+            props.onMouseEnter?.(event);
+            onMouseEnter();
+          }}
+        />
+      )}
+    </SearchOption>
   );
 }
 
@@ -136,6 +164,8 @@ export function PersonRows({ people }: { people: PersonResult[] }) {
         <SearchMenuItem
           key={person.id}
           label={person.name}
+          secondaryLabel={person.username}
+          secondaryLabelPosition={person.username ? 'inline' : undefined}
           leadingVisual={
             <UserAvatar
               src={person.avatarSrc}

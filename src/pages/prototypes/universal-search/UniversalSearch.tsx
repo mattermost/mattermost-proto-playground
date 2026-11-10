@@ -10,8 +10,6 @@ import {
 } from '@mattermost/compass-proto';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
-import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
-import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { universalSearchChannelsSidebarModel } from './channelsSidebar.model';
 import UniversalSearchModal, {
   type SearchChip,
@@ -19,27 +17,19 @@ import UniversalSearchModal, {
 import type { SearchTip } from './components/SearchTipBar';
 import AllScene from './scenes/AllScene';
 import ChannelsScene from './scenes/ChannelsScene';
-import ChannelsTypingScene from './scenes/ChannelsTypingScene';
 import FilesScene from './scenes/FilesScene';
 import MessagesModifiersScene from './scenes/MessagesModifiersScene';
 import MessagesResultsScene from './scenes/MessagesResultsScene';
 import MessagesScene from './scenes/MessagesScene';
 import PeopleScene from './scenes/PeopleScene';
-import PeopleTypingScene from './scenes/PeopleTypingScene';
 import {
-  ACTIVE_CHANNEL_FILTER,
   ACTIVE_CHANNEL_NAME,
-  ALL_QUERY,
-  CHANNEL_QUERY,
   FILE_MODIFIERS,
   MESSAGE_MODIFIERS,
-  MESSAGE_RESULTS_QUERY,
-  PEOPLE_QUERY,
   RECENT_FILE_SEARCHES,
   RECENT_MESSAGE_SEARCHES,
 } from './universalSearchData';
 import {
-  SCENES,
   isModalOpen,
   tabForScene,
   type SceneId,
@@ -90,7 +80,6 @@ function sceneFromTab(tab: SearchTab): SceneId {
 }
 
 export default function UniversalSearch() {
-  const { setCenterSlot } = usePrototypeChrome();
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameEl, setFrameEl] = useState<HTMLElement | null>(null);
   const [scene, setScene] = useState<SceneId>('all');
@@ -110,6 +99,22 @@ export default function UniversalSearch() {
     setFrameEl(frameRef.current);
   }, []);
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || event.altKey || event.shiftKey) return;
+      if (!event.metaKey && !event.ctrlKey) return;
+      const key = event.key.toLowerCase();
+      if (key !== 'k' && key !== 'f') return;
+      event.preventDefault();
+      setDismissed(false);
+      setQuery('');
+      setChips([]);
+      setScene(key === 'k' ? 'channels' : 'all');
+    };
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, []);
+
   // The shell's Find channels row is a static label. This prototype turns
   // that row into the control that opens channel search.
   useEffect(() => {
@@ -121,6 +126,8 @@ export default function UniversalSearch() {
     if (!row) return;
     const openChannelsSearch = () => {
       setDismissed(false);
+      setQuery('');
+      setChips([]);
       setScene('channels');
     };
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
@@ -140,78 +147,6 @@ export default function UniversalSearch() {
     };
   }, [frameEl]);
 
-  useEffect(() => {
-    switch (scene) {
-      case 'all':
-        setQuery('');
-        setChips([]);
-        break;
-      case 'all-typing':
-        setQuery(ALL_QUERY);
-        setChips([]);
-        break;
-      case 'channels':
-        setQuery('');
-        setChips([]);
-        break;
-      case 'channels-typing':
-        setQuery(CHANNEL_QUERY);
-        setChips([]);
-        break;
-      case 'messages':
-        setQuery('');
-        setChips([]);
-        break;
-      case 'messages-modifiers':
-        setQuery('');
-        setChips([
-          {
-            id: 'in-channel',
-            label: `${ACTIVE_CHANNEL_FILTER.label} ${ACTIVE_CHANNEL_FILTER.value}`,
-          },
-          { id: 'from-pending', label: 'From:' },
-        ]);
-        break;
-      case 'messages-results':
-        setQuery(MESSAGE_RESULTS_QUERY);
-        setChips([]);
-        break;
-      case 'files':
-        setQuery('');
-        setChips([]);
-        break;
-      case 'people':
-        setQuery('');
-        setChips([]);
-        break;
-      case 'people-typing':
-        setQuery(PEOPLE_QUERY);
-        setChips([]);
-        break;
-      case 'copilot':
-        setQuery('');
-        setChips([]);
-        break;
-      default:
-        break;
-    }
-  }, [scene]);
-
-  useEffect(() => {
-    setCenterSlot(
-      <SceneSwitcher
-        scenes={SCENES}
-        activeId={scene}
-        onChange={(id) => {
-          setDismissed(false);
-          setScene(id as SceneId);
-        }}
-        ariaLabel="Universal search entry points"
-      />,
-    );
-    return () => setCenterSlot(null);
-  }, [scene, setCenterSlot]);
-
   const tip: SearchTip = useMemo(() => {
     if (activeTab === 'all') {
       return {
@@ -230,6 +165,7 @@ export default function UniversalSearch() {
         kind: 'modifiers',
         modifiers: MESSAGE_MODIFIERS,
         onModifierClick: (modifier) => {
+          setQuery('');
           setScene('messages-modifiers');
           setChips((current) => [
             ...current.filter((chip) => chip.id !== 'from-pending'),
@@ -253,35 +189,25 @@ export default function UniversalSearch() {
         text: 'Agents searches all channels and messages you have access to',
       };
     }
-    return {
-      kind: 'shortcut',
-      prefix: 'Tip: Use',
-      keys: ['⌘', 'Shift', 'K'],
-      suffix: 'to browse teammates or start a group message',
-    };
+    return { kind: 'people' };
   }, [activeTab, chips.length, query]);
 
   const handleTabChange = (tab: SearchTab) => {
+    setQuery('');
+    setChips([]);
     setScene(sceneFromTab(tab));
   };
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
 
-    if (activeTab === 'all') {
-      if (!value.trim() && scene !== 'all') setScene('all');
-      return;
-    }
-    if (activeTab === 'channels') {
-      setScene(value.trim() ? 'channels-typing' : 'channels');
-      return;
-    }
-    if (activeTab === 'people') {
-      setScene(value.trim() ? 'people-typing' : 'people');
-      return;
-    }
-    if (activeTab === 'messages' && value.trim().toLowerCase().startsWith('from:')) {
+    if (activeTab !== 'messages') return;
+    const fromFilter = value.trim().toLowerCase().startsWith('from:');
+    if (fromFilter && scene !== 'messages-modifiers') {
       setScene('messages-modifiers');
+    }
+    if (!fromFilter && scene === 'messages-modifiers') {
+      setScene('messages');
     }
   };
 
@@ -294,7 +220,6 @@ export default function UniversalSearch() {
   const modalBody = (() => {
     switch (scene) {
       case 'all':
-      case 'all-typing':
         return (
           <AllScene
             query={query}
@@ -307,12 +232,11 @@ export default function UniversalSearch() {
           />
         );
       case 'channels':
-        return <ChannelsScene />;
-      case 'channels-typing':
-        return <ChannelsTypingScene />;
+        return <ChannelsScene query={query} />;
       case 'messages':
         return (
           <MessagesScene
+            query={query}
             searches={recentMessageSearches}
             onRemoveSearch={(id) =>
               setRecentMessageSearches((current) =>
@@ -324,6 +248,7 @@ export default function UniversalSearch() {
       case 'messages-modifiers':
         return (
           <MessagesModifiersScene
+            query={query}
             onSelect={(id, label) => {
               setChips((current) => [
                 ...current.filter((chip) => chip.id !== 'from-pending'),
@@ -336,6 +261,7 @@ export default function UniversalSearch() {
       case 'files':
         return (
           <FilesScene
+            query={query}
             searches={recentFileSearches}
             onRemoveSearch={(id) =>
               setRecentFileSearches((current) =>
@@ -345,9 +271,7 @@ export default function UniversalSearch() {
           />
         );
       case 'people':
-        return <PeopleScene />;
-      case 'people-typing':
-        return <PeopleTypingScene />;
+        return <PeopleScene query={query} />;
       default:
         return null;
     }
@@ -361,6 +285,8 @@ export default function UniversalSearch() {
           globalHeaderProps={{
             onSearchClick: () => {
               setDismissed(false);
+              setQuery('');
+              setChips([]);
               setScene('all');
             },
           }}
@@ -375,7 +301,10 @@ export default function UniversalSearch() {
           }
           trailing={
             scene === 'messages-results' ? (
-              <MessagesResultsScene onClose={() => setScene('messages')} />
+              <MessagesResultsScene
+                query={query}
+                onClose={() => setScene('messages')}
+              />
             ) : undefined
           }
         >

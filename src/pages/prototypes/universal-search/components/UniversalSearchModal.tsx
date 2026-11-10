@@ -63,6 +63,9 @@ export default function UniversalSearchModal({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const listSignature = useRef<string | null>(null);
+  const previousTab = useRef(activeTab);
+  const wasOpen = useRef(open);
+  const enterFrom = useRef<'forward' | 'back' | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [listGeneration, setListGeneration] = useState(0);
   const [optionCount, setOptionCount] = useState(0);
@@ -128,6 +131,20 @@ export default function UniversalSearchModal({
       ];
     option?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex]);
+
+  if (previousTab.current !== activeTab) {
+    const delta =
+      TABS.findIndex((tab) => tab.key === activeTab) -
+      TABS.findIndex((tab) => tab.key === previousTab.current);
+    enterFrom.current =
+      open && wasOpen.current && delta !== 0
+        ? delta > 0
+          ? 'forward'
+          : 'back'
+        : null;
+    previousTab.current = activeTab;
+  }
+  wasOpen.current = open;
 
   const activeOptionId =
     optionCount > 0 ? `universal-search-option-${activeIndex}` : undefined;
@@ -213,16 +230,29 @@ export default function UniversalSearchModal({
           generation={listGeneration}
           onActiveIndexChange={setActiveIndex}
         >
-          <div
-            ref={listRef}
-            id="universal-search-results"
-            className={styles['universal-search-modal__list']}
-            role="listbox"
-            tabIndex={-1}
-            aria-label="Search results"
-            onKeyDown={handleListKeyDown}
-          >
-            {children}
+          <div className={styles['universal-search-modal__stage']}>
+            <div
+              key={activeTab}
+              ref={listRef}
+              id="universal-search-results"
+              className={[
+                styles['universal-search-modal__list'],
+                enterFrom.current === 'forward'
+                  ? styles['universal-search-modal__list--enter-forward']
+                  : '',
+                enterFrom.current === 'back'
+                  ? styles['universal-search-modal__list--enter-back']
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              role="listbox"
+              tabIndex={-1}
+              aria-label="Search results"
+              onKeyDown={handleListKeyDown}
+            >
+              {children}
+            </div>
           </div>
         </SearchResults>
       </Modal>
