@@ -28,19 +28,17 @@ export default function CallsAdminConsole() {
   }, [activeScene, setCenterSlot]);
 
   return (
-    <div className={styles['calls-admin']}>
-      <div className={styles['calls-admin__shell']}>
-        <div className={styles['calls-admin__body']}>
-          <div className={styles['calls-admin__sidebar']}>
-            <AdminConsoleSidebar
-              avatarSrc={avatarLeonard}
-              avatarAlt="Leonard Riley"
-              groups={CALLS_SIDEBAR_GROUPS}
-            />
-          </div>
-          <div className={styles['calls-admin__main']}>
-            {activeScene === 'settings' && <SettingsScene />}
-          </div>
+    <div className={styles['calls-admin-page']}>
+      <div className={styles['calls-admin']}>
+        <div className={styles['calls-admin__sidebar-mount']}>
+          <AdminConsoleSidebar
+            avatarSrc={avatarLeonard}
+            avatarAlt="Leonard Riley"
+            groups={CALLS_SIDEBAR_GROUPS}
+          />
+        </div>
+        <div className={styles['calls-admin__main']}>
+          {activeScene === 'settings' && <SettingsScene />}
         </div>
       </div>
     </div>

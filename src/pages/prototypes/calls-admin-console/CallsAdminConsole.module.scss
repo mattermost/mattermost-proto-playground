@@ -1,41 +1,34 @@
-.calls-admin {
-  height: 100%;
+// Full-height host so the frame's `margin: auto` centers it in the page.
+.calls-admin-page {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xxl);
+  height: 100%;
+}
+
+.calls-admin {
+  // Admin Console layout frame (compass-design layouts/admin-console specimen).
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: calc(100% - 80px);
+  height: calc(100% - 80px);
+  margin: auto;
+  max-width: 1440px;
+  max-height: 800px;
+  min-width: 1000px;
+  min-height: 600px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  box-shadow: var(--elevation-6);
+  overflow: hidden;
   box-sizing: border-box;
 
-  &__shell {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    flex: 1 1 auto;
-    min-height: 0;
-    max-width: 1440px;
-    max-height: 800px;
-    background: var(--sidebar-bg);
-    color: var(--center-channel-color);
-    border-radius: var(--radius-xl);
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
-    box-shadow: var(--elevation-6);
-    overflow: hidden;
-  }
-
-  &__body {
-    display: flex;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  &__sidebar {
+  &__sidebar-mount {
     display: flex;
     flex-shrink: 0;
     height: 100%;
     min-height: 0;
 
-    // Sidebar defaults to a fixed demo height; fill the shell instead.
+    // Sidebar defaults to a fixed demo height; fill the frame instead.
     & > * {
       height: 100% !important;
     }
@@ -43,7 +36,7 @@
 
   &__main {
     display: flex;
-    flex: 1 1 0;
+    flex: 1;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
@@ -72,9 +65,10 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xl);
-    // Figma: 960px content column, 20px inset.
+    // Figma content column: 960px wide with a 20px inset.
     max-width: 960px;
     padding: var(--spacing-xl);
+    padding-bottom: var(--spacing-xxl);
     box-sizing: border-box;
   }
 
