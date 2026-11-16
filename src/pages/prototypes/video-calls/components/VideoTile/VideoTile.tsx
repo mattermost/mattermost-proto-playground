@@ -495,7 +495,6 @@ function VideoTileInner({
               icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
               size="x-small"
               style="inverted"
-              rounded
               aria-label={l.participantActions}
               aria-haspopup="menu"
               aria-expanded={!!menuState}
