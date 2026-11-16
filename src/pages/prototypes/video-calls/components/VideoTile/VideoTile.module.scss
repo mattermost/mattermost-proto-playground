@@ -351,6 +351,14 @@
     }
   }
 
+  // Host-driven shift (e.g. the self view) — declared first so the explicit
+  // hover / menu-open / touch rules below win on equal specificity.
+  &--has-menu .video-tile__badges {
+    translate: calc(
+      -1 * var(--video-tile-corner-step) * var(--video-tile-host-reveal, 0)
+    );
+  }
+
   // Reveal the `...` button on hover, keyboard focus or while its menu is
   // open; touch screens (no hover) keep it visible.
   &--has-menu:hover,
@@ -375,12 +383,6 @@
         translate: calc(-1 * var(--video-tile-corner-step)) 0;
       }
     }
-  }
-
-  &--has-menu .video-tile__badges {
-    translate: calc(
-      -1 * var(--video-tile-corner-step) * var(--video-tile-host-reveal, 0)
-    );
   }
 
   &--mirrored {
