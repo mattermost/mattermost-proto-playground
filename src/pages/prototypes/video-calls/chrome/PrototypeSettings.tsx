@@ -6,6 +6,8 @@ import {
   type ReactNode,
 } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
+import VideoOffOutlineIcon from '@mattermost/compass-icons/components/video-off-outline';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import VolumeHighIcon from '@mattermost/compass-icons/components/volume-high';
 import CogOutlineIcon from '@mattermost/compass-icons/components/cog-outline';
@@ -46,6 +48,12 @@ export interface PrototypeSettingsProps {
   onOpenCallLink: () => void;
   canOpenCallLink: boolean;
 }
+
+const REMOTE_VIDEO_ICON: Record<RemoteVideo, ReactNode> = {
+  on: <VideoOutlineIcon />,
+  off: <VideoOffOutlineIcon />,
+  mixed: <AccountMultipleOutlineIcon />,
+};
 
 const SECONDARY: Record<RemoteVideo, string> = {
   on: 'Everyone else has their camera on. Available in a live call.',
@@ -183,6 +191,9 @@ export default function PrototypeSettings({
                 aria-checked={remoteVideo === o.id}
                 label={o.label}
                 secondaryLabel={SECONDARY[o.id]}
+                leadingVisual={
+                  <Icon size="16" glyph={REMOTE_VIDEO_ICON[o.id]} />
+                }
                 trailingElement={remoteVideo === o.id}
                 disabled={
                   !canSetRemoteVideo || (o.id === 'mixed' && !canSetMixedVideo)
