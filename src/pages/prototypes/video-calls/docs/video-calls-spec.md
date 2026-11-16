@@ -375,7 +375,24 @@ Widget while sharing (Phase 1): the 16:9 video area is replaced by a live thumbn
 
 **Self-view picture-in-picture.** Draggable with release velocity; settles into the nearest corner with a spring. Arrow keys move it between corners; Escape cancels a drag; a hide control collapses it to a "Show self view" chip.
 
-**Tiles.** Name label with mute state; HOST tag next to the host's name (popout tiles only); a pin icon after the name on the tile you pinned; active speaker border and sound wave (not shown when muted; yours too, see Your own speaking highlight); raised-hand badge; reaction pop (emoji shows 2.5s on the tile with a stage-wide burst); poor connection and "Reconnecting…" states. Remote tiles with the camera on play a muted looping clip, staggered so tiles never move in lockstep; a poster still shows before the clip loads and under reduced motion. A clip pauses on its still frame while the tile is scrolled out of view, in overflow or in a hidden tab, and resumes without restarting. A tile with the camera off, or with no clip, shows the avatar. To see this, the prototype settings menu has an "Other people's video" control (prototype chrome, not product UI) with Video on, Video off and Mixed (every second person off, groups only). It is available in a live call and resets when the call ends.
+**Tiles.** Name label with mute state; HOST tag next to the host's name (popout tiles only); a pin icon after the name on the tile you pinned; active speaker border and sound wave (not shown when muted; yours too, see Your own speaking highlight); raised-hand badge; reaction pop (emoji shows 2.5s on the tile with a stage-wide burst); loading, poor connection and reconnecting states (below). Remote tiles with the camera on play a muted looping clip, staggered so tiles never move in lockstep; a poster still shows before the clip loads and under reduced motion. A clip pauses on its still frame while the tile is scrolled out of view, in overflow or in a hidden tab, and resumes without restarting. A tile with the camera off, or with no clip, shows the avatar.
+
+In-between video states, on any tile (featured, strip, grid, the floating self view and the widget):
+
+- **Loading:** the person's camera is on but their video has not arrived. The tile shows their avatar on the dark tile with a spinner and "Connecting…" below it; no video plays.
+- **Poor connection:** the video pauses on its current frame under a dimmed veil, and the poor-connection badge (alert icon) shows in the top-right corner. With no video (camera off), the avatar is dimmed instead.
+- **Reconnecting:** frozen and dimmed the same way, in grey, with a spinner and "Reconnecting…" in the middle; no badge.
+- The name label, mute state, HOST tag, pin icon and active-speaker border stay visible in every state. On short tiles (the speaker strip, the widget's self view) the label would run into the name, so only the spinner shows, on a dark disc over the avatar's centre.
+- The video resumes in place, without restarting, when the state clears. The tile still pauses on its own when scrolled away, in a hidden tab or under reduced motion; the spinner does not turn under reduced motion.
+
+![Call window (DM): the other person's video is loading: avatar with a "Connecting…" spinner](shots/final/30-window-remote-loading.png)
+
+![Call window (4 people): the featured speaker has a poor connection: video paused and dimmed, with the warning badge; the strip plays on](shots/final/31-window-remote-poor-paused.png)
+
+To see these, the prototype settings menu (prototype chrome, not product UI) has two radio groups, available only in a live call and reset when the call ends:
+
+- **Other people's video:** Video on, Video off, Loading, Poor network, Reconnecting and Mixed. In a DM every option applies to the other person, and Mixed is hidden. In a group or channel, Video on and Video off apply to everyone else, Mixed turns off every second other person, and Loading, Poor network and Reconnecting apply to one person only: the first other person in the roster (Marco, the default featured speaker); everyone else stays live.
+- **My connection:** Good, Poor and Reconnecting. It sets the state of your own tile wherever it shows, and posts your connection warning (see Notices, recording and warnings).
 
 Each window tile, yours and the floating self view included, has a "..." button in its top-right corner, shown while you hover or focus the tile or while its menu is open (always shown on touch screens). It opens the same menu as right-clicking the tile. While the button shows, the tile's status badges (raised hand, poor connection) slide left of it so they never overlap; on the floating self view the button sits beside the hide control and does not start a drag. The menu holds Pin or Unpin in the speaker views, and the host's controls on other people's tiles (see Host controls). A tile with nothing to offer (for example someone else's tile in Grid when you are not the host) has no "..." button and no right-click menu.
 
@@ -387,13 +404,13 @@ GM and channel calls are capped at 10 participants in Phase 2 (confirmed). Behav
 
 Only the host sees host controls, and only on other people's tiles, in the tile's "..." menu or right-click menu (see Tiles) below Pin: Mute (mutes them for everyone; disabled if already muted), Make host, Remove from call (destructive). Other people's menus hold only Pin, and the host's own tile only Pin or Unpin. Each posts a notice ("Muted <name>", "<name> is now a host", "<name> was removed"). Make host moves the HOST tag; you stop being host. Leaving as host transfers host automatically (see Leaving and ending a call); End call for everyone is a host-only action that is not in the prototype yet.
 
-![Host tile menu: Mute, Make host, Remove from call](shots/final/22-window-host-menu.png)
+![Host tile menu in Grid, opened from the "..." button in the tile's top-right corner: Mute (disabled, already muted), Make host, Remove from call](shots/final/22-window-host-menu.png)
 
 ![Tile menu in the speaker view (4 people): Pin, then the host controls](shots/final/29-window-tile-menu-pin.png)
 
 ### Notices, recording and warnings
 
-- Notices stack bottom-left of the stage above the controls, up to 5, newest at the bottom.
+- Notices stack bottom-left of the stage above the controls, up to 5, newest at the bottom. In the call window, permission, device and network warnings show at the top instead (see below).
 - Transient (joined, left, host, info, recording, raised hand) fade after 3 seconds (200ms fade-off). Persistent until dismissed: network (warning), device (danger), permission (danger), and "Recording and transcription has started". When the stack is full the oldest transient notice drops first so warnings are not pushed off.
 - Every notice is the proto call-notice pill, except the two recording notices: "Recording stopped" uses a compact popover with a record icon, and "Recording and transcription has started" is the popover notice below. Notices are not Toasts (the one exception is the "Call link copied" confirmation in the header, which is a Toast). The pill has no dismiss button, so a notice that stays until dismissed (network, device, permission) is dismissed by pressing the pill (its trailing close icon is the affordance; Enter and Space also dismiss).
 - "Recording and transcription has started" is a persistent popover notice (record icon, title, the body "Consider letting everyone know that this meeting is being recorded and transcribed.", a primary Dismiss button and a close button). It stays until dismissed and is not dropped when the stack is full.
@@ -410,6 +427,9 @@ Only the host sees host controls, and only on other people's tiles, in the tile'
 !["Recording and transcription has started" popover notice, with the REC indicator in the header](shots/final/24-window-recording-notice.png)
 
 - Permission, device and network warnings: in the call window they show at the top, in the call header. In the widget they show as notices like any other, but stay until dismissed. Examples: the browser camera is blocked (permission), no camera is found (device), the connection is poor (network).
+- **Your own connection.** While your connection is poor, one persistent warning shows: "Your connection is poor. Video may pause."; while reconnecting: "Reconnecting to the call…". It is a network notice in the warning tone: at the top of the call window, in the call header, and above the widget like any other notice. There is only ever one: switching between poor and reconnecting replaces it, and it goes away by itself once the connection is good again. If you dismiss it while the connection is still poor, it stays dismissed until the state changes. It counts toward the cap of 5 and outlives transient notices. Your tile shows the matching state (badge, or frozen with "Reconnecting…").
+
+![Call window with your connection poor: the warning at the top and the badge on your tile](shots/final/32-window-my-connection-poor.png)
 
 ### Sounds
 
@@ -433,7 +453,7 @@ Compass durations and easings only: quick (150ms) with entrance / exit easings f
 - Every control has an accessible name (for example "Hide self view", "Dismiss notification", "More options", "Expand call window"); toolbars and regions are labelled ("Call notifications", "Active call", "Outgoing call", "Joining call", "Call setup").
 - Call state changes use polite live regions (calling, joining, notices, helper text); the incoming widget is a dialog.
 - Keyboard: Escape closes menus; arrow keys navigate device and participant menus (Home also supported in device menus); arrow keys move the self view; the call shortcuts listed under Call window. _Verify focus order and Tab reachability of the draggable widget._
-- Tiles expose "<name>: <status>" (speaking, hand raised, host, pinned, muted, poor connection).
+- Tiles expose "<name>: <status>" (speaking, hand raised, host, pinned, muted, connecting, poor connection, reconnecting).
 - The window's View button shows the text "View" but its accessible name is "Change call layout", so the visible label is not part of the name (WCAG 2.5.3 Label in Name). _Question: rename to "View" or "View: change call layout"._
 - A participant with no avatar image shows initials on a green disc (for example "Et"); the name label stays the accessible name.
 - Contrast: white text on green-600 is 3.54:1, which passes only for large text or UI components; green-700 is 5.2:1 and passes for body text. _Question: which surfaces use green-600 for small white text (Join banner, Start call button)? Move small text to green-700 or enlarge._
@@ -460,7 +480,7 @@ New in the prototype (candidates for the design system): UserSettingsModal (Call
 4. _Resolved:_ the banner live-updates (elapsed time and participant count). The prototype now ticks the elapsed time; the count follows the People control.
 5. Green-600 versus green-700 for small white text (3.54:1 versus 5.2:1).
 6. _Resolved:_ the call card states for DM calls, including what the caller sees on decline, no answer and cancel, are defined in the Calls UX Improvements for DM Calls spec.
-7. Which events produce persistent network warnings, and what is the copy?
+7. Which events produce persistent network warnings, and what is the copy? The prototype shows one for your own poor or reconnecting connection ("Your connection is poor. Video may pause.", "Reconnecting to the call…"); the copy and thresholds are not confirmed.
 8. _Resolved:_ sounds follow mattermost-plugin-calls v2 (see Sounds). The prototype now plays join-self, join-user and leave; the 8-participant join limit and leave-on-disconnect are still to do.
 9. _Resolved:_ GM and channel calls have no incoming call notice, so there is no Audio only choice there; people join from the Ongoing banner, header Join call or call card. Remaining question: should the 1:1 DM incoming widget offer Audio only? (The unused `IncomingCallCard` component has it; the widget does not.)
 10. Where should the Figma board be refreshed so it matches the prototype?
