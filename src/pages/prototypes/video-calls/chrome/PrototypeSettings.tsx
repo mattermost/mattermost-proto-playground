@@ -1,5 +1,4 @@
 import {
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -20,13 +19,13 @@ import { WithTooltip } from '@mattermost/compass-proto';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
+import { Select } from '@mattermost/compass-ui/components/select';
 import {
   PopoverMenu,
   PopoverMenuDivider,
   PopoverMenuGroup,
   PopoverMenuGroupTitle,
 } from '@mattermost/compass-ui/components/popover-menu';
-import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { CallFeatures } from '@/types/videoCall';
 import {
   MY_CONNECTION,
@@ -180,8 +179,21 @@ export default function PrototypeSettings({
 }: PrototypeSettingsProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const close = useCallback(() => setOpen(false), []);
-  useOutsideClose(ref, open, close);
+  // Outside click closes the popover, but not a click in a Select's menu: that
+  // menu is portaled to the body, so it is outside `ref` in the DOM. React
+  // events still bubble through portals, so the wrapper flags those clicks.
+  const insideClick = useRef(false);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      const inside =
+        insideClick.current || !!ref.current?.contains(e.target as Node);
+      insideClick.current = false;
+      if (!inside) setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [open]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -194,7 +206,13 @@ export default function PrototypeSettings({
   }, [open]);
 
   return (
-    <div ref={ref} className={styles['prototype-settings']}>
+    <div
+      ref={ref}
+      className={styles['prototype-settings']}
+      onMouseDownCapture={() => {
+        insideClick.current = true;
+      }}
+    >
       <WithTooltip placement="bottom" label="Prototype settings">
         <IconButton
           size="small"
@@ -249,47 +267,51 @@ export default function PrototypeSettings({
             <PopoverMenuGroupTitle>
               Other people&apos;s video
             </PopoverMenuGroupTitle>
-            {REMOTE_VIDEO.filter((o) => !(isDm && o.id === 'mixed')).map(
-              (o) => (
-                <MenuItem
-                  key={o.id}
-                  role="menuitemradio"
-                  aria-checked={remoteVideo === o.id}
-                  label={o.label}
-                  secondaryLabel={remoteVideoSecondary(o.id, isDm, focusName)}
-                  leadingVisual={
+            <div className={styles['prototype-settings__field']}>
+              <Select
+                size="small"
+                aria-label="Other people's video"
+                value={remoteVideo}
+                disabled={!canSetRemoteVideo}
+                zIndex={40}
+                onChange={(v) => onRemoteVideoChange(v as RemoteVideo)}
+                options={REMOTE_VIDEO.filter(
+                  (o) => !(isDm && o.id === 'mixed'),
+                ).map((o) => ({
+                  value: o.id,
+                  label: o.label,
+                  leadingVisual: (
                     <Icon size="16" glyph={REMOTE_VIDEO_ICON[o.id]} />
-                  }
-                  trailingElement={remoteVideo === o.id}
-                  disabled={
-                    !canSetRemoteVideo ||
-                    (o.id === 'mixed' && !canSetMixedVideo)
-                  }
-                  onClick={() => onRemoteVideoChange(o.id)}
-                />
-              ),
-            )}
+                  ),
+                  secondaryLabel: remoteVideoSecondary(o.id, isDm, focusName),
+                  disabled: o.id === 'mixed' && !canSetMixedVideo,
+                }))}
+              />
+            </div>
           </PopoverMenuGroup>
 
           <PopoverMenuDivider />
 
           <PopoverMenuGroup>
             <PopoverMenuGroupTitle>My connection</PopoverMenuGroupTitle>
-            {MY_CONNECTION.map((o) => (
-              <MenuItem
-                key={o.id}
-                role="menuitemradio"
-                aria-checked={myConnection === o.id}
-                label={o.label}
-                secondaryLabel={MY_CONNECTION_SECONDARY[o.id]}
-                leadingVisual={
-                  <Icon size="16" glyph={MY_CONNECTION_ICON[o.id]} />
-                }
-                trailingElement={myConnection === o.id}
+            <div className={styles['prototype-settings__field']}>
+              <Select
+                size="small"
+                aria-label="My connection"
+                value={myConnection}
                 disabled={!canSetRemoteVideo}
-                onClick={() => onMyConnectionChange(o.id)}
+                zIndex={40}
+                onChange={(v) => onMyConnectionChange(v as MyConnection)}
+                options={MY_CONNECTION.map((o) => ({
+                  value: o.id,
+                  label: o.label,
+                  leadingVisual: (
+                    <Icon size="16" glyph={MY_CONNECTION_ICON[o.id]} />
+                  ),
+                  secondaryLabel: MY_CONNECTION_SECONDARY[o.id],
+                }))}
               />
-            ))}
+            </div>
           </PopoverMenuGroup>
 
           <PopoverMenuDivider />

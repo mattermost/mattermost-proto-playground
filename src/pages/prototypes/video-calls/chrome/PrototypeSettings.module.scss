@@ -12,4 +12,9 @@
     max-width: 90vw;
     transform-origin: top left;
   }
+
+  // A Select under a group title, inset like the menu rows.
+  &__field {
+    padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-xs);
+  }
 }

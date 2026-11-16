@@ -389,7 +389,7 @@ In-between video states, on any tile (featured, strip, grid, the floating self v
 
 ![Call window (4 people): the featured speaker has a poor connection: video paused and dimmed, with the warning badge; the strip plays on](shots/final/31-window-remote-poor-paused.png)
 
-To see these, the prototype settings menu (prototype chrome, not product UI) has two radio groups, available only in a live call and reset when the call ends:
+To see these, the prototype settings menu (prototype chrome, not product UI) has two selects, available only in a live call and reset when the call ends:
 
 - **Other people's video:** Video on, Video off, Loading, Poor network, Reconnecting and Mixed. In a DM every option applies to the other person, and Mixed is hidden. In a group or channel, Video on and Video off apply to everyone else, Mixed turns off every second other person, and Loading, Poor network and Reconnecting apply to one person only: the first other person in the roster (Marco, the default featured speaker); everyone else stays live.
 - **My connection:** Good, Poor and Reconnecting. It sets the state of your own tile wherever it shows, and posts your connection warning (see Notices, recording and warnings).
