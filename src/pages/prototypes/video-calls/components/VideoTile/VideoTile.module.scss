@@ -260,6 +260,13 @@
     background: rgba(0, 0, 0, 0.64);
     color: var(--away-indicator, var(--color-warning));
 
+    // The alert triangle fills its 16px box edge to edge, so it crowds the
+    // circle: scale it down and lift it slightly (its mass sits low).
+    &--poor > * {
+      scale: 0.75;
+      translate: 0 -0.5px;
+    }
+
     // Yellow badge with a dark glyph for contrast.
     &--hand {
       color: var(--color-neutral-1050);

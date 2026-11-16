@@ -475,7 +475,7 @@ function VideoTileInner({
         <div className={styles['video-tile__badges']}>
           {connection === 'poor' && (
             <span
-              className={styles['video-tile__badge']}
+              className={`${styles['video-tile__badge']} ${styles['video-tile__badge--poor']}`}
               title={l.poorConnection}
             >
               <Icon glyph={<AlertOutlineIcon />} size="16" />
