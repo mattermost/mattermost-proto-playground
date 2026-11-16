@@ -33,12 +33,6 @@
   }
 }
 
-@keyframes video-tile-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .video-tile {
   // Figma camera-off fill and muted glyph red have no Compass token yet.
   --video-tile-bg: var(--calls-video-bg, #080c14);
@@ -348,11 +342,6 @@
     white-space: nowrap;
   }
 
-  &__spinner {
-    animation: video-tile-spin calc(var(--duration-moderate) * 4)
-      var(--ease-transition) infinite;
-  }
-
   // -------------------------------------------------------------------------
   // Modifiers
   // -------------------------------------------------------------------------
@@ -494,8 +483,7 @@
       transition: none;
     }
 
-    .video-tile__wave-bar,
-    .video-tile__spinner {
+    .video-tile__wave-bar {
       animation: none;
     }
 

@@ -10,6 +10,7 @@ import {
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { WithTooltip } from '@mattermost/compass-proto';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { Spinner } from '@mattermost/compass-ui/components/spinner';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import {
@@ -22,8 +23,6 @@ import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PinOutlineIcon from '@mattermost/compass-icons/components/pin-outline';
-import RefreshIcon from '@mattermost/compass-icons/components/refresh';
-import SyncIcon from '@mattermost/compass-icons/components/sync';
 import {
   ParticipantMenu,
   type ParticipantMenuAnchor,
@@ -453,9 +452,9 @@ function VideoTileInner({
             <span
               className={`${styles['video-tile__status']} ${compactStatus ? styles['video-tile__status--compact'] : ''}`}
             >
-              <Icon
-                className={styles['video-tile__spinner']}
-                glyph={loading ? <RefreshIcon /> : <SyncIcon />}
+              <Spinner
+                inverted
+                aria-label={statusText}
                 size={size === 'default' && !compactStatus ? '16' : '12'}
               />
               {/* Short tiles (strip, the widget's self view) keep the
