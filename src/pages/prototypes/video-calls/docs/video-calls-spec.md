@@ -115,7 +115,8 @@ Phases: No call, Ongoing, Pre-join, Calling, Incoming, Joining, In call.
 
 1. No call. The header shows the Start call button.
 2. Pre-join (start mode). Starting from the menu opens the widget at pre-join. This is the default; a person can skip it in the Calls plugin settings (see Pre-join), in which case the call rings straight away. In Video mode the widget pre-join shows your self view large, filling the video area. When you press Start call, the self view shrinks into the picture-in-picture corner while the person called fades in behind it, with the avatar animation on the dark call background, so calling reads as the live call's layout.
-3. In call.
+3. Connecting. When the person answers, the call goes live in the same widget or window, and their video tile first shows their avatar with a spinner and "Connecting…" for a moment (about 1.8 seconds in the prototype) before the video appears. Layout and controls are already those of the live call; only the video is still arriving.
+4. In call.
    Receiving: Incoming (widget with Decline / Accept; rings up to 30 seconds, then becomes a missed call) → Joining → In call. Joining is the brief connecting state after Accept and is used only for incoming calls (about 1.8 seconds in the prototype). It is widget-only and not expandable.
 
 The call card in the conversation follows the call: Calling while it rings, then Call started while you are in it, then Call ended (when it ends: the time it ended and how long it lasted). The other card states are defined in the Calls UX Improvements for DM Calls spec (see Entry points).

@@ -7,6 +7,8 @@ import { useVideoCall } from '../videoCallContext';
 const CALLING_ANSWER_MS = 6000;
 /** How long an accepted incoming call shows "Joining…" before it is live. */
 const JOINING_MS = 1800;
+/** How long the answered caller sees the other person's video connecting. */
+const VIDEO_CONNECTING_MS = 1800;
 /** How long an incoming call rings before it becomes a missed call. */
 const INCOMING_RING_MS = 30000;
 
@@ -28,6 +30,16 @@ export default function CallPhaseEffects() {
     const timer = window.setTimeout(actions.connect, CALLING_ANSWER_MS);
     return () => window.clearTimeout(timer);
   }, [phase, actions]);
+
+  // Answered: the live call first shows the other person's video connecting.
+  useEffect(() => {
+    if (!state.connectingVideo) return;
+    const timer = window.setTimeout(
+      actions.videoConnected,
+      VIDEO_CONNECTING_MS,
+    );
+    return () => window.clearTimeout(timer);
+  }, [state.connectingVideo, actions]);
 
   // Toggling sounds restarts only the ring, never the lifecycle timer.
   useEffect(() => {

@@ -64,6 +64,11 @@ export interface VideoCallState {
    */
   remoteVideo: RemoteVideo;
   /**
+   * An outgoing call was just answered: the other person's video is still
+   * connecting (spinner), for a moment, between Calling and the live call.
+   */
+  connectingVideo: boolean;
+  /**
    * Prototype-chrome control: your own connection. Sets the state of your
    * tile; poor and reconnecting also post one persistent network warning.
    */
@@ -128,6 +133,7 @@ const INITIAL_STATE: VideoCallState = {
   media: { micOn: true, cameraOn: false, useWebcam: false },
   count: 2,
   remoteVideo: 'on',
+  connectingVideo: false,
   myConnection: 'good',
   overrides: {},
   removedIds: [],
@@ -218,6 +224,7 @@ const PER_CALL_RESET: Partial<VideoCallState> = {
   selfSpeaking: false,
   // Prototype-chrome connection / video states belong to one call.
   remoteVideo: 'on',
+  connectingVideo: false,
   myConnection: 'good',
   recording: false,
   handRaised: false,
@@ -309,7 +316,7 @@ export function useVideoCallState() {
           ? state.remoteVideo
           : merged.connection;
       if (!cameraAvailable) return { ...merged, connection, cameraOn: false };
-      if (focus && state.remoteVideo === 'loading') {
+      if (focus && (state.remoteVideo === 'loading' || state.connectingVideo)) {
         return { ...merged, connection, cameraOn: true, videoLoading: true };
       }
       const remoteIndex = ROSTER.filter((r) => r.id !== SELF_ID).findIndex(
@@ -338,6 +345,7 @@ export function useVideoCallState() {
     state.removedIds,
     state.overrides,
     state.remoteVideo,
+    state.connectingVideo,
     state.myConnection,
     state.media,
     state.handRaised,
@@ -597,9 +605,22 @@ export function useVideoCallState() {
                   : Date.now(),
               },
         ),
-      /** Calling answered (or a demo shortcut): the call is live. */
+      /**
+       * Calling answered: the call is live, and the other person's video is
+       * still connecting (see `connectingVideo`).
+       */
       connect: () =>
-        setState((s) => ({ ...s, phase: 'active', callStartedAt: Date.now() })),
+        setState((s) => ({
+          ...s,
+          phase: 'active',
+          callStartedAt: Date.now(),
+          connectingVideo: true,
+        })),
+      /** The other person's video has arrived. */
+      videoConnected: () =>
+        setState((s) =>
+          s.connectingVideo ? { ...s, connectingVideo: false } : s,
+        ),
       /** Cancel pre-join or an outgoing ring: back to the chat. */
       cancelCall: () =>
         setState((s) =>

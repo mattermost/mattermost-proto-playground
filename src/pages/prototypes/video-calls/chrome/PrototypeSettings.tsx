@@ -264,7 +264,7 @@ export default function PrototypeSettings({
             </PopoverMenuGroupTitle>
             <div className={styles['prototype-settings__field']}>
               <Select
-                size="small"
+                size="medium"
                 aria-label="Other people's video"
                 value={remoteVideo}
                 disabled={!canSetRemoteVideo}
@@ -291,7 +291,7 @@ export default function PrototypeSettings({
             <PopoverMenuGroupTitle>My connection</PopoverMenuGroupTitle>
             <div className={styles['prototype-settings__field']}>
               <Select
-                size="small"
+                size="medium"
                 aria-label="My connection"
                 value={myConnection}
                 disabled={!canSetRemoteVideo}
