@@ -68,6 +68,8 @@ export interface VideoCallState {
    * connecting (spinner), for a moment, between Calling and the live call.
    */
   connectingVideo: boolean;
+  /** People who just joined a live call: their video is still connecting (spinner). */
+  connectingIds: string[];
   /**
    * Prototype-chrome control: your own connection. Sets the state of your
    * tile; poor and reconnecting also post one persistent network warning.
@@ -134,6 +136,7 @@ const INITIAL_STATE: VideoCallState = {
   count: 2,
   remoteVideo: 'on',
   connectingVideo: false,
+  connectingIds: [],
   myConnection: 'good',
   overrides: {},
   removedIds: [],
@@ -225,6 +228,7 @@ const PER_CALL_RESET: Partial<VideoCallState> = {
   // Prototype-chrome connection / video states belong to one call.
   remoteVideo: 'on',
   connectingVideo: false,
+  connectingIds: [],
   myConnection: 'good',
   recording: false,
   handRaised: false,
@@ -316,7 +320,10 @@ export function useVideoCallState() {
           ? state.remoteVideo
           : merged.connection;
       if (!cameraAvailable) return { ...merged, connection, cameraOn: false };
-      if (focus && (state.remoteVideo === 'loading' || state.connectingVideo)) {
+      if (
+        (focus && (state.remoteVideo === 'loading' || state.connectingVideo)) ||
+        state.connectingIds.includes(p.id)
+      ) {
         return { ...merged, connection, cameraOn: true, videoLoading: true };
       }
       const remoteIndex = ROSTER.filter((r) => r.id !== SELF_ID).findIndex(
@@ -346,6 +353,7 @@ export function useVideoCallState() {
     state.overrides,
     state.remoteVideo,
     state.connectingVideo,
+    state.connectingIds,
     state.myConnection,
     state.media,
     state.handRaised,
@@ -616,6 +624,24 @@ export function useVideoCallState() {
           callStartedAt: Date.now(),
           connectingVideo: true,
         })),
+      /** People joined a live call: their video is connecting (spinner). */
+      startConnecting: (ids: string[]) =>
+        setState((s) => ({
+          ...s,
+          connectingIds: [...new Set([...s.connectingIds, ...ids])],
+        })),
+      /** Those people's video has arrived. */
+      videoConnectedFor: (ids: string[]) =>
+        setState((s) =>
+          s.connectingIds.some((id) => ids.includes(id))
+            ? {
+                ...s,
+                connectingIds: s.connectingIds.filter(
+                  (id) => !ids.includes(id),
+                ),
+              }
+            : s,
+        ),
       /** The other person's video has arrived. */
       videoConnected: () =>
         setState((s) =>

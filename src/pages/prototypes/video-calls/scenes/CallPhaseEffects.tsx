@@ -95,10 +95,17 @@ export default function CallPhaseEffects() {
     const ids = participants.map((p) => p.id);
     const before = prevIds.current;
     prevIds.current = ids;
-    if (before && ids.some((id) => !before.includes(id))) {
+    const added = ids.filter((id) => !before?.includes(id));
+    if (before && added.length > 0) {
       playSound('join-user');
+      // Their video connects first: a spinner on their tile for a moment.
+      actions.startConnecting(added);
+      window.setTimeout(
+        () => actions.videoConnectedFor(added),
+        VIDEO_CONNECTING_MS,
+      );
     }
-  }, [phase, participants]);
+  }, [phase, participants, actions]);
 
   // Join / leave notices when the call size changes, whichever surface is
   // showing. A person the host removed already has a "was removed" notice.

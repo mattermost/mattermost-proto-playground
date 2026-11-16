@@ -381,6 +381,7 @@ Widget while sharing (Phase 1): the 16:9 video area is replaced by a live thumbn
 In-between video states, on any tile (featured, strip, grid, the floating self view and the widget):
 
 - **Loading:** the person's camera is on but their video has not arrived. The tile shows their avatar on the dark tile with a spinner and "Connecting…" below it; no video plays.
+- **Joining:** when someone joins a live group call, their tile first shows the same Connecting state (avatar with a spinner and "Connecting…") for a moment, about 1.8 seconds in the prototype, before their video appears. This applies to each person who joins while you are in the call, and to the first other person when an outgoing call is answered.
 - **Poor connection:** the video pauses on its current frame under a dimmed veil, and the poor-connection badge (alert icon in a dark circle) shows in the top-right corner, with a "Poor connection" tooltip on hover or focus. The icon is scaled to sit inside the circle. With no video (camera off), the avatar is dimmed instead.
 - **Reconnecting:** frozen and dimmed the same way, in grey, with a spinner and "Reconnecting…" in the middle; no badge.
 - The name label, mute state, HOST tag, pin icon and active-speaker border stay visible in every state. On short tiles (the speaker strip, the widget's self view) the label would run into the name, so only the spinner shows, on a dark disc over the avatar's centre.
