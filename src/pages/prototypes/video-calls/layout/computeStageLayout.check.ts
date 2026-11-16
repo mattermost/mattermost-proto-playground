@@ -655,4 +655,244 @@ check('speaker-side sharing 1..10 → share layout wins', () => {
   }
 });
 
+// ── Pin ──────────────────────────────────────────────────────────────────────
+
+check('pin 2..10, both speaker views: pinned remote / self is featured', () => {
+  for (let n = 2; n <= 10; n += 1) {
+    for (const view of ['speaker', 'speaker-side'] as const) {
+      for (const pinned of ['self', IDS[n - 1]]) {
+        // Someone else is speaking: the pin still wins.
+        const speaker = n > 2 ? 'p1' : undefined;
+        const label = `n=${n} view=${view} pinned=${pinned}`;
+        const l = computeStageLayout({
+          participants: people(n),
+          view,
+          sharing: false,
+          activeSpeakerId: speaker,
+          pinnedId: pinned,
+        });
+        if (n === 2 && view === 'speaker' && pinned !== 'self') {
+          // 1:1 PiP: the other person is already main, so pinning them is a no-op.
+          assert.deepEqual(l, { kind: 'pip', mainId: 'p1', pipId: 'self' });
+          continue;
+        }
+        const s = asSpeaker(l);
+        assert.equal(s.featuredId, pinned, label);
+        assert.equal(
+          s.strip,
+          view === 'speaker' && n > 2 ? 'top' : 'side',
+          label,
+        );
+        assert.ok(!s.stripIds.includes(pinned), label);
+        assert.deepEqual(
+          s.stripIds,
+          IDS.slice(0, n).filter((id) => id !== pinned),
+          label,
+        );
+        assert.deepEqual(shape(s.stripRows), [n - 1], label);
+        assert.ok(visibleIds(s).includes('self'), label);
+      }
+    }
+  }
+});
+
+check('pin 2 people, speaker view, self pinned → side shape, not a PiP', () => {
+  const s = asSpeaker(
+    computeStageLayout({
+      participants: people(2),
+      view: 'speaker',
+      sharing: false,
+      pinnedId: 'self',
+    }),
+  );
+  assert.deepEqual(
+    [s.strip, s.featuredId, s.stripIds],
+    ['side', 'self', ['p1']],
+  );
+  // Unpinned again → back to the PiP.
+  const back = computeStageLayout({
+    participants: people(2),
+    view: 'speaker',
+    sharing: false,
+    previous: s,
+  });
+  assert.deepEqual(back, { kind: 'pip', mainId: 'p1', pipId: 'self' });
+});
+
+check('pin holds through speaker changes; swap keeps the strip stable', () => {
+  const base = people(6);
+  for (const view of ['speaker', 'speaker-side'] as const) {
+    const a = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view,
+        sharing: false,
+        activeSpeakerId: 'p1',
+      }),
+    );
+    // Pin a strip tile: it swaps with the featured speaker.
+    const b = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view,
+        sharing: false,
+        activeSpeakerId: 'p1',
+        pinnedId: 'p4',
+        previous: a,
+      }),
+    );
+    assert.equal(b.featuredId, 'p4', view);
+    assert.deepEqual(b.stripIds, ['self', 'p2', 'p3', 'p1', 'p5'], view);
+    let prev: StageLayout = b;
+    for (const speaker of ['p2', 'p5', 'p1', undefined]) {
+      const c = asSpeaker(
+        computeStageLayout({
+          participants: base,
+          view,
+          sharing: false,
+          activeSpeakerId: speaker,
+          pinnedId: 'p4',
+          previous: prev,
+        }),
+      );
+      assert.equal(c.featuredId, 'p4', `${view} speaker=${speaker}`);
+      assert.deepEqual(c.stripIds, b.stripIds, `${view} speaker=${speaker}`);
+      prev = c;
+    }
+    // Re-pin someone else: replaces the pin, the old pin takes their slot.
+    const d = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view,
+        sharing: false,
+        activeSpeakerId: 'p2',
+        pinnedId: 'p2',
+        previous: prev,
+      }),
+    );
+    assert.equal(d.featuredId, 'p2');
+    assert.deepEqual(d.stripIds, ['self', 'p4', 'p3', 'p1', 'p5']);
+  }
+});
+
+check(
+  'pin self then unpin: self back in its strip slot, a remote featured',
+  () => {
+    const base = people(5);
+    const a = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker',
+        sharing: false,
+        activeSpeakerId: 'p2',
+      }),
+    );
+    const b = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker',
+        sharing: false,
+        activeSpeakerId: 'p2',
+        pinnedId: 'self',
+        previous: a,
+      }),
+    );
+    assert.equal(b.featuredId, 'self');
+    assert.deepEqual(b.stripIds, ['p2', 'p1', 'p3', 'p4']);
+    const c = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker',
+        sharing: false,
+        activeSpeakerId: 'p2',
+        previous: b,
+      }),
+    );
+    assert.equal(c.featuredId, 'p2');
+    assert.deepEqual(c.stripIds, ['self', 'p1', 'p3', 'p4']);
+  },
+);
+
+check(
+  'pin survives speaker ↔ speaker-side and a round trip through grid',
+  () => {
+    const base = people(7);
+    const opts = { participants: base, sharing: false, pinnedId: 'p5' };
+    const a = asSpeaker(computeStageLayout({ ...opts, view: 'speaker' }));
+    const b = asSpeaker(
+      computeStageLayout({ ...opts, view: 'speaker-side', previous: a }),
+    );
+    assert.deepEqual([b.featuredId, b.stripIds], [a.featuredId, a.stripIds]);
+    const g = asGrid(
+      computeStageLayout({ ...opts, view: 'grid', previous: b }),
+    );
+    assert.deepEqual(g.tileIds, IDS.slice(0, 7));
+    const c = asSpeaker(
+      computeStageLayout({
+        ...opts,
+        view: 'speaker',
+        activeSpeakerId: 'p2',
+        previous: g,
+      }),
+    );
+    assert.equal(c.featuredId, 'p5');
+  },
+);
+
+check('pin ignored in grid view and while sharing', () => {
+  for (let n = 2; n <= 10; n += 1) {
+    for (const pinned of ['self', IDS[n - 1]]) {
+      const g = asGrid(
+        computeStageLayout({
+          participants: people(n),
+          view: 'grid',
+          sharing: false,
+          pinnedId: pinned,
+        }),
+      );
+      assert.deepEqual(g.tileIds, IDS.slice(0, n), `grid n=${n}`);
+      for (const view of ['speaker', 'speaker-side', 'grid'] as const) {
+        const withPin = computeStageLayout({
+          participants: people(n, { p1: { sharing: true } }),
+          view,
+          sharing: true,
+          pinnedId: pinned,
+        });
+        const without = computeStageLayout({
+          participants: people(n, { p1: { sharing: true } }),
+          view,
+          sharing: true,
+        });
+        assert.deepEqual(withPin, without, `share n=${n} ${view}`);
+      }
+    }
+  }
+});
+
+check('pin of a non-existent id (or null) is ignored', () => {
+  for (let n = 2; n <= 10; n += 1) {
+    for (const view of ['speaker', 'speaker-side', 'grid'] as const) {
+      const plain = computeStageLayout({
+        participants: people(n),
+        view,
+        sharing: false,
+        activeSpeakerId: IDS[n - 1],
+      });
+      for (const pinned of ['nobody', 'p11', '', null]) {
+        assert.deepEqual(
+          computeStageLayout({
+            participants: people(n),
+            view,
+            sharing: false,
+            activeSpeakerId: IDS[n - 1],
+            pinnedId: pinned,
+          }),
+          plain,
+          `n=${n} ${view} pinned=${pinned}`,
+        );
+      }
+    }
+  }
+});
+
 console.log(`\n${checks} checks passed`);

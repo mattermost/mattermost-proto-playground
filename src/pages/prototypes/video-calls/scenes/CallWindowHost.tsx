@@ -177,7 +177,9 @@ export default function CallWindowHost({
     setOpenMenu((cur) => (cur === id ? null : id));
 
   // Derived props -----------------------------------------------------------
-  const layout = useStageLayout(participants, state.view, sharing);
+  const layout = useStageLayout(participants, state.view, sharing, {
+    pinnedId: state.pinnedId,
+  });
   const paneParticipants = useMemo(
     () =>
       participants.map((p) => ({
@@ -191,20 +193,41 @@ export default function CallWindowHost({
     [participants],
   );
 
-  // Host controls: only the host sees a menu, and only on other people's tiles.
+  // Tile menu. Everyone can pin / unpin any tile (yours too) while the view
+  // has a featured slot (the speaker views; not grid or screen share). Only
+  // the host also gets Mute / Make host / Remove, on other people's tiles. A
+  // tile with no items gets no `...` button and no context menu.
   const iAmHost = participants.some((p) => p.self && p.host);
+  const featuredSlot = layout.kind === 'speaker' || layout.kind === 'pip';
+  const pinnedId = state.pinnedId;
   const getTileMenu = useCallback(
     (id: string): VideoTileMenu | undefined => {
       const target = participants.find((p) => p.id === id);
-      if (!iAmHost || !target || target.self) return undefined;
-      return {
-        items: [
+      if (!target) return undefined;
+      const items: VideoTileMenu['items'] = [];
+      if (featuredSlot) {
+        items.push(
+          pinnedId === id
+            ? { id: 'unpin', label: 'Unpin' }
+            : { id: 'pin', label: 'Pin' },
+        );
+      }
+      if (iAmHost && !target.self) {
+        items.push(
           { id: 'mute', label: 'Mute', disabled: Boolean(target.muted) },
           { id: 'make-host', label: 'Make host' },
           { id: 'remove', label: 'Remove from call', destructive: true },
-        ],
+        );
+      }
+      if (!items.length) return undefined;
+      return {
+        items,
         onSelect: (item) => {
-          if (item === 'mute') {
+          if (item === 'pin') {
+            actions.setPinned(id);
+          } else if (item === 'unpin') {
+            actions.setPinned(null);
+          } else if (item === 'mute') {
             actions.patchParticipant(id, { muted: true });
             actions.pushNotice({ kind: 'info', text: `Muted ${target.name}` });
           } else if (item === 'make-host') {
@@ -223,7 +246,7 @@ export default function CallWindowHost({
         },
       };
     },
-    [iAmHost, participants, actions],
+    [featuredSlot, pinnedId, iAmHost, participants, actions],
   );
 
   const moreMenu = (
@@ -301,6 +324,7 @@ export default function CallWindowHost({
         pane={pane}
         onDismissOverlays={closeMenu}
         getTileMenu={getTileMenu}
+        pinnedId={featuredSlot ? pinnedId : null}
         recording={state.recording ? 'recording' : undefined}
         onStopRecording={actions.toggleRecording}
         onToggleRecording={actions.toggleRecording}

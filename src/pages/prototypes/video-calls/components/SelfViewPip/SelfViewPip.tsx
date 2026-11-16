@@ -283,7 +283,10 @@ export function SelfViewPip({
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     const el = rootRef.current;
     if (!el || e.button !== 0 || drag.current) return;
-    if ((e.target as HTMLElement).closest('button')) return;
+    // Buttons (hide, the tile's `...`) never start a drag, nor does anything
+    // portalled out of the PiP (a tile menu's events bubble through React).
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || !el.contains(target)) return;
     stop();
     const g = measure(el);
     const rest = restPosition(corner, g);

@@ -47,7 +47,18 @@
  * - Speaker view: on a speaker change with a previous speaker layout, the old
  *   featured tile takes the new speaker's strip slot (a swap); every other
  *   strip tile stays put. Otherwise the strip is in base order.
- * - Self is never featured and never dropped.
+ * - Self is never featured (unless pinned) and never dropped.
+ *
+ * ── Pin ─────────────────────────────────────────────────────────────────────
+ * `pinnedId` (local to the viewer) overrides the featured choice in both
+ * speaker views while it names a participant: the pinned person stays featured
+ * whoever speaks, through the usual swap (the old featured tile takes the
+ * pinned tile's strip slot). Self may be pinned. In the 1:1 speaker view
+ * pinning the remote person changes nothing (they are already main); pinning
+ * self returns the speaker-side shape (self featured, the other person alone
+ * in the column) rather than a PiP of the remote person, so the self tile never
+ * has to float someone else's video. Ignored in grid view and while sharing,
+ * and when the id is not a participant.
  */
 import {
   MAX_PARTICIPANTS,
@@ -78,6 +89,12 @@ export interface StageLayoutInput {
   sharing: boolean;
   /** Non-self participant to feature / keep visible. */
   activeSpeakerId?: string;
+  /**
+   * Participant pinned by the local user (self allowed): featured in the
+   * speaker views whoever speaks. Ignored in grid, while sharing, or when the
+   * id is not a participant.
+   */
+  pinnedId?: string | null;
   /** Max cells in a grid including self and the overflow chip. Default 10. */
   maxVisible?: number;
   /** Max cells in the share filmstrip including the overflow chip. Default 6. */
@@ -115,7 +132,7 @@ export interface SpeakerLayout {
    * view), `side` = one column right of it (speaker-side view).
    */
   strip: 'top' | 'side';
-  /** Large tile beside the strip (active speaker, never self). */
+  /** Large tile beside the strip (pinned person, else the active speaker; self only when pinned). */
   featuredId: string;
   /**
    * Strip cell ids per lane (`OVERFLOW_CELL` = the chip, always last). A lane
@@ -317,6 +334,10 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
     order.includes(input.activeSpeakerId)
       ? input.activeSpeakerId
       : undefined;
+  const pinnedId =
+    input.pinnedId && order.includes(input.pinnedId)
+      ? input.pinnedId
+      : undefined;
   const required = (...ids: (string | undefined)[]) =>
     ids.filter((id): id is string => !!id);
 
@@ -342,14 +363,17 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
   }
 
   // ── 1:1 speaker view: remote large, self floating ────────────────────────
-  if (list.length === 2 && input.view === 'speaker') {
+  // (Self pinned: falls through to the speaker-side shape below.)
+  const selfPinned = !!pinnedId && pinnedId === selfId;
+  if (list.length === 2 && input.view === 'speaker' && !selfPinned) {
     const pipId = selfId ?? order.find((id) => id !== speakerId) ?? order[1];
     const mainId = order.find((id) => id !== pipId) ?? order[0];
     return { kind: 'pip', mainId, pipId };
   }
 
   // ── Grid view (any count; speaker views below their minimum) ─────────────
-  const side = input.view === 'speaker-side';
+  const side =
+    input.view === 'speaker-side' || (list.length === 2 && selfPinned);
   if (input.view === 'grid' || list.length < (side ? 2 : 3)) {
     const { visible, overflow } = selectVisible(
       order,
@@ -377,6 +401,7 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
         ? prevLayout.mainId
         : undefined;
   const featuredId =
+    pinnedId ??
     speakerId ??
     (prevFeatured && prevFeatured !== selfId && order.includes(prevFeatured)
       ? prevFeatured

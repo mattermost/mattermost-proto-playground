@@ -44,6 +44,8 @@
   --video-tile-bg: var(--calls-video-bg, #080c14);
   --video-tile-muted: var(--calls-muted-color, #ff585b);
   --video-tile-ring: var(--online-indicator);
+  // One corner control: the 24px badge / x-small button plus the row gap.
+  --video-tile-corner-step: calc(var(--icon-size-24) + var(--spacing-xxxs));
 
   position: relative;
   width: 100%;
@@ -97,10 +99,8 @@
   // -------------------------------------------------------------------------
   // Label chip — bottom-left, flush to the tile corner
   // -------------------------------------------------------------------------
-  // Bottom 24px strip: hit area for the host-controls button (hover / focus).
-  // The label chip sits inside it so hovering the chip also reveals the button.
-  // Overlay chrome cancels the FLIP scale (--flip-s) so it never balloons while a
-  // tile resizes into a new layout.
+  // Bottom 24px strip holding the label chip. Overlay chrome cancels the FLIP
+  // scale (--flip-s) so it never balloons while a tile resizes into a new layout.
   &__strip {
     scale: calc(1 / var(--flip-s, 1));
     transform-origin: bottom left;
@@ -111,15 +111,6 @@
     z-index: 3;
     height: var(--spacing-xxl);
     pointer-events: none;
-  }
-
-  &__more {
-    position: absolute;
-    right: var(--spacing-xxxs);
-    bottom: 0;
-    pointer-events: auto;
-    opacity: 0;
-    transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
   &__label {
@@ -163,7 +154,13 @@
     white-space: nowrap;
   }
 
-  // 5 bars, 2px wide, 2px gap, heights 9 / 5 / 13 / 7 / 3.
+  // Pin indicator by the name (the participant is pinned in your view).
+  &__pin {
+    flex: 0 0 auto;
+    display: inline-flex;
+    color: var(--button-color, var(--color-neutral-0));
+  }
+
   // HOST tag (compass-ui Tag, default type), recoloured for the dark tile:
   // the default tint assumes a light surface. Doubled class beats the Tag's own.
   &__host#{&}__host {
@@ -172,6 +169,7 @@
     color: var(--button-color, var(--color-neutral-0));
   }
 
+  // 5 bars, 2px wide, 2px gap, heights 9 / 5 / 13 / 7 / 3.
   &__wave {
     flex: 0 0 auto;
     display: inline-flex;
@@ -212,17 +210,39 @@
   }
 
   // -------------------------------------------------------------------------
-  // Top-right status badges (poor network, raised hand)
+  // Top-right corner: status badges (poor network, raised hand) and the
+  // tile's `...` button. The button sits in the corner; while it is revealed
+  // the badges slide left of it, so the two never overlap.
   // -------------------------------------------------------------------------
-  &__badges {
+  // A host can keep extra room clear at the corner's end with
+  // `--video-tile-corner-offset` (e.g. the floating self view's hide control).
+  &__corner {
     scale: calc(1 / var(--flip-s, 1));
     transform-origin: top right;
     position: absolute;
     top: var(--spacing-xs);
-    right: var(--spacing-xs);
+    right: calc(var(--spacing-xs) + var(--video-tile-corner-offset, 0px));
     z-index: 3;
+    min-height: var(--icon-size-24);
+  }
+
+  &__badges {
     display: flex;
     gap: var(--spacing-xxxs);
+    transition: translate var(--duration-quick) var(--ease-transition);
+  }
+
+  // Dark pill behind the `...` button, like the badges, so it reads over any
+  // video; the IconButton's own hover / pressed tint layers on top.
+  &__more {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: inline-flex;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.64);
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
   &__badge {
@@ -290,24 +310,30 @@
     }
   }
 
-  &--has-menu {
-    .video-tile__strip {
-      pointer-events: auto;
-    }
-
-    .video-tile__label {
-      max-width: calc(100% - var(--spacing-xxl) - var(--spacing-xs));
-    }
-
-    .video-tile__strip:hover .video-tile__more,
-    .video-tile__strip:focus-within .video-tile__more,
-    .video-tile__more:focus-visible {
+  // Reveal the `...` button on hover, keyboard focus or while its menu is
+  // open; touch screens (no hover) keep it visible.
+  &--has-menu:hover,
+  &--has-menu:focus-within,
+  &--menu-open {
+    .video-tile__more {
       opacity: 1;
+    }
+
+    .video-tile__badges {
+      translate: calc(-1 * var(--video-tile-corner-step)) 0;
     }
   }
 
-  &--menu-open .video-tile__more {
-    opacity: 1;
+  @media (hover: none) {
+    &--has-menu {
+      .video-tile__more {
+        opacity: 1;
+      }
+
+      .video-tile__badges {
+        translate: calc(-1 * var(--video-tile-corner-step)) 0;
+      }
+    }
   }
 
   &--mirrored {
@@ -325,9 +351,9 @@
   // Compact fills its parent like default (the filmstrip / mobile grid sets
   // the 182 square); only the inner scale changes.
   &--size-compact {
-    .video-tile__badges {
+    .video-tile__corner {
       top: var(--spacing-xxxs);
-      right: var(--spacing-xxxs);
+      right: calc(var(--spacing-xxxs) + var(--video-tile-corner-offset, 0px));
     }
   }
 
@@ -340,9 +366,9 @@
       padding: var(--spacing-xxxs);
     }
 
-    .video-tile__badges {
+    .video-tile__corner {
       top: var(--spacing-xxxs);
-      right: var(--spacing-xxxs);
+      right: calc(var(--spacing-xxxs) + var(--video-tile-corner-offset, 0px));
     }
 
     .video-tile__badge {
@@ -361,6 +387,7 @@
     }
 
     .video-tile__avatar-image,
+    .video-tile__badges,
     .video-tile__more {
       transition: none;
     }

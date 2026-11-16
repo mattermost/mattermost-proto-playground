@@ -70,8 +70,10 @@ export interface VideoCallWindowProps {
   /** Pointer-down on the stage; hosts close open menus here. */
   onDismissOverlays?: () => void;
 
-  /** Host controls: per-tile menu (passed through to `VideoStage`). */
+  /** Per-tile actions menu (pin, host controls; passed through to `VideoStage`). */
   getTileMenu?: (participantId: string) => VideoTileMenu | undefined;
+  /** Participant pinned by the local user (passed through to `VideoStage`). */
+  pinnedId?: string | null;
 
   controls: CallControlsBarProps;
 
@@ -145,6 +147,7 @@ export function VideoCallWindow({
   pane,
   onDismissOverlays,
   getTileMenu,
+  pinnedId,
   controls,
   labels,
   className,
@@ -291,6 +294,7 @@ export function VideoCallWindow({
                 shareContent={shareContent}
                 labels={stageLabels}
                 getTileMenu={getTileMenu}
+                pinnedId={pinnedId}
                 settledWidth={settledStageWidth}
               />
             )}

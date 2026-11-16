@@ -12,12 +12,15 @@ export interface UseStageLayoutOptions {
   maxFilmstrip?: number;
   /** Speaker-view strip cells incl. the overflow chip. Default 9 (everyone). */
   maxStrip?: number;
+  /** Participant pinned by the local user: featured in the speaker views. */
+  pinnedId?: string | null;
 }
 
 /**
  * Memoized stage layout. Derives the active speaker from `talking` (first
  * talking non-self participant, else the previous speaker, so silence never
  * reshuffles tiles) and feeds the previous layout back in for sticky ordering.
+ * A `pinnedId` overrides the featured choice in the speaker views.
  */
 export function useStageLayout(
   participants: VideoParticipant[],
@@ -25,7 +28,7 @@ export function useStageLayout(
   sharing: boolean,
   options: UseStageLayoutOptions = {},
 ): StageLayout {
-  const { maxVisible, maxFilmstrip, maxStrip } = options;
+  const { maxVisible, maxFilmstrip, maxStrip, pinnedId = null } = options;
   const prevSpeakerRef = useRef<string | undefined>(undefined);
   const prevLayoutRef = useRef<StageLayout | null>(null);
 
@@ -50,6 +53,7 @@ export function useStageLayout(
         view,
         sharing,
         activeSpeakerId,
+        pinnedId,
         maxVisible,
         maxFilmstrip,
         maxStrip,
@@ -62,6 +66,7 @@ export function useStageLayout(
       view,
       sharing,
       activeSpeakerId,
+      pinnedId,
       maxVisible,
       maxFilmstrip,
       maxStrip,

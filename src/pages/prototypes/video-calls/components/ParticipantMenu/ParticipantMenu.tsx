@@ -39,6 +39,12 @@ export interface ParticipantMenuProps {
   triggerEl?: HTMLElement | null;
   /** Move focus into the menu on open (keyboard / button). */
   focusOnOpen?: boolean;
+  /**
+   * Horizontal alignment to the anchor: `start` = menu's left edge at the
+   * anchor's left (default), `end` = menu's right edge at the anchor's right
+   * (a trigger in a top-right corner). Flips when it would leave the viewport.
+   */
+  align?: 'start' | 'end';
 }
 
 const VIEWPORT_PAD = 8;
@@ -56,6 +62,7 @@ export function ParticipantMenu({
   onClose,
   triggerEl,
   focusOnOpen = false,
+  align = 'start',
 }: ParticipantMenuProps) {
   const [open, setOpen] = useState(true);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
@@ -73,15 +80,18 @@ export function ParticipantMenu({
     const aw = anchor.width ?? 0;
     const ah = anchor.height ?? 0;
 
-    let left = anchor.x;
-    if (left + w > vw - VIEWPORT_PAD) left = anchor.x + aw - w;
+    const start = anchor.x;
+    const end = anchor.x + aw - w;
+    let left = align === 'end' ? end : start;
+    if (align === 'start' && left + w > vw - VIEWPORT_PAD) left = end;
+    if (align === 'end' && left < VIEWPORT_PAD) left = start;
     left = Math.max(VIEWPORT_PAD, Math.min(left, vw - w - VIEWPORT_PAD));
 
     let top = anchor.y + ah;
     if (top + h > vh - VIEWPORT_PAD) top = anchor.y - h;
     top = Math.max(VIEWPORT_PAD, Math.min(top, vh - h - VIEWPORT_PAD));
     setPos({ left, top });
-  }, [anchor.x, anchor.y, anchor.width, anchor.height]);
+  }, [anchor.x, anchor.y, anchor.width, anchor.height, align]);
 
   useEffect(() => {
     const inside = (t: EventTarget | null) =>

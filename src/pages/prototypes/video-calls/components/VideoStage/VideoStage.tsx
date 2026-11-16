@@ -98,8 +98,10 @@ export interface VideoStageProps {
   onSelectTile?: (id: string) => void;
   /** Called by the overflow chip. */
   onSelectOverflow?: () => void;
-  /** Per-tile host-controls menu (passed to `VideoTile` as `menu`). */
+  /** Per-tile actions menu (pin, host controls; passed to `VideoTile` as `menu`). */
   getTileMenu?: (participantId: string) => VideoTileMenu | undefined;
+  /** Participant pinned by the local user: their tile shows the pin glyph. */
+  pinnedId?: string | null;
   pipHidden?: boolean;
   onPipHiddenChange?: (hidden: boolean) => void;
   pipCorner?: SelfViewPipCorner;
@@ -377,6 +379,7 @@ export function VideoStage({
   onSelectTile,
   onSelectOverflow,
   getTileMenu,
+  pinnedId,
   pipHidden,
   onPipHiddenChange,
   pipCorner,
@@ -555,6 +558,7 @@ export function VideoStage({
         speaking={!!p.talking && !p.muted}
         handRaised={p.handRaised}
         host={p.host}
+        pinned={!!pinnedId && p.id === pinnedId}
         reaction={p.reaction}
         connection={p.connection}
         paused={paused}

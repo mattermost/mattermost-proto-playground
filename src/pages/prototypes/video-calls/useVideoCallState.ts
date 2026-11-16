@@ -65,6 +65,11 @@ export interface VideoCallState {
   /** Participants a host removed from the call (cleared when the count is set). */
   removedIds: string[];
   view: StageView;
+  /**
+   * Participant you pinned (local to your view): featured in the speaker views
+   * until unpinned. One at a time; cleared when they leave or the call ends.
+   */
+  pinnedId: string | null;
   pane: CallPane;
   handRaised: boolean;
   sharing: boolean;
@@ -118,6 +123,7 @@ const INITIAL_STATE: VideoCallState = {
   overrides: {},
   removedIds: [],
   view: 'speaker',
+  pinnedId: null,
   pane: null,
   handRaised: false,
   sharing: false,
@@ -175,6 +181,13 @@ function countFor(context: CallContext, groupCount: number) {
   return context === 'dm' ? 2 : groupCount;
 }
 
+/** The pin survives a new count only while the pinned person is still in it. */
+function pinWithin(pinnedId: string | null, count: number) {
+  return pinnedId && ROSTER.slice(0, count).some((p) => p.id === pinnedId)
+    ? pinnedId
+    : null;
+}
+
 /** Whether you are about to join, or jump into, a call already running without you. */
 function joinsRunningCall(s: VideoCallState) {
   return (
@@ -192,6 +205,7 @@ const PER_CALL_RESET: Partial<VideoCallState> = {
   removedIds: [],
   overrides: {},
   notices: [],
+  pinnedId: null,
 };
 
 /** Fields that reset whenever a call ends or is abandoned. */
@@ -307,6 +321,7 @@ export function useVideoCallState() {
             ...s,
             callContext: context,
             count: countFor(context, s.groupCount),
+            pinnedId: pinWithin(s.pinnedId, countFor(context, s.groupCount)),
             joinMode: joinModeFor(context, s.phase, s.joinMode),
             ...(keepPhase
               ? {}
@@ -438,6 +453,7 @@ export function useVideoCallState() {
             count: next,
             groupCount: s.callContext === 'dm' ? s.groupCount : next,
             removedIds: [],
+            pinnedId: pinWithin(s.pinnedId, next),
           };
         }),
 
@@ -651,6 +667,9 @@ export function useVideoCallState() {
       setExternalEnabled: (externalEnabled: boolean) =>
         setState((s) => ({ ...s, externalEnabled })),
       setView: (view: StageView) => setState((s) => ({ ...s, view })),
+      /** Pin someone to the featured slot of your view (replaces any pin); `null` unpins. */
+      setPinned: (pinnedId: string | null) =>
+        setState((s) => (s.pinnedId === pinnedId ? s : { ...s, pinnedId })),
       togglePane: (pane: Exclude<CallPane, null>) =>
         setState((s) => ({ ...s, pane: s.pane === pane ? null : pane })),
       closePane: () => setState((s) => ({ ...s, pane: null })),
@@ -661,6 +680,7 @@ export function useVideoCallState() {
           removedIds: s.removedIds.includes(id)
             ? s.removedIds
             : [...s.removedIds, id],
+          pinnedId: s.pinnedId === id ? null : s.pinnedId,
         })),
       /** Host control: hand the host role to someone else (mock). */
       makeHost: (id: string) =>

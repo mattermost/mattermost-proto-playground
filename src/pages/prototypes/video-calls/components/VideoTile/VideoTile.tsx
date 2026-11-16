@@ -20,6 +20,7 @@ import HandRightIcon from '@mattermost/compass-icons/components/hand-right';
 import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
+import PinOutlineIcon from '@mattermost/compass-icons/components/pin-outline';
 import SyncIcon from '@mattermost/compass-icons/components/sync';
 import {
   ParticipantMenu,
@@ -45,11 +46,13 @@ export interface VideoTileLabels {
   cameraOff?: string;
   /** Text of the host tag. */
   host?: string;
-  /** Accessible name of the host-controls `...` button and its menu. */
+  /** Accessible name of the tile's `...` button and its menu. */
   participantActions?: string;
+  /** Pin indicator (status copy and the glyph's accessible name). */
+  pinned?: string;
 }
 
-/** Host controls: items shown in the tile's menu; `onSelect` gets the item id. */
+/** Tile actions (pin, host controls): menu items; `onSelect` gets the item id. */
 export interface VideoTileMenu {
   items: {
     id: string;
@@ -83,6 +86,8 @@ export interface VideoTileProps {
   handRaised?: boolean;
   /** Shows a HOST tag next to the name (label strip only, not thumbnails). */
   host?: boolean;
+  /** Pinned to the featured slot by the local user: a pin glyph by the name. */
+  pinned?: boolean;
   /** Emoji shown as a short pop over the tile. Change `reactionKey` to replay the same emoji. */
   reaction?: string;
   reactionKey?: string | number;
@@ -104,8 +109,9 @@ export interface VideoTileProps {
   /** Shown after the name for the signed-in user, e.g. "You" → "Leonard Riley (You)". */
   selfLabel?: string;
   /**
-   * Host controls. When set, hovering / focusing the bottom label strip reveals
-   * a `...` button and right-clicking the tile opens the same menu.
+   * Tile actions. When set, hovering / focusing the tile reveals a `...`
+   * button in its top-right corner (status badges shift left of it) and
+   * right-clicking the tile opens the same menu. Omit for no button or menu.
    */
   menu?: VideoTileMenu;
   labels?: VideoTileLabels;
@@ -123,6 +129,7 @@ const DEFAULT_LABELS: Required<VideoTileLabels> = {
   cameraOff: 'Camera off',
   host: 'Host',
   participantActions: 'Participant actions',
+  pinned: 'Pinned',
 };
 
 const AVATAR_SIZE: Record<VideoTileSize, UserAvatarSize> = {
@@ -146,6 +153,7 @@ function VideoTileInner({
   speaking = false,
   handRaised = false,
   host = false,
+  pinned = false,
   reaction,
   reactionKey,
   connection = 'good',
@@ -278,6 +286,7 @@ function VideoTileInner({
   const displayName = selfLabel ? `${name} (${selfLabel})` : name;
   const status = [
     host ? l.host : null,
+    pinned ? l.pinned : null,
     muted ? l.muted : l.unmuted,
     speaking && !muted ? l.speaking : null,
     handRaised ? l.handRaised : null,
@@ -367,21 +376,42 @@ function VideoTileInner({
         </div>
       )}
 
-      <div className={styles['video-tile__badges']}>
-        {connection === 'poor' && (
-          <span
-            className={styles['video-tile__badge']}
-            title={l.poorConnection}
-          >
-            <Icon glyph={<AlertOutlineIcon />} size="16" />
-          </span>
-        )}
-        {handRaised && (
-          <span
-            className={`${styles['video-tile__badge']} ${styles['video-tile__badge--hand']}`}
-            title={l.handRaised}
-          >
-            <Icon glyph={<HandRightIcon />} size="16" />
+      {/* Top-right corner: status badges, then the tile's `...` button. The
+          badges slide left of the button while it is revealed. */}
+      <div className={styles['video-tile__corner']}>
+        <div className={styles['video-tile__badges']}>
+          {connection === 'poor' && (
+            <span
+              className={styles['video-tile__badge']}
+              title={l.poorConnection}
+            >
+              <Icon glyph={<AlertOutlineIcon />} size="16" />
+            </span>
+          )}
+          {handRaised && (
+            <span
+              className={`${styles['video-tile__badge']} ${styles['video-tile__badge--hand']}`}
+              title={l.handRaised}
+            >
+              <Icon glyph={<HandRightIcon />} size="16" />
+            </span>
+          )}
+        </div>
+        {menu && (
+          // Dark backing behind the button so it reads over any video; the
+          // button's own hover / pressed tint layers on top of it.
+          <span className={styles['video-tile__more']}>
+            <IconButton
+              ref={moreRef}
+              icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
+              size="x-small"
+              style="inverted"
+              rounded
+              aria-label={l.participantActions}
+              aria-haspopup="menu"
+              aria-expanded={!!menuState}
+              onClick={openFromButton}
+            />
           </span>
         )}
       </div>
@@ -422,6 +452,16 @@ function VideoTileInner({
               size={iconSize}
             />
             <span className={styles['video-tile__name']}>{displayName}</span>
+            {pinned && (
+              <span
+                className={styles['video-tile__pin']}
+                role="img"
+                aria-label={l.pinned}
+                title={l.pinned}
+              >
+                <Icon glyph={<PinOutlineIcon />} size={iconSize} />
+              </span>
+            )}
             {host && (
               <Tag
                 className={styles['video-tile__host']}
@@ -439,20 +479,6 @@ function VideoTileInner({
               </span>
             )}
           </figcaption>
-          {menu && (
-            <IconButton
-              ref={moreRef}
-              className={styles['video-tile__more']}
-              icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
-              size="small"
-              padding="compact"
-              style="inverted"
-              aria-label={l.participantActions}
-              aria-haspopup="menu"
-              aria-expanded={!!menuState}
-              onClick={openFromButton}
-            />
-          )}
         </div>
       )}
       {menu && menuState && (
@@ -463,6 +489,7 @@ function VideoTileInner({
           label={l.participantActions}
           triggerEl={menuState.fromButton ? moreRef.current : null}
           focusOnOpen={menuState.fromButton}
+          align={menuState.fromButton ? 'end' : 'start'}
           onSelect={menu.onSelect}
           onClose={closeMenu}
         />
