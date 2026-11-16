@@ -95,6 +95,8 @@
     right: var(--spacing-xxxs);
     z-index: 6;
     opacity: 0;
+    // Invisible at rest: let clicks reach the badge and ... menu beneath.
+    pointer-events: none;
     transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
@@ -105,6 +107,7 @@
 
       .self-view-pip__hide {
         opacity: 1;
+        pointer-events: auto;
       }
     }
   }
@@ -115,6 +118,7 @@
 
     .self-view-pip__hide {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -125,6 +129,7 @@
 
     .self-view-pip__hide {
       opacity: 1;
+      pointer-events: auto;
     }
   }
 
