@@ -89,6 +89,8 @@ export interface VideoCallState {
    * banner's elapsed time and the call card's "N minutes ago", so they agree.
    */
   ongoingStartedAt: number;
+  /** The last group / channel size, kept while a DM (always 1:1) is open. */
+  groupCount: number;
   /** Set when an incoming call rang out; the DM shows a missed-call post. */
   missedCall: boolean;
   /** Set when you declined an incoming call; the DM shows a declined-call post. */
@@ -129,6 +131,7 @@ const INITIAL_STATE: VideoCallState = {
   recordingsMade: 0,
   callerId: SELF_ID,
   ongoingStartedAt: Date.now() - ONGOING_ELAPSED_MS,
+  groupCount: DEFAULT_GROUP_COUNT,
   missedCall: false,
   declinedCall: false,
   canceledCall: false,
@@ -163,10 +166,22 @@ function clampCount(count: number) {
   return Math.min(MAX_PARTICIPANTS, Math.max(2, Math.round(count)));
 }
 
-/** Count that matches the context: DMs are always 1:1. */
-function countFor(context: CallContext, current: number) {
+/**
+ * Count that matches the context: DMs are always 1:1; a group / channel returns
+ * to the size it last had (so a 1:1 check does not lose a custom People value).
+ */
+function countFor(context: CallContext, groupCount: number) {
   if (context === 'dm') return 2;
-  return current >= 3 ? current : DEFAULT_GROUP_COUNT;
+  return groupCount >= 3 ? groupCount : DEFAULT_GROUP_COUNT;
+}
+
+/** Whether you are about to join, or jump into, a call already running without you. */
+function joinsRunningCall(s: VideoCallState) {
+  return (
+    s.callContext !== 'dm' &&
+    (s.phase === 'ongoing' ||
+      (s.phase === 'pre-join' && s.joinMode === 'join-group'))
+  );
 }
 
 /** Per-call state that never carries over into a new call. */
@@ -291,7 +306,7 @@ export function useVideoCallState() {
           return {
             ...s,
             callContext: context,
-            count: countFor(context, s.count),
+            count: countFor(context, s.groupCount),
             joinMode: joinModeFor(context, s.phase, s.joinMode),
             ...(keepPhase
               ? {}
@@ -324,7 +339,12 @@ export function useVideoCallState() {
             phase,
             surface,
             joinMode: joinModeFor(s.callContext, s.phase, s.joinMode),
-            callStartedAt: phase === 'active' ? Date.now() : null,
+            callStartedAt:
+              phase === 'active'
+                ? joinsRunningCall(s)
+                  ? s.ongoingStartedAt
+                  : Date.now()
+                : null,
             sharing: phase === 'active' ? s.sharing : false,
             shareSource: phase === 'active' ? s.shareSource : null,
             pane: phase === 'active' ? s.pane : null,
@@ -387,7 +407,7 @@ export function useVideoCallState() {
             mode,
             media: demo.phase === 'idle' ? releaseCamera(s.media) : s.media,
             callContext: demo.context,
-            count: countFor(demo.context, s.count),
+            count: countFor(demo.context, s.groupCount),
             joinMode: joinModeFor(demo.context, s.phase, s.joinMode),
             phase: demo.phase,
             surface: demo.surface,
@@ -411,7 +431,15 @@ export function useVideoCallState() {
         }),
       /** Prototype-chrome control: set the number of people (2..MAX_PARTICIPANTS). */
       setCount: (count: number) =>
-        setState((s) => ({ ...s, count: clampCount(count), removedIds: [] })),
+        setState((s) => {
+          const next = clampCount(count);
+          return {
+            ...s,
+            count: next,
+            groupCount: s.callContext === 'dm' ? s.groupCount : next,
+            removedIds: [],
+          };
+        }),
 
       // --- Real flow -------------------------------------------------------
       /** Header "Start call" / banner "Join": opens the widget at pre-join. */
@@ -503,7 +531,14 @@ export function useVideoCallState() {
         setState((s) =>
           s.callContext === 'dm'
             ? { ...s, phase: 'calling' }
-            : { ...s, phase: 'active', callStartedAt: Date.now() },
+            : {
+                ...s,
+                phase: 'active',
+                // Joining a call that is already running keeps its start time.
+                callStartedAt: joinsRunningCall(s)
+                  ? s.ongoingStartedAt
+                  : Date.now(),
+              },
         ),
       /** Calling answered (or a demo shortcut): the call is live. */
       connect: () =>

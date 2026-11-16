@@ -52,7 +52,11 @@ function useCallPost(): CallPostModel | null {
       mine && phase !== 'ongoing'
         ? 'just now'
         : `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-    const timestamp = mine ? clock(Date.now()) : '10:03 AM';
+    // The post is stamped when the call started, not with the current time (this
+    // hook re-renders every second for the call's age).
+    const timestamp = mine
+      ? clock(state.callStartedAt ?? state.ongoingStartedAt)
+      : '10:03 AM';
 
     // A call is running and you are not in it (or are about to join it).
     if (
