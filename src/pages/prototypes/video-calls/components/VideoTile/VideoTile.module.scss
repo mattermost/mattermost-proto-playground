@@ -336,10 +336,6 @@
     &::after {
       box-shadow: inset 0 0 0 3px var(--video-tile-ring);
     }
-
-    .video-tile__avatar-image {
-      box-shadow: 0 0 0 3px var(--video-tile-ring);
-    }
   }
 
   // Reveal the `...` button on hover, keyboard focus or while its menu is
