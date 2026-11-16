@@ -225,8 +225,19 @@
     scale: calc(1 / var(--flip-s, 1));
     transform-origin: top right;
     position: absolute;
-    top: var(--spacing-xs);
-    right: calc(var(--spacing-xs) + var(--video-tile-corner-offset, 0px));
+    // The whole corner row (badges and `...` button) sits 2px further in
+    // than the tile's padding step, so its controls stay aligned.
+    top: var(
+      --video-tile-corner-top,
+      calc(var(--spacing-xs) + var(--spacing-xxxxs))
+    );
+    right: calc(
+      var(
+          --video-tile-corner-inset,
+          calc(var(--spacing-xs) + var(--spacing-xxxxs))
+        ) +
+        var(--video-tile-corner-offset, 0px)
+    );
     z-index: 3;
     min-height: var(--icon-size-24);
     transition: right var(--duration-quick) var(--ease-transition);
@@ -247,7 +258,10 @@
     display: inline-flex;
     border-radius: var(--radius-s);
     background: rgba(0, 0, 0, 0.64);
-    opacity: 0;
+    // A host that owns a larger hover area (the floating self view, whose
+    // hide control sits outside the tile) reveals the button through
+    // `--video-tile-host-reveal` (0 or 1).
+    opacity: var(--video-tile-host-reveal, 0);
     transition: opacity var(--duration-quick) var(--ease-transition);
   }
 
@@ -264,9 +278,6 @@
     // The alert triangle fills its 16px box edge to edge, so it crowds the
     // circle: scale it down and lift it slightly (its mass sits low).
     &--poor {
-      // The whole badge sits 2px left and down of the corner row.
-      translate: -2px 2px;
-
       > * {
         scale: 0.75;
         translate: 0 -0.5px;
@@ -377,6 +388,12 @@
     }
   }
 
+  &--has-menu .video-tile__badges {
+    translate: calc(
+      -1 * var(--video-tile-corner-step) * var(--video-tile-host-reveal, 0)
+    );
+  }
+
   &--mirrored {
     .video-tile__media {
       transform: scaleX(-1);
@@ -406,8 +423,17 @@
     }
 
     .video-tile__corner {
-      top: var(--spacing-xxxs);
-      right: calc(var(--spacing-xxxs) + var(--video-tile-corner-offset, 0px));
+      top: var(
+        --video-tile-corner-top,
+        calc(var(--spacing-xxxs) + var(--spacing-xxxxs))
+      );
+      right: calc(
+        var(
+            --video-tile-corner-inset,
+            calc(var(--spacing-xxxs) + var(--spacing-xxxxs))
+          ) +
+          var(--video-tile-corner-offset, 0px)
+      );
     }
   }
 
@@ -433,8 +459,17 @@
     }
 
     .video-tile__corner {
-      top: var(--spacing-xxxs);
-      right: calc(var(--spacing-xxxs) + var(--video-tile-corner-offset, 0px));
+      top: var(
+        --video-tile-corner-top,
+        calc(var(--spacing-xxxs) + var(--spacing-xxxxs))
+      );
+      right: calc(
+        var(
+            --video-tile-corner-inset,
+            calc(var(--spacing-xxxs) + var(--spacing-xxxxs))
+          ) +
+          var(--video-tile-corner-offset, 0px)
+      );
     }
 
     .video-tile__badge {

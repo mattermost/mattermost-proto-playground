@@ -27,6 +27,12 @@
     var(--icon-size-24) + var(--spacing-xxxs)
   );
   --video-tile-corner-offset: 0px;
+  // Line the badge, the `...` button and the hide control up on one centre
+  // line: the 24px hide control sits 4px from the top; the 20px badge and
+  // button on the tile start 2px lower.
+  --video-tile-corner-top: calc(var(--spacing-xxxs) + var(--spacing-xxxxs));
+  --video-tile-corner-inset: var(--spacing-xs);
+  --video-tile-host-reveal: 0;
   // Hairline that separates the PiP from video of a similar tone underneath.
   --self-view-pip-border: rgba(var(--button-color-rgb, 255, 255, 255), 0.16);
 
@@ -95,6 +101,7 @@
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       --video-tile-corner-offset: var(--self-view-pip-corner-offset);
+      --video-tile-host-reveal: 1;
 
       .self-view-pip__hide {
         opacity: 1;
@@ -104,6 +111,7 @@
 
   &:focus-within {
     --video-tile-corner-offset: var(--self-view-pip-corner-offset);
+    --video-tile-host-reveal: 1;
 
     .self-view-pip__hide {
       opacity: 1;
@@ -113,6 +121,7 @@
   // Touch: no hover, so keep the hide control visible.
   @media (hover: none) {
     --video-tile-corner-offset: var(--self-view-pip-corner-offset);
+    --video-tile-host-reveal: 1;
 
     .self-view-pip__hide {
       opacity: 1;
@@ -180,7 +189,17 @@
 
   // Inline in a stage cell: plain tile, no float chrome.
   &--docked {
+    // No hide control here: the tile keeps its own corner layout.
     --video-tile-corner-offset: 0px;
+    --video-tile-corner-top: initial;
+    --video-tile-corner-inset: initial;
+    --video-tile-host-reveal: 0;
+
+    &:hover,
+    &:focus-within {
+      --video-tile-corner-offset: 0px;
+      --video-tile-host-reveal: 0;
+    }
 
     position: relative;
     z-index: auto;
