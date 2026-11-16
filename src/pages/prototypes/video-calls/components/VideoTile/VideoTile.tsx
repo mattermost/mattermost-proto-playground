@@ -8,6 +8,7 @@ import {
   type MouseEvent,
 } from 'react';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { WithTooltip } from '@mattermost/compass-proto';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -474,12 +475,15 @@ function VideoTileInner({
       <div className={styles['video-tile__corner']}>
         <div className={styles['video-tile__badges']}>
           {connection === 'poor' && (
-            <span
-              className={`${styles['video-tile__badge']} ${styles['video-tile__badge--poor']}`}
-              title={l.poorConnection}
-            >
-              <Icon glyph={<AlertOutlineIcon />} size="16" />
-            </span>
+            <WithTooltip placement="bottom" label={l.poorConnection}>
+              <span
+                className={`${styles['video-tile__badge']} ${styles['video-tile__badge--poor']}`}
+                role="img"
+                aria-label={l.poorConnection}
+              >
+                <Icon glyph={<AlertOutlineIcon />} size="16" />
+              </span>
+            </WithTooltip>
           )}
           {handRaised && (
             <span

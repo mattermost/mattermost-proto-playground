@@ -20,9 +20,13 @@
   --self-view-pip-width: 240px;
   --self-view-pip-height: calc(var(--self-view-pip-width) * 9 / 16);
   --self-view-pip-inset: var(--spacing-l);
-  // Keep the tile's own top-right controls (its `...` button and badges)
-  // clear of the hide control: one x-small button plus the gap.
-  --video-tile-corner-offset: calc(var(--icon-size-24) + var(--spacing-xxxs));
+  // At rest the hide control is not shown, so the tile's top-right badges sit
+  // flush right. While it shows (hover, focus, touch) they move left of it:
+  // one x-small button plus the gap.
+  --self-view-pip-corner-offset: calc(
+    var(--icon-size-24) + var(--spacing-xxxs)
+  );
+  --video-tile-corner-offset: 0px;
   // Hairline that separates the PiP from video of a similar tone underneath.
   --self-view-pip-border: rgba(var(--button-color-rgb, 255, 255, 255), 0.16);
 
@@ -89,17 +93,27 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    &:hover .self-view-pip__hide {
+    &:hover {
+      --video-tile-corner-offset: var(--self-view-pip-corner-offset);
+
+      .self-view-pip__hide {
+        opacity: 1;
+      }
+    }
+  }
+
+  &:focus-within {
+    --video-tile-corner-offset: var(--self-view-pip-corner-offset);
+
+    .self-view-pip__hide {
       opacity: 1;
     }
   }
 
-  &:focus-within .self-view-pip__hide {
-    opacity: 1;
-  }
-
   // Touch: no hover, so keep the hide control visible.
   @media (hover: none) {
+    --video-tile-corner-offset: var(--self-view-pip-corner-offset);
+
     .self-view-pip__hide {
       opacity: 1;
     }

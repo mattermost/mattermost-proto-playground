@@ -229,6 +229,7 @@
     right: calc(var(--spacing-xs) + var(--video-tile-corner-offset, 0px));
     z-index: 3;
     min-height: var(--icon-size-24);
+    transition: right var(--duration-quick) var(--ease-transition);
   }
 
   &__badges {
@@ -452,6 +453,7 @@
     }
 
     .video-tile__avatar-image,
+    .video-tile__corner,
     .video-tile__badges,
     .video-tile__more {
       transition: none;
