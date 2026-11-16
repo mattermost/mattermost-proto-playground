@@ -22,6 +22,7 @@ import {
 } from '@mattermost/compass-ui/components/popover-menu';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { CallFeatures } from '@/types/videoCall';
+import { REMOTE_VIDEO, type RemoteVideo } from '../videoCalls.scenes';
 import styles from './PrototypeSettings.module.scss';
 
 export interface PrototypeSettingsProps {
@@ -34,10 +35,23 @@ export interface PrototypeSettingsProps {
   /** Prototype call sounds. */
   soundOn: boolean;
   onSoundChange: (on: boolean) => void;
+  /** Other people's cameras: all on, all off, or every second one off. */
+  remoteVideo: RemoteVideo;
+  onRemoteVideoChange: (next: RemoteVideo) => void;
+  /** Only while the call is live. */
+  canSetRemoteVideo: boolean;
+  /** "Mixed" needs a group (3 or more people). */
+  canSetMixedVideo: boolean;
   /** Simulates opening a call link (always shows pre-join). */
   onOpenCallLink: () => void;
   canOpenCallLink: boolean;
 }
+
+const SECONDARY: Record<RemoteVideo, string> = {
+  on: 'Everyone else has their camera on. Available in a live call.',
+  off: 'Everyone else has their camera off (avatars on the dark tile).',
+  mixed: 'Every second person has their camera off. Groups only.',
+};
 
 /**
  * A setting as a menu row: a checkbox menu item whose check shows when it is
@@ -84,6 +98,10 @@ export default function PrototypeSettings({
   onFeaturesChange,
   soundOn,
   onSoundChange,
+  remoteVideo,
+  onRemoteVideoChange,
+  canSetRemoteVideo,
+  canSetMixedVideo,
   onOpenCallLink,
   canOpenCallLink,
 }: PrototypeSettingsProps) {
@@ -150,6 +168,28 @@ export default function PrototypeSettings({
               on={features.phone}
               onToggle={() => onFeaturesChange({ phone: !features.phone })}
             />
+          </PopoverMenuGroup>
+
+          <PopoverMenuDivider />
+
+          <PopoverMenuGroup>
+            <PopoverMenuGroupTitle>
+              Other people&apos;s video
+            </PopoverMenuGroupTitle>
+            {REMOTE_VIDEO.map((o) => (
+              <MenuItem
+                key={o.id}
+                role="menuitemradio"
+                aria-checked={remoteVideo === o.id}
+                label={o.label}
+                secondaryLabel={SECONDARY[o.id]}
+                trailingElement={remoteVideo === o.id}
+                disabled={
+                  !canSetRemoteVideo || (o.id === 'mixed' && !canSetMixedVideo)
+                }
+                onClick={() => onRemoteVideoChange(o.id)}
+              />
+            ))}
           </PopoverMenuGroup>
 
           <PopoverMenuDivider />

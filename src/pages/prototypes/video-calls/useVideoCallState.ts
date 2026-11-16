@@ -30,6 +30,7 @@ import {
   phaseAvailableForMode,
   surfaceAvailable,
   type DemoSceneId,
+  type RemoteVideo,
 } from './videoCalls.scenes';
 
 export interface VideoCallState {
@@ -54,6 +55,11 @@ export interface VideoCallState {
   media: MediaPrefs;
   /** Participants in the call (2 = the 1:1 baseline). Clamped to 2..MAX_PARTICIPANTS. */
   count: number;
+  /**
+   * Prototype-chrome control: other people's cameras. `off` turns every other
+   * camera off; `mixed` turns off every second other person (groups only).
+   */
+  remoteVideo: RemoteVideo;
   /** Per-participant overrides applied on top of ROSTER (talking, muted, hand, ...). */
   overrides: Record<string, Partial<VideoParticipant>>;
   /** Participants a host removed from the call (cleared when the count is set). */
@@ -106,6 +112,7 @@ const INITIAL_STATE: VideoCallState = {
   joinMode: 'start',
   media: { micOn: true, cameraOn: false, useWebcam: false },
   count: 2,
+  remoteVideo: 'on',
   overrides: {},
   removedIds: [],
   view: 'speaker',
@@ -181,6 +188,7 @@ const CALL_RESET: Partial<VideoCallState> = {
   shareSource: null,
   pane: null,
   callStartedAt: null,
+  remoteVideo: 'on',
 };
 
 /** The webcam is released with the call; the next call starts camera-off. */
@@ -240,7 +248,15 @@ export function useVideoCallState() {
             sharing: state.sharing,
           };
         }
-        return cameraAvailable ? merged : { ...merged, cameraOn: false };
+        if (!cameraAvailable) return { ...merged, cameraOn: false };
+        // Prototype control for other people's video (see `remoteVideo`).
+        const remoteIndex = ROSTER.filter((r) => r.id !== SELF_ID).findIndex(
+          (r) => r.id === p.id,
+        );
+        const off =
+          state.remoteVideo === 'off' ||
+          (state.remoteVideo === 'mixed' && remoteIndex % 2 === 1);
+        return off ? { ...merged, cameraOn: false } : merged;
       });
     // One active speaker at a time: you while your microphone hears you,
     // otherwise the first person marked as talking.
@@ -257,6 +273,7 @@ export function useVideoCallState() {
     state.count,
     state.removedIds,
     state.overrides,
+    state.remoteVideo,
     state.media,
     state.handRaised,
     state.sharing,
@@ -640,6 +657,8 @@ export function useVideoCallState() {
           ...s,
           notices: s.notices.filter((n) => n.id !== id),
         })),
+      setRemoteVideo: (remoteVideo: RemoteVideo) =>
+        setState((s) => ({ ...s, remoteVideo })),
       setSoundOn: (soundOn: boolean) => setState((s) => ({ ...s, soundOn })),
       reset: () => setState(INITIAL_STATE),
     }),

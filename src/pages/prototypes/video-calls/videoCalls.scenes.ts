@@ -35,6 +35,15 @@ export const SURFACES: { id: CallSurface; label: string }[] = [
   { id: 'window', label: 'Window' },
 ];
 
+/** Other people's cameras in the prototype: all on, all off, or every second one off. */
+export type RemoteVideo = 'on' | 'off' | 'mixed';
+
+export const REMOTE_VIDEO: { id: RemoteVideo; label: string }[] = [
+  { id: 'on', label: 'Video on' },
+  { id: 'off', label: 'Video off' },
+  { id: 'mixed', label: 'Mixed' },
+];
+
 /** The mode a Mattermost call gets: video when the server has it, otherwise audio. */
 export function mattermostModeFor(features: CallFeatures): CallMode {
   return features.video ? 'video' : 'audio';

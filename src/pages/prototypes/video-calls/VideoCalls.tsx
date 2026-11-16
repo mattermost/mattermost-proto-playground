@@ -120,6 +120,10 @@ export default function VideoCalls() {
           onFeaturesChange={actions.setFeatures}
           soundOn={state.soundOn}
           onSoundChange={actions.setSoundOn}
+          remoteVideo={state.remoteVideo}
+          onRemoteVideoChange={actions.setRemoteVideo}
+          canSetRemoteVideo={phase === 'active'}
+          canSetMixedVideo={count >= 3}
           onOpenCallLink={() => actions.startCall({ fromLink: true })}
           canOpenCallLink={phase === 'idle' || phase === 'ongoing'}
         />
@@ -135,6 +139,7 @@ export default function VideoCalls() {
     features,
     state.skipPreJoin,
     state.soundOn,
+    state.remoteVideo,
     actions,
     setCenterSlot,
     walkthroughActive,
