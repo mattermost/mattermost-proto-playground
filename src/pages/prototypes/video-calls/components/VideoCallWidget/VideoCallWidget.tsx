@@ -561,6 +561,7 @@ export function VideoCallWidget({
             handRaised={speaker.handRaised}
             reaction={speaker.reaction}
             connection={speaker.connection}
+            videoLoading={speaker.videoLoading}
             size="thumbnail"
             showName
           />
@@ -587,6 +588,7 @@ export function VideoCallWidget({
               speaking={!!self.talking && !self.muted}
               handRaised={self.handRaised}
               reaction={self.reaction}
+              connection={self.connection}
               size="thumbnail"
               showLabel={false}
               selfLabel={l.self}

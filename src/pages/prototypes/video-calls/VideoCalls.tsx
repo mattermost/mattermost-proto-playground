@@ -23,6 +23,7 @@ import { useScreenShare } from './useScreenShare';
 import { useSelfCamera } from './useSelfCamera';
 import { useVideoCallState } from './useVideoCallState';
 import { VideoCallContext } from './videoCallContext';
+import { DM_PEER_ID, ROSTER } from './videoCallsData';
 import {
   CONTEXTS,
   DEMO_SCENES,
@@ -35,6 +36,10 @@ import {
 import { videoCallsWalkthrough } from './videoCallsWalkthrough';
 import { stampVideoCallsWalkthroughFocus } from './videoCallsWalkthroughFocus';
 import styles from './VideoCalls.module.scss';
+
+/** First name of the person the in-between video states apply to in a group. */
+const FOCUS_NAME =
+  ROSTER.find((p) => p.id === DM_PEER_ID)?.name.split(' ')[0] ?? 'One person';
 
 export default function VideoCalls() {
   const { setCenterSlot } = usePrototypeChrome();
@@ -123,7 +128,11 @@ export default function VideoCalls() {
           remoteVideo={state.remoteVideo}
           onRemoteVideoChange={actions.setRemoteVideo}
           canSetRemoteVideo={phase === 'active'}
+          isDm={callContext === 'dm'}
           canSetMixedVideo={count >= 3}
+          focusName={FOCUS_NAME}
+          myConnection={state.myConnection}
+          onMyConnectionChange={actions.setMyConnection}
           onOpenCallLink={() => actions.startCall({ fromLink: true })}
           canOpenCallLink={phase === 'idle' || phase === 'ongoing'}
         />
@@ -140,6 +149,7 @@ export default function VideoCalls() {
     state.skipPreJoin,
     state.soundOn,
     state.remoteVideo,
+    state.myConnection,
     actions,
     setCenterSlot,
     walkthroughActive,

@@ -49,6 +49,8 @@ export interface VideoStageParticipant {
   host?: boolean;
   reaction?: string;
   connection?: VideoTileConnection;
+  /** Camera on, video not arrived yet (see `VideoTile` `videoLoading`). */
+  videoLoading?: boolean;
   self?: boolean;
   /** Key into `clips`. */
   clipId?: string;
@@ -561,6 +563,7 @@ export function VideoStage({
         pinned={!!pinnedId && p.id === pinnedId}
         reaction={p.reaction}
         connection={p.connection}
+        videoLoading={p.videoLoading}
         paused={paused}
         size={size}
         selfLabel={p.self ? l.self : undefined}

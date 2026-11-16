@@ -19,6 +19,11 @@ export interface VideoParticipant extends Participant {
   /** Transient emoji reaction currently shown over the tile. */
   reaction?: string;
   connection?: ConnectionState;
+  /**
+   * Camera is on but the video has not arrived yet: the tile shows the avatar
+   * with a "Connecting…" spinner instead of video.
+   */
+  videoLoading?: boolean;
   /** Key into `CLIPS` (remote video loop). Undefined → avatar fallback. */
   clipId?: string;
 }

@@ -35,13 +35,31 @@ export const SURFACES: { id: CallSurface; label: string }[] = [
   { id: 'window', label: 'Window' },
 ];
 
-/** Other people's cameras in the prototype: all on, all off, or every second one off. */
-export type RemoteVideo = 'on' | 'off' | 'mixed';
+/**
+ * Other people's video in the prototype. `on` / `off` apply to everyone else;
+ * `mixed` turns off every second other person (groups only). The in-between
+ * states (`loading`, `poor`, `reconnecting`) apply to one person: the first
+ * other participant (the DM peer, or the default featured speaker in a group).
+ */
+export type RemoteVideo =
+  'on' | 'off' | 'loading' | 'poor' | 'reconnecting' | 'mixed';
 
 export const REMOTE_VIDEO: { id: RemoteVideo; label: string }[] = [
   { id: 'on', label: 'Video on' },
   { id: 'off', label: 'Video off' },
+  { id: 'loading', label: 'Loading' },
+  { id: 'poor', label: 'Poor network' },
+  { id: 'reconnecting', label: 'Reconnecting' },
   { id: 'mixed', label: 'Mixed' },
+];
+
+/** Your own connection in the prototype (sets the state of your tile). */
+export type MyConnection = 'good' | 'poor' | 'reconnecting';
+
+export const MY_CONNECTION: { id: MyConnection; label: string }[] = [
+  { id: 'good', label: 'Good' },
+  { id: 'poor', label: 'Poor' },
+  { id: 'reconnecting', label: 'Reconnecting' },
 ];
 
 /** The mode a Mattermost call gets: video when the server has it, otherwise audio. */

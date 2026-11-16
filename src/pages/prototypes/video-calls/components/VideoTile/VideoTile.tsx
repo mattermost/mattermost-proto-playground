@@ -21,6 +21,7 @@ import MicrophoneIcon from '@mattermost/compass-icons/components/microphone';
 import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-off';
 import DotsHorizontalIcon from '@mattermost/compass-icons/components/dots-horizontal';
 import PinOutlineIcon from '@mattermost/compass-icons/components/pin-outline';
+import RefreshIcon from '@mattermost/compass-icons/components/refresh';
 import SyncIcon from '@mattermost/compass-icons/components/sync';
 import {
   ParticipantMenu,
@@ -43,6 +44,8 @@ export interface VideoTileLabels {
   handRaised?: string;
   poorConnection?: string;
   reconnecting?: string;
+  /** Camera on, video not arrived yet (`videoLoading`). */
+  connecting?: string;
   cameraOff?: string;
   /** Text of the host tag. */
   host?: string;
@@ -91,7 +94,19 @@ export interface VideoTileProps {
   /** Emoji shown as a short pop over the tile. Change `reactionKey` to replay the same emoji. */
   reaction?: string;
   reactionKey?: string | number;
+  /**
+   * `poor`: the video pauses on its current frame under a dimmed veil, with
+   * the poor-connection badge. `reconnecting`: frozen and dimmed the same
+   * way, with a "Reconnecting…" spinner. With no video frame, the avatar is
+   * dimmed instead. The `<video>` element stays mounted throughout.
+   */
   connection?: VideoTileConnection;
+  /**
+   * The camera is on but the video has not arrived: the avatar shows with a
+   * "Connecting…" spinner and no video plays (the element stays mounted,
+   * hidden and paused, so the video resumes in place once it arrives).
+   */
+  videoLoading?: boolean;
   /** Mirror the video horizontally (self webcam). */
   mirrored?: boolean;
   /**
@@ -126,6 +141,7 @@ const DEFAULT_LABELS: Required<VideoTileLabels> = {
   handRaised: 'Hand raised',
   poorConnection: 'Poor connection',
   reconnecting: 'Reconnecting…',
+  connecting: 'Connecting…',
   cameraOff: 'Camera off',
   host: 'Host',
   participantActions: 'Participant actions',
@@ -139,6 +155,12 @@ const AVATAR_SIZE: Record<VideoTileSize, UserAvatarSize> = {
 };
 
 const WAVE_BARS = [0, 1, 2, 3, 4];
+
+/**
+ * Below this height (a strip or widget tile) the status line would run into
+ * the name label, so the spinner sits over the avatar's centre, without text.
+ */
+const SHORT_TILE_PX = 140;
 
 function VideoTileInner({
   name,
@@ -157,6 +179,7 @@ function VideoTileInner({
   reaction,
   reactionKey,
   connection = 'good',
+  videoLoading = false,
   mirrored = false,
   paused = false,
   size = 'default',
@@ -174,6 +197,7 @@ function VideoTileInner({
   const rootElRef = useRef<HTMLElement>(null);
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const [inView, setInView] = useState(true);
+  const [short, setShort] = useState(false);
   const [tabVisible, setTabVisible] = useState(
     () => typeof document === 'undefined' || !document.hidden,
   );
@@ -209,17 +233,52 @@ function VideoTileInner({
     });
   };
 
+  const reconnecting = connection === 'reconnecting';
+  // Poor network and reconnecting freeze the video on its current frame.
+  const frozen = connection !== 'good';
+  // Camera on but nothing has arrived yet: avatar and a spinner, no video.
+  const loading = cameraOn && videoLoading;
   const hasStream = cameraOn && !!stream;
   const hasClip = cameraOn && !hasStream && !!videoSrc;
   const showStream = hasStream && !paused;
-  // The clip element stays mounted while paused (poster / last frame shows),
-  // so toggling `paused` or moving between layout cells never restarts it.
+  // The clip element stays mounted while paused, frozen or loading (poster /
+  // last frame shows), so none of those states, nor moving between layout
+  // cells, restarts it.
   const showClip = hasClip;
   const showPoster =
-    cameraOn && !hasStream && !hasClip && paused && !!posterSrc;
-  const showAvatar = !showStream && !showClip && !showPoster;
-  const playClip = hasClip && !paused && inView && tabVisible && !reducedMotion;
-  const reconnecting = connection === 'reconnecting';
+    cameraOn && !hasStream && !hasClip && paused && !!posterSrc && !loading;
+  const hasFrame = (showStream || showClip || showPoster) && !loading;
+  const showAvatar = !hasFrame;
+  const playClip =
+    hasClip &&
+    !paused &&
+    !frozen &&
+    !loading &&
+    inView &&
+    tabVisible &&
+    !reducedMotion;
+  const freezeStream = frozen || loading;
+  // Spinner + label: under the avatar, or centred over the frozen frame.
+  const statusText = loading
+    ? l.connecting
+    : reconnecting
+      ? l.reconnecting
+      : null;
+  const compactStatus = short || (size === 'thumbnail' && !showName);
+
+  // Short tiles keep only the spinner (see SHORT_TILE_PX). Layout height,
+  // so a FLIP scale in flight does not flip it.
+  useEffect(() => {
+    const el = rootElRef.current;
+    if (!statusText || !el || typeof ResizeObserver === 'undefined') {
+      return undefined;
+    }
+    const read = () => setShort(el.clientHeight < SHORT_TILE_PX);
+    read();
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [statusText]);
 
   useEffect(() => {
     const video = streamRef.current;
@@ -232,6 +291,20 @@ function VideoTileInner({
       video.srcObject = null;
     };
   }, [stream, showStream]);
+
+  // Freeze the live stream on its current frame (poor / reconnecting) and
+  // resume it in place; the element is never remounted for this.
+  useEffect(() => {
+    const video = streamRef.current;
+    if (!video || !showStream) return;
+    if (freezeStream) {
+      video.pause();
+    } else if (video.paused) {
+      video.play().catch(() => {
+        /* autoplay refused; retried on the next user gesture */
+      });
+    }
+  }, [showStream, freezeStream]);
 
   // Pause clips that are scrolled out of view.
   useEffect(() => {
@@ -291,6 +364,7 @@ function VideoTileInner({
     speaking && !muted ? l.speaking : null,
     handRaised ? l.handRaised : null,
     !cameraOn ? l.cameraOff : null,
+    loading ? l.connecting : null,
     connection === 'poor' ? l.poorConnection : null,
     reconnecting ? l.reconnecting : null,
   ]
@@ -302,6 +376,7 @@ function VideoTileInner({
     styles[`video-tile--size-${size}`],
     speaking ? styles['video-tile--speaking'] : '',
     showAvatar ? styles['video-tile--camera-off'] : '',
+    loading ? styles['video-tile--loading'] : '',
     reconnecting ? styles['video-tile--reconnecting'] : '',
     mirrored || (clipMirrored && hasClip) ? styles['video-tile--mirrored'] : '',
     menu ? styles['video-tile--has-menu'] : '',
@@ -353,26 +428,40 @@ function VideoTileInner({
           aria-hidden="true"
         />
       )}
-      {showAvatar && (
-        <div className={styles['video-tile__avatar']} aria-hidden="true">
-          <UserAvatar
-            className={styles['video-tile__avatar-image']}
-            src={avatarSrc}
-            alt=""
-            name={name}
-            size={AVATAR_SIZE[size]}
-          />
-        </div>
+      {/* Dims the frozen frame (or the avatar) under poor / reconnecting. */}
+      {frozen && (
+        <div className={styles['video-tile__veil']} aria-hidden="true" />
       )}
 
-      {reconnecting && (
-        <div className={styles['video-tile__reconnecting']} aria-hidden="true">
-          <Icon
-            className={styles['video-tile__spinner']}
-            glyph={<SyncIcon />}
-            size="24"
-          />
-          {size !== 'thumbnail' && <span>{l.reconnecting}</span>}
+      {(showAvatar || statusText) && (
+        <div className={styles['video-tile__avatar']} aria-hidden="true">
+          {showAvatar && (
+            <UserAvatar
+              className={styles['video-tile__avatar-image']}
+              src={avatarSrc}
+              alt=""
+              name={name}
+              size={AVATAR_SIZE[size]}
+            />
+          )}
+          {statusText && (
+            <span
+              className={`${styles['video-tile__status']} ${compactStatus ? styles['video-tile__status--compact'] : ''}`}
+            >
+              <Icon
+                className={styles['video-tile__spinner']}
+                glyph={loading ? <RefreshIcon /> : <SyncIcon />}
+                size={size === 'default' && !compactStatus ? '16' : '12'}
+              />
+              {/* Short tiles (strip, the widget's self view) keep the
+                  spinner only, over the avatar's centre. */}
+              {!compactStatus && (
+                <span className={styles['video-tile__status-text']}>
+                  {statusText}
+                </span>
+              )}
+            </span>
+          )}
         </div>
       )}
 

@@ -30,6 +30,7 @@ import {
   phaseAvailableForMode,
   surfaceAvailable,
   type DemoSceneId,
+  type MyConnection,
   type RemoteVideo,
 } from './videoCalls.scenes';
 
@@ -56,10 +57,17 @@ export interface VideoCallState {
   /** Participants in the call (2 = the 1:1 baseline). Clamped to 2..MAX_PARTICIPANTS. */
   count: number;
   /**
-   * Prototype-chrome control: other people's cameras. `off` turns every other
-   * camera off; `mixed` turns off every second other person (groups only).
+   * Prototype-chrome control: other people's video. `on` / `off` apply to
+   * everyone else; `mixed` turns off every second other person (groups only).
+   * `loading`, `poor` and `reconnecting` apply to one person only: the first
+   * other participant (see `RemoteVideo`).
    */
   remoteVideo: RemoteVideo;
+  /**
+   * Prototype-chrome control: your own connection. Sets the state of your
+   * tile; poor and reconnecting also post one persistent network warning.
+   */
+  myConnection: MyConnection;
   /** Per-participant overrides applied on top of ROSTER (talking, muted, hand, ...). */
   overrides: Record<string, Partial<VideoParticipant>>;
   /** Participants a host removed from the call (cleared when the count is set). */
@@ -120,6 +128,7 @@ const INITIAL_STATE: VideoCallState = {
   media: { micOn: true, cameraOn: false, useWebcam: false },
   count: 2,
   remoteVideo: 'on',
+  myConnection: 'good',
   overrides: {},
   removedIds: [],
   view: 'speaker',
@@ -153,6 +162,13 @@ const PERSISTENT_NOTICE_KINDS: readonly CallNotice['kind'][] = [
   'device',
   'recording-started',
 ];
+
+/** The network warning for your own connection (none while it is good). */
+const MY_CONNECTION_NOTICE: Record<MyConnection, string | null> = {
+  good: null,
+  poor: 'Your connection is poor. Video may pause.',
+  reconnecting: 'Reconnecting to the call…',
+};
 
 /**
  * Cap the stack at MAX_NOTICES. Drop the oldest transient notice first so a
@@ -200,6 +216,9 @@ function joinsRunningCall(s: VideoCallState) {
 /** Per-call state that never carries over into a new call. */
 const PER_CALL_RESET: Partial<VideoCallState> = {
   selfSpeaking: false,
+  // Prototype-chrome connection / video states belong to one call.
+  remoteVideo: 'on',
+  myConnection: 'good',
   recording: false,
   handRaised: false,
   removedIds: [],
@@ -217,7 +236,6 @@ const CALL_RESET: Partial<VideoCallState> = {
   shareSource: null,
   pane: null,
   callStartedAt: null,
-  remoteVideo: 'on',
 };
 
 /** The webcam is released with the call; the next call starts camera-off. */
@@ -260,33 +278,50 @@ export function useVideoCallState() {
 
   /** Roster slice for the current count with overrides and self media applied. */
   const participants = useMemo<VideoParticipant[]>(() => {
-    const list = ROSTER.slice(0, state.count)
-      .filter((p) => !state.removedIds.includes(p.id))
-      .map((p) => {
-        const merged = { ...p, ...state.overrides[p.id] };
-        // Audio-only and phone calls never show a camera.
-        const cameraAvailable = state.mode === 'video';
-        if (p.id === SELF_ID) {
-          return {
-            ...merged,
-            muted: !state.media.micOn,
-            // Highlighted when your microphone detects your voice (never while muted).
-            talking: state.selfSpeaking && state.media.micOn,
-            cameraOn: cameraAvailable && state.media.cameraOn,
-            handRaised: state.handRaised,
-            sharing: state.sharing,
-          };
-        }
-        if (!cameraAvailable) return { ...merged, cameraOn: false };
-        // Prototype control for other people's video (see `remoteVideo`).
-        const remoteIndex = ROSTER.filter((r) => r.id !== SELF_ID).findIndex(
-          (r) => r.id === p.id,
-        );
-        const off =
-          state.remoteVideo === 'off' ||
-          (state.remoteVideo === 'mixed' && remoteIndex % 2 === 1);
-        return off ? { ...merged, cameraOn: false } : merged;
-      });
+    const present = ROSTER.slice(0, state.count).filter(
+      (p) => !state.removedIds.includes(p.id),
+    );
+    // The first other person in the roster (the DM peer, or the default
+    // featured speaker in a group) gets the in-between video states.
+    const focusId = present.find((p) => p.id !== SELF_ID)?.id;
+    const list = present.map((p) => {
+      const merged = { ...p, ...state.overrides[p.id] };
+      // Audio-only and phone calls never show a camera.
+      const cameraAvailable = state.mode === 'video';
+      if (p.id === SELF_ID) {
+        return {
+          ...merged,
+          muted: !state.media.micOn,
+          // Highlighted when your microphone detects your voice (never while muted).
+          talking: state.selfSpeaking && state.media.micOn,
+          cameraOn: cameraAvailable && state.media.cameraOn,
+          handRaised: state.handRaised,
+          sharing: state.sharing,
+          connection: state.myConnection,
+        };
+      }
+      // Prototype control for other people's video (see `remoteVideo`).
+      // The in-between states apply to the first other person only.
+      const focus = p.id === focusId;
+      const connection =
+        focus &&
+        (state.remoteVideo === 'poor' || state.remoteVideo === 'reconnecting')
+          ? state.remoteVideo
+          : merged.connection;
+      if (!cameraAvailable) return { ...merged, connection, cameraOn: false };
+      if (focus && state.remoteVideo === 'loading') {
+        return { ...merged, connection, cameraOn: true, videoLoading: true };
+      }
+      const remoteIndex = ROSTER.filter((r) => r.id !== SELF_ID).findIndex(
+        (r) => r.id === p.id,
+      );
+      const off =
+        state.remoteVideo === 'off' ||
+        (state.remoteVideo === 'mixed' && remoteIndex % 2 === 1);
+      return off
+        ? { ...merged, connection, cameraOn: false }
+        : { ...merged, connection };
+    });
     // One active speaker at a time: you while your microphone hears you,
     // otherwise the first person marked as talking.
     let haveSpeaker = state.selfSpeaking && state.media.micOn;
@@ -303,6 +338,7 @@ export function useVideoCallState() {
     state.removedIds,
     state.overrides,
     state.remoteVideo,
+    state.myConnection,
     state.media,
     state.handRaised,
     state.sharing,
@@ -323,6 +359,11 @@ export function useVideoCallState() {
             count: countFor(context, s.groupCount),
             pinnedId: pinWithin(s.pinnedId, countFor(context, s.groupCount)),
             joinMode: joinModeFor(context, s.phase, s.joinMode),
+            // Mixed is a group-only look; a DM falls back to video on.
+            remoteVideo:
+              context === 'dm' && s.remoteVideo === 'mixed'
+                ? 'on'
+                : s.remoteVideo,
             ...(keepPhase
               ? {}
               : {
@@ -714,6 +755,27 @@ export function useVideoCallState() {
         })),
       setRemoteVideo: (remoteVideo: RemoteVideo) =>
         setState((s) => ({ ...s, remoteVideo })),
+      /**
+       * Your own connection (prototype chrome). Keeps exactly one network
+       * warning for it: poor and reconnecting replace each other, good removes
+       * it. A dismissed warning stays dismissed until the state changes.
+       */
+      setMyConnection: (myConnection: MyConnection) =>
+        setState((s) => {
+          if (s.myConnection === myConnection) return s;
+          const rest = s.notices.filter((n) => n.kind !== 'network');
+          const text = MY_CONNECTION_NOTICE[myConnection];
+          return {
+            ...s,
+            myConnection,
+            notices: text
+              ? trimNotices([
+                  ...rest,
+                  { id: `notice-${++noticeSeq}`, kind: 'network', text },
+                ])
+              : rest,
+          };
+        }),
       setSoundOn: (soundOn: boolean) => setState((s) => ({ ...s, soundOn })),
       reset: () => setState(INITIAL_STATE),
     }),

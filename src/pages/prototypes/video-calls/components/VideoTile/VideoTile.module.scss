@@ -82,12 +82,17 @@
     background: var(--video-tile-bg);
   }
 
+  // Centre column: the avatar (camera off, no frame, or loading) and / or the
+  // status line (spinner + "Connecting…" / "Reconnecting…"). No z-index of its
+  // own, so the avatar sits under the veil while the status line sits above it.
   &__avatar {
     position: absolute;
     inset: 0;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: var(--spacing-xs);
     padding: var(--spacing-m);
   }
 
@@ -276,20 +281,47 @@
       var(--ease-entrance) forwards;
   }
 
-  &__reconnecting {
+  // Poor network / reconnecting: dims the frozen frame (or the avatar).
+  // Badges, the label strip and the speaking ring sit above it.
+  &__veil {
     position: absolute;
     inset: 0;
+    z-index: 1;
+    background: rgba(var(--calls-bg-rgb), 0.64);
+    pointer-events: none;
+  }
+
+  &__status {
+    position: relative;
     z-index: 2;
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: var(--spacing-xs);
-    background: rgba(var(--calls-bg-rgb, 9, 29, 72), 0.72);
+    gap: var(--spacing-xxs);
+    max-width: 100%;
     color: var(--button-color, var(--color-neutral-0));
     font-size: var(--font-size-75);
     line-height: var(--line-height-75);
     font-weight: var(--font-weight-semibold);
+  }
+
+  // Short tiles: the spinner alone, on a dark disc over the avatar's centre.
+  &__status--compact {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    justify-content: center;
+    width: var(--icon-size-24);
+    height: var(--icon-size-24);
+    border-radius: var(--radius-pill);
+    background: rgba(var(--calls-bg-rgb), 0.72);
+    translate: -50% -50%;
+  }
+
+  &__status-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__spinner {
@@ -342,6 +374,14 @@
     }
   }
 
+  // Camera on, nothing arrived yet: the (paused) video stays mounted but
+  // hidden behind the avatar until it arrives.
+  &--loading {
+    .video-tile__media {
+      visibility: hidden;
+    }
+  }
+
   &--reconnecting {
     .video-tile__media {
       filter: grayscale(0.6);
@@ -351,6 +391,11 @@
   // Compact fills its parent like default (the filmstrip / mobile grid sets
   // the 182 square); only the inner scale changes.
   &--size-compact {
+    .video-tile__avatar {
+      gap: var(--spacing-xxs);
+      padding: var(--spacing-xs);
+    }
+
     .video-tile__corner {
       top: var(--spacing-xxxs);
       right: calc(var(--spacing-xxxs) + var(--video-tile-corner-offset, 0px));
@@ -363,6 +408,7 @@
     border-radius: var(--radius-s);
 
     .video-tile__avatar {
+      gap: var(--spacing-xxxs);
       padding: var(--spacing-xxxs);
     }
 

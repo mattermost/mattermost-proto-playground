@@ -7,6 +7,10 @@ import {
 } from 'react';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
+import AlertOutlineIcon from '@mattermost/compass-icons/components/alert-outline';
+import CheckCircleOutlineIcon from '@mattermost/compass-icons/components/check-circle-outline';
+import RefreshIcon from '@mattermost/compass-icons/components/refresh';
+import SyncIcon from '@mattermost/compass-icons/components/sync';
 import VideoOffOutlineIcon from '@mattermost/compass-icons/components/video-off-outline';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import VolumeHighIcon from '@mattermost/compass-icons/components/volume-high';
@@ -24,7 +28,12 @@ import {
 } from '@mattermost/compass-ui/components/popover-menu';
 import { useOutsideClose } from '@/hooks/useOutsideClose';
 import type { CallFeatures } from '@/types/videoCall';
-import { REMOTE_VIDEO, type RemoteVideo } from '../videoCalls.scenes';
+import {
+  MY_CONNECTION,
+  REMOTE_VIDEO,
+  type MyConnection,
+  type RemoteVideo,
+} from '../videoCalls.scenes';
 import styles from './PrototypeSettings.module.scss';
 
 export interface PrototypeSettingsProps {
@@ -37,13 +46,23 @@ export interface PrototypeSettingsProps {
   /** Prototype call sounds. */
   soundOn: boolean;
   onSoundChange: (on: boolean) => void;
-  /** Other people's cameras: all on, all off, or every second one off. */
+  /**
+   * Other people's video: on, off, loading, poor network, reconnecting, or
+   * mixed. The in-between states apply to one person (`focusName`).
+   */
   remoteVideo: RemoteVideo;
   onRemoteVideoChange: (next: RemoteVideo) => void;
-  /** Only while the call is live. */
+  /** Only while the call is live (also gates My connection). */
   canSetRemoteVideo: boolean;
+  /** 1:1 DM: options name "them", and Mixed is hidden. */
+  isDm: boolean;
   /** "Mixed" needs a group (3 or more people). */
   canSetMixedVideo: boolean;
+  /** First name of the person the in-between states apply to in a group. */
+  focusName: string;
+  /** Your own connection (sets your tile; poor and reconnecting post a warning). */
+  myConnection: MyConnection;
+  onMyConnectionChange: (next: MyConnection) => void;
   /** Simulates opening a call link (always shows pre-join). */
   onOpenCallLink: () => void;
   canOpenCallLink: boolean;
@@ -52,13 +71,55 @@ export interface PrototypeSettingsProps {
 const REMOTE_VIDEO_ICON: Record<RemoteVideo, ReactNode> = {
   on: <VideoOutlineIcon />,
   off: <VideoOffOutlineIcon />,
+  loading: <RefreshIcon />,
+  poor: <AlertOutlineIcon />,
+  reconnecting: <SyncIcon />,
   mixed: <AccountMultipleOutlineIcon />,
 };
 
-const SECONDARY: Record<RemoteVideo, string> = {
-  on: 'Everyone else has their camera on. Available in a live call.',
-  off: 'Everyone else has their camera off (avatars on the dark tile).',
-  mixed: 'Every second person has their camera off. Groups only.',
+/** One-line secondary labels; DM copy talks about the other person. */
+function remoteVideoSecondary(
+  id: RemoteVideo,
+  isDm: boolean,
+  focusName: string,
+): string {
+  const who = isDm ? 'Their' : `${focusName} only:`;
+  switch (id) {
+    case 'on':
+      return isDm
+        ? 'Their camera is on. Available in a live call.'
+        : 'Everyone else has their camera on. Available in a live call.';
+    case 'off':
+      return isDm
+        ? 'Their camera is off (avatar on the dark tile).'
+        : 'Everyone else has their camera off (avatars on the dark tile).';
+    case 'loading':
+      return isDm
+        ? 'Their camera is on but the video has not arrived yet.'
+        : `${who} camera on, video not arrived yet.`;
+    case 'poor':
+      return isDm
+        ? 'Their video pauses on its last frame.'
+        : `${who} video pauses on its last frame.`;
+    case 'reconnecting':
+      return isDm
+        ? 'Their video freezes while they reconnect.'
+        : `${who} video freezes while they reconnect.`;
+    case 'mixed':
+      return 'Every second person has their camera off. Groups only.';
+  }
+}
+
+const MY_CONNECTION_ICON: Record<MyConnection, ReactNode> = {
+  good: <CheckCircleOutlineIcon />,
+  poor: <AlertOutlineIcon />,
+  reconnecting: <SyncIcon />,
+};
+
+const MY_CONNECTION_SECONDARY: Record<MyConnection, string> = {
+  good: 'No warning. Available in a live call.',
+  poor: 'A warning notice, and a badge on your tile.',
+  reconnecting: 'A warning notice; your tile freezes.',
 };
 
 /**
@@ -109,7 +170,11 @@ export default function PrototypeSettings({
   remoteVideo,
   onRemoteVideoChange,
   canSetRemoteVideo,
+  isDm,
   canSetMixedVideo,
+  focusName,
+  myConnection,
+  onMyConnectionChange,
   onOpenCallLink,
   canOpenCallLink,
 }: PrototypeSettingsProps) {
@@ -184,21 +249,45 @@ export default function PrototypeSettings({
             <PopoverMenuGroupTitle>
               Other people&apos;s video
             </PopoverMenuGroupTitle>
-            {REMOTE_VIDEO.map((o) => (
+            {REMOTE_VIDEO.filter((o) => !(isDm && o.id === 'mixed')).map(
+              (o) => (
+                <MenuItem
+                  key={o.id}
+                  role="menuitemradio"
+                  aria-checked={remoteVideo === o.id}
+                  label={o.label}
+                  secondaryLabel={remoteVideoSecondary(o.id, isDm, focusName)}
+                  leadingVisual={
+                    <Icon size="16" glyph={REMOTE_VIDEO_ICON[o.id]} />
+                  }
+                  trailingElement={remoteVideo === o.id}
+                  disabled={
+                    !canSetRemoteVideo ||
+                    (o.id === 'mixed' && !canSetMixedVideo)
+                  }
+                  onClick={() => onRemoteVideoChange(o.id)}
+                />
+              ),
+            )}
+          </PopoverMenuGroup>
+
+          <PopoverMenuDivider />
+
+          <PopoverMenuGroup>
+            <PopoverMenuGroupTitle>My connection</PopoverMenuGroupTitle>
+            {MY_CONNECTION.map((o) => (
               <MenuItem
                 key={o.id}
                 role="menuitemradio"
-                aria-checked={remoteVideo === o.id}
+                aria-checked={myConnection === o.id}
                 label={o.label}
-                secondaryLabel={SECONDARY[o.id]}
+                secondaryLabel={MY_CONNECTION_SECONDARY[o.id]}
                 leadingVisual={
-                  <Icon size="16" glyph={REMOTE_VIDEO_ICON[o.id]} />
+                  <Icon size="16" glyph={MY_CONNECTION_ICON[o.id]} />
                 }
-                trailingElement={remoteVideo === o.id}
-                disabled={
-                  !canSetRemoteVideo || (o.id === 'mixed' && !canSetMixedVideo)
-                }
-                onClick={() => onRemoteVideoChange(o.id)}
+                trailingElement={myConnection === o.id}
+                disabled={!canSetRemoteVideo}
+                onClick={() => onMyConnectionChange(o.id)}
               />
             ))}
           </PopoverMenuGroup>
