@@ -117,7 +117,7 @@ export default function ChannelScene({
         <div className={styles['mobile-home-channel__composer-spacer']} />
         <div className={styles['mobile-home-channel__composer-sheet']}>
           <MobileMessageInput
-            variant="Root"
+            variant="root"
             placeholder={`Write to ${channel.name}…`}
             value={draft}
             onChange={setDraft}
