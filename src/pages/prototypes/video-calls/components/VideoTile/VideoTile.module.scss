@@ -402,6 +402,17 @@
     }
   }
 
+  // Small tiles: 20px badges and a compact `...` button, so the corner row
+  // steps by 20px instead of 24px.
+  &--small-corner {
+    --video-tile-corner-step: calc(var(--icon-size-20) + var(--spacing-xxxs));
+
+    .video-tile__badge {
+      width: var(--icon-size-20);
+      height: var(--icon-size-20);
+    }
+  }
+
   &--size-thumbnail {
     width: 120px;
     height: 136px;

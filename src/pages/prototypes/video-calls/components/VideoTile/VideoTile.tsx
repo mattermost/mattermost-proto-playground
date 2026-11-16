@@ -371,6 +371,9 @@ function VideoTileInner({
     .filter(Boolean)
     .join(', ');
 
+  // Small tiles get the compact `...` button and 20px badges.
+  const smallCorner = short || size !== 'default';
+
   const rootClass = [
     styles['video-tile'],
     styles[`video-tile--size-${size}`],
@@ -380,6 +383,7 @@ function VideoTileInner({
     reconnecting ? styles['video-tile--reconnecting'] : '',
     mirrored || (clipMirrored && hasClip) ? styles['video-tile--mirrored'] : '',
     menu ? styles['video-tile--has-menu'] : '',
+    smallCorner ? styles['video-tile--small-corner'] : '',
     menuState ? styles['video-tile--menu-open'] : '',
     className ?? '',
   ]
@@ -494,6 +498,7 @@ function VideoTileInner({
               ref={moreRef}
               icon={<Icon size="16" glyph={<DotsHorizontalIcon />} />}
               size="x-small"
+              padding={smallCorner ? 'compact' : undefined}
               style="inverted"
               aria-label={l.participantActions}
               aria-haspopup="menu"
