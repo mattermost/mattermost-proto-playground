@@ -168,11 +168,11 @@ function clampCount(count: number) {
 
 /**
  * Count that matches the context: DMs are always 1:1; a group / channel returns
- * to the size it last had (so a 1:1 check does not lose a custom People value).
+ * to the size it last had (so a 1:1 check does not lose a custom People value,
+ * including 2).
  */
 function countFor(context: CallContext, groupCount: number) {
-  if (context === 'dm') return 2;
-  return groupCount >= 3 ? groupCount : DEFAULT_GROUP_COUNT;
+  return context === 'dm' ? 2 : groupCount;
 }
 
 /** Whether you are about to join, or jump into, a call already running without you. */

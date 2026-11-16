@@ -229,12 +229,15 @@ function planStage(
   if (layout.kind === 'speaker' && layout.strip === 'side') {
     // Featured speaker on the left (largest 16:9 box, centred); the strip is
     // one column of 16:9 cells on the right, centred vertically as a group by
-    // the two flexible spacer rows. Row height comes from the full-page slot
-    // count, so a shorter last page keeps the same tile size.
+    // the two flexible spacer rows. Row height AND the number of rows come from
+    // the full-page slot count: a shorter last page keeps the same tile size, and
+    // tiles leaving during a page flip still land on real tracks (like the top
+    // strip). The shorter page sits centred to the nearest whole row.
     const lane = layout.stripRows.flat();
     const k = Math.max(1, stripSlots, lane.length);
+    const lead = Math.floor((k - lane.length) / 2);
     lane.forEach((id, i) => {
-      cells.set(id, { role: 'strip', column: '2', row: `${i + 2}` });
+      cells.set(id, { role: 'strip', column: '2', row: `${lead + i + 2}` });
     });
     cells.set(layout.featuredId, {
       role: 'featured',
@@ -245,7 +248,7 @@ function planStage(
       canvas: {
         '--video-stage-strip-count': k,
         gridTemplateColumns: 'minmax(0, 1fr) var(--video-stage-side-cell)',
-        gridTemplateRows: `minmax(0, 1fr) repeat(${lane.length}, var(--video-stage-side-row)) minmax(0, 1fr)`,
+        gridTemplateRows: `minmax(0, 1fr) repeat(${k}, var(--video-stage-side-row)) minmax(0, 1fr)`,
       },
       cells,
     };
