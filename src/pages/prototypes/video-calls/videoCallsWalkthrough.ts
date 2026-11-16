@@ -311,7 +311,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       lead: 'With more than two people, the window can show a speaker layout or a grid. Speaker puts the person talking in the large tile and everyone else in a strip along the top.',
       lookFor: ['The strip of people', 'View'],
       bullets: [
-        'View switches between speaker and grid. Grid keeps join order and does not reshuffle when someone talks.',
+        'View switches between speaker, speaker with side strip (everyone else in a column on the right) and grid. Grid keeps join order and does not reshuffle when someone talks.',
         'You are the host here. Hover another person’s name for Mute, Make host and Remove from call.',
         'Leave on your own does not end the call. Host passes to the person who joined next.',
       ],

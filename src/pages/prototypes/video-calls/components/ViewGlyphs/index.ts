@@ -1,2 +1,6 @@
-export { ViewGridGlyph, ViewSpeakerGlyph } from './ViewGlyphs';
+export {
+  ViewGridGlyph,
+  ViewSpeakerGlyph,
+  ViewSpeakerSideGlyph,
+} from './ViewGlyphs';
 export type { ViewGlyphProps } from './ViewGlyphs';

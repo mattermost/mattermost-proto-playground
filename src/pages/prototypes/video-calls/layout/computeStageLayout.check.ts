@@ -235,7 +235,7 @@ check('self is never featured', () => {
 
 check('self never dropped with overflow, wherever self sits', () => {
   const list = people(10).reverse(); // self last
-  for (const view of ['speaker', 'grid'] as const) {
+  for (const view of ['speaker', 'speaker-side', 'grid'] as const) {
     for (const cap of [2, 3, 5, 9]) {
       const l = computeStageLayout({
         participants: list,
@@ -439,7 +439,7 @@ check('sharing=false ignores stale participant.sharing flags', () => {
 
 check('invalid caps are clamped', () => {
   for (const cap of [-5, 0, 1, Number.NaN, 99]) {
-    for (const view of ['speaker', 'grid'] as const) {
+    for (const view of ['speaker', 'speaker-side', 'grid'] as const) {
       const l = computeStageLayout({
         participants: people(10),
         view,
@@ -449,6 +449,209 @@ check('invalid caps are clamped', () => {
       });
       assert.ok(visibleIds(l).includes('self'));
     }
+  }
+});
+
+check('speaker view keeps the strip on top', () => {
+  const s = asSpeaker(
+    computeStageLayout({
+      participants: people(4),
+      view: 'speaker',
+      sharing: false,
+    }),
+  );
+  assert.equal(s.strip, 'top');
+});
+
+check('speaker-side 1 participant → self alone in a grid', () => {
+  const g = asGrid(
+    computeStageLayout({
+      participants: people(1),
+      view: 'speaker-side',
+      sharing: false,
+    }),
+  );
+  assert.deepEqual(g.rows, [['self']]);
+});
+
+check(
+  'speaker-side 2 participants → remote featured, self in the column (no PiP)',
+  () => {
+    for (const speaker of [undefined, 'p1', 'self']) {
+      const s = asSpeaker(
+        computeStageLayout({
+          participants: people(2),
+          view: 'speaker-side',
+          sharing: false,
+          activeSpeakerId: speaker,
+        }),
+      );
+      assert.equal(s.strip, 'side');
+      assert.equal(s.featuredId, 'p1');
+      assert.deepEqual(s.stripIds, ['self']);
+      assert.deepEqual(s.stripRows, [['self']]);
+      assert.deepEqual(s.overflowIds, []);
+    }
+    // Self listed first or last makes no difference.
+    const s = asSpeaker(
+      computeStageLayout({
+        participants: people(2).reverse(),
+        view: 'speaker-side',
+        sharing: false,
+      }),
+    );
+    assert.deepEqual([s.featuredId, s.stripIds], ['p1', ['self']]);
+  },
+);
+
+check(
+  'speaker-side 2..10: membership, one column, self visible, never featured',
+  () => {
+    for (let n = 2; n <= 10; n += 1) {
+      for (const speaker of [undefined, 'self', IDS[n - 1]]) {
+        const s = asSpeaker(
+          computeStageLayout({
+            participants: people(n),
+            view: 'speaker-side',
+            sharing: false,
+            activeSpeakerId: speaker,
+          }),
+        );
+        const label = `n=${n} speaker=${speaker}`;
+        assert.equal(s.strip, 'side', label);
+        assert.notEqual(s.featuredId, 'self', label);
+        assert.equal(
+          s.featuredId,
+          speaker && speaker !== 'self' ? speaker : 'p1',
+          label,
+        );
+        assert.ok(s.stripIds.includes('self'), label);
+        assert.ok(!s.stripIds.includes(s.featuredId), label);
+        assert.deepEqual(shape(s.stripRows), [n - 1], label);
+        assert.deepEqual(s.stripRows.flat(), s.stripIds, label);
+        assert.deepEqual(
+          s.stripIds,
+          IDS.slice(0, n).filter((id) => id !== s.featuredId),
+          label,
+        );
+        assert.equal(s.overflowIds.length, 0, label);
+        // Same membership as speaker view (3+).
+        if (n >= 3) {
+          const top = asSpeaker(
+            computeStageLayout({
+              participants: people(n),
+              view: 'speaker',
+              sharing: false,
+              activeSpeakerId: speaker,
+            }),
+          );
+          assert.deepEqual(
+            [top.featuredId, top.stripIds],
+            [s.featuredId, s.stripIds],
+            label,
+          );
+        }
+      }
+    }
+  },
+);
+
+check(
+  'speaker-side: speaker change swaps, membership sticky across views',
+  () => {
+    const base = people(6);
+    const a = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker-side',
+        sharing: false,
+        activeSpeakerId: 'p1',
+      }),
+    );
+    const b = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker-side',
+        sharing: false,
+        activeSpeakerId: 'p4',
+        previous: a,
+      }),
+    );
+    assert.equal(b.featuredId, 'p4');
+    assert.deepEqual(b.stripIds, ['self', 'p2', 'p3', 'p1', 'p5']);
+    // Switching to the top strip keeps the arrangement (and back again).
+    const c = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker',
+        sharing: false,
+        previous: b,
+      }),
+    );
+    assert.deepEqual(
+      [c.strip, c.featuredId, c.stripIds],
+      ['top', 'p4', b.stripIds],
+    );
+    const d = asSpeaker(
+      computeStageLayout({
+        participants: base,
+        view: 'speaker-side',
+        sharing: false,
+        previous: c,
+      }),
+    );
+    assert.deepEqual({ ...d, strip: 'side' }, { ...c, strip: 'side' });
+    // From the 1:1 PiP the featured person carries over.
+    const pip = computeStageLayout({
+      participants: people(2),
+      view: 'speaker',
+      sharing: false,
+    });
+    const e = asSpeaker(
+      computeStageLayout({
+        participants: people(2),
+        view: 'speaker-side',
+        sharing: false,
+        previous: pip,
+      }),
+    );
+    assert.equal(e.featuredId, 'p1');
+  },
+);
+
+check(
+  'speaker-side overflow with maxStrip 4 → 3 tiles + chip in the column',
+  () => {
+    const s = asSpeaker(
+      computeStageLayout({
+        participants: people(10),
+        view: 'speaker-side',
+        sharing: false,
+        activeSpeakerId: 'p7',
+        maxStrip: 4,
+      }),
+    );
+    assert.equal(s.featuredId, 'p7');
+    assert.deepEqual(shape(s.stripRows), [4]);
+    assert.equal(s.stripRows[0].slice(-1)[0], OVERFLOW_CELL);
+    assert.ok(s.stripIds.includes('self'));
+    assert.equal(s.stripIds.length + s.overflowIds.length + 1, 10);
+  },
+);
+
+check('speaker-side sharing 1..10 → share layout wins', () => {
+  for (let n = 1; n <= 10; n += 1) {
+    const sharer = n > 1 ? 'p1' : 'self';
+    const s = asShare(
+      computeStageLayout({
+        participants: people(n, { [sharer]: { sharing: true } }),
+        view: 'speaker-side',
+        sharing: true,
+      }),
+    );
+    assert.equal(s.presenterId, sharer);
+    assert.ok(s.filmstripIds.includes('self'));
+    assert.equal(s.filmstripIds.length + s.overflowIds.length, n);
   }
 });
 

@@ -4,10 +4,14 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
 import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
-import { ViewGridGlyph, ViewSpeakerGlyph } from '../ViewGlyphs';
+import {
+  ViewGridGlyph,
+  ViewSpeakerGlyph,
+  ViewSpeakerSideGlyph,
+} from '../ViewGlyphs';
 import styles from './ViewToggle.module.scss';
 
-export type ViewToggleValue = 'speaker' | 'grid';
+export type ViewToggleValue = 'speaker' | 'speaker-side' | 'grid';
 
 export interface ViewToggleLabels {
   /** Trigger text. */
@@ -17,6 +21,7 @@ export interface ViewToggleLabels {
   /** Menu accessible name. */
   menu?: string;
   speaker?: string;
+  speakerSide?: string;
   grid?: string;
 }
 
@@ -35,11 +40,13 @@ const DEFAULT_LABELS: Required<ViewToggleLabels> = {
   triggerAria: 'Change call layout',
   menu: 'Call layout',
   speaker: 'Speaker',
+  speakerSide: 'Speaker with side strip',
   grid: 'Grid',
 };
 
 /**
- * Header "View" button with a small layout menu (speaker / grid). The button
+ * Header "View" button with a small layout menu (speaker /
+ * speaker with side strip / grid). The button
  * glyph reflects the selected view. The host owns
  * `open`, outside-click and Escape; the menu is anchored under the trigger.
  */
@@ -54,8 +61,14 @@ export function ViewToggle({
   const l = { ...DEFAULT_LABELS, ...labels };
   const options: { id: ViewToggleValue; label: string; glyph: ReactNode }[] = [
     { id: 'speaker', label: l.speaker, glyph: <ViewSpeakerGlyph /> },
+    {
+      id: 'speaker-side',
+      label: l.speakerSide,
+      glyph: <ViewSpeakerSideGlyph />,
+    },
     { id: 'grid', label: l.grid, glyph: <ViewGridGlyph /> },
   ];
+  const selected = options.find((o) => o.id === view) ?? options[0];
 
   return (
     <div
@@ -65,12 +78,7 @@ export function ViewToggle({
         emphasis="quaternary"
         appearance="inverted"
         size="small"
-        leadingIcon={
-          <Icon
-            size="16"
-            glyph={view === 'grid' ? <ViewGridGlyph /> : <ViewSpeakerGlyph />}
-          />
-        }
+        leadingIcon={<Icon size="16" glyph={selected.glyph} />}
         aria-label={l.triggerAria}
         aria-haspopup="menu"
         aria-expanded={open}

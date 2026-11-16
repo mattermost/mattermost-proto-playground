@@ -27,6 +27,13 @@
  * Self stays in the strip.
  * 2 people in speaker view = remote large + self picture-in-picture.
  *
+ * ── Speaker-side view ───────────────────────────────────────────────────────
+ * Same featured / strip membership, swap and sticky rules as speaker view,
+ * returned as a `speaker` layout with `strip: 'side'`: the featured tile is
+ * large on the left and the strip is ONE column on the right (`stripRows`
+ * holds that single column). Unlike speaker view, 2 people do not get the
+ * PiP: the remote person is featured and self is the only strip tile.
+ *
  * ── Ordering rules (deterministic) ──────────────────────────────────────────
  * - Base order is the `participants` order (join order). Self keeps its index.
  * - Grid view always displays visible tiles in base order. Talking never
@@ -103,9 +110,17 @@ export interface GridLayout {
 
 export interface SpeakerLayout {
   kind: 'speaker';
-  /** Large tile under the strip (active speaker, never self). */
+  /**
+   * Where the strip runs: `top` = one row above the featured tile (speaker
+   * view), `side` = one column right of it (speaker-side view).
+   */
+  strip: 'top' | 'side';
+  /** Large tile beside the strip (active speaker, never self). */
   featuredId: string;
-  /** Strip cell ids per row (`OVERFLOW_CELL` = the chip, always last). */
+  /**
+   * Strip cell ids per lane (`OVERFLOW_CELL` = the chip, always last). A lane
+   * is a row for a `top` strip and the column for a `side` strip.
+   */
   stripRows: string[][];
   /** Strip tiles in display order (no chip). */
   stripIds: string[];
@@ -333,8 +348,9 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
     return { kind: 'pip', mainId, pipId };
   }
 
-  // ── Grid view (any count) ────────────────────────────────────────────────
-  if (input.view === 'grid' || list.length < 3) {
+  // ── Grid view (any count; speaker views below their minimum) ─────────────
+  const side = input.view === 'speaker-side';
+  if (input.view === 'grid' || list.length < (side ? 2 : 3)) {
     const { visible, overflow } = selectVisible(
       order,
       maxVisible,
@@ -353,7 +369,7 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
     };
   }
 
-  // ── Speaker view, 3+ people: featured speaker under a strip ──────────────
+  // ── Speaker view 3+ / speaker-side 2+: featured speaker beside a strip ────
   const prevFeatured =
     prevLayout?.kind === 'speaker'
       ? prevLayout.featuredId
@@ -394,6 +410,7 @@ export function computeStageLayout(input: StageLayoutInput): StageLayout {
   const cells = overflow.length ? [...stripIds, OVERFLOW_CELL] : stripIds;
   return {
     kind: 'speaker',
+    strip: side ? 'side' : 'top',
     featuredId,
     stripRows: chunk(cells, stripRowSizes(cells.length)),
     stripIds,

@@ -319,7 +319,7 @@ _Known gap, out of scope: the widget More menu still repeats Microphone and Came
 
 ### Call window (popout)
 
-- Title bar: "Call · <conversation name>". Header: elapsed time and participant count ("12:40 • 4 participants"), recording indicator when recording, share pill when sharing (Stop), view toggle (Speaker / Grid) at right.
+- Title bar: "Call · <conversation name>". Header: elapsed time and participant count ("12:40 • 4 participants"), recording indicator when recording, share pill when sharing (Stop), view toggle (Speaker, Speaker with side strip, Grid) at right.
 - Controls bar (three zones): participants; mic and camera (segmented, with device menus), share, reactions, raise hand; chat (blue unread dot), More, Leave.
 - Side panes (participants, chat thread) slide in over the right edge like the right-hand sidebar, per the RHS overlay pattern (docs/RHS-OVERLAY-PATTERN.md), and the stage resizes with them. Panes share one width. Only one pane at a time. Chat messages persist for the call.
 - Shortcuts follow mattermost-plugin-calls: Ctrl/Cmd+Shift+Space mutes or unmutes, Ctrl/Cmd+Shift+Y raises or lowers your hand, Ctrl/Cmd+Shift+X opens reactions, Ctrl/Cmd+Shift+E starts or stops screen share, Alt+P or Ctrl/Cmd+Shift+P toggles the participants list, Ctrl/Cmd+Shift+L leaves. In the call window, Space is push to talk and Ctrl/Cmd+Alt+R toggles recording. The plugin has no camera shortcut. _TODO: decide whether video adds one._
@@ -331,7 +331,7 @@ _Known gap, out of scope: the widget More menu still repeats Microphone and Came
 
 **Audio mode window (video disabled).** The window follows the old-style call room, as in the external call participants prototype and the compass-proto call popout, instead of the video stage:
 
-- No Speaker / Grid view toggle in the header (the header keeps the time and participant count, the recording indicator and the share pill), and no self-view picture-in-picture.
+- No view toggle in the header (the header keeps the time and participant count, the recording indicator and the share pill), and no self-view picture-in-picture.
 - The stage is a room of avatars, wrapped and centred, with no video tiles: each person is an avatar with their name below (yours reads "(You)"), a mute badge, a HOST label, a talking ring (not shown when muted), a raised-hand overlay and a reaction. Avatars are medium up to six people and small beyond.
 - The controls bar has no camera control. Everything else (participants and chat panes, share, reactions, raise hand, More, Leave) is as in Video mode.
 - Host actions on a person (Mute, Make host, Remove from call) are not on the avatars in the prototype. _Question: where does the host menu live in the audio room (avatar overflow, as the compass-proto avatar offers, or only in the participants pane)?_
@@ -345,7 +345,11 @@ Video mode only.
 
 **Speaker.** 2 people: remote tile fills the stage with self-view picture-in-picture. 3+: the active speaker is featured in a large tile below one strip of everyone else, which runs along the top (you stay in the strip, never featured). When the speaker changes, the old featured tile swaps into the new speaker's strip slot. The strip pages when its tiles would drop below a minimum width (for example when a side pane narrows the stage). The number of pages follows from the stage width: each page keeps room for its Previous and Next buttons and fits as many minimum-width tiles as it can (at least 2), so a narrower stage, such as with a pane open, means fewer tiles per page and more pages. Previous and Next buttons (labelled "Previous participants, page N of M" and "Next participants, page N of M") flip between pages, tile size stays the same on every page, a shorter last page centres its tiles, and you are always on the first page. A page flip slides the tiles in the direction of travel. Paging is decided against the width the stage will have once a pane finishes sliding in, so the buttons do not flicker while it animates.
 
+**Speaker with side strip.** The same people as Speaker, arranged side by side: the featured tile is large on the left and everyone else is stacked in one column on the right. Membership follows the Speaker rules (you stay in the column and are never featured; when the speaker changes, the old featured tile swaps into the new speaker's slot in the column), and switching between Speaker and Speaker with side strip keeps everyone in the same order. 2 people: the other person is featured and you are the only tile in the column, instead of the floating self view (this is the view to choose to keep your own video beside the other person's rather than over it). Column tiles are 16:9, the same size on every page, as large as the top strip's at most and no wider than a quarter of the stage; the column is centred vertically as a group. When the stage is too short for every tile at a minimum height, the column pages the same way as the top strip: Previous and Next buttons (up and down chevrons, with the same "page N of M" labels) sit above and below the column, each page fits as many minimum-height tiles as the stage height allows (at least 2), you are always on the first page, a shorter last page centres its tiles, and a page flip slides the tiles up or down. Opening a side pane narrows the stage but does not change the column's paging. The View menu lists Speaker, Speaker with side strip and Grid in every call, DMs included, and the View button shows the selected view's glyph.
+
 ![Speaker view with 4 people (strip on top, featured speaker below)](shots/final/19-window-speaker-4.png)
+
+![Speaker with side strip, 4 people (featured speaker left, column on the right)](shots/final/28-window-speaker-side-4.png)
 
 ![Grid view with 4 people](shots/final/20-window-grid-4.png)
 

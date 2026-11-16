@@ -27,28 +27,35 @@
 }
 
 // Strip page flips: the new page slides in from the direction of travel while
-// the old one slides out the other way (shift set per cell by a modifier).
+// the old one slides out the other way (shift set per cell by a modifier:
+// along x for the top strip, along y for the side column).
 @keyframes video-stage-page-in {
   from {
     opacity: 0;
-    transform: translateX(var(--video-stage-page-shift));
+    transform: translate(
+      var(--video-stage-page-shift-x, 0px),
+      var(--video-stage-page-shift-y, 0px)
+    );
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(0, 0);
   }
 }
 
 @keyframes video-stage-page-out {
   from {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate(0, 0);
   }
 
   to {
     opacity: 0;
-    transform: translateX(calc(-1 * var(--video-stage-page-shift)));
+    transform: translate(
+      calc(-1 * var(--video-stage-page-shift-x, 0px)),
+      calc(-1 * var(--video-stage-page-shift-y, 0px))
+    );
   }
 }
 
@@ -70,6 +77,12 @@
   // layout widths (read by VideoStage to decide paging).
   --video-stage-strip-min: 160px;
   --video-stage-strip-nav: 40px;
+  // Side column (speaker-side view): pages when tiles would be shorter than
+  // this (128px wide at 16:9: a column only grows by height, so it allows a
+  // little less than the top strip's minimum before paging), and never takes
+  // more than this share of the stage width.
+  --video-stage-side-min: 72px;
+  --video-stage-side-max: 25cqw;
 
   position: relative;
   width: 100%;
@@ -181,13 +194,14 @@
       pointer-events: none;
     }
 
-    // Strip page flip (see VideoStage): forward = content travels left.
+    // Strip page flip (see VideoStage): forward = content travels left (top
+    // strip) or up (side column, see the `--strip-side` modifier).
     &--page-forward {
-      --video-stage-page-shift: var(--video-stage-strip-cell);
+      --video-stage-page-shift-x: var(--video-stage-strip-cell);
     }
 
     &--page-back {
-      --video-stage-page-shift: calc(-1 * var(--video-stage-strip-cell));
+      --video-stage-page-shift-x: calc(-1 * var(--video-stage-strip-cell));
     }
 
     &--page-enter {
@@ -359,6 +373,56 @@
   // -------------------------------------------------------------------------
   // Modifiers
   // -------------------------------------------------------------------------
+
+  // Speaker-side view: the strip is one column right of the featured tile.
+  // Tiles are 16:9, as large as the top strip's at most, no wider than
+  // `--video-stage-side-max`, and shrink so the whole page fits the stage
+  // height (count = slots per page; reserve = room for the page buttons).
+  &--strip-side .video-stage__canvas {
+    --video-stage-side-row: min(
+      calc(var(--video-stage-strip-max) / var(--video-stage-strip-aspect)),
+      calc(var(--video-stage-side-max) / var(--video-stage-strip-aspect)),
+      calc(
+        (
+            100cqh - 2 * var(--video-stage-edge) -
+              (var(--video-stage-strip-count, 1) + 1) *
+              var(--video-stage-gap) - var(--video-stage-strip-reserve)
+          ) /
+          var(--video-stage-strip-count, 1)
+      )
+    );
+    --video-stage-side-cell: calc(
+      var(--video-stage-side-row) * var(--video-stage-strip-aspect) +
+        var(--video-stage-gap)
+    );
+  }
+
+  &--strip-side .video-stage__cell--page-forward {
+    --video-stage-page-shift-x: 0px;
+    --video-stage-page-shift-y: calc(
+      var(--video-stage-side-row) + var(--video-stage-gap)
+    );
+  }
+
+  &--strip-side .video-stage__cell--page-back {
+    --video-stage-page-shift-x: 0px;
+    --video-stage-page-shift-y: calc(
+      -1 * (var(--video-stage-side-row) + var(--video-stage-gap))
+    );
+  }
+
+  // Page buttons sit above and below the column, centred on it.
+  &--strip-side .video-stage__nav {
+    left: auto;
+    right: 0;
+    width: var(--video-stage-side-cell);
+    height: var(--video-stage-strip-nav);
+  }
+
+  &--strip-side .video-stage__nav--next {
+    top: auto;
+    bottom: 0;
+  }
 
   // Side filmstrip: tiles hug the stage edge when rows shrink below 16:9 of
   // the column width.

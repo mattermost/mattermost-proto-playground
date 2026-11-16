@@ -12,8 +12,10 @@ import {
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
 import ChevronLeftIcon from '@mattermost/compass-icons/components/chevron-left';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
+import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import {
   OVERFLOW_CELL,
   type StageLayout,
@@ -148,11 +150,15 @@ interface Placement {
 interface StripBox {
   /** Canvas width (px). */
   width: number;
+  /** Canvas height (px). */
+  height: number;
   /** Gap between strip tiles (px). */
   gap: number;
-  /** Minimum strip tile width (px) before the strip paginates. */
+  /** Minimum top-strip tile width (px) before the strip paginates. */
   min: number;
-  /** Width reserved for each page button (px). */
+  /** Minimum side-strip tile height (px) before the column paginates. */
+  sideMin: number;
+  /** Room reserved for each page button along the strip (px). */
   nav: number;
 }
 
@@ -215,6 +221,31 @@ function planStage(
         '--video-stage-grid-rows': Math.max(1, layout.rows.length),
         gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
         gridTemplateRows: `repeat(${Math.max(1, layout.rows.length)}, minmax(0, 1fr))`,
+      },
+      cells,
+    };
+  }
+
+  if (layout.kind === 'speaker' && layout.strip === 'side') {
+    // Featured speaker on the left (largest 16:9 box, centred); the strip is
+    // one column of 16:9 cells on the right, centred vertically as a group by
+    // the two flexible spacer rows. Row height comes from the full-page slot
+    // count, so a shorter last page keeps the same tile size.
+    const lane = layout.stripRows.flat();
+    const k = Math.max(1, stripSlots, lane.length);
+    lane.forEach((id, i) => {
+      cells.set(id, { role: 'strip', column: '2', row: `${i + 2}` });
+    });
+    cells.set(layout.featuredId, {
+      role: 'featured',
+      column: '1',
+      row: '1 / -1',
+    });
+    return {
+      canvas: {
+        '--video-stage-strip-count': k,
+        gridTemplateColumns: 'minmax(0, 1fr) var(--video-stage-side-cell)',
+        gridTemplateRows: `minmax(0, 1fr) repeat(${lane.length}, var(--video-stage-side-row)) minmax(0, 1fr)`,
       },
       cells,
     };
@@ -324,7 +355,8 @@ class FlipBoundary extends Component<FlipBoundaryProps> {
 }
 
 /**
- * Call stage: renders a `StageLayout` (pip / grid / speaker / share). Every
+ * Call stage: renders a `StageLayout` (pip / grid / speaker with a top or
+ * side strip / share). Every
  * tile is a direct child of one CSS grid, keyed by participant id and kept in
  * participant order in the DOM; layouts only change each tile's grid lines,
  * so switching view, sharing or joining never reparents or remounts a
@@ -371,18 +403,20 @@ export function VideoStage({
         settledWidth !== undefined && root
           ? settledWidth - root.clientWidth
           : 0;
+      const px = (name: string) => parseFloat(cs.getPropertyValue(name)) || 0;
       const next: StripBox = {
         width: Math.round(canvas.clientWidth + delta),
+        height: Math.round(canvas.clientHeight),
         gap: parseFloat(cs.rowGap) || 0,
-        min: parseFloat(cs.getPropertyValue('--video-stage-strip-min')) || 0,
-        nav: parseFloat(cs.getPropertyValue('--video-stage-strip-nav')) || 0,
+        min: px('--video-stage-strip-min'),
+        sideMin: px('--video-stage-side-min'),
+        nav: px('--video-stage-strip-nav'),
       };
       setStripBox((prev) =>
         prev &&
-        prev.width === next.width &&
-        prev.gap === next.gap &&
-        prev.min === next.min &&
-        prev.nav === next.nav
+        (Object.keys(next) as (keyof StripBox)[]).every(
+          (key) => prev[key] === next[key],
+        )
           ? prev
           : next,
       );
@@ -395,17 +429,22 @@ export function VideoStage({
   }, [compact, settledWidth]);
 
   // Speaker strip pagination, only when the tiles would drop below the
-  // minimum size (e.g. a side pane narrows the stage). Every strip tile,
-  // yours included, belongs to exactly one page (yours is on the first).
+  // minimum size (e.g. a side pane narrows the stage, or a short stage for
+  // the side column). Every strip tile, yours included, belongs to exactly
+  // one page (yours is on the first). The same rule runs along the strip's
+  // axis: width for the top strip, height for the side column (whose two
+  // spacer rows add one gap beyond the tiles' own).
   const paged = useMemo(() => {
-    if (inputLayout.kind !== 'speaker' || !stripBox || stripBox.min <= 0) {
-      return null;
-    }
-    const { width, gap, min, nav } = stripBox;
+    if (inputLayout.kind !== 'speaker' || !stripBox) return null;
+    const side = inputLayout.strip === 'side';
+    const { gap, nav } = stripBox;
+    const min = side ? stripBox.sideMin : stripBox.min;
+    if (min <= 0) return null;
+    const room = side ? stripBox.height - gap : stripBox.width;
     const cell = min + gap;
     const ids = inputLayout.stripIds;
-    if (ids.length <= Math.floor(width / cell)) return null;
-    const capacity = Math.max(2, Math.floor((width - 2 * nav) / cell));
+    if (ids.length <= Math.floor(room / cell)) return null;
+    const capacity = Math.max(2, Math.floor((room - 2 * nav) / cell));
     const pageCount = Math.max(1, Math.ceil(ids.length / capacity));
     const page = Math.min(stripPage, pageCount - 1);
     const visible = ids.slice(page * capacity, (page + 1) * capacity);
@@ -487,7 +526,8 @@ export function VideoStage({
 
   // A paged strip's membership is left out of the key: page flips have their
   // own slide, and FLIP would otherwise move tiles (self included) on its own.
-  const flipKey = `${layout.kind}|${filmstripPosition}|${compact ? 1 : 0}|${[
+  const sideStrip = layout.kind === 'speaker' && layout.strip === 'side';
+  const flipKey = `${layout.kind}|${sideStrip ? 'side' : ''}|${filmstripPosition}|${compact ? 1 : 0}|${[
     ...plan.cells,
   ]
     .filter(([, p]) => !(paged && p.role === 'strip'))
@@ -731,6 +771,7 @@ export function VideoStage({
     styles[`video-stage--${layout.kind}`],
     layout.kind === 'share' &&
       styles[`video-stage--filmstrip-${filmstripPosition}`],
+    sideStrip && styles['video-stage--strip-side'],
     compact && styles['video-stage--compact'],
     className,
   );
@@ -760,7 +801,14 @@ export function VideoStage({
                 )}
               >
                 <IconButton
-                  icon={<Icon size="16" glyph={<ChevronLeftIcon />} />}
+                  icon={
+                    <Icon
+                      size="16"
+                      glyph={
+                        sideStrip ? <ChevronUpIcon /> : <ChevronLeftIcon />
+                      }
+                    />
+                  }
                   size="small"
                   padding="compact"
                   style="inverted"
@@ -776,7 +824,14 @@ export function VideoStage({
                 )}
               >
                 <IconButton
-                  icon={<Icon size="16" glyph={<ChevronRightIcon />} />}
+                  icon={
+                    <Icon
+                      size="16"
+                      glyph={
+                        sideStrip ? <ChevronDownIcon /> : <ChevronRightIcon />
+                      }
+                    />
+                  }
                   size="small"
                   padding="compact"
                   style="inverted"

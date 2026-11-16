@@ -24,10 +24,13 @@ export interface VideoParticipant extends Participant {
 }
 
 /**
- * `speaker`: 1:1 = remote large + self PiP; groups = active speaker promoted.
+ * `speaker`: 1:1 = remote large + self PiP; groups = active speaker promoted
+ * above a strip of everyone else along the top.
+ * `speaker-side`: active speaker large on the left, everyone else (you
+ * included, also in a 1:1) stacked in a column on the right.
  * `grid`: equal tiles (the Figma "View" toggle).
  */
-export type StageView = 'speaker' | 'grid';
+export type StageView = 'speaker' | 'speaker-side' | 'grid';
 
 /** What the user is doing when they arrive at pre-join. */
 export type JoinMode = 'start' | 'accept' | 'join-group';
