@@ -418,6 +418,15 @@ export function VideoStage({
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [stripBox, setStripBox] = useState<StripBox | null>(null);
   const [stripPage, setStripPage] = useState(0);
+  // A different strip (another view, or a share starting / ending) starts on its
+  // first page, not on the page the previous strip was left on.
+  const stripKey =
+    inputLayout.kind === 'share'
+      ? `share:${inputLayout.view}`
+      : inputLayout.kind === 'speaker'
+        ? `speaker:${inputLayout.strip}`
+        : inputLayout.kind;
+  useEffect(() => setStripPage(0), [stripKey]);
 
   // Measure the strip's room: canvas width, gap and the minimum tile / nav
   // widths (CSS custom properties), so paging follows the stage, not a guess.
@@ -456,7 +465,9 @@ export function VideoStage({
     const ro = new ResizeObserver(read);
     ro.observe(canvas);
     return () => ro.disconnect();
-  }, [compact, settledWidth]);
+    // `stripKey`: the share view changes the minimum tile width (a CSS variable)
+    // without resizing the canvas, so the ResizeObserver alone would miss it.
+  }, [compact, settledWidth, stripKey]);
 
   // Speaker strip pagination, only when the tiles would drop below the
   // minimum size (e.g. a side pane narrows the stage, or a short stage for
@@ -498,7 +509,8 @@ export function VideoStage({
     if (inputLayout.kind !== 'share') return null;
     const size =
       inputLayout.view === 'grid' ? SHARE_PAGE_SIZE_GRID : SHARE_PAGE_SIZE;
-    const ids = inputLayout.filmstripIds;
+    // Anyone behind an explicit filmstrip cap is paged with the rest.
+    const ids = [...inputLayout.filmstripIds, ...inputLayout.overflowIds];
     // Tiles never drop below a minimum size: a short or narrow stage shows
     // fewer per page (down to one) instead of squeezing them.
     let perPage = size;

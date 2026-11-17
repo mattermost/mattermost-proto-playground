@@ -80,9 +80,9 @@ export default function PreJoinScene() {
     enabled: media.micOn,
     simulated: !micStream.stream,
   });
-  const devices = useMediaDevices({
-    enabled: media.useWebcam || micCheck || openMenu !== null,
-  });
+  // Enumeration never prompts, and the pickers in the details column need the
+  // real device list from the start (not only after a camera / mic gesture).
+  const devices = useMediaDevices({ enabled: true });
   const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
   const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
   const speakers = devices.speakers.length
@@ -221,6 +221,7 @@ export default function PreJoinScene() {
                   cameraOn={media.cameraOn}
                   stream={selfCamera.stream}
                   muted={!media.micOn}
+                  blurBackground={!!media.blurBackground}
                   mirrored
                 />
                 {selfCamera.status === 'requesting' && (
