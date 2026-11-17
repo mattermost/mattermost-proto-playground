@@ -71,16 +71,6 @@ export function playSound(
   }
   release(name); // never leak or stack elements for the same sound
   const el = new Audio(def.url);
-  // Play on the output chosen in the call's settings. Inert when none is chosen
-  // or the browser has no `setSinkId`; an unknown id keeps the default output.
-  const sinkable = el as HTMLAudioElement & {
-    setSinkId?: (sinkId: string) => Promise<void>;
-  };
-  if (outputDeviceId && sinkable.setSinkId) {
-    sinkable.setSinkId(outputDeviceId).catch(() => {
-      // Unsupported or missing device: keep the default output.
-    });
-  }
   el.loop = Boolean(opts.loop);
   el.volume = def.volume ?? 1;
   playing.set(name, el);
@@ -89,16 +79,39 @@ export function playSound(
       release(name);
     }
   };
-  try {
-    el.play().catch(() => {
-      // Autoplay blocked or aborted: fail silently.
-      if (playing.get(name) === el) {
-        release(name);
-      }
-    });
-  } catch {
-    release(name);
+  const start = () => {
+    try {
+      el.play().catch(() => {
+        // Autoplay blocked or aborted: fail silently.
+        if (playing.get(name) === el) {
+          release(name);
+        }
+      });
+    } catch {
+      release(name);
+    }
+  };
+  // Play on the output chosen in the call's settings. Inert when none is chosen
+  // or the browser has no `setSinkId`; an unknown id keeps the default output.
+  // The switch is asynchronous, so playback starts once it has settled (and only
+  // if this sound is still the one that should play).
+  const sinkable = el as HTMLAudioElement & {
+    setSinkId?: (sinkId: string) => Promise<void>;
+  };
+  if (outputDeviceId && sinkable.setSinkId) {
+    sinkable
+      .setSinkId(outputDeviceId)
+      .catch(() => {
+        // Unsupported or missing device: keep the default output.
+      })
+      .then(() => {
+        if (enabled && playing.get(name) === el) {
+          start();
+        }
+      });
+    return;
   }
+  start();
 }
 
 export function setSoundsEnabled(value: boolean): void {

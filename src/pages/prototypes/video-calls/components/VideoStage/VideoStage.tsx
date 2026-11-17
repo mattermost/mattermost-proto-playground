@@ -442,6 +442,10 @@ export function VideoStage({
   // page 0 on the very first render (no frame on the old page, no backward flip).
   const [stripState, setStripState] = useState({ key: stripKey, page: 0 });
   const stripPage = stripState.key === stripKey ? stripState.page : 0;
+  // Forget the page of a strip we have left, so coming back opens on page 0.
+  if (stripState.key !== stripKey) {
+    setStripState({ key: stripKey, page: 0 });
+  }
   const setStripPage = (page: number) => setStripState({ key: stripKey, page });
 
   // Measure the strip's room: canvas width, gap and the minimum tile / nav
