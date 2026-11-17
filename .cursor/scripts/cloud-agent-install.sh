@@ -45,7 +45,7 @@ clone_compass_design() {
 
   # The repo may sit directly under a root-owned directory (e.g. /workspace); pre-create
   # an empty, user-owned target so git can clone into it.
-  if [ ! -w "$(dirname "$compass_dir")" ]; then
+  if [ ! -w "$(dirname "$compass_dir")" ] && [ ! -d "$compass_dir" ]; then
     sudo install -d -o "$(id -u)" -g "$(id -g)" "$compass_dir"
   fi
 
@@ -67,7 +67,22 @@ refresh_compass_design() {
     log "Checking out compass-design $compass_ref (CLOUD_AGENT_COMPASS_DESIGN_REF)"
     git -C "$compass_dir" fetch --quiet origin "$compass_ref"
     git -C "$compass_dir" checkout --quiet --detach FETCH_HEAD
-  elif git -C "$compass_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+    return
+  fi
+
+  # A detached HEAD is what an earlier CLOUD_AGENT_COMPASS_DESIGN_REF run leaves behind.
+  if ! git -C "$compass_dir" symbolic-ref -q HEAD >/dev/null; then
+    local default_branch
+    default_branch="$(git -C "$compass_dir" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
+    default_branch="${default_branch#origin/}"
+    if [ -n "$default_branch" ]; then
+      log "Returning compass-design to $default_branch (no CLOUD_AGENT_COMPASS_DESIGN_REF set)"
+      git -C "$compass_dir" checkout --quiet "$default_branch" ||
+        log "WARNING: could not check out $default_branch in $compass_dir"
+    fi
+  fi
+
+  if git -C "$compass_dir" rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
     git -C "$compass_dir" pull --quiet --ff-only ||
       log "WARNING: could not fast-forward $compass_dir; using the existing checkout"
   else
@@ -75,7 +90,8 @@ refresh_compass_design() {
   fi
 }
 
-if [ -e "$compass_dir" ]; then
+# An empty directory is what a failed clone into a pre-created target leaves behind.
+if [ -e "$compass_dir" ] && [ -n "$(ls -A "$compass_dir" 2>/dev/null)" ]; then
   refresh_compass_design
 else
   clone_compass_design
