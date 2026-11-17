@@ -77,7 +77,9 @@ refresh_compass_design() {
   # A detached HEAD is what an earlier CLOUD_AGENT_COMPASS_DESIGN_REF run leaves behind.
   if ! git -C "$compass_dir" symbolic-ref -q HEAD >/dev/null; then
     local default_branch
-    git -C "$compass_dir" remote set-head origin --auto >/dev/null 2>&1 ||
+    # set-head --auto fails when the new default branch has no remote-tracking ref yet.
+    { git -C "$compass_dir" fetch --quiet origin &&
+      git -C "$compass_dir" remote set-head origin --auto >/dev/null 2>&1; } ||
       log "WARNING: could not refresh origin/HEAD; using the cached default branch"
     default_branch="$(git -C "$compass_dir" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
     default_branch="${default_branch#origin/}"

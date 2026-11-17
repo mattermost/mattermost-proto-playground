@@ -40,8 +40,8 @@ These instructions apply only to Cursor Cloud Agents. `.cursor/scripts/cloud-age
 
   ```bash
   nohup npm run dev > /tmp/dev.log 2>&1 &
-  timeout 120 bash -c 'until curl -sf -o /dev/null http://localhost:5173/; do sleep 1; done' ||
-    { echo "Dev server did not start:"; cat /tmp/dev.log; }
+  timeout 120 bash -c 'until [ "$(curl -s --max-time 2 -o /dev/null -w "%{http_code}" http://localhost:5173/)" = 200 ]; do sleep 1; done' ||
+    { echo "Dev server did not start:"; cat /tmp/dev.log; false; }
   ```
 
 - `predev` / `prebuild` run `scripts/ensure-compass-packages.mjs`, which rebuilds compass-proto `dist/` in `../compass-design` when its source is newer.
