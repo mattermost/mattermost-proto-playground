@@ -599,14 +599,13 @@ export function VideoStage({
       return;
     }
     // A different strip (another view, a share starting or ending) is not a page
-    // flip: no slide, and the old strip's cells do not apply to the new grid.
-    if (
-      !prev ||
-      prev.key !== cur.key ||
-      prev.page === cur.page ||
-      prefersReducedMotion()
-    )
+    // flip: no slide, and any slide still running is dropped, because its
+    // leaving tiles hold the old strip's cells that do not apply to the new grid.
+    if (prev && prev.key !== cur.key) {
+      setPageFlow(null);
       return;
+    }
+    if (!prev || prev.page === cur.page || prefersReducedMotion()) return;
     setPageFlow({
       dir: cur.page > prev.page ? 1 : -1,
       entering: cur.ids.filter((id) => !prev.ids.includes(id)),
