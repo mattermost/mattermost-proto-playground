@@ -394,7 +394,7 @@ class FlipBoundary extends Component<FlipBoundaryProps> {
  * most the visible tiles decode video.
  */
 export function VideoStage({
-  layout: inputLayout,
+  layout: rawLayout,
   participants,
   clips = {},
   selfStream,
@@ -417,7 +417,19 @@ export function VideoStage({
   const l = { ...DEFAULT_LABELS, ...labels };
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [stripBox, setStripBox] = useState<StripBox | null>(null);
-  const [stripPage, setStripPage] = useState(0);
+  // Anyone behind an explicit filmstrip cap is folded into the filmstrip, so the
+  // share paging below sees everyone (and shows no overflow chip).
+  const inputLayout = useMemo<StageLayout>(
+    () =>
+      rawLayout.kind === 'share' && rawLayout.overflowIds.length > 0
+        ? {
+            ...rawLayout,
+            filmstripIds: [...rawLayout.filmstripIds, ...rawLayout.overflowIds],
+            overflowIds: [],
+          }
+        : rawLayout,
+    [rawLayout],
+  );
   // A different strip (another view, or a share starting / ending) starts on its
   // first page, not on the page the previous strip was left on.
   const stripKey =
@@ -426,7 +438,11 @@ export function VideoStage({
       : inputLayout.kind === 'speaker'
         ? `speaker:${inputLayout.strip}`
         : inputLayout.kind;
-  useEffect(() => setStripPage(0), [stripKey]);
+  // The page is stored with the strip it belongs to, so a different strip reads
+  // page 0 on the very first render (no frame on the old page, no backward flip).
+  const [stripState, setStripState] = useState({ key: stripKey, page: 0 });
+  const stripPage = stripState.key === stripKey ? stripState.page : 0;
+  const setStripPage = (page: number) => setStripState({ key: stripKey, page });
 
   // Measure the strip's room: canvas width, gap and the minimum tile / nav
   // widths (CSS custom properties), so paging follows the stage, not a guess.
@@ -509,8 +525,7 @@ export function VideoStage({
     if (inputLayout.kind !== 'share') return null;
     const size =
       inputLayout.view === 'grid' ? SHARE_PAGE_SIZE_GRID : SHARE_PAGE_SIZE;
-    // Anyone behind an explicit filmstrip cap is paged with the rest.
-    const ids = [...inputLayout.filmstripIds, ...inputLayout.overflowIds];
+    const ids = inputLayout.filmstripIds;
     // Tiles never drop below a minimum size: a short or narrow stage shows
     // fewer per page (down to one) instead of squeezing them.
     let perPage = size;
@@ -568,13 +583,14 @@ export function VideoStage({
   // tiles stay mounted in their old cells until their exit animation ends.
   const [pageFlow, setPageFlow] = useState<PageFlow | null>(null);
   const prevStrip = useRef<{
+    key: string;
     page: number;
     ids: string[];
     cells: Map<string, Placement>;
   } | null>(null);
   useLayoutEffect(() => {
     const cur = paged
-      ? { page: paged.page, ids: paged.ids, cells: plan.cells }
+      ? { key: stripKey, page: paged.page, ids: paged.ids, cells: plan.cells }
       : null;
     const prev = prevStrip.current;
     prevStrip.current = cur;
@@ -582,7 +598,15 @@ export function VideoStage({
       setPageFlow(null);
       return;
     }
-    if (!prev || prev.page === cur.page || prefersReducedMotion()) return;
+    // A different strip (another view, a share starting or ending) is not a page
+    // flip: no slide, and the old strip's cells do not apply to the new grid.
+    if (
+      !prev ||
+      prev.key !== cur.key ||
+      prev.page === cur.page ||
+      prefersReducedMotion()
+    )
+      return;
     setPageFlow({
       dir: cur.page > prev.page ? 1 : -1,
       entering: cur.ids.filter((id) => !prev.ids.includes(id)),
@@ -593,7 +617,7 @@ export function VideoStage({
           return place ? [{ id, place }] : [];
         }),
     });
-  }, [paged, plan]);
+  }, [paged, plan, stripKey]);
   useEffect(() => {
     if (!pageFlow) return undefined;
     // Safety net if an exit animation never reports its end.

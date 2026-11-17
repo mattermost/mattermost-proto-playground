@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { startRingback, stopRingback } from '@/utils/phoneSounds';
-import { playSound, setSoundsEnabled, stopSound } from '../callSounds';
+import {
+  playSound,
+  setSoundOutputDevice,
+  setSoundsEnabled,
+  stopSound,
+} from '../callSounds';
 import { useVideoCall } from '../videoCallContext';
 
 /** How long an outgoing call rings before the other person answers (demo). */
@@ -24,6 +29,12 @@ export default function CallPhaseEffects() {
   useEffect(() => {
     setSoundsEnabled(soundOn);
   }, [soundOn]);
+
+  // Call sounds (and the pre-join speaker test) follow the chosen audio output.
+  const speakerDeviceId = state.media.speakerDeviceId;
+  useEffect(() => {
+    setSoundOutputDevice(speakerDeviceId);
+  }, [speakerDeviceId]);
 
   useEffect(() => {
     if (phase !== 'calling') return;

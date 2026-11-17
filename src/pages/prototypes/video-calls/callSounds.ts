@@ -38,6 +38,7 @@ const SOUND_MAP: Partial<Record<CallSoundName, SoundDef>> = {
 };
 
 let enabled = false;
+let outputDeviceId: string | undefined;
 const playing = new Map<CallSoundName, HTMLAudioElement>();
 
 function release(name: CallSoundName) {
@@ -70,6 +71,16 @@ export function playSound(
   }
   release(name); // never leak or stack elements for the same sound
   const el = new Audio(def.url);
+  // Play on the output chosen in the call's settings. Inert when none is chosen
+  // or the browser has no `setSinkId`; an unknown id keeps the default output.
+  const sinkable = el as HTMLAudioElement & {
+    setSinkId?: (sinkId: string) => Promise<void>;
+  };
+  if (outputDeviceId && sinkable.setSinkId) {
+    sinkable.setSinkId(outputDeviceId).catch(() => {
+      // Unsupported or missing device: keep the default output.
+    });
+  }
   el.loop = Boolean(opts.loop);
   el.volume = def.volume ?? 1;
   playing.set(name, el);
@@ -95,6 +106,11 @@ export function setSoundsEnabled(value: boolean): void {
   if (!value) {
     stopSound();
   }
+}
+
+/** The audio output (a `speakerDeviceId`) call sounds play on; `undefined` = default. */
+export function setSoundOutputDevice(deviceId: string | undefined): void {
+  outputDeviceId = deviceId;
 }
 
 export function isSoundsEnabled(): boolean {

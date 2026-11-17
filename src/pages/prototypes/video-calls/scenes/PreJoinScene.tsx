@@ -83,6 +83,12 @@ export default function PreJoinScene() {
   // Enumeration never prompts, and the pickers in the details column need the
   // real device list from the start (not only after a camera / mic gesture).
   const devices = useMediaDevices({ enabled: true });
+  // A permission grant can change device labels without a devicechange event:
+  // list the devices again once the camera is live.
+  const refreshDevices = devices.refresh;
+  useEffect(() => {
+    if (selfCamera.status === 'active') refreshDevices();
+  }, [selfCamera.status, refreshDevices]);
   const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
   const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
   const speakers = devices.speakers.length

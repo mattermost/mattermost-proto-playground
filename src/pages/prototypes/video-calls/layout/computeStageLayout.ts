@@ -105,7 +105,10 @@ export interface StageLayoutInput {
   pinnedId?: string | null;
   /** Max cells in a grid including self and the overflow chip. Default 10. */
   maxVisible?: number;
-  /** Max cells in the share filmstrip including the overflow chip. Default 6. */
+  /**
+   * Max cells in the share filmstrip including the overflow chip. Default:
+   * everyone (the stage pages the filmstrip, so there is no chip).
+   */
   maxFilmstrip?: number;
   /** Max cells in the speaker strip including the overflow chip. Default 9. */
   maxStrip?: number;
