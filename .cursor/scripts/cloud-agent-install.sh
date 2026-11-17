@@ -38,6 +38,10 @@ compass_ref="${CLOUD_AGENT_COMPASS_DESIGN_REF:-}"
 clone_compass_design() {
   if [ -n "${COMPASS_DESIGN_PATH:-}" ] && [ -f "$COMPASS_DESIGN_PATH/package.json" ]; then
     log "Linking $compass_dir -> $COMPASS_DESIGN_PATH (COMPASS_DESIGN_PATH set)"
+    # ln -s into an existing directory would create the link inside it.
+    if [ -d "$compass_dir" ] && [ ! -L "$compass_dir" ]; then
+      rmdir "$compass_dir" 2>/dev/null || sudo rmdir "$compass_dir"
+    fi
     ln -s "$(cd "$COMPASS_DESIGN_PATH" && pwd)" "$compass_dir" 2>/dev/null ||
       sudo ln -s "$(cd "$COMPASS_DESIGN_PATH" && pwd)" "$compass_dir"
     return
@@ -73,6 +77,8 @@ refresh_compass_design() {
   # A detached HEAD is what an earlier CLOUD_AGENT_COMPASS_DESIGN_REF run leaves behind.
   if ! git -C "$compass_dir" symbolic-ref -q HEAD >/dev/null; then
     local default_branch
+    git -C "$compass_dir" remote set-head origin --auto >/dev/null 2>&1 ||
+      log "WARNING: could not refresh origin/HEAD; using the cached default branch"
     default_branch="$(git -C "$compass_dir" symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)"
     default_branch="${default_branch#origin/}"
     if [ -n "$default_branch" ]; then
