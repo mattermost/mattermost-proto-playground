@@ -72,5 +72,6 @@ Never put absolute local paths (a home directory, `~/.claude/...`, session memor
 - [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-toolkit/skills/compass-review/SKILL.md) — Read-only Compass audit of that UI (local path `.agents/skills/compass-review/SKILL.md`)
 - [.agents/skills/guided-walkthrough/SKILL.md](.agents/skills/guided-walkthrough/SKILL.md) — Guided walkthrough mode for a prototype
 - [.cursor/rules/creating-agent-rules.mdc](.cursor/rules/creating-agent-rules.mdc) — Adding or changing agent guidance
+- [.cursor/cursor.md](.cursor/cursor.md) — Cursor Cloud Agents: sibling compass-design setup, running the playground, screenshots, verification (environment in [.cursor/README.md](.cursor/README.md))
 
 For guidelines, Storybook, and package work, use the **compass-design** repo.
