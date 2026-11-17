@@ -18,18 +18,18 @@ jobs:
     timeout-minutes: 15
     steps:
       # Sibling layout so file:../compass-design resolves from the playground root.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: mattermost-proto-playground
           persist-credentials: false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: mattermost/compass-design
           path: compass-design
           persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: mattermost-proto-playground/.nvmrc
           cache: npm

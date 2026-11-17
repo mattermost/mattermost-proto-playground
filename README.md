@@ -44,7 +44,7 @@ Open the URL shown in the terminal. The catalog index is at `/`.
 2. Create the flow under `src/pages/prototypes/<slug>/`
 3. Follow [src/pages/prototypes/AGENTS.md](src/pages/prototypes/AGENTS.md) for scene chrome, component lookup, and overlay wiring
 
-Use [.agents/skills/scaffold-prototype/SKILL.md](.agents/skills/scaffold-prototype/SKILL.md) to scaffold a multi-scene prototype.
+Use [.agents/skills/scaffold-prototype/SKILL.md](.agents/skills/scaffold-prototype/SKILL.md) to scaffold a multi-scene prototype. Scene UI follows [compass-build](https://github.com/mattermost/compass-design/blob/main/skills/compass-build/SKILL.md) (local path `.agents/skills/compass-build/SKILL.md`); check it with [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-review/SKILL.md) (local path `.agents/skills/compass-review/SKILL.md`).
 
 ## Dependencies
 
