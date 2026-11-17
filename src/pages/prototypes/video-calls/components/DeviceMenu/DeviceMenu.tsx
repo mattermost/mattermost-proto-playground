@@ -19,13 +19,24 @@ export interface DeviceMenuDevice {
   label: string;
 }
 
+/** An on / off row in a section, e.g. "Blur background". */
+export interface DeviceMenuToggle {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
 export interface DeviceMenuSection {
   id: string;
-  /** Group heading, e.g. "Microphone" / "Speakers". */
+  /** Group heading, e.g. "Microphone" / "Audio output". */
   title: string;
-  devices: DeviceMenuDevice[];
+  /** Device choices (radio rows). Omit for a section of toggles only. */
+  devices?: DeviceMenuDevice[];
   selectedId?: string;
-  onSelect: (id: string) => void;
+  onSelect?: (id: string) => void;
+  /** On / off rows shown after the devices. */
+  toggles?: DeviceMenuToggle[];
 }
 
 export interface DeviceMenuLabels {
@@ -180,14 +191,27 @@ export function DeviceMenu({
         onKeyDown={onMenuKeyDown}
         className={cx(styles['device-menu'], className)}
       >
-        <MenuGroupHeading label={title} />
+        {!sections && <MenuGroupHeading label={title} />}
         {sections
           ? sections.map((s, i) => (
               <div key={s.id} role="group" aria-label={s.title}>
                 {i > 0 && <PopoverMenuDivider />}
                 <PopoverMenuGroup>
                   <MenuGroupHeading label={s.title} />
-                  {renderItems(s.devices, s.selectedId, s.onSelect)}
+                  {s.devices &&
+                    renderItems(s.devices, s.selectedId, s.onSelect)}
+                  {s.toggles?.map((t) => (
+                    <MenuItem
+                      key={t.id}
+                      role="menuitemcheckbox"
+                      aria-checked={t.checked}
+                      label={t.label}
+                      leadingElement={false}
+                      trailingElement={t.checked}
+                      trailingVisual={<Icon size="16" glyph={<CheckIcon />} />}
+                      onClick={() => t.onChange(!t.checked)}
+                    />
+                  ))}
                 </PopoverMenuGroup>
               </div>
             ))

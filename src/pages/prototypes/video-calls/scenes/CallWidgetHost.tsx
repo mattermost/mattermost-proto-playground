@@ -113,17 +113,36 @@ function useDeviceMenus(ov: WidgetOverlay) {
   const devices = useMediaDevices({ enabled: true });
   const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
   const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
+  const speakers = devices.speakers.length
+    ? devices.speakers
+    : FALLBACK_SPEAKERS;
 
   const micMenu = (
     <DeviceMenu
       open={ov.overlay === 'mic'}
-      title="Microphone"
-      devices={mics.map((m) => ({ id: m.deviceId, label: m.label }))}
-      selectedId={state.media.micDeviceId}
-      onSelect={(id) => {
-        actions.setMedia({ micDeviceId: id });
-        ov.close();
-      }}
+      title="Microphone and audio output"
+      sections={[
+        {
+          id: 'mic',
+          title: 'Microphone',
+          devices: mics.map((m) => ({ id: m.deviceId, label: m.label })),
+          selectedId: state.media.micDeviceId,
+          onSelect: (id) => {
+            actions.setMedia({ micDeviceId: id });
+            ov.close();
+          },
+        },
+        {
+          id: 'output',
+          title: 'Audio output',
+          devices: speakers.map((d) => ({ id: d.deviceId, label: d.label })),
+          selectedId: state.media.speakerDeviceId,
+          onSelect: (id) => {
+            actions.setMedia({ speakerDeviceId: id });
+            ov.close();
+          },
+        },
+      ]}
       onClose={ov.closeFromMenu}
     />
   );
@@ -131,12 +150,30 @@ function useDeviceMenus(ov: WidgetOverlay) {
     <DeviceMenu
       open={ov.overlay === 'camera'}
       title="Camera"
-      devices={cameras.map((c) => ({ id: c.deviceId, label: c.label }))}
-      selectedId={state.media.cameraDeviceId}
-      onSelect={(id) => {
-        actions.setMedia({ cameraDeviceId: id });
-        ov.close();
-      }}
+      sections={[
+        {
+          id: 'camera',
+          title: 'Camera',
+          devices: cameras.map((c) => ({ id: c.deviceId, label: c.label })),
+          selectedId: state.media.cameraDeviceId,
+          onSelect: (id) => {
+            actions.setMedia({ cameraDeviceId: id });
+            ov.close();
+          },
+        },
+        {
+          id: 'background',
+          title: 'Background',
+          toggles: [
+            {
+              id: 'blur',
+              label: 'Blur background',
+              checked: !!state.media.blurBackground,
+              onChange: (on) => actions.setMedia({ blurBackground: on }),
+            },
+          ],
+        },
+      ]}
       onClose={ov.closeFromMenu}
     />
   );
@@ -219,6 +256,7 @@ function CardWidget({
       micMenuOpen={overlay === 'mic'}
       micMenu={micMenu}
       cameraOn={state.media.cameraOn}
+      blurBackground={!!state.media.blurBackground}
       onToggleCamera={selfCamera.toggle}
       onOpenCameraMenu={() => toggle('camera')}
       cameraMenuOpen={overlay === 'camera'}

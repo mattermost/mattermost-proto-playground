@@ -18,6 +18,8 @@ import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right
 import ChevronUpIcon from '@mattermost/compass-icons/components/chevron-up';
 import {
   OVERFLOW_CELL,
+  SHARE_PAGE_SIZE,
+  SHARE_PAGE_SIZE_GRID,
   type StageLayout,
 } from '../../layout/computeStageLayout';
 import {
@@ -42,6 +44,8 @@ export interface VideoStageParticipant {
   name: string;
   avatarSrc?: string;
   cameraOn: boolean;
+  /** Self only: blur the background behind you. */
+  blurBackground?: boolean;
   muted?: boolean;
   talking?: boolean;
   handRaised?: boolean;
@@ -109,7 +113,7 @@ export interface VideoStageProps {
   pipCorner?: SelfViewPipCorner;
   onPipCornerChange?: (corner: SelfViewPipCorner) => void;
   /** `side` = filmstrip column on the right (desktop), `bottom` = row below content. */
-  filmstripPosition?: 'side' | 'bottom';
+  filmstripPosition?: 'side' | 'bottom' | 'top';
   /** Use compact tiles / PiP (mobile). */
   compact?: boolean;
   /** Pause every tile (e.g. stage covered); shows poster frames only. */
@@ -162,6 +166,8 @@ interface StripBox {
   min: number;
   /** Minimum side-strip tile height (px) before the column paginates. */
   sideMin: number;
+  /** Minimum share-filmstrip tile width (px) before the filmstrip shows fewer per page. */
+  filmMin: number;
   /** Room reserved for each page button along the strip (px). */
   nav: number;
 }
@@ -189,7 +195,7 @@ const cx = (...names: (string | false | undefined)[]) =>
  */
 function planStage(
   layout: StageLayout,
-  filmstripPosition: 'side' | 'bottom',
+  filmstripPosition: 'side' | 'bottom' | 'top',
   stripSlots = 0,
 ): StagePlan {
   const cells = new Map<string, Placement>();
@@ -293,11 +299,14 @@ function planStage(
   const strip = layout.overflowIds.length
     ? [...layout.filmstripIds, OVERFLOW_CELL]
     : layout.filmstripIds;
-  const n = Math.max(1, strip.length);
+  // A paged filmstrip sizes its cells for a full page, so a shorter last page
+  // keeps the tile size (its tiles are centred).
+  const n = Math.max(1, stripSlots, strip.length);
+  const lead = Math.floor((n - strip.length) / 2);
   if (filmstripPosition === 'side') {
     cells.set(SHARE_CONTENT, { role: 'tile', column: '1', row: '1 / -1' });
     strip.forEach((id, i) =>
-      cells.set(id, { role: 'strip', column: '2', row: `${i + 2}` }),
+      cells.set(id, { role: 'strip', column: '2', row: `${lead + i + 2}` }),
     );
     return {
       canvas: {
@@ -308,15 +317,27 @@ function planStage(
       cells,
     };
   }
-  cells.set(SHARE_CONTENT, { role: 'tile', column: '1 / -1', row: '1' });
+  // Row of cameras above (`top`) or below the shared content.
+  const top = filmstripPosition === 'top';
+  cells.set(SHARE_CONTENT, {
+    role: 'tile',
+    column: '1 / -1',
+    row: top ? '2' : '1',
+  });
   strip.forEach((id, i) =>
-    cells.set(id, { role: 'strip', column: `${i + 2}`, row: '2' }),
+    cells.set(id, {
+      role: 'strip',
+      column: `${lead + i + 2}`,
+      row: top ? '1' : '2',
+    }),
   );
   return {
     canvas: {
       '--video-stage-strip-count': n,
       gridTemplateColumns: `minmax(0, 1fr) repeat(${n}, var(--video-stage-film-cell)) minmax(0, 1fr)`,
-      gridTemplateRows: 'minmax(0, 1fr) var(--video-stage-film-row)',
+      gridTemplateRows: top
+        ? 'var(--video-stage-film-row) minmax(0, 1fr)'
+        : 'minmax(0, 1fr) var(--video-stage-film-row)',
     },
     cells,
   };
@@ -418,6 +439,7 @@ export function VideoStage({
         gap: parseFloat(cs.rowGap) || 0,
         min: px('--video-stage-strip-min'),
         sideMin: px('--video-stage-side-min'),
+        filmMin: px('--video-stage-film-min'),
         nav: px('--video-stage-strip-nav'),
       };
       setStripBox((prev) =>
@@ -442,7 +464,7 @@ export function VideoStage({
   // one page (yours is on the first). The same rule runs along the strip's
   // axis: width for the top strip, height for the side column (whose two
   // spacer rows add one gap beyond the tiles' own).
-  const paged = useMemo(() => {
+  const speakerPaged = useMemo(() => {
     if (inputLayout.kind !== 'speaker' || !stripBox) return null;
     const side = inputLayout.strip === 'side';
     const { gap, nav } = stripBox;
@@ -460,9 +482,58 @@ export function VideoStage({
       page,
       pageCount,
       slots: capacity,
-      layout: { ...inputLayout, stripIds: visible, stripRows: [visible] },
+      ids: visible,
+      layout: {
+        ...inputLayout,
+        stripIds: visible,
+        stripRows: [visible],
+      } as StageLayout,
     };
   }, [inputLayout, stripBox, stripPage]);
+
+  // Share filmstrip pagination: everyone is in the strip, a fixed number of
+  // tiles show per page (fewer, larger tiles in Grid view) and the viewer pages
+  // through the rest. You are on the first page.
+  const sharePaged = useMemo(() => {
+    if (inputLayout.kind !== 'share') return null;
+    const size =
+      inputLayout.view === 'grid' ? SHARE_PAGE_SIZE_GRID : SHARE_PAGE_SIZE;
+    const ids = inputLayout.filmstripIds;
+    // Tiles never drop below a minimum size: a short or narrow stage shows
+    // fewer per page (down to one) instead of squeezing them.
+    let perPage = size;
+    let fitAll = size;
+    if (stripBox && stripBox.filmMin > 0) {
+      const pos = inputLayout.view === 'speaker' ? 'top' : filmstripPosition;
+      const vertical = pos === 'side';
+      const { gap, nav, filmMin } = stripBox;
+      const tile = vertical ? filmMin / (compact ? 1 : 16 / 9) : filmMin;
+      const room = vertical ? stripBox.height - gap : stripBox.width;
+      const cell = tile + gap;
+      fitAll = Math.max(1, Math.min(size, Math.floor(room / cell)));
+      perPage = Math.max(
+        1,
+        Math.min(size, Math.floor((room - 2 * nav) / cell)),
+      );
+    }
+    if (ids.length <= fitAll) return null;
+    const pageCount = Math.ceil(ids.length / perPage);
+    const page = Math.min(stripPage, pageCount - 1);
+    const visible = ids.slice(page * perPage, (page + 1) * perPage);
+    return {
+      page,
+      pageCount,
+      slots: perPage,
+      ids: visible,
+      layout: {
+        ...inputLayout,
+        filmstripIds: visible,
+        overflowIds: [],
+      } as StageLayout,
+    };
+  }, [inputLayout, stripBox, stripPage, filmstripPosition, compact]);
+
+  const paged = speakerPaged ?? sharePaged;
   const layout: StageLayout = paged?.layout ?? inputLayout;
 
   const byId = new Map(participants.map((p) => [p.id, p]));
@@ -472,7 +543,13 @@ export function VideoStage({
       new Map(participants.map((p) => [p.id, getTileMenu?.(p.id)] as const)),
     [participants, getTileMenu],
   );
-  const plan = planStage(layout, filmstripPosition, paged?.slots);
+  // While sharing, Speaker (top strip) keeps its strip across the top; Speaker
+  // with side strip and Grid keep the column at the side.
+  const filmstrip =
+    layout.kind === 'share' && layout.view === 'speaker'
+      ? 'top'
+      : filmstripPosition;
+  const plan = planStage(layout, filmstrip, paged?.slots);
 
   // Page flips slide the strip tiles in the direction of travel: the new page
   // enters from that side while the old one leaves the other way. The leaving
@@ -485,7 +562,7 @@ export function VideoStage({
   } | null>(null);
   useLayoutEffect(() => {
     const cur = paged
-      ? { page: paged.page, ids: paged.layout.stripIds, cells: plan.cells }
+      ? { page: paged.page, ids: paged.ids, cells: plan.cells }
       : null;
     const prev = prevStrip.current;
     prevStrip.current = cur;
@@ -535,7 +612,12 @@ export function VideoStage({
   // A paged strip's membership is left out of the key: page flips have their
   // own slide, and FLIP would otherwise move tiles (self included) on its own.
   const sideStrip = layout.kind === 'speaker' && layout.strip === 'side';
-  const flipKey = `${layout.kind}|${sideStrip ? 'side' : ''}|${filmstripPosition}|${compact ? 1 : 0}|${[
+  // The paging buttons run vertically for any side column (speaker or share).
+  const navVertical =
+    sideStrip || (layout.kind === 'share' && filmstrip === 'side');
+  // Share + Grid view: the filmstrip tiles are larger (and fewer) than the speaker views'.
+  const shareGrid = layout.kind === 'share' && layout.view === 'grid';
+  const flipKey = `${layout.kind}|${sideStrip ? 'side' : ''}|${shareGrid ? 'grid' : ''}|${filmstrip}|${compact ? 1 : 0}|${[
     ...plan.cells,
   ]
     .filter(([, p]) => !(paged && p.role === 'strip'))
@@ -556,6 +638,7 @@ export function VideoStage({
         stream={useStream ? selfStream : undefined}
         mirrored={useStream}
         cameraOn={p.cameraOn}
+        blurBackground={p.blurBackground}
         muted={p.muted}
         speaking={!!p.talking && !p.muted}
         handRaised={p.handRaised}
@@ -597,7 +680,8 @@ export function VideoStage({
     .filter((p) => plan.cells.has(p.id))
     .map((p) => {
       const place = plan.cells.get(p.id)!;
-      const small = place.role === 'strip' || place.role === 'floating';
+      const small =
+        (place.role === 'strip' && !shareGrid) || place.role === 'floating';
       const size: VideoTileSize = compact || small ? 'compact' : 'default';
       if (p.self) {
         const floating = place.role === 'floating';
@@ -696,7 +780,7 @@ export function VideoStage({
     const people = overflowIds
       .map((id) => byId.get(id))
       .filter((p): p is VideoStageParticipant => !!p);
-    const small = compact || place.role === 'strip';
+    const small = compact || (place.role === 'strip' && !shareGrid);
     const content = (
       <>
         <span
@@ -779,9 +863,9 @@ export function VideoStage({
   const rootClass = cx(
     styles['video-stage'],
     styles[`video-stage--${layout.kind}`],
-    layout.kind === 'share' &&
-      styles[`video-stage--filmstrip-${filmstripPosition}`],
+    layout.kind === 'share' && styles[`video-stage--filmstrip-${filmstrip}`],
     sideStrip && styles['video-stage--strip-side'],
+    shareGrid && styles['video-stage--share-grid'],
     compact && styles['video-stage--compact'],
     className,
   );
@@ -815,7 +899,7 @@ export function VideoStage({
                     <Icon
                       size="16"
                       glyph={
-                        sideStrip ? <ChevronUpIcon /> : <ChevronLeftIcon />
+                        navVertical ? <ChevronUpIcon /> : <ChevronLeftIcon />
                       }
                     />
                   }
@@ -838,7 +922,7 @@ export function VideoStage({
                     <Icon
                       size="16"
                       glyph={
-                        sideStrip ? <ChevronDownIcon /> : <ChevronRightIcon />
+                        navVertical ? <ChevronDownIcon /> : <ChevronRightIcon />
                       }
                     />
                   }

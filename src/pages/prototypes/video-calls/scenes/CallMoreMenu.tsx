@@ -38,8 +38,9 @@ export interface CallMoreMenuProps {
 /**
  * The call's "More" menu, shared by the widget and the window. Mirrors the
  * compass-proto `CallWidget` menu recipe (Audio output, Record call, Show chat
- * thread, Call info). Microphone and Camera rows are omitted because the
- * segmented controls already carry their device menus.
+ * thread, Call info). Devices are listed Microphone, Audio output, then Camera.
+ * Microphone and Camera rows are omitted where the segmented controls already
+ * carry their device menus.
  */
 export default function CallMoreMenu({
   open,
@@ -69,6 +70,15 @@ export default function CallMoreMenu({
           onClick={onShowMic}
         />
       )}
+      <MenuItem
+        role="menuitem"
+        label="Audio output"
+        secondaryLabel={outputLabel}
+        leadingVisual={<Icon size="16" glyph={<VolumeHighIcon />} />}
+        trailingElement
+        trailingVisual={<Icon size="16" glyph={<ChevronRightIcon />} />}
+        onClick={onShowOutput}
+      />
       {onShowCamera && (
         <MenuItem
           role="menuitem"
@@ -80,15 +90,6 @@ export default function CallMoreMenu({
           onClick={onShowCamera}
         />
       )}
-      <MenuItem
-        role="menuitem"
-        label="Audio output"
-        secondaryLabel={outputLabel}
-        leadingVisual={<Icon size="16" glyph={<VolumeHighIcon />} />}
-        trailingElement
-        trailingVisual={<Icon size="16" glyph={<ChevronRightIcon />} />}
-        onClick={onShowOutput}
-      />
       <PopoverMenuDivider />
       {onToggleHand && (
         <MenuItem

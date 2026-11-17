@@ -12,6 +12,8 @@ export type ConnectionState = 'good' | 'poor' | 'reconnecting';
  */
 export interface VideoParticipant extends Participant {
   cameraOn: boolean;
+  /** Self only: the background behind you is blurred. */
+  blurBackground?: boolean;
   /** True for the signed-in user. Exactly one participant has `self`. */
   self?: boolean;
   sharing?: boolean;
@@ -73,6 +75,8 @@ export interface MediaPrefs {
   micDeviceId?: string;
   cameraDeviceId?: string;
   speakerDeviceId?: string;
+  /** Blur the area behind you on your own camera. */
+  blurBackground?: boolean;
 }
 
 export type CallNoticeKind =

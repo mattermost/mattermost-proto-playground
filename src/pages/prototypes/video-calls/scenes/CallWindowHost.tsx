@@ -343,13 +343,35 @@ export default function CallWindowHost({
           micMenu: (
             <DeviceMenu
               open={openMenu === 'mic'}
-              title="Microphone"
-              devices={mics.map((m) => ({ id: m.deviceId, label: m.label }))}
-              selectedId={state.media.micDeviceId}
-              onSelect={(id) => {
-                actions.setMedia({ micDeviceId: id });
-                closeMenu();
-              }}
+              title="Microphone and audio output"
+              sections={[
+                {
+                  id: 'mic',
+                  title: 'Microphone',
+                  devices: mics.map((m) => ({
+                    id: m.deviceId,
+                    label: m.label,
+                  })),
+                  selectedId: state.media.micDeviceId,
+                  onSelect: (id) => {
+                    actions.setMedia({ micDeviceId: id });
+                    closeMenu();
+                  },
+                },
+                {
+                  id: 'output',
+                  title: 'Audio output',
+                  devices: speakers.map((d) => ({
+                    id: d.deviceId,
+                    label: d.label,
+                  })),
+                  selectedId: state.media.speakerDeviceId,
+                  onSelect: (id) => {
+                    actions.setMedia({ speakerDeviceId: id });
+                    closeMenu();
+                  },
+                },
+              ]}
               onClose={closeMenu}
             />
           ),
@@ -362,12 +384,34 @@ export default function CallWindowHost({
             <DeviceMenu
               open={openMenu === 'camera'}
               title="Camera"
-              devices={cameras.map((c) => ({ id: c.deviceId, label: c.label }))}
-              selectedId={state.media.cameraDeviceId}
-              onSelect={(id) => {
-                actions.setMedia({ cameraDeviceId: id });
-                closeMenu();
-              }}
+              sections={[
+                {
+                  id: 'camera',
+                  title: 'Camera',
+                  devices: cameras.map((c) => ({
+                    id: c.deviceId,
+                    label: c.label,
+                  })),
+                  selectedId: state.media.cameraDeviceId,
+                  onSelect: (id) => {
+                    actions.setMedia({ cameraDeviceId: id });
+                    closeMenu();
+                  },
+                },
+                {
+                  id: 'background',
+                  title: 'Background',
+                  toggles: [
+                    {
+                      id: 'blur',
+                      label: 'Blur background',
+                      checked: !!state.media.blurBackground,
+                      onChange: (on) =>
+                        actions.setMedia({ blurBackground: on }),
+                    },
+                  ],
+                },
+              ]}
               onClose={closeMenu}
             />
           ),

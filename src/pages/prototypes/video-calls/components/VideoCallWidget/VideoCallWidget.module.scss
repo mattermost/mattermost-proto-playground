@@ -287,47 +287,72 @@
     text-align: center;
   }
 
-  // Sharing state of the media row: live thumbnail, what you share + a clear Stop.
+  // Sharing state of the media row: the live preview fills the video area (the
+  // same 16:9 as the live call, so the card keeps its height), with what you
+  // share and a clear Stop along its bottom edge.
   &__sharing {
-    display: flex;
+    position: relative;
     flex: 1 1 auto;
-    align-items: center;
-    gap: var(--spacing-m);
     min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-s);
   }
 
   &__share-thumb {
+    position: absolute;
+    inset: 0;
     display: flex;
-    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    width: 96px; // one-off thumbnail width (16:9 inside the 88px media row)
-    aspect-ratio: 16 / 9;
     overflow: hidden;
-    border-radius: var(--radius-s);
+    border-radius: inherit;
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.72);
+
+    // A light 4% darkening over the preview, so a white shared screen does not
+    // blend into the card.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+    }
   }
 
   &__share-video {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    background: #000; // letterbox behind a captured surface, not a theme colour
+    // Fill the area: a screen that is not 16:9 is cropped at its edges rather than
+    // letterboxed with bars.
+    object-fit: cover;
+    background: #000; // behind a captured surface until its first frame, not a theme colour
   }
 
+  // Status + Stop over a scrim, so they stay legible on any shared content.
   &__sharing-body {
+    position: absolute;
+    inset: auto 0 0 0;
     display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-s);
     min-width: 0;
+    padding: var(--spacing-xs) var(--spacing-s);
+    background: rgba(
+      0,
+      0,
+      0,
+      0.64
+    ); // scrim over a captured surface, not a theme colour
+    color: var(--button-color);
   }
 
   &__sharing-text {
     display: flex;
+    flex: 1 1 0;
     align-items: center;
     gap: var(--spacing-s);
     max-width: 100%;

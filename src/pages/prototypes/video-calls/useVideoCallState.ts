@@ -306,6 +306,7 @@ export function useVideoCallState() {
           // Highlighted when your microphone detects your voice (never while muted).
           talking: state.selfSpeaking && state.media.micOn,
           cameraOn: cameraAvailable && state.media.cameraOn,
+          blurBackground: !!state.media.blurBackground,
           handRaised: state.handRaised,
           sharing: state.sharing,
           connection: state.myConnection,

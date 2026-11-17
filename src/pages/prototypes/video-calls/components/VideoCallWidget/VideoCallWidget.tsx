@@ -94,6 +94,8 @@ export interface VideoCallWidgetLabels extends WidgetMediaControlsLabels {
   sharingStatus?: (what: string) => string;
   /** Stop button text in the sharing state. */
   stopSharing?: string;
+  /** Visible text of the compact Stop button (its accessible name stays `stopSharing`). */
+  stopSharingShort?: string;
   more?: string;
   leave?: string;
   /** Suffix after the signed-in user's name on a tile, e.g. "You". */
@@ -123,6 +125,8 @@ export interface VideoCallWidgetProps {
   /** Host-rendered device menu, anchored above the card. */
   micMenu?: ReactNode;
   cameraOn: boolean;
+  /** Blur the background behind you in your own video. */
+  blurBackground?: boolean;
   onToggleCamera: () => void;
   /** Omit for a plain camera toggle. */
   onOpenCameraMenu?: () => void;
@@ -214,6 +218,7 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   stopShare: 'Stop sharing screen',
   sharingStatus: (what) => `You're sharing ${what}`,
   stopSharing: 'Stop sharing',
+  stopSharingShort: 'Stop',
   more: 'More options',
   leave: 'Leave call',
   self: 'You',
@@ -241,6 +246,7 @@ export function VideoCallWidget({
   micMenuOpen = false,
   micMenu,
   cameraOn,
+  blurBackground = false,
   onToggleCamera,
   onOpenCameraMenu,
   cameraMenuOpen = false,
@@ -452,6 +458,7 @@ export function VideoCallWidget({
           avatarSrc={selfAvatarSrc}
           stream={selfStream}
           cameraOn={cameraOn}
+          blurBackground={blurBackground}
           muted={!micOn}
           mirrored
           size="thumbnail"
@@ -479,6 +486,7 @@ export function VideoCallWidget({
               avatarSrc={selfAvatarSrc}
               stream={selfStream}
               cameraOn={cameraOn}
+              blurBackground={blurBackground}
               muted={!micOn}
               mirrored
               showLabel={false}
@@ -532,9 +540,11 @@ export function VideoCallWidget({
             emphasis="primary"
             destructive
             size="small"
+            compact
+            aria-label={l.stopSharing}
             onClick={onToggleShare}
           >
-            {l.stopSharing}
+            {l.stopSharingShort}
           </Button>
         </div>
       </div>
@@ -584,6 +594,7 @@ export function VideoCallWidget({
               stream={selfStream}
               mirrored
               cameraOn={self.cameraOn}
+              blurBackground={self.blurBackground}
               muted={self.muted}
               speaking={!!self.talking && !self.muted}
               handRaised={self.handRaised}

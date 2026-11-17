@@ -4,4 +4,5 @@ export type {
   DeviceMenuLabels,
   DeviceMenuProps,
   DeviceMenuSection,
+  DeviceMenuToggle,
 } from './DeviceMenu';

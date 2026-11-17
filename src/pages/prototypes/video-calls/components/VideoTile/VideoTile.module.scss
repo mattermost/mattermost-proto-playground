@@ -79,6 +79,25 @@
   // Centre column: the avatar (camera off, no frame, or loading) and / or the
   // status line (spinner + "Connecting…" / "Reconnecting…"). No z-index of its
   // own, so the avatar sits under the veil while the status line sits above it.
+  // Background blur: the edges of the picture blur and the centre (you) stays
+  // sharp. A stand-in for real background segmentation.
+  &__blur {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+    -webkit-mask-image: radial-gradient(
+      ellipse 38% 48% at 50% 55%,
+      transparent 70%,
+      #000 100%
+    );
+    mask-image: radial-gradient(
+      ellipse 38% 48% at 50% 55%,
+      transparent 70%,
+      #000 100%
+    );
+  }
+
   &__avatar {
     position: absolute;
     inset: 0;

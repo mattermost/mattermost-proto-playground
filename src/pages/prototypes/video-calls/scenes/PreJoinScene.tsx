@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Select } from '@mattermost/compass-ui/components/select';
+import { Switch } from '@mattermost/compass-ui/components/switch';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
@@ -34,6 +36,10 @@ const SPEAKER_TEST_MS = 1500;
 const FALLBACK_MICS = [
   { deviceId: 'fallback-mic-1', label: 'Default microphone' },
   { deviceId: 'fallback-mic-2', label: 'External USB microphone' },
+];
+const FALLBACK_SPEAKERS = [
+  { deviceId: 'fallback-speaker-1', label: 'Default speakers' },
+  { deviceId: 'fallback-speaker-2', label: 'External headphones' },
 ];
 const FALLBACK_CAMERAS = [
   { deviceId: 'fallback-camera-1', label: 'Built-in camera' },
@@ -79,6 +85,19 @@ export default function PreJoinScene() {
   });
   const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
   const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
+  const speakers = devices.speakers.length
+    ? devices.speakers
+    : FALLBACK_SPEAKERS;
+  const uid = useId();
+  const micOptions = mics.map((m) => ({ value: m.deviceId, label: m.label }));
+  const speakerOptions = speakers.map((d) => ({
+    value: d.deviceId,
+    label: d.label,
+  }));
+  const cameraOptions = cameras.map((c) => ({
+    value: c.deviceId,
+    label: c.label,
+  }));
 
   useEffect(
     () => () => {
@@ -103,6 +122,22 @@ export default function PreJoinScene() {
       testTimer.current = null;
     }, SPEAKER_TEST_MS);
   };
+
+  // Only real states: nothing is said about the simulated meter.
+  const helper = [
+    micCheck && micStream.status === 'denied'
+      ? 'Microphone access is blocked. Allow it in your browser to check it.'
+      : micCheck && micStream.status === 'unavailable'
+        ? 'We could not find a working microphone.'
+        : micCheck
+          ? "Say something, to check your microphone's level."
+          : '',
+    !soundOn
+      ? 'Turn on sounds in the prototype controls to hear the speaker test.'
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const others = participants.filter((p) => !p.self);
   const isStart = joinMode === 'start';
@@ -221,7 +256,18 @@ export default function PreJoinScene() {
                 onSelectCamera={(id) =>
                   actions.setMedia({ cameraDeviceId: id })
                 }
+                speakers={speakers.map((d) => ({
+                  id: d.deviceId,
+                  label: d.label,
+                }))}
+                speakerDeviceId={media.speakerDeviceId}
+                onSelectSpeaker={(id) =>
+                  actions.setMedia({ speakerDeviceId: id })
+                }
+                blurBackground={!!media.blurBackground}
+                onToggleBlur={(on) => actions.setMedia({ blurBackground: on })}
                 hideCamera={state.mode !== 'video'}
+                showMenus={calling}
                 openMenu={openMenu}
                 onOpenMenuChange={setOpenMenu}
               />
@@ -229,11 +275,26 @@ export default function PreJoinScene() {
             participants={who}
             checks={
               calling ? undefined : (
-                <>
-                  <MicLevelMeter level={level} muted={!media.micOn} />
-                  <div className={styles['pre-join-scene__check-row']}>
+                <div className={styles['pre-join-scene__devices']}>
+                  <div className={styles['pre-join-scene__field']}>
+                    <label
+                      className={styles['pre-join-scene__field-label']}
+                      htmlFor={`${uid}-mic`}
+                    >
+                      Microphone
+                    </label>
+                    <Select
+                      size="small"
+                      className={styles['pre-join-scene__select']}
+                      id={`${uid}-mic`}
+                      options={micOptions}
+                      value={media.micDeviceId ?? micOptions[0].value}
+                      onChange={(id) => actions.setMedia({ micDeviceId: id })}
+                    />
+                    <MicLevelMeter level={level} muted={!media.micOn} />
                     {!micCheck && (
                       <Button
+                        className={styles['pre-join-scene__field-action']}
                         emphasis="tertiary"
                         appearance="inverted"
                         size="small"
@@ -243,7 +304,26 @@ export default function PreJoinScene() {
                         Check my microphone
                       </Button>
                     )}
+                  </div>
+                  <div className={styles['pre-join-scene__field']}>
+                    <label
+                      className={styles['pre-join-scene__field-label']}
+                      htmlFor={`${uid}-speakers`}
+                    >
+                      Speakers
+                    </label>
+                    <Select
+                      size="small"
+                      className={styles['pre-join-scene__select']}
+                      id={`${uid}-speakers`}
+                      options={speakerOptions}
+                      value={media.speakerDeviceId ?? speakerOptions[0].value}
+                      onChange={(id) =>
+                        actions.setMedia({ speakerDeviceId: id })
+                      }
+                    />
                     <Button
+                      className={styles['pre-join-scene__field-action']}
                       emphasis="tertiary"
                       appearance="inverted"
                       size="small"
@@ -254,18 +334,46 @@ export default function PreJoinScene() {
                       {testing ? 'Playing…' : 'Test speakers'}
                     </Button>
                   </div>
-                  <p className={styles['pre-join-scene__helper']} role="status">
-                    {micCheck && micStream.status === 'denied'
-                      ? 'Microphone access is blocked. Allow it in your browser to check it.'
-                      : micCheck && micStream.status === 'unavailable'
-                        ? 'We could not find a working microphone.'
-                        : micCheck
-                          ? "Say something, to check your microphone's level."
-                          : 'The meter is simulated until you check your microphone.'}
-                    {!soundOn &&
-                      ' Turn on sounds in the prototype controls to hear the speaker test.'}
-                  </p>
-                </>
+                  {state.mode === 'video' && (
+                    <div className={styles['pre-join-scene__field']}>
+                      <label
+                        className={styles['pre-join-scene__field-label']}
+                        htmlFor={`${uid}-camera`}
+                      >
+                        Camera
+                      </label>
+                      <Select
+                        size="small"
+                        className={styles['pre-join-scene__select']}
+                        id={`${uid}-camera`}
+                        options={cameraOptions}
+                        value={media.cameraDeviceId ?? cameraOptions[0].value}
+                        onChange={(id) =>
+                          actions.setMedia({ cameraDeviceId: id })
+                        }
+                      />
+                      <Switch
+                        size="small"
+                        checked={!!media.blurBackground}
+                        onChange={(e) =>
+                          actions.setMedia({
+                            blurBackground: e.target.checked,
+                          })
+                        }
+                      >
+                        Blur background
+                      </Switch>
+                    </div>
+                  )}
+                  {helper && (
+                    <p
+                      className={styles['pre-join-scene__helper']}
+                      role="status"
+                    >
+                      {helper}
+                    </p>
+                  )}
+                </div>
               )
             }
             actions={

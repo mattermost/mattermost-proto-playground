@@ -4,6 +4,7 @@ import MicrophoneOffIcon from '@mattermost/compass-icons/components/microphone-o
 import VideoOffOutlineIcon from '@mattermost/compass-icons/components/video-off-outline';
 import VideoOutlineIcon from '@mattermost/compass-icons/components/video-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
 import { DeviceMenu, type DeviceMenuDevice } from '../DeviceMenu';
 import { SegmentedIconButton } from '../SegmentedIconButton';
 import styles from './WindowDeviceControls.module.scss';
@@ -19,6 +20,9 @@ export interface WindowDeviceControlsLabels {
   cameraOff?: string;
   cameraOptions?: string;
   cameraMenuTitle?: string;
+  outputMenuTitle?: string;
+  backgroundMenuTitle?: string;
+  blurBackground?: string;
 }
 
 export interface WindowDeviceControlsProps {
@@ -27,6 +31,10 @@ export interface WindowDeviceControlsProps {
   mics: DeviceMenuDevice[];
   micDeviceId?: string;
   onSelectMic: (id: string) => void;
+  /** Audio output devices: adds an "Audio output" group to the microphone menu. */
+  speakers?: DeviceMenuDevice[];
+  speakerDeviceId?: string;
+  onSelectSpeaker?: (id: string) => void;
 
   cameraOn: boolean;
   /** The opt-in gesture: turning the camera on asks for the webcam. */
@@ -34,6 +42,9 @@ export interface WindowDeviceControlsProps {
   cameras: DeviceMenuDevice[];
   cameraDeviceId?: string;
   onSelectCamera: (id: string) => void;
+  /** Adds a "Blur background" row to the camera menu. */
+  blurBackground?: boolean;
+  onToggleBlur?: (on: boolean) => void;
   /** Audio-only calls have no camera: show the microphone alone. */
   hideCamera?: boolean;
 
@@ -43,6 +54,8 @@ export interface WindowDeviceControlsProps {
 
   /** Menus open upward (default, as in the controls bar) or downward. */
   menuPlacement?: 'top' | 'bottom';
+  /** Plain toggles without the chevron menus (the host offers the pickers elsewhere). Default true. */
+  showMenus?: boolean;
   labels?: WindowDeviceControlsLabels;
   className?: string;
 }
@@ -56,6 +69,9 @@ const DEFAULT_LABELS: Required<WindowDeviceControlsLabels> = {
   cameraOff: 'Turn camera off',
   cameraOptions: 'Camera options',
   cameraMenuTitle: 'Camera',
+  outputMenuTitle: 'Audio output',
+  backgroundMenuTitle: 'Background',
+  blurBackground: 'Blur background',
 };
 
 const cx = (...names: (string | false | undefined)[]) =>
@@ -72,15 +88,21 @@ export function WindowDeviceControls({
   mics,
   micDeviceId,
   onSelectMic,
+  speakers,
+  speakerDeviceId,
+  onSelectSpeaker,
   cameraOn,
   onToggleCamera,
   cameras,
   cameraDeviceId,
   onSelectCamera,
+  blurBackground = false,
+  onToggleBlur,
   hideCamera = false,
   openMenu,
   onOpenMenuChange,
   menuPlacement = 'top',
+  showMenus = true,
   labels,
   className,
 }: WindowDeviceControlsProps) {
@@ -97,36 +119,52 @@ export function WindowDeviceControls({
     glyph: ReactNode,
     onToggle: () => void,
     menu: ReactNode,
-  ) => (
-    <div className={styles['window-device-controls__slot']} data-menu-anchor>
-      <SegmentedIconButton
+  ) =>
+    !showMenus ? (
+      <IconButton
         size="medium"
         style="inverted"
-        className={styles['window-device-controls__segment']}
-        mainClassName={cx(
+        className={cx(
           styles['window-device-controls__toggle'],
           on
             ? styles['window-device-controls__toggle--on']
             : styles['window-device-controls__toggle--off'],
         )}
-        menuOpen={openMenu === id}
-        label={toggleLabel}
-        chevronLabel={optionsLabel}
+        aria-label={toggleLabel}
+        title={toggleLabel}
         icon={<Icon size="20" glyph={glyph} />}
         onClick={onToggle}
-        onChevronClick={() => toggleMenu(id)}
       />
-      <div
-        className={cx(
-          styles['window-device-controls__popover'],
-          menuPlacement === 'bottom' &&
-            styles['window-device-controls__popover--bottom'],
-        )}
-      >
-        {menu}
+    ) : (
+      <div className={styles['window-device-controls__slot']} data-menu-anchor>
+        <SegmentedIconButton
+          size="medium"
+          style="inverted"
+          className={styles['window-device-controls__segment']}
+          mainClassName={cx(
+            styles['window-device-controls__toggle'],
+            on
+              ? styles['window-device-controls__toggle--on']
+              : styles['window-device-controls__toggle--off'],
+          )}
+          menuOpen={openMenu === id}
+          label={toggleLabel}
+          chevronLabel={optionsLabel}
+          icon={<Icon size="20" glyph={glyph} />}
+          onClick={onToggle}
+          onChevronClick={() => toggleMenu(id)}
+        />
+        <div
+          className={cx(
+            styles['window-device-controls__popover'],
+            menuPlacement === 'bottom' &&
+              styles['window-device-controls__popover--bottom'],
+          )}
+        >
+          {menu}
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <div className={cx(styles['window-device-controls'], className)}>
@@ -139,13 +177,44 @@ export function WindowDeviceControls({
         onToggleMic,
         <DeviceMenu
           open={openMenu === 'mic'}
-          title={l.micMenuTitle}
-          devices={mics}
-          selectedId={micDeviceId}
-          onSelect={(id) => {
-            onSelectMic(id);
-            close();
-          }}
+          title={
+            speakers
+              ? `${l.micMenuTitle} and ${l.outputMenuTitle.toLowerCase()}`
+              : l.micMenuTitle
+          }
+          {...(speakers
+            ? {
+                sections: [
+                  {
+                    id: 'mic',
+                    title: l.micMenuTitle,
+                    devices: mics,
+                    selectedId: micDeviceId,
+                    onSelect: (id: string) => {
+                      onSelectMic(id);
+                      close();
+                    },
+                  },
+                  {
+                    id: 'output',
+                    title: l.outputMenuTitle,
+                    devices: speakers,
+                    selectedId: speakerDeviceId,
+                    onSelect: (id: string) => {
+                      onSelectSpeaker?.(id);
+                      close();
+                    },
+                  },
+                ],
+              }
+            : {
+                devices: mics,
+                selectedId: micDeviceId,
+                onSelect: (id: string) => {
+                  onSelectMic(id);
+                  close();
+                },
+              })}
           onClose={close}
         />,
       )}
@@ -160,12 +229,41 @@ export function WindowDeviceControls({
           <DeviceMenu
             open={openMenu === 'camera'}
             title={l.cameraMenuTitle}
-            devices={cameras}
-            selectedId={cameraDeviceId}
-            onSelect={(id) => {
-              onSelectCamera(id);
-              close();
-            }}
+            {...(onToggleBlur
+              ? {
+                  sections: [
+                    {
+                      id: 'camera',
+                      title: l.cameraMenuTitle,
+                      devices: cameras,
+                      selectedId: cameraDeviceId,
+                      onSelect: (id: string) => {
+                        onSelectCamera(id);
+                        close();
+                      },
+                    },
+                    {
+                      id: 'background',
+                      title: l.backgroundMenuTitle,
+                      toggles: [
+                        {
+                          id: 'blur',
+                          label: l.blurBackground,
+                          checked: blurBackground,
+                          onChange: onToggleBlur,
+                        },
+                      ],
+                    },
+                  ],
+                }
+              : {
+                  devices: cameras,
+                  selectedId: cameraDeviceId,
+                  onSelect: (id: string) => {
+                    onSelectCamera(id);
+                    close();
+                  },
+                })}
             onClose={close}
           />,
         )}

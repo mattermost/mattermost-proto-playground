@@ -109,6 +109,8 @@ export interface VideoTileProps {
   videoLoading?: boolean;
   /** Mirror the video horizontally (self webcam). */
   mirrored?: boolean;
+  /** Blur everything but the centre of the picture (your background blur). */
+  blurBackground?: boolean;
   /**
    * Off-screen / overflow: the clip pauses on a still frame and stops
    * decoding. The `<video>` element stays mounted so resuming (or a layout
@@ -181,6 +183,7 @@ function VideoTileInner({
   connection = 'good',
   videoLoading = false,
   mirrored = false,
+  blurBackground = false,
   paused = false,
   size = 'default',
   showLabel = true,
@@ -431,6 +434,9 @@ function VideoTileInner({
           alt=""
           aria-hidden="true"
         />
+      )}
+      {blurBackground && (showStream || showClip) && (
+        <span className={styles['video-tile__blur']} aria-hidden="true" />
       )}
       {/* Dims the frozen frame (or the avatar) under poor / reconnecting. */}
       {frozen && (

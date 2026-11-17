@@ -394,28 +394,47 @@ check('speaker view: someone joins → appended to strip, others stay', () => {
   assert.deepEqual(b.stripIds, [...a.stripIds, 'p5']);
 });
 
-check('sharing 1..10 → filmstrip cells ≤ 6, presenter + self visible', () => {
-  for (let n = 1; n <= 10; n += 1) {
-    const sharer = n > 1 ? 'p1' : 'self';
-    for (const view of ['speaker', 'grid'] as const) {
-      const s = asShare(
-        computeStageLayout({
-          participants: people(n, { [sharer]: { sharing: true } }),
-          view,
-          sharing: true,
-        }),
-      );
-      assert.equal(s.presenterId, sharer);
-      assert.ok(s.filmstripIds.includes('self'));
-      assert.ok(s.filmstripIds.includes(sharer));
-      assert.equal(s.filmstripIds.length + s.overflowIds.length, n);
-      // ≤ 6 people: everyone; 7+: 5 tiles + "+N" chip.
-      const cells = s.filmstripIds.length + (s.overflowIds.length ? 1 : 0);
-      assert.equal(cells, Math.min(n, 6), `n=${n}`);
-      assert.equal(s.overflowIds.length, n > 6 ? n - 5 : 0);
+check(
+  'sharing 1..10 → everyone is in the filmstrip (the stage pages it), presenter + self included',
+  () => {
+    for (let n = 1; n <= 10; n += 1) {
+      const sharer = n > 1 ? 'p1' : 'self';
+      for (const view of ['speaker', 'speaker-side', 'grid'] as const) {
+        const s = asShare(
+          computeStageLayout({
+            participants: people(n, { [sharer]: { sharing: true } }),
+            view,
+            sharing: true,
+          }),
+        );
+        assert.equal(s.presenterId, sharer);
+        assert.equal(s.view, view);
+        assert.equal(s.filmstripIds.length, n, `${view} n=${n}`);
+        assert.equal(s.overflowIds.length, 0);
+        assert.ok(s.filmstripIds.includes('self'));
+        assert.ok(s.filmstripIds.includes(sharer));
+      }
     }
-  }
-});
+  },
+);
+
+check(
+  'an explicit filmstrip cap still keeps self + presenter and a chip',
+  () => {
+    const s = asShare(
+      computeStageLayout({
+        participants: people(10, { p1: { sharing: true } }),
+        view: 'speaker',
+        sharing: true,
+        maxFilmstrip: 6,
+      }),
+    );
+    assert.equal(s.filmstripIds.length, 5);
+    assert.equal(s.overflowIds.length, 5);
+    assert.ok(s.filmstripIds.includes('self'));
+    assert.ok(s.filmstripIds.includes('p1'));
+  },
+);
 
 check('sharing without a sharer flag falls back to self as presenter', () => {
   const s = asShare(

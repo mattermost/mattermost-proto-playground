@@ -71,17 +71,21 @@
   --video-stage-gap: var(--spacing-m);
   --video-stage-edge: var(--spacing-xs);
   --video-stage-film: 200px;
+  // Smallest share-filmstrip tile width: the filmstrip shows fewer tiles per page
+  // (down to one) rather than go below it. Same minimum as the speaker strips.
+  --video-stage-film-min: var(--video-stage-strip-min);
   --video-stage-strip-max: 240px;
   --video-stage-strip-aspect: calc(16 / 9);
-  // Speaker strip paginates when tiles would be narrower than this. One-off
-  // layout widths (read by VideoStage to decide paging).
+  // Smallest thumbnail width, in every strip and column, in a share or not: the
+  // strip paginates when tiles would be narrower than this. One-off layout
+  // widths (read by VideoStage to decide paging).
   --video-stage-strip-min: 160px;
   --video-stage-strip-nav: 40px;
   // Side column (speaker-side view): pages when tiles would be shorter than
-  // this (128px wide at 16:9: a column only grows by height, so it allows a
-  // little less than the top strip's minimum before paging), and never takes
-  // more than this share of the stage width.
-  --video-stage-side-min: 72px;
+  // this (90px = the same 160px minimum width at 16:9; a literal, because the
+  // paging code reads it as a plain length), and never takes more than this
+  // share of the stage width.
+  --video-stage-side-min: 90px;
   --video-stage-side-max: 25cqw;
 
   position: relative;
@@ -430,32 +434,103 @@
     justify-content: flex-end;
   }
 
-  // Side filmstrip rows shrink so up to six fit the stage height.
+  // Side filmstrip rows shrink so a page fits the stage height (less room for
+  // the page buttons above and below when the filmstrip pages).
   &--filmstrip-side .video-stage__canvas {
     --video-stage-film-row: min(
       calc(var(--video-stage-film) / var(--video-stage-strip-aspect)),
       calc(
         (
             100% - (var(--video-stage-strip-count, 1) + 1) *
-              var(--video-stage-gap)
+              var(--video-stage-gap) - var(--video-stage-strip-reserve)
           ) /
           var(--video-stage-strip-count, 1)
       )
     );
   }
 
-  // Bottom filmstrip cells shrink so every cell fits the stage width.
+  // Page flip along the side filmstrip: up / down by one row.
+  &--filmstrip-side .video-stage__cell--page-forward {
+    --video-stage-page-shift-x: 0px;
+    --video-stage-page-shift-y: calc(
+      var(--video-stage-film-row) + var(--video-stage-gap)
+    );
+  }
+
+  &--filmstrip-side .video-stage__cell--page-back {
+    --video-stage-page-shift-x: 0px;
+    --video-stage-page-shift-y: calc(
+      -1 * (var(--video-stage-film-row) + var(--video-stage-gap))
+    );
+  }
+
+  // Share filmstrip paging buttons take just the compact small IconButton
+  // (28px). The speaker strips outside a share keep their own, roomier size.
+  &--filmstrip-side,
+  &--filmstrip-top,
+  &--filmstrip-bottom {
+    --video-stage-strip-nav: 28px;
+  }
+
+  // Page buttons sit above and below the side filmstrip, centred on it.
+  &--filmstrip-side .video-stage__nav {
+    left: auto;
+    right: 0;
+    width: var(--video-stage-film-cell);
+    height: var(--video-stage-strip-nav);
+  }
+
+  &--filmstrip-side .video-stage__nav--next {
+    top: auto;
+    bottom: 0;
+  }
+
+  // Top / bottom filmstrip: the page buttons sit in the side margins, centred
+  // on the filmstrip row.
+  &--filmstrip-top .video-stage__nav,
+  &--filmstrip-bottom .video-stage__nav {
+    height: var(--video-stage-film-row);
+  }
+
+  &--filmstrip-bottom .video-stage__nav {
+    top: auto;
+    bottom: 0;
+  }
+
+  &--filmstrip-top .video-stage__cell--page-forward,
+  &--filmstrip-bottom .video-stage__cell--page-forward {
+    --video-stage-page-shift-x: var(--video-stage-film-cell);
+  }
+
+  &--filmstrip-top .video-stage__cell--page-back,
+  &--filmstrip-bottom .video-stage__cell--page-back {
+    --video-stage-page-shift-x: calc(-1 * var(--video-stage-film-cell));
+  }
+
+  // Top and bottom filmstrip cells shrink so every cell fits the stage width.
+  &--filmstrip-top .video-stage__canvas,
   &--filmstrip-bottom .video-stage__canvas {
     --video-stage-film-cell: min(
       calc(var(--video-stage-film) + var(--video-stage-gap)),
-      calc(100% / var(--video-stage-strip-count, 1))
+      calc(
+        (100% - var(--video-stage-strip-reserve)) /
+          var(--video-stage-strip-count, 1)
+      )
     );
+  }
+
+  // Share + Grid view: larger filmstrip tiles (fewer at a time). Compact stages
+  // below keep their own size.
+  &--share-grid {
+    --video-stage-film: 360px;
+    --video-stage-film-min: 200px;
   }
 
   &--compact {
     --video-stage-gap: var(--spacing-xs);
     --video-stage-edge: var(--spacing-xxs);
     --video-stage-film: 120px;
+    --video-stage-side-min: 72px;
     --video-stage-strip-max: 120px;
     --video-stage-strip-aspect: 1;
     --video-stage-strip-min: 72px;
