@@ -288,11 +288,15 @@ function CardWidget({
             actions.toggleRecording();
             close();
           }}
-          onShowChat={() => {
-            close();
-            actions.expand();
-            if (state.pane !== 'chat') actions.togglePane('chat');
-          }}
+          onShowChat={
+            state.mode === 'phone'
+              ? undefined
+              : () => {
+                  close();
+                  actions.expand();
+                  if (state.pane !== 'chat') actions.togglePane('chat');
+                }
+          }
           onShowInfo={() => toggle('info')}
         />
       }

@@ -30,7 +30,8 @@ export interface CallMoreMenuProps {
   onShowCamera?: () => void;
   onShowOutput: () => void;
   onToggleRecording: () => void;
-  onShowChat: () => void;
+  /** Omitted when there is no chat pane to show (phone calls stay in the widget). */
+  onShowChat?: () => void;
   onShowInfo: () => void;
 }
 
@@ -119,12 +120,14 @@ export default function CallMoreMenu({
         }
         onClick={onToggleRecording}
       />
-      <MenuItem
-        role="menuitem"
-        label="Show chat thread"
-        leadingVisual={<Icon size="16" glyph={<MessageTextOutlineIcon />} />}
-        onClick={onShowChat}
-      />
+      {onShowChat && (
+        <MenuItem
+          role="menuitem"
+          label="Show chat thread"
+          leadingVisual={<Icon size="16" glyph={<MessageTextOutlineIcon />} />}
+          onClick={onShowChat}
+        />
+      )}
       <MenuItem
         role="menuitem"
         label="Call info"
