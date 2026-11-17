@@ -2,6 +2,7 @@
 // CallPopout (title bar, header row, `--calls-bg` surface).
 .video-call-window-frame {
   position: relative;
+  outline: none;
   display: flex;
   flex-direction: column;
   width: 100%;

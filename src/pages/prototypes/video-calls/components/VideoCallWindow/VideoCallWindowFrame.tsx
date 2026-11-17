@@ -62,6 +62,7 @@ export function VideoCallWindowFrame({
       )}
       role="dialog"
       aria-modal="false"
+      tabIndex={-1}
       aria-label={l.title}
     >
       {!fullscreen && (

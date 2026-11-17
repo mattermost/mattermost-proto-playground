@@ -27,7 +27,7 @@
     border-radius: var(--radius-pill);
     background: var(
       --calling-pulse-color,
-      rgba(var(--color-green-600-rgb), 0.32)
+      rgba(var(--color-success-rgb), 0.32)
     );
     animation: calling-pulse calc(var(--duration-moderate) * 6) var(--ease-exit)
       infinite;

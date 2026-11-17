@@ -3,6 +3,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { ModalOverlay } from '@mattermost/compass-ui/components/modal';
@@ -191,6 +192,65 @@ export default function VideoCalls() {
   const [frameEl, setFrameEl] = useState<HTMLDivElement | null>(null);
   const windowRendered = useExitAnimation(showWindow, 150).rendered;
 
+  // The window is modeless (the chat stays usable), so no focus trap: focus
+  // moves into the window when it opens and returns to the control that
+  // opened it when it collapses. The opener (the widget's expand button) is
+  // unmounted before this effect runs, so remember the last focused control
+  // as it happens and fall back to finding its twin by label afterwards.
+  const windowBodyRef = useRef<HTMLDivElement>(null);
+  const lastFocusRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const onFocusIn = (e: FocusEvent) => {
+      if (
+        e.target instanceof HTMLElement &&
+        !windowBodyRef.current?.contains(e.target)
+      ) {
+        lastFocusRef.current = e.target;
+      }
+    };
+    document.addEventListener('focusin', onFocusIn);
+    return () => document.removeEventListener('focusin', onFocusIn);
+  }, []);
+  useEffect(() => {
+    if (!showWindow) return;
+    const opener = lastFocusRef.current;
+    const openerLabel = opener?.getAttribute('aria-label') ?? null;
+    return () => {
+      // The widget remounts a moment after the window closes, so retry for
+      // a few frames, and never steal focus the person already moved.
+      let frames = 0;
+      const restore = () => {
+        const target =
+          opener && opener.isConnected
+            ? opener
+            : openerLabel
+              ? document.querySelector<HTMLElement>(
+                  `button[aria-label="${CSS.escape(openerLabel)}"]`,
+                )
+              : null;
+        const active = document.activeElement;
+        const focusFree =
+          !active ||
+          active === document.body ||
+          !!active.closest('[role="dialog"][aria-modal="false"]');
+        if (!focusFree) return;
+        if (target) target.focus({ preventScroll: true });
+        else if (++frames < 30) requestAnimationFrame(restore);
+      };
+      requestAnimationFrame(restore);
+    };
+  }, [showWindow]);
+  const windowOpen = showWindow && windowRendered;
+  useEffect(() => {
+    if (!windowOpen) return;
+    const raf = requestAnimationFrame(() => {
+      windowBodyRef.current
+        ?.querySelector<HTMLElement>('[role="dialog"]')
+        ?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [windowOpen]);
+
   return (
     <VideoCallContext.Provider value={value}>
       <CallPhaseEffects />
@@ -214,7 +274,10 @@ export default function VideoCalls() {
             style={{ position: 'absolute' }}
           >
             {windowRendered && (
-              <div className={styles['video-calls__window-body']}>
+              <div
+                ref={windowBodyRef}
+                className={styles['video-calls__window-body']}
+              >
                 <CallWindowScene />
               </div>
             )}

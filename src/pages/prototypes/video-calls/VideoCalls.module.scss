@@ -33,7 +33,7 @@
     :global([class*='channel-sidebar-item__call']) {
     padding: var(--spacing-xxxs) var(--spacing-xs);
     border-radius: var(--radius-pill);
-    background: var(--color-green-600);
+    background: var(--color-success);
     color: var(--button-color, var(--color-neutral-0));
   }
 

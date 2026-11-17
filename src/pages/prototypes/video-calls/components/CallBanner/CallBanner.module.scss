@@ -14,7 +14,7 @@
     var(--spacing-s);
   border-radius: var(--radius-s);
   // green-600, not the theme's online green: white text needs the contrast.
-  background: var(--color-green-600);
+  background: var(--color-success);
   box-shadow: var(--elevation-2);
   color: var(--button-color, var(--color-neutral-0));
 
@@ -47,7 +47,7 @@
   // reads --button-fg; triple class beats its appearance rule.
   #{&}__join#{&}__join#{&}__join {
     flex: 0 0 auto;
-    --button-fg: var(--color-green-600);
+    --button-fg: var(--color-success);
   }
 
   // Extra space between Join and Close, on top of the banner's own gap.

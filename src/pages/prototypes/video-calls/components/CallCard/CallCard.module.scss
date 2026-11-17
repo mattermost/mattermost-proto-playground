@@ -47,7 +47,7 @@
     width: var(--icon-size-40, 40px);
     height: var(--icon-size-40, 40px);
     border-radius: var(--radius-pill);
-    background: var(--color-green-600);
+    background: var(--color-success);
     color: var(--button-color, var(--color-neutral-0));
   }
 
@@ -88,7 +88,7 @@
   // online green). The primary Button reads --button-bg (hover / active tints
   // derive from it).
   &__join {
-    --button-bg: var(--color-green-600);
+    --button-bg: var(--color-success);
   }
 
   // Ended: grey icon disc instead of the online green.
@@ -120,10 +120,10 @@
 
 @keyframes call-card-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(var(--color-green-600-rgb), 0.32);
+    box-shadow: 0 0 0 0 rgba(var(--color-success-rgb), 0.32);
   }
   100% {
-    box-shadow: 0 0 0 var(--spacing-m) rgba(var(--color-green-600-rgb), 0);
+    box-shadow: 0 0 0 var(--spacing-m) rgba(var(--color-success-rgb), 0);
   }
 }
 
