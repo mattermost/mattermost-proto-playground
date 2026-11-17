@@ -211,6 +211,11 @@ export default function VideoCalls() {
     document.addEventListener('focusin', onFocusIn);
     return () => document.removeEventListener('focusin', onFocusIn);
   }, []);
+  // A pending restore from a collapse must not run once the window is back.
+  const showWindowRef = useRef(showWindow);
+  useEffect(() => {
+    showWindowRef.current = showWindow;
+  }, [showWindow]);
   useEffect(() => {
     if (!showWindow) return;
     const opener = lastFocusRef.current;
@@ -220,6 +225,7 @@ export default function VideoCalls() {
       // a few frames, and never steal focus the person already moved.
       let frames = 0;
       const restore = () => {
+        if (showWindowRef.current) return;
         const target =
           opener && opener.isConnected
             ? opener
