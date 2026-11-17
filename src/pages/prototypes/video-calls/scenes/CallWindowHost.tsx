@@ -35,8 +35,7 @@ import { useCallSession } from './useCallSession';
 import { useConversationName } from './useConversationName';
 import styles from './CallWindowHost.module.scss';
 
-type MenuId =
-  'mic' | 'camera' | 'reactions' | 'more' | 'view' | 'output' | 'info';
+type MenuId = 'mic' | 'camera' | 'reactions' | 'more' | 'view' | 'info';
 
 const REACTION_MS = 2500;
 const FALLBACK_MICS = [
@@ -131,9 +130,10 @@ export default function CallWindowHost({
   const speakers = devices.speakers.length
     ? devices.speakers
     : FALLBACK_SPEAKERS;
-  const outputLabel =
-    speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
-    speakers[0].label;
+  const labelOf = (
+    list: { deviceId: string; label: string }[],
+    id: string | undefined,
+  ) => list.find((d) => d.deviceId === id)?.label ?? list[0].label;
 
   // Reactions ----------------------------------------------------------------
   useEffect(
@@ -250,34 +250,57 @@ export default function CallWindowHost({
   );
 
   const moreMenu = (
-    <>
-      <CallMoreMenu
-        open={openMenu === 'more'}
-        recording={state.recording}
-        outputLabel={outputLabel}
-        onShowOutput={() => setOpenMenu('output')}
-        onToggleRecording={() => {
-          actions.toggleRecording();
-          closeMenu();
-        }}
-        onShowChat={() => {
-          closeMenu();
-          if (state.pane !== 'chat') actions.togglePane('chat');
-        }}
-        onShowInfo={() => setOpenMenu('info')}
-      />
-      <DeviceMenu
-        open={openMenu === 'output'}
-        title="Audio output"
-        devices={speakers.map((d) => ({ id: d.deviceId, label: d.label }))}
-        selectedId={state.media.speakerDeviceId}
-        onSelect={(id) => {
-          actions.setMedia({ speakerDeviceId: id });
-          closeMenu();
-        }}
-        onClose={closeMenu}
-      />
-    </>
+    <CallMoreMenu
+      open={openMenu === 'more'}
+      recording={state.recording}
+      onPicked={closeMenu}
+      mic={{
+        label: labelOf(mics, state.media.micDeviceId),
+        devices: mics.map((d) => ({ id: d.deviceId, label: d.label })),
+        selectedId: state.media.micDeviceId,
+        onSelect: (id) => actions.setMedia({ micDeviceId: id }),
+      }}
+      output={{
+        label: labelOf(speakers, state.media.speakerDeviceId),
+        devices: speakers.map((d) => ({ id: d.deviceId, label: d.label })),
+        selectedId: state.media.speakerDeviceId,
+        onSelect: (id) => actions.setMedia({ speakerDeviceId: id }),
+      }}
+      camera={
+        state.mode === 'video'
+          ? {
+              label: labelOf(cameras, state.media.cameraDeviceId),
+              devices: cameras.map((d) => ({ id: d.deviceId, label: d.label })),
+              selectedId: state.media.cameraDeviceId,
+              onSelect: (id) => actions.setMedia({ cameraDeviceId: id }),
+              extraSections: [
+                {
+                  id: 'background',
+                  title: 'Background',
+                  toggles: [
+                    {
+                      id: 'blur',
+                      label: 'Blur background',
+                      checked: !!state.media.blurBackground,
+                      onChange: (on) =>
+                        actions.setMedia({ blurBackground: on }),
+                    },
+                  ],
+                },
+              ],
+            }
+          : undefined
+      }
+      onToggleRecording={() => {
+        actions.toggleRecording();
+        closeMenu();
+      }}
+      onShowChat={() => {
+        closeMenu();
+        if (state.pane !== 'chat') actions.togglePane('chat');
+      }}
+      onShowInfo={() => setOpenMenu('info')}
+    />
   );
 
   const pane =

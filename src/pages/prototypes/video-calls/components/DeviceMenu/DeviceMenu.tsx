@@ -65,6 +65,12 @@ export interface DeviceMenuProps {
   /** Called after the exit transition finishes. */
   onExited?: () => void;
   labels?: DeviceMenuLabels;
+  /**
+   * Render as a child submenu of another menu (e.g. the More menu): uses the
+   * Compass `child` surface and leaves dismissal, focus and Escape to the parent
+   * menu, which owns them.
+   */
+  nested?: boolean;
   className?: string;
 }
 
@@ -91,6 +97,7 @@ export function DeviceMenu({
   onClose,
   onExited,
   labels,
+  nested = false,
   className,
 }: DeviceMenuProps) {
   const l = { ...DEFAULT_LABELS, ...labels };
@@ -103,7 +110,7 @@ export function DeviceMenu({
 
   // Dismissal + initial focus while open.
   useEffect(() => {
-    if (!open) return;
+    if (!open || nested) return;
     const onPointerDown = (e: PointerEvent) => {
       const menu = menuRef.current;
       const target = e.target as Node | null;
@@ -135,7 +142,7 @@ export function DeviceMenu({
       document.removeEventListener('keydown', onKeyDown);
       cancelAnimationFrame(raf);
     };
-  }, [open]);
+  }, [open, nested]);
 
   const onMenuKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     const keys = ['ArrowDown', 'ArrowUp', 'Home', 'End'];
@@ -188,8 +195,13 @@ export function DeviceMenu({
         onExited={onExited}
         role="menu"
         aria-label={title}
+        variant={nested ? 'child' : 'parent'}
         onKeyDown={onMenuKeyDown}
-        className={cx(styles['device-menu'], className)}
+        className={cx(
+          styles['device-menu'],
+          nested && styles['device-menu--nested'],
+          className,
+        )}
       >
         {!sections && <MenuGroupHeading label={title} />}
         {sections

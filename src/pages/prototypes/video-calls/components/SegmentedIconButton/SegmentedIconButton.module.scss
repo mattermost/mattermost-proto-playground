@@ -10,7 +10,10 @@
     position: relative;
   }
 
-  &__main {
+  // Square the inner (trailing) corners of the main segment so it joins the
+  // chevron. Triple class so it beats IconButton's own radius (a single class
+  // lost, leaving the right side of the mic / camera button rounded).
+  #{&}__main#{&}__main#{&}__main {
     border-start-end-radius: 0;
     border-end-end-radius: 0;
   }

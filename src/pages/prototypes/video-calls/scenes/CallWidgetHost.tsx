@@ -41,8 +41,7 @@ import styles from './CallWidgetHost.module.scss';
  */
 const PARTICIPANTS_SCROLL_FROM = 5;
 
-type Overlay =
-  'participants' | 'more' | 'mic' | 'camera' | 'output' | 'info' | null;
+type Overlay = 'participants' | 'more' | 'mic' | 'camera' | 'info' | null;
 
 const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
 const SELF = ROSTER.find((p) => p.id === SELF_ID) ?? ROSTER[0];
@@ -183,7 +182,19 @@ function useDeviceMenus(ov: WidgetOverlay) {
   const cameraLabel =
     cameras.find((d) => d.deviceId === state.media.cameraDeviceId)?.label ??
     cameras[0].label;
-  return { micMenu, cameraMenu, micLabel, cameraLabel };
+  const speakerLabel =
+    speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
+    speakers[0].label;
+  return {
+    micMenu,
+    cameraMenu,
+    micLabel,
+    cameraLabel,
+    speakerLabel,
+    mics,
+    cameras,
+    speakers,
+  };
 }
 
 /** Incoming, and Joining after Accept (same card, so the height holds). */
@@ -223,19 +234,34 @@ function CardWidget({
     elapsedLabel,
   } = useCallSession();
   const conversationName = useConversationName();
-  const { micMenu, cameraMenu, micLabel, cameraLabel } = useDeviceMenus(ov);
+  const {
+    micMenu,
+    cameraMenu,
+    micLabel,
+    cameraLabel,
+    speakerLabel,
+    mics,
+    cameras,
+    speakers,
+  } = useDeviceMenus(ov);
   const { overlay, close, toggle } = ov;
   const micLevel = useMicLevel({
     enabled: phase === 'pre-join' && state.media.micOn,
     simulated: true,
   });
-  const devices = useMediaDevices({ enabled: true });
-  const speakers = devices.speakers.length
-    ? devices.speakers
-    : FALLBACK_SPEAKERS;
-  const outputLabel =
-    speakers.find((d) => d.deviceId === state.media.speakerDeviceId)?.label ??
-    speakers[0].label;
+
+  const blurSection = {
+    id: 'background',
+    title: 'Background',
+    toggles: [
+      {
+        id: 'blur',
+        label: 'Blur background',
+        checked: !!state.media.blurBackground,
+        onChange: (on: boolean) => actions.setMedia({ blurBackground: on }),
+      },
+    ],
+  };
 
   // Notices stack above the card like a menu, so they step aside while a menu
   // is open. The widget and the window show the same notices.
@@ -314,14 +340,33 @@ function CardWidget({
             actions.toggleHand();
             close();
           }}
-          outputLabel={outputLabel}
-          micLabel={micLabel}
-          onShowMic={() => toggle('mic')}
-          cameraLabel={cameraLabel}
-          onShowCamera={
-            state.mode === 'video' ? () => toggle('camera') : undefined
+          onPicked={close}
+          mic={{
+            label: micLabel,
+            devices: mics.map((d) => ({ id: d.deviceId, label: d.label })),
+            selectedId: state.media.micDeviceId,
+            onSelect: (id) => actions.setMedia({ micDeviceId: id }),
+          }}
+          output={{
+            label: speakerLabel,
+            devices: speakers.map((d) => ({ id: d.deviceId, label: d.label })),
+            selectedId: state.media.speakerDeviceId,
+            onSelect: (id) => actions.setMedia({ speakerDeviceId: id }),
+          }}
+          camera={
+            state.mode === 'video'
+              ? {
+                  label: cameraLabel,
+                  devices: cameras.map((d) => ({
+                    id: d.deviceId,
+                    label: d.label,
+                  })),
+                  selectedId: state.media.cameraDeviceId,
+                  onSelect: (id) => actions.setMedia({ cameraDeviceId: id }),
+                  extraSections: [blurSection],
+                }
+              : undefined
           }
-          onShowOutput={() => toggle('output')}
           onToggleRecording={() => {
             actions.toggleRecording();
             close();
@@ -350,17 +395,6 @@ function CardWidget({
       }
       extraPopovers={
         <>
-          <DeviceMenu
-            open={overlay === 'output'}
-            title="Audio output"
-            devices={speakers.map((d) => ({ id: d.deviceId, label: d.label }))}
-            selectedId={state.media.speakerDeviceId}
-            onSelect={(id) => {
-              actions.setMedia({ speakerDeviceId: id });
-              close();
-            }}
-            onClose={ov.closeFromMenu}
-          />
           <ExitingPopover open={overlay === 'info'}>
             <CallInfoPanel
               fullWidth

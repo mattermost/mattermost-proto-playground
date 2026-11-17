@@ -1,0 +1,30 @@
+.call-more-menu {
+  // Transparent to layout: the host positions the PopoverMenu itself.
+  display: contents;
+
+  // A row that opens a child menu. The wrapper holds both, so the pointer can
+  // cross from the row into the submenu without leaving it.
+  &__submenu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  // Beside the row, top-aligned with it (lined up with the menu's own padding).
+  &__child {
+    position: absolute;
+    z-index: 1;
+    top: calc(-1 * var(--spacing-xs));
+    left: 100%;
+    // Slight overlap with the parent border so there is no dead gap to cross.
+    margin-inline-start: calc(-1 * var(--spacing-xxxs));
+
+    &--flip {
+      left: auto;
+      right: 100%;
+      margin-inline-start: 0;
+      margin-inline-end: calc(-1 * var(--spacing-xxxs));
+    }
+  }
+}
