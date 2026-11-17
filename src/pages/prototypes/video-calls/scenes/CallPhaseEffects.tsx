@@ -87,23 +87,50 @@ export default function CallPhaseEffects() {
 
   // Someone else joining while you are in the call.
   const prevIds = useRef<string[] | null>(null);
+  // One pending "video connected" timer per person, so a leave / rejoin or a
+  // new call can't be cut short by a stale timer from an earlier join.
+  const connectTimers = useRef(new Map<string, number>());
+  const clearConnectTimer = (id: string) => {
+    const t = connectTimers.current.get(id);
+    if (t !== undefined) window.clearTimeout(t);
+    connectTimers.current.delete(id);
+  };
+  useEffect(() => {
+    const timers = connectTimers.current;
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      timers.clear();
+    };
+  }, []);
   useEffect(() => {
     if (phase !== 'active') {
       prevIds.current = null;
+      connectTimers.current.forEach((t) => window.clearTimeout(t));
+      connectTimers.current.clear();
       return;
     }
     const ids = participants.map((p) => p.id);
     const before = prevIds.current;
     prevIds.current = ids;
+    // Anyone who has left no longer needs their pending timer.
+    for (const id of [...connectTimers.current.keys()]) {
+      if (!ids.includes(id)) clearConnectTimer(id);
+    }
     const added = ids.filter((id) => !before?.includes(id));
     if (before && added.length > 0) {
       playSound('join-user');
       // Their video connects first: a spinner on their tile for a moment.
       actions.startConnecting(added);
-      window.setTimeout(
-        () => actions.videoConnectedFor(added),
-        VIDEO_CONNECTING_MS,
-      );
+      for (const id of added) {
+        clearConnectTimer(id);
+        connectTimers.current.set(
+          id,
+          window.setTimeout(() => {
+            connectTimers.current.delete(id);
+            actions.videoConnectedFor([id]);
+          }, VIDEO_CONNECTING_MS),
+        );
+      }
     }
   }, [phase, participants, actions]);
 
