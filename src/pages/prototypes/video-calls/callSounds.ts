@@ -37,6 +37,9 @@ const SOUND_MAP: Partial<Record<CallSoundName, SoundDef>> = {
   leave: { url: leaveUrl },
 };
 
+/** Longest a sound waits for the audio output switch before it plays anyway. */
+const SINK_SWITCH_LIMIT_MS = 500;
+
 let enabled = false;
 let outputDeviceId: string | undefined;
 const playing = new Map<CallSoundName, HTMLAudioElement>();
@@ -99,8 +102,16 @@ export function playSound(
     setSinkId?: (sinkId: string) => Promise<void>;
   };
   if (outputDeviceId && sinkable.setSinkId) {
-    sinkable
-      .setSinkId(outputDeviceId)
+    // Never wait for the switch for long (a permission prompt or a stalled
+    // device can leave it pending): after the limit the sound plays on whatever
+    // output it has.
+    const switched = Promise.race([
+      sinkable.setSinkId(outputDeviceId),
+      new Promise<void>((resolve) =>
+        window.setTimeout(resolve, SINK_SWITCH_LIMIT_MS),
+      ),
+    ]);
+    switched
       .catch(() => {
         // Unsupported or missing device: keep the default output.
       })
