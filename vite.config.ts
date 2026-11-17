@@ -104,6 +104,11 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    // compass-proto is a file: link, so its real path sits in the compass-design
+    // repo, which has its own copy of React. Without this the production build
+    // bundles two Reacts and hooks from the second one fail with "Cannot read
+    // properties of null (reading 'useRef')".
+    dedupe: ['react', 'react-dom'],
   },
   css: {
     preprocessorOptions: {
