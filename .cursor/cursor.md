@@ -15,7 +15,7 @@ These instructions apply only to Cursor Cloud Agents. `.cursor/scripts/cloud-age
 
   It clones or fast-forwards `../compass-design` (default branch), runs `npm ci` there, builds `packages/compass-ui/dist` and `packages/compass-proto/dist` (`node scripts/ensure-compass-ui.mjs`), runs `npm ci` here, then checks everything with `node scripts/ensure-compass-packages.mjs`.
 
-- `../compass-design` is required at exactly that path: `package.json` links `file:../compass-design/packages/compass-proto`,. The Compass skills (`compass-build`, `compass-review`) come from the `mattermost-compass-toolkit` plugin, not from this checkout.
+- `../compass-design` is required at exactly that path: `package.json` links `file:../compass-design/packages/compass-proto`, and `.agents/skills/compass-build` / `compass-review` are symlinks into it.
 - Environment variables (set as Cloud Agent secrets):
 
   | Variable                         | Effect                                                                           |
