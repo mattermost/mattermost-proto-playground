@@ -15,8 +15,8 @@ export default function PrototypesIndex() {
       <div className={styles['prototypes-index__body']}>
         {PROTOTYPES.length === 0 && (
           <p className={styles['prototypes-index__empty']}>
-            No prototypes registered yet. Add entries to <code>PROTOTYPES</code> in{' '}
-            <code>src/manifests/prototypes.ts</code>.
+            No prototypes registered yet. Add entries to <code>PROTOTYPES</code>{' '}
+            in <code>src/manifests/prototypes.ts</code>.
           </p>
         )}
 

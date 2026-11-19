@@ -1,0 +1,61 @@
+@keyframes phase-crossfade-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--spacing-xs));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes phase-crossfade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+// Both layers share one grid cell so the outgoing phase fades under the
+// incoming one. Default alignment is bottom (the widget grows upward).
+.phase-crossfade {
+  display: grid;
+  min-width: 0;
+
+  &__layer {
+    grid-area: 1 / 1;
+    align-self: end;
+    min-width: 0;
+    min-height: 0;
+
+    &--in {
+      animation: phase-crossfade-in var(--duration-quick) var(--ease-entrance)
+        both;
+    }
+
+    &--out {
+      animation: phase-crossfade-out var(--duration-quick) var(--ease-exit) both;
+      pointer-events: none;
+    }
+  }
+
+  // Window: layers fill the cell and keep their own flex layout.
+  &--fill {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    .phase-crossfade__layer {
+      align-self: stretch;
+      display: flex;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phase-crossfade__layer--in,
+    .phase-crossfade__layer--out {
+      animation: none;
+    }
+  }
+}

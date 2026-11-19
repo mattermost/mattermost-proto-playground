@@ -1,0 +1,74 @@
+.call-header-button {
+  position: relative;
+  display: inline-flex;
+
+  // IconButton is square; with a chevron it holds two glyphs, so it grows to
+  // fit them. Triple class beats IconButton's size rules (same trick as
+  // SegmentedIconButton). Without a chevron it stays a normal square button.
+  #{&}__trigger#{&}__trigger--menu#{&}__trigger--menu {
+    width: auto;
+    gap: var(--spacing-xxxs);
+    padding-inline: var(--spacing-xs);
+  }
+
+  &__chevron {
+    transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  &__trigger--open &__chevron {
+    transform: rotate(180deg);
+  }
+
+  &__trigger {
+    // A call is running (join) or you are in it: the phone reads as live.
+    &--live {
+      color: var(--online-indicator, var(--color-success));
+    }
+
+    &--in-call {
+      background: rgba(
+        var(--online-indicator-rgb, var(--color-success-rgb)),
+        0.12
+      );
+    }
+  }
+
+  // Under the button, centered on it. Visual only; pointer events pass through.
+  &__tooltip {
+    position: absolute;
+    top: calc(100% + var(--spacing-xxs));
+    left: 50%;
+    z-index: 30;
+    transform: translateX(-50%);
+    transform-origin: top center;
+    pointer-events: none;
+    animation: call-header-button-tip-in var(--duration-quick)
+      var(--ease-entrance);
+
+    &--exiting {
+      opacity: 0;
+      transition: opacity var(--duration-quick) var(--ease-exit);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      transition: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__chevron {
+      transition: none;
+    }
+  }
+}
+
+@keyframes call-header-button-tip-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

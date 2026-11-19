@@ -4,7 +4,10 @@ import { OutboundCallIcon } from '@mattermost/compass-proto';
 import { PhoneLockIcon } from '@mattermost/compass-proto';
 import type { PhoneKind } from '@/types/outboundCall';
 
-export function phoneLabelText(phone: { label: string; sipTrunk?: string }): string {
+export function phoneLabelText(phone: {
+  label: string;
+  sipTrunk?: string;
+}): string {
   return [phone.label, phone.sipTrunk].filter(Boolean).join(' • ');
 }
 

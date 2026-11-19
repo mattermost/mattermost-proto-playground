@@ -1,0 +1,21 @@
+// The room fills the stage and centres a wrapped grid of avatars, as in the
+// compass-proto CallPopout.
+.audio-room {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--spacing-l) 8%;
+  overflow: hidden;
+
+  &__grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--spacing-xxxs);
+    width: 100%;
+  }
+}

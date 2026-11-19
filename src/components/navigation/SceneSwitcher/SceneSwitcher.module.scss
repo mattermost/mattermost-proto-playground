@@ -35,8 +35,14 @@
       background-color var(--duration-quick) var(--ease-transition),
       color var(--duration-quick) var(--ease-transition);
 
-    &:hover {
+    &:hover:not(:disabled) {
       color: var(--center-channel-color);
+    }
+
+    // Not available: dimmed (disabled controls may drop to 40%) and inert.
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
     &--active {

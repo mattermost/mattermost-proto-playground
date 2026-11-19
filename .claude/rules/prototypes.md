@@ -1,6 +1,6 @@
 ---
 paths:
-  - "src/pages/prototypes/**"
+  - 'src/pages/prototypes/**'
 ---
 
 # Prototypes area

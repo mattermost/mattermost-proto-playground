@@ -25,7 +25,8 @@ export function parseExternalWalkthroughApply(
 
   let widgetOverlay: ExternalWalkthroughApply['widgetOverlay'];
   if (state.widgetOverlay === null) widgetOverlay = null;
-  else if (isWidgetOverlay(state.widgetOverlay)) widgetOverlay = state.widgetOverlay;
+  else if (isWidgetOverlay(state.widgetOverlay))
+    widgetOverlay = state.widgetOverlay;
 
   return {
     widgetOverlay,

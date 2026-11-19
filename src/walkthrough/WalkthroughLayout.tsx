@@ -25,16 +25,8 @@ export default function WalkthroughLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const {
-    document,
-    active,
-    step,
-    stepIndex,
-    goNext,
-    goBack,
-    goToStep,
-    exit,
-  } = useWalkthrough();
+  const { document, active, step, stepIndex, goNext, goBack, goToStep, exit } =
+    useWalkthrough();
   const stageRef = useRef<HTMLDivElement>(null);
   const snapshotRef = useRef<ShellSnapshot | null>(null);
   const [expanded, setExpanded] = useState(false);

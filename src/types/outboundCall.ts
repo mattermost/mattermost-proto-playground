@@ -35,7 +35,8 @@ export type Recent = {
 export type AudioDeviceKind = 'laptop' | 'headphones' | 'external' | 'phone';
 export type AudioDevice = { id: string; label: string; kind: AudioDeviceKind };
 
-export type CallStatus = 'idle' | 'composing' | 'dialing' | 'connected' | 'ended';
+export type CallStatus =
+  'idle' | 'composing' | 'dialing' | 'connected' | 'ended';
 
 export type BridgedStatus = 'dialing' | 'connected' | 'ended';
 

@@ -68,9 +68,9 @@ export function stampExternalWalkthroughFocus(): () => void {
     '[aria-label="Active call"] [role="menu"]',
   );
   if (widgetMenu) {
-    const callInfoItem = Array.from(
-      widgetMenu.querySelectorAll('button'),
-    ).find((el) => el.textContent?.includes('Call info'));
+    const callInfoItem = Array.from(widgetMenu.querySelectorAll('button')).find(
+      (el) => el.textContent?.includes('Call info'),
+    );
     stamp(callInfoItem, 'widget-call-info-menu');
   }
 
@@ -86,7 +86,9 @@ export function stampExternalWalkthroughFocus(): () => void {
     );
   }
 
-  const participantsPanel = document.querySelector('[aria-label="Participants"]');
+  const participantsPanel = document.querySelector(
+    '[aria-label="Participants"]',
+  );
   if (participantsPanel) {
     const groupTitle = Array.from(
       participantsPanel.querySelectorAll(
@@ -96,13 +98,16 @@ export function stampExternalWalkthroughFocus(): () => void {
     const lists = participantsPanel.querySelectorAll(
       '[class*="participants-panel__list"]',
     );
-    const externalList =
-      lists.length > 1 ? lists[lists.length - 1] : null;
+    const externalList = lists.length > 1 ? lists[lists.length - 1] : null;
 
     if (groupTitle && externalList) {
       // Single parent around heading + rows — avoids overlapping per-row rings.
       cleanups.push(
-        wrapSiblingsWithFocus(groupTitle, externalList, 'participants-external'),
+        wrapSiblingsWithFocus(
+          groupTitle,
+          externalList,
+          'participants-external',
+        ),
       );
     } else if (externalList) {
       stamp(externalList, 'participants-external');

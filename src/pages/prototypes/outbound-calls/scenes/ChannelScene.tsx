@@ -2,9 +2,17 @@ import type { MouseEvent, ReactNode } from 'react';
 import { MessageSeparator } from '@mattermost/compass-ui/components/message-separator';
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { StartCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
-import { CHANNEL_POSTS, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
+import {
+  CHANNEL_POSTS,
+  CONTACT_MAP,
+} from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles, ChannelHeader, MessageInput, Message } from '@mattermost/compass-proto';
+import {
+  layoutStyles,
+  ChannelHeader,
+  MessageInput,
+  Message,
+} from '@mattermost/compass-proto';
 import styles from '../OutboundCalls.module.scss';
 
 function ProfileClickable({
@@ -21,7 +29,8 @@ function ProfileClickable({
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     const isAvatar = target.tagName === 'IMG';
-    const isUsername = target.tagName === 'SPAN' && target.textContent?.trim() === contactName;
+    const isUsername =
+      target.tagName === 'SPAN' && target.textContent?.trim() === contactName;
     if (!isAvatar && !isUsername) return;
     const img = e.currentTarget.querySelector('img');
     const rect = (img ?? target).getBoundingClientRect();
@@ -100,7 +109,9 @@ export function ChannelScene({
                 username={c.name}
                 timestamp={p.timestamp}
               >
-                <p className={layoutStyles['channel-shell__post-text']}>{p.body}</p>
+                <p className={layoutStyles['channel-shell__post-text']}>
+                  {p.body}
+                </p>
               </Message>
             </ProfileClickable>
           );

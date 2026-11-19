@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState, } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MobileChannelsSidebar } from '@mattermost/compass-proto';
 import { type MobileTabBarTab } from '@mattermost/compass-proto';
-import { MobileHome, MobileTabBar, MobileTeamSidebar } from '@mattermost/compass-proto';
-import {avatars} from '../mobileHomeChannelData';
+import {
+  MobileHome,
+  MobileTabBar,
+  MobileTeamSidebar,
+} from '@mattermost/compass-proto';
+import { avatars } from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';
 import MentionsScene from './MentionsScene';
 import ProfileScene from './ProfileScene';
@@ -97,10 +101,8 @@ export default function HomeScene({
             }
             channelsSidebar={
               <MobileChannelsSidebar
-                teamName={
-                  activeTeamId === 'design' ? 'Design' : 'Contributors'
-                }
-                subtitle='Community'
+                teamName={activeTeamId === 'design' ? 'Design' : 'Contributors'}
+                subtitle="Community"
                 showUnreadsCategory
                 onItemClick={onChannelClick}
                 avatarAikoTan={avatars.aikoTan}
@@ -172,7 +174,7 @@ export default function HomeScene({
         activeTab={activeTab}
         onTabChange={onTabChange}
         profileSrc={avatars.leonard}
-        profileAlt='Leonard Riley'
+        profileAlt="Leonard Riley"
         mentionsBadge={2}
       />
     </div>

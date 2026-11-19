@@ -87,7 +87,9 @@ function PopoverJumpList({
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    const activeItem = container.querySelector<HTMLElement>('[class*="menu-item--active"]');
+    const activeItem = container.querySelector<HTMLElement>(
+      '[class*="menu-item--active"]',
+    );
     activeItem?.scrollIntoView({ block: 'nearest' });
   }, [activeStepId]);
 
@@ -100,7 +102,9 @@ function PopoverJumpList({
       container.querySelectorAll<HTMLElement>('[role="menuitem"]'),
     );
     if (items.length === 0) return;
-    const currentIndex = items.indexOf(window.document.activeElement as HTMLElement);
+    const currentIndex = items.indexOf(
+      window.document.activeElement as HTMLElement,
+    );
     const next =
       e.key === 'ArrowDown'
         ? items[(currentIndex + 1) % items.length]

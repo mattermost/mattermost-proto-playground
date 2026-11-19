@@ -2,9 +2,9 @@
 
 Follow this when working under `src/pages/prototypes/`.
 
-For scaffolding a new multi-scene prototype end-to-end, use [.cursor/skills/scaffold-prototype/SKILL.md](../../../.cursor/skills/scaffold-prototype/SKILL.md).
+For scaffolding a new multi-scene prototype end-to-end, use [.agents/skills/scaffold-prototype/SKILL.md](../../../.agents/skills/scaffold-prototype/SKILL.md). Scene UI follows [compass-build](https://github.com/mattermost/compass-design/blob/main/skills/compass-toolkit/skills/compass-build/SKILL.md) (local path `.agents/skills/compass-build/SKILL.md`, prototype context). Audit it with [compass-review](https://github.com/mattermost/compass-design/blob/main/skills/compass-toolkit/skills/compass-review/SKILL.md) (local path `.agents/skills/compass-review/SKILL.md`) before calling the work done.
 
-For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.cursor/skills/guided-walkthrough/SKILL.md](../../../.cursor/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
+For a **guided walkthrough viewing mode** on an existing prototype (content file, focus anchors, mode chrome), use [.agents/skills/guided-walkthrough/SKILL.md](../../../.agents/skills/guided-walkthrough/SKILL.md). Runtime lives under `src/walkthrough/`.
 
 ## Imports
 
@@ -23,43 +23,43 @@ Playground chrome (`PrototypeTopNav`, `SceneSwitcher`, `DeviceFrame`, `MobileMod
 
 ### Common `@mattermost/compass-ui` components
 
-| Use for | Export | Import |
-| --- | --- | --- |
-| System Console settings section | `AdminPanel` | `@mattermost/compass-ui/components/admin-panel` |
-| Section action rail (pass via `AdminPanel` `footer`) | `AdminPanelFooter` | `@mattermost/compass-ui/components/admin-panel-footer` |
-| System Console page title | `AdminConsoleHeader` | `@mattermost/compass-ui/components/admin-console-header` |
-| System Console page Save / Cancel bar | `AdminConsoleFooter` | `@mattermost/compass-ui/components/admin-console-footer` |
-| Dialog / modal (desktop) | `Modal` | `@mattermost/compass-ui/components/modal` |
-| Menu row | `MenuItem` | `@mattermost/compass-ui/components/menu-item` |
-| Search field | `SearchInput` | `@mattermost/compass-ui/components/search-input` |
-| Text field | `TextInput` | `@mattermost/compass-ui/components/text-input` |
-| User avatar | `UserAvatar` | `@mattermost/compass-ui/components/user-avatar` |
-| Channel / DM sidebar row (type glyph built in) | `ChannelSidebarItem` | `@mattermost/compass-ui/components/channel-sidebar-item` |
-| Icon wrapper | `Icon` | `@mattermost/compass-ui/components/icon` |
-| Mention count | `MentionBadge` | `@mattermost/compass-ui/components/mention-badge` |
-| Unread indicator | `UnreadBadge` | `@mattermost/compass-ui/components/unread-badge` |
-| Presence (online / away / do-not-disturb) | `StatusBadge` | `@mattermost/compass-ui/components/status-badge` |
-| Button | `Button` | `@mattermost/compass-ui/components/button` |
-| Icon-only button | `IconButton` | `@mattermost/compass-ui/components/icon-button` |
-| Empty view | `EmptyState` | `@mattermost/compass-ui/components/empty-state` |
-| Tooltip (visual chrome only) | `Tooltip` | `@mattermost/compass-ui/components/tooltip` |
-| Walkthrough / product tour card | `TourPoint` | `@mattermost/compass-ui/components/tour-point` |
-| Chat message | `Message` | `@mattermost/compass-proto` |
-| Composer | `MessageInput` | `@mattermost/compass-proto` |
-| Channel header | `ChannelHeader` | `@mattermost/compass-proto` |
-| Divider | `Divider` | `@mattermost/compass-ui/components/divider` |
-| Scroll container | `Scrollbar` | `@mattermost/compass-ui/components/scrollbar` |
-| Chip | `Chip` | `@mattermost/compass-ui/components/chip` |
-| Metadata label (BOT, Guest) | `Tag` | `@mattermost/compass-ui/components/tag` |
-| Typeahead / multi-select | `Combobox` | `@mattermost/compass-ui/components/combobox` |
-| Closed single-select | `Select` | `@mattermost/compass-ui/components/select` |
-| Heading / filter trigger | `Dropdown` | `@mattermost/compass-ui/components/dropdown` |
-| Multi-line text | `TextArea` | `@mattermost/compass-ui/components/text-area` |
-| Check / radio / switch | `Checkbox`, `Radio`, `Switch` | `@mattermost/compass-ui/components/checkbox` (also `radio`, `switch`) |
-| Tabs | `Tabs` | `@mattermost/compass-ui/components/tabs` |
-| Transient confirmation | `Toast` | `@mattermost/compass-ui/components/toast` |
-| Menu surface | `PopoverMenu` | `@mattermost/compass-ui/components/popover-menu` |
-| Date / unread rule in a message list | `MessageSeparator` | `@mattermost/compass-ui/components/message-separator` |
+| Use for                                              | Export                        | Import                                                                |
+| ---------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| System Console settings section                      | `AdminPanel`                  | `@mattermost/compass-ui/components/admin-panel`                       |
+| Section action rail (pass via `AdminPanel` `footer`) | `AdminPanelFooter`            | `@mattermost/compass-ui/components/admin-panel-footer`                |
+| System Console page title                            | `AdminConsoleHeader`          | `@mattermost/compass-ui/components/admin-console-header`              |
+| System Console page Save / Cancel bar                | `AdminConsoleFooter`          | `@mattermost/compass-ui/components/admin-console-footer`              |
+| Dialog / modal (desktop)                             | `Modal`                       | `@mattermost/compass-ui/components/modal`                             |
+| Menu row                                             | `MenuItem`                    | `@mattermost/compass-ui/components/menu-item`                         |
+| Search field                                         | `SearchInput`                 | `@mattermost/compass-ui/components/search-input`                      |
+| Text field                                           | `TextInput`                   | `@mattermost/compass-ui/components/text-input`                        |
+| User avatar                                          | `UserAvatar`                  | `@mattermost/compass-ui/components/user-avatar`                       |
+| Channel / DM sidebar row (type glyph built in)       | `ChannelSidebarItem`          | `@mattermost/compass-ui/components/channel-sidebar-item`              |
+| Icon wrapper                                         | `Icon`                        | `@mattermost/compass-ui/components/icon`                              |
+| Mention count                                        | `MentionBadge`                | `@mattermost/compass-ui/components/mention-badge`                     |
+| Unread indicator                                     | `UnreadBadge`                 | `@mattermost/compass-ui/components/unread-badge`                      |
+| Presence (online / away / do-not-disturb)            | `StatusBadge`                 | `@mattermost/compass-ui/components/status-badge`                      |
+| Button                                               | `Button`                      | `@mattermost/compass-ui/components/button`                            |
+| Icon-only button                                     | `IconButton`                  | `@mattermost/compass-ui/components/icon-button`                       |
+| Empty view                                           | `EmptyState`                  | `@mattermost/compass-ui/components/empty-state`                       |
+| Tooltip (visual chrome only)                         | `Tooltip`                     | `@mattermost/compass-ui/components/tooltip`                           |
+| Walkthrough / product tour card                      | `TourPoint`                   | `@mattermost/compass-ui/components/tour-point`                        |
+| Chat message                                         | `Message`                     | `@mattermost/compass-proto`                                           |
+| Composer                                             | `MessageInput`                | `@mattermost/compass-proto`                                           |
+| Channel header                                       | `ChannelHeader`               | `@mattermost/compass-proto`                                           |
+| Divider                                              | `Divider`                     | `@mattermost/compass-ui/components/divider`                           |
+| Scroll container                                     | `Scrollbar`                   | `@mattermost/compass-ui/components/scrollbar`                         |
+| Chip                                                 | `Chip`                        | `@mattermost/compass-ui/components/chip`                              |
+| Metadata label (BOT, Guest)                          | `Tag`                         | `@mattermost/compass-ui/components/tag`                               |
+| Typeahead / multi-select                             | `Combobox`                    | `@mattermost/compass-ui/components/combobox`                          |
+| Closed single-select                                 | `Select`                      | `@mattermost/compass-ui/components/select`                            |
+| Heading / filter trigger                             | `Dropdown`                    | `@mattermost/compass-ui/components/dropdown`                          |
+| Multi-line text                                      | `TextArea`                    | `@mattermost/compass-ui/components/text-area`                         |
+| Check / radio / switch                               | `Checkbox`, `Radio`, `Switch` | `@mattermost/compass-ui/components/checkbox` (also `radio`, `switch`) |
+| Tabs                                                 | `Tabs`                        | `@mattermost/compass-ui/components/tabs`                              |
+| Transient confirmation                               | `Toast`                       | `@mattermost/compass-ui/components/toast`                             |
+| Menu surface                                         | `PopoverMenu`                 | `@mattermost/compass-ui/components/popover-menu`                      |
+| Date / unread rule in a message list                 | `MessageSeparator`            | `@mattermost/compass-ui/components/message-separator`                 |
 
 There is no `Dialog` — use `Modal`. Host owns open/close, portal, and backdrop; `Modal` owns dialog focus and Escape.
 
@@ -72,29 +72,29 @@ import GlobeIcon from '@mattermost/compass-icons/components/globe';
 import LockIcon from '@mattermost/compass-icons/components/lock';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 
-<Icon glyph={<GlobeIcon />} size="16" />
+<Icon glyph={<GlobeIcon />} size="16" />;
 ```
 
 Sidebar rows use `ChannelSidebarItem` with `leadingVisual` (`'public'` \| `'private'` \| `'direct-message'` \| …).
 
 ### Common `@mattermost/compass-proto` components
 
-| Use for | Export | Import |
-| --- | --- | --- |
-| Desktop channel layout | `ChannelShell` | `@mattermost/compass-proto` |
-| Team sidebar | `TeamSidebar` | `@mattermost/compass-proto` |
-| Desktop sidebar | `ChannelsSidebar` | `@mattermost/compass-proto` |
-| Global header | `GlobalHeader` | `@mattermost/compass-proto` |
-| Admin console sidebar | `AdminConsoleSidebar` | `@mattermost/compass-proto` |
-| Hardcoded menu recipes | `PlusMenu`, `HelpMenu`, `ChannelMenu`, `TeamMenu`, … | `@mattermost/compass-proto` |
-| Default sidebar fixture | `buildDefaultChannelsSidebarModel` | `@mattermost/compass-proto` |
-| Mobile home | `MobileHome` | `@mattermost/compass-proto` |
-| Mobile tab bar | `MobileTabBar` | `@mattermost/compass-proto` |
-| Mobile modal | `MobileModal` | `@mattermost/compass-proto` |
-| Mobile message | `MobileMessage` | `@mattermost/compass-proto` |
-| Mobile search | `MobileSearch` | `@mattermost/compass-proto` |
+| Use for                          | Export                                                        | Import                      |
+| -------------------------------- | ------------------------------------------------------------- | --------------------------- |
+| Desktop channel layout           | `ChannelShell`                                                | `@mattermost/compass-proto` |
+| Team sidebar                     | `TeamSidebar`                                                 | `@mattermost/compass-proto` |
+| Desktop sidebar                  | `ChannelsSidebar`                                             | `@mattermost/compass-proto` |
+| Global header                    | `GlobalHeader`                                                | `@mattermost/compass-proto` |
+| Admin console sidebar            | `AdminConsoleSidebar`                                         | `@mattermost/compass-proto` |
+| Hardcoded menu recipes           | `PlusMenu`, `HelpMenu`, `ChannelMenu`, `TeamMenu`, …          | `@mattermost/compass-proto` |
+| Default sidebar fixture          | `buildDefaultChannelsSidebarModel`                            | `@mattermost/compass-proto` |
+| Mobile home                      | `MobileHome`                                                  | `@mattermost/compass-proto` |
+| Mobile tab bar                   | `MobileTabBar`                                                | `@mattermost/compass-proto` |
+| Mobile modal                     | `MobileModal`                                                 | `@mattermost/compass-proto` |
+| Mobile message                   | `MobileMessage`                                               | `@mattermost/compass-proto` |
+| Mobile search                    | `MobileSearch`                                                | `@mattermost/compass-proto` |
 | Mobile composer / nav / menu row | `MobileMessageInput`, `MobileNavigationBar`, `MobileMenuItem` | `@mattermost/compass-proto` |
-| Call widget / popout | `CallWidget`, `CallPopout` | `@mattermost/compass-proto` |
+| Call widget / popout             | `CallWidget`, `CallPopout`                                    | `@mattermost/compass-proto` |
 
 ```tsx
 import { ChannelShell, MobileModal } from '@mattermost/compass-proto';
@@ -133,36 +133,36 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 
 ### Choose this, not that
 
-| Need | Use | Not |
-| --- | --- | --- |
-| Find / filter | `SearchInput` | `TextInput` or `Combobox` |
-| Type a value | `TextInput` | `SearchInput` |
-| Multi-line text | `TextArea` | `TextInput` |
-| On / off | `Switch` | `Checkbox` |
-| Few exclusive options | `Radio` | `Select` or stacked `Checkbox` |
-| Typeahead, long list, or multi-select (chips) | `Combobox` | `Select`, `SearchInput`, or a custom picker |
-| One value from a short closed list | `Select` | `Combobox` or `Dropdown` |
-| Heading / filter trigger (not a form value) | `Dropdown` | `Select` / `Combobox` |
-| Selectable / removable token | `Chip` | `Tag` |
-| Metadata label (BOT, Guest) | `Tag` | `Chip` |
-| Mention count / unread / presence | `MentionBadge` / `UnreadBadge` / `StatusBadge` | a custom pill |
-| Desktop dialog | `Modal` + host portal / backdrop | a restyled `div`, or `MobileModal` |
-| Mobile sheet | `MobileModal` + `MobileModalStage` | desktop `Modal` |
-| Desktop vs mobile message / menu / search | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component |
-| Channel type glyph | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual` | a `ChannelIcon` |
-| Full desktop channel column | `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput` (all proto) | rebuilding the chrome |
-| Sidebar chrome only | `ChannelsSidebar` | `ChannelShell` |
-| Sidebar demo tree | `buildDefaultChannelsSidebarModel` | a hand-rolled tree when the fixture fits |
-| Scroll region | `Scrollbar` | raw `overflow` |
-| Date or unread rule in a message list | `MessageSeparator` | `Divider` |
-| Transient confirmation | `Toast` | `Modal` or `SectionNotice` |
-| Tab strip (mutually exclusive view switcher) | `Tabs` | custom `button[role="tab"]` / `div[role="tablist"]` |
-| Empty / zero-data view | `EmptyState` | custom `div` with inline text or icon |
-| System Console settings section | `AdminPanel` | a custom bordered card, `Modal`, or `SectionNotice` |
-| Sectional actions inside a panel | `AdminPanel` `footer` + `AdminPanelFooter` | page-level `AdminConsoleFooter`, or a freeform button row |
-| System Console page Save / Cancel | `AdminConsoleFooter` | `AdminPanelFooter` or ad-hoc footer buttons |
-| Menu surface | `PopoverMenu` + `MenuItem` | unstyled `ul` / `div` rows when a menu is what you mean |
-| Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed) | custom `button` / `li` rows |
+| Need                                                 | Use                                                                                           | Not                                                       |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Find / filter                                        | `SearchInput`                                                                                 | `TextInput` or `Combobox`                                 |
+| Type a value                                         | `TextInput`                                                                                   | `SearchInput`                                             |
+| Multi-line text                                      | `TextArea`                                                                                    | `TextInput`                                               |
+| On / off                                             | `Switch`                                                                                      | `Checkbox`                                                |
+| Few exclusive options                                | `Radio`                                                                                       | `Select` or stacked `Checkbox`                            |
+| Typeahead, long list, or multi-select (chips)        | `Combobox`                                                                                    | `Select`, `SearchInput`, or a custom picker               |
+| One value from a short closed list                   | `Select`                                                                                      | `Combobox` or `Dropdown`                                  |
+| Heading / filter trigger (not a form value)          | `Dropdown`                                                                                    | `Select` / `Combobox`                                     |
+| Selectable / removable token                         | `Chip`                                                                                        | `Tag`                                                     |
+| Metadata label (BOT, Guest)                          | `Tag`                                                                                         | `Chip`                                                    |
+| Mention count / unread / presence                    | `MentionBadge` / `UnreadBadge` / `StatusBadge`                                                | a custom pill                                             |
+| Desktop dialog                                       | `Modal` + host portal / backdrop                                                              | a restyled `div`, or `MobileModal`                        |
+| Mobile sheet                                         | `MobileModal` + `MobileModalStage`                                                            | desktop `Modal`                                           |
+| Desktop vs mobile message / menu / search            | `Message` / `MenuItem` / `SearchInput` vs `MobileMessage` / `MobileMenuItem` / `MobileSearch` | `platform="mobile"` on the desktop component              |
+| Channel type glyph                                   | `Icon` + `GlobeIcon` / `LockIcon`, or `ChannelSidebarItem` `leadingVisual`                    | a `ChannelIcon`                                           |
+| Full desktop channel column                          | `ChannelShell`, `ChannelHeader`, `Message`, `MessageInput` (all proto)                        | rebuilding the chrome                                     |
+| Sidebar chrome only                                  | `ChannelsSidebar`                                                                             | `ChannelShell`                                            |
+| Sidebar demo tree                                    | `buildDefaultChannelsSidebarModel`                                                            | a hand-rolled tree when the fixture fits                  |
+| Scroll region                                        | `Scrollbar`                                                                                   | raw `overflow`                                            |
+| Date or unread rule in a message list                | `MessageSeparator`                                                                            | `Divider`                                                 |
+| Transient confirmation                               | `Toast`                                                                                       | `Modal` or `SectionNotice`                                |
+| Tab strip (mutually exclusive view switcher)         | `Tabs`                                                                                        | custom `button[role="tab"]` / `div[role="tablist"]`       |
+| Empty / zero-data view                               | `EmptyState`                                                                                  | custom `div` with inline text or icon                     |
+| System Console settings section                      | `AdminPanel`                                                                                  | a custom bordered card, `Modal`, or `SectionNotice`       |
+| Sectional actions inside a panel                     | `AdminPanel` `footer` + `AdminPanelFooter`                                                    | page-level `AdminConsoleFooter`, or a freeform button row |
+| System Console page Save / Cancel                    | `AdminConsoleFooter`                                                                          | `AdminPanelFooter` or ad-hoc footer buttons               |
+| Menu surface                                         | `PopoverMenu` + `MenuItem`                                                                    | unstyled `ul` / `div` rows when a menu is what you mean   |
+| Result rows in modal pickers and find/search dialogs | `MenuItem` (standalone — no `PopoverMenu` needed)                                             | custom `button` / `li` rows                               |
 
 **Channels sidebar fixtures:** At most one row may be `active`. A favorited channel or DM appears **only** under Favorites — never also in its home category (Channels, DMs, etc.). Prefer `activeChannelName` on `ChannelsSidebar` (or a single `active` flag in a custom model) over setting `active` on multiple rows that share a name.
 
@@ -182,16 +182,17 @@ Orchestration hooks in this repo live in `src/hooks/` (`useExitAnimation`, `useO
 
 ### RHS panels
 
-For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md).
+For a secondary panel (thread, etc.) that slides in over the primary, see the [RHS overlay pattern](../../../docs/RHS-OVERLAY-PATTERN.md). That doc also defines the standard enter/exit motion for right-hand panels.
 
 ### Prototype-only UI
 
 **Before writing any custom element, ask: does a Compass component cover this structure?**
-If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components.
+If yes, use it — even when the color or display mode differs from the default. Apply a `className` override and target internals with `:global([class*='component__element'])` selectors. That is cheaper than custom markup and keeps the prototype on real components. This is looser than `compass-build`, and it wins for prototype scene UI. When the override fills a gap that belongs in Compass, open a follow-up issue in the compass-design repo.
 
 The threshold for "close enough to use Compass" is low. A `Chip` that needs a blue tint, a `Button` that needs `align-self: flex-start`, a `Checkbox` with an extra margin — all still use the Compass component with a className override. Only reach for custom HTML when Compass has nothing structurally close.
 
 Decision order:
+
 1. **Name matches a Compass export → use it.** Do not restyle a structural cousin.
 2. **Compass component + className override → use it.** Minor visual differences (color, display, margin) do not justify a custom element.
 3. **No Compass match → build from primitives.** Flow-specific composition (a Find Channels dialog, a call PIP, a card layout) → `src/pages/prototypes/<slug>/components/`, built from primitives, tokens, and BEM. Be explicit about why Compass has nothing that fits.
@@ -240,7 +241,11 @@ Prefer shared presenter `MobileModalStage` (`src/components/layout/MobileModalSt
 ```tsx
 <MobileModalStage
   open={open}
-  modal={<MobileModal title="…" onCloseClick={close}>…</MobileModal>}
+  modal={
+    <MobileModal title="…" onCloseClick={close}>
+      …
+    </MobileModal>
+  }
 >
   {/* previous view */}
 </MobileModalStage>
@@ -279,6 +284,7 @@ docs/                 # Input references: requirements, PRFAQ/PRD, UX spec, shot
 
 Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It holds the inputs the prototype is built from, so agents in later sessions can read them instead of asking again.
 
+- The user prompt, saved as `<slug>-prompt.md`, is a requirement source.
 - Requirements, PRFAQ / PRD links or excerpts, and other input references.
 - UX spec source markdown as `<slug>-spec.md`.
 - Screenshots under `docs/shots/`, referenced with **relative** image paths.
@@ -287,5 +293,5 @@ Every prototype has a `docs/` folder at `src/pages/prototypes/<slug>/docs/`. It 
 Rules:
 
 - **Read `docs/` first** when starting work on a prototype.
-- When the user provides a new input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
+- When the user provides a prompt or another input (spec, PRFAQ, Figma or Confluence link, screenshots), **add it to `docs/`** and list it in `docs/README.md`.
 - No absolute local paths. Link rather than paste anything confidential.

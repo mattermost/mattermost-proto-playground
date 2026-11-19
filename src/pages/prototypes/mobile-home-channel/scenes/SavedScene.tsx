@@ -1,6 +1,10 @@
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
-import { MobileMessage, MobileSavedMessages, mobileMessageStyles } from '@mattermost/compass-proto';
-import {avatars} from '../mobileHomeChannelData';
+import {
+  MobileMessage,
+  MobileSavedMessages,
+  mobileMessageStyles,
+} from '@mattermost/compass-proto';
+import { avatars } from '../mobileHomeChannelData';
 import styles from '../MobileHomeChannel.module.scss';
 
 const bodyTextClass = mobileMessageStyles['mobile-message__body-text'];
@@ -12,11 +16,11 @@ export default function SavedScene() {
         <div className={styles['mobile-home-channel__tab-list']}>
           <MobileMessage
             avatarSrc={avatars.leonard}
-            avatarAlt='Leonard Riley'
-            username='Leonard Riley'
-            timestamp='10:12 AM'
-            channelName='UX Design'
-            teamName='Contributors'
+            avatarAlt="Leonard Riley"
+            username="Leonard Riley"
+            timestamp="10:12 AM"
+            channelName="UX Design"
+            teamName="Contributors"
           >
             <p className={bodyTextClass}>
               Design review is bumped to 2:00 PM today — conflict with the
@@ -26,11 +30,11 @@ export default function SavedScene() {
 
           <MobileMessage
             avatarSrc={avatars.marco}
-            avatarAlt='Marco Rinaldi'
-            username='Marco Rinaldi'
-            timestamp='Yesterday'
-            channelName='Onboarding'
-            teamName='Design'
+            avatarAlt="Marco Rinaldi"
+            username="Marco Rinaldi"
+            timestamp="Yesterday"
+            channelName="Onboarding"
+            teamName="Design"
           >
             <p className={bodyTextClass}>
               Just pushed the updated onboarding flow to staging — would love a
@@ -40,11 +44,11 @@ export default function SavedScene() {
 
           <MobileMessage
             avatarSrc={avatars.sofia}
-            avatarAlt='Sofia Bauer'
-            username='Sofia Bauer'
-            timestamp='Mon'
-            channelName='Town Square'
-            teamName='Contributors'
+            avatarAlt="Sofia Bauer"
+            username="Sofia Bauer"
+            timestamp="Mon"
+            channelName="Town Square"
+            teamName="Contributors"
           >
             <p className={bodyTextClass}>
               Morning everyone! Reminder that the Q2 roadmap review is at 10:30

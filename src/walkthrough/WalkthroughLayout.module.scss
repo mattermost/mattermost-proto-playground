@@ -24,7 +24,8 @@
     min-height: 0;
     height: 100%;
     overflow: hidden;
-    transition: width var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+    transition: width var(--duration-moderate, 300ms)
+      var(--ease-transition, ease-in-out);
   }
 
   &__narrative-slot--expanded {
@@ -54,8 +55,10 @@
     opacity: 0;
     transform: translateX(-12px);
     transition:
-      opacity var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
-      transform var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+      opacity var(--duration-moderate, 300ms)
+        var(--ease-transition, ease-in-out),
+      transform var(--duration-moderate, 300ms)
+        var(--ease-transition, ease-in-out);
   }
 
   &__narrative-slot--expanded &__narrative-clip {
@@ -77,9 +80,12 @@
     pointer-events: none;
     transition:
       width var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
-      margin-right var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
-      opacity var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out),
-      transform var(--duration-moderate, 300ms) var(--ease-transition, ease-in-out);
+      margin-right var(--duration-moderate, 300ms)
+        var(--ease-transition, ease-in-out),
+      opacity var(--duration-moderate, 300ms)
+        var(--ease-transition, ease-in-out),
+      transform var(--duration-moderate, 300ms)
+        var(--ease-transition, ease-in-out);
   }
 
   &__jump-slot--entered {

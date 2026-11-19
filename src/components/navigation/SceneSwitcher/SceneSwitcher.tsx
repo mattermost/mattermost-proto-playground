@@ -3,6 +3,8 @@ import styles from './SceneSwitcher.module.scss';
 export interface SceneSwitcherScene {
   id: string;
   label: string;
+  /** Not available right now: shown dimmed and not selectable (never hide it). */
+  disabled?: boolean;
 }
 
 export interface SceneSwitcherProps {
@@ -40,6 +42,7 @@ export default function SceneSwitcher({
               type="button"
               role="tab"
               aria-selected={isActive}
+              disabled={s.disabled && !isActive}
               className={`${styles['scene-switcher__tab']} ${
                 isActive ? styles['scene-switcher__tab--active'] : ''
               }`}

@@ -1,0 +1,29 @@
+.participant-count {
+  // Same height as the scene switchers beside it: stretch to their row (which
+  // includes each switcher's own 4px of padding) minus that padding.
+  align-self: stretch;
+  box-sizing: border-box;
+  margin-block: var(--spacing-xxxs);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxxxs);
+  padding: var(--spacing-xxxxs) var(--spacing-xxxs);
+  border-radius: var(--radius-pill);
+  background: rgba(var(--center-channel-color-rgb), 0.08);
+  color: var(--center-channel-color);
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+
+  // The People icon in place of a text label (the group's aria-label names it).
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--spacing-xxxs);
+  }
+
+  &__value {
+    min-width: 2ch;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+}

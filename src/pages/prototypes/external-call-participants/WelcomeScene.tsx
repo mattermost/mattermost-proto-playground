@@ -13,7 +13,10 @@ export interface WelcomeSceneProps {
   onJoin: (name: string) => void;
 }
 
-export default function WelcomeScene({ channelName, onJoin }: WelcomeSceneProps) {
+export default function WelcomeScene({
+  channelName,
+  onJoin,
+}: WelcomeSceneProps) {
   const [name, setName] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
@@ -53,7 +56,9 @@ export default function WelcomeScene({ channelName, onJoin }: WelcomeSceneProps)
                 className={styles['welcome__input']}
                 placeholder="Your name"
                 value={name}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setName(e.target.value)
+                }
               />
               <Button
                 type="submit"

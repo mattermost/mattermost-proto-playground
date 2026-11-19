@@ -3,9 +3,16 @@ import { MessageSeparator } from '@mattermost/compass-ui/components/message-sepa
 import { OutboundCallPhoneNumberLink } from '@/pages/prototypes/outbound-calls/OutboundCallPhoneNumberLink';
 import { StartCallButton } from '@/pages/prototypes/outbound-calls/OutboundCallStartCallMenu';
 import TelAutocompleteMessageInput from '@/pages/prototypes/outbound-calls/TelAutocompleteMessageInput';
-import { avatarLeonard, CONTACT_MAP } from '@/pages/prototypes/outbound-calls/outboundCallData';
+import {
+  avatarLeonard,
+  CONTACT_MAP,
+} from '@/pages/prototypes/outbound-calls/outboundCallData';
 import type { StartCallAction } from '@/types/outboundCall';
-import { layoutStyles, ChannelHeader, Message } from '@mattermost/compass-proto';
+import {
+  layoutStyles,
+  ChannelHeader,
+  Message,
+} from '@mattermost/compass-proto';
 
 export function DMScene({
   onOpenProfile,
@@ -58,7 +65,9 @@ export function DMScene({
         description={contact.title}
         avatarSrc={contact.avatar}
         avatarStatus={contact.online}
-        onNameClick={(e: MouseEvent) => onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())}
+        onNameClick={(e: MouseEvent) =>
+          onOpenProfile(contact.id, e.currentTarget.getBoundingClientRect())
+        }
         callButton={
           <StartCallButton
             actions={actions}
@@ -80,8 +89,8 @@ export function DMScene({
           timestamp="9:02 AM"
         >
           <p className={layoutStyles['channel-shell__post-text']}>
-            Hey — have a minute? Need to walk through the Nightingale comms plan before the 11:00
-            handover. Easier by voice.
+            Hey — have a minute? Need to walk through the Nightingale comms plan
+            before the 11:00 handover. Easier by voice.
           </p>
         </Message>
         <Message

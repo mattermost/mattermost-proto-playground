@@ -1,0 +1,101 @@
+@keyframes incoming-call-card-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.56;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes incoming-call-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--spacing-l)));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.incoming-call-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+  width: 340px; // one-off layout width
+  max-width: 100%;
+  padding: var(--spacing-xl);
+  box-sizing: border-box;
+  border-radius: var(--radius-l);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+  box-shadow: var(--elevation-5);
+  animation: incoming-call-card-enter var(--duration-moderate)
+    var(--ease-entrance);
+
+  &__caller {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-l);
+    min-width: 0;
+  }
+
+  &__avatar {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    border-radius: var(--radius-pill);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-pill);
+      border: var(--spacing-xxxxs) solid var(--online-indicator);
+      animation: incoming-call-card-ring calc(var(--duration-moderate) * 5)
+        var(--ease-exit) infinite;
+      pointer-events: none;
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-300);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+
+    .incoming-call-card__avatar::after {
+      animation: none;
+      opacity: 0.56;
+    }
+  }
+}

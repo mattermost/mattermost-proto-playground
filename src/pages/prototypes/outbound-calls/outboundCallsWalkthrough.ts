@@ -140,7 +140,10 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Channel',
       title: 'Call a number from a message',
       lead: 'Phone numbers in messages auto-link — click to start an outbound call without copying digits.',
-      lookFor: ['Leonard Riley’s message in op-nightingale', 'Clickable 555-0174 link'],
+      lookFor: [
+        'Leonard Riley’s message in op-nightingale',
+        'Clickable 555-0174 link',
+      ],
       bullets: [
         'Inline numbers stay in the thread so teammates can share lines as they coordinate.',
         'One click opens the softphone to that number; you remain in the channel.',
@@ -163,7 +166,11 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       section: 'phone-mode',
       title: 'Phone-mode softphone',
       lead: 'While dialing you see Calling… with a pulse; once connected, a timer and mute, devices, keypad, and hang up appear — with no expand or popout.',
-      lookFor: ['Floating phone-mode PIP', 'Connected call with timer', 'No expand control'],
+      lookFor: [
+        'Floating phone-mode PIP',
+        'Connected call with timer',
+        'No expand control',
+      ],
       bullets: [
         'Hang up ends the call immediately — no confirmation.',
         'Video, screen share, and raise hand stay hidden in phone mode.',
@@ -241,7 +248,11 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Team sidebar',
       title: 'Compose from the dial pad',
       lead: 'Opening the dial pad brings up the softphone PIP in a composing state — the Call button stays disabled until you enter digits.',
-      lookFor: ['Composing softphone PIP', 'Keypad ready for digits', 'Disabled call button when empty'],
+      lookFor: [
+        'Composing softphone PIP',
+        'Keypad ready for digits',
+        'Disabled call button when empty',
+      ],
       bullets: [
         'Type or tap digits, then place the call.',
         'The channel stays visible underneath the PIP.',
@@ -291,7 +302,10 @@ export const outboundCallsWalkthrough: WalkthroughDocument = {
       railGroup: 'Direct message',
       title: 'Insert a number with tel:',
       lead: 'Typing tel: in the composer opens autocomplete across contacts and their dialable numbers.',
-      lookFor: ['tel: in the DM composer', 'Suggestion menu with names and numbers'],
+      lookFor: [
+        'tel: in the DM composer',
+        'Suggestion menu with names and numbers',
+      ],
       bullets: [
         'Pick a suggestion to insert tel:<number> into the message.',
         'Useful when sharing a dialable line in-thread for others to click later.',

@@ -39,7 +39,9 @@ export function KeypadInput({
       className={inputClassName ?? styles['keypad__input']}
       size="small"
       value={value}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(sanitizeDigits(e.target.value))}
+      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+        onChange(sanitizeDigits(e.target.value))
+      }
       onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
         if (onEnter && e.key === 'Enter') {
           e.preventDefault();

@@ -1,0 +1,21 @@
+{
+  "name": "Mattermost Proto Playground Cloud Agent",
+  "user": "ubuntu",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "repositoryDependencies": ["github.com/mattermost/compass-design"],
+  "install": "bash .cursor/scripts/cloud-agent-install.sh",
+  "start": "bash .cursor/scripts/cloud-agent-start.sh",
+  "ports": [
+    {
+      "name": "Prototype playground (Vite dev)",
+      "port": 5173
+    },
+    {
+      "name": "Prototype playground (Vite preview)",
+      "port": 4173
+    }
+  ]
+}

@@ -9,20 +9,26 @@ import {
 
 type PrototypeChromeContextValue = {
   setCenterSlot: Dispatch<SetStateAction<ReactNode>>;
+  /** Controls next to the title, on the left of the prototype header. */
+  setStartSlot: Dispatch<SetStateAction<ReactNode>>;
 };
 
-const PrototypeChromeContext = createContext<PrototypeChromeContextValue | null>(
-  null,
-);
+const PrototypeChromeContext =
+  createContext<PrototypeChromeContextValue | null>(null);
 
 export function PrototypeChromeProvider({
   children,
   setCenterSlot,
+  setStartSlot,
 }: {
   children: React.ReactNode;
   setCenterSlot: Dispatch<SetStateAction<ReactNode>>;
+  setStartSlot: Dispatch<SetStateAction<ReactNode>>;
 }) {
-  const value = useMemo(() => ({ setCenterSlot }), [setCenterSlot]);
+  const value = useMemo(
+    () => ({ setCenterSlot, setStartSlot }),
+    [setCenterSlot, setStartSlot],
+  );
 
   return (
     <PrototypeChromeContext.Provider value={value}>
@@ -34,7 +40,9 @@ export function PrototypeChromeProvider({
 export function usePrototypeChrome() {
   const ctx = useContext(PrototypeChromeContext);
   if (!ctx) {
-    throw new Error('usePrototypeChrome must be used within PrototypeChromeProvider');
+    throw new Error(
+      'usePrototypeChrome must be used within PrototypeChromeProvider',
+    );
   }
   return ctx;
 }

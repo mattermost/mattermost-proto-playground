@@ -49,7 +49,8 @@ function buildSuggestions(query: string): Suggestion[] {
       const nameMatch = c.name.toLowerCase().includes(q);
       const handleMatch = c.handle.toLowerCase().includes(q);
       const labelMatch = p.label.toLowerCase().includes(q);
-      const numberMatch = qDigits.length > 0 && digitsOnly(p.number).includes(qDigits);
+      const numberMatch =
+        qDigits.length > 0 && digitsOnly(p.number).includes(qDigits);
       if (nameMatch || handleMatch || labelMatch || numberMatch) {
         out.push({ contact: c, phone: p, phoneIndex: i });
       }
@@ -113,7 +114,8 @@ export default function TelAutocompleteMessageInput({
 
   useOutsideClose(wrapRef, token != null && !forceOpen, () => setToken(null));
 
-  const suggestions = token || forceOpen ? buildSuggestions(token?.query ?? '') : [];
+  const suggestions =
+    token || forceOpen ? buildSuggestions(token?.query ?? '') : [];
   const open = (token != null || forceOpen) && suggestions.length > 0;
 
   const insert = (phone: Phone) => {
@@ -152,11 +154,18 @@ export default function TelAutocompleteMessageInput({
                 label={s.contact.name}
                 secondaryLabel={`${s.phone.label} · ${s.phone.number}`}
                 leadingVisual={
-                  <UserAvatar src={s.contact.avatar} alt={s.contact.name} size="24" />
+                  <UserAvatar
+                    src={s.contact.avatar}
+                    alt={s.contact.name}
+                    size="24"
+                  />
                 }
                 trailingVisual={
                   <Icon
-                    glyph={phoneGlyphFor(s.phone.kind, styles['phone-icon--secure'])}
+                    glyph={phoneGlyphFor(
+                      s.phone.kind,
+                      styles['phone-icon--secure'],
+                    )}
                     size="16"
                   />
                 }

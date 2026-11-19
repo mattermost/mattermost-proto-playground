@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { MobileSearch } from '@mattermost/compass-proto';
 import { MobileSearchSuggestions } from '@mattermost/compass-proto';

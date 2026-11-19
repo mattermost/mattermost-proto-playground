@@ -57,12 +57,18 @@ export function parseOutboundWalkthroughApply(
 
   let call: OutboundWalkthroughApply['call'];
   if (state.call === null) call = null;
-  else if (state.call && typeof state.call === 'object' && 'contactId' in state.call) {
+  else if (
+    state.call &&
+    typeof state.call === 'object' &&
+    'contactId' in state.call
+  ) {
     const raw = state.call as Record<string, unknown>;
     const contactId = typeof raw.contactId === 'string' ? raw.contactId : '';
     if (contactId) {
       const status =
-        raw.status === 'composing' || raw.status === 'dialing' || raw.status === 'connected'
+        raw.status === 'composing' ||
+        raw.status === 'dialing' ||
+        raw.status === 'connected'
           ? raw.status
           : 'connected';
       call = {
@@ -92,10 +98,22 @@ export function resolvePopoverAnchorRect(contactId: string): DOMRect {
   ) as HTMLElement | null;
   if (el) return el.getBoundingClientRect();
   // Fallback: mid-stage so the popover is still visible in the shell.
-  const stage = document.querySelector('[data-wt-focus="channel-shell"], [data-wt-focus="dm-shell"]');
+  const stage = document.querySelector(
+    '[data-wt-focus="channel-shell"], [data-wt-focus="dm-shell"]',
+  );
   const stageRect = stage?.getBoundingClientRect();
   if (stageRect) {
-    return new DOMRect(stageRect.left + stageRect.width * 0.35, stageRect.top + 120, 40, 40);
+    return new DOMRect(
+      stageRect.left + stageRect.width * 0.35,
+      stageRect.top + 120,
+      40,
+      40,
+    );
   }
-  return new DOMRect(window.innerWidth * 0.45, window.innerHeight * 0.35, 40, 40);
+  return new DOMRect(
+    window.innerWidth * 0.45,
+    window.innerHeight * 0.35,
+    40,
+    40,
+  );
 }

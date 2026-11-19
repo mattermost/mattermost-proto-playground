@@ -1,11 +1,7 @@
 import ClockOutlineIcon from '@mattermost/compass-icons/components/clock-outline';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Select } from '@mattermost/compass-ui/components/select';
-import {
-  rangeError,
-  timeOptions,
-  type TimeRange,
-} from '../workingHoursData';
+import { rangeError, timeOptions, type TimeRange } from '../workingHoursData';
 import styles from '../WorkingHours.module.scss';
 
 type Props = {

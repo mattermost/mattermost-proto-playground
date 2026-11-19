@@ -1,0 +1,53 @@
+.reaction-tray {
+  width: max-content;
+  max-width: none;
+  transform-origin: bottom center;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
+  }
+
+  &__emoji {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-m);
+    background: transparent;
+    font-size: var(--font-size-400);
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) var(--ease-transition),
+      transform var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      transform: scale(1.12);
+    }
+
+    &:active {
+      background: rgba(var(--center-channel-color-rgb), 0.12);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+}

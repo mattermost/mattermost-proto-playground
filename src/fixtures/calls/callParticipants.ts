@@ -21,15 +21,55 @@ export const PARTICIPANTS: Participant[] = [
     muted: false,
   },
   { id: 'aiko', name: 'Aiko Tan', avatarSrc: avatarAikoTan, muted: true },
-  { id: 'arjun', name: 'Arjun Patel', avatarSrc: avatarArjunPatel, muted: true },
-  { id: 'danielle', name: 'Danielle Okoro', avatarSrc: avatarDanielle, muted: true },
-  { id: 'darius', name: 'Darius Cole', avatarSrc: avatarDariusCole, muted: true },
-  { id: 'david', name: 'David Liang', avatarSrc: avatarDavidLiang, muted: true },
+  {
+    id: 'arjun',
+    name: 'Arjun Patel',
+    avatarSrc: avatarArjunPatel,
+    muted: true,
+  },
+  {
+    id: 'danielle',
+    name: 'Danielle Okoro',
+    avatarSrc: avatarDanielle,
+    muted: true,
+  },
+  {
+    id: 'darius',
+    name: 'Darius Cole',
+    avatarSrc: avatarDariusCole,
+    muted: true,
+  },
+  {
+    id: 'david',
+    name: 'David Liang',
+    avatarSrc: avatarDavidLiang,
+    muted: true,
+  },
   { id: 'emma', name: 'Emma Novak', avatarSrc: avatarEmmaNovak, muted: true },
-  { id: 'ethan', name: 'Ethan Brooks', avatarSrc: avatarEthanBrooks, muted: true },
-  { id: 'isabella', name: 'Isabella Cruz', avatarSrc: avatarIsabellaCruz, muted: true },
-  { id: 'leila', name: 'Leila Haddad', avatarSrc: avatarLeilaHaddad, muted: true },
-  { id: 'lucas', name: 'Lucas Meyer', avatarSrc: avatarLukasMeyer, muted: true },
+  {
+    id: 'ethan',
+    name: 'Ethan Brooks',
+    avatarSrc: avatarEthanBrooks,
+    muted: true,
+  },
+  {
+    id: 'isabella',
+    name: 'Isabella Cruz',
+    avatarSrc: avatarIsabellaCruz,
+    muted: true,
+  },
+  {
+    id: 'leila',
+    name: 'Leila Haddad',
+    avatarSrc: avatarLeilaHaddad,
+    muted: true,
+  },
+  {
+    id: 'lucas',
+    name: 'Lucas Meyer',
+    avatarSrc: avatarLukasMeyer,
+    muted: true,
+  },
 ];
 
 /** Full call roster for host widget/popout and guest view (Figma-aligned). */

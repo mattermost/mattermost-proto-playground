@@ -1,0 +1,422 @@
+import { useEffect, useId, useRef, useState } from 'react';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { Select } from '@mattermost/compass-ui/components/select';
+import { Switch } from '@mattermost/compass-ui/components/switch';
+import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
+import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
+import PhoneIcon from '@mattermost/compass-icons/components/phone';
+import PhoneHangupIcon from '@mattermost/compass-icons/components/phone-hangup';
+import VolumeHighIcon from '@mattermost/compass-icons/components/volume-high';
+import type { JoinMode } from '@/types/videoCall';
+import { CallingPulse } from '../components/CallingPulse';
+import { CallNotice } from '../components/CallNotice';
+import { MicLevelMeter } from '../components/MicLevelMeter';
+import { PreJoinPanel } from '../components/PreJoinPanel';
+import { VideoCallWindowFrame } from '../components/VideoCallWindow';
+import { VideoTile } from '../components/VideoTile';
+import {
+  WindowDeviceControls,
+  type WindowDeviceMenuId,
+} from '../components/WindowDeviceControls';
+import { playSound, setSoundsEnabled, stopSound } from '../callSounds';
+import { useMediaDevices } from '../hooks/useMediaDevices';
+import { useMicLevel, useMicStream } from '../hooks/useMicLevel';
+import { useMicPermissionGranted } from '../hooks/useMicPermission';
+import { useVideoCall } from '../videoCallContext';
+import { DM_PEER_ID, ROSTER, SELF_ID } from '../videoCallsData';
+import { describePeople } from './callCopy';
+import { useConversationName } from './useConversationName';
+import styles from './PreJoinScene.module.scss';
+
+const PEER = ROSTER.find((p) => p.id === DM_PEER_ID) ?? ROSTER[1];
+const SELF = ROSTER.find((p) => p.id === SELF_ID) ?? ROSTER[0];
+const SPEAKER_TEST_MS = 1500;
+
+const FALLBACK_MICS = [
+  { deviceId: 'fallback-mic-1', label: 'Default microphone' },
+  { deviceId: 'fallback-mic-2', label: 'External USB microphone' },
+];
+const FALLBACK_SPEAKERS = [
+  { deviceId: 'fallback-speaker-1', label: 'Default speakers' },
+  { deviceId: 'fallback-speaker-2', label: 'External headphones' },
+];
+const FALLBACK_CAMERAS = [
+  { deviceId: 'fallback-camera-1', label: 'Built-in camera' },
+  { deviceId: 'fallback-camera-2', label: 'External webcam' },
+];
+
+/** "Start call with Marco" / "Join call with UX Design". */
+const titleFor = (joinMode: JoinMode, name: string) =>
+  `${joinMode === 'start' ? 'Start' : 'Join'} call with ${name}`;
+
+/**
+ * Large "ready to join" check inside the dark call window. While the call is
+ * ringing (`phase === 'calling'`) the same layout stays on screen: the self
+ * preview and mic / camera controls remain, the details column shows who is
+ * being called with the shared pulse, and the actions collapse to Cancel. Camera and mic are
+ * never requested without a click: the camera button IS the opt-in
+ * (`selfCamera.toggle`).
+ */
+export default function PreJoinScene() {
+  const { state, participants, actions, selfCamera } = useVideoCall();
+  const { media, joinMode, soundOn } = state;
+  const calling = state.phase === 'calling';
+  const conversationName = useConversationName();
+  const [openMenu, setOpenMenu] = useState<WindowDeviceMenuId | null>(null);
+  const [micRequested, setMicRequested] = useState(false);
+  // Already granted: the meter goes live on its own and the button is not needed.
+  const micGranted = useMicPermissionGranted(true);
+  const micCheck = micRequested || micGranted;
+  const [testing, setTesting] = useState(false);
+  const testTimer = useRef<number | null>(null);
+
+  const micStream = useMicStream({
+    enabled: micCheck && media.micOn,
+    deviceId: media.micDeviceId,
+  });
+  const level = useMicLevel({
+    stream: micStream.stream,
+    enabled: media.micOn,
+    simulated: !micStream.stream,
+  });
+  // Enumeration never prompts, and the pickers in the details column need the
+  // real device list from the start (not only after a camera / mic gesture).
+  const devices = useMediaDevices({ enabled: true });
+  // A permission grant can change device labels without a devicechange event:
+  // list the devices again once the camera is live.
+  const refreshDevices = devices.refresh;
+  useEffect(() => {
+    if (selfCamera.status === 'active') refreshDevices();
+  }, [selfCamera.status, refreshDevices]);
+  const mics = devices.microphones.length ? devices.microphones : FALLBACK_MICS;
+  const cameras = devices.cameras.length ? devices.cameras : FALLBACK_CAMERAS;
+  const speakers = devices.speakers.length
+    ? devices.speakers
+    : FALLBACK_SPEAKERS;
+  const uid = useId();
+  const micOptions = mics.map((m) => ({ value: m.deviceId, label: m.label }));
+  const speakerOptions = speakers.map((d) => ({
+    value: d.deviceId,
+    label: d.label,
+  }));
+  const cameraOptions = cameras.map((c) => ({
+    value: c.deviceId,
+    label: c.label,
+  }));
+
+  useEffect(
+    () => () => {
+      if (testTimer.current !== null) {
+        window.clearTimeout(testTimer.current);
+        // Only a speaker test in progress owns the 'join-self' sound; the call's own
+        // join chime must survive this scene's crossfade-out.
+        stopSound('join-self');
+      }
+    },
+    [],
+  );
+
+  const testSpeakers = () => {
+    if (testTimer.current !== null) window.clearTimeout(testTimer.current);
+    setSoundsEnabled(soundOn);
+    playSound('join-self');
+    setTesting(true);
+    testTimer.current = window.setTimeout(() => {
+      stopSound('join-self');
+      setTesting(false);
+      testTimer.current = null;
+    }, SPEAKER_TEST_MS);
+  };
+
+  // Only real states: nothing is said about the simulated meter.
+  const helper = [
+    micCheck && micStream.status === 'denied'
+      ? 'Microphone access is blocked. Allow it in your browser to check it.'
+      : micCheck && micStream.status === 'unavailable'
+        ? 'We could not find a working microphone.'
+        : micCheck
+          ? "Say something, to check your microphone's level."
+          : '',
+    !soundOn
+      ? 'Turn on sounds in the prototype controls to hear the speaker test.'
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const others = participants.filter((p) => !p.self);
+  const isStart = joinMode === 'start';
+  const title = calling
+    ? `Calling ${PEER.name}…`
+    : titleFor(joinMode, conversationName);
+
+  const startingGroup = isStart && state.callContext !== 'dm';
+
+  const who = calling ? (
+    <div className={styles['pre-join-scene__who']}>
+      <CallingPulse>
+        <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
+      </CallingPulse>
+      <p className={styles['pre-join-scene__who-text']}>
+        <span className={styles['pre-join-scene__who-name']}>{PEER.name}</span>{' '}
+        is being called
+      </p>
+    </div>
+  ) : startingGroup ? (
+    <div className={styles['pre-join-scene__who']}>
+      <p className={styles['pre-join-scene__who-text']}>
+        {others.length > 0
+          ? `${describePeople(others.map((p) => p.name))} will be notified`
+          : 'Everyone here will be notified'}
+      </p>
+    </div>
+  ) : joinMode === 'join-group' ? (
+    <div className={styles['pre-join-scene__who']}>
+      {others.length > 0 && (
+        <UserAvatarGroup
+          size="32"
+          max={4}
+          avatars={others.map((p) => ({
+            key: p.id,
+            name: p.name,
+            src: p.avatarSrc,
+          }))}
+        />
+      )}
+      <p className={styles['pre-join-scene__who-text']}>
+        {others.length > 0
+          ? `${describePeople(others.map((p) => p.name))} ${others.length === 1 ? 'is' : 'are'} in the call`
+          : 'No one else is here yet'}
+      </p>
+    </div>
+  ) : (
+    <div className={styles['pre-join-scene__who']}>
+      <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
+      <p className={styles['pre-join-scene__who-text']}>
+        <span className={styles['pre-join-scene__who-name']}>{PEER.name}</span>{' '}
+        {isStart ? 'will be called' : 'is waiting for you'}
+      </p>
+    </div>
+  );
+
+  return (
+    <div className={styles['pre-join-scene']}>
+      <VideoCallWindowFrame
+        onCollapse={actions.collapse}
+        labels={{ title: `Call · ${conversationName}` }}
+      >
+        <div className={styles['pre-join-scene__body']}>
+          <PreJoinPanel
+            appearance="dark"
+            title={title}
+            subtitle={
+              calling
+                ? 'Waiting for them to answer.'
+                : state.mode === 'video'
+                  ? 'Check your camera and microphone first.'
+                  : 'Check your microphone first.'
+            }
+            ariaLabel={title}
+            preview={
+              <>
+                <VideoTile
+                  name={SELF.name}
+                  selfLabel="You"
+                  avatarSrc={SELF.avatarSrc}
+                  cameraOn={media.cameraOn}
+                  stream={selfCamera.stream}
+                  muted={!media.micOn}
+                  blurBackground={!!media.blurBackground}
+                  mirrored
+                />
+                {selfCamera.status === 'requesting' && (
+                  <div
+                    className={styles['pre-join-scene__overlay']}
+                    role="status"
+                  >
+                    <p className={styles['pre-join-scene__message']}>
+                      Starting camera…
+                    </p>
+                  </div>
+                )}
+                <CallNotice
+                  notices={state.notices}
+                  onDismiss={actions.dismissNotice}
+                />
+              </>
+            }
+            previewControls={
+              <WindowDeviceControls
+                micOn={media.micOn}
+                onToggleMic={actions.toggleMic}
+                mics={mics.map((m) => ({ id: m.deviceId, label: m.label }))}
+                micDeviceId={media.micDeviceId}
+                onSelectMic={(id) => actions.setMedia({ micDeviceId: id })}
+                cameraOn={media.cameraOn}
+                onToggleCamera={selfCamera.toggle}
+                cameras={cameras.map((c) => ({
+                  id: c.deviceId,
+                  label: c.label,
+                }))}
+                cameraDeviceId={media.cameraDeviceId}
+                onSelectCamera={(id) =>
+                  actions.setMedia({ cameraDeviceId: id })
+                }
+                speakers={speakers.map((d) => ({
+                  id: d.deviceId,
+                  label: d.label,
+                }))}
+                speakerDeviceId={media.speakerDeviceId}
+                onSelectSpeaker={(id) =>
+                  actions.setMedia({ speakerDeviceId: id })
+                }
+                blurBackground={!!media.blurBackground}
+                onToggleBlur={(on) => actions.setMedia({ blurBackground: on })}
+                hideCamera={state.mode !== 'video'}
+                showMenus={calling}
+                openMenu={openMenu}
+                onOpenMenuChange={setOpenMenu}
+              />
+            }
+            participants={who}
+            checks={
+              calling ? undefined : (
+                <div className={styles['pre-join-scene__devices']}>
+                  <div className={styles['pre-join-scene__field']}>
+                    <label
+                      className={styles['pre-join-scene__field-label']}
+                      htmlFor={`${uid}-mic`}
+                    >
+                      Microphone
+                    </label>
+                    <Select
+                      size="small"
+                      className={styles['pre-join-scene__select']}
+                      id={`${uid}-mic`}
+                      options={micOptions}
+                      value={media.micDeviceId ?? micOptions[0].value}
+                      onChange={(id) => actions.setMedia({ micDeviceId: id })}
+                    />
+                    <MicLevelMeter level={level} muted={!media.micOn} />
+                    {!micCheck && (
+                      <Button
+                        className={styles['pre-join-scene__field-action']}
+                        emphasis="tertiary"
+                        appearance="inverted"
+                        size="small"
+                        disabled={!media.micOn}
+                        onClick={() => setMicRequested(true)}
+                      >
+                        Check my microphone
+                      </Button>
+                    )}
+                  </div>
+                  <div className={styles['pre-join-scene__field']}>
+                    <label
+                      className={styles['pre-join-scene__field-label']}
+                      htmlFor={`${uid}-speakers`}
+                    >
+                      Speakers
+                    </label>
+                    <Select
+                      size="small"
+                      className={styles['pre-join-scene__select']}
+                      id={`${uid}-speakers`}
+                      options={speakerOptions}
+                      value={media.speakerDeviceId ?? speakerOptions[0].value}
+                      onChange={(id) =>
+                        actions.setMedia({ speakerDeviceId: id })
+                      }
+                    />
+                    <Button
+                      className={styles['pre-join-scene__field-action']}
+                      emphasis="tertiary"
+                      appearance="inverted"
+                      size="small"
+                      leadingIcon={<Icon glyph={<VolumeHighIcon />} />}
+                      disabled={!soundOn || testing}
+                      onClick={testSpeakers}
+                    >
+                      {testing ? 'Playing…' : 'Test speakers'}
+                    </Button>
+                  </div>
+                  {state.mode === 'video' && (
+                    <div className={styles['pre-join-scene__field']}>
+                      <label
+                        className={styles['pre-join-scene__field-label']}
+                        htmlFor={`${uid}-camera`}
+                      >
+                        Camera
+                      </label>
+                      <Select
+                        size="small"
+                        className={styles['pre-join-scene__select']}
+                        id={`${uid}-camera`}
+                        options={cameraOptions}
+                        value={media.cameraDeviceId ?? cameraOptions[0].value}
+                        onChange={(id) =>
+                          actions.setMedia({ cameraDeviceId: id })
+                        }
+                      />
+                      <Switch
+                        size="small"
+                        checked={!!media.blurBackground}
+                        onChange={(e) =>
+                          actions.setMedia({
+                            blurBackground: e.target.checked,
+                          })
+                        }
+                      >
+                        Blur background
+                      </Switch>
+                    </div>
+                  )}
+                  {helper && (
+                    <p
+                      className={styles['pre-join-scene__helper']}
+                      role="status"
+                    >
+                      {helper}
+                    </p>
+                  )}
+                </div>
+              )
+            }
+            actions={
+              calling ? (
+                <Button
+                  className={styles['pre-join-scene__start']}
+                  emphasis="primary"
+                  destructive
+                  leadingIcon={<Icon size="16" glyph={<PhoneHangupIcon />} />}
+                  onClick={actions.cancelCall}
+                >
+                  Cancel
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    className={styles['pre-join-scene__start']}
+                    emphasis="primary"
+                    leadingIcon={<Icon size="16" glyph={<PhoneIcon />} />}
+                    onClick={actions.confirmPreJoin}
+                  >
+                    {isStart ? 'Start call' : 'Join call'}
+                  </Button>
+                  <Button
+                    emphasis="tertiary"
+                    appearance="inverted"
+                    onClick={actions.cancelCall}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              )
+            }
+          />
+        </div>
+      </VideoCallWindowFrame>
+    </div>
+  );
+}

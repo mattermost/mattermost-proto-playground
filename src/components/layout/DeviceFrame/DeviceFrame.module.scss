@@ -4,7 +4,9 @@
 .device-frame {
   --device-bezel: 9px;
   --device-radius-screen: 55px;
-  --device-radius-outer: calc(var(--device-radius-screen) + var(--device-bezel));
+  --device-radius-outer: calc(
+    var(--device-radius-screen) + var(--device-bezel)
+  );
   --device-island-width: 126px;
   --device-island-height: 37px;
   --device-chassis: #1c1c1e;
@@ -23,7 +25,12 @@
   &__chassis {
     position: relative;
     padding: var(--device-bezel);
-    background: linear-gradient(160deg, #3a3a3c 0%, var(--device-chassis) 42%, #0a0a0a 100%);
+    background: linear-gradient(
+      160deg,
+      #3a3a3c 0%,
+      var(--device-chassis) 42%,
+      #0a0a0a 100%
+    );
     border-radius: var(--device-radius-outer);
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.08),
@@ -108,10 +115,7 @@
     color: var(--device-status-color);
     pointer-events: none;
     font-family:
-      -apple-system,
-      BlinkMacSystemFont,
-      'SF Pro Text',
-      'Helvetica Neue',
+      -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue',
       sans-serif;
   }
 

@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import DialpadIcon from '@mattermost/compass-icons/components/dialpad';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import {
@@ -10,7 +17,12 @@ import {
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
 import { useRegisterWalkthrough, useWalkthrough } from '@/walkthrough';
 import type { WalkthroughSceneState } from '@/walkthrough';
-import { playDtmf, startRingback, stopRingback, playHangupClick } from '@/utils/phoneSounds';
+import {
+  playDtmf,
+  startRingback,
+  stopRingback,
+  playHangupClick,
+} from '@/utils/phoneSounds';
 import { CallPip } from '@/pages/prototypes/outbound-calls/CallPip/CallPip';
 import { OutboundCallSceneSwitcher } from '@/pages/prototypes/outbound-calls/OutboundCallSceneSwitcher';
 import { AUDIO_DEVICES } from '@/pages/prototypes/outbound-calls/OutboundCallAudioConstants';
@@ -39,7 +51,12 @@ import {
 import { ChannelScene } from '@/pages/prototypes/outbound-calls/scenes/ChannelScene';
 import { DialerScene } from '@/pages/prototypes/outbound-calls/scenes/DialerScene';
 import { DMScene } from '@/pages/prototypes/outbound-calls/scenes/DMScene';
-import type { ActiveCall, AddMode, Recent, SceneId } from '@/types/outboundCall';
+import type {
+  ActiveCall,
+  AddMode,
+  Recent,
+  SceneId,
+} from '@/types/outboundCall';
 import styles from './OutboundCalls.module.scss';
 
 const SCENE_IDS: SceneId[] = ['channel', 'dm', 'dialer', 'rhs', 'team-sidebar'];
@@ -55,12 +72,17 @@ export default function OutboundCalls() {
   const [call, setCall] = useState<ActiveCall | null>(null);
 
   const [keypadOpen, setKeypadOpen] = useState(false);
-  const [popover, setPopover] = useState<{ contactId: string; rect: DOMRect } | null>(null);
+  const [popover, setPopover] = useState<{
+    contactId: string;
+    rect: DOMRect;
+  } | null>(null);
   const [recents, setRecents] = useState<Recent[]>(INITIAL_RECENTS);
   const [callExiting, setCallExiting] = useState(false);
   const [rhsOpen, setRhsOpen] = useState(false);
   const [startCallMenuOpen, setStartCallMenuOpen] = useState(false);
-  const [composeTab, setComposeTab] = useState<'dialpad' | 'recent' | 'conference' | undefined>();
+  const [composeTab, setComposeTab] = useState<
+    'dialpad' | 'recent' | 'conference' | undefined
+  >();
   const [telAutocompleteOpen, setTelAutocompleteOpen] = useState(false);
 
   const [addingParticipant, setAddingParticipant] = useState(false);
@@ -178,7 +200,9 @@ export default function OutboundCalls() {
     [applyWalkthroughState],
   );
 
-  useRegisterWalkthrough(outboundCallsWalkthrough, { onScene: onWalkthroughScene });
+  useRegisterWalkthrough(outboundCallsWalkthrough, {
+    onScene: onWalkthroughScene,
+  });
 
   useEffect(() => {
     if (walkthroughActive) {
@@ -205,7 +229,9 @@ export default function OutboundCalls() {
     if (!call || call.status !== 'dialing') return;
     startRingback();
     const id = setTimeout(() => {
-      setCall((c) => (c ? { ...c, status: 'connected', startedAt: Date.now() } : c));
+      setCall((c) =>
+        c ? { ...c, status: 'connected', startedAt: Date.now() } : c,
+      );
       setNowTick(Date.now());
     }, 2400);
     return () => {
@@ -473,7 +499,9 @@ export default function OutboundCalls() {
     window.setTimeout(() => {
       setCall((c) => {
         if (!c) return c;
-        const remaining = c.bridgedParticipants.filter((p) => p.id !== participantId);
+        const remaining = c.bridgedParticipants.filter(
+          (p) => p.id !== participantId,
+        );
         return { ...c, bridgedParticipants: remaining };
       });
     }, 300);
@@ -483,11 +511,14 @@ export default function OutboundCalls() {
     setPopover({ contactId, rect });
   };
 
-  const activeContact = call ? CONTACT_MAP[call.contactId] ?? null : null;
+  const activeContact = call ? (CONTACT_MAP[call.contactId] ?? null) : null;
   const activePhone =
-    call && activeContact ? activeContact.phones[call.phoneIndex] ?? null : null;
+    call && activeContact
+      ? (activeContact.phones[call.phoneIndex] ?? null)
+      : null;
   const activeDevice = useMemo(
-    () => AUDIO_DEVICES.find((d) => d.id === call?.deviceId) ?? AUDIO_DEVICES[0],
+    () =>
+      AUDIO_DEVICES.find((d) => d.id === call?.deviceId) ?? AUDIO_DEVICES[0],
     [call?.deviceId],
   );
 
@@ -536,11 +567,19 @@ export default function OutboundCalls() {
             <TeamSidebar
               activeTeamId="contributors"
               teams={[
-                { id: 'contributors', name: 'Task Force Aurora', src: avatarStaffTeam },
+                {
+                  id: 'contributors',
+                  name: 'Task Force Aurora',
+                  src: avatarStaffTeam,
+                },
                 { id: 'design', name: 'Design', initials: 'De', unread: true },
                 { id: 'acme', name: 'Acme', initials: 'Ac', mentions: 3 },
               ]}
-              showDialPad={scene === 'team-sidebar' || scene === 'channel' || scene === 'dm'}
+              showDialPad={
+                scene === 'team-sidebar' ||
+                scene === 'channel' ||
+                scene === 'dm'
+              }
               dialPadActive={!!call && keypadOpen}
               onDialPadClick={openDialpadWidget}
             />
@@ -586,7 +625,10 @@ export default function OutboundCalls() {
             <div className={styles['calls__inner-panel']}>
               <div className={styles['calls__center']}>
                 {scene === 'channel' && (
-                  <div data-tour-focus="channel-shell" className={styles['calls__focus-wrap']}>
+                  <div
+                    data-tour-focus="channel-shell"
+                    className={styles['calls__focus-wrap']}
+                  >
                     <ChannelScene
                       onOpenProfile={openProfile}
                       onOpenDialer={openDialpadWidget}
@@ -598,7 +640,10 @@ export default function OutboundCalls() {
                   </div>
                 )}
                 {scene === 'dm' && (
-                  <div data-tour-focus="dm-shell" className={styles['calls__focus-wrap']}>
+                  <div
+                    data-tour-focus="dm-shell"
+                    className={styles['calls__focus-wrap']}
+                  >
                     <DMScene
                       onOpenProfile={openProfile}
                       onStartCall={startCall}
@@ -663,7 +708,9 @@ export default function OutboundCalls() {
             nowTick={nowTick}
             audioDevice={activeDevice}
             keypadOpen={keypadOpen}
-            onToggleMute={() => setCall((c) => (c ? { ...c, muted: !c.muted } : c))}
+            onToggleMute={() =>
+              setCall((c) => (c ? { ...c, muted: !c.muted } : c))
+            }
             onToggleKeypad={() =>
               setKeypadOpen((k) => {
                 const next = !k;
@@ -678,7 +725,9 @@ export default function OutboundCalls() {
             onDtmfChange={handleDtmfChange}
             onDtmfClear={clearDtmf}
             onStartComposingCall={startComposingCall}
-            onPickDevice={(id) => setCall((c) => (c ? { ...c, deviceId: id } : c))}
+            onPickDevice={(id) =>
+              setCall((c) => (c ? { ...c, deviceId: id } : c))
+            }
             onHangUp={hangUp}
             onDismiss={dismissCall}
             exiting={callExiting}

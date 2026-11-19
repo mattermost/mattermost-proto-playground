@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  type ComponentProps,
-} from 'react';
+import { useEffect, useId, useRef, useState, type ComponentProps } from 'react';
 import AccountOutlineIcon from '@mattermost/compass-icons/components/account-outline';
 import BellOutlineIcon from '@mattermost/compass-icons/components/bell-outline';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
@@ -59,10 +53,7 @@ const SCREEN_STACK: MobilePage[] = [
 /** Matches `--duration-moderate`. */
 const SCREEN_TRANSITION_MS = 300;
 
-function screenDirection(
-  from: MobilePage,
-  to: MobilePage,
-): 'forward' | 'back' {
+function screenDirection(from: MobilePage, to: MobilePage): 'forward' | 'back' {
   if (from === 'dm' || to === 'dm') return to === 'dm' ? 'forward' : 'back';
   return SCREEN_STACK.indexOf(to) > SCREEN_STACK.indexOf(from)
     ? 'forward'
@@ -203,248 +194,248 @@ export function MobileFlow({
 
   const renderPage = (current: MobilePage) => {
     if (current === 'profile') {
-    return (
-      <>
-        <MobileProfile
-          avatarSrc={avatarLeonard}
-          avatarAlt="Leonard Riley"
-          displayName="Leonard Riley"
-          username="@leonard.riley"
-          status={status === 'online'}
-        >
-          <Scrollbar>
-            <div className={styles['mobile-menu']}>
-              {(['online', 'away'] as const).map((s) => (
+      return (
+        <>
+          <MobileProfile
+            avatarSrc={avatarLeonard}
+            avatarAlt="Leonard Riley"
+            displayName="Leonard Riley"
+            username="@leonard.riley"
+            status={status === 'online'}
+          >
+            <Scrollbar>
+              <div className={styles['mobile-menu']}>
+                {(['online', 'away'] as const).map((s) => (
+                  <MobileMenuItem
+                    key={s}
+                    label={MANUAL_STATUS_LABEL[s]}
+                    leadingVisual={<StatusBadge size="medium" status={s} />}
+                    trailingElement={status === s}
+                    onClick={() => onPickStatus(s)}
+                  />
+                ))}
                 <MobileMenuItem
-                  key={s}
-                  label={MANUAL_STATUS_LABEL[s]}
-                  leadingVisual={<StatusBadge size="medium" status={s} />}
-                  trailingElement={status === s}
-                  onClick={() => onPickStatus(s)}
-                />
-              ))}
-              <MobileMenuItem
-                label="Do Not Disturb"
-                secondaryLabel={dnd ? (dndUntil ?? undefined) : undefined}
-                leadingVisual={
-                  <StatusBadge size="medium" status="do-not-disturb" />
-                }
-                trailingElement={dnd}
-                active={dnd}
-              />
-              <MobileMenuItem
-                label="Offline"
-                leadingVisual={<StatusBadge size="medium" status="offline" />}
-                trailingElement={status === 'offline'}
-                onClick={() => onPickStatus('offline')}
-              />
-              {customStatus && (
-                <MobileMenuItem
-                  label={customStatus.text}
+                  label="Do Not Disturb"
+                  secondaryLabel={dnd ? (dndUntil ?? undefined) : undefined}
                   leadingVisual={
-                    <span
-                      className={styles['mobile-menu__status-emoji']}
-                      aria-hidden
-                    >
-                      {customStatus.emoji}
-                    </span>
+                    <StatusBadge size="medium" status="do-not-disturb" />
+                  }
+                  trailingElement={dnd}
+                  active={dnd}
+                />
+                <MobileMenuItem
+                  label="Offline"
+                  leadingVisual={<StatusBadge size="medium" status="offline" />}
+                  trailingElement={status === 'offline'}
+                  onClick={() => onPickStatus('offline')}
+                />
+                {customStatus && (
+                  <MobileMenuItem
+                    label={customStatus.text}
+                    leadingVisual={
+                      <span
+                        className={styles['mobile-menu__status-emoji']}
+                        aria-hidden
+                      >
+                        {customStatus.emoji}
+                      </span>
+                    }
+                  />
+                )}
+                <div
+                  className={styles['mobile-menu__divider']}
+                  role="separator"
+                />
+                <MobileMenuItem
+                  label="Your Profile"
+                  leadingVisual={
+                    <Icon size="20" glyph={<AccountOutlineIcon />} />
                   }
                 />
-              )}
-              <div
-                className={styles['mobile-menu__divider']}
-                role="separator"
-              />
-              <MobileMenuItem
-                label="Your Profile"
-                leadingVisual={
-                  <Icon size="20" glyph={<AccountOutlineIcon />} />
-                }
-              />
-              <MobileMenuItem
-                label="Settings"
-                leadingVisual={<Icon size="20" glyph={<CogOutlineIcon />} />}
-                onClick={() => onPageChange('settings')}
-              />
-            </div>
-          </Scrollbar>
-        </MobileProfile>
-        <MobileTabBar
-          activeTab="profile"
-          profileSrc={avatarLeonard}
-          profileAlt="Leonard Riley"
-        />
-      </>
-    );
+                <MobileMenuItem
+                  label="Settings"
+                  leadingVisual={<Icon size="20" glyph={<CogOutlineIcon />} />}
+                  onClick={() => onPageChange('settings')}
+                />
+              </div>
+            </Scrollbar>
+          </MobileProfile>
+          <MobileTabBar
+            activeTab="profile"
+            profileSrc={avatarLeonard}
+            profileAlt="Leonard Riley"
+          />
+        </>
+      );
     } else if (current === 'settings') {
-    return (
-      <MobileModal
-        title="Settings"
-        variant="child"
-        onBackClick={() => onPageChange('profile')}
-      >
-        <MobileMenuItem
-          label="Notifications"
-          leadingVisual={<Icon size="20" glyph={<BellOutlineIcon />} />}
-          trailingElement
-          trailingVisual={chevron}
-          onClick={() => onPageChange('notifications')}
-        />
-        <MobileMenuItem
-          label="Display"
-          leadingVisual={<Icon size="20" glyph={<CogOutlineIcon />} />}
-          trailingElement
-          trailingVisual={chevron}
-        />
-      </MobileModal>
-    );
-    } else if (current === 'notifications') {
-    return (
-      <MobileModal
-        title="Notifications"
-        variant="child"
-        onBackClick={() => onPageChange('settings')}
-      >
-        <MobileMenuItem
-          label="Mentions"
-          leadingVisual={<Icon size="20" glyph={<BellOutlineIcon />} />}
-          trailingElement
-          trailingVisual={chevron}
-        />
-        <MobileMenuItem
-          label="Working hours"
-          secondaryLabel={scheduleSummary(schedule, clock24)}
-          leadingVisual={<Icon size="20" glyph={<ClockOutlineIcon />} />}
-          trailingElement
-          trailingVisual={chevron}
-          onClick={() => onPageChange('schedule')}
-        />
-      </MobileModal>
-    );
-    } else if (current === 'dm') {
-    const late = !isWithinRange(teammateLocalTime, TEAMMATE.hours);
-    return (
-      <div className={styles['mobile-dm']}>
-        <MobileNavigationBar
-          variant="dm"
-          name={TEAMMATE.name}
+      return (
+        <MobileModal
+          title="Settings"
+          variant="child"
           onBackClick={() => onPageChange('profile')}
-        />
-        <div className={styles['mobile-dm__body']}>
-          <Scrollbar>
-            <div className={styles['mobile-dm__messages']}>
-              <MessageSeparator type="date" label="Today" />
-              <MobileMessage
-                avatarSrc={avatarAiko}
-                avatarAlt={TEAMMATE.name}
-                username={TEAMMATE.name}
-                timestamp="9:12 AM"
-              >
-                <p className={bodyTextClass}>
-                  Pushed the new settings layouts to Figma. Feedback welcome.
-                </p>
-              </MobileMessage>
-              <MobileMessage
-                avatarSrc={avatarLeonard}
-                avatarAlt="Leonard Riley"
-                username="Leonard Riley"
-                timestamp="9:40 AM"
-              >
-                <p className={bodyTextClass}>
-                  Thanks Aiko, I will take a look after the stand-up.
-                </p>
-              </MobileMessage>
-            </div>
-          </Scrollbar>
-        </div>
-        <div className={styles['mobile-dm__composer']}>
-          {late && (
-            <LateHoursNotice
-              name={TEAMMATE.name}
-              time={formatTime(teammateLocalTime, clock24)}
-            />
-          )}
-          <MobileMessageInput placeholder={`Message ${TEAMMATE.name}`} />
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <MobileModal
-        title="Working hours"
-        variant="child"
-        onBackClick={() => onPageChange('notifications')}
-      >
-        <ToggleRow
-          label="Enable working hours"
-          secondaryLabel="Applies this schedule. Off keeps the setup and pauses every effect."
-          checked={draft.enabled}
-          divider
-          aria-expanded={draft.enabled}
-          aria-controls={hoursId}
-          onChange={(enabled) => changeSchedule({ ...draft, enabled })}
-        />
-        <div
-          id={hoursId}
-          className={[
-            styles['mobile-form__details'],
-            draft.enabled && styles['mobile-form__details--expanded'],
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          inert={!draft.enabled}
-          aria-hidden={!draft.enabled}
         >
-          <div className={styles['mobile-form__details-inner']}>
-            <MobileScheduleForm
-              schedule={draft}
-              clock24={clock24}
-              onChange={changeSchedule}
-              portalContainer={frameEl}
-            />
-            {Object.keys(activeWindows(draft)).length === 0 && (
-              <p className={styles['mobile-form__error']} role="alert">
-                Select at least one day.
-              </p>
+          <MobileMenuItem
+            label="Notifications"
+            leadingVisual={<Icon size="20" glyph={<BellOutlineIcon />} />}
+            trailingElement
+            trailingVisual={chevron}
+            onClick={() => onPageChange('notifications')}
+          />
+          <MobileMenuItem
+            label="Display"
+            leadingVisual={<Icon size="20" glyph={<CogOutlineIcon />} />}
+            trailingElement
+            trailingVisual={chevron}
+          />
+        </MobileModal>
+      );
+    } else if (current === 'notifications') {
+      return (
+        <MobileModal
+          title="Notifications"
+          variant="child"
+          onBackClick={() => onPageChange('settings')}
+        >
+          <MobileMenuItem
+            label="Mentions"
+            leadingVisual={<Icon size="20" glyph={<BellOutlineIcon />} />}
+            trailingElement
+            trailingVisual={chevron}
+          />
+          <MobileMenuItem
+            label="Working hours"
+            secondaryLabel={scheduleSummary(schedule, clock24)}
+            leadingVisual={<Icon size="20" glyph={<ClockOutlineIcon />} />}
+            trailingElement
+            trailingVisual={chevron}
+            onClick={() => onPageChange('schedule')}
+          />
+        </MobileModal>
+      );
+    } else if (current === 'dm') {
+      const late = !isWithinRange(teammateLocalTime, TEAMMATE.hours);
+      return (
+        <div className={styles['mobile-dm']}>
+          <MobileNavigationBar
+            variant="dm"
+            name={TEAMMATE.name}
+            onBackClick={() => onPageChange('profile')}
+          />
+          <div className={styles['mobile-dm__body']}>
+            <Scrollbar>
+              <div className={styles['mobile-dm__messages']}>
+                <MessageSeparator type="date" label="Today" />
+                <MobileMessage
+                  avatarSrc={avatarAiko}
+                  avatarAlt={TEAMMATE.name}
+                  username={TEAMMATE.name}
+                  timestamp="9:12 AM"
+                >
+                  <p className={bodyTextClass}>
+                    Pushed the new settings layouts to Figma. Feedback welcome.
+                  </p>
+                </MobileMessage>
+                <MobileMessage
+                  avatarSrc={avatarLeonard}
+                  avatarAlt="Leonard Riley"
+                  username="Leonard Riley"
+                  timestamp="9:40 AM"
+                >
+                  <p className={bodyTextClass}>
+                    Thanks Aiko, I will take a look after the stand-up.
+                  </p>
+                </MobileMessage>
+              </div>
+            </Scrollbar>
+          </div>
+          <div className={styles['mobile-dm__composer']}>
+            {late && (
+              <LateHoursNotice
+                name={TEAMMATE.name}
+                time={formatTime(teammateLocalTime, clock24)}
+              />
             )}
-            <div className={styles['mobile-form__options']}>
-              <ToggleRow
-                label="Do Not Disturb outside working hours"
-                checked={draft.dndOutside}
-                divider
-                onChange={(dndOutside) =>
-                  changeSchedule({ ...draft, dndOutside })
-                }
+            <MobileMessageInput placeholder={`Message ${TEAMMATE.name}`} />
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <MobileModal
+          title="Working hours"
+          variant="child"
+          onBackClick={() => onPageChange('notifications')}
+        >
+          <ToggleRow
+            label="Enable working hours"
+            secondaryLabel="Applies this schedule. Off keeps the setup and pauses every effect."
+            checked={draft.enabled}
+            divider
+            aria-expanded={draft.enabled}
+            aria-controls={hoursId}
+            onChange={(enabled) => changeSchedule({ ...draft, enabled })}
+          />
+          <div
+            id={hoursId}
+            className={[
+              styles['mobile-form__details'],
+              draft.enabled && styles['mobile-form__details--expanded'],
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            inert={!draft.enabled}
+            aria-hidden={!draft.enabled}
+          >
+            <div className={styles['mobile-form__details-inner']}>
+              <MobileScheduleForm
+                schedule={draft}
+                clock24={clock24}
+                onChange={changeSchedule}
+                portalContainer={frameEl}
               />
-              <ToggleRow
-                label="Set a custom status outside working hours"
-                checked={draft.statusOutside}
-                onChange={(statusOutside) =>
-                  changeSchedule({ ...draft, statusOutside })
-                }
-              />
-              <div className={styles['mobile-form__status']}>
-                <CustomStatusFields
-                  size="large"
-                  open={draft.statusOutside}
-                  emoji={draft.statusEmoji}
-                  text={draft.statusText}
-                  onChange={({ emoji, text }) =>
-                    changeSchedule({
-                      ...draft,
-                      statusEmoji: emoji,
-                      statusText: text,
-                    })
+              {Object.keys(activeWindows(draft)).length === 0 && (
+                <p className={styles['mobile-form__error']} role="alert">
+                  Select at least one day.
+                </p>
+              )}
+              <div className={styles['mobile-form__options']}>
+                <ToggleRow
+                  label="Do Not Disturb outside working hours"
+                  checked={draft.dndOutside}
+                  divider
+                  onChange={(dndOutside) =>
+                    changeSchedule({ ...draft, dndOutside })
                   }
                 />
+                <ToggleRow
+                  label="Set a custom status outside working hours"
+                  checked={draft.statusOutside}
+                  onChange={(statusOutside) =>
+                    changeSchedule({ ...draft, statusOutside })
+                  }
+                />
+                <div className={styles['mobile-form__status']}>
+                  <CustomStatusFields
+                    size="large"
+                    open={draft.statusOutside}
+                    emoji={draft.statusEmoji}
+                    text={draft.statusText}
+                    onChange={({ emoji, text }) =>
+                      changeSchedule({
+                        ...draft,
+                        statusEmoji: emoji,
+                        statusText: text,
+                      })
+                    }
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className={styles['mobile-form__safe']} />
-      </MobileModal>
-    );
-  }
+          <div className={styles['mobile-form__safe']} />
+        </MobileModal>
+      );
+    }
   };
 
   const layerClass = (role: 'incoming' | 'outgoing') => {

@@ -27,7 +27,8 @@ export function buildQuickSwitcherDestinations(): QuickSwitcherDestination[] {
     path: prototype.path,
     title: prototype.label,
     breadcrumb: ['Prototypes'],
-    searchText: `${prototype.label} ${prototype.id} ${prototype.path}`.toLowerCase(),
+    searchText:
+      `${prototype.label} ${prototype.id} ${prototype.path}`.toLowerCase(),
     sortKey: index + 1,
   }));
 
