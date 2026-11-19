@@ -68,7 +68,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
         'Start call on the left, Cancel on the right',
       ],
       bullets: [
-        'The title names who you are calling, for example Start call with Marco Rinaldi.',
+        'The title names who you are calling, for example Call Marco Rinaldi.',
         'Cancel returns to the conversation and does not ring anyone.',
         'A preference can skip this screen so the call starts immediately. Call settings is where that preference lives. Opening a call link always shows this screen.',
         'Accepting an incoming call does not show it.',
@@ -94,7 +94,7 @@ export const videoCallsWalkthrough: WalkthroughDocument = {
       lead: 'Expanding moves setup into a window over the conversation, with a larger preview and the line “Check your camera and microphone first.”',
       lookFor: ['Window over the conversation', 'Collapse'],
       bullets: [
-        'A direct message says the other person will be called.',
+        'The title names who you are calling; the column shows your active microphone, speaker and camera.',
         'Collapse returns to the small card without losing your choices.',
         'Start call and Cancel stay in the same order as in the widget.',
       ],

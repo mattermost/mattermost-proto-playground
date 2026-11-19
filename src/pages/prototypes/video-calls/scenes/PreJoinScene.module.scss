@@ -33,6 +33,14 @@
     line-height: var(--line-height-100);
   }
 
+  // Peer / people avatar beside the title (pulse while ringing).
+  &__title-with-avatar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    min-width: 0;
+  }
+
   &__who {
     display: flex;
     align-items: center;
@@ -78,18 +86,42 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  // Secondary action tied to the control above it (Test speakers, Check my
-  // microphone): left-aligned and quiet so Start / Join call stays the one
-  // primary action.
-  &__field-action {
-    align-self: flex-start;
-  }
-
-  &__check-row {
+  // Microphone label and a compact level meter on one row.
+  &__field-header {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    justify-content: space-between;
     gap: var(--spacing-s);
+    min-width: 0;
+  }
+
+  &__mic-meter {
+    flex: 0 0 auto;
+    width: calc(var(--spacing-xxxxl) * 3);
+  }
+
+  // Secondary action tied to the control above it (Check my microphone):
+  // left-aligned and quiet so Start / Join call stays the one primary action.
+  &__field-action {
+    align-self: flex-start;
+    flex: 0 0 auto;
+  }
+
+  // Speaker select and Test speaker share one row.
+  &__speaker-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    min-width: 0;
+
+    .pre-join-scene__select {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .pre-join-scene__field-action {
+      align-self: center;
+    }
   }
 
   &__helper {

@@ -195,7 +195,7 @@ const DEFAULT_LABELS: Required<VideoCallWidgetLabels> = {
   regionJoining: 'Joining call',
   regionActive: 'Active call',
   expand: 'Expand call window',
-  titleStart: (name) => `Start call with ${name}`,
+  titleStart: (name) => `Call ${name}`,
   titleJoin: (name) => `Join call with ${name}`,
   start: 'Start call',
   join: 'Join call',

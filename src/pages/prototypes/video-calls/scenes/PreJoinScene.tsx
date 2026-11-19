@@ -2,7 +2,6 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Select } from '@mattermost/compass-ui/components/select';
-import { Switch } from '@mattermost/compass-ui/components/switch';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { UserAvatarGroup } from '@mattermost/compass-ui/components/user-avatar-group';
 import PhoneIcon from '@mattermost/compass-icons/components/phone';
@@ -46,17 +45,17 @@ const FALLBACK_CAMERAS = [
   { deviceId: 'fallback-camera-2', label: 'External webcam' },
 ];
 
-/** "Start call with Marco" / "Join call with UX Design". */
+/** "Call Marco" / "Join call with UX Design". */
 const titleFor = (joinMode: JoinMode, name: string) =>
-  `${joinMode === 'start' ? 'Start' : 'Join'} call with ${name}`;
+  joinMode === 'start' ? `Call ${name}` : `Join call with ${name}`;
 
 /**
  * Large "ready to join" check inside the dark call window. While the call is
  * ringing (`phase === 'calling'`) the same layout stays on screen: the self
  * preview and mic / camera controls remain, the details column shows who is
- * being called with the shared pulse, and the actions collapse to Cancel. Camera and mic are
- * never requested without a click: the camera button IS the opt-in
- * (`selfCamera.toggle`).
+ * being called with the shared pulse beside the title, and the actions collapse
+ * to Cancel. Camera and mic are never requested without a click: the camera
+ * button IS the opt-in (`selfCamera.toggle`).
  */
 export default function PreJoinScene() {
   const { state, participants, actions, selfCamera } = useVideoCall();
@@ -109,9 +108,9 @@ export default function PreJoinScene() {
     () => () => {
       if (testTimer.current !== null) {
         window.clearTimeout(testTimer.current);
-        // Only a speaker test in progress owns the 'join-self' sound; the call's own
-        // join chime must survive this scene's crossfade-out.
-        stopSound('join-self');
+        // Only a speaker test in progress owns the ringtone; a real incoming
+        // ring must survive this scene's crossfade-out.
+        stopSound('ring-incoming');
       }
     },
     [],
@@ -120,24 +119,22 @@ export default function PreJoinScene() {
   const testSpeakers = () => {
     if (testTimer.current !== null) window.clearTimeout(testTimer.current);
     setSoundsEnabled(soundOn);
-    playSound('join-self');
+    playSound('ring-incoming');
     setTesting(true);
     testTimer.current = window.setTimeout(() => {
-      stopSound('join-self');
+      stopSound('ring-incoming');
       setTesting(false);
       testTimer.current = null;
     }, SPEAKER_TEST_MS);
   };
 
-  // Only real states: nothing is said about the simulated meter.
+  // Only blocked / missing mic, or when the speaker test cannot play.
   const helper = [
     micCheck && micStream.status === 'denied'
       ? 'Microphone access is blocked. Allow it in your browser to check it.'
       : micCheck && micStream.status === 'unavailable'
         ? 'We could not find a working microphone.'
-        : micCheck
-          ? "Say something, to check your microphone's level."
-          : '',
+        : '',
     !soundOn
       ? 'Turn on sounds in the prototype controls to hear the speaker test.'
       : '',
@@ -147,58 +144,50 @@ export default function PreJoinScene() {
 
   const others = participants.filter((p) => !p.self);
   const isStart = joinMode === 'start';
-  const title = calling
+  const titleText = calling
     ? `Calling ${PEER.name}…`
     : titleFor(joinMode, conversationName);
 
-  const startingGroup = isStart && state.callContext !== 'dm';
-
-  const who = calling ? (
-    <div className={styles['pre-join-scene__who']}>
-      <CallingPulse>
-        <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
-      </CallingPulse>
-      <p className={styles['pre-join-scene__who-text']}>
-        <span className={styles['pre-join-scene__who-name']}>{PEER.name}</span>{' '}
-        is being called
-      </p>
-    </div>
-  ) : startingGroup ? (
-    <div className={styles['pre-join-scene__who']}>
-      <p className={styles['pre-join-scene__who-text']}>
-        {others.length > 0
-          ? `${describePeople(others.map((p) => p.name))} will be notified`
-          : 'Everyone here will be notified'}
-      </p>
-    </div>
-  ) : joinMode === 'join-group' ? (
-    <div className={styles['pre-join-scene__who']}>
-      {others.length > 0 && (
-        <UserAvatarGroup
-          size="32"
-          max={4}
-          avatars={others.map((p) => ({
-            key: p.id,
-            name: p.name,
-            src: p.avatarSrc,
-          }))}
-        />
-      )}
-      <p className={styles['pre-join-scene__who-text']}>
-        {others.length > 0
-          ? `${describePeople(others.map((p) => p.name))} ${others.length === 1 ? 'is' : 'are'} in the call`
-          : 'No one else is here yet'}
-      </p>
-    </div>
-  ) : (
-    <div className={styles['pre-join-scene__who']}>
+  // DM: the peer's avatar sits with the title (pulse while ringing). Group join:
+  // the people already in the call. Group/channel start has no single peer.
+  const titleAvatar = calling ? (
+    <CallingPulse>
       <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
-      <p className={styles['pre-join-scene__who-text']}>
-        <span className={styles['pre-join-scene__who-name']}>{PEER.name}</span>{' '}
-        {isStart ? 'will be called' : 'is waiting for you'}
-      </p>
-    </div>
+    </CallingPulse>
+  ) : state.callContext === 'dm' ? (
+    <UserAvatar src={PEER.avatarSrc} alt="" name={PEER.name} size="40" />
+  ) : joinMode === 'join-group' && others.length > 0 ? (
+    <UserAvatarGroup
+      size="32"
+      max={4}
+      avatars={others.map((p) => ({
+        key: p.id,
+        name: p.name,
+        src: p.avatarSrc,
+      }))}
+    />
+  ) : undefined;
+
+  const title = titleAvatar ? (
+    <span className={styles['pre-join-scene__title-with-avatar']}>
+      {titleAvatar}
+      <span>{titleText}</span>
+    </span>
+  ) : (
+    titleText
   );
+
+  // Avatars live with the title; join mode keeps a short who line for the names.
+  const who =
+    !calling && joinMode === 'join-group' ? (
+      <div className={styles['pre-join-scene__who']}>
+        <p className={styles['pre-join-scene__who-text']}>
+          {others.length > 0
+            ? `${describePeople(others.map((p) => p.name))} ${others.length === 1 ? 'is' : 'are'} in the call`
+            : 'No one else is here yet'}
+        </p>
+      </div>
+    ) : undefined;
 
   return (
     <div className={styles['pre-join-scene']}>
@@ -217,7 +206,7 @@ export default function PreJoinScene() {
                   ? 'Check your camera and microphone first.'
                   : 'Check your microphone first.'
             }
-            ariaLabel={title}
+            ariaLabel={titleText}
             preview={
               <>
                 <VideoTile
@@ -274,7 +263,6 @@ export default function PreJoinScene() {
                 blurBackground={!!media.blurBackground}
                 onToggleBlur={(on) => actions.setMedia({ blurBackground: on })}
                 hideCamera={state.mode !== 'video'}
-                showMenus={calling}
                 openMenu={openMenu}
                 onOpenMenuChange={setOpenMenu}
               />
@@ -284,12 +272,21 @@ export default function PreJoinScene() {
               calling ? undefined : (
                 <div className={styles['pre-join-scene__devices']}>
                   <div className={styles['pre-join-scene__field']}>
-                    <label
-                      className={styles['pre-join-scene__field-label']}
-                      htmlFor={`${uid}-mic`}
-                    >
-                      Microphone
-                    </label>
+                    <div className={styles['pre-join-scene__field-header']}>
+                      <label
+                        className={styles['pre-join-scene__field-label']}
+                        htmlFor={`${uid}-mic`}
+                      >
+                        Microphone
+                      </label>
+                      <MicLevelMeter
+                        className={styles['pre-join-scene__mic-meter']}
+                        level={level}
+                        muted={!media.micOn}
+                        segments={8}
+                        showIcon={false}
+                      />
+                    </div>
                     <Select
                       size="small"
                       className={styles['pre-join-scene__select']}
@@ -298,7 +295,6 @@ export default function PreJoinScene() {
                       value={media.micDeviceId ?? micOptions[0].value}
                       onChange={(id) => actions.setMedia({ micDeviceId: id })}
                     />
-                    <MicLevelMeter level={level} muted={!media.micOn} />
                     {!micCheck && (
                       <Button
                         className={styles['pre-join-scene__field-action']}
@@ -319,27 +315,29 @@ export default function PreJoinScene() {
                     >
                       Speakers
                     </label>
-                    <Select
-                      size="small"
-                      className={styles['pre-join-scene__select']}
-                      id={`${uid}-speakers`}
-                      options={speakerOptions}
-                      value={media.speakerDeviceId ?? speakerOptions[0].value}
-                      onChange={(id) =>
-                        actions.setMedia({ speakerDeviceId: id })
-                      }
-                    />
-                    <Button
-                      className={styles['pre-join-scene__field-action']}
-                      emphasis="tertiary"
-                      appearance="inverted"
-                      size="small"
-                      leadingIcon={<Icon glyph={<VolumeHighIcon />} />}
-                      disabled={!soundOn || testing}
-                      onClick={testSpeakers}
-                    >
-                      {testing ? 'Playing…' : 'Test speakers'}
-                    </Button>
+                    <div className={styles['pre-join-scene__speaker-row']}>
+                      <Select
+                        size="small"
+                        className={styles['pre-join-scene__select']}
+                        id={`${uid}-speakers`}
+                        options={speakerOptions}
+                        value={media.speakerDeviceId ?? speakerOptions[0].value}
+                        onChange={(id) =>
+                          actions.setMedia({ speakerDeviceId: id })
+                        }
+                      />
+                      <Button
+                        className={styles['pre-join-scene__field-action']}
+                        emphasis="tertiary"
+                        appearance="inverted"
+                        size="small"
+                        leadingIcon={<Icon glyph={<VolumeHighIcon />} />}
+                        disabled={!soundOn || testing}
+                        onClick={testSpeakers}
+                      >
+                        {testing ? 'Playing…' : 'Test speaker'}
+                      </Button>
+                    </div>
                   </div>
                   {state.mode === 'video' && (
                     <div className={styles['pre-join-scene__field']}>
@@ -359,17 +357,6 @@ export default function PreJoinScene() {
                           actions.setMedia({ cameraDeviceId: id })
                         }
                       />
-                      <Switch
-                        size="small"
-                        checked={!!media.blurBackground}
-                        onChange={(e) =>
-                          actions.setMedia({
-                            blurBackground: e.target.checked,
-                          })
-                        }
-                      >
-                        Blur background
-                      </Switch>
                     </div>
                   )}
                   {helper && (

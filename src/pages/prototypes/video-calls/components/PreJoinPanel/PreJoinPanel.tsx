@@ -10,7 +10,7 @@ export interface PreJoinPanelProps {
   preview: ReactNode;
   /** Device toggles and pickers shown under the preview. */
   previewControls?: ReactNode;
-  /** Who is in the call / who will be called. */
+  /** Who is already in the call (join mode). */
   participants?: ReactNode;
   /** Extra checks (mic meter, speaker test) shown in the side column. */
   checks?: ReactNode;
@@ -24,8 +24,9 @@ export interface PreJoinPanelProps {
 }
 
 /**
- * Two-column "ready to join" layout: preview on the left, details and actions
- * on the right (stacked on narrow containers). Presentational and slot-driven.
+ * Two-column "ready to join" layout: preview and device toggles on the left,
+ * details and actions on the right (stacked on narrow containers).
+ * Presentational and slot-driven.
  */
 export default function PreJoinPanel({
   title,
