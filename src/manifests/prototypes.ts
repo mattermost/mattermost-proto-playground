@@ -1,6 +1,8 @@
 import type { ComponentType } from 'react';
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
+import WorkingHours from '@/pages/prototypes/working-hours/WorkingHours';
+import WorkingHoursMobile from '@/pages/prototypes/working-hours-mobile/WorkingHoursMobile';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 import VideoCalls from '@/pages/prototypes/video-calls/VideoCalls';
 
@@ -23,6 +25,18 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Mobile sample',
     path: '/prototypes/mobile-home-channel',
     component: MobileHomeChannel,
+  },
+  {
+    id: 'working-hours',
+    label: 'Working Hours',
+    path: '/prototypes/working-hours',
+    component: WorkingHours,
+  },
+  {
+    id: 'working-hours-mobile',
+    label: 'Working Hours (mobile)',
+    path: '/prototypes/working-hours-mobile',
+    component: WorkingHoursMobile,
   },
   {
     id: 'outbound-calls',

@@ -1,0 +1,205 @@
+// Section rows follow the Settings modal built for the Calls prototype: a summary row
+// (title + description, Edit on hover) that expands in place into a panel with Save /
+// Cancel. The summary and panel share one grid cell so the swap animates without
+// moving the title.
+.notifications-settings {
+  // Content inset: 28px top, 32px sides and bottom.
+  padding: calc(var(--spacing-xxl) + var(--spacing-xxxs)) var(--spacing-xxxl)
+    var(--spacing-xxxl);
+
+  &__title {
+    margin: 0 0 var(--spacing-xl);
+    font-size: var(--font-size-300);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__list {
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__section {
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    transition: background var(--duration-moderate) var(--ease-transition);
+
+    &:not(#{&}--expanded):hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &--editable:not(#{&}--expanded) {
+      cursor: pointer;
+    }
+
+    &--expanded {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+  }
+
+  &__stack {
+    display: grid;
+
+    > * {
+      grid-area: 1 / 1;
+      align-self: start;
+    }
+  }
+
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+  }
+
+  &__section--expanded &__collapse {
+    grid-template-rows: 1fr;
+  }
+
+  &__collapse-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  // Collapsed: title and description on the left, Edit on the right.
+  &__summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--spacing-xxxs) var(--spacing-m);
+    padding: var(--spacing-l);
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--spacing-l);
+  }
+
+  &__section-body {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+    padding: var(--spacing-l) 0 var(--spacing-xs) var(--spacing-xxxl);
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__section--expanded &__section-body {
+    opacity: 1;
+  }
+
+  // Shown on row hover; stays reachable by keyboard via focus-within.
+  &__edit {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__section:hover #{&}__edit,
+  &__section:focus-within #{&}__edit {
+    opacity: 1;
+  }
+
+  // After the hover rule so an open section hides Edit even while hovered.
+  &__section--expanded &__edit,
+  &__section--expanded:hover &__edit,
+  &__section--expanded:focus-within &__edit,
+  &__section--expanded &__description {
+    opacity: 0;
+  }
+
+  &__section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+    transition: opacity var(--duration-quick) var(--ease-transition);
+
+    // The panel copy of the title stays invisible (still the heading for assistive
+    // tech); the summary copy never fades, so the title does not move.
+    &--hidden {
+      opacity: 0;
+    }
+  }
+
+  &__description {
+    // Stay under the title even in rows with no Edit button to claim column 2.
+    grid-column: 1;
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  &__editor {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // The fields stay mounted so turning the switch off collapses them in place.
+  &__details {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  &__details-inner {
+    min-height: 0;
+    overflow: hidden;
+    // Keep the clip through the expand, then release it so focus rings paint.
+    transition: overflow 0s linear 0s;
+  }
+
+  &__details--expanded &__details-inner {
+    overflow: visible;
+    transition-delay: var(--duration-moderate);
+  }
+
+  &__details-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+    // The space above the fields is inside the collapse, so it goes with them.
+    padding-top: var(--spacing-xxl);
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+  }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing-s);
+    padding-top: var(--spacing-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__section,
+    &__collapse,
+    &__details,
+    &__description,
+    &__section-title,
+    &__section-body,
+    &__details-inner,
+    &__details--expanded &__details-inner {
+      transition: none;
+    }
+  }
+}

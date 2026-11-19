@@ -529,6 +529,11 @@ export default function WalkthroughFocusLayer({
       400,
     );
 
+    // Late passes: menus and popovers can still be animating in after the staggered
+    // passes above, so settle the ring and note on their final box.
+    const t4 = window.setTimeout(() => measure({ forcePlace: true }), 700);
+    const t5 = window.setTimeout(() => measure({ forcePlace: true }), 1100);
+
     const onScroll = () => {
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => measure({ forcePlace: true }));
@@ -546,6 +551,8 @@ export default function WalkthroughFocusLayer({
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.clearTimeout(t3);
+      window.clearTimeout(t4);
+      window.clearTimeout(t5);
       window.cancelAnimationFrame(frame);
       ro.disconnect();
       window.removeEventListener('scroll', onScroll, true);
