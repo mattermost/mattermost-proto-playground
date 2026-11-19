@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit configuration for mattermost-proto-playground.
+# The rules themselves live in AGENTS.md and the rule files below, which CodeRabbit
+# reads as code guidelines. Keep this file to scoping and pointers; don't restate rules.
+
+# Inherit org-level settings (tuning, tone, defaults) and layer repo settings on top.
+inheritance: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "AGENTS.md"
+      - "**/AGENTS.md"
+      - ".claude/rules/*.md"
+      - ".cursor/rules/*.mdc"
+
+reviews:
+  path_filters:
+    - "!package-lock.json"
+    - "!**/dist/**"
+
+  path_instructions:
+    - path: "src/components/**"
+      instructions: |
+        Per AGENTS.md "Building new UI", `src/components/` is for playground chrome and
+        layout only (PrototypeTopNav, SceneSwitcher, DeviceFrame, MobileModalStage).
+        Flag any design-system component added here; it belongs in compass-design.
+
+    - path: "src/pages/prototypes/**"
+      instructions: |
+        Review against src/pages/prototypes/AGENTS.md: look up components before
+        inventing UI, follow "Choose this, not that", overlay wiring, and the scene
+        folder structure. Flag Compass imports from the root barrel
+        `@mattermost/compass-ui` (use subpaths) and subpath imports of
+        `@mattermost/compass-proto` (root only).
+
+    - path: "**/*.{tsx,ts}"
+      instructions: |
+        Apply the AGENTS.md "Variant prop string values" rule: Compass variant props
+        use lowercase kebab-case literals. Flag Title Case values. Also flag
+        duplicated logic that `src/hooks/` already covers (`useExitAnimation`,
+        `useOutsideClose`).
+
+    - path: "**/*.{scss,css}"
+      instructions: |
+        Apply .cursor/rules/styling.mdc: prefer Compass CSS variables over hardcoded
+        values and follow the BEM, motion, and opacity rules.
