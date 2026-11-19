@@ -29,8 +29,8 @@ if [ "$node_major" != "24" ] || [ "$npm_major" != "11" ]; then
   log "WARNING: expected Node 24 / npm 11 (package.json engines), found node $(node --version) / npm $(npm --version)"
 fi
 
-# npm resolves `file:../compass-design/packages/compass-proto` and .agents/skills symlinks
-# point at ../compass-design, so the sibling must live at exactly this path.
+# npm resolves `file:../compass-design/packages/compass-proto`, so the sibling must live at
+# exactly this path.
 compass_dir="$(dirname "$repo_root")/compass-design"
 compass_url="${CLOUD_AGENT_COMPASS_DESIGN_URL:-https://github.com/mattermost/compass-design.git}"
 compass_ref="${CLOUD_AGENT_COMPASS_DESIGN_REF:-}"
@@ -151,12 +151,6 @@ if ! is_true "${CLOUD_AGENT_SKIP_PACKAGE_BUILD:-}"; then
   log "Verifying compass-ui and compass-proto for the playground"
   node scripts/ensure-compass-packages.mjs
 fi
-
-for skill in .agents/skills/*; do
-  if [ -L "$skill" ] && [ ! -e "$skill" ]; then
-    log "WARNING: $skill is a dangling symlink ($(readlink "$skill"))"
-  fi
-done
 
 log "Tool versions:"
 printf '  node %s\n  npm %s\n  %s\n  compass-design %s\n' \
