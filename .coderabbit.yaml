@@ -11,17 +11,17 @@ inheritance: true
 
 reviews:
   path_filters:
-    - "!package-lock.json"
-    - "!**/dist/**"
+    - '!package-lock.json'
+    - '!**/dist/**'
 
   path_instructions:
-    - path: "src/components/**"
+    - path: 'src/components/**'
       instructions: |
         Per AGENTS.md "Building new UI", `src/components/` is for playground chrome and
         layout only (PrototypeTopNav, SceneSwitcher, DeviceFrame, MobileModalStage).
         Flag any design-system component added here; it belongs in compass-design.
 
-    - path: "src/pages/prototypes/**"
+    - path: 'src/pages/prototypes/**'
       instructions: |
         Review against src/pages/prototypes/AGENTS.md: look up components before
         inventing UI, follow "Choose this, not that", overlay wiring, and the scene
@@ -29,14 +29,14 @@ reviews:
         `@mattermost/compass-ui` (use subpaths) and subpath imports of
         `@mattermost/compass-proto` (root only).
 
-    - path: "**/*.{tsx,ts}"
+    - path: '**/*.{tsx,ts}'
       instructions: |
         Apply the AGENTS.md "Variant prop string values" rule: Compass variant props
         use lowercase kebab-case literals. Flag Title Case values. Also flag
         duplicated logic that `src/hooks/` already covers (`useExitAnimation`,
         `useOutsideClose`).
 
-    - path: "**/*.{scss,css}"
+    - path: '**/*.{scss,css}'
       instructions: |
         Apply .cursor/rules/styling.mdc: prefer Compass CSS variables over hardcoded
         values and follow the BEM, motion, and opacity rules.
