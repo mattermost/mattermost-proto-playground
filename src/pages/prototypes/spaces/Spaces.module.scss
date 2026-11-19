@@ -1,0 +1,178 @@
+// Shared layout for the Spaces prototype scenes (page, panels, rows).
+// Panels are prototype-only: Compass has no generic card surface yet.
+
+@keyframes spaces-arrive {
+  from {
+    background-color: rgba(var(--button-bg-rgb), 0.12);
+  }
+
+  to {
+    background-color: transparent;
+  }
+}
+
+.spaces {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-xxl) var(--spacing-xxxxl);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--spacing-xl);
+    align-items: start;
+  }
+
+  &__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    min-width: 0;
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-l);
+    background: var(--center-channel-bg);
+  }
+
+  &__panel-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m) var(--spacing-l);
+  }
+
+  &__panel-title {
+    margin: 0;
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+  }
+
+  &__panel-aside {
+    margin-left: auto;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+
+  &__panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    padding: 0 var(--spacing-l) var(--spacing-l);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-l);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__row--arrived {
+    animation: spaces-arrive calc(var(--duration-moderate) * 8) var(--ease-exit);
+  }
+
+  &__row-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__row-title {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-100);
+  }
+
+  &__row-meta {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+  }
+
+  &__row-end {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__muted {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+
+  &__icon-tile {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-xxxl);
+    height: var(--spacing-xxxl);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__icon-tile--danger {
+    background: rgba(
+      var(--error-text-color-rgb, var(--color-danger-rgb)),
+      0.12
+    );
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__icon-tile--warning {
+    background: rgba(var(--color-warning-rgb), 0.16);
+    color: var(--center-channel-color);
+  }
+
+  &__icon-tile--info {
+    background: rgba(var(--button-bg-rgb), 0.12);
+    color: var(--button-bg);
+  }
+
+  &__toast {
+    position: absolute;
+    right: var(--spacing-xl);
+    bottom: var(--spacing-xl);
+    z-index: 2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spaces__row--arrived {
+      animation: none;
+    }
+  }
+}

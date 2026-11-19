@@ -1,0 +1,38 @@
+.space-channel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-l);
+  border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  font-size: var(--font-size-75);
+
+  &__name {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__meta {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__open {
+    margin-left: auto;
+  }
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__posts {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100%;
+    padding: var(--spacing-l) 0;
+  }
+
+  &__composer {
+    padding: 0 var(--spacing-l) var(--spacing-l);
+  }
+}

@@ -1,0 +1,42 @@
+@keyframes spaces-sidebar-arrive {
+  from {
+    background-color: rgba(var(--sidebar-text-active-border-rgb), 0.24);
+  }
+
+  to {
+    background-color: transparent;
+  }
+}
+
+.spaces-sidebar {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+
+  &--expanded {
+    grid-template-rows: 1fr;
+  }
+
+  &__children {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  // Nest the Space's channels one step in under the Space row.
+  &__child {
+    padding-left: var(--spacing-l);
+  }
+
+  &__child--new {
+    animation: spaces-sidebar-arrive calc(var(--duration-moderate) * 6)
+      var(--ease-exit);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    .spaces-sidebar__child--new {
+      animation: none;
+    }
+  }
+}

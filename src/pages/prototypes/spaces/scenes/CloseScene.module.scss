@@ -1,0 +1,25 @@
+.close-scene {
+  &__met {
+    color: var(--color-success);
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-l);
+    padding: 0 var(--spacing-l) var(--spacing-l);
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__stat-value {
+    font-family: Metropolis, sans-serif;
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-500);
+  }
+}

@@ -1,0 +1,109 @@
+.agent-strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-s) var(--spacing-m);
+  border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  border-radius: var(--radius-m);
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__label {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__meta {
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+
+  &__toggle {
+    transition: transform var(--duration-quick) var(--ease-transition);
+  }
+
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  &__steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    margin: 0;
+    padding: var(--spacing-xxs) 0 0;
+    list-style: none;
+  }
+
+  &__step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+
+  &__done {
+    color: var(--color-success);
+  }
+
+  &__question {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-s);
+    border-radius: var(--radius-s);
+    background: rgba(var(--color-warning-rgb), 0.12);
+
+    p {
+      margin: 0;
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-75);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &--expanded {
+    .agent-strip__collapse {
+      grid-template-rows: 1fr;
+    }
+
+    .agent-strip__toggle {
+      transform: rotate(180deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agent-strip__collapse,
+    .agent-strip__toggle {
+      transition: none;
+    }
+  }
+}

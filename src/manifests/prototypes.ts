@@ -3,6 +3,7 @@ import ExternalCallParticipants from '@/pages/prototypes/external-call-participa
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 import VideoCalls from '@/pages/prototypes/video-calls/VideoCalls';
+import Spaces from '@/pages/prototypes/spaces/Spaces';
 
 export type PrototypeEntry = {
   id: string;
@@ -29,6 +30,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Outbound Calls',
     path: '/prototypes/outbound-calls',
     component: OutboundCalls,
+  },
+  {
+    id: 'spaces',
+    label: 'Spaces',
+    path: '/prototypes/spaces',
+    component: Spaces,
   },
   {
     id: 'video-calls',
