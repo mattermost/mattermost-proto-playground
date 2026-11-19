@@ -1,20 +1,13 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 #
 # CodeRabbit configuration for mattermost-proto-playground.
-# The rules themselves live in AGENTS.md and the rule files below, which CodeRabbit
-# reads as code guidelines. Keep this file to scoping and pointers; don't restate rules.
+# The rules themselves live in AGENTS.md and the rule files below, which the org-level
+# config already reads as code guidelines. Keep this file to scoping and pointers; don't
+# restate rules.
 
-# Inherit org-level settings (tuning, tone, defaults) and layer repo settings on top.
+# Inherit org-level settings (tuning, tone, code guidelines, defaults) and layer repo
+# settings on top.
 inheritance: true
-
-knowledge_base:
-  code_guidelines:
-    enabled: true
-    filePatterns:
-      - "AGENTS.md"
-      - "**/AGENTS.md"
-      - ".claude/rules/*.md"
-      - ".cursor/rules/*.mdc"
 
 reviews:
   path_filters:
