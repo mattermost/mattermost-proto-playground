@@ -32,6 +32,14 @@
       var(--ease-exit);
   }
 
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-l) var(--spacing-xs)
+      calc(var(--spacing-l) + var(--spacing-l));
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     transition: none;
 

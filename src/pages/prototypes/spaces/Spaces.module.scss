@@ -15,10 +15,51 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
   min-width: 0;
   min-height: 0;
   background: var(--center-channel-bg);
   color: var(--center-channel-color);
+
+  // Same stage as the call prototypes: flex centering and padding, so the
+  // shell sits below PrototypeTopNav instead of flush against it.
+  &__stage {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: var(--spacing-xxl);
+    gap: var(--spacing-m);
+  }
+
+  &__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-width: 1440px;
+    max-height: 800px;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+  }
+
+  // ChannelShell ships its own height and horizontal margin, which pins it
+  // to the top of the stage. Fill the padded frame instead.
+  &__frame :global([class*='channel-shell']:not([class*='channel-shell__'])) {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
 
   &__scroll {
     flex: 1;
