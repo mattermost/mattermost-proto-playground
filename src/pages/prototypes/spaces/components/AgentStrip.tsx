@@ -25,13 +25,15 @@ const STATUS: Record<
 export interface AgentStripProps {
   state: SitrepState;
   onAnswer: () => void;
+  title?: string;
+  meta?: string;
 }
 
 /**
  * Compact agent task strip: one line at rest, expands to the agent's checklist.
  * Every agent task has a person behind it (the sponsor).
  */
-export function AgentStrip({ state, onAnswer }: AgentStripProps) {
+export function AgentStrip({ state, onAnswer, title, meta }: AgentStripProps) {
   const [expanded, setExpanded] = useState(state === 'needs-input');
   const [posted, setPosted] = useState(false);
   const agent = PEOPLE.agent!;
@@ -39,21 +41,26 @@ export function AgentStrip({ state, onAnswer }: AgentStripProps) {
     ? { label: 'Posted', type: 'success' as const, value: 100 }
     : STATUS[state];
 
-  const steps = [
-    { label: 'Collect numbers from every run, channel and board', done: true },
-    {
-      label:
-        state === 'needs-input'
-          ? 'Ask Alex how to count INC-1294'
-          : "Draft this week's sitrep",
-      done: state !== 'drafting',
-    },
-    {
-      label:
-        'Alex reviews, then save as a page and post a summary to the war room',
-      done: posted,
-    },
-  ];
+  const steps = title
+    ? [{ label: meta ?? title, done: state !== 'drafting' }]
+    : [
+        {
+          label: 'Collect numbers from every run, channel and board',
+          done: true,
+        },
+        {
+          label:
+            state === 'needs-input'
+              ? 'Ask Alex how to count INC-1294'
+              : "Draft this week's sitrep",
+          done: state !== 'drafting',
+        },
+        {
+          label:
+            'Alex reviews, then save as a page and post a summary to the war room',
+          done: posted,
+        },
+      ];
 
   return (
     <div
@@ -62,9 +69,13 @@ export function AgentStrip({ state, onAnswer }: AgentStripProps) {
       <div className={styles['agent-strip__bar']}>
         <UserAvatar src={agent.avatar} alt={agent.name} size="24" />
         <div className={styles['agent-strip__label']}>
-          <span className={styles['agent-strip__title']}>Weekly sitrep</span>
+          <span className={styles['agent-strip__title']}>
+            {title ?? 'Weekly sitrep'}
+          </span>
           <span className={styles['agent-strip__meta']}>
-            {agent.name} · sponsor Alex Taylor
+            {title
+              ? (meta ?? agent.name)
+              : `${agent.name} · sponsor Alex Taylor`}
           </span>
         </div>
         <Tag label={status.label} type={status.type} size="x-small" />
@@ -103,7 +114,7 @@ export function AgentStrip({ state, onAnswer }: AgentStripProps) {
               </li>
             ))}
           </ol>
-          {state === 'needs-input' ? (
+          {!title && state === 'needs-input' ? (
             <div className={styles['agent-strip__question']}>
               <p>
                 Should INC-1294 count as a new successful spray, or as part of
@@ -130,7 +141,7 @@ export function AgentStrip({ state, onAnswer }: AgentStripProps) {
               </div>
             </div>
           ) : null}
-          {state === 'ready' && !posted ? (
+          {!title && state === 'ready' && !posted ? (
             <div className={styles['agent-strip__actions']}>
               <Button
                 size="small"

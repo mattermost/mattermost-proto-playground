@@ -96,7 +96,7 @@ export default function CloseScene({ story, onStoryChange }: CloseSceneProps) {
                   How the campaign went
                 </h2>
                 <span className={shared['spaces__panel-aside']}>
-                  Computed from logged times
+                  From the log
                 </span>
               </div>
               <div className={styles['close-scene__stats']}>
@@ -126,7 +126,7 @@ export default function CloseScene({ story, onStoryChange }: CloseSceneProps) {
                 <li className={shared['spaces__row']}>
                   <Icon glyph={<ArchiveOutlineIcon />} size="16" />
                   <span className={shared['spaces__row-meta']}>
-                    {runs.length} runs and boards archive together
+                    {runs.length} runs and boards stay with the Space
                   </span>
                 </li>
                 <li className={shared['spaces__row']}>

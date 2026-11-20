@@ -6,6 +6,7 @@ import { Tag } from '@mattermost/compass-ui/components/tag';
 import { Toast } from '@mattermost/compass-ui/components/toast';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import { HealthDot } from '../components/HealthDot';
+import type { PackRun, PackTask, PackWorkstream } from '../spacePacks';
 import { PEOPLE, RUNS, WORKSTREAMS, type Task } from '../spacesData';
 import {
   hardeningDone,
@@ -39,21 +40,47 @@ const ORDER: Record<Task['status'], number> = {
 export interface BoardSceneProps {
   story: StoryState;
   onStoryChange: (update: Partial<StoryState>) => void;
+  catalog?: {
+    runs: PackRun[];
+    tasks: PackTask[];
+    workstreams: PackWorkstream[];
+    onlyRunId?: string;
+  };
 }
 
-export default function BoardScene({ story, onStoryChange }: BoardSceneProps) {
+export default function BoardScene({
+  story,
+  onStoryChange,
+  catalog,
+}: BoardSceneProps) {
   const [groupBy, setGroupBy] = useState<GroupBy>('run');
   const [toast, setToast] = useState<string | null>(null);
 
-  const runIds = new Set(visibleRuns(story).map((r) => r.id));
-  const tasks = story.tasks.filter((t) => runIds.has(t.runId));
+  const catalogRuns = catalog
+    ? catalog.runs.filter(
+        (run) => !catalog.onlyRunId || run.id === catalog.onlyRunId,
+      )
+    : null;
+  const runIds = new Set((catalogRuns ?? visibleRuns(story)).map((r) => r.id));
+  const tasks = (catalog ? catalog.tasks : story.tasks).filter((t) =>
+    runIds.has(t.runId),
+  );
 
   const groups = useMemo(() => {
     const sorted = (list: Task[]) =>
       [...list].sort((a, b) => ORDER[a.status] - ORDER[b.status]);
     if (groupBy === 'run') {
+      if (catalogRuns) {
+        return catalogRuns.map((run) => ({
+          key: run.id,
+          title: run.title,
+          meta: `${run.done} of ${run.total} done · ${run.source}`,
+          health: run.health,
+          tasks: sorted(tasks.filter((t) => t.runId === run.id)),
+        }));
+      }
       return visibleRuns(story)
-        .filter((r) => !r.restricted)
+        .filter((run) => !run.restricted)
         .map((run) => ({
           key: run.id,
           title: run.title,
@@ -63,6 +90,27 @@ export default function BoardScene({ story, onStoryChange }: BoardSceneProps) {
         }));
     }
     if (groupBy === 'workstream') {
+      if (catalog) {
+        return catalog.workstreams
+          .filter(
+            (stream) =>
+              !catalog.onlyRunId ||
+              catalogRuns?.some((run) => run.workstream === stream.id),
+          )
+          .map((w) => ({
+            key: w.id,
+            title: w.label,
+            meta: w.meta,
+            health: w.health,
+            tasks: sorted(
+              tasks.filter((t) =>
+                catalogRuns?.some(
+                  (run) => run.id === t.runId && run.workstream === w.id,
+                ),
+              ),
+            ),
+          }));
+      }
       return WORKSTREAMS.map((w) => ({
         key: w.id,
         title: w.label,
@@ -90,10 +138,10 @@ export default function BoardScene({ story, onStoryChange }: BoardSceneProps) {
         ),
       ),
     }));
-  }, [groupBy, story, tasks]);
+  }, [catalog, catalogRuns, groupBy, story, tasks]);
 
   const toggle = (task: Task) => {
-    if (task.status === 'blocked') return;
+    if (catalog || task.status === 'blocked') return;
     const next: Task['status'] =
       task.status === 'done' ? 'in-progress' : 'done';
     const nextTasks = story.tasks.map((t) =>
@@ -117,8 +165,7 @@ export default function BoardScene({ story, onStoryChange }: BoardSceneProps) {
     <div className={styles['board-scene']}>
       <div className={styles['board-scene__toolbar']}>
         <span className={shared['spaces__muted']}>
-          {open} open tasks from checklists, boards and agents · same items as
-          each run&rsquo;s own checklist
+          {catalog?.onlyRunId ? `${open} open on this run` : `${open} open`}
         </span>
         <SegmentedControl
           size="small"
@@ -153,7 +200,10 @@ export default function BoardScene({ story, onStoryChange }: BoardSceneProps) {
               <ul className={styles['board-scene__cards']}>
                 {g.tasks.map((task) => {
                   const owner = PEOPLE[task.ownerId]!;
-                  const run = RUNS.find((r) => r.id === task.runId)!;
+                  const runTitle =
+                    catalogRuns?.find((item) => item.id === task.runId)
+                      ?.title ??
+                    RUNS.find((item) => item.id === task.runId)?.title;
                   const status = STATUS_TAG[task.status];
                   return (
                     <li
@@ -189,7 +239,7 @@ export default function BoardScene({ story, onStoryChange }: BoardSceneProps) {
                         />
                         {groupBy !== 'run' ? (
                           <span className={shared['spaces__muted']}>
-                            {run.title}
+                            {runTitle}
                           </span>
                         ) : null}
                         {task.due ? (

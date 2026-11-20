@@ -39,23 +39,35 @@ const POSTS = [
 export interface SpaceChannelProps {
   story: StoryState;
   onOpenSpace: () => void;
+  name?: string;
+  healthLabel?: string;
+  posts?: { by: string; at: string; text: string }[];
 }
 
 /** A Space channel: the Space's status comes to where people already are. */
-export function SpaceChannel({ story, onOpenSpace }: SpaceChannelProps) {
+export function SpaceChannel({
+  story,
+  onOpenSpace,
+  name,
+  healthLabel,
+  posts,
+}: SpaceChannelProps) {
   const health = spaceHealth(story);
   const attention = needsAttention(story).length;
   const hardening = hardeningDone(story);
+  const feed = posts ?? POSTS;
 
   return (
     <>
       <div className={styles['space-channel']} role="status">
         <Icon glyph={<LayersOutlineIcon />} size="16" />
-        <span className={styles['space-channel__name']}>{SPACE.shortName}</span>
+        <span className={styles['space-channel__name']}>
+          {name ?? SPACE.shortName}
+        </span>
         <HealthDot health={health} />
         <span className={styles['space-channel__meta']}>
-          {HEALTH_LABEL[health]} · {attention} need attention · hardening{' '}
-          {hardening.done}/{hardening.total}
+          {healthLabel ??
+            `${HEALTH_LABEL[health]} · ${attention} need attention · hardening ${hardening.done}/${hardening.total}`}
         </span>
         <Button
           className={styles['space-channel__open']}
@@ -68,7 +80,7 @@ export function SpaceChannel({ story, onOpenSpace }: SpaceChannelProps) {
       </div>
       <Scrollbar className={styles['space-channel__scroll']}>
         <div className={styles['space-channel__posts']}>
-          {POSTS.map((p) => {
+          {feed.map((p) => {
             const person = PEOPLE[p.by]!;
             return (
               <Message

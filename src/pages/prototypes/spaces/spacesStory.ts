@@ -12,7 +12,7 @@ export type SceneId =
   'day' | 'create' | 'overview' | 'board' | 'decision' | 'close';
 
 export const SCENES: { id: SceneId; label: string; when: string }[] = [
-  { id: 'day', label: 'Start your day', when: 'Week 4, Thursday' },
+  { id: 'day', label: 'Home', when: 'Week 4, Thursday' },
   { id: 'create', label: 'Open a Space', when: 'Week 1, Monday' },
   { id: 'overview', label: 'Space overview', when: 'Week 2, Wednesday' },
   { id: 'board', label: 'Campaign board', when: 'Week 3' },

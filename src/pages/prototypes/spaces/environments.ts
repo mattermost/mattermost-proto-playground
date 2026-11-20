@@ -1,0 +1,862 @@
+/**
+ * Illustrative fixtures for five environments. Names, dates, and rollup
+ * rules come from a chat summary, not from a product decision. One selector
+ * swaps this data through the same shell.
+ */
+
+export type UseCaseId = 'a' | 'b' | 'c' | 'd' | 'e';
+
+export type Tenure = 'temporary' | 'standing';
+
+export type Freshness = 'current' | 'review-due' | 'stale';
+
+export type RollupView = 'safe' | 'leak';
+
+export interface TreeNode {
+  id: string;
+  name: string;
+  /** Vocabulary of this node: Mission, Run, Workstream, Task, Record… */
+  kind: string;
+  state?: string;
+  /** 0–100 progress. Temporary work rolls this up. */
+  progress?: number;
+  freshness?: Freshness;
+  /** Omitted from a safe rollup. An unsafe rollup leaks that it exists. */
+  restricted?: boolean;
+  note?: string;
+  children?: TreeNode[];
+}
+
+export interface SpaceReference {
+  spaceId: string;
+  name: string;
+  /** Set when the reference is pinned. Absent when it is only a pointer. */
+  version?: string;
+}
+
+export interface SpaceFixture {
+  id: string;
+  name: string;
+  /** Operation, Exercise, Case, Project, Library, Handbook. */
+  vocabulary: string;
+  tenure: Tenure;
+  summary: string;
+  state?: string;
+  timeframe?: string;
+  freshness?: Freshness;
+  /** 0–100. Standing spaces leave this empty and roll freshness up instead. */
+  progress?: number;
+  closeOut?: string;
+  references?: SpaceReference[];
+  children: TreeNode[];
+}
+
+export interface FloorItem {
+  name: string;
+  private?: boolean;
+}
+
+export interface MetricFixture {
+  id: string;
+  label: string;
+  value: string;
+  detail: string;
+  /** 0–100. Omit when the metric uses a sparkline. */
+  bar?: number;
+  series?: number[];
+}
+
+export interface HomeUpdate {
+  id: string;
+  title: string;
+  detail: string;
+}
+
+export interface EnvironmentFixture {
+  id: UseCaseId;
+  switchLabel: string;
+  title: string;
+  audience: string;
+  dateLabel: string;
+  suggestions: string[];
+  metrics: MetricFixture[];
+  spaces: SpaceFixture[];
+  floors: {
+    command: FloorItem[];
+    currentOps: FloorItem[];
+    support: FloorItem[];
+  };
+  watching: string[];
+  /** Rows that fill Home. Illustrative, not a product feed. */
+  updates: HomeUpdate[];
+  /** Present only when the environment compares two rollups. */
+  compareRollup?: boolean;
+  agent?: { name: string; status: string; progress: number };
+  callouts: string[];
+}
+
+export const FRESHNESS_LABEL: Record<Freshness, string> = {
+  current: 'Current',
+  'review-due': 'Review due',
+  stale: 'Stale',
+};
+
+export const FRESHNESS_TAG: Record<
+  Freshness,
+  'success' | 'warning' | 'danger'
+> = {
+  current: 'success',
+  'review-due': 'warning',
+  stale: 'danger',
+};
+
+export interface RollupNode extends TreeNode {
+  /** True when this row exists only to show that a hidden child is there. */
+  leaked?: boolean;
+}
+
+/** Safe rollup drops restricted nodes. Unsafe rollup keeps a nameless row. */
+export function rollupNodes(
+  nodes: TreeNode[] | undefined,
+  leak: boolean,
+): RollupNode[] {
+  if (!nodes) return [];
+  const out: RollupNode[] = [];
+  for (const node of nodes) {
+    if (node.restricted) {
+      if (leak) {
+        out.push({
+          id: node.id,
+          name: 'Restricted',
+          kind: 'Restricted',
+          leaked: true,
+          note: 'Existence only. The contents stay on the other side.',
+        });
+      }
+      continue;
+    }
+    out.push({
+      ...node,
+      children: node.children ? rollupNodes(node.children, leak) : undefined,
+    });
+  }
+  return out;
+}
+
+export const ENVIRONMENTS: EnvironmentFixture[] = [
+  {
+    id: 'a',
+    switchLabel: 'Air operations',
+    title: 'Operation BLUE HARBOR',
+    audience: 'MissionOps · Ops Center',
+    dateLabel: 'Wednesday, 12 November',
+    suggestions: [
+      'Draft the SITREP from mission states',
+      'Which missions are still planned?',
+      'What is still planned for Night Transit?',
+    ],
+    metrics: [
+      {
+        id: 'missions',
+        label: 'Missions underway',
+        value: '1/2',
+        detail: 'Harbor Sweep is underway. Night Transit is planned.',
+        bar: 50,
+      },
+      {
+        id: 'runs',
+        label: 'Runs complete',
+        value: '1/3',
+        detail: 'One Harbor Sweep run is still going.',
+        bar: 33,
+      },
+      {
+        id: 'ato',
+        label: 'Seeded from ATO',
+        value: '1844',
+        detail: 'The operation was opened from the ATO record.',
+        bar: 100,
+      },
+      {
+        id: 'window',
+        label: 'Days in window',
+        value: '6',
+        detail: 'Through 26 November.',
+        series: [2, 3, 4, 5, 5, 6, 6],
+      },
+    ],
+    agent: {
+      name: 'SITREP skill',
+      status: 'Waiting on Night Transit before it can draft',
+      progress: 55,
+    },
+    callouts: [
+      'Harbor Sweep is underway through 26 November.',
+      'Night Transit is still planned. The SITREP is waiting on it.',
+    ],
+    spaces: [
+      {
+        id: 'blue-harbor',
+        name: 'Operation BLUE HARBOR',
+        vocabulary: 'Operation',
+        tenure: 'temporary',
+        summary: 'ATO window 14–21 November. Screen and escort.',
+        state: 'En route',
+        timeframe: '14–21 November',
+        progress: 45,
+        closeOut:
+          'Archive the operation, missions, and runs together, then open an after-action review.',
+        children: [
+          {
+            id: 'msn-101',
+            name: 'MSN-101 Tanker Track Alpha',
+            kind: 'Mission',
+            state: 'On station',
+            progress: 50,
+          },
+          {
+            id: 'msn-102',
+            name: 'MSN-102 CAS Package',
+            kind: 'Mission',
+            state: 'En route',
+            progress: 40,
+          },
+          {
+            id: 'msn-103',
+            name: 'MSN-103 CSAR Standby',
+            kind: 'Mission',
+            state: 'Planning',
+            progress: 0,
+          },
+          {
+            id: 'msn-104',
+            name: 'MSN-104 ISR Orbit',
+            kind: 'Mission',
+            state: 'Critical',
+            progress: 20,
+          },
+        ],
+      },
+    ],
+    floors: {
+      command: [
+        { name: 'ops-center' },
+        { name: 'ato-1844', private: true },
+        { name: 'watch-floor' },
+      ],
+      currentOps: [
+        { name: 'harbor-sweep' },
+        { name: 'night-transit' },
+        { name: 'convoy-track' },
+      ],
+      support: [
+        { name: 'weather' },
+        { name: 'logistics' },
+        { name: 'medical' },
+      ],
+    },
+    watching: ['SITREP skill', 'Night Transit', 'Patrol report'],
+    updates: [
+      {
+        id: 'a1',
+        title: 'Harbor Sweep boarded two merchants',
+        detail: 'Northern lane screen is still running. Report is due tonight.',
+      },
+      {
+        id: 'a2',
+        title: 'Night Transit is still planned',
+        detail: 'Convoy escort and the harbor-pilot brief have not started.',
+      },
+      {
+        id: 'a3',
+        title: 'SITREP skill is waiting',
+        detail: 'It will not draft until Night Transit has a state.',
+      },
+      {
+        id: 'a4',
+        title: 'ATO 1844 is the seed',
+        detail: 'Night Transit still needs a start time.',
+      },
+      {
+        id: 'a5',
+        title: 'Weather window holds through Friday',
+        detail: 'Logistics has fuel for the escort. Medical is on standby.',
+      },
+    ],
+  },
+  {
+    id: 'b',
+    switchLabel: 'Coalition exercise',
+    title: 'Exercise CRIMSON ONE',
+    audience: 'MissionOps · Exercise control',
+    dateLabel: 'Monday, 3 March',
+    compareRollup: true,
+    suggestions: [
+      'What can the partner instance see?',
+      'What can I see on this exercise?',
+      'Summarize the unclassified injects',
+    ],
+    metrics: [
+      {
+        id: 'visible',
+        label: 'Missions you can see',
+        value: '1',
+        detail: 'Force-on-force is visible at this level.',
+        bar: 50,
+      },
+      {
+        id: 'hidden',
+        label: 'Restricted',
+        value: '0',
+        detail: 'Restricted missions are hidden.',
+        bar: 0,
+      },
+      {
+        id: 'injects',
+        label: 'Injects run',
+        value: '2/4',
+        detail: 'Exercise control, this instance only.',
+        bar: 50,
+      },
+      {
+        id: 'bridge',
+        label: 'Partner traffic',
+        value: '18',
+        detail: 'Messages across the partner instance today.',
+        series: [4, 6, 9, 8, 11, 14, 18],
+      },
+    ],
+    callouts: [
+      'Force-on-force is underway on this instance.',
+      'The partner annex stays hidden unless you show restricted items.',
+    ],
+    spaces: [
+      {
+        id: 'crimson-one',
+        name: 'Exercise CRIMSON ONE',
+        vocabulary: 'Exercise',
+        tenure: 'temporary',
+        summary:
+          'Force-on-force on this instance, with a partner annex the other cell cannot be shown.',
+        state: 'Active',
+        timeframe: '3–7 March',
+        progress: 50,
+        closeOut:
+          'Archive the exercise and every inject together when the window ends.',
+        children: [
+          {
+            id: 'air-defense',
+            name: 'Coalition Air Defense',
+            kind: 'Cell',
+            state: 'On station',
+            progress: 80,
+          },
+          {
+            id: 'cyber',
+            name: 'Cyber Effects Cell',
+            kind: 'Cell',
+            state: 'Warning',
+            restricted: true,
+            progress: 45,
+          },
+          {
+            id: 'sigint',
+            name: 'SIGINT Fusion Cell',
+            kind: 'Cell',
+            state: 'Critical',
+            restricted: true,
+            progress: 25,
+          },
+        ],
+      },
+    ],
+    floors: {
+      command: [
+        { name: 'exercise-control' },
+        { name: 'controller-net', private: true },
+      ],
+      currentOps: [
+        { name: 'crimson-one' },
+        { name: 'partner-bridge', private: true },
+        { name: 'inject-channel' },
+      ],
+      support: [{ name: 'white-cell' }, { name: 'safety' }],
+    },
+    watching: [
+      'Inject 2 · comms loss',
+      'Inject 3 · casualty',
+      'White-cell notes',
+    ],
+    updates: [
+      {
+        id: 'b1',
+        title: 'Inject 2 is running',
+        detail: 'Comms loss on this instance. White cell is scoring it.',
+      },
+      {
+        id: 'b2',
+        title: 'Inject 1 is done',
+        detail: 'Muster completed at 09:10. Inject 3 is still planned.',
+      },
+      {
+        id: 'b3',
+        title: 'Partner annex is hidden',
+        detail: 'Turn on Show restricted to list it.',
+      },
+      {
+        id: 'b4',
+        title: 'Partner bridge is up',
+        detail:
+          '18 messages today. The annex itself stays on the other instance.',
+      },
+      {
+        id: 'b5',
+        title: 'Safety cell is clear',
+        detail: 'No real-world stop. The exercise window runs through 7 March.',
+      },
+    ],
+  },
+  {
+    id: 'c',
+    switchLabel: 'Ransomware case',
+    title: 'Ransomware case INC-1120',
+    audience: 'CyberSec · Threat Response',
+    dateLabel: 'Friday, 18 April',
+    suggestions: [
+      'Where is the blocked time?',
+      'Who owns the regulator task?',
+      'Read the chain-of-custody record',
+    ],
+    metrics: [
+      {
+        id: 'mtta',
+        label: 'MTTA',
+        value: '18m',
+        detail: 'From the containment runs.',
+        bar: 30,
+      },
+      {
+        id: 'mttr',
+        label: 'MTTR',
+        value: '6.5h',
+        detail: 'Containment is still open.',
+        bar: 54,
+      },
+      {
+        id: 'blocked',
+        label: 'Blocked time',
+        value: '14h',
+        detail: 'Isolate the file server is blocked on the backup key.',
+        bar: 70,
+      },
+      {
+        id: 'blocked-trend',
+        label: 'Blocked hours',
+        value: '14',
+        detail: 'Hours blocked, by day, from the playbook runs.',
+        series: [1, 2, 4, 6, 9, 12, 14],
+      },
+    ],
+    callouts: [
+      'Containment is blocked on the backup key.',
+      'Notify the regulator is still open.',
+    ],
+    spaces: [
+      {
+        id: 'inc-1120',
+        name: 'INC-2026-1120 · Ransomware at Plant 7',
+        vocabulary: 'Case',
+        tenure: 'temporary',
+        summary: 'Ransomware on the finance file server. Containment is open.',
+        state: 'Containment',
+        timeframe: 'Opened 18 April',
+        progress: 40,
+        closeOut:
+          'Archive the case, workstreams, runs, the case-owned task, and the custody record together.',
+        children: [
+          {
+            id: 'containment',
+            name: 'Containment',
+            kind: 'Workstream',
+            state: 'Active',
+            progress: 35,
+          },
+          {
+            id: 'forensics',
+            name: 'Forensics',
+            kind: 'Workstream',
+            state: 'Active',
+            progress: 25,
+          },
+          {
+            id: 'legal',
+            name: 'Legal & Comms',
+            kind: 'Workstream',
+            state: 'Planned',
+            progress: 0,
+          },
+        ],
+      },
+    ],
+    floors: {
+      command: [
+        { name: 'threat-response' },
+        { name: 'incident-command', private: true },
+      ],
+      currentOps: [
+        { name: 'inc-1120', private: true },
+        { name: 'finance-bridge' },
+      ],
+      support: [{ name: 'legal' }, { name: 'ir-playbooks' }, { name: 'comms' }],
+    },
+    watching: [
+      'Disk image 04',
+      'Notify the regulator',
+      'Isolate the file server',
+    ],
+    updates: [
+      {
+        id: 'c1',
+        title: 'File server isolation is blocked',
+        detail:
+          '14 hours on the backup key. The finance share disable is running.',
+      },
+      {
+        id: 'c2',
+        title: 'Notify the regulator is open',
+        detail: 'Owned by the case, not by a playbook run.',
+      },
+      {
+        id: 'c3',
+        title: 'Disk image 04 is sealed',
+        detail: 'Chain of custody is on the case. Legal has the hash.',
+      },
+      {
+        id: 'c4',
+        title: 'MTTA 18m, MTTR 6.5h',
+        detail: 'From the containment runs. Recovery has not started.',
+      },
+      {
+        id: 'c5',
+        title: 'Payroll validation is planned',
+        detail: 'It waits on the last clean backup.',
+      },
+    ],
+  },
+  {
+    id: 'd',
+    switchLabel: 'OOB IR + DR',
+    title: 'DR Library and Failover Event',
+    audience: 'CyberSec · Disaster recovery',
+    dateLabel: 'Tuesday, 2 September',
+    suggestions: [
+      'Which runbook version is pinned?',
+      'What in the library is stale?',
+      'Is the library inside the event?',
+    ],
+    metrics: [
+      {
+        id: 'fresh',
+        label: 'Pages current',
+        value: '1/3',
+        detail: 'Current pages over the library. Two need review.',
+        bar: 33,
+      },
+      {
+        id: 'event',
+        label: 'Failover progress',
+        value: '2/4',
+        detail: 'The runbook is pinned. The library stays separate.',
+        bar: 50,
+      },
+      {
+        id: 'pin',
+        label: 'Pinned version',
+        value: 'v2024.3',
+        detail: 'Failover Event references DR Library at this version.',
+        bar: 100,
+      },
+      {
+        id: 'sync',
+        label: 'Sync lag',
+        value: '3h',
+        detail: 'Hours since the library last synced.',
+        series: [1, 1, 2, 2, 4, 6, 3],
+      },
+    ],
+    callouts: [
+      'Failover is in progress. The runbook is pinned at v2024.3.',
+      'DR Library last synced 3 hours ago. The contact tree needs review.',
+    ],
+    spaces: [
+      {
+        id: 'failover',
+        name: 'Failover Event · Region East outage',
+        vocabulary: 'Event',
+        tenure: 'temporary',
+        summary:
+          'Regional failover in progress. The runbook is pinned, not copied in.',
+        state: 'Active',
+        timeframe: 'Opened 2 September',
+        progress: 50,
+        closeOut: 'Archive the event when traffic is back. The library stays.',
+        references: [
+          { spaceId: 'dr-library', name: 'DR Library', version: 'v2024.3' },
+        ],
+        children: [
+          {
+            id: 'network',
+            name: 'Network',
+            kind: 'Workstream',
+            state: 'Done soon',
+            progress: 83,
+          },
+          {
+            id: 'identity',
+            name: 'Identity',
+            kind: 'Workstream',
+            state: 'Blocked',
+            progress: 40,
+          },
+          {
+            id: 'apps',
+            name: 'Core apps',
+            kind: 'Workstream',
+            state: 'Active',
+            progress: 33,
+          },
+        ],
+      },
+      {
+        id: 'dr-library',
+        name: 'Disaster Recovery Library',
+        vocabulary: 'Library',
+        tenure: 'standing',
+        summary: 'Disaster recovery library. Last synced 3 hours ago.',
+        freshness: 'review-due',
+        children: [
+          {
+            id: 'runbook',
+            name: 'Runbook · regional failover',
+            kind: 'Page',
+            freshness: 'current',
+            note: 'Synced. This is the page v2024.3 pins.',
+          },
+          {
+            id: 'contacts',
+            name: 'Contact tree',
+            kind: 'Page',
+            freshness: 'stale',
+          },
+          {
+            id: 'comms-plan',
+            name: 'Customer comms plan',
+            kind: 'Page',
+            freshness: 'review-due',
+          },
+          {
+            id: 'vendor-list',
+            name: 'Vendor callback list',
+            kind: 'Page',
+            freshness: 'current',
+          },
+        ],
+      },
+    ],
+    floors: {
+      command: [
+        { name: 'cybersec-leads' },
+        { name: 'dr-owners', private: true },
+      ],
+      currentOps: [{ name: 'failover-us-east-1' }, { name: 'west-2-bridge' }],
+      support: [{ name: 'dr-library' }, { name: 'status-page' }],
+    },
+    watching: ['Contact tree', 'Customer comms plan', 'Pinned runbook v2024.3'],
+    updates: [
+      {
+        id: 'd1',
+        title: 'Traffic shift is running',
+        detail:
+          'West-2 health check is done. The customer note is still drafting.',
+      },
+      {
+        id: 'd2',
+        title: 'Runbook is pinned at v2024.3',
+        detail:
+          'The failover event references DR Library. It does not contain it.',
+      },
+      {
+        id: 'd3',
+        title: 'Contact tree is stale',
+        detail: 'Two pages need review.',
+      },
+      {
+        id: 'd4',
+        title: 'Library last synced 3 hours ago',
+        detail: 'The library stays after the failover ends.',
+      },
+      {
+        id: 'd5',
+        title: 'Status page is drafted',
+        detail: 'It quotes the customer comms plan, which is review due.',
+      },
+    ],
+  },
+  {
+    id: 'e',
+    switchLabel: 'DevSecOps project',
+    title: 'Dependency Vulnerability Sprint',
+    audience: 'DevSecOps',
+    dateLabel: 'Thursday, 16 October',
+    suggestions: [
+      'What is Dependency Scout doing?',
+      'What is still open on the lodash exception?',
+      'What does the handbook say about exceptions?',
+    ],
+    metrics: [
+      {
+        id: 'findings',
+        label: 'Findings open',
+        value: '7',
+        detail: 'On the sprint board.',
+        bar: 70,
+      },
+      {
+        id: 'owned',
+        label: 'Project-owned tasks',
+        value: '1',
+        detail: 'Exception for lodash sits on the Project, not a playbook.',
+        bar: 100,
+      },
+      {
+        id: 'agent',
+        label: 'Agent coverage',
+        value: '4/7',
+        detail: 'Dependency Scout has triaged four findings.',
+        bar: 57,
+      },
+      {
+        id: 'advisories',
+        label: 'New advisories',
+        value: '5',
+        detail: 'This week, across the dependency tree.',
+        series: [1, 1, 2, 2, 3, 4, 5],
+      },
+    ],
+    agent: {
+      name: 'Dependency Scout',
+      status: 'Triaging the sprint board',
+      progress: 57,
+    },
+    callouts: [
+      'Four of seven findings are triaged.',
+      'The lodash exception is still open.',
+    ],
+    spaces: [
+      {
+        id: 'vuln-sprint',
+        name: 'Dependency Vulnerability Sprint · Q4',
+        vocabulary: 'Project',
+        tenure: 'temporary',
+        summary: 'Two-week sprint on direct dependencies.',
+        state: 'In progress',
+        timeframe: '13–24 October',
+        progress: 55,
+        closeOut:
+          'Archive the project, board, and project-owned tasks together.',
+        references: [{ spaceId: 'handbook', name: 'Security Handbook' }],
+        children: [
+          {
+            id: 'cves',
+            name: 'Critical CVEs',
+            kind: 'Workstream',
+            state: 'At risk',
+            progress: 80,
+          },
+          {
+            id: 'hotfix',
+            name: 'Hotfix release',
+            kind: 'Workstream',
+            state: 'Waiting',
+            progress: 60,
+          },
+          {
+            id: 'backlog',
+            name: 'Backlog burn-down',
+            kind: 'Workstream',
+            state: 'On track',
+            progress: 55,
+          },
+        ],
+      },
+      {
+        id: 'handbook',
+        name: 'Security Engineering Handbook',
+        vocabulary: 'Handbook',
+        tenure: 'standing',
+        summary: 'Security policy for dependencies.',
+        freshness: 'current',
+        children: [
+          {
+            id: 'dep-policy',
+            name: 'Dependency policy',
+            kind: 'Page',
+            freshness: 'current',
+          },
+          {
+            id: 'exception-bar',
+            name: 'Exception bar',
+            kind: 'Page',
+            freshness: 'current',
+            note: 'The lodash task references this page.',
+          },
+          {
+            id: 'severity',
+            name: 'Severity scale',
+            kind: 'Page',
+            freshness: 'current',
+          },
+        ],
+      },
+    ],
+    floors: {
+      command: [{ name: 'devsecops' }, { name: 'appsec-leads', private: true }],
+      currentOps: [{ name: 'vuln-sprint' }, { name: 'dependency-alerts' }],
+      support: [{ name: 'security-handbook' }, { name: 'build-help' }],
+    },
+    watching: ['Exception for lodash', 'Bump axios', 'Dependency policy'],
+    updates: [
+      {
+        id: 'e1',
+        title: 'Dependency Scout triaged four findings',
+        detail: 'Three are still open on the sprint board.',
+      },
+      {
+        id: 'e2',
+        title: 'Exception for lodash is open',
+        detail: 'The Project owns it. It points at the Security Handbook.',
+      },
+      {
+        id: 'e3',
+        title: 'Axios bump is in progress',
+        detail: 'Minimatch replacement has not started.',
+      },
+      {
+        id: 'e4',
+        title: 'Handbook is current',
+        detail: 'The sprint points at the handbook.',
+      },
+      {
+        id: 'e5',
+        title: 'Five new advisories this week',
+        detail: 'Two are direct dependencies. The rest are transitive.',
+      },
+    ],
+  },
+];
+
+export function environmentById(id: UseCaseId): EnvironmentFixture {
+  const found = ENVIRONMENTS.find((env) => env.id === id);
+  if (!found) return ENVIRONMENTS[0]!;
+  return found;
+}

@@ -22,6 +22,7 @@ import {
   WORKSTREAMS,
   type WorkstreamId,
 } from '../spacesData';
+import type { SpacePack } from '../spacePacks';
 import {
   hardeningDone,
   needsAttention,
@@ -46,6 +47,8 @@ export interface OverviewSceneProps {
   onOpenDecision: () => void;
   onOpenBoard: () => void;
   showPages: boolean;
+  pack?: SpacePack;
+  showRestricted?: boolean;
 }
 
 export default function OverviewScene({
@@ -54,6 +57,8 @@ export default function OverviewScene({
   onOpenDecision,
   onOpenBoard,
   showPages,
+  pack,
+  showRestricted = false,
 }: OverviewSceneProps) {
   const [arrived, setArrived] = useState(false);
   const [toast, setToast] = useState(false);
@@ -61,14 +66,14 @@ export default function OverviewScene({
   // Scripted live change (beat 4): a new alert matches the campaign's IOCs and
   // INC-1294 opens inside the Space a moment after the overview loads.
   useEffect(() => {
-    if (story.inc1294Joined) return;
+    if (pack || story.inc1294Joined) return;
     const timer = window.setTimeout(() => {
       onStoryChange({ inc1294Joined: true });
       setArrived(true);
       setToast(true);
     }, 2500);
     return () => window.clearTimeout(timer);
-  }, [story.inc1294Joined, onStoryChange]);
+  }, [pack, story.inc1294Joined, onStoryChange]);
 
   useEffect(() => {
     if (!toast) return;
@@ -76,12 +81,20 @@ export default function OverviewScene({
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  const attention = needsAttention(story);
+  const open = <T extends { restricted?: boolean }>(items: T[]) =>
+    showRestricted ? items : items.filter((item) => !item.restricted);
+  const attention = pack ? open(pack.attention) : needsAttention(story);
   const runs = visibleRuns(story);
   const hardening = hardeningDone(story);
-  const channels = story.inc1294Joined
-    ? [...SPACE_CHANNELS, INC_1294_CHANNEL]
-    : SPACE_CHANNELS;
+  const channels = pack
+    ? open(pack.channels)
+    : story.inc1294Joined
+      ? [...SPACE_CHANNELS, INC_1294_CHANNEL]
+      : SPACE_CHANNELS;
+  const packRuns = pack ? open(pack.runs) : null;
+  const packGroups = pack ? open(pack.workstreams) : null;
+  const pages = pack ? pack.pages : SPACE_PAGES;
+  const library = pack ? pack.library : SPACE_LIBRARY;
 
   const summary: Record<WorkstreamId, string> = {
     incidents: `${runs.filter((r) => r.workstream === 'incidents' && r.kind === 'incident').length} incident runs`,
@@ -114,7 +127,7 @@ export default function OverviewScene({
                 </h2>
               </div>
               <ul className={styles['spaces__list']}>
-                {SPACE_PAGES.map((p) => (
+                {pages.map((p) => (
                   <li key={p.title} className={styles['spaces__row']}>
                     <span className={styles['spaces__icon-tile']} aria-hidden>
                       <Icon glyph={<FileTextOutlineIcon />} size="20" />
@@ -144,7 +157,7 @@ export default function OverviewScene({
                 </h2>
               </div>
               <ul className={styles['spaces__list']}>
-                {SPACE_LIBRARY.map((f) => (
+                {library.map((f) => (
                   <li key={f.title} className={styles['spaces__row']}>
                     <div className={styles['spaces__row-main']}>
                       <span className={styles['spaces__row-title']}>
@@ -187,7 +200,7 @@ export default function OverviewScene({
                     size="x-small"
                   />
                   <span className={styles['spaces__panel-aside']}>
-                    Rolled up from every run, channel and board
+                    Across this Space
                   </span>
                 </div>
                 <AttentionList
@@ -212,27 +225,50 @@ export default function OverviewScene({
                     id="workstreams-title"
                     className={styles['spaces__panel-title']}
                   >
-                    Workstreams
+                    {pack?.groupLabel ?? 'Workstreams'}
                   </h2>
                   <span className={styles['spaces__panel-aside']}>
-                    Health is the worst of its open runs
+                    From open work
                   </span>
                 </div>
                 <ul className={styles['spaces__list']} aria-live="polite">
-                  {WORKSTREAMS.map((w) => {
-                    const health = workstreamHealth(story, w.id);
+                  {(packGroups
+                    ? packGroups.map((w) => ({
+                        id: w.id,
+                        label: w.label,
+                        leadId: w.leadId,
+                        health: w.health,
+                        meta: w.meta,
+                        progress: w.progress,
+                      }))
+                    : WORKSTREAMS.map((w) => ({
+                        id: w.id,
+                        label: w.label,
+                        leadId: w.leadId,
+                        health: workstreamHealth(story, w.id),
+                        meta: summary[w.id],
+                        progress: undefined as number | undefined,
+                      }))
+                  ).map((w) => {
                     const lead = PEOPLE[w.leadId]!;
                     return (
                       <li key={w.id} className={styles['spaces__row']}>
-                        <HealthDot health={health} />
+                        <HealthDot health={w.health} />
                         <div className={styles['spaces__row-main']}>
                           <span className={styles['spaces__row-title']}>
                             {w.label}
                           </span>
                           <span className={styles['spaces__row-meta']}>
-                            {summary[w.id]}
+                            {w.meta}
                           </span>
-                          {w.id === 'hardening' ? (
+                          {w.progress != null ? (
+                            <ProgressBar
+                              value={w.progress}
+                              size="small"
+                              aria-label={`${w.label} progress`}
+                            />
+                          ) : null}
+                          {w.id === 'hardening' && !packGroups ? (
                             <ProgressBar
                               value={(hardening.done / hardening.total) * 100}
                               size="small"
@@ -242,7 +278,7 @@ export default function OverviewScene({
                         </div>
                         <div className={styles['spaces__row-end']}>
                           <span className={styles['spaces__muted']}>
-                            {HEALTH_LABEL[health]}
+                            {HEALTH_LABEL[w.health]}
                           </span>
                           <UserAvatar
                             src={lead.avatar}
@@ -265,13 +301,39 @@ export default function OverviewScene({
                     Runs and boards
                   </h2>
                   <span className={styles['spaces__panel-aside']}>
-                    {runs.length} in this Space
+                    {(packRuns ?? runs).length} in this Space
                   </span>
                 </div>
                 <ul className={styles['spaces__list']}>
-                  {runs.map((run) => {
-                    const p = runProgress(story, run.id);
-                    const health = runHealth(story, run);
+                  {(packRuns
+                    ? packRuns.map((run) => ({
+                        id: run.id,
+                        title: run.title,
+                        source: run.source,
+                        phase: run.phase,
+                        ownerId: run.ownerId,
+                        restricted: run.restricted,
+                        done: run.done,
+                        total: run.total,
+                        health: run.health,
+                      }))
+                    : runs.map((run) => {
+                        const p = runProgress(story, run.id);
+                        return {
+                          id: run.id,
+                          title: run.title,
+                          source: run.source,
+                          phase: run.phase,
+                          ownerId: run.ownerId,
+                          restricted: run.restricted,
+                          done: p.done,
+                          total: p.total,
+                          health: runHealth(story, run),
+                        };
+                      })
+                  ).map((run) => {
+                    const p = { done: run.done, total: run.total };
+                    const health = run.health;
                     const owner = PEOPLE[run.ownerId]!;
                     const isNew = run.id === 'inc-1294' && arrived;
                     return (
@@ -338,6 +400,8 @@ export default function OverviewScene({
                 <div className={styles['spaces__panel-body']}>
                   <AgentStrip
                     state={story.sitrep}
+                    title={pack?.agentTitle}
+                    meta={pack?.agentMeta}
                     onAnswer={() => onStoryChange({ sitrep: 'ready' })}
                   />
                 </div>
@@ -403,11 +467,11 @@ export default function OverviewScene({
                     Pages
                   </h2>
                   <span className={styles['spaces__panel-aside']}>
-                    {SPACE_PAGES.length}
+                    {pages.length}
                   </span>
                 </div>
                 <ul className={styles['spaces__list']}>
-                  {SPACE_PAGES.slice(0, 4).map((p) => (
+                  {pages.slice(0, 4).map((p) => (
                     <li key={p.title} className={styles['spaces__row']}>
                       <Icon glyph={<FileTextOutlineIcon />} size="16" />
                       <div className={styles['spaces__row-main']}>

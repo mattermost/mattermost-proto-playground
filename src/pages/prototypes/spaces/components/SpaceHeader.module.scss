@@ -50,28 +50,80 @@
 
   &__lifecycle {
     display: flex;
-    gap: var(--spacing-xxxs);
-    margin: 0;
+    align-items: center;
+    width: 100%;
+    margin: var(--spacing-xxs) 0 0;
     padding: 0;
     list-style: none;
   }
 
   &__step {
-    padding: var(--spacing-xxxs) var(--spacing-xs);
-    border-radius: var(--radius-s);
-    background: rgba(var(--center-channel-color-rgb), 0.04);
-    color: rgba(var(--center-channel-color-rgb), 0.72);
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    min-width: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.56);
     font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+
+    &:last-child {
+      flex: none;
+    }
+
+    &:not(:last-child)::after {
+      content: '';
+      flex: 1;
+      height: var(--spacing-xxxxs);
+      min-width: var(--spacing-s);
+      margin-inline: var(--spacing-xxs);
+      border-radius: var(--radius-full);
+      background: rgba(var(--center-channel-color-rgb), 0.16);
+    }
   }
 
-  &__step--past {
+  &__step-label {
+    white-space: nowrap;
+  }
+
+  &__marker {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--spacing-xl);
+    height: var(--spacing-xl);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.24);
+    border-radius: var(--radius-full);
+    background: var(--center-channel-bg);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__step--past,
+  &__step--current {
     color: var(--center-channel-color);
   }
 
+  &__step--past &__marker,
+  &__step--current &__marker {
+    border-color: var(--button-bg);
+    background: var(--button-bg);
+    color: var(--button-color);
+  }
+
+  &__step--past::after {
+    background: var(--button-bg);
+  }
+
   &__step--current {
-    background: rgba(var(--button-bg-rgb), 0.12);
     color: var(--button-bg);
     font-weight: var(--font-weight-semibold);
+  }
+
+  &__step--current &__marker {
+    box-shadow:
+      0 0 0 var(--spacing-xxxxs) var(--center-channel-bg),
+      0 0 0 var(--spacing-xxxs) var(--button-bg);
   }
 
   &__fact {
