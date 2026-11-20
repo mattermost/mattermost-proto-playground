@@ -37,9 +37,7 @@ function ChildRows({
   onOpen: () => void;
 }) {
   if (nodes.length === 0) {
-    return (
-      <p className={styles['spaces-sidebar__empty']}>Nothing here</p>
-    );
+    return <p className={styles['spaces-sidebar__empty']}>Nothing here</p>;
   }
   return nodes.map((node) => (
     <ChannelSidebarItem
