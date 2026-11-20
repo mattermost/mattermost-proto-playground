@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--spacing-s);
-  padding: var(--spacing-m) var(--spacing-m) var(--spacing-m) var(--spacing-l);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
   background: var(--center-channel-bg);
   border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
   border-radius: var(--radius-pill);
@@ -32,7 +32,7 @@
   }
 
   &__plus {
-    padding: var(--spacing-s);
+    padding: calc(var(--spacing-xs) + var(--spacing-xxxxs));
     background: rgba(var(--center-channel-color-rgb), 0.08);
     color: rgba(var(--center-channel-color-rgb), 0.56);
 
@@ -43,7 +43,7 @@
   }
 
   &__send {
-    padding: var(--spacing-m) var(--spacing-xl);
+    padding: var(--spacing-s) var(--spacing-l);
     background: transparent;
     color: rgba(var(--center-channel-color-rgb), 0.56);
 
