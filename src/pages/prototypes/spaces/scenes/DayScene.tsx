@@ -211,6 +211,23 @@ export default function DayScene({
                 ))}
               </ul>
             )}
+            <h3 id="updates-title" className={styles['day-scene__subhead']}>
+              Open items
+            </h3>
+            <ul className={shared['spaces__list']}>
+              {environment.updates.map((item) => (
+                <li key={item.id} className={shared['spaces__row']}>
+                  <div className={shared['spaces__row-main']}>
+                    <span className={shared['spaces__row-title']}>
+                      {item.title}
+                    </span>
+                    <span className={shared['spaces__row-meta']}>
+                      {item.detail}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <div className={shared['spaces__column']}>
@@ -310,31 +327,6 @@ export default function DayScene({
             </section>
           </div>
         </div>
-
-        <section
-          className={shared['spaces__panel']}
-          aria-labelledby="updates-title"
-        >
-          <div className={shared['spaces__panel-header']}>
-            <h2 id="updates-title" className={shared['spaces__panel-title']}>
-              Open items
-            </h2>
-          </div>
-          <ul className={shared['spaces__list']}>
-            {environment.updates.map((item) => (
-              <li key={item.id} className={shared['spaces__row']}>
-                <div className={shared['spaces__row-main']}>
-                  <span className={shared['spaces__row-title']}>
-                    {item.title}
-                  </span>
-                  <span className={shared['spaces__row-meta']}>
-                    {item.detail}
-                  </span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
       </div>
     </Scrollbar>
   );

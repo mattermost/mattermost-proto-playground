@@ -91,6 +91,16 @@
     }
   }
 
+  &__subhead {
+    margin: 0;
+    padding: var(--spacing-m) var(--spacing-l) var(--spacing-xxs);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75);
+  }
+
   &__empty {
     margin: 0;
     padding: var(--spacing-l);
