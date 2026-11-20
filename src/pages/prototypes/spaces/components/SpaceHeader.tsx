@@ -90,23 +90,23 @@ export function SpaceHeader({
         <div className={styles['space-header__aside']}>{aside}</div>
       </div>
       <p className={styles['space-header__outcome']}>{space.outcome}</p>
+      <ol className={styles['space-header__lifecycle']} aria-label="Lifecycle">
+        {space.lifecycle.map((step, i) => (
+          <li
+            key={step}
+            className={`${styles['space-header__step']} ${
+              i < current ? styles['space-header__step--past'] : ''
+            } ${i === current ? styles['space-header__step--current'] : ''}`}
+            aria-current={i === current ? 'step' : undefined}
+          >
+            <span className={styles['space-header__marker']} aria-hidden>
+              {i + 1}
+            </span>
+            <span className={styles['space-header__step-label']}>{step}</span>
+          </li>
+        ))}
+      </ol>
       <div className={styles['space-header__meta']}>
-        <ol
-          className={styles['space-header__lifecycle']}
-          aria-label="Lifecycle"
-        >
-          {space.lifecycle.map((step, i) => (
-            <li
-              key={step}
-              className={`${styles['space-header__step']} ${
-                i < current ? styles['space-header__step--past'] : ''
-              } ${i === current ? styles['space-header__step--current'] : ''}`}
-              aria-current={i === current ? 'step' : undefined}
-            >
-              {step}
-            </li>
-          ))}
-        </ol>
         <span className={styles['space-header__fact']}>
           Lead <strong>{PEOPLE[space.leadId]!.name}</strong>
         </span>
