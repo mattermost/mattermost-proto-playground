@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ChannelShell } from '@mattermost/compass-proto';
 import SceneSwitcher from '@/components/navigation/SceneSwitcher/SceneSwitcher';
 import { usePrototypeChrome } from '@/contexts/PrototypeChromeContext';
+import { ViewingAs } from './components/ViewingAs';
 import { SpacesSidebar } from './components/SpacesSidebar';
 import {
   ENVIRONMENTS,
@@ -32,18 +33,29 @@ export default function Spaces() {
 
   useEffect(() => {
     setCenterSlot(
-      <SceneSwitcher
-        scenes={ENVIRONMENTS.map((item) => ({
-          id: item.id,
-          label: item.switchLabel,
-        }))}
-        activeId={useCase}
-        onChange={(id) => selectUseCase(id as UseCaseId)}
-        ariaLabel="Use case"
-      />,
+      <div className={styles['spaces__chrome']}>
+        <SceneSwitcher
+          scenes={ENVIRONMENTS.map((item) => ({
+            id: item.id,
+            label: item.switchLabel,
+          }))}
+          activeId={useCase}
+          onChange={(id) => selectUseCase(id as UseCaseId)}
+          ariaLabel="Use case"
+        />
+        {environment.compareRollup ? (
+          <ViewingAs value={rollup} onChange={setRollup} />
+        ) : null}
+      </div>,
     );
     return () => setCenterSlot(null);
-  }, [useCase, selectUseCase, setCenterSlot]);
+  }, [
+    useCase,
+    rollup,
+    environment.compareRollup,
+    selectUseCase,
+    setCenterSlot,
+  ]);
 
   const sidebar = (
     <SpacesSidebar
@@ -61,14 +73,12 @@ export default function Spaces() {
       environment={environment}
       space={space}
       rollup={environment.compareRollup ? rollup : 'safe'}
-      onRollupChange={setRollup}
       onOpenSpace={setSpaceId}
     />
   ) : (
     <DayScene
       environment={environment}
       rollup={environment.compareRollup ? rollup : 'safe'}
-      onRollupChange={setRollup}
       onOpenSpace={setSpaceId}
     />
   );

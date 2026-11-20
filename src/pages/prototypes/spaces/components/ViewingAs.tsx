@@ -18,17 +18,19 @@ export function ViewingAs({ value, onChange }: ViewingAsProps) {
       <span className={styles['viewing-as__label']}>Viewing as</span>
       <Radio
         name="viewing-as"
+        size="small"
         checked={value === 'safe'}
         onChange={() => onChange('safe')}
       >
-        Ops center (safe rollup)
+        Safe rollup
       </Radio>
       <Radio
         name="viewing-as"
+        size="small"
         checked={value === 'leak'}
         onChange={() => onChange('leak')}
       >
-        Partner liaison (leaks existence)
+        Leaks existence
       </Radio>
     </div>
   );

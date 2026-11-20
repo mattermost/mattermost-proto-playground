@@ -66,6 +66,12 @@ export interface MetricFixture {
   series?: number[];
 }
 
+export interface HomeUpdate {
+  id: string;
+  title: string;
+  detail: string;
+}
+
 export interface EnvironmentFixture {
   id: UseCaseId;
   switchLabel: string;
@@ -81,6 +87,8 @@ export interface EnvironmentFixture {
     support: FloorItem[];
   };
   watching: string[];
+  /** Rows that fill Home. Illustrative, not a product feed. */
+  updates: HomeUpdate[];
   /** Present only when the environment compares two rollups. */
   compareRollup?: boolean;
   agent?: { name: string; status: string; progress: number };
@@ -220,6 +228,13 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
                 state: 'Running',
                 progress: 40,
               },
+              {
+                id: 'patrol-report',
+                name: 'File the patrol report',
+                kind: 'Run',
+                state: 'Running',
+                progress: 25,
+              },
             ],
           },
           {
@@ -236,17 +251,72 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
                 state: 'Planned',
                 progress: 0,
               },
+              {
+                id: 'pilot-brief',
+                name: 'Brief the harbor pilot',
+                kind: 'Run',
+                state: 'Planned',
+                progress: 0,
+              },
             ],
+          },
+          {
+            id: 'sitrep-draft',
+            name: 'SITREP draft',
+            kind: 'Skill',
+            state: 'Waiting',
+            progress: 55,
+            note: 'Needs Night Transit before it can draft.',
           },
         ],
       },
     ],
     floors: {
-      command: [{ name: 'ops-center' }, { name: 'ato-1844', private: true }],
-      currentOps: [{ name: 'harbor-sweep' }, { name: 'night-transit' }],
-      support: [{ name: 'weather' }, { name: 'logistics' }],
+      command: [
+        { name: 'ops-center' },
+        { name: 'ato-1844', private: true },
+        { name: 'watch-floor' },
+      ],
+      currentOps: [
+        { name: 'harbor-sweep' },
+        { name: 'night-transit' },
+        { name: 'convoy-track' },
+      ],
+      support: [
+        { name: 'weather' },
+        { name: 'logistics' },
+        { name: 'medical' },
+      ],
     },
-    watching: ['SITREP skill', 'Night Transit'],
+    watching: ['SITREP skill', 'Night Transit', 'Patrol report'],
+    updates: [
+      {
+        id: 'a1',
+        title: 'Harbor Sweep boarded two merchants',
+        detail: 'Northern lane screen is still running. Report is due tonight.',
+      },
+      {
+        id: 'a2',
+        title: 'Night Transit is still planned',
+        detail: 'Convoy escort and the harbor-pilot brief have not started.',
+      },
+      {
+        id: 'a3',
+        title: 'SITREP skill is waiting',
+        detail: 'It will not draft until Night Transit has a state.',
+      },
+      {
+        id: 'a4',
+        title: 'ATO 1844 is the seed',
+        detail:
+          'The operation, missions, and runs archive together on close-out.',
+      },
+      {
+        id: 'a5',
+        title: 'Weather window holds through Friday',
+        detail: 'Logistics has fuel for the escort. Medical is on standby.',
+      },
+    ],
   },
   {
     id: 'b',
@@ -322,7 +392,29 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
                 state: 'Running',
                 progress: 60,
               },
+              {
+                id: 'inject-1',
+                name: 'Inject 1 · muster',
+                kind: 'Run',
+                state: 'Done',
+                progress: 100,
+              },
+              {
+                id: 'inject-3',
+                name: 'Inject 3 · casualty',
+                kind: 'Run',
+                state: 'Planned',
+                progress: 0,
+              },
             ],
+          },
+          {
+            id: 'white-cell-notes',
+            name: 'White-cell notes',
+            kind: 'Record',
+            state: 'Open',
+            progress: 40,
+            note: 'Unclassified. Safe to show on this instance.',
           },
           {
             id: 'partner-annex',
@@ -346,14 +438,50 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       },
     ],
     floors: {
-      command: [{ name: 'exercise-control' }],
+      command: [
+        { name: 'exercise-control' },
+        { name: 'controller-net', private: true },
+      ],
       currentOps: [
         { name: 'crimson-one' },
         { name: 'partner-bridge', private: true },
+        { name: 'inject-channel' },
       ],
-      support: [{ name: 'white-cell' }],
+      support: [{ name: 'white-cell' }, { name: 'safety' }],
     },
-    watching: ['Inject 2 · comms loss'],
+    watching: [
+      'Inject 2 · comms loss',
+      'Inject 3 · casualty',
+      'White-cell notes',
+    ],
+    updates: [
+      {
+        id: 'b1',
+        title: 'Inject 2 is running',
+        detail: 'Comms loss on this instance. White cell is scoring it.',
+      },
+      {
+        id: 'b2',
+        title: 'Inject 1 is done',
+        detail: 'Muster completed at 09:10. Inject 3 is still planned.',
+      },
+      {
+        id: 'b3',
+        title: 'Safe rollup hides the partner annex',
+        detail: 'Switch Viewing as in the top bar to compare the leak.',
+      },
+      {
+        id: 'b4',
+        title: 'Partner bridge is up',
+        detail:
+          '18 messages today. The annex itself stays on the other instance.',
+      },
+      {
+        id: 'b5',
+        title: 'Safety cell is clear',
+        detail: 'No real-world stop. The exercise window runs through 7 March.',
+      },
+    ],
   },
   {
     id: 'c',
@@ -428,6 +556,13 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
                 progress: 35,
                 note: 'Blocked 14h on the backup key.',
               },
+              {
+                id: 'disable-share',
+                name: 'Disable the finance share',
+                kind: 'Run',
+                state: 'Running',
+                progress: 60,
+              },
             ],
           },
           {
@@ -443,6 +578,13 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
                 kind: 'Run',
                 state: 'Planned',
                 progress: 10,
+              },
+              {
+                id: 'validate',
+                name: 'Validate payroll files',
+                kind: 'Run',
+                state: 'Planned',
+                progress: 0,
               },
             ],
           },
@@ -466,11 +608,50 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       },
     ],
     floors: {
-      command: [{ name: 'threat-response' }],
-      currentOps: [{ name: 'inc-1120', private: true }],
-      support: [{ name: 'legal' }, { name: 'ir-playbooks' }],
+      command: [
+        { name: 'threat-response' },
+        { name: 'incident-command', private: true },
+      ],
+      currentOps: [
+        { name: 'inc-1120', private: true },
+        { name: 'finance-bridge' },
+      ],
+      support: [{ name: 'legal' }, { name: 'ir-playbooks' }, { name: 'comms' }],
     },
-    watching: ['Disk image 04', 'Notify the regulator'],
+    watching: [
+      'Disk image 04',
+      'Notify the regulator',
+      'Isolate the file server',
+    ],
+    updates: [
+      {
+        id: 'c1',
+        title: 'File server isolation is blocked',
+        detail:
+          '14 hours on the backup key. The finance share disable is running.',
+      },
+      {
+        id: 'c2',
+        title: 'Notify the regulator is open',
+        detail: 'Owned by the case, not by a playbook run.',
+      },
+      {
+        id: 'c3',
+        title: 'Disk image 04 is sealed',
+        detail: 'Chain of custody is on the case. Legal has the hash.',
+      },
+      {
+        id: 'c4',
+        title: 'MTTA 18m, MTTR 6.5h',
+        detail:
+          'Both roll up from the Playbooks runs. Recovery has not started.',
+      },
+      {
+        id: 'c5',
+        title: 'Payroll validation is planned',
+        detail: 'It waits on the last clean backup.',
+      },
+    ],
   },
   {
     id: 'd',
@@ -548,6 +729,21 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
             state: 'Running',
             progress: 40,
           },
+          {
+            id: 'customer-note',
+            name: 'Post the customer note',
+            kind: 'Run',
+            state: 'Running',
+            progress: 30,
+            note: 'Uses the comms plan. That page is review due.',
+          },
+          {
+            id: 'health-check',
+            name: 'Check west-2 health',
+            kind: 'Run',
+            state: 'Done',
+            progress: 100,
+          },
         ],
       },
       {
@@ -578,15 +774,53 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
             kind: 'Page',
             freshness: 'review-due',
           },
+          {
+            id: 'vendor-list',
+            name: 'Vendor callback list',
+            kind: 'Page',
+            freshness: 'current',
+          },
         ],
       },
     ],
     floors: {
-      command: [{ name: 'cybersec-leads' }],
-      currentOps: [{ name: 'failover-us-east-1' }],
-      support: [{ name: 'dr-library' }],
+      command: [
+        { name: 'cybersec-leads' },
+        { name: 'dr-owners', private: true },
+      ],
+      currentOps: [{ name: 'failover-us-east-1' }, { name: 'west-2-bridge' }],
+      support: [{ name: 'dr-library' }, { name: 'status-page' }],
     },
-    watching: ['Contact tree'],
+    watching: ['Contact tree', 'Customer comms plan', 'Pinned runbook v2024.3'],
+    updates: [
+      {
+        id: 'd1',
+        title: 'Traffic shift is running',
+        detail:
+          'West-2 health check is done. The customer note is still drafting.',
+      },
+      {
+        id: 'd2',
+        title: 'Runbook is pinned at v2024.3',
+        detail:
+          'The failover event references DR Library. It does not contain it.',
+      },
+      {
+        id: 'd3',
+        title: 'Contact tree is stale',
+        detail: 'Library freshness is review due. Two pages need a look.',
+      },
+      {
+        id: 'd4',
+        title: 'Library last synced 3 hours ago',
+        detail: 'Standing. No timeframe and no close-out.',
+      },
+      {
+        id: 'd5',
+        title: 'Status page is drafted',
+        detail: 'It quotes the customer comms plan, which is review due.',
+      },
+    ],
   },
   {
     id: 'e',
@@ -676,6 +910,20 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
             progress: 20,
             note: 'Owned by the Project, not by a playbook.',
           },
+          {
+            id: 'axios',
+            name: 'Bump axios',
+            kind: 'Task',
+            state: 'In progress',
+            progress: 45,
+          },
+          {
+            id: 'minimatch',
+            name: 'Replace minimatch',
+            kind: 'Task',
+            state: 'Open',
+            progress: 10,
+          },
         ],
       },
       {
@@ -699,15 +947,48 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
             freshness: 'current',
             note: 'The lodash task references this page.',
           },
+          {
+            id: 'severity',
+            name: 'Severity scale',
+            kind: 'Page',
+            freshness: 'current',
+          },
         ],
       },
     ],
     floors: {
-      command: [{ name: 'devsecops' }],
-      currentOps: [{ name: 'vuln-sprint' }],
-      support: [{ name: 'security-handbook' }],
+      command: [{ name: 'devsecops' }, { name: 'appsec-leads', private: true }],
+      currentOps: [{ name: 'vuln-sprint' }, { name: 'dependency-alerts' }],
+      support: [{ name: 'security-handbook' }, { name: 'build-help' }],
     },
-    watching: ['Exception for lodash'],
+    watching: ['Exception for lodash', 'Bump axios', 'Dependency policy'],
+    updates: [
+      {
+        id: 'e1',
+        title: 'Dependency Scout triaged four findings',
+        detail: 'Three are still open on the sprint board.',
+      },
+      {
+        id: 'e2',
+        title: 'Exception for lodash is open',
+        detail: 'The Project owns it. It points at the Security Handbook.',
+      },
+      {
+        id: 'e3',
+        title: 'Axios bump is in progress',
+        detail: 'Minimatch replacement has not started.',
+      },
+      {
+        id: 'e4',
+        title: 'Handbook is current',
+        detail: 'Standing. The sprint references it and does not contain it.',
+      },
+      {
+        id: 'e5',
+        title: 'Five new advisories this week',
+        detail: 'Two are direct dependencies. The rest are transitive.',
+      },
+    ],
   },
 ];
 

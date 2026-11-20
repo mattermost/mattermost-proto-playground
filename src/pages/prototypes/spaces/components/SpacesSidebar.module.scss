@@ -32,6 +32,13 @@
       var(--ease-exit);
   }
 
+  &__hint {
+    margin: 0;
+    padding: 0 var(--spacing-l) var(--spacing-xxs);
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+    font-size: var(--font-size-75);
+  }
+
   &__empty {
     margin: 0;
     padding: var(--spacing-xs) var(--spacing-l) var(--spacing-xs)

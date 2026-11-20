@@ -6,7 +6,6 @@ import { Tag } from '@mattermost/compass-ui/components/tag';
 import ChevronRightIcon from '@mattermost/compass-icons/components/chevron-right';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
 import { AgentChatBox } from '../components/AgentChatBox';
-import { ViewingAs } from '../components/ViewingAs';
 import {
   FRESHNESS_LABEL,
   FRESHNESS_TAG,
@@ -21,7 +20,6 @@ import styles from './DayScene.module.scss';
 export interface DaySceneProps {
   environment: EnvironmentFixture;
   rollup: RollupView;
-  onRollupChange: (value: RollupView) => void;
   onOpenSpace: (spaceId: string) => void;
 }
 
@@ -64,7 +62,6 @@ function spaceMeta(space: SpaceFixture, leak: boolean): string {
 export default function DayScene({
   environment,
   rollup,
-  onRollupChange,
   onOpenSpace,
 }: DaySceneProps) {
   const leak = rollup === 'leak';
@@ -115,10 +112,6 @@ export default function DayScene({
             {environment.title} · {environment.audience}
           </span>
         </header>
-
-        {environment.compareRollup ? (
-          <ViewingAs value={rollup} onChange={onRollupChange} />
-        ) : null}
 
         <section
           className={styles['day-scene__ask']}
@@ -177,11 +170,9 @@ export default function DayScene({
                 id="temporary-title"
                 className={shared['spaces__panel-title']}
               >
-                Temporary
+                Active
               </h2>
-              <span className={shared['spaces__panel-aside']}>
-                State, timeframe, close-out
-              </span>
+              <span className={shared['spaces__panel-aside']}>Closes out</span>
             </div>
             {temporary.length === 0 ? (
               <p className={styles['day-scene__empty']}>
@@ -245,7 +236,7 @@ export default function DayScene({
               </div>
               {standing.length === 0 ? (
                 <p className={styles['day-scene__empty']}>
-                  No standing Spaces. Temporary work can still reference one.
+                  No standing Spaces. Active work can still reference one.
                 </p>
               ) : (
                 <ul className={shared['spaces__list']}>
@@ -326,6 +317,31 @@ export default function DayScene({
             </section>
           </div>
         </div>
+
+        <section
+          className={shared['spaces__panel']}
+          aria-labelledby="updates-title"
+        >
+          <div className={shared['spaces__panel-header']}>
+            <h2 id="updates-title" className={shared['spaces__panel-title']}>
+              Open items
+            </h2>
+          </div>
+          <ul className={shared['spaces__list']}>
+            {environment.updates.map((item) => (
+              <li key={item.id} className={shared['spaces__row']}>
+                <div className={shared['spaces__row-main']}>
+                  <span className={shared['spaces__row-title']}>
+                    {item.title}
+                  </span>
+                  <span className={shared['spaces__row-meta']}>
+                    {item.detail}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       </div>
     </Scrollbar>
   );

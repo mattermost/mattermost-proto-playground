@@ -98,7 +98,8 @@ export function SpacesSidebar({
             }
           >
             <SpaceGroup
-              label="Temporary"
+              label="Active"
+              hint="Closes out"
               spaces={temporary}
               leak={leak}
               expanded={expanded}
@@ -108,6 +109,7 @@ export function SpacesSidebar({
             />
             <SpaceGroup
               label="Standing"
+              hint="No close-out"
               spaces={standing}
               leak={leak}
               expanded={expanded}
@@ -147,6 +149,7 @@ export function SpacesSidebar({
 
 function SpaceGroup({
   label,
+  hint,
   spaces,
   leak,
   expanded,
@@ -155,6 +158,7 @@ function SpaceGroup({
   onOpenSpace,
 }: {
   label: string;
+  hint: string;
   spaces: EnvironmentFixture['spaces'];
   leak: boolean;
   expanded: string | null;
@@ -165,6 +169,7 @@ function SpaceGroup({
   return (
     <div className={channelsSidebarStyles['channels-sidebar__channel-group']}>
       <ChannelsSidebarCategory label={label} />
+      <p className={styles['spaces-sidebar__hint']}>{hint}</p>
       {spaces.map((space) => {
         const open = expanded === space.id;
         const children = rollupNodes(space.children, leak);

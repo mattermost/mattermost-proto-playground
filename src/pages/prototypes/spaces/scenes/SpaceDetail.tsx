@@ -5,7 +5,6 @@ import { Tag } from '@mattermost/compass-ui/components/tag';
 import LayersOutlineIcon from '@mattermost/compass-icons/components/layers-outline';
 import LinkVariantIcon from '@mattermost/compass-icons/components/link-variant';
 import LockIcon from '@mattermost/compass-icons/components/lock';
-import { ViewingAs } from '../components/ViewingAs';
 import {
   FRESHNESS_LABEL,
   FRESHNESS_TAG,
@@ -22,7 +21,6 @@ export interface SpaceDetailProps {
   environment: EnvironmentFixture;
   space: SpaceFixture;
   rollup: RollupView;
-  onRollupChange: (value: RollupView) => void;
   onOpenSpace: (spaceId: string) => void;
 }
 
@@ -74,7 +72,6 @@ export default function SpaceDetail({
   environment,
   space,
   rollup,
-  onRollupChange,
   onOpenSpace,
 }: SpaceDetailProps) {
   const leak = rollup === 'leak';
@@ -84,9 +81,6 @@ export default function SpaceDetail({
   return (
     <Scrollbar className={shared['spaces__scroll']}>
       <div className={shared['spaces__body']}>
-        {environment.compareRollup ? (
-          <ViewingAs value={rollup} onChange={onRollupChange} />
-        ) : null}
         <header className={styles['space-detail__header']}>
           <span className={styles['space-detail__eyebrow']}>
             <Icon glyph={<LayersOutlineIcon />} size="16" />

@@ -17,7 +17,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-l);
+    width: 100%;
+    // Same column as the agents chat composer.
+    max-width: 800px;
     margin-block: var(--spacing-xl);
+    margin-inline: auto;
   }
 
   &__suggestions {

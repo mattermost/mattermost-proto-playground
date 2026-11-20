@@ -61,6 +61,17 @@
     margin: 0 !important;
   }
 
+  // Prototype controls in the top-nav centre slot, beside the use-case switcher.
+  &__chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+
+    button {
+      white-space: nowrap;
+    }
+  }
+
   &__scroll {
     flex: 1;
     min-height: 0;
