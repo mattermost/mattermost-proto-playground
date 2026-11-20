@@ -22,7 +22,7 @@ export function ViewingAs({ value, onChange }: ViewingAsProps) {
         checked={value === 'safe'}
         onChange={() => onChange('safe')}
       >
-        Safe rollup
+        Your access
       </Radio>
       <Radio
         name="viewing-as"
@@ -30,7 +30,7 @@ export function ViewingAs({ value, onChange }: ViewingAsProps) {
         checked={value === 'leak'}
         onChange={() => onChange('leak')}
       >
-        Leaks existence
+        Show restricted
       </Radio>
     </div>
   );

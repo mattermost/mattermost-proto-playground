@@ -202,7 +202,7 @@ export default function DecisionScene({
                   How it got here
                 </h2>
                 <span className={shared['spaces__panel-aside']}>
-                  Reminders and escalation are rule-based
+                  Since Oct 26
                 </span>
               </div>
               <ol className={shared['spaces__list']}>

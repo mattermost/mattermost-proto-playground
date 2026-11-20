@@ -127,7 +127,7 @@ export function rollupNodes(
       if (leak) {
         out.push({
           id: node.id,
-          name: 'Hidden child',
+          name: 'Restricted',
           kind: 'Restricted',
           leaked: true,
           note: 'Existence only. The contents stay on the other side.',
@@ -146,14 +146,14 @@ export function rollupNodes(
 export const ENVIRONMENTS: EnvironmentFixture[] = [
   {
     id: 'a',
-    switchLabel: 'A Harbor',
+    switchLabel: 'Air operations',
     title: 'Operation BLUE HARBOR',
     audience: 'MissionOps · Ops Center',
     dateLabel: 'Wednesday, 12 November',
     suggestions: [
       'Draft the SITREP from mission states',
       'Which missions are still planned?',
-      'What archives together on close-out?',
+      'What is still planned for Night Transit?',
     ],
     metrics: [
       {
@@ -167,7 +167,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         id: 'runs',
         label: 'Runs complete',
         value: '1/3',
-        detail: 'Operation → Mission → Run',
+        detail: 'One Harbor Sweep run is still going.',
         bar: 33,
       },
       {
@@ -181,7 +181,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         id: 'window',
         label: 'Days in window',
         value: '6',
-        detail: '12–26 November. Closes as one archive.',
+        detail: 'Through 26 November.',
         series: [2, 3, 4, 5, 5, 6, 6],
       },
     ],
@@ -191,8 +191,8 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       progress: 55,
     },
     callouts: [
-      'Temporary. State, timeframe, and a close-out that archives the operation, its missions, and its runs together.',
-      'Close-out can open an after-action review. There is no standing Space in this environment.',
+      'Harbor Sweep is underway through 26 November.',
+      'Night Transit is still planned. The SITREP is waiting on it.',
     ],
     spaces: [
       {
@@ -200,73 +200,40 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         name: 'Operation BLUE HARBOR',
         vocabulary: 'Operation',
         tenure: 'temporary',
-        summary: 'Seeded from ATO 1844. Screen and escort through 26 November.',
-        state: 'Active',
-        timeframe: '12–26 November',
+        summary: 'ATO window 14–21 November. Screen and escort.',
+        state: 'En route',
+        timeframe: '14–21 November',
         progress: 45,
         closeOut:
           'Archive the operation, missions, and runs together, then open an after-action review.',
         children: [
           {
-            id: 'harbor-sweep',
-            name: 'Harbor Sweep',
+            id: 'msn-101',
+            name: 'MSN-101 Tanker Track Alpha',
             kind: 'Mission',
-            state: 'Underway',
-            progress: 70,
-            children: [
-              {
-                id: 'screen-lane',
-                name: 'Screen the northern lane',
-                kind: 'Run',
-                state: 'Running',
-                progress: 80,
-              },
-              {
-                id: 'board-traffic',
-                name: 'Board merchant traffic',
-                kind: 'Run',
-                state: 'Running',
-                progress: 40,
-              },
-              {
-                id: 'patrol-report',
-                name: 'File the patrol report',
-                kind: 'Run',
-                state: 'Running',
-                progress: 25,
-              },
-            ],
+            state: 'On station',
+            progress: 50,
           },
           {
-            id: 'night-transit',
-            name: 'Night Transit',
+            id: 'msn-102',
+            name: 'MSN-102 CAS Package',
             kind: 'Mission',
-            state: 'Planned',
+            state: 'En route',
+            progress: 40,
+          },
+          {
+            id: 'msn-103',
+            name: 'MSN-103 CSAR Standby',
+            kind: 'Mission',
+            state: 'Planning',
             progress: 0,
-            children: [
-              {
-                id: 'escort',
-                name: 'Escort the convoy',
-                kind: 'Run',
-                state: 'Planned',
-                progress: 0,
-              },
-              {
-                id: 'pilot-brief',
-                name: 'Brief the harbor pilot',
-                kind: 'Run',
-                state: 'Planned',
-                progress: 0,
-              },
-            ],
           },
           {
-            id: 'sitrep-draft',
-            name: 'SITREP draft',
-            kind: 'Skill',
-            state: 'Waiting',
-            progress: 55,
-            note: 'Needs Night Transit before it can draft.',
+            id: 'msn-104',
+            name: 'MSN-104 ISR Orbit',
+            kind: 'Mission',
+            state: 'Critical',
+            progress: 20,
           },
         ],
       },
@@ -308,8 +275,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       {
         id: 'a4',
         title: 'ATO 1844 is the seed',
-        detail:
-          'The operation, missions, and runs archive together on close-out.',
+        detail: 'Night Transit still needs a start time.',
       },
       {
         id: 'a5',
@@ -320,29 +286,29 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
   },
   {
     id: 'b',
-    switchLabel: 'B Crimson',
+    switchLabel: 'Coalition exercise',
     title: 'Exercise CRIMSON ONE',
-    audience: 'MissionOps · one Space, two security levels',
+    audience: 'MissionOps · Exercise control',
     dateLabel: 'Monday, 3 March',
     compareRollup: true,
     suggestions: [
       'What can the partner instance see?',
-      'Which children does the safe rollup drop?',
+      'What can I see on this exercise?',
       'Summarize the unclassified injects',
     ],
     metrics: [
       {
         id: 'visible',
-        label: 'Missions in the rollup',
+        label: 'Missions you can see',
         value: '1',
         detail: 'Force-on-force is visible at this level.',
         bar: 50,
       },
       {
         id: 'hidden',
-        label: 'Hidden children',
+        label: 'Restricted',
         value: '0',
-        detail: 'Safe rollup removes them instead of naming them.',
+        detail: 'Restricted missions are hidden.',
         bar: 0,
       },
       {
@@ -361,8 +327,8 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       },
     ],
     callouts: [
-      'One temporary Space spans security levels and a partner instance.',
-      'Switch Viewing as to compare a safe rollup with one that leaks existence.',
+      'Force-on-force is underway on this instance.',
+      'The partner annex stays hidden unless you show restricted items.',
     ],
     spaces: [
       {
@@ -379,60 +345,27 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
           'Archive the exercise and every inject together when the window ends.',
         children: [
           {
-            id: 'force-on-force',
-            name: 'Force-on-force',
-            kind: 'Mission',
-            state: 'Underway',
-            progress: 50,
-            children: [
-              {
-                id: 'inject-2',
-                name: 'Inject 2 · comms loss',
-                kind: 'Run',
-                state: 'Running',
-                progress: 60,
-              },
-              {
-                id: 'inject-1',
-                name: 'Inject 1 · muster',
-                kind: 'Run',
-                state: 'Done',
-                progress: 100,
-              },
-              {
-                id: 'inject-3',
-                name: 'Inject 3 · casualty',
-                kind: 'Run',
-                state: 'Planned',
-                progress: 0,
-              },
-            ],
+            id: 'air-defense',
+            name: 'Coalition Air Defense',
+            kind: 'Cell',
+            state: 'On station',
+            progress: 80,
           },
           {
-            id: 'white-cell-notes',
-            name: 'White-cell notes',
-            kind: 'Record',
-            state: 'Open',
-            progress: 40,
-            note: 'Unclassified. Safe to show on this instance.',
-          },
-          {
-            id: 'partner-annex',
-            name: 'Partner annex',
-            kind: 'Mission',
-            state: 'Underway',
+            id: 'cyber',
+            name: 'Cyber Effects Cell',
+            kind: 'Cell',
+            state: 'Warning',
             restricted: true,
-            progress: 35,
-            note: 'Lives on the partner instance.',
-            children: [
-              {
-                id: 'liaison',
-                name: 'Cross-instance liaison',
-                kind: 'Run',
-                restricted: true,
-                progress: 20,
-              },
-            ],
+            progress: 45,
+          },
+          {
+            id: 'sigint',
+            name: 'SIGINT Fusion Cell',
+            kind: 'Cell',
+            state: 'Critical',
+            restricted: true,
+            progress: 25,
           },
         ],
       },
@@ -467,8 +400,8 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       },
       {
         id: 'b3',
-        title: 'Safe rollup hides the partner annex',
-        detail: 'Switch Viewing as in the top bar to compare the leak.',
+        title: 'Partner annex is hidden',
+        detail: 'Turn on Show restricted to list it.',
       },
       {
         id: 'b4',
@@ -485,7 +418,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
   },
   {
     id: 'c',
-    switchLabel: 'C INC-1120',
+    switchLabel: 'Ransomware case',
     title: 'Ransomware case INC-1120',
     audience: 'CyberSec · Threat Response',
     dateLabel: 'Friday, 18 April',
@@ -499,7 +432,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         id: 'mtta',
         label: 'MTTA',
         value: '18m',
-        detail: 'Rolled up from the Playbooks POC.',
+        detail: 'From the containment runs.',
         bar: 30,
       },
       {
@@ -525,13 +458,13 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       },
     ],
     callouts: [
-      'Case → Workstream → Run. One task is owned by the Case itself, not by a playbook.',
-      'Chain of custody is a record on the case. Blocked time, MTTA, and MTTR roll up from Playbooks.',
+      'Containment is blocked on the backup key.',
+      'Notify the regulator is still open.',
     ],
     spaces: [
       {
         id: 'inc-1120',
-        name: 'INC-1120',
+        name: 'INC-2026-1120 · Ransomware at Plant 7',
         vocabulary: 'Case',
         tenure: 'temporary',
         summary: 'Ransomware on the finance file server. Containment is open.',
@@ -545,64 +478,22 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
             id: 'containment',
             name: 'Containment',
             kind: 'Workstream',
-            state: 'Blocked',
+            state: 'Active',
             progress: 35,
-            children: [
-              {
-                id: 'isolate',
-                name: 'Isolate the file server',
-                kind: 'Run',
-                state: 'Blocked',
-                progress: 35,
-                note: 'Blocked 14h on the backup key.',
-              },
-              {
-                id: 'disable-share',
-                name: 'Disable the finance share',
-                kind: 'Run',
-                state: 'Running',
-                progress: 60,
-              },
-            ],
           },
           {
-            id: 'recovery',
-            name: 'Recovery',
+            id: 'forensics',
+            name: 'Forensics',
+            kind: 'Workstream',
+            state: 'Active',
+            progress: 25,
+          },
+          {
+            id: 'legal',
+            name: 'Legal & Comms',
             kind: 'Workstream',
             state: 'Planned',
-            progress: 10,
-            children: [
-              {
-                id: 'restore',
-                name: 'Restore from the last clean backup',
-                kind: 'Run',
-                state: 'Planned',
-                progress: 10,
-              },
-              {
-                id: 'validate',
-                name: 'Validate payroll files',
-                kind: 'Run',
-                state: 'Planned',
-                progress: 0,
-              },
-            ],
-          },
-          {
-            id: 'regulator',
-            name: 'Notify the regulator',
-            kind: 'Task',
-            state: 'Open',
             progress: 0,
-            note: 'Owned by the Case, not by a playbook run.',
-          },
-          {
-            id: 'custody',
-            name: 'Disk image 04',
-            kind: 'Record',
-            state: 'Sealed',
-            progress: 100,
-            note: 'Chain of custody. Held on the case.',
           },
         ],
       },
@@ -643,8 +534,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       {
         id: 'c4',
         title: 'MTTA 18m, MTTR 6.5h',
-        detail:
-          'Both roll up from the Playbooks runs. Recovery has not started.',
+        detail: 'From the containment runs. Recovery has not started.',
       },
       {
         id: 'c5',
@@ -655,9 +545,9 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
   },
   {
     id: 'd',
-    switchLabel: 'D Failover',
+    switchLabel: 'OOB IR + DR',
     title: 'DR Library and Failover Event',
-    audience: 'CyberSec · one standing, one temporary',
+    audience: 'CyberSec · Disaster recovery',
     dateLabel: 'Tuesday, 2 September',
     suggestions: [
       'Which runbook version is pinned?',
@@ -667,7 +557,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
     metrics: [
       {
         id: 'fresh',
-        label: 'Library freshness',
+        label: 'Pages current',
         value: '1/3',
         detail: 'Current pages over the library. Two need review.',
         bar: 33,
@@ -676,7 +566,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         id: 'event',
         label: 'Failover progress',
         value: '2/4',
-        detail: 'Temporary event. It does not contain the library.',
+        detail: 'The runbook is pinned. The library stays separate.',
         bar: 50,
       },
       {
@@ -695,13 +585,13 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       },
     ],
     callouts: [
-      'DR Library is standing: no timeframe, no close-out, freshness instead of progress.',
-      'Failover Event is temporary and references the library by pinned version. It does not contain it.',
+      'Failover is in progress. The runbook is pinned at v2024.3.',
+      'DR Library last synced 3 hours ago. The contact tree needs review.',
     ],
     spaces: [
       {
         id: 'failover',
-        name: 'Failover Event · us-east-1',
+        name: 'Failover Event · Region East outage',
         vocabulary: 'Event',
         tenure: 'temporary',
         summary:
@@ -715,44 +605,34 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         ],
         children: [
           {
-            id: 'execute-runbook',
-            name: 'Execute pinned runbook',
-            kind: 'Run',
-            state: 'Running',
-            progress: 50,
-            note: 'Uses DR Library v2024.3. The library is not a child of this event.',
+            id: 'network',
+            name: 'Network',
+            kind: 'Workstream',
+            state: 'Done soon',
+            progress: 83,
           },
           {
-            id: 'shift-traffic',
-            name: 'Shift traffic to us-west-2',
-            kind: 'Run',
-            state: 'Running',
+            id: 'identity',
+            name: 'Identity',
+            kind: 'Workstream',
+            state: 'Blocked',
             progress: 40,
           },
           {
-            id: 'customer-note',
-            name: 'Post the customer note',
-            kind: 'Run',
-            state: 'Running',
-            progress: 30,
-            note: 'Uses the comms plan. That page is review due.',
-          },
-          {
-            id: 'health-check',
-            name: 'Check west-2 health',
-            kind: 'Run',
-            state: 'Done',
-            progress: 100,
+            id: 'apps',
+            name: 'Core apps',
+            kind: 'Workstream',
+            state: 'Active',
+            progress: 33,
           },
         ],
       },
       {
         id: 'dr-library',
-        name: 'DR Library',
+        name: 'Disaster Recovery Library',
         vocabulary: 'Library',
         tenure: 'standing',
-        summary:
-          'MetLife-style disaster-recovery library. Synced, freshness-rated.',
+        summary: 'Disaster recovery library. Last synced 3 hours ago.',
         freshness: 'review-due',
         children: [
           {
@@ -808,12 +688,12 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       {
         id: 'd3',
         title: 'Contact tree is stale',
-        detail: 'Library freshness is review due. Two pages need a look.',
+        detail: 'Two pages need review.',
       },
       {
         id: 'd4',
         title: 'Library last synced 3 hours ago',
-        detail: 'Standing. No timeframe and no close-out.',
+        detail: 'The library stays after the failover ends.',
       },
       {
         id: 'd5',
@@ -824,14 +704,14 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
   },
   {
     id: 'e',
-    switchLabel: 'E Sprint',
+    switchLabel: 'DevSecOps project',
     title: 'Dependency Vulnerability Sprint',
-    audience: 'DevSecOps · a Project and a standing Handbook',
+    audience: 'DevSecOps',
     dateLabel: 'Thursday, 16 October',
     suggestions: [
       'What is Dependency Scout doing?',
-      'Which task is owned by the Project?',
-      'Where does the Handbook get referenced?',
+      'What is still open on the lodash exception?',
+      'What does the handbook say about exceptions?',
     ],
     metrics: [
       {
@@ -869,13 +749,13 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       progress: 57,
     },
     callouts: [
-      'The sprint is a temporary Project: a board, a custom agent, and a task the Project owns.',
-      'Security Handbook is standing. The project references it and does not contain it.',
+      'Four of seven findings are triaged.',
+      'The lodash exception is still open.',
     ],
     spaces: [
       {
         id: 'vuln-sprint',
-        name: 'Dependency Vulnerability Sprint',
+        name: 'Dependency Vulnerability Sprint · Q4',
         vocabulary: 'Project',
         tenure: 'temporary',
         summary: 'Two-week sprint on direct dependencies.',
@@ -887,51 +767,34 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
         references: [{ spaceId: 'handbook', name: 'Security Handbook' }],
         children: [
           {
-            id: 'scout',
-            name: 'Dependency Scout',
-            kind: 'Agent',
-            state: 'Working',
-            progress: 57,
-            note: 'Custom agent on this Project.',
+            id: 'cves',
+            name: 'Critical CVEs',
+            kind: 'Workstream',
+            state: 'At risk',
+            progress: 80,
           },
           {
-            id: 'board',
-            name: 'Sprint board',
-            kind: 'Board',
-            state: 'In progress',
+            id: 'hotfix',
+            name: 'Hotfix release',
+            kind: 'Workstream',
+            state: 'Waiting',
+            progress: 60,
+          },
+          {
+            id: 'backlog',
+            name: 'Backlog burn-down',
+            kind: 'Workstream',
+            state: 'On track',
             progress: 55,
-            note: 'Seven findings. Four triaged.',
-          },
-          {
-            id: 'lodash',
-            name: 'Exception for lodash',
-            kind: 'Task',
-            state: 'Open',
-            progress: 20,
-            note: 'Owned by the Project, not by a playbook.',
-          },
-          {
-            id: 'axios',
-            name: 'Bump axios',
-            kind: 'Task',
-            state: 'In progress',
-            progress: 45,
-          },
-          {
-            id: 'minimatch',
-            name: 'Replace minimatch',
-            kind: 'Task',
-            state: 'Open',
-            progress: 10,
           },
         ],
       },
       {
         id: 'handbook',
-        name: 'Security Handbook',
+        name: 'Security Engineering Handbook',
         vocabulary: 'Handbook',
         tenure: 'standing',
-        summary: 'Standing policy. The sprint points at it.',
+        summary: 'Security policy for dependencies.',
         freshness: 'current',
         children: [
           {
@@ -981,7 +844,7 @@ export const ENVIRONMENTS: EnvironmentFixture[] = [
       {
         id: 'e4',
         title: 'Handbook is current',
-        detail: 'Standing. The sprint references it and does not contain it.',
+        detail: 'The sprint points at the handbook.',
       },
       {
         id: 'e5',

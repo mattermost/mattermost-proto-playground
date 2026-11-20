@@ -38,7 +38,7 @@ function ChildRows({
 }) {
   if (nodes.length === 0) {
     return (
-      <p className={styles['spaces-sidebar__empty']}>Nothing in this rollup</p>
+      <p className={styles['spaces-sidebar__empty']}>Nothing here</p>
     );
   }
   return nodes.map((node) => (
@@ -99,7 +99,7 @@ export function SpacesSidebar({
           >
             <SpaceGroup
               label="Active"
-              hint="Closes out"
+              hint="Open"
               spaces={temporary}
               leak={leak}
               expanded={expanded}
@@ -108,8 +108,8 @@ export function SpacesSidebar({
               onOpenSpace={onOpenSpace}
             />
             <SpaceGroup
-              label="Standing"
-              hint="No close-out"
+              label="Reference"
+              hint="Kept"
               spaces={standing}
               leak={leak}
               expanded={expanded}

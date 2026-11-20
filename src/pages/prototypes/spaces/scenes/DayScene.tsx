@@ -51,12 +51,12 @@ function Sparkline({ values }: { values: number[] }) {
 function spaceMeta(space: SpaceFixture, leak: boolean): string {
   if (space.tenure === 'standing') {
     return space.freshness
-      ? `Standing · ${FRESHNESS_LABEL[space.freshness]}`
-      : 'Standing';
+      ? `Reference · ${FRESHNESS_LABEL[space.freshness]}`
+      : 'Reference';
   }
   const visible = rollupNodes(space.children, leak).length;
   const state = space.state ? `${space.state} · ` : '';
-  return `${state}${visible} in the rollup${space.timeframe ? ` · ${space.timeframe}` : ''}`;
+  return `${state}${visible} items${space.timeframe ? ` · ${space.timeframe}` : ''}`;
 }
 
 export default function DayScene({
@@ -73,7 +73,7 @@ export default function DayScene({
         ? {
             ...metric,
             value: '2',
-            detail: 'Force-on-force, plus a hidden child the rollup admits.',
+            detail: 'Force-on-force, plus one restricted mission.',
             bar: 100,
           }
         : {
@@ -88,14 +88,14 @@ export default function DayScene({
       return {
         ...metric,
         value: '1',
-        detail: 'Unsafe rollup leaks that a hidden child exists.',
+        detail: 'One restricted mission is listed.',
         bar: 100,
       };
     }
     return {
       ...metric,
       value: '0',
-      detail: 'Safe rollup removes hidden children.',
+      detail: 'Restricted missions are hidden.',
       bar: 0,
     };
   });
@@ -131,10 +131,7 @@ export default function DayScene({
           </div>
         </section>
 
-        <section
-          className={styles['day-scene__metrics']}
-          aria-label="Rollup numbers"
-        >
+        <section className={styles['day-scene__metrics']} aria-label="Status">
           {metrics.map((metric) => (
             <article key={metric.id} className={styles['day-scene__metric']}>
               <div className={styles['day-scene__metric-top']}>
@@ -172,12 +169,10 @@ export default function DayScene({
               >
                 Active
               </h2>
-              <span className={shared['spaces__panel-aside']}>Closes out</span>
+              <span className={shared['spaces__panel-aside']}>Open</span>
             </div>
             {temporary.length === 0 ? (
-              <p className={styles['day-scene__empty']}>
-                No temporary Spaces in this environment.
-              </p>
+              <p className={styles['day-scene__empty']}>No open Spaces.</p>
             ) : (
               <ul className={shared['spaces__list']}>
                 {temporary.map((space) => (
@@ -228,15 +223,13 @@ export default function DayScene({
                   id="standing-title"
                   className={shared['spaces__panel-title']}
                 >
-                  Standing
+                  Reference
                 </h2>
-                <span className={shared['spaces__panel-aside']}>
-                  Freshness, no close-out
-                </span>
+                <span className={shared['spaces__panel-aside']}>Kept</span>
               </div>
               {standing.length === 0 ? (
                 <p className={styles['day-scene__empty']}>
-                  No standing Spaces. Active work can still reference one.
+                  No reference Spaces.
                 </p>
               ) : (
                 <ul className={shared['spaces__list']}>
@@ -306,7 +299,7 @@ export default function DayScene({
             >
               <div className={shared['spaces__panel-header']}>
                 <h2 id="rollup-title" className={shared['spaces__panel-title']}>
-                  Rollup
+                  Status
                 </h2>
               </div>
               <ul className={styles['day-scene__since']}>

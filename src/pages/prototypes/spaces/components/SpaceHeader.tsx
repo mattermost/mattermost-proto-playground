@@ -15,14 +15,27 @@ import styles from './SpaceHeader.module.scss';
 
 export type SpaceTab = 'overview' | 'board' | 'pages';
 
+export interface SpaceProfile {
+  name: string;
+  type: string;
+  outcome: string;
+  leadId: string;
+  sponsorId: string;
+  targetEnd: string;
+  lifecycle: readonly string[];
+  memberIds: string[];
+  boardLabel?: string;
+}
+
 export interface SpaceHeaderProps {
   health: Health;
-  lifecycle: (typeof SPACE.lifecycle)[number];
+  lifecycle: string;
   tab: SpaceTab;
   onTabChange: (tab: SpaceTab) => void;
   boardCount: number;
   /** Shown at the right of the title row (e.g. viewing-as chip). */
   aside?: ReactNode;
+  profile?: SpaceProfile;
 }
 
 const MEMBERS = [
@@ -47,16 +60,28 @@ export function SpaceHeader({
   onTabChange,
   boardCount,
   aside,
+  profile,
 }: SpaceHeaderProps) {
-  const current = SPACE.lifecycle.indexOf(lifecycle);
+  const space = profile ?? {
+    name: SPACE.name,
+    type: SPACE.type,
+    outcome: SPACE.outcome,
+    leadId: SPACE.leadId,
+    sponsorId: SPACE.sponsorId,
+    targetEnd: SPACE.targetEnd,
+    lifecycle: SPACE.lifecycle,
+    memberIds: MEMBERS,
+    boardLabel: 'Campaign board',
+  };
+  const current = space.lifecycle.indexOf(lifecycle);
   return (
     <header className={styles['space-header']}>
       <div className={styles['space-header__eyebrow']}>
         <Icon glyph={<LayersOutlineIcon />} size="16" />
-        <span>Space · {SPACE.type}</span>
+        <span>Space · {space.type}</span>
       </div>
       <div className={styles['space-header__title-row']}>
-        <h1 className={styles['space-header__title']}>{SPACE.name}</h1>
+        <h1 className={styles['space-header__title']}>{space.name}</h1>
         <Tag
           label={HEALTH_LABEL[health]}
           type={HEALTH_TAG[health]}
@@ -64,13 +89,13 @@ export function SpaceHeader({
         />
         <div className={styles['space-header__aside']}>{aside}</div>
       </div>
-      <p className={styles['space-header__outcome']}>{SPACE.outcome}</p>
+      <p className={styles['space-header__outcome']}>{space.outcome}</p>
       <div className={styles['space-header__meta']}>
         <ol
           className={styles['space-header__lifecycle']}
           aria-label="Lifecycle"
         >
-          {SPACE.lifecycle.map((step, i) => (
+          {space.lifecycle.map((step, i) => (
             <li
               key={step}
               className={`${styles['space-header__step']} ${
@@ -83,18 +108,18 @@ export function SpaceHeader({
           ))}
         </ol>
         <span className={styles['space-header__fact']}>
-          Lead <strong>{PEOPLE[SPACE.leadId]!.name}</strong>
+          Lead <strong>{PEOPLE[space.leadId]!.name}</strong>
         </span>
         <span className={styles['space-header__fact']}>
-          Sponsor <strong>{PEOPLE[SPACE.sponsorId]!.name}</strong>
+          Sponsor <strong>{PEOPLE[space.sponsorId]!.name}</strong>
         </span>
         <span className={styles['space-header__fact']}>
-          Target end <strong>{SPACE.targetEnd}</strong>
+          Target end <strong>{space.targetEnd}</strong>
         </span>
         <UserAvatarGroup
           size="24"
           max={5}
-          avatars={MEMBERS.map((id) => ({
+          avatars={space.memberIds.map((id) => ({
             key: id,
             src: PEOPLE[id]!.avatar,
             name: PEOPLE[id]!.name,
@@ -107,7 +132,11 @@ export function SpaceHeader({
         onChange={(key) => onTabChange(key as SpaceTab)}
         tabs={[
           { key: 'overview', label: 'Overview' },
-          { key: 'board', label: 'Campaign board', countBadge: boardCount },
+          {
+            key: 'board',
+            label: space.boardLabel ?? 'Campaign board',
+            countBadge: boardCount,
+          },
           { key: 'pages', label: 'Pages and library' },
         ]}
       />
