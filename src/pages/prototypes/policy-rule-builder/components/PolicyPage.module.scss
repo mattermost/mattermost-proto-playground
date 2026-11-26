@@ -1,0 +1,665 @@
+/* While a panel opens, it clips (see __panel). */
+@keyframes policy-page-opening {
+  from,
+  to {
+    overflow: hidden;
+  }
+}
+
+@keyframes policy-page-building {
+  0% {
+    transform: translate3d(-120%, -22%, 0) rotate(16deg);
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  82% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate3d(220%, 22%, 0) rotate(16deg);
+    opacity: 0;
+  }
+}
+
+.policy-page {
+  /* The Compass System Console layout (compass-design layouts/admin-console):
+     header, a scrolling workspace of admin panels, and the pinned footer.
+     Wide columns dock the coach beside that column. Narrow columns cover
+     the page with it, header through footer. */
+  position: relative;
+  container: policy-page / inline-size;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--center-channel-bg);
+
+  /* Narrow column: the coach covers the page, so dim what is behind it.
+     Wide columns dock the coach instead, and this stays hidden. */
+  &__coach-scrim {
+    display: none;
+
+    @container policy-page (max-width: 1199px) {
+      display: block;
+      position: absolute;
+      z-index: 20;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.32);
+    }
+  }
+
+  &--coach {
+    flex-direction: row;
+  }
+
+  &__column {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  &__body {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  /* Where the Sections rail and scene links land: the workspace gutter. */
+  /* Capped like the Compass Admin Panel inside it, so the sheen stays on the card. */
+  &__section {
+    position: relative;
+    max-width: 920px;
+    scroll-margin-top: var(--spacing-xl);
+  }
+
+  /* A wide, soft diagonal light on each card a prompt is writing.
+     It fades in, glides, and fades out. Cards start in sequence so the
+     light reads as one pass down the page. */
+  &__sheen {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    overflow: hidden;
+    border-radius: var(--radius-m);
+    pointer-events: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      bottom: -40%;
+      left: 0;
+      width: 72%;
+      background: linear-gradient(
+        100deg,
+        transparent 0%,
+        rgba(var(--button-bg-rgb), 0.015) 16%,
+        rgba(var(--button-bg-rgb), 0.06) 36%,
+        rgba(var(--button-bg-rgb), 0.14) 50%,
+        rgba(var(--button-bg-rgb), 0.06) 64%,
+        rgba(var(--button-bg-rgb), 0.015) 84%,
+        transparent 100%
+      );
+      filter: blur(18px);
+      /* `both` holds the hidden first frame through each card's delay. */
+      animation: policy-page-building 2.8s cubic-bezier(0.4, 0, 0.6, 1) both;
+    }
+
+    &[data-sheen='who']::before {
+      animation-delay: 0.28s;
+    }
+
+    &[data-sheen='rules']::before {
+      animation-delay: 0.56s;
+    }
+
+    &[data-sheen='permissions']::before {
+      animation-delay: 0.84s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &::before {
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        transform: none;
+        filter: none;
+        opacity: 0.7;
+        animation: none;
+      }
+    }
+  }
+
+  &__scroll {
+    flex: 1 1 0;
+    min-height: 0;
+    /* The Sections rail sizes itself to this region (100cqh). */
+    container-type: size;
+    background-color: rgba(var(--center-channel-color-rgb), 0.04);
+
+    :global(.simplebar-wrapper),
+    :global(.simplebar-mask),
+    :global(.simplebar-offset),
+    :global(.simplebar-content-wrapper) {
+      background-color: transparent;
+    }
+  }
+
+  /* Admin-console spacing: 20px gutters and gaps, a little more at the end. */
+  &__workspace {
+    padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-xxl);
+
+    &--rail {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      align-items: start;
+      gap: var(--spacing-xl);
+    }
+
+    &--panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      align-items: start;
+      gap: var(--spacing-xl);
+    }
+  }
+
+  &__panels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    min-width: 0;
+  }
+
+  /* Compass Admin Panel, overflow left visible: the rule menus open in place.
+     While a panel opens it clips, so its content doesn't spill mid-animation. */
+  &__panel#{&}__panel {
+    overflow: visible;
+
+    /* A heading the Sections rail moved focus to: no ring from a click, the
+       Compass ring from the keyboard. */
+    h2[tabindex='-1']:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    h2[tabindex='-1']:focus-visible {
+      outline: 2px solid var(--focus-ring-color);
+      outline-offset: var(--spacing-xxxs);
+      border-radius: var(--radius-xs);
+    }
+
+    :global([class*='admin-panel__collapse--expanded']) > :global([class*='admin-panel__collapse-inner']) {
+      overflow: visible;
+      animation: policy-page-opening var(--duration-moderate) linear;
+    }
+  }
+
+  /* Rules row: the label on the left, Advanced | Simple on the right.
+     The selected segment is a blue tint with blue text. The three-view
+     placement still uses Compass Tabs, styled below. */
+  &__mode {
+    margin-bottom: var(--spacing-xs);
+  }
+
+  &__mode-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-s) var(--spacing-m);
+    min-height: 32px;
+  }
+
+  &__mode-tools {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+    margin-left: auto;
+  }
+
+  /* Same outer corner as the Advanced | Simple switch beside it. */
+  &__mode-tools > &__ai-toggle {
+    border-radius: var(--radius-m);
+  }
+
+  &__mode-label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    line-height: 20px;
+    color: var(--center-channel-color);
+  }
+
+  &__mode-switch {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xxxs);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    /* Inner radius plus this padding matches the outer corner. */
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+  }
+
+  &__mode-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+    font-family: inherit;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: 16px;
+    cursor: pointer;
+
+    &:hover:not(&--active):not([aria-disabled='true']) {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring-color);
+      outline-offset: 1px;
+    }
+
+    &--active {
+      background: rgba(var(--button-bg-rgb), 0.12);
+      color: var(--button-bg);
+
+      &:hover {
+        background: rgba(var(--button-bg-rgb), 0.16);
+        color: var(--button-bg);
+      }
+    }
+
+    &[aria-disabled='true'] {
+      cursor: not-allowed;
+      color: rgba(var(--center-channel-color-rgb), 0.4);
+    }
+  }
+
+  /* Three views still use Compass Tabs: one full-width bar. Scoped to that
+     tab list so it doesn't restyle the Advanced | Simple switch. */
+  &__mode > :global([class*='tabs_']) {
+    box-sizing: border-box;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 var(--spacing-l);
+    border: 1px solid #4494cf;
+    border-radius: var(--radius-xs);
+    background: #ecf5fc;
+
+    :global([role='tab']) {
+      background-color: transparent;
+      border-radius: 0;
+    }
+
+    :global([role='tab']:hover:not([class*='tabs__tab--active'])) {
+      background-color: rgba(68, 148, 207, 0.12);
+    }
+
+    :global([role='tab'][class*='tabs__tab--active']) {
+      background-color: transparent;
+    }
+
+    /* Simple while the expression can't be a table (set on the tab, since
+       Compass Tabs has no disabled state). Disabled text may go to 0.4. */
+    :global([role='tab'][aria-disabled='true']) {
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: transparent;
+      }
+
+      :global([class*='tabs__tab-label']) {
+        color: rgba(var(--center-channel-color-rgb), 0.4);
+      }
+    }
+  }
+
+  :global([data-theme='indigo']) &__mode > :global([class*='tabs_']),
+  :global([data-theme='onyx']) &__mode > :global([class*='tabs_']) {
+    border-color: var(--link-color);
+    background: rgba(var(--link-color-rgb), 0.16);
+
+    :global([role='tab']:hover:not([class*='tabs__tab--active'])) {
+      background-color: rgba(var(--link-color-rgb), 0.12);
+    }
+  }
+
+  &__view {
+    min-width: 0;
+  }
+
+  /* M7 Live summary: the reading leads the Policy expression panel. */
+  &__summary {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  /* Warnings and Simulate, under the rules. */
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-l);
+  }
+
+  /* The reason Simulate is unavailable. Shown on hover and focus, above the button. */
+  &__simulate {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__simulate:hover > &__simulate-tip,
+  &__simulate:focus-within > &__simulate-tip {
+    opacity: 1;
+  }
+
+  &__simulate-tip {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    z-index: 20;
+    width: max-content;
+    max-width: 280px;
+    padding-bottom: var(--spacing-xs);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  /* M7 Save bar: the summary pinned above the footer. */
+  &__savebar {
+    padding: var(--spacing-m) var(--spacing-xl);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+  }
+
+  /* One labelled field in a card: Policy name, description, role. */
+  &__field {
+    max-width: 400px;
+
+    & + & {
+      margin-top: var(--spacing-xxl);
+    }
+  }
+
+  &__readback {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-m);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__readback-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__readback-title {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__readback-text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__warning {
+    margin-top: var(--spacing-s);
+  }
+
+  &__warning-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+  }
+
+  &__warning-subhead {
+    margin: var(--spacing-xs) 0 0;
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__warning-note {
+    margin: 0;
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: var(--spacing-l);
+    list-style: disc;
+  }
+
+  &__advanced {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__inline-note {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__picker {
+    max-height: 420px;
+  }
+
+  &__option--blocked {
+    cursor: not-allowed;
+
+    :global([class*='menu-item__label']) {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    :global([class*='menu-item__secondary']) {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+
+  /* Room for the downward permission picker to scroll into view. */
+  &__runway {
+    height: 400px;
+  }
+
+  /* Host-positioned Compass Toast, pinned to the bottom of the page view. */
+  &__toast {
+    position: sticky;
+    bottom: var(--spacing-l);
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+    height: 0;
+    overflow: visible;
+  }
+
+  &__readback-note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__error {
+    margin-top: var(--spacing-l);
+  }
+
+  /* The Warnings panel: Compass Section Notices, stacked (F6, round 1.2). */
+  &__warnings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding-top: var(--spacing-l);
+  }
+
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+  }
+
+  &__collapse--open {
+    grid-template-rows: 1fr;
+  }
+
+  &__collapse-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  &__warnings-note {
+    margin: var(--spacing-xs) 0 0;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__plain {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  /* In Permissions: when each permission is allowed, under its description. */
+  &__row-explain {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-xxs);
+    color: var(--center-channel-color);
+
+    > :first-child {
+      flex: none;
+      margin-top: var(--spacing-xxxxs);
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
+  &__aside {
+    position: sticky;
+    top: var(--spacing-l);
+  }
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__hint-line {
+    margin: var(--spacing-xxs) 0 0;
+    text-align: right;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__row--flagged {
+    background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.04);
+  }
+
+  /* The Permissions table: fixed columns, so Description starts in the same
+     place in every state, and every row top-aligned like a flagged one. */
+  &__permissions-table {
+    table-layout: fixed;
+
+    > tbody > tr > td {
+      vertical-align: top;
+    }
+
+    /* The delete button lines up with the first text line (CVIS1-8). */
+    > tbody > tr > td:last-child > button {
+      margin-top: var(--spacing-xxxs);
+    }
+  }
+
+  &__col-permission {
+    width: 38%;
+  }
+
+  &__col-action#{&}__col-action {
+    width: 48px;
+  }
+
+  /* The red icon carries the meaning; the reason is full-strength text,
+     since red at 12px on the pink row was 4.11:1 (CVIS1-2). The 12px icon
+     sits in the middle of the 20px first line. */
+  &__row-flag {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    line-height: 20px;
+    color: var(--center-channel-color);
+
+    > :first-child {
+      flex: none;
+      margin-top: var(--spacing-xxxs);
+      color: var(--error-text, var(--color-danger));
+    }
+  }
+
+  &__readback-lead {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Same warning wash and icon colour as the button that opens these. */
+  &__warnings :global([class*='section-notice--type-warning']) {
+    background-color: rgba(var(--color-warning-rgb), 0.12);
+    border-color: rgba(var(--color-warning-rgb), 0.16);
+  }
+
+  /* A Compass tertiary button in warning colours, not link blue (designer,
+     round 1.2). The doubled class outranks Compass's own hover and active. */
+  &__warnings-button#{&}__warnings-button {
+    background-color: rgba(var(--color-warning-rgb), 0.12);
+    color: var(--center-channel-color);
+
+    &:hover:not(:disabled) {
+      background-color: rgba(var(--color-warning-rgb), 0.2);
+    }
+
+    &:active:not(:disabled) {
+      background-color: rgba(var(--color-warning-rgb), 0.24);
+    }
+
+    :global([class*='button__icon-slot']) {
+      color: var(--color-warning);
+    }
+  }
+}

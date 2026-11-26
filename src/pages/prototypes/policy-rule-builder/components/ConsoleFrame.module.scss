@@ -1,0 +1,53 @@
+.prb-console-frame {
+  position: relative;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  background: var(--center-channel-bg);
+  isolation: isolate;
+
+  &__sidebar {
+    display: flex;
+    flex: 0 0 auto;
+    align-self: stretch;
+    min-height: 0;
+    overflow: hidden;
+
+    /* Compass sizes this for a 768px frame. The console is now the page, so
+       the panel fills it and the nav scrolls inside. */
+    > :global([class*='admin-console-sidebar_']) {
+      flex: 1 1 auto;
+      align-self: stretch;
+      height: auto;
+      min-height: 0;
+    }
+  }
+
+  /* The page brings its own header, scrolling workspace and footer
+     (Compass admin-console layout), so this column doesn't scroll. */
+  &__main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--center-channel-bg);
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    background: rgba(0, 0, 0, 0.5);
+
+    /* Keep tall dialogs inside the console; the Compass body scrolls. */
+    > * {
+      max-height: 100%;
+    }
+  }
+}

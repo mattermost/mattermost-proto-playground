@@ -1,0 +1,239 @@
+/* [AI DRAFT] "What this policy does" in each placement under test (M7). */
+
+.explain {
+  /* The boxed explanation (button, three views, side panel). */
+  &__box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-radius: var(--radius-m);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.02em;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__text {
+    margin: 0;
+    min-width: 0;
+    max-width: 100%;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    overflow-wrap: break-word;
+    color: var(--center-channel-color);
+  }
+
+  &__lead {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* Wide enough that the collapse's clipping never cuts the bullets (VIS2-2). */
+  &__list {
+    margin: 0;
+    padding-left: var(--spacing-xl);
+    list-style: disc;
+  }
+
+  &__note {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__fallback {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  /* One live line, the rest a click away (summary, Save bar). */
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__summary-line {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &__summary-text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+  }
+
+  &__summary-text--clamped {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* "Can't be summarized": a caution, not a reading (VIS3-1). */
+  &__caution-icon {
+    display: flex;
+    flex: none;
+    margin-top: var(--spacing-xxxxs);
+    color: var(--color-warning);
+  }
+
+  /* While the expression doesn't parse, the last good reading stays put,
+     marked as out of date (UX1-1). */
+  &__summary-text--stale {
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__stale {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+
+    > :first-child {
+      color: var(--error-text, var(--color-danger));
+    }
+  }
+
+  /* The designer's Sections rail: a card like the form's, not an info-blue
+     notice, since it sometimes carries a caution. A long reading stops after
+     six lines; Read more opens the rest, and that rest scrolls inside the
+     card when it is taller than the rail. */
+  &__panel {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    align-self: start;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+    /* The same surface as the Compass Admin Panels beside it. */
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+    box-shadow: var(--elevation-1);
+    padding-bottom: var(--spacing-m);
+  }
+
+  /* The status icon (error or caution) sits at the right end of the title row. */
+  &__panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-l) var(--spacing-l) var(--spacing-xs);
+
+    > :is(.explain__error-icon, .explain__caution-icon) {
+      margin-top: 0;
+    }
+  }
+
+  &__panel-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    padding: var(--spacing-xxs) var(--spacing-l) 0;
+    overflow: auto;
+  }
+
+  /* The preview. Shorter readings are unchanged; longer ones clip here. */
+  &__panel-body--clamped {
+    max-height: calc(var(--line-height-100) * 6);
+    overflow: hidden;
+  }
+
+  &__panel-body--fade {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: var(--line-height-100);
+      background: linear-gradient(transparent, var(--center-channel-bg));
+      pointer-events: none;
+    }
+  }
+
+  &__panel-more {
+    padding: var(--spacing-xs) var(--spacing-l) 0;
+  }
+
+  &__text--muted {
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__error-icon {
+    display: flex;
+    flex: none;
+    margin-top: var(--spacing-xxxxs);
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    width: 100%;
+    transition: grid-template-rows var(--duration-moderate) var(--ease-transition);
+  }
+
+  &__collapse--open {
+    grid-template-rows: 1fr;
+  }
+
+  &__collapse-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding-top: var(--spacing-xxs);
+  }
+}

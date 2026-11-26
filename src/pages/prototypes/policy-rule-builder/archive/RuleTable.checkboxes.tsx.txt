@@ -1,0 +1,538 @@
+// [AI DRAFT] A′ "Extend in place": the shipped requirements table, generalized
+// to the full grammar. B′ reuses it verbatim for its unconditional rules and
+// inside every When card (04 §6).
+//
+// Row:   [party chip ▾]  [operator ▾]  [value ▾ | attribute chip ▾]  [delete]
+// The value menu has two sections, "Values" and "Compare with another
+// attribute", following the shipped "Channel attributes" section (04 §6).
+// Grouping (b) adds row checkboxes, "Group" / "Ungroup", and one level of
+// indented group blocks, each with its own join.
+import { useId, useState, type ReactNode } from 'react';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
+import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
+import { Button } from '@mattermost/compass-ui/components/button';
+import { Checkbox } from '@mattermost/compass-ui/components/checkbox';
+import { Icon } from '@mattermost/compass-ui/components/icon';
+import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import type { PartyId } from '../model/catalog';
+import type { GroupingMode } from '../model/celParse';
+import { operandText, refLabel } from '../model/format';
+import type { PermissionId, ResourceMode } from '../model/permissions';
+import {
+  compareCandidates,
+  defaultRuleFor,
+  group as makeGroup,
+  isMultiValue,
+  operatorLabel,
+  operatorsFor,
+  refDef,
+  rule as makeRule,
+  type Group,
+  type Join,
+  type OperatorId,
+  type RoleId,
+  type Rule,
+  type RuleNode,
+} from '../model/rules';
+import type { Vocabulary } from '../model/vocabulary';
+import { EDITOR, JOIN, WHEN } from '../copy';
+import MenuCell, { AttributeChip, type MenuGroup } from './MenuCell';
+import { attributeMenu, parseRefKey, refKey } from './attributeMenu';
+import editor from './RuleEditor.module.scss';
+import styles from './RuleTable.module.scss';
+
+export interface RuleContext {
+  vocab: Vocabulary;
+  role: RoleId;
+  permissions: PermissionId[];
+  resourceMode: ResourceMode;
+  /** Parties the whole policy's rules use (rules first, feedback F3). */
+  partiesInUse: PartyId[];
+  grouping: GroupingMode;
+  /** Parties rules may use right now. */
+  parties: PartyId[];
+}
+
+const NUMBER_PRESETS = ['2', '4', '6', '8', '12', '20'];
+
+/* ------------------------------------------------------------------ */
+/* Join control                                                        */
+/* ------------------------------------------------------------------ */
+
+export function JoinControl({
+  value,
+  onChange,
+  nested = false,
+  lockedReason,
+}: {
+  value: Join;
+  onChange: (j: Join) => void;
+  nested?: boolean;
+  lockedReason?: string;
+}) {
+  const labels = nested ? JOIN.nested : JOIN.root;
+  const reasonId = useId();
+  if (lockedReason) {
+    return (
+      <span className={editor['policy-editor__anchor']}>
+        <span
+          className={[editor['policy-editor__head-control'], styles['rule-table__join--locked']].join(' ')}
+          aria-describedby={reasonId}
+          title={lockedReason}
+        >
+          <Icon glyph={<FilterVariantIcon />} size="16" />
+          {labels[value]}
+        </span>
+        <span id={reasonId} className={styles['rule-table__visually-hidden']}>
+          {lockedReason}
+        </span>
+      </span>
+    );
+  }
+  // Built on MenuCell for the keyboard path (cycle 2, QA2-5).
+  return (
+    <MenuCell
+      ariaLabel={`${labels[value]}. Change how rules combine`}
+      groups={[{ options: (['all', 'any'] as Join[]).map((j) => ({ value: j, label: labels[j] })) }]}
+      selected={[value]}
+      onSelect={(j) => onChange(j as Join)}
+      menuClassName={styles['rule-table__join-menu']}
+      renderTrigger={({ open, toggle }) => (
+        <button
+          type="button"
+          className={editor['policy-editor__head-control']}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          onClick={toggle}
+        >
+          <Icon glyph={<FilterVariantIcon />} size="16" />
+          {labels[value]}
+          <Icon glyph={<ChevronDownIcon />} size="16" />
+        </button>
+      )}
+    >
+      {null}
+    </MenuCell>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Row                                                                 */
+/* ------------------------------------------------------------------ */
+
+function valueGroups(r: Rule, ctx: RuleContext): MenuGroup[] {
+  const def = refDef(r.left);
+  const values = def.type === 'number' ? NUMBER_PRESETS : def.values;
+  const groups: MenuGroup[] = [
+    {
+      heading: EDITOR.valuesSection,
+      options: values.map((v) => ({ value: `v:${v}`, label: v })),
+    },
+  ];
+  if (operatorsFor(def.type, 'attr').length > 0) {
+    const candidates = compareCandidates(r.left, ctx.parties);
+    if (candidates.length > 0) {
+      groups.push({
+        heading: EDITOR.compareSection,
+        options: candidates.map((c) => ({
+          value: `a:${refKey(c.ref.party, c.ref.attr)}`,
+          label: refLabel(c.ref, ctx.vocab),
+          disabledReason: c.disabledReason,
+        })),
+      });
+    }
+  }
+  return groups;
+}
+
+export function RuleRow({
+  r,
+  index,
+  ctx,
+  onChange,
+  onRemove,
+  selectable,
+  selectColumn = selectable,
+  selected,
+  onSelect,
+  valueMenuOpen = false,
+}: {
+  valueMenuOpen?: boolean;
+  /** Render the select cell even when this row can't be grouped, to keep the grid. */
+  selectColumn?: boolean;
+  r: Rule;
+  index: number;
+  ctx: RuleContext;
+  onChange: (next: Rule) => void;
+  onRemove: () => void;
+  selectable: boolean;
+  selected: boolean;
+  onSelect: (on: boolean) => void;
+}) {
+  const def = refDef(r.left);
+  const leftLabel = refLabel(r.left, ctx.vocab);
+  const ops = operatorsFor(def.type, r.right.kind);
+  const multi = r.right.kind === 'value' && isMultiValue(r.op);
+  const selectedValues =
+    r.right.kind === 'value'
+      ? r.right.values.map((v) => `v:${v}`)
+      : [`a:${refKey(r.right.ref.party, r.right.ref.attr)}`];
+
+
+  const pickValue = (key: string) => {
+    if (key.startsWith('a:')) {
+      const ref = parseRefKey(key.slice(2));
+      const attrOps = operatorsFor(def.type, 'attr');
+      onChange({
+        ...r,
+        op: attrOps.includes(r.op) ? r.op : attrOps[0],
+        right: { kind: 'attr', ref },
+      });
+      return;
+    }
+    const v = key.slice(2);
+    const valueOps = operatorsFor(def.type, 'value');
+    const op: OperatorId = valueOps.includes(r.op) ? r.op : valueOps[0];
+    if (r.right.kind === 'value' && isMultiValue(op)) {
+      const has = r.right.values.includes(v);
+      const next = has ? r.right.values.filter((x) => x !== v) : [...r.right.values, v];
+      onChange({ ...r, op, right: { kind: 'value', values: next.length ? next : [v] } });
+      return;
+    }
+    onChange({ ...r, op, right: { kind: 'value', values: [v] } });
+  };
+
+  return (
+    <tr>
+      {selectColumn && !selectable ? <td className={styles['rule-table__select']} /> : null}
+      {selectable ? (
+        <td className={styles['rule-table__select']}>
+          <Checkbox
+            size="small"
+            checked={selected}
+            aria-label={EDITOR.selectRow(index + 1)}
+            onChange={(e) => onSelect(e.target.checked)}
+          />
+        </td>
+      ) : null}
+      <td className={editor['policy-editor__cell--trigger']}>
+        <MenuCell
+          ariaLabel={EDITOR.rowAria(leftLabel, 'attribute', leftLabel)}
+          groups={attributeMenu(ctx.vocab, ctx.partiesInUse, ctx.role, r.left.party)}
+          selected={[refKey(r.left.party, r.left.attr)]}
+          onSelect={(key) => {
+            const left = parseRefKey(key);
+            onChange({ ...r, left, ...defaultRuleFor(left) });
+          }}
+        >
+          <AttributeChip label={leftLabel} />
+        </MenuCell>
+      </td>
+      <td className={editor['policy-editor__cell--trigger']}>
+        <MenuCell
+          ariaLabel={EDITOR.rowAria(leftLabel, 'operator', operatorLabel(r.op, def.type, r.right.kind))}
+          groups={[
+            {
+              options: ops.map((o) => ({
+                value: o,
+                label: operatorLabel(o, def.type, r.right.kind),
+              })),
+            },
+          ]}
+          selected={[r.op]}
+          onSelect={(op) => {
+            const nextOp = op as OperatorId;
+            if (r.right.kind === 'value' && !isMultiValue(nextOp)) {
+              onChange({ ...r, op: nextOp, right: { kind: 'value', values: r.right.values.slice(0, 1) } });
+              return;
+            }
+            onChange({ ...r, op: nextOp });
+          }}
+        >
+          {operatorLabel(r.op, def.type, r.right.kind)}
+        </MenuCell>
+      </td>
+      <td className={editor['policy-editor__cell--trigger']}>
+        <MenuCell
+          ariaLabel={EDITOR.rowAria(
+            leftLabel,
+            'value',
+            r.right.kind === 'attr'
+              ? refLabel(r.right.ref, ctx.vocab)
+              : operandText(r, ctx.vocab) || WHEN.placeholder,
+          )}
+          groups={valueGroups(r, ctx)}
+          selected={selectedValues}
+          multi={multi}
+          onSelect={pickValue}
+          defaultOpen={valueMenuOpen}
+          chevron
+        >
+          {r.right.kind === 'attr' ? (
+            <AttributeChip label={refLabel(r.right.ref, ctx.vocab)} />
+          ) : operandText(r, ctx.vocab) ? (
+            operandText(r, ctx.vocab)
+          ) : (
+            <span className={styles['rule-table__placeholder']}>{WHEN.placeholder}</span>
+          )}
+        </MenuCell>
+      </td>
+      <td className={editor['policy-editor__table-right']}>
+        <IconButton
+          size="small"
+          destructive
+          icon={<Icon glyph={<TrashCanOutlineIcon />} size="16" />}
+          aria-label={EDITOR.removeRow(leftLabel)}
+          onClick={onRemove}
+        />
+      </td>
+    </tr>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Add attribute                                                       */
+/* ------------------------------------------------------------------ */
+
+export function AddAttributeButton({
+  ctx,
+  onAdd,
+  label = EDITOR.addAttribute,
+  defaultOpen = false,
+}: {
+  ctx: RuleContext;
+  onAdd: (r: Rule) => void;
+  label?: string;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <MenuCell
+      ariaLabel={label.replace('+ ', '')}
+      groups={attributeMenu(ctx.vocab, ctx.partiesInUse, ctx.role)}
+      selected={[]}
+      onSelect={(key) => {
+        const left = parseRefKey(key);
+        const d = defaultRuleFor(left);
+        onAdd(makeRule(left, d.op, d.right));
+      }}
+      defaultOpen={defaultOpen}
+      renderTrigger={({ open, toggle }) => (
+        <Button
+          emphasis="tertiary"
+          size="small"
+          aria-haspopup="menu"
+          aria-expanded={open}
+          onClick={toggle}
+        >
+          {label}
+        </Button>
+      )}
+    >
+      {null}
+    </MenuCell>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Table                                                               */
+/* ------------------------------------------------------------------ */
+
+export interface RuleTableProps {
+  group: Group;
+  onChange: (next: Group) => void;
+  ctx: RuleContext;
+  /** Inside a group block or a When card: nested join labels, no further groups. */
+  nested?: boolean;
+  /** Fixed join, with the reason (B′ root once a When card exists). */
+  joinLocked?: string;
+  /** Rules here can't be grouped (B′ When conditions), but the grid stays aligned. */
+  noGroups?: boolean;
+  /** Hide the join control (When conditions are always All). */
+  hideJoin?: boolean;
+  addLabel?: string;
+  emptyText?: string;
+  footerExtra?: ReactNode;
+  /** Scene support: open "+ Add attribute" on load. */
+  addMenuOpen?: boolean;
+  /** Scene support: open the first row's value menu on load. */
+  valueMenuOpen?: boolean;
+  ariaLabel?: string;
+}
+
+export default function RuleTable({
+  group,
+  onChange,
+  ctx,
+  nested = false,
+  joinLocked,
+  noGroups = false,
+  hideJoin = false,
+  addLabel,
+  emptyText = EDITOR.empty,
+  footerExtra,
+  addMenuOpen = false,
+  valueMenuOpen = false,
+  ariaLabel,
+}: RuleTableProps) {
+  const [selected, setSelected] = useState<string[]>([]);
+  const allowGroups = ctx.grouping === 'one-level' && !nested && !noGroups;
+  // Every table under one-level grouping keeps the select column, so stacked
+  // and nested tables share one grid (cycle 2, VIS-8).
+  const selectCol = ctx.grouping === 'one-level';
+  const visible = group.children.filter((c) => c.kind !== 'when');
+  const hidden = group.children.filter((c) => c.kind === 'when');
+
+  const setVisible = (children: RuleNode[]) =>
+    onChange({ ...group, children: [...children, ...hidden] });
+
+  const replace = (id: string, next: RuleNode | null) =>
+    setVisible(
+      visible.flatMap((c) => (c.id === id ? (next ? [next] : []) : [c])),
+    );
+
+  const makeGroupOf = () => {
+    const picked = visible.filter((c) => selected.includes(c.id));
+    if (picked.length < 2) return;
+    const at = visible.findIndex((c) => c.id === picked[0].id);
+    // A new group inherits its parent's join, so grouping never changes the
+    // policy's meaning (D5-3). Flipping the group's join does, and is checked.
+    const g = makeGroup(group.join, picked);
+    const rest = visible.filter((c) => !selected.includes(c.id));
+    rest.splice(at, 0, g);
+    setVisible(rest);
+    setSelected([]);
+  };
+
+  const canGroup = selected.length >= 2;
+  const ruleRows = visible.filter((c) => c.kind === 'rule').length;
+  const showGroup = allowGroups && ruleRows >= 2;
+  const cols = selectCol ? 5 : 4;
+  let ruleIndex = 0;
+
+  return (
+    <div
+      className={[
+        editor['policy-editor__table-wrap'],
+        nested ? styles['rule-table--nested'] : '',
+      ].join(' ')}
+      role="group"
+      aria-label={ariaLabel ?? (nested ? JOIN.nested[group.join] : JOIN.root[group.join])}
+    >
+      <table className={[editor['policy-editor__table'], styles['rule-table__table']].join(' ')}>
+        {/* One column grid for every rule table, so stacked tables line up (VIS-8). */}
+        <colgroup>
+          {selectCol ? <col className={styles['rule-table__col--select']} /> : null}
+          <col className={styles['rule-table__col--attribute']} />
+          <col className={styles['rule-table__col--operator']} />
+          <col />
+          <col className={styles['rule-table__col--actions']} />
+        </colgroup>
+        <thead>
+          <tr>
+            {selectCol ? <th className={styles['rule-table__select']} aria-hidden /> : null}
+            <th>{EDITOR.columns.attribute}</th>
+            <th>{EDITOR.columns.operator}</th>
+            <th>{EDITOR.columns.values}</th>
+            <th className={editor['policy-editor__table-right']}>
+              {hideJoin ? null : (
+                <JoinControl
+                  value={group.join}
+                  nested={nested}
+                  lockedReason={joinLocked}
+                  onChange={(join) => onChange({ ...group, join })}
+                />
+              )}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {visible.length === 0 ? (
+            <tr>
+              <td colSpan={cols} className={editor['policy-editor__empty-other']}>
+                {emptyText}
+              </td>
+            </tr>
+          ) : null}
+          {visible.map((child) => {
+            if (child.kind === 'rule') {
+              const i = ruleIndex;
+              ruleIndex += 1;
+              return (
+                <RuleRow
+                  key={child.id}
+                  r={child}
+                  index={i}
+                  ctx={ctx}
+                  valueMenuOpen={valueMenuOpen && i === 0}
+                  selectable={allowGroups}
+                  selectColumn={selectCol}
+                  selected={selected.includes(child.id)}
+                  onSelect={(on) =>
+                    setSelected((s) => (on ? [...s, child.id] : s.filter((x) => x !== child.id)))
+                  }
+                  onChange={(next) => replace(child.id, next)}
+                  onRemove={() => replace(child.id, null)}
+                />
+              );
+            }
+            if (child.kind !== 'group') return null;
+            return (
+              <tr key={child.id} className={styles['rule-table__group-row']}>
+                <td colSpan={cols}>
+                  <div className={styles['rule-table__group']}>
+                    <div className={styles['rule-table__group-head']}>
+                      <Button
+                        emphasis="tertiary"
+                        size="x-small"
+                        onClick={() =>
+                          setVisible(visible.flatMap((c) => (c.id === child.id ? child.children : [c])))
+                        }
+                      >
+                        {EDITOR.ungroup}
+                      </Button>
+                    </div>
+                    <RuleTable
+                      group={child}
+                      nested
+                      ctx={ctx}
+                      onChange={(next) =>
+                        replace(child.id, next.children.length ? next : null)
+                      }
+                    />
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <div className={[editor['policy-editor__table-footer'], styles['rule-table__footer']].join(' ')}>
+        <AddAttributeButton
+          ctx={ctx}
+          label={addLabel}
+          defaultOpen={addMenuOpen}
+          onAdd={(r) => setVisible([...visible, r])}
+        />
+        {showGroup ? (
+          <Button
+            emphasis="tertiary"
+            size="small"
+            aria-disabled={!canGroup || undefined}
+            aria-describedby={!canGroup ? 'prb-group-hint' : undefined}
+            className={!canGroup ? editor['policy-editor__button--blocked'] : undefined}
+            onClick={makeGroupOf}
+          >
+            {EDITOR.group}
+          </Button>
+        ) : null}
+        {showGroup && !canGroup ? (
+          <span id="prb-group-hint" className={styles['rule-table__hint']}>
+            {EDITOR.groupHint}
+          </span>
+        ) : null}
+        {footerExtra}
+      </div>
+    </div>
+  );
+}

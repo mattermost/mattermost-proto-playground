@@ -1,0 +1,524 @@
+@keyframes policy-editor-popover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.policy-editor {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  &__hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__field-label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__field {
+    position: relative;
+    max-width: 400px;
+    margin-bottom: var(--spacing-l);
+  }
+
+  &__role-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    width: 100%;
+    padding: var(--spacing-s) var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-s);
+    background: var(--center-channel-bg);
+    color: rgba(var(--center-channel-color-rgb), 0.56);
+    cursor: pointer;
+    transition:
+      border-color var(--duration-quick) var(--ease-transition),
+      box-shadow var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      border-color: rgba(var(--center-channel-color-rgb), 0.32);
+    }
+
+    &--open {
+      border-color: var(--button-bg);
+      box-shadow: inset 0 0 0 1px var(--button-bg);
+    }
+  }
+
+  &__role-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__role-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    width: 100%;
+    max-width: none;
+    transform-origin: top center;
+    animation: policy-editor-popover-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+
+  &__check {
+    display: inline-flex;
+    color: var(--button-bg);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__table-head-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  &__subhead {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__table-wrap {
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    border-radius: var(--radius-s);
+    /* Keep visible so the permission picker can float below the button. */
+    overflow: visible;
+    container-type: inline-size;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-100);
+
+    th {
+      padding: var(--spacing-xs) var(--spacing-s);
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+      text-align: left;
+      font-size: var(--font-size-75);
+      font-weight: var(--font-weight-semibold);
+      color: rgba(var(--center-channel-color-rgb), 0.75);
+    }
+
+    td {
+      padding: var(--spacing-s);
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      color: var(--center-channel-color);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Borderless trigger cells fill the whole cell, like the shipped editor. */
+    td.policy-editor__cell--trigger {
+      padding: 0;
+    }
+
+    /* Rows are as tall as the 40px cell triggers, so the hover wash fills the
+       full row height; the delete cell must not add vertical padding. */
+    tbody td.policy-editor__table-right {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
+  &__table-right {
+    text-align: right;
+    width: 1%;
+    white-space: nowrap;
+  }
+
+  &__head-control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--center-channel-color);
+    }
+  }
+
+  &__cell-icon-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: inherit;
+  }
+
+  &__empty-cell {
+    padding: var(--spacing-xxl) var(--spacing-s);
+    text-align: center;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__table-footer {
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  /* Baseline, not centre: the 12px hint and the 14px helper share one line (GVIS1-4). */
+  &__table-caption-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+    margin-top: var(--spacing-m);
+
+    p {
+      margin: 0;
+      font-size: var(--font-size-100);
+    }
+  }
+
+  &__muted {
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__permission-name {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__anchor {
+    position: relative;
+    display: inline-block;
+  }
+
+  &__picker-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + var(--spacing-xs));
+    left: 0;
+    width: 480px;
+    max-width: none;
+    transform-origin: top left;
+    animation: policy-editor-popover-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__overlay-host {
+    position: relative;
+    min-height: 100%;
+    isolation: isolate;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: var(--spacing-xxxl);
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  /* ---------------------------------------------------------------- */
+
+  &__confirm {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
+    color: var(--center-channel-color);
+
+    p {
+      margin: 0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: var(--spacing-l);
+      /* The modal body resets list markers; restore them explicitly. */
+      list-style: disc outside;
+    }
+
+    li {
+      margin-bottom: var(--spacing-xxs);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Additions for DM/GM: summary slot, other-person card, inline edit */
+
+  /* Direction B: the summary stays pinned while the admin edits below it. */
+  &__summary-slot {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    margin: 0 calc(var(--spacing-l) * -1);
+    padding: var(--spacing-xs) var(--spacing-l);
+    background: var(--center-channel-bg);
+    box-shadow: 0 1px 0 rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__subhead-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
+  }
+
+  &__subhead-hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__cell-select {
+    min-width: 180px;
+    max-width: 260px;
+  }
+
+  /* --- Requirement row cells, after the shipped ABAC table editor ---------- */
+
+  &__cell-anchor {
+    position: relative;
+    width: 100%;
+  }
+
+  &__cell-trigger {
+    display: flex;
+    width: 100%;
+    min-height: var(--spacing-xxxxl);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s);
+    border: none;
+    background: transparent;
+    color: var(--center-channel-color);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &[aria-expanded='true'] {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
+
+    > :global([class*='icon']) {
+      flex-shrink: 0;
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+
+  &__cell-trigger-value {
+    overflow: hidden;
+    min-width: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__cell-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + var(--spacing-xxs));
+    left: 0;
+    min-width: 200px;
+    max-height: 320px;
+    /* Scrolling is the inner Compass Scrollbar's job (MenuCell). */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: top left;
+    animation: policy-editor-popover-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+
+  /* "[] User: Program": an attribute reference, not a literal value. */
+  &__attr-chip {
+    display: inline-flex;
+    overflow: hidden;
+    min-width: 0;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xxs) var(--spacing-xs);
+    border-radius: var(--radius-xs);
+    background: rgba(var(--button-bg-rgb), 0.12);
+    /* Link colour: darker in light themes, lighter in dark ones, so the chip
+       text clears 4.5:1 in both (GVIS3-7; button-bg was 3.85:1 on onyx). */
+    color: var(--link-color);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-75, 1);
+    white-space: nowrap;
+  }
+
+  &__attr-chip-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__cell-select--narrow {
+    min-width: 112px;
+    max-width: 140px;
+  }
+
+  &__attr-kind {
+    margin-left: var(--spacing-xxs);
+  }
+
+  &__match-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + var(--spacing-xxs));
+    right: 0;
+    width: 260px;
+    max-width: none;
+    text-align: left;
+    animation: policy-editor-popover-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+
+  &__add-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + var(--spacing-xs));
+    left: 0;
+    width: 320px;
+    max-width: none;
+    animation: policy-editor-popover-in var(--duration-quick)
+      var(--ease-entrance);
+  }
+
+  /* Height is capped inline to the space available (see useMenuPlacement). */
+  &__picker-menu--tall {
+    overflow-y: auto;
+  }
+
+  /* The permission picker sits at the bottom of the page, so it opens upward. */
+  &__picker-menu--up {
+    top: auto;
+    bottom: calc(100% + var(--spacing-xs));
+    transform-origin: bottom left;
+  }
+
+  &__cel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__cel-input {
+    width: 100%;
+
+    textarea {
+      font-family: var(--font-family-mono, monospace);
+      font-size: var(--font-size-75);
+      line-height: var(--line-height-100);
+    }
+  }
+
+  &__cel-hint {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  /* aria-disabled keeps it focusable with its hint; this is the disabled
+     look (the repo's 0.4 floor), without the tertiary hover tint. Doubled to
+     outrank Compass's hover and active states. */
+  & &__button--blocked#{&}__button--blocked {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+    box-shadow: none;
+    cursor: not-allowed;
+
+    &:hover,
+    &:active {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__menu-runway {
+    order: 99;
+    height: 280px;
+  }
+
+  &__menu-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    margin: 0;
+    padding: var(--spacing-xxs) var(--spacing-l) var(--spacing-xs);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__join-note {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__missing-note {
+    margin-top: var(--spacing-m);
+  }
+
+  &__empty-other {
+    padding: var(--spacing-l) var(--spacing-s);
+    text-align: center;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}

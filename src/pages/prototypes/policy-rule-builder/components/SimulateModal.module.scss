@@ -1,0 +1,243 @@
+.simulate {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) 1fr;
+  gap: var(--spacing-xl);
+  min-height: 360px;
+  max-height: 440px;
+
+  &__inputs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__result {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: 440px;
+    border-left: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+  }
+
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+  }
+
+  &__result-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    padding-left: var(--spacing-xl);
+    padding-right: var(--spacing-s);
+  }
+
+  &__verdict {
+    display: flex;
+  }
+
+  &__run {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  &__run-title {
+    margin: 0;
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+
+    .simulate__list {
+      padding-left: var(--spacing-l);
+      border-left: 2px solid rgba(var(--center-channel-color-rgb), 0.12);
+    }
+  }
+
+  &__group-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+
+    /* Semantic tokens, no raw palette (CVIS2-5). The icon carries the state. */
+    &--pass {
+      color: var(--color-success);
+    }
+
+    &--fail {
+      color: var(--error-text, var(--color-danger));
+    }
+
+    /* "No value" is its own state, not a second red mark (CVIS1-10). */
+    &--missing {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    &--na {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+
+  &__row-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxxs);
+  }
+
+  &__row-rule {
+    font-size: var(--font-size-100);
+    color: var(--center-channel-color);
+  }
+
+  &__row-meta {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__trace {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  &__verdict {
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__verdict-text {
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  /* The Tag above carries the verdict in colour; this text stays neutral, so
+     one expected denial isn't five red marks (CVIS1-10, CVIS2-5). */
+  &__run-outcome--pass,
+  &__run-outcome--na,
+  &__run-outcome--fail,
+  &__run-outcome--missing {
+    color: var(--center-channel-color);
+  }
+
+  &__grid {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: var(--font-size-75);
+
+    th,
+    td {
+      padding: var(--spacing-xxs) var(--spacing-xxs);
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      overflow-wrap: anywhere;
+      text-align: left;
+      font-weight: var(--font-weight-regular);
+      color: var(--center-channel-color);
+    }
+
+    thead th {
+      font-weight: var(--font-weight-semibold);
+      color: rgba(var(--center-channel-color-rgb), 0.75);
+    }
+  }
+
+  &__grid-caption {
+    margin-bottom: var(--spacing-xs);
+    text-align: left;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  &__modal {
+    max-height: calc(100% - var(--spacing-xxxl));
+  }
+
+  /* aria-disabled: the disabled look (0.4 floor), no hover tint. Doubled to
+     outrank Compass's own states. */
+  &__blocked#{&}__blocked {
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.4);
+    box-shadow: none;
+    cursor: not-allowed;
+
+    &:hover,
+    &:active {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+  }
+
+  &__hint {
+    margin-top: calc(var(--spacing-xs) * -1);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xxs);
+    }
+  }
+
+  &__grid-corner {
+    width: 128px;
+    white-space: nowrap;
+    font-size: var(--font-size-75);
+  }
+
+  &__nowrap {
+    white-space: nowrap;
+  }
+
+  /* The list's own join and outcome, above the rules (CON1, QA1-12). */
+  &__root {
+    list-style: none;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__empty {
+    margin: 0;
+    font-size: var(--font-size-100);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}

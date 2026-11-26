@@ -1,0 +1,71 @@
+.menu-cell {
+  /* The menu clips; the Compass Scrollbar inside scrolls, overlaid on the
+     content and hidden until used (round 1.3). Repo rule: Scrollbar, not raw
+     overflow. */
+  &__menu {
+    max-height: 440px;
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* Stays put above the scrolling list (M6). */
+  &__search {
+    flex: none;
+    padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-xs);
+  }
+
+  /* No border of its own: the Compass divider below separates it. */
+  &__back {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* aria-disabled, not native disabled: focusable, and the reason stays
+     readable (label at the disabled floor, reason at the text floor). */
+  &__option--disabled {
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+    }
+
+    :global([class*='menu-item__label']) {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    :global([class*='menu-item__secondary']) {
+      color: rgba(var(--center-channel-color-rgb), 0.75);
+      opacity: 1;
+    }
+  }
+
+  /* Help, then the warning on its own line (the secondary slot is a flex row). */
+  &__stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* A consequence, not help: its own line, icon, full-strength text (GVIS3-6). */
+  &__warning {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxxs);
+    margin-top: var(--spacing-xxxs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+
+    > :first-child {
+      color: var(--color-warning);
+    }
+  }
+
+  /* Compass dims the whole secondary slot to 0.75; undo that so the warning
+     reads at full strength, and keep the help at the usual dimmed colour. */
+  &__option--warns :global([class*='menu-item__secondary']) {
+    opacity: 1;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+}

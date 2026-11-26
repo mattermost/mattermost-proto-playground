@@ -1,0 +1,320 @@
+.rule-table {
+  &--nested {
+    border-color: rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+  }
+
+  &__table {
+    table-layout: fixed;
+
+    :global([class*='policy-editor__cell-select']) {
+      min-width: 0;
+      max-width: 100%;
+    }
+  }
+
+  &__col--lead {
+    width: 88px;
+  }
+
+  &__col--attribute {
+    width: 300px;
+  }
+
+  /* Inside a group the block is indented by the cell padding, the 3px edge
+     and the block padding (2 × --spacing-s + 3px = 23px). Taking that off the
+     attribute column keeps Operator, Values and the actions on the outer grid
+     (GVIS1-1). The group cell has no right padding, so the actions column is
+     the outer width. */
+  &__col--attribute-inner {
+    width: calc(300px - 2 * var(--spacing-s) - 3px);
+  }
+
+  &__col--operator {
+    width: 160px;
+  }
+
+  /* Hugs the row's delete button (small IconButton, 32px) plus cell padding,
+     so Values gets the width (round 1.3). */
+  &__col--actions {
+    width: calc(32px + 2 * var(--spacing-s));
+  }
+
+  /* The side panel narrows this table. Give Values the room the join
+     control and the chips need, and let the name columns shrink. */
+  @container (max-width: 880px) {
+    &__col--attribute {
+      width: 200px;
+    }
+
+    &__col--attribute-inner {
+      width: calc(200px - 2 * var(--spacing-s) - 3px);
+    }
+
+    &__col--operator {
+      width: 128px;
+    }
+  }
+
+  /* The join control shares the Values header, so it can't cover the label. */
+  &__values-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+    min-width: 0;
+
+    > span {
+      flex: none;
+    }
+
+    :global([class*='policy-editor__cell-anchor']) {
+      display: flex;
+      align-items: center;
+      width: auto;
+      min-width: 0;
+      line-height: 0;
+    }
+
+    :global([class*='policy-editor__head-control']) {
+      display: flex;
+      line-height: 16px;
+    }
+  }
+
+  &__lead {
+    vertical-align: middle;
+    padding-left: var(--spacing-xs) !important;
+    padding-right: 0 !important;
+
+    /* A compact connector trigger: the word plus a small chevron. */
+    :global([class*='policy-editor__cell-trigger']) {
+      min-width: 0;
+      padding: 0 var(--spacing-xxs);
+      gap: var(--spacing-xxxs);
+    }
+  }
+
+  &__connector {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: lowercase;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__row-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+  }
+
+  &__row-menu {
+    right: 0;
+    left: auto;
+    min-width: 200px;
+  }
+
+  &__group-row > td {
+    padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-s) !important;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxs);
+    padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-s);
+    /* Full-alpha edge: the block must read in glare, not by indent alone
+       (GVIS2-3). No fill: it cut text contrast below 4.5:1 and the edge
+       already marks the block (GVIS3-1). */
+    border-left: 3px solid var(--button-bg);
+  }
+
+  /* Head, empty line and footer start on the inner chips' line (GVIS3-4). */
+  &__group-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s);
+  }
+
+  /* The rules' size: "Or," says how the group joins the list (GVIS3-3). */
+  &__group-label {
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__group-actions {
+    margin-left: auto;
+  }
+
+  /* Stands in for the row's delete button (IconButton small, 32px). */
+  &__action-spacer {
+    width: 32px;
+    height: 32px;
+  }
+
+  &__group-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* No dividers inside a group, wherever it sits: the shared last-row rule
+     otherwise strips them only from the last group (GVIS4-2). */
+  &__inner {
+    background: transparent;
+
+    td {
+      border-top: 0 !important;
+      border-bottom: 0 !important;
+    }
+  }
+
+  &__group-empty {
+    margin: var(--spacing-xxs) 0;
+    padding: 0 var(--spacing-s);
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__group-footer {
+    display: flex;
+    padding: 0 var(--spacing-s);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__placeholder {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__join--locked {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+
+    > :first-child {
+      cursor: default;
+
+      &:hover {
+        background: transparent;
+      }
+    }
+  }
+
+  &__tip-anchor {
+    position: relative;
+    display: inline-flex;
+  }
+
+  /* Host-positioned Compass Tooltip, below the info button and right-aligned
+     to it (GVIS4-1). The top padding bridges the gap, so the pointer can move
+     onto the tip without it closing (GUX4-4). */
+  &__tip {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 20;
+    display: none;
+    width: max-content;
+    padding-top: var(--spacing-xxxs);
+
+    &--open {
+      display: block;
+    }
+
+    /* Compass centres the arrow; put it under the 24px button's icon:
+       half the button (12px) less half the arrow (4px). */
+    :global([class*='tooltip__arrow']) {
+      align-self: flex-end;
+      margin-right: 8px;
+    }
+  }
+
+  &__join-menu {
+    right: 0;
+    left: auto;
+    min-width: 220px;
+  }
+
+  &__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* Rule sets (sets mode): an "Or" divider between set tables. */
+  &__or {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    margin: var(--spacing-xs) 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+  }
+
+  &__set-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  /* Always mounted (live region); it only takes space while open. */
+  &__undo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: var(--center-channel-color);
+
+    > :first-child {
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+
+    &--open {
+      padding: var(--spacing-xxs) var(--spacing-s);
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    /* The warning icon only when the change loosens the policy (GVIS2-4).
+       No amber fill: the warnings bar stays the one amber surface, and the
+       Undo button keeps its normal tint (GVIS3-5). */
+    &--loosens > :first-child {
+      color: var(--color-warning);
+    }
+  }
+
+  &__undo-lead {
+    font-weight: var(--font-weight-semibold);
+  }
+}

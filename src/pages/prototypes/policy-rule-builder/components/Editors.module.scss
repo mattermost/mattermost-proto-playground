@@ -1,0 +1,99 @@
+.editors {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-m);
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-left: 3px solid rgba(var(--button-bg-rgb), 0.64);
+    border-radius: var(--radius-m);
+    background: var(--center-channel-bg);
+  }
+
+  &__card-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
+  }
+
+  &__card-title {
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-100);
+    font-weight: var(--font-weight-semibold);
+    color: var(--center-channel-color);
+  }
+
+  &__card-hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__card-remove {
+    margin-left: auto;
+  }
+
+  &__card-readback {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__connector {
+    margin: 0;
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__card-error {
+    margin: 0;
+    font-size: var(--font-size-75);
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__blocked {
+    background: rgba(var(--center-channel-color-rgb), 0.08) !important;
+    color: rgba(var(--center-channel-color-rgb), 0.64) !important;
+    cursor: not-allowed;
+  }
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__or {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(var(--center-channel-color-rgb), 0.16);
+    }
+  }
+
+  &__set-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xxs);
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}

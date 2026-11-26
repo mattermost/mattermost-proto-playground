@@ -5,6 +5,8 @@ import DmGmActionControlsV1 from '@/pages/prototypes/dm-gm-action-controls-v1/Dm
 import ExternalCallParticipants from '@/pages/prototypes/external-call-participants/ExternalCallParticipants';
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
+import PolicyRuleBuilder from '@/pages/prototypes/policy-rule-builder/PolicyRuleBuilder';
+import PolicyRuleBuilderAuthoring from '@/pages/prototypes/policy-rule-builder-authoring/PolicyRuleBuilderAuthoring';
 import SimulateAccess from '@/pages/prototypes/simulate-access/SimulateAccess';
 
 export type PrototypeEntry = {
@@ -15,6 +17,18 @@ export type PrototypeEntry = {
 };
 
 export const PROTOTYPES: PrototypeEntry[] = [
+  {
+    id: 'policy-rule-builder',
+    label: 'Permission Policy Rule Builder (DM/GM expansion)',
+    path: '/prototypes/policy-rule-builder',
+    component: PolicyRuleBuilder,
+  },
+  {
+    id: 'policy-rule-builder-authoring',
+    label: 'Permission Policy Rule Builder (authoring only)',
+    path: '/prototypes/policy-rule-builder-authoring',
+    component: PolicyRuleBuilderAuthoring,
+  },
   {
     id: 'dm-gm-action-controls-v1',
     label: 'DM/GM Action Controls v1 (Latest)',

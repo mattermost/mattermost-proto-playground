@@ -1,0 +1,113 @@
+.rule-table {
+  &--nested {
+    border-color: rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+  }
+
+  &__select {
+    width: 36px;
+    padding-right: 0 !important;
+  }
+
+  &__row--flagged {
+    background: rgba(var(--error-text-color-rgb, var(--color-danger-rgb)), 0.04);
+
+    > td {
+      vertical-align: top;
+    }
+  }
+
+  &__flag {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xxs);
+    margin-top: var(--spacing-xxxs);
+    padding-left: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    color: var(--error-text, var(--color-danger));
+  }
+
+  &__group-row > td {
+    padding: var(--spacing-xs) var(--spacing-s) !important;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-s) var(--spacing-s);
+    border-left: 3px solid rgba(var(--button-bg-rgb), 0.48);
+    border-radius: var(--radius-s);
+    background: rgba(var(--center-channel-color-rgb), 0.04);
+  }
+
+  &__group-head {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__group-label {
+    font-size: var(--font-size-75);
+    font-weight: var(--font-weight-semibold);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+
+  &__hint {
+    font-size: var(--font-size-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__placeholder {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &__table {
+    table-layout: fixed;
+  }
+
+  &__col--select {
+    width: 40px;
+  }
+
+  &__col--attribute {
+    width: 300px;
+  }
+
+  &__col--operator {
+    width: 160px;
+  }
+
+  &__col--actions {
+    width: 200px;
+  }
+
+  &__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  &__join--locked {
+    cursor: default;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  &__join-menu {
+    right: 0;
+    left: auto;
+    min-width: 220px;
+  }
+}

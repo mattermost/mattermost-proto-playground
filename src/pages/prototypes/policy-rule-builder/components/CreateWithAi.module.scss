@@ -1,0 +1,160 @@
+.ai {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  margin-bottom: var(--spacing-m);
+  padding: var(--spacing-m);
+  border: 1px solid rgba(var(--button-bg-rgb), 0.16);
+  border-radius: var(--radius-m);
+  /* Opaque fill under the wash, so the tint stays inside the panel. */
+  background-image:
+    linear-gradient(165deg, rgba(var(--button-bg-rgb), 0.16), rgba(var(--button-bg-rgb), 0.04) 42%, transparent 78%),
+    linear-gradient(var(--center-channel-bg), var(--center-channel-bg));
+  background-origin: border-box;
+  background-clip: padding-box;
+  min-width: 0;
+}
+
+.ai__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxxs);
+}
+
+.ai__title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  margin: 0;
+  font-size: var(--font-size-100);
+  font-weight: var(--font-weight-semibold);
+  line-height: 20px;
+  color: var(--center-channel-color);
+
+  /* The icon box collapses to 0 here, so the glyph was painting into the label. */
+  > :first-child {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--button-bg);
+
+    svg {
+      display: block;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.ai__hint,
+.ai__pending,
+.ai__body,
+.ai__lead {
+  margin: 0;
+  font-size: var(--font-size-75);
+  line-height: 20px;
+}
+
+.ai__hint,
+.ai__pending {
+  color: rgba(var(--center-channel-color-rgb), 0.75);
+}
+
+.ai__reply,
+.ai__expression {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  min-width: 0;
+}
+
+.ai__who {
+  display: block;
+  font-size: var(--font-size-75);
+  font-weight: var(--font-weight-semibold);
+  line-height: 16px;
+  color: rgba(var(--center-channel-color-rgb), 0.64);
+}
+
+.ai__code {
+  margin: 0;
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: var(--radius-s);
+  background: rgba(var(--center-channel-color-rgb), 0.04);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--font-size-75);
+  line-height: 18px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ai__composer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 40px;
+  border: 1px solid rgba(var(--button-bg-rgb), 0.28);
+  border-radius: var(--radius-s);
+  background: var(--center-channel-bg);
+
+  &:focus-within {
+    border-color: var(--button-bg);
+    box-shadow: 0 0 0 1px var(--button-bg);
+  }
+}
+
+.ai__field {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  margin: 0;
+  padding: 0 40px 0 var(--spacing-m);
+  border: 0;
+  background: transparent;
+  color: var(--center-channel-color);
+  font: inherit;
+  font-size: var(--font-size-100);
+  line-height: 40px;
+
+  &::placeholder {
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.ai__send {
+  position: absolute;
+  right: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: rgba(var(--center-channel-color-rgb), 0.32);
+  cursor: pointer;
+
+  &:not(:disabled) {
+    color: var(--button-bg);
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba(var(--button-bg-rgb), 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
