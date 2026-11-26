@@ -1,24 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import CheckIcon from '@mattermost/compass-icons/components/check';
+import { useState } from 'react';
+import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
+import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import CodeTagsIcon from '@mattermost/compass-icons/components/code-tags';
-import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
+import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
 import ShieldOutlineIcon from '@mattermost/compass-icons/components/shield-outline';
+import TableLargeIcon from '@mattermost/compass-icons/components/table-large';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
-import TuneIcon from '@mattermost/compass-icons/components/tune';
 import { WithTooltip } from '@mattermost/compass-proto';
 import { Button } from '@mattermost/compass-ui/components/button';
-import { Combobox } from '@mattermost/compass-ui/components/combobox';
-import { Dropdown } from '@mattermost/compass-ui/components/dropdown';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
-import { MenuItem } from '@mattermost/compass-ui/components/menu-item';
-import { PopoverMenu } from '@mattermost/compass-ui/components/popover-menu';
-import { SegmentedControl } from '@mattermost/compass-ui/components/segmented-control';
-import { Select } from '@mattermost/compass-ui/components/select';
 import { TextArea } from '@mattermost/compass-ui/components/text-area';
-import { useOutsideClose } from '@mattermost/compass-ui/hooks/use-outside-close';
 import {
   ATTRIBUTES,
   toExpression,
@@ -27,18 +20,28 @@ import {
   type MatchMode,
   type Operator,
 } from '../weaveAutomationPermissionsData';
+import MenuCell, { type MenuGroup } from './MenuCell';
 import styles from './AttributeRuleEditor.module.scss';
 
+/* Copy and operator labels follow the policy rule builder (`copy.ts`, shipped
+ * admin.access_control.operators.*). */
 const OPERATORS: { value: Operator; label: string }[] = [
   { value: 'is', label: 'is' },
   { value: 'is-not', label: 'is not' },
-  { value: 'in', label: 'includes' },
+  { value: 'in', label: 'in' },
 ];
 
-const MATCH_LABELS: Record<MatchMode, string> = {
-  all: 'All attributes required',
-  any: 'Any attribute matches',
+const JOIN_LABELS: Record<MatchMode, string> = {
+  all: 'All rules required',
+  any: 'Any rule required',
 };
+
+const ATTRIBUTE_MENU: MenuGroup[] = [
+  {
+    heading: 'User',
+    options: ATTRIBUTES.map((a) => ({ value: a.key, label: a.label })),
+  },
+];
 
 interface AttributeRuleEditorProps {
   conditions: Condition[];
@@ -50,108 +53,22 @@ interface AttributeRuleEditorProps {
 
 let nextId = 100;
 
-/**
- * "All attributes required" / "Any attribute matches" trigger and menu.
- * Host-owned overlay: portaled, fixed below the trigger, closes on outside
- * press and Escape.
- */
-function MatchModeMenu({
-  value,
-  onChange,
-}: {
-  value: MatchMode;
-  onChange: (m: MatchMode) => void;
-}) {
-  const [anchor, setAnchor] = useState<DOMRect | null>(null);
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  useOutsideClose(wrapRef, open, () => setOpen(false), menuRef);
-
-  function close() {
-    setOpen(false);
-    wrapRef.current?.querySelector('button')?.focus();
-  }
-
-  // Escape closes the menu and returns focus to the trigger.
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape' && !e.defaultPrevented) {
-        e.preventDefault();
-        setOpen(false);
-        wrapRef.current?.querySelector('button')?.focus();
-      }
-    }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open]);
-
+function AttributeChip({ label }: { label: string }) {
   return (
-    <div ref={wrapRef}>
-      <Dropdown
-        size="x-small"
-        leadingIcon={<Icon glyph={<TuneIcon />} />}
-        isOpen={open}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={(e) => {
-          if (open) {
-            setOpen(false);
-          } else {
-            setAnchor(e.currentTarget.getBoundingClientRect());
-            setOpen(true);
-          }
-        }}
-      >
-        {MATCH_LABELS[value]}
-      </Dropdown>
-      {anchor &&
-        createPortal(
-          <div
-            ref={menuRef}
-            className={styles['rule-editor__menu-layer']}
-            style={{ top: anchor.bottom + 4, left: anchor.right }}
-          >
-            <PopoverMenu
-              open={open}
-              onExited={() => setAnchor(null)}
-              role="menu"
-              aria-label="How conditions combine"
-            >
-              {(Object.keys(MATCH_LABELS) as MatchMode[]).map((key) => (
-                <MenuItem
-                  key={key}
-                  role="menuitemradio"
-                  leadingElement={false}
-                  aria-checked={value === key}
-                  label={MATCH_LABELS[key]}
-                  secondaryLabel={
-                    key === 'all' ? 'Combined with AND' : 'Combined with OR'
-                  }
-                  secondaryLabelPosition="below"
-                  trailingElement={value === key}
-                  trailingVisual={<Icon glyph={<CheckIcon />} />}
-                  onClick={() => {
-                    onChange(key);
-                    close();
-                  }}
-                />
-              ))}
-            </PopoverMenu>
-          </div>,
-          document.body,
-        )}
-    </div>
+    <span className={styles['rule-editor__chip']}>
+      <Icon glyph={<CodeBracketsIcon />} size="12" />
+      {label}
+    </span>
   );
 }
 
 /**
- * Attribute rule editor, following Abhijit's System Console membership
- * policy prototype (branch `abhijit-prototypes`,
- * `src/pages/MembershipPoliciesTeams/screens/SG1PolicyEditor.tsx`, built to
- * the Permission Policies Figma). The real product reuses the host webapp's
- * table and expression editors.
+ * Attribute rule editor, following Abhijit's permission policy rule builder
+ * (branch `abhijit/dm-gm-action-controls`, `prototypes/policy-rule-builder`):
+ * a borderless-cell table whose cells open menus, an "All / Any rule
+ * required" header control, and an Advanced / Simple switch. Narrowed to one
+ * party (user attributes) with no nested groups, since Weave rules only see
+ * the acting user.
  */
 export default function AttributeRuleEditor({
   conditions,
@@ -160,174 +77,238 @@ export default function AttributeRuleEditor({
   onMatchChange,
   onTest,
 }: AttributeRuleEditorProps) {
-  const [mode, setMode] = useState('simple');
+  const [mode, setMode] = useState<'simple' | 'advanced'>('simple');
 
   function update(id: string, patch: Partial<Condition>) {
     onChange(conditions.map((c) => (c.id === id ? { ...c, ...patch } : c)));
   }
 
-  function add() {
-    const used = new Set(conditions.map((c) => c.attribute));
-    const attr = ATTRIBUTES.find((a) => !used.has(a.key)) ?? ATTRIBUTES[0];
+  function add(attribute: AttributeKey) {
     onChange([
       ...conditions,
-      { id: `c${nextId++}`, attribute: attr.key, operator: 'is', values: [] },
+      { id: `c${nextId++}`, attribute, operator: 'is', values: [] },
     ]);
+  }
+
+  function toggleValue(c: Condition, v: string) {
+    const has = c.values.includes(v);
+    update(c.id, {
+      values: has ? c.values.filter((x) => x !== v) : [...c.values, v],
+    });
   }
 
   return (
     <div className={styles['rule-editor']}>
       <div className={styles['rule-editor__header']}>
         <span className={styles['rule-editor__title']} id="rule-editor-title">
-          User attribute requirements
+          Attribute-based rules
         </span>
-        <SegmentedControl
-          size="small"
+        <div
+          className={styles['rule-editor__mode-switch']}
+          role="group"
           aria-label="Editor mode"
-          value={mode}
-          onChange={setMode}
-          options={[
-            {
-              key: 'advanced',
-              label: 'Advanced',
-              icon: <Icon glyph={<CodeTagsIcon />} />,
-              id: 'rule-mode-advanced',
-              panelId: 'rule-panel',
-            },
-            {
-              key: 'simple',
-              label: 'Simple',
-              icon: <Icon glyph={<FormatListBulletedIcon />} />,
-              id: 'rule-mode-simple',
-              panelId: 'rule-panel',
-            },
-          ]}
-        />
+        >
+          {(
+            [
+              { key: 'advanced', label: 'Advanced', glyph: <CodeTagsIcon /> },
+              { key: 'simple', label: 'Simple', glyph: <TableLargeIcon /> },
+            ] as const
+          ).map((o) => (
+            <button
+              key={o.key}
+              type="button"
+              aria-pressed={mode === o.key}
+              className={[
+                styles['rule-editor__mode-option'],
+                mode === o.key
+                  ? styles['rule-editor__mode-option--active']
+                  : '',
+              ].join(' ')}
+              onClick={() => setMode(o.key)}
+            >
+              <Icon glyph={o.glyph} size="12" />
+              {o.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div
-        id="rule-panel"
-        role="tabpanel"
-        aria-labelledby={
-          mode === 'simple' ? 'rule-mode-simple' : 'rule-mode-advanced'
-        }
-      >
-        {mode === 'simple' ? (
-          <div
+      {mode === 'simple' ? (
+        <div className={styles['rule-editor__table-wrap']}>
+          <table
             className={styles['rule-editor__table']}
-            role="table"
             aria-labelledby="rule-editor-title"
           >
-            <div className={styles['rule-editor__head']} role="row">
-              <span role="columnheader">Attribute</span>
-              <span role="columnheader">Operator</span>
-              <span role="columnheader">Values</span>
-              <span
-                role="columnheader"
-                className={styles['rule-editor__head-end']}
-              >
-                <span className={styles['rule-editor__sr']}>
-                  How conditions combine
-                </span>
-                <MatchModeMenu value={match} onChange={onMatchChange} />
-              </span>
-            </div>
-            {conditions.map((c) => {
-              const attr =
-                ATTRIBUTES.find((a) => a.key === c.attribute) ?? ATTRIBUTES[0];
-              return (
-                <div
-                  key={c.id}
-                  className={styles['rule-editor__row']}
-                  role="row"
+            <colgroup>
+              <col className={styles['rule-editor__col-attr']} />
+              <col className={styles['rule-editor__col-op']} />
+              <col />
+              <col className={styles['rule-editor__col-actions']} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">Attribute</th>
+                <th scope="col">Operator</th>
+                <th scope="col">Values</th>
+                <th scope="col" className={styles['rule-editor__head-end']}>
+                  <MenuCell
+                    ariaLabel={`${JOIN_LABELS[match]}. Change how rules combine`}
+                    groups={[
+                      {
+                        options: (['all', 'any'] as MatchMode[]).map((m) => ({
+                          value: m,
+                          label: JOIN_LABELS[m],
+                        })),
+                      },
+                    ]}
+                    selected={[match]}
+                    onSelect={(m) => onMatchChange(m as MatchMode)}
+                    align="end"
+                    renderTrigger={({ open, toggle }) => (
+                      <button
+                        type="button"
+                        className={styles['rule-editor__head-control']}
+                        aria-haspopup="menu"
+                        aria-expanded={open}
+                        aria-label={`${JOIN_LABELS[match]}. Change how rules combine`}
+                        onClick={toggle}
+                      >
+                        <Icon glyph={<FilterVariantIcon />} size="16" />
+                        {JOIN_LABELS[match]}
+                        <Icon glyph={<ChevronDownIcon />} size="16" />
+                      </button>
+                    )}
+                  />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {conditions.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className={styles['rule-editor__empty']}>
+                    Select an attribute and values to create a rule
+                  </td>
+                </tr>
+              ) : (
+                conditions.map((c) => {
+                  const attr =
+                    ATTRIBUTES.find((a) => a.key === c.attribute) ??
+                    ATTRIBUTES[0];
+                  const opLabel =
+                    OPERATORS.find((o) => o.value === c.operator)?.label ??
+                    'is';
+                  return (
+                    <tr key={c.id}>
+                      <td className={styles['rule-editor__trigger-cell']}>
+                        <MenuCell
+                          ariaLabel={`Attribute: ${attr.label}. Change attribute`}
+                          groups={ATTRIBUTE_MENU}
+                          searchable
+                          selected={[c.attribute]}
+                          onSelect={(k) =>
+                            k !== c.attribute &&
+                            update(c.id, {
+                              attribute: k as AttributeKey,
+                              values: [],
+                            })
+                          }
+                        >
+                          <AttributeChip label={attr.label} />
+                        </MenuCell>
+                      </td>
+                      <td className={styles['rule-editor__trigger-cell']}>
+                        <MenuCell
+                          ariaLabel={`${attr.label} operator: ${opLabel}. Change operator`}
+                          groups={[{ options: OPERATORS }]}
+                          selected={[c.operator]}
+                          onSelect={(o) =>
+                            update(c.id, { operator: o as Operator })
+                          }
+                        >
+                          {opLabel}
+                        </MenuCell>
+                      </td>
+                      <td className={styles['rule-editor__trigger-cell']}>
+                        <MenuCell
+                          ariaLabel={`${attr.label} values: ${c.values.join(', ') || 'none'}. Change values`}
+                          groups={[
+                            {
+                              heading: 'Values',
+                              options: attr.values.map((v) => ({
+                                value: v,
+                                label: v,
+                              })),
+                            },
+                          ]}
+                          selected={c.values}
+                          multi
+                          chevron
+                          onSelect={(v) => toggleValue(c, v)}
+                        >
+                          {c.values.length ? (
+                            c.values.join(', ')
+                          ) : (
+                            <span
+                              className={styles['rule-editor__placeholder']}
+                            >
+                              Select value
+                            </span>
+                          )}
+                        </MenuCell>
+                      </td>
+                      <td className={styles['rule-editor__actions-cell']}>
+                        <WithTooltip label="Remove rule">
+                          <IconButton
+                            size="small"
+                            padding="compact"
+                            destructive
+                            icon={<Icon glyph={<TrashCanOutlineIcon />} />}
+                            aria-label={`Remove rule on ${attr.label}`}
+                            onClick={() =>
+                              onChange(conditions.filter((x) => x.id !== c.id))
+                            }
+                          />
+                        </WithTooltip>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+          <div className={styles['rule-editor__table-footer']}>
+            <MenuCell
+              ariaLabel="Add attribute"
+              groups={ATTRIBUTE_MENU}
+              searchable
+              selected={[]}
+              onSelect={(k) => add(k as AttributeKey)}
+              renderTrigger={({ open, toggle }) => (
+                <Button
+                  emphasis="tertiary"
+                  size="small"
+                  leadingIcon={<Icon glyph={<PlusIcon />} />}
+                  aria-haspopup="menu"
+                  aria-expanded={open}
+                  onClick={toggle}
                 >
-                  <div role="cell">
-                    <Select
-                      size="small"
-                      aria-label="Attribute"
-                      listboxLabel="Attribute"
-                      leadingIcon={<Icon glyph={<FormatListBulletedIcon />} />}
-                      value={c.attribute}
-                      options={ATTRIBUTES.map((a) => ({
-                        value: a.key,
-                        label: a.label,
-                      }))}
-                      onChange={(v) =>
-                        update(c.id, {
-                          attribute: v as AttributeKey,
-                          values: [],
-                        })
-                      }
-                    />
-                  </div>
-                  <div role="cell">
-                    <Select
-                      size="small"
-                      aria-label="Operator"
-                      listboxLabel="Operator"
-                      value={c.operator}
-                      options={OPERATORS}
-                      onChange={(v) =>
-                        update(c.id, { operator: v as Operator })
-                      }
-                    />
-                  </div>
-                  <div role="cell">
-                    <Combobox
-                      size="small"
-                      multiple
-                      aria-label={`${attr.label} values`}
-                      placeholder="Add values"
-                      options={attr.values.map((v) => ({ value: v, label: v }))}
-                      value={c.values}
-                      onChange={(v) =>
-                        update(c.id, { values: (v as string[]) ?? [] })
-                      }
-                    />
-                  </div>
-                  <div role="cell" className={styles['rule-editor__cell-end']}>
-                    <WithTooltip label="Remove attribute">
-                      <IconButton
-                        size="small"
-                        padding="compact"
-                        destructive
-                        icon={<Icon glyph={<TrashCanOutlineIcon />} />}
-                        aria-label={`Remove ${attr.label} rule`}
-                        onClick={() =>
-                          onChange(conditions.filter((x) => x.id !== c.id))
-                        }
-                      />
-                    </WithTooltip>
-                  </div>
-                </div>
-              );
-            })}
-            <div className={styles['rule-editor__add']}>
-              <Button
-                emphasis="link"
-                size="x-small"
-                leadingIcon={<Icon glyph={<PlusIcon />} />}
-                onClick={add}
-              >
-                Add attribute
-              </Button>
-            </div>
+                  Add attribute
+                </Button>
+              )}
+            />
           </div>
-        ) : (
-          <TextArea
-            label="Expression"
-            readOnly
-            value={toExpression(conditions, match)}
-            message="Read-only in this prototype. The product uses the host's expression editor."
-            messageTone="info"
-          />
-        )}
-      </div>
+        </div>
+      ) : (
+        <TextArea
+          label="Expression"
+          readOnly
+          value={toExpression(conditions, match)}
+          message="Read-only in this prototype. The product uses the host's expression editor."
+          messageTone="info"
+        />
+      )}
 
       <div className={styles['rule-editor__footer']}>
-        <p className={styles['rule-editor__help']}>
-          Select attributes and values that people must have to be in this group
-        </p>
         <Button
           emphasis="tertiary"
           size="small"

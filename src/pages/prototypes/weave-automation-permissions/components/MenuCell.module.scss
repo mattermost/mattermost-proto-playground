@@ -1,0 +1,78 @@
+// Ported from the policy rule builder's cell trigger and menu
+// (RuleEditor.module.scss: policy-editor__cell-trigger, __cell-menu).
+.menu-cell {
+  width: 100%;
+
+  &__trigger {
+    display: flex;
+    width: 100%;
+    min-height: var(--spacing-xxxxl);
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding: 0 var(--spacing-s);
+    border: none;
+    background: transparent;
+    color: var(--center-channel-color);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &[aria-expanded='true'] {
+      background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
+
+    > :global([class*='icon']) {
+      flex-shrink: 0;
+      color: rgba(var(--center-channel-color-rgb), 0.56);
+    }
+  }
+
+  &__value {
+    overflow: hidden;
+    min-width: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Portaled layer, fixed under the trigger.
+  &__layer {
+    --popover-transform-origin: top left;
+
+    position: fixed;
+    z-index: var(--z-menu, 1000);
+
+    &--end {
+      --popover-transform-origin: top right;
+
+      transform: translateX(-100%);
+    }
+  }
+
+  &__menu {
+    min-width: 200px;
+    max-height: 360px;
+  }
+
+  &__search {
+    padding: var(--spacing-xxs) var(--spacing-s) var(--spacing-xs);
+  }
+
+  &__empty {
+    margin: 0;
+    padding: var(--spacing-xs) var(--spacing-l);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}
