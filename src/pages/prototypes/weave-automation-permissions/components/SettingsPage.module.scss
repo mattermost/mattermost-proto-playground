@@ -1,0 +1,106 @@
+// Values follow the Agents plugin settings view (agents_settings_page.tsx).
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--center-channel-bg);
+  color: var(--center-channel-color);
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  // Same column as the Agents plugin's All agents and Settings views.
+  &__container {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-xxxl) var(--spacing-xxxl);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    padding: var(--spacing-xxxxxl) 0 var(--spacing-xl);
+  }
+
+  &__leading {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    min-width: 0;
+  }
+
+  // Pulls the back button's own padding into the gutter so the title stays on the column edge.
+  &__back {
+    margin-left: calc(-1 * var(--spacing-xs));
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+    min-width: 0;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-500);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-500);
+    color: var(--center-channel-color);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+  }
+
+  &__save-bar {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.12);
+    background: var(--center-channel-bg);
+  }
+
+  &__save-bar-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    box-sizing: border-box;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--spacing-m) var(--spacing-xxxl);
+  }
+
+  &__save-bar-message {
+    flex: 1;
+    min-width: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.75);
+  }
+}

@@ -1,15 +1,13 @@
 import { useMemo, useState } from 'react';
 import AccountMultipleOutlineIcon from '@mattermost/compass-icons/components/account-multiple-outline';
-import { AdminConsoleFooter } from '@mattermost/compass-ui/components/admin-console-footer';
-import { AdminConsoleHeader } from '@mattermost/compass-ui/components/admin-console-header';
 import { AdminPanel } from '@mattermost/compass-ui/components/admin-panel';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Combobox } from '@mattermost/compass-ui/components/combobox';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Radio } from '@mattermost/compass-ui/components/radio';
-import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import AttributeRuleEditor from '../components/AttributeRuleEditor';
+import SettingsPage from '../components/SettingsPage';
 import StepPicker from '../components/StepPicker';
 import {
   PEOPLE,
@@ -66,6 +64,7 @@ export default function GroupEditorScene({
 }: GroupEditorSceneProps) {
   const [draft, setDraft] = useState<PermissionGroup>(group);
   const matches = peopleInGroup(draft);
+  const dirty = JSON.stringify(draft) !== JSON.stringify(group);
 
   // Only offer steps that aren't already shared with everyone.
   const extraCatalog = useMemo(
@@ -86,140 +85,130 @@ export default function GroupEditorScene({
   const title = draft.name.trim() || (isNew ? 'New group' : 'Untitled group');
 
   return (
-    <div className={styles['weave-permissions__page']}>
-      <AdminConsoleHeader
-        showBack
-        ariaLabelBack="Back to Permissions"
-        onBackClick={onCancel}
-        title={title}
-        trailing={
-          isNew ? undefined : (
-            <Button
-              emphasis="tertiary"
-              size="small"
-              destructive
-              onClick={() => onDelete(group.id)}
+    <SettingsPage
+      title={title}
+      onBack={onCancel}
+      backLabel="Back to Permissions"
+      headerActions={
+        isNew ? undefined : (
+          <Button
+            emphasis="tertiary"
+            size="small"
+            destructive
+            onClick={() => onDelete(group.id)}
+          >
+            Delete group
+          </Button>
+        )
+      }
+      saveBar={{
+        visible: dirty || isNew,
+        saveDisabled: draft.name.trim() === '',
+        onSave: () => onSave({ ...draft, name: draft.name.trim() }),
+        onDiscard: () => (isNew ? onCancel() : setDraft(group)),
+      }}
+    >
+      <AdminPanel>
+        <TextInput
+          label="Name"
+          required
+          value={draft.name}
+          onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
+        />
+      </AdminPanel>
+
+      <AdminPanel
+        title="Who's in this group"
+        subtitle="They can create team automations and edit their own, in any team they belong to. Guests and deactivated accounts are never included."
+      >
+        <div className={styles['weave-permissions__stack']}>
+          <div
+            className={styles['weave-permissions__radio-row']}
+            role="radiogroup"
+            aria-label="How to choose people"
+          >
+            <Radio
+              name="who-mode"
+              checked={draft.mode === 'members'}
+              onChange={() => setMode('members')}
             >
-              Delete group
-            </Button>
-          )
-        }
-      />
-      <Scrollbar className={styles['weave-permissions__scroll']}>
-        <div className={styles['weave-permissions__body']}>
-          <AdminPanel>
-            <TextInput
-              label="Name"
-              required
-              value={draft.name}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, name: e.target.value }))
-              }
-            />
-          </AdminPanel>
+              Specific users or groups
+            </Radio>
+            <Radio
+              name="who-mode"
+              checked={draft.mode === 'attributes'}
+              onChange={() => setMode('attributes')}
+            >
+              Attribute-based policy
+            </Radio>
+          </div>
 
-          <AdminPanel
-            title="Who's in this group"
-            subtitle="They can create team automations and edit their own, in any team they belong to. Guests and deactivated accounts are never included."
-          >
-            <div className={styles['weave-permissions__stack']}>
-              <div
-                className={styles['weave-permissions__radio-row']}
-                role="radiogroup"
-                aria-label="How to choose people"
-              >
-                <Radio
-                  name="who-mode"
-                  checked={draft.mode === 'members'}
-                  onChange={() => setMode('members')}
-                >
-                  Specific users or groups
-                </Radio>
-                <Radio
-                  name="who-mode"
-                  checked={draft.mode === 'attributes'}
-                  onChange={() => setMode('attributes')}
-                >
-                  Attribute-based policy
-                </Radio>
-              </div>
-
-              {draft.mode === 'members' ? (
-                <>
-                  <Combobox
-                    multiple
-                    label="Users or groups"
-                    placeholder="Search users and groups"
-                    options={MEMBER_OPTIONS}
-                    value={draft.members}
-                    onChange={(v) =>
-                      setDraft((d) => ({
-                        ...d,
-                        members: (v as string[]) ?? [],
-                      }))
-                    }
-                  />
-                  <div className={styles['weave-permissions__count-row']}>
-                    <span aria-live="polite">
-                      {matches.length}{' '}
-                      {matches.length === 1 ? 'person' : 'people'}
-                    </span>
-                    <Button
-                      emphasis="link"
-                      size="small"
-                      onClick={() => onSeeWho(title, matches)}
-                      disabled={matches.length === 0}
-                    >
-                      See who
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <AttributeRuleEditor
-                  conditions={draft.conditions}
-                  onChange={(conditions) =>
-                    setDraft((d) => ({ ...d, conditions }))
-                  }
-                  onTest={() => onSeeWho(title, matches)}
-                />
-              )}
-            </div>
-          </AdminPanel>
-
-          <AdminPanel
-            title="Extra steps"
-            subtitle={
-              <>
-                On top of the shared steps everyone gets from All automation
-                editors.{' '}
-                <Button emphasis="link" size="small" onClick={onEditShared}>
-                  Edit shared steps
-                </Button>
-              </>
-            }
-          >
-            {extraCatalog.length > 0 ? (
-              <StepPicker
-                label="Extra steps by category"
-                catalog={extraCatalog}
-                selected={new Set(draft.extraSteps)}
-                onChange={(next) =>
-                  setDraft((d) => ({ ...d, extraSteps: [...next] }))
+          {draft.mode === 'members' ? (
+            <>
+              <Combobox
+                multiple
+                label="Users or groups"
+                placeholder="Search users and groups"
+                options={MEMBER_OPTIONS}
+                value={draft.members}
+                onChange={(v) =>
+                  setDraft((d) => ({
+                    ...d,
+                    members: (v as string[]) ?? [],
+                  }))
                 }
               />
-            ) : (
-              <p className={styles['weave-permissions__intro']}>
-                Every step is already shared with everyone.
-              </p>
-            )}
-          </AdminPanel>
+              <div className={styles['weave-permissions__count-row']}>
+                <span aria-live="polite">
+                  {matches.length} {matches.length === 1 ? 'person' : 'people'}
+                </span>
+                <Button
+                  emphasis="link"
+                  size="small"
+                  onClick={() => onSeeWho(title, matches)}
+                  disabled={matches.length === 0}
+                >
+                  See who
+                </Button>
+              </div>
+            </>
+          ) : (
+            <AttributeRuleEditor
+              conditions={draft.conditions}
+              onChange={(conditions) => setDraft((d) => ({ ...d, conditions }))}
+              onTest={() => onSeeWho(title, matches)}
+            />
+          )}
         </div>
-      </Scrollbar>
-      <AdminConsoleFooter
-        saveDisabled={draft.name.trim() === ''}
-        onSave={() => onSave({ ...draft, name: draft.name.trim() })}
-        onCancel={onCancel}
-      />
-    </div>
+      </AdminPanel>
+
+      <AdminPanel
+        title="Extra steps"
+        subtitle={
+          <>
+            On top of the shared steps everyone gets from All automation
+            editors.{' '}
+            <Button emphasis="link" size="small" onClick={onEditShared}>
+              Edit shared steps
+            </Button>
+          </>
+        }
+      >
+        {extraCatalog.length > 0 ? (
+          <StepPicker
+            label="Extra steps by category"
+            catalog={extraCatalog}
+            selected={new Set(draft.extraSteps)}
+            onChange={(next) =>
+              setDraft((d) => ({ ...d, extraSteps: [...next] }))
+            }
+          />
+        ) : (
+          <p className={styles['weave-permissions__intro']}>
+            Every step is already shared with everyone.
+          </p>
+        )}
+      </AdminPanel>
+    </SettingsPage>
   );
 }

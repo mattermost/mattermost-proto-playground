@@ -30,41 +30,10 @@
     margin: 0;
   }
 
-  // Page inside the shell's center column: header, scrolling body, optional footer.
-  &__page {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-    background: var(--center-channel-bg);
-    color: var(--center-channel-color);
-  }
-
-  &__scroll {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  &__body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xl);
-    max-width: 920px;
-    padding: var(--spacing-xxl);
-  }
-
-  &__pagehead {
-    display: flex;
-    flex-direction: column;
+  &__title-row {
+    display: inline-flex;
+    align-items: center;
     gap: var(--spacing-xs);
-  }
-
-  &__page-title {
-    margin: 0;
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-700);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-700);
   }
 
   &__intro {
@@ -94,12 +63,6 @@
     font-size: var(--font-size-75);
     line-height: var(--line-height-75);
     color: rgba(var(--center-channel-color-rgb), 0.72);
-  }
-
-  &__title-row {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
   }
 
   // Who / steps summary inside a group panel.

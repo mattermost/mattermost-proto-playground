@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { AdminConsoleFooter } from '@mattermost/compass-ui/components/admin-console-footer';
-import { AdminConsoleHeader } from '@mattermost/compass-ui/components/admin-console-header';
 import { AdminPanel } from '@mattermost/compass-ui/components/admin-panel';
 import { Button } from '@mattermost/compass-ui/components/button';
-import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { Tag } from '@mattermost/compass-ui/components/tag';
+import SettingsPage from '../components/SettingsPage';
 import StepPicker from '../components/StepPicker';
 import {
   peopleInAnyGroup,
@@ -41,53 +39,52 @@ export default function SharedStepsScene({
     [...draft].some((id) => !sharedSteps.has(id));
 
   return (
-    <div className={styles['weave-permissions__page']}>
-      <AdminConsoleHeader
-        showBack
-        ariaLabelBack="Back to Permissions"
-        onBackClick={onCancel}
-        title={
-          <span className={styles['weave-permissions__title-row']}>
-            All automation editors
-            <Tag label="Preset" size="small" />
-          </span>
+    <SettingsPage
+      title={
+        <>
+          All automation editors
+          <Tag label="Preset" size="small" />
+        </>
+      }
+      subtitle="Steps everyone who can create automations can use."
+      onBack={onCancel}
+      backLabel="Back to Permissions"
+      saveBar={{
+        visible: dirty || pendingNewSteps.length > 0,
+        message:
+          !dirty && pendingNewSteps.length > 0
+            ? 'Save to mark the new steps as reviewed'
+            : undefined,
+        onSave: () => onSave(draft),
+        onDiscard: () => setDraft(new Set(sharedSteps)),
+      }}
+    >
+      <AdminPanel
+        title="Who's included"
+        subtitle="Everyone in any group on the Permissions page. Change who by editing the groups."
+        headerActions={
+          <Button emphasis="tertiary" size="small" onClick={onSeeWho}>
+            See who
+          </Button>
         }
-      />
-      <Scrollbar className={styles['weave-permissions__scroll']}>
-        <div className={styles['weave-permissions__body']}>
-          <AdminPanel
-            title="Who's included"
-            subtitle="Everyone in any group on the Permissions page. Change who by editing the groups."
-            headerActions={
-              <Button emphasis="tertiary" size="small" onClick={onSeeWho}>
-                See who
-              </Button>
-            }
-          >
-            <p className={styles['weave-permissions__intro']}>
-              {everyone.length} people across all teams
-            </p>
-          </AdminPanel>
+      >
+        <p className={styles['weave-permissions__intro']}>
+          {everyone.length} people across all teams
+        </p>
+      </AdminPanel>
 
-          <AdminPanel
-            title="Shared steps"
-            subtitle="Everyone who can create automations can use these. New steps from Weave upgrades show up here first."
-          >
-            <StepPicker
-              label="Shared steps by category"
-              catalog={catalog}
-              selected={draft}
-              onChange={setDraft}
-              highlight={pendingNewSteps.map((s) => s.id)}
-            />
-          </AdminPanel>
-        </div>
-      </Scrollbar>
-      <AdminConsoleFooter
-        saveDisabled={!dirty && pendingNewSteps.length === 0}
-        onSave={() => onSave(draft)}
-        onCancel={onCancel}
-      />
-    </div>
+      <AdminPanel
+        title="Shared steps"
+        subtitle="Everyone who can create automations can use these. New steps from Weave upgrades show up here first."
+      >
+        <StepPicker
+          label="Shared steps by category"
+          catalog={catalog}
+          selected={draft}
+          onChange={setDraft}
+          highlight={pendingNewSteps.map((s) => s.id)}
+        />
+      </AdminPanel>
+    </SettingsPage>
   );
 }
