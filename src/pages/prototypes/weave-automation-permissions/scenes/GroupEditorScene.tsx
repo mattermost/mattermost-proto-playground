@@ -89,7 +89,7 @@ export default function GroupEditorScene({
     <div className={styles['weave-permissions__page']}>
       <AdminConsoleHeader
         showBack
-        ariaLabelBack="Back to Permissions"
+        ariaLabelBack="Back to Settings"
         onBackClick={onCancel}
         title={title}
         trailing={

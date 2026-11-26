@@ -7,6 +7,7 @@ import { SearchInput } from '@mattermost/compass-ui/components/search-input';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import { WithTooltip } from '@mattermost/compass-proto';
 import type { StepCategory } from '../weaveAutomationPermissionsData';
+import { glyphForStep } from './stepIcons';
 import styles from './StepPicker.module.scss';
 
 interface StepPickerProps {
@@ -156,22 +157,31 @@ export default function StepPicker({
               >
                 <div className={styles['step-picker__collapse-inner']}>
                   <ul className={styles['step-picker__steps']}>
-                    {cat.steps.map((step) => (
-                      <li key={step.id} className={styles['step-picker__step']}>
-                        <Checkbox
-                          checked={selected.has(step.id)}
-                          tabIndex={isOpen ? 0 : -1}
-                          onChange={(e) =>
-                            toggleStep(step.id, e.target.checked)
-                          }
+                    {cat.steps.map((step) => {
+                      const Glyph = glyphForStep(step.type);
+                      return (
+                        <li
+                          key={step.id}
+                          className={styles['step-picker__step']}
                         >
-                          {step.label}
-                        </Checkbox>
-                        {highlight.includes(step.id) && (
-                          <Tag label="New" type="warning" />
-                        )}
-                      </li>
-                    ))}
+                          <Checkbox
+                            checked={selected.has(step.id)}
+                            tabIndex={isOpen ? 0 : -1}
+                            onChange={(e) =>
+                              toggleStep(step.id, e.target.checked)
+                            }
+                          >
+                            <span className={styles['step-picker__step-label']}>
+                              <Icon glyph={<Glyph />} size="16" />
+                              {step.label}
+                            </span>
+                          </Checkbox>
+                          {highlight.includes(step.id) && (
+                            <Tag label="New" type="warning" />
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>

@@ -35,14 +35,7 @@
     list-style: none;
   }
 
-  &__section {
-    margin: 0;
-    padding: var(--spacing-l) var(--spacing-l) var(--spacing-xxxs);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-50);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-50);
-    text-transform: uppercase;
-    color: rgba(var(--sidebar-text-rgb), 0.72);
+  &__group {
+    padding-top: var(--spacing-l);
   }
 }

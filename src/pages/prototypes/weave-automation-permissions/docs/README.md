@@ -1,8 +1,12 @@
 # Weave automation permissions — docs
 
-| Item                                                   | Link                                                                                                       | Type        |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | ----------- |
-| Prompt                                                 | `weave-automation-permissions-prompt.md`                                                                   | requirement |
-| Design exploration ("Preset + groups" page)            | https://claude.ai/artifact/A7wsHToJjpLd6bHenrQ3ot                                                          | requirement |
-| Engineering spec: builder access through ABAC policies | https://mattermost.atlassian.net/wiki/spaces/PW/pages/5148278789/Spec+builder+access+through+ABAC+policies | background  |
-| Epics                                                  | https://mattermost.atlassian.net/browse/MM-71879, https://mattermost.atlassian.net/browse/MM-71880         | background  |
+| Item                                                    | Link                                                                                                                                                                            | Type        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Prompt                                                  | `weave-automation-permissions-prompt.md`                                                                                                                                        | requirement |
+| Design exploration ("Preset + groups" page)             | https://claude.ai/artifact/A7wsHToJjpLd6bHenrQ3ot                                                                                                                               | requirement |
+| Engineering spec: builder access through ABAC policies  | https://mattermost.atlassian.net/wiki/spaces/PW/pages/5148278789/Spec+builder+access+through+ABAC+policies                                                                      | background  |
+| Epics                                                   | https://mattermost.atlassian.net/browse/MM-71879, https://mattermost.atlassian.net/browse/MM-71880                                                                              | background  |
+| Weave plugin: product nav, step catalog, step icons     | https://github.com/mattermost/mattermost-plugin-weave (main, `webapp/src/components/product_nav.tsx`, `server/automation/catalog.json`, `webapp/src/components/step_icons.tsx`) | background  |
+| Weave plugin: builder policy admin UI (Settings → tabs) | https://github.com/mattermost/mattermost-plugin-weave/tree/MM-71879-builder-policy-admin-ui                                                                                     | background  |
+| Automations product prototype                           | https://github.com/mattermost/mattermost-proto-playground/tree/cursor/automations-product-prototype-373c                                                                        | background  |
+| Agents vision prototype (Product Rail origin)           | https://github.com/mattermost/mattermost-proto-playground/tree/cursor/agents-vision-prototype-c820                                                                              | background  |

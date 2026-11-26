@@ -7,7 +7,7 @@ import {
   ProductRail,
   ProductShell,
 } from '@mattermost/compass-proto';
-import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
+import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
 import WeaveSidebar from './WeaveSidebar';
 import styles from '../WeaveAutomationPermissions.module.scss';
 
@@ -37,8 +37,8 @@ export default function WeaveShell({ children }: { children: ReactNode }) {
       <div className={styles['weave-permissions__frame']}>
         <ProductShell
           product="automation"
-          userAvatarSrc={avatarSofia}
-          userAvatarAlt="Sofia Bauer"
+          userAvatarSrc={avatarDanielle}
+          userAvatarAlt="Danielle Okoro"
           productRail={<ProductRail items={RAIL_ITEMS} activeId="automation" />}
           sidebar={<WeaveSidebar />}
         >

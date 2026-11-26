@@ -91,6 +91,18 @@
     list-style: none;
   }
 
+  &__step-label {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--spacing-xxs);
+
+    svg {
+      flex: none;
+      margin-top: var(--spacing-xxxxs);
+      color: rgba(var(--center-channel-color-rgb), 0.64);
+    }
+  }
+
   &__step {
     display: flex;
     align-items: center;

@@ -16,166 +16,36 @@ import avatarLeonard from '@/assets/avatars/Leonard Riley.png';
 import avatarLukas from '@/assets/avatars/Lukas Meyer.png';
 import avatarMarco from '@/assets/avatars/Marco Rinaldi.png';
 import avatarSofia from '@/assets/avatars/Sofia Bauer.png';
+import { WEAVE_CATALOG } from './weaveCatalog';
 
 /* ------------------------------------------------------------------ Steps */
 
-export type Step = { id: string; label: string };
+export type Step = { id: string; type: string; label: string };
 export type StepCategory = { id: string; label: string; steps: Step[] };
 
-function steps(prefix: string, labels: string[]): Step[] {
-  return labels.map((label) => ({
-    id: `${prefix}_${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`,
-    label,
-  }));
-}
+/** The plugin's real catalog (see weaveCatalog.ts). */
+export const STEP_CATEGORIES: StepCategory[] = WEAVE_CATALOG;
 
-export const STEP_CATEGORIES: StepCategory[] = [
-  {
-    id: 'triggers',
-    label: 'Triggers',
-    steps: steps('trigger', [
-      'Message posted',
-      'Message edited',
-      'Message deleted',
-      'Reaction added',
-      'Reaction removed',
-      'Thread reply posted',
-      'File uploaded',
-      'User joined channel',
-      'User left channel',
-      'User joined team',
-      'User left team',
-      'Channel created',
-      'Channel archived',
-      'Channel header changed',
-      'Schedule',
-      'Slash command',
-      'Manual run',
-      'Message action',
-      'Post menu action',
-      'Dialog submitted',
-      'Webhook received',
-      'Playbook run started',
-      'Playbook run finished',
-      'Checklist item completed',
-      'Status update posted',
-      'Keyword mentioned',
-    ]),
-  },
-  {
-    id: 'flow',
-    label: 'Flow',
-    steps: steps('node', [
-      'Condition',
-      'Switch',
-      'Transform',
-      'Wait',
-      'Loop',
-      'Stop',
-      'Run automation',
-    ]),
-  },
-  {
-    id: 'channels',
-    label: 'Channels',
-    steps: steps('node', [
-      'Get channel',
-      'Create channel',
-      'Rename channel',
-      'Archive channel',
-      'Add channel member',
-      'Remove channel member',
-      'Set channel header',
-      'Set channel purpose',
-    ]),
-  },
-  {
-    id: 'users-teams',
-    label: 'Users & teams',
-    steps: steps('node', [
-      'Get user',
-      'Find users',
-      'Get user attributes',
-      'Add team member',
-      'Remove team member',
-      'Set user status',
-      'Get team',
-      'Update user roles',
-    ]),
-  },
-  {
-    id: 'posts',
-    label: 'Posts',
-    steps: steps('node', [
-      'Post message',
-      'Reply in thread',
-      'Update post',
-      'Delete post',
-      'Get posts',
-      'Add reaction',
-      'Pin post',
-      'Send direct message',
-      'Send ephemeral message',
-      'Mention user',
-    ]),
-  },
-  {
-    id: 'blocking',
-    label: 'Blocking',
-    steps: steps('trigger', ['Message will be posted']),
-  },
-  {
-    id: 'interactive',
-    label: 'Interactive',
-    steps: steps('node', ['Open dialog']),
-  },
-  {
-    id: 'stored-state',
-    label: 'Stored state',
-    steps: steps('node', [
-      'Get value',
-      'Set value',
-      'Delete value',
-      'Increment counter',
-      'Get list',
-      'Append to list',
-    ]),
-  },
-  {
-    id: 'integrations',
-    label: 'Integrations',
-    steps: steps('node', ['HTTP request', 'Call plugin']),
-  },
-  {
-    id: 'ai',
-    label: 'AI',
-    steps: steps('node', ['AI completion', 'AI summarize', 'AI classify']),
-  },
-  {
-    id: 'playbooks',
-    label: 'Playbooks',
-    steps: steps('node', [
-      'Start playbook run',
-      'Finish playbook run',
-      'Update run status',
-      'Check off item',
-      'Assign item',
-      'Add timeline event',
-    ]),
-  },
-  {
-    id: 'legacy',
-    label: 'Legacy',
-    steps: steps('node', ['Legacy webhook']),
-  },
-];
-
-/** Steps added by a Weave upgrade since the policy was last saved. */
+/**
+ * Steps added by a Weave upgrade since the policy was last saved. Stand-ins
+ * for the plugin event bus actions: not in the real catalog yet.
+ */
 export const NEW_STEPS: { categoryId: string; step: Step }[] = [
-  { categoryId: 'posts', step: { id: 'node_send_email', label: 'Send email' } },
+  {
+    categoryId: 'triggers',
+    step: {
+      id: 'trigger_plugin_event',
+      type: 'plugin_event',
+      label: 'Plugin event',
+    },
+  },
   {
     categoryId: 'ai',
-    step: { id: 'node_translate_text', label: 'Translate text' },
+    step: {
+      id: 'node_ai_translate',
+      type: 'ai_translate',
+      label: 'AI translate',
+    },
   },
 ];
 
@@ -189,27 +59,35 @@ export function catalogWithNewSteps(): StepCategory[] {
   }));
 }
 
-export const ALL_STEP_IDS = catalogWithNewSteps().flatMap((c) =>
-  c.steps.map((s) => s.id),
-);
-
 function categorySteps(...ids: string[]): string[] {
   return STEP_CATEGORIES.filter((c) => ids.includes(c.id)).flatMap((c) =>
     c.steps.map((s) => s.id),
   );
 }
 
-/** Shared steps: everything except Integrations, Blocking, AI and Legacy. */
-export const INITIAL_SHARED_STEPS: string[] = categorySteps(
-  'triggers',
-  'flow',
-  'channels',
-  'users-teams',
-  'posts',
-  'interactive',
-  'stored-state',
-  'playbooks',
-);
+const BLOCKING_TRIGGERS = STEP_CATEGORIES.find((c) => c.id === 'triggers')!
+  .steps.filter((s) => s.label.includes('(blocking)'))
+  .map((s) => s.id);
+
+/**
+ * Shared steps, after the spec's example "All team builders" rule: every
+ * non-blocking trigger and the everyday groups. Blocking hooks, webhooks,
+ * HTTP, AI, legacy and role changes are left for specific groups.
+ */
+export const INITIAL_SHARED_STEPS: string[] = [
+  ...categorySteps('triggers').filter(
+    (id) => !BLOCKING_TRIGGERS.includes(id) && id !== 'trigger_webhook',
+  ),
+  ...categorySteps(
+    'flow',
+    'channels',
+    'users-teams',
+    'posts',
+    'interactive',
+    'stored-state',
+    'playbooks',
+  ).filter((id) => id !== 'node_update_user_roles'),
+];
 
 /* ------------------------------------------------------------ Attributes */
 
@@ -251,20 +129,24 @@ export type Person = {
   attributes: Record<AttributeKey, string | string[]>;
 };
 
+// People with avatars keep the names their pictures are filed under, so they
+// match the automations and agents prototypes. The rest are generated.
+const NAMED: [string, string][] = [
+  ['Danielle Okoro', avatarDanielle],
+  ['Ethan Brooks', avatarEthan],
+  ['Sofia Bauer', avatarSofia],
+  ['Darius Cole', avatarDarius],
+  ['Aiko Tan', avatarAiko],
+  ['Emma Novak', avatarEmma],
+  ['Arjun Patel', avatarArjun],
+  ['David Liang', avatarDavid],
+  ['Isabella Cruz', avatarIsabella],
+  ['Leila Haddad', avatarLeila],
+  ['Leonard Riley', avatarLeonard],
+  ['Lukas Meyer', avatarLukas],
+  ['Marco Rinaldi', avatarMarco],
+];
 const FIRST = [
-  'Aiko',
-  'Arjun',
-  'Danielle',
-  'Darius',
-  'David',
-  'Emma',
-  'Ethan',
-  'Isabella',
-  'Leila',
-  'Leonard',
-  'Lukas',
-  'Marco',
-  'Sofia',
   'Nina',
   'Omar',
   'Priya',
@@ -275,21 +157,9 @@ const FIRST = [
   'Uma',
   'Victor',
   'Wen',
+  'Yara',
 ];
 const LAST = [
-  'Tan',
-  'Patel',
-  'Okoro',
-  'Cole',
-  'Liang',
-  'Novak',
-  'Brooks',
-  'Cruz',
-  'Haddad',
-  'Riley',
-  'Meyer',
-  'Rinaldi',
-  'Bauer',
   'Kim',
   'Farah',
   'Shah',
@@ -300,21 +170,8 @@ const LAST = [
   'Rao',
   'Alvarez',
   'Chen',
-];
-const AVATARS = [
-  avatarAiko,
-  avatarArjun,
-  avatarDanielle,
-  avatarDarius,
-  avatarDavid,
-  avatarEmma,
-  avatarEthan,
-  avatarIsabella,
-  avatarLeila,
-  avatarLeonard,
-  avatarLukas,
-  avatarMarco,
-  avatarSofia,
+  'Novak',
+  'Brandt',
 ];
 const DEPARTMENTS = [
   'engineering',
@@ -323,18 +180,20 @@ const DEPARTMENTS = [
   'Sales',
   'Support',
   'engineering',
-  'Design',
+  'Security',
 ];
 
 /** 46 deterministic fake people, so counts and previews are consistent. */
 export const PEOPLE: Person[] = Array.from({ length: 46 }, (_, i) => {
-  const first = FIRST[i % FIRST.length];
-  const last = LAST[(i * 7 + 3) % LAST.length];
+  const named = NAMED[i];
+  const name = named
+    ? named[0]
+    : `${FIRST[i % FIRST.length]} ${LAST[(i * 5 + 1) % LAST.length]}`;
   return {
     id: `u${i}`,
-    name: `${first} ${last}`,
-    username: `${first}.${last}`.toLowerCase(),
-    avatar: i < AVATARS.length ? AVATARS[i] : undefined,
+    name,
+    username: name.toLowerCase().replace(' ', '.'),
+    avatar: named?.[1],
     attributes: {
       weave_builder: i < 31 ? 'Yes' : 'No',
       Department: DEPARTMENTS[i % DEPARTMENTS.length],
@@ -403,7 +262,7 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
     mode: 'members',
     conditions: [],
     members: ['g-platform-leads', 'u3', 'u40'],
-    extraSteps: [...categorySteps('integrations'), ...categorySteps('ai')],
+    extraSteps: ['trigger_webhook', ...categorySteps('integrations', 'ai')],
   },
   {
     id: 'moderators',
@@ -419,7 +278,11 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
       },
     ],
     members: [],
-    extraSteps: categorySteps('blocking'),
+    extraSteps: [
+      'trigger_message_will_be_posted',
+      'trigger_file_will_be_uploaded',
+      ...categorySteps('blocking'),
+    ],
   },
   {
     id: 'engineering-ai',
@@ -517,8 +380,9 @@ export function toExpression(conditions: Condition[]): string {
 }
 
 /**
- * Plain-language summary of a set of steps against the catalog: name whole
- * categories, and fall back to step names when a category is partly granted.
+ * Plain-language summary of a set of steps against the catalog. Short lists
+ * name the steps; longer ones name whole groups and the groups that are only
+ * partly granted.
  */
 export function describeSteps(
   stepIds: string[],
@@ -526,25 +390,21 @@ export function describeSteps(
   mode: 'all' | 'extra',
 ): string {
   const set = new Set(stepIds);
-  const granted: string[] = [];
-  const missing: string[] = [];
+  if (set.size === 0) return mode === 'extra' ? 'None' : 'No steps';
+
+  const full: string[] = [];
+  const partial: string[] = [];
+  const names: string[] = [];
   for (const cat of catalog) {
     const have = cat.steps.filter((s) => set.has(s.id));
-    if (have.length === cat.steps.length) granted.push(cat.label);
-    else if (have.length === 0) missing.push(cat.label);
-    else {
-      granted.push(...have.map((s) => s.label));
-      missing.push(
-        ...cat.steps.filter((s) => !set.has(s.id)).map((s) => s.label),
-      );
-    }
+    names.push(...have.map((s) => s.label));
+    if (have.length === cat.steps.length) full.push(cat.label);
+    else if (have.length > 0) partial.push(cat.label);
   }
-  if (set.size === 0) return mode === 'extra' ? 'None' : 'No steps';
-  if (missing.length === 0) return 'All steps';
-  if (mode === 'all' && missing.length <= 6) {
-    return `All steps except ${joinList(missing)}`;
-  }
-  return joinList(granted);
+  if (names.length <= 4) return joinList(names);
+  if (partial.length === 0) return joinList(full);
+  const some = `some ${joinList(partial)} steps`;
+  return full.length ? `${joinList(full)}, plus ${some}` : `Only ${some}`;
 }
 
 function joinList(items: string[]): string {
