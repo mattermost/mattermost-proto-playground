@@ -175,7 +175,9 @@ export default function GroupEditorScene({
           ) : (
             <AttributeRuleEditor
               conditions={draft.conditions}
+              match={draft.match}
               onChange={(conditions) => setDraft((d) => ({ ...d, conditions }))}
+              onMatchChange={(match) => setDraft((d) => ({ ...d, match }))}
               onTest={() => onSeeWho(title, matches)}
             />
           )}

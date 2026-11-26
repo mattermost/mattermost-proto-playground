@@ -235,11 +235,15 @@ export type Condition = {
 
 export type WhoMode = 'members' | 'attributes';
 
+/** How conditions combine: every one (AND) or any one (OR). */
+export type MatchMode = 'all' | 'any';
+
 export type PermissionGroup = {
   id: string;
   name: string;
   mode: WhoMode;
   conditions: Condition[];
+  match: MatchMode;
   /** User ids and user group ids, for `mode: 'members'`. */
   members: string[];
   extraSteps: string[];
@@ -253,6 +257,7 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
     conditions: [
       { id: 'c1', attribute: 'weave_builder', operator: 'is', values: ['Yes'] },
     ],
+    match: 'all',
     members: [],
     extraSteps: [],
   },
@@ -261,6 +266,7 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
     name: 'Platform team',
     mode: 'members',
     conditions: [],
+    match: 'all',
     members: ['g-platform-leads', 'u3', 'u40'],
     extraSteps: ['trigger_webhook', ...categorySteps('integrations', 'ai')],
   },
@@ -277,6 +283,7 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
         values: ['moderation'],
       },
     ],
+    match: 'all',
     members: [],
     extraSteps: [
       'trigger_message_will_be_posted',
@@ -297,6 +304,7 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
         values: ['engineering'],
       },
     ],
+    match: 'all',
     members: [],
     extraSteps: categorySteps('ai'),
   },
@@ -313,11 +321,12 @@ function matchesCondition(person: Person, c: Condition): boolean {
 
 export function peopleInGroup(group: PermissionGroup): Person[] {
   if (group.mode === 'attributes') {
-    if (group.conditions.length === 0) return [];
+    const active = group.conditions.filter((c) => c.values.length > 0);
+    if (active.length === 0) return [];
     return PEOPLE.filter((p) =>
-      group.conditions.every(
-        (c) => c.values.length === 0 || matchesCondition(p, c),
-      ),
+      group.match === 'any'
+        ? active.some((c) => matchesCondition(p, c))
+        : active.every((c) => matchesCondition(p, c)),
     );
   }
   const ids = new Set<string>();
@@ -348,7 +357,7 @@ export function describeWho(group: PermissionGroup): string {
         (c) =>
           `${c.attribute} ${OPERATOR_TEXT[c.operator]} ${c.values.join(' or ') || '…'}`,
       )
-      .join(' and ');
+      .join(group.match === 'any' ? ' or ' : ' and ');
   }
   if (group.members.length === 0) return 'No one yet';
   return group.members
@@ -361,7 +370,10 @@ export function describeWho(group: PermissionGroup): string {
     .join(', ');
 }
 
-export function toExpression(conditions: Condition[]): string {
+export function toExpression(
+  conditions: Condition[],
+  match: MatchMode = 'all',
+): string {
   if (conditions.length === 0) return 'false';
   return conditions
     .map((c) => {
@@ -376,7 +388,7 @@ export function toExpression(conditions: Condition[]): string {
       }
       return `${attr} ${c.operator === 'is-not' ? '!=' : '=='} ${JSON.stringify(c.values[0] ?? '')}`;
     })
-    .join(' && ');
+    .join(match === 'any' ? ' || ' : ' && ');
 }
 
 /**

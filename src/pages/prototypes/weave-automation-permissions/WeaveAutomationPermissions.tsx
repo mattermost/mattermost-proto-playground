@@ -166,6 +166,7 @@ export default function WeaveAutomationPermissions() {
               name: '',
               mode: 'members',
               conditions: [],
+              match: 'all',
               members: [],
               extraSteps: [],
             },
