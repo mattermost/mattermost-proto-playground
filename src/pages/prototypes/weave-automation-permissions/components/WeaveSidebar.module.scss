@@ -1,0 +1,48 @@
+// Product sidebar for Automation. Width and header rhythm match ChannelsSidebar.
+.weave-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 264px;
+  height: 100%;
+  min-height: 0;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    // stylelint-disable-next-line declaration-property-value-disallowed-list -- matches ChannelsSidebar header padding
+    padding: 14px var(--spacing-l);
+  }
+
+  &__title {
+    font-family: var(--font-family-heading);
+    font-size: var(--font-size-200);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-200);
+    color: var(--sidebar-text);
+  }
+
+  &__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__section {
+    margin: 0;
+    padding: var(--spacing-l) var(--spacing-l) var(--spacing-xxxs);
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-50);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-50);
+    text-transform: uppercase;
+    color: rgba(var(--sidebar-text-rgb), 0.72);
+  }
+}

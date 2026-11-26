@@ -1,0 +1,108 @@
+.step-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-l);
+  }
+
+  &__search {
+    flex: 1 1 auto;
+    max-width: 360px;
+  }
+
+  &__count {
+    white-space: nowrap;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
+    border-radius: var(--radius-m);
+  }
+
+  &__category + &__category {
+    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-height: calc(var(--spacing-xxxl) + var(--spacing-xs));
+    padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
+      var(--spacing-l);
+
+    > :first-child {
+      flex: 1 1 auto;
+    }
+  }
+
+  &__label {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  &__meta {
+    white-space: nowrap;
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__chevron {
+    transition: transform var(--duration-quick) var(--ease-transition);
+
+    &--open {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--duration-moderate)
+      var(--ease-transition);
+
+    &--expanded {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  &__collapse-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  &__steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-m) var(--spacing-l);
+    margin: 0;
+    padding: var(--spacing-xxxs) var(--spacing-l) var(--spacing-l)
+      var(--spacing-xxxl);
+    list-style: none;
+  }
+
+  &__step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__chevron,
+    &__collapse {
+      transition: none;
+    }
+  }
+}

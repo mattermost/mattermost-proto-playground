@@ -3,6 +3,7 @@ import ExternalCallParticipants from '@/pages/prototypes/external-call-participa
 import MobileHomeChannel from '@/pages/prototypes/mobile-home-channel/MobileHomeChannel';
 import OutboundCalls from '@/pages/prototypes/outbound-calls/OutboundCalls';
 import VideoCalls from '@/pages/prototypes/video-calls/VideoCalls';
+import WeaveAutomationPermissions from '@/pages/prototypes/weave-automation-permissions/WeaveAutomationPermissions';
 
 export type PrototypeEntry = {
   id: string;
@@ -35,6 +36,12 @@ export const PROTOTYPES: PrototypeEntry[] = [
     label: 'Video Calls',
     path: '/prototypes/video-calls',
     component: VideoCalls,
+  },
+  {
+    id: 'weave-automation-permissions',
+    label: 'Automation permissions',
+    path: '/prototypes/weave-automation-permissions',
+    component: WeaveAutomationPermissions,
   },
 ];
 
