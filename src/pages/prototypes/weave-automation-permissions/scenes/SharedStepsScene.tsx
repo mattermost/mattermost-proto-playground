@@ -44,7 +44,7 @@ export default function SharedStepsScene({
     <div className={styles['weave-permissions__page']}>
       <AdminConsoleHeader
         showBack
-        ariaLabelBack="Back to Settings"
+        ariaLabelBack="Back to Permissions"
         onBackClick={onCancel}
         title={
           <span className={styles['weave-permissions__title-row']}>
@@ -57,7 +57,7 @@ export default function SharedStepsScene({
         <div className={styles['weave-permissions__body']}>
           <AdminPanel
             title="Who's included"
-            subtitle="Everyone in any group on the Permissions tab. Change who by editing the groups."
+            subtitle="Everyone in any group on the Permissions page. Change who by editing the groups."
             headerActions={
               <Button emphasis="tertiary" size="small" onClick={onSeeWho}>
                 See who

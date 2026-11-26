@@ -4,7 +4,6 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Scrollbar } from '@mattermost/compass-ui/components/scrollbar';
 import { SectionNotice } from '@mattermost/compass-ui/components/section-notice';
-import { Tabs } from '@mattermost/compass-ui/components/tabs';
 import { Tag } from '@mattermost/compass-ui/components/tag';
 import {
   describeSteps,
@@ -54,149 +53,118 @@ export default function PermissionsScene({
     <div className={styles['weave-permissions__page']}>
       <Scrollbar className={styles['weave-permissions__scroll']}>
         <div className={styles['weave-permissions__body']}>
-          {/* Settings page head and tabs, as in the plugin's settings_page.tsx. */}
           <div className={styles['weave-permissions__pagehead']}>
             <h1 className={styles['weave-permissions__page-title']}>
-              Settings
+              Permissions
             </h1>
-            <p className={styles['weave-permissions__intro']}>
-              Workspace-wide Weave settings for system admins.
-            </p>
-          </div>
-          <Tabs
-            aria-label="Settings sections"
-            appearance="underlined"
-            tabs={[
-              {
-                key: 'permissions',
-                label: 'Permissions',
-                id: 'settings-tab-permissions',
-                panelId: 'settings-panel-permissions',
-              },
-            ]}
-            activeKey="permissions"
-            onChange={() => {}}
-          />
-          <div
-            role="tabpanel"
-            id="settings-panel-permissions"
-            aria-labelledby="settings-tab-permissions"
-            className={styles['weave-permissions__panel']}
-          >
             <p className={styles['weave-permissions__intro']}>
               People in these groups can create team automations and edit their
               own, in any team they belong to. Everyone gets the shared steps,
               plus any extra steps from their groups. System admins always have
               full access.
             </p>
-
-            {pendingNewSteps.length > 0 && (
-              <SectionNotice
-                type="warning"
-                title={`${pendingNewSteps.length} new steps aren't available to anyone yet`}
-                description={`${pendingNewSteps.map((s) => s.label).join(', ')}. Add them to the shared steps, or give them to specific groups.`}
-                primaryButtonLabel="Add to everyone"
-                onPrimaryAction={onAddNewStepsToEveryone}
-                secondaryButtonLabel="Review"
-                onSecondaryAction={onReviewNewSteps}
-              />
-            )}
-
-            <AdminPanel
-              title={
-                <span className={styles['weave-permissions__title-row']}>
-                  All automation editors
-                  <Tag label="Preset" />
-                </span>
-              }
-              subtitle={`Everyone in the groups below · ${everyone.length} people`}
-              headerActions={
-                <div className={styles['weave-permissions__panel-actions']}>
-                  <Button
-                    emphasis="tertiary"
-                    size="small"
-                    onClick={() => onSeeWho('All automation editors')}
-                  >
-                    See who
-                  </Button>
-                  <Button
-                    emphasis="tertiary"
-                    size="small"
-                    onClick={onEditShared}
-                  >
-                    Edit shared steps
-                  </Button>
-                </div>
-              }
-            >
-              <dl className={styles['weave-permissions__summary']}>
-                <dt>Shared steps</dt>
-                <dd>
-                  {describeSteps([...sharedSteps], summaryCatalog, 'all')}
-                </dd>
-              </dl>
-            </AdminPanel>
-
-            <div className={styles['weave-permissions__section-heading']}>
-              <h2 className={styles['weave-permissions__section-title']}>
-                Groups
-              </h2>
-              <span className={styles['weave-permissions__muted']}>
-                Who can create, and any extra steps they get
-              </span>
-            </div>
-
-            {groups.map((g) => {
-              const count = peopleInGroup(g).length;
-              return (
-                <AdminPanel
-                  key={g.id}
-                  title={g.name}
-                  subtitle={`${count} ${count === 1 ? 'person' : 'people'}`}
-                  headerActions={
-                    <div className={styles['weave-permissions__panel-actions']}>
-                      <Button
-                        emphasis="tertiary"
-                        size="small"
-                        onClick={() => onSeeWho(g.name, g.id)}
-                      >
-                        See who
-                      </Button>
-                      <Button
-                        emphasis="tertiary"
-                        size="small"
-                        onClick={() => onEditGroup(g.id)}
-                      >
-                        Edit
-                      </Button>
-                    </div>
-                  }
-                >
-                  <dl className={styles['weave-permissions__summary']}>
-                    <dt>Who</dt>
-                    <dd>{describeWho(g)}</dd>
-                    <dt>Extra steps</dt>
-                    <dd>
-                      {describeSteps(
-                        g.extraSteps.filter((id) => !sharedSteps.has(id)),
-                        summaryCatalog,
-                        'extra',
-                      )}
-                    </dd>
-                  </dl>
-                </AdminPanel>
-              );
-            })}
-
-            <Button
-              className={styles['weave-permissions__add']}
-              emphasis="tertiary"
-              leadingIcon={<Icon glyph={<PlusIcon />} />}
-              onClick={onAddGroup}
-            >
-              Add group
-            </Button>
           </div>
+
+          {pendingNewSteps.length > 0 && (
+            <SectionNotice
+              type="warning"
+              title={`${pendingNewSteps.length} new steps aren't available to anyone yet`}
+              description={`${pendingNewSteps.map((s) => s.label).join(', ')}. Add them to the shared steps, or give them to specific groups.`}
+              primaryButtonLabel="Add to everyone"
+              onPrimaryAction={onAddNewStepsToEveryone}
+              secondaryButtonLabel="Review"
+              onSecondaryAction={onReviewNewSteps}
+            />
+          )}
+
+          <AdminPanel
+            title={
+              <span className={styles['weave-permissions__title-row']}>
+                All automation editors
+                <Tag label="Preset" />
+              </span>
+            }
+            subtitle={`Everyone in the groups below · ${everyone.length} people`}
+            headerActions={
+              <div className={styles['weave-permissions__panel-actions']}>
+                <Button
+                  emphasis="tertiary"
+                  size="small"
+                  onClick={() => onSeeWho('All automation editors')}
+                >
+                  See who
+                </Button>
+                <Button emphasis="tertiary" size="small" onClick={onEditShared}>
+                  Edit shared steps
+                </Button>
+              </div>
+            }
+          >
+            <dl className={styles['weave-permissions__summary']}>
+              <dt>Shared steps</dt>
+              <dd>{describeSteps([...sharedSteps], summaryCatalog, 'all')}</dd>
+            </dl>
+          </AdminPanel>
+
+          <div className={styles['weave-permissions__section-heading']}>
+            <h2 className={styles['weave-permissions__section-title']}>
+              Groups
+            </h2>
+            <span className={styles['weave-permissions__muted']}>
+              Who can create, and any extra steps they get
+            </span>
+          </div>
+
+          {groups.map((g) => {
+            const count = peopleInGroup(g).length;
+            return (
+              <AdminPanel
+                key={g.id}
+                title={g.name}
+                subtitle={`${count} ${count === 1 ? 'person' : 'people'}`}
+                headerActions={
+                  <div className={styles['weave-permissions__panel-actions']}>
+                    <Button
+                      emphasis="tertiary"
+                      size="small"
+                      onClick={() => onSeeWho(g.name, g.id)}
+                    >
+                      See who
+                    </Button>
+                    <Button
+                      emphasis="tertiary"
+                      size="small"
+                      onClick={() => onEditGroup(g.id)}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                }
+              >
+                <dl className={styles['weave-permissions__summary']}>
+                  <dt>Who</dt>
+                  <dd>{describeWho(g)}</dd>
+                  <dt>Extra steps</dt>
+                  <dd>
+                    {describeSteps(
+                      g.extraSteps.filter((id) => !sharedSteps.has(id)),
+                      summaryCatalog,
+                      'extra',
+                    )}
+                  </dd>
+                </dl>
+              </AdminPanel>
+            );
+          })}
+
+          <Button
+            className={styles['weave-permissions__add']}
+            emphasis="tertiary"
+            leadingIcon={<Icon glyph={<PlusIcon />} />}
+            onClick={onAddGroup}
+          >
+            Add group
+          </Button>
         </div>
       </Scrollbar>
     </div>

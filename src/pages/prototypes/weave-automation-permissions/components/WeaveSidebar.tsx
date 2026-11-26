@@ -5,7 +5,7 @@ import HomeVariantOutlineIcon from '@mattermost/compass-icons/components/home-va
 import IframeListOutlineIcon from '@mattermost/compass-icons/components/iframe-list-outline';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
-import SettingsOutlineIcon from '@mattermost/compass-icons/components/settings-outline';
+import ShieldOutlineIcon from '@mattermost/compass-icons/components/shield-outline';
 import { ChannelsSidebarCategory } from '@mattermost/compass-proto';
 import { ChannelSidebarItem } from '@mattermost/compass-ui/components/channel-sidebar-item';
 import { Icon } from '@mattermost/compass-ui/components/icon';
@@ -16,7 +16,8 @@ import styles from './WeaveSidebar.module.scss';
  * Mirrors the Weave plugin's product nav (mattermost-plugin-weave
  * `webapp/src/components/product_nav.tsx`, branch
  * MM-71879-builder-policy-admin-ui): primary items, Health and Settings for
- * system admins, then each folder with its automations, then Recents.
+ * system admins (the plugin calls the last one Settings; it only holds
+ * builder access, so it is Permissions here), then each folder with its automations, then Recents.
  */
 const NAV = [
   { id: 'list', label: 'Home', glyph: <HomeVariantOutlineIcon /> },
@@ -25,7 +26,7 @@ const NAV = [
   { id: 'all_runs', label: 'Run history', glyph: <PlayOutlineIcon /> },
   { id: 'secrets', label: 'Variables & secrets', glyph: <CodeBracketsIcon /> },
   { id: 'health', label: 'Health', glyph: <ChartLineIcon /> },
-  { id: 'settings', label: 'Settings', glyph: <SettingsOutlineIcon /> },
+  { id: 'permissions', label: 'Permissions', glyph: <ShieldOutlineIcon /> },
 ];
 
 // Stand-in folders and automations, named after the automations prototype's fixtures.
@@ -79,7 +80,7 @@ export default function WeaveSidebar() {
               <ChannelSidebarItem
                 name={item.label}
                 leadingVisual={<Icon glyph={item.glyph} />}
-                active={item.id === 'settings'}
+                active={item.id === 'permissions'}
               />
             </li>
           ))}
