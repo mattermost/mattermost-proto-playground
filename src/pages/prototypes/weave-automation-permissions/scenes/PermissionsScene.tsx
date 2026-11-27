@@ -169,7 +169,7 @@ export default function PermissionsScene({
                       {g.name}
                     </span>
                     <span className={styles['weave-permissions__group-desc']}>
-                      {`${count} ${count === 1 ? 'person' : 'people'} · ${extraStepsSummary(g.extraSteps.filter((id) => !sharedSteps.has(id)))}`}
+                      {`${count} ${count === 1 ? 'person' : 'people'} · ${g.mode === 'attributes' ? 'Attribute-based policy · ' : ''}${extraStepsSummary(g.extraSteps.filter((id) => !sharedSteps.has(id)))}`}
                     </span>
                   </div>
                   <div className={styles['weave-permissions__panel-actions']}>
