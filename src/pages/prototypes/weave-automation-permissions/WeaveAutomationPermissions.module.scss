@@ -9,7 +9,15 @@
   justify-content: center;
   padding: var(--spacing-xxl);
 
+  // Header controls: the scene switcher with the prototype settings cog after it.
+  &__chrome {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
+
   &__frame {
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -43,20 +51,85 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  &__section-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--spacing-l);
-    margin-top: var(--spacing-xs);
+  // A whole panel that opens its editor on click. The wash is a gradient layer
+  // so it sits over the panel's own background in any theme.
+  &__panel-link {
+    cursor: pointer;
+
+    &#{&}:hover {
+      background-image: linear-gradient(
+        rgba(var(--center-channel-color-rgb), 0.04),
+        rgba(var(--center-channel-color-rgb), 0.04)
+      );
+    }
   }
 
-  &__section-title {
-    margin: 0;
-    font-family: var(--font-family-heading);
-    font-size: var(--font-size-200);
+  // Rows run edge to edge so the hover wash reaches the panel border; the
+  // dividers are inset back to the content padding.
+  &__groups {
+    margin: calc(-1 * var(--spacing-xxl));
+    padding: 0;
+    list-style: none;
+  }
+
+  &__group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-l);
+    padding: var(--spacing-l) var(--spacing-xxl);
+    cursor: pointer;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    // The outer rows get the panel's 24px padding against the header divider
+    // and the bottom edge; rows between keep 16px.
+    &:first-child {
+      padding-top: var(--spacing-xxl);
+    }
+
+    // Follow the panel's rounded bottom corners.
+    &:last-child {
+      padding-bottom: var(--spacing-xxl);
+      border-bottom-right-radius: var(--radius-m);
+      border-bottom-left-radius: var(--radius-m);
+    }
+
+    & + &::before {
+      position: absolute;
+      top: 0;
+      right: var(--spacing-xxl);
+      left: var(--spacing-xxl);
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      content: '';
+    }
+  }
+
+  &__group-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--spacing-xxxs);
+  }
+
+  &__group-desc {
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
+  &__group-name {
     font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-200);
+  }
+
+  &__confirm-text {
+    margin: 0;
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
   }
 
   &__muted {
@@ -87,10 +160,6 @@
   &__panel-actions {
     display: flex;
     gap: var(--spacing-xs);
-  }
-
-  &__add {
-    align-self: flex-start;
   }
 
   &__stack {
@@ -142,7 +211,9 @@
 
     > span {
       display: flex;
-      flex-direction: column;
+      align-items: baseline;
+      gap: var(--spacing-xs);
+      min-width: 0;
     }
   }
 

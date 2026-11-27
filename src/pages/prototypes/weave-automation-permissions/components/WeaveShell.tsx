@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import LightningBoltOutlineIcon from '@mattermost/compass-icons/components/lightning-bolt-outline';
 import {
   BullseyeArrowIcon,
@@ -8,6 +8,7 @@ import {
   ProductShell,
 } from '@mattermost/compass-proto';
 import avatarDanielle from '@/assets/avatars/Danielle Okoro.png';
+import { OverlayContainerContext } from './OverlayContainer';
 import WeaveSidebar from './WeaveSidebar';
 import styles from '../WeaveAutomationPermissions.module.scss';
 
@@ -31,10 +32,23 @@ const RAIL_ITEMS = [
 ];
 
 /** Automation product frame: Product Rail, Automation sidebar, and the page. */
-export default function WeaveShell({ children }: { children: ReactNode }) {
+export default function WeaveShell({
+  children,
+  overlays,
+}: {
+  children: ReactNode;
+  /** Modals, rendered inside the frame so their scrim covers only the shell. */
+  overlays?: ReactNode;
+}) {
+  // A state-held node (not a ref) so modals re-render once the frame exists.
+  const [frame, setFrame] = useState<HTMLElement | null>(null);
   return (
     <div className={styles['weave-permissions']}>
-      <div className={styles['weave-permissions__frame']}>
+      <div
+        className={styles['weave-permissions__frame']}
+        ref={setFrame}
+        data-wt-shell
+      >
         <ProductShell
           product="automation"
           userAvatarSrc={avatarDanielle}
@@ -44,6 +58,9 @@ export default function WeaveShell({ children }: { children: ReactNode }) {
         >
           {children}
         </ProductShell>
+        <OverlayContainerContext.Provider value={frame}>
+          {overlays}
+        </OverlayContainerContext.Provider>
       </div>
     </div>
   );

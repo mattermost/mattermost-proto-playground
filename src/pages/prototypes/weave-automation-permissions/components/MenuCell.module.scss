@@ -3,6 +3,10 @@
 .menu-cell {
   width: 100%;
 
+  &--inline {
+    width: auto;
+  }
+
   &__trigger {
     display: flex;
     width: 100%;

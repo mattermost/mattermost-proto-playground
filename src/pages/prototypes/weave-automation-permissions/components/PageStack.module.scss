@@ -1,0 +1,41 @@
+.page-stack {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--center-channel-bg);
+
+  &__layer {
+    position: absolute;
+    inset: 0;
+    background: var(--center-channel-bg);
+    transition:
+      opacity var(--duration-moderate) var(--ease-transition),
+      transform var(--duration-moderate) var(--ease-transition);
+
+    &--base {
+      opacity: 1;
+
+      &.page-stack__layer--covered {
+        opacity: 0;
+      }
+    }
+
+    // A short slide with a fade, not a full-width push.
+    &--child {
+      opacity: 0;
+      transform: translateX(var(--spacing-xxl));
+
+      &.page-stack__layer--visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__layer {
+      transition: none;
+    }
+  }
+}

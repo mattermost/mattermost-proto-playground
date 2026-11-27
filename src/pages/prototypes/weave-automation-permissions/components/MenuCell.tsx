@@ -33,6 +33,8 @@ export interface MenuOption {
   value: string;
   label: string;
   description?: string;
+  /** Actions mode only: styles the row as destructive. */
+  destructive?: boolean;
 }
 
 export interface MenuGroup {
@@ -55,6 +57,10 @@ interface MenuCellProps {
   searchable?: boolean;
   /** Which edge of the trigger the menu lines up with. */
   align?: 'start' | 'end';
+  /** Rows are commands (`menuitem`), not selectable values: no checks, closes on pick. */
+  actions?: boolean;
+  /** Size to the trigger instead of filling the row. */
+  inline?: boolean;
 }
 
 const ITEM = '[data-menu-item]';
@@ -70,6 +76,8 @@ export default function MenuCell({
   renderTrigger,
   searchable = false,
   align = 'start',
+  actions = false,
+  inline = false,
 }: MenuCellProps) {
   const [open, setOpen] = useState(false);
   // Stays set through the exit transition; cleared by PopoverMenu `onExited`.
@@ -156,7 +164,13 @@ export default function MenuCell({
     : groups;
 
   return (
-    <div className={styles['menu-cell']} ref={ref}>
+    <div
+      className={[
+        styles['menu-cell'],
+        inline ? styles['menu-cell--inline'] : '',
+      ].join(' ')}
+      ref={ref}
+    >
       {renderTrigger ? (
         renderTrigger({ open, toggle })
       ) : (
@@ -230,14 +244,21 @@ export default function MenuCell({
                           secondaryLabel={o.description}
                           secondaryLabelPosition="below"
                           leadingElement={false}
-                          trailingElement={checked}
+                          trailingElement={!actions && checked}
                           trailingVisual={<Icon glyph={<CheckIcon />} />}
                           data-menu-item
-                          role={multi ? 'menuitemcheckbox' : 'menuitemradio'}
-                          aria-checked={checked}
+                          destructive={o.destructive}
+                          role={
+                            actions
+                              ? 'menuitem'
+                              : multi
+                                ? 'menuitemcheckbox'
+                                : 'menuitemradio'
+                          }
+                          aria-checked={actions ? undefined : checked}
                           onClick={() => {
                             onSelect(o.value);
-                            if (!multi) close(true);
+                            if (actions || !multi) close(true);
                           }}
                         />
                       );

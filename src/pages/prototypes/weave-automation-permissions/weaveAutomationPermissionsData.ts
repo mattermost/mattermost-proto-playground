@@ -20,11 +20,76 @@ import { WEAVE_CATALOG } from './weaveCatalog';
 
 /* ------------------------------------------------------------------ Steps */
 
-export type Step = { id: string; type: string; label: string };
+export type Step = {
+  id: string;
+  type: string;
+  label: string;
+  /** Sub-heading the picker lists this step under, within its category. */
+  group?: string;
+};
 export type StepCategory = { id: string; label: string; steps: Step[] };
 
+const TRIGGER_GROUPS: Record<string, string[]> = {
+  'Messages and channels': [
+    'message_posted',
+    'message_updated',
+    'message_deleted',
+    'channel_created',
+    'user_joined_channel',
+    'user_left_channel',
+    'reaction_added',
+    'reaction_removed',
+    'message_action',
+    'post_menu_action',
+  ],
+  'Users & teams': ['user_joined_team', 'user_left_team', 'user_created'],
+  'Run by a person': ['slash_command', 'dialog_submitted', 'manual'],
+  'Schedule & external': ['schedule', 'webhook', 'plugin_event'],
+};
+
+/** One-line explainers shown under a sub-heading in the step picker. */
+export const STEP_GROUP_NOTES: Record<string, string> = {
+  'Blocking hooks':
+    'These run before the action completes and can stop it, such as holding a message until the automation approves it. Grant them with care.',
+};
+
 /** The plugin's real catalog (see weaveCatalog.ts). */
-export const STEP_CATEGORIES: StepCategory[] = WEAVE_CATALOG;
+// The plugin has several one-step categories (Blocking, Interactive, Legacy).
+// A category of one is odd to expand, so each is listed under a related one.
+// Step ids don't change.
+const MERGE_INTO: Record<string, string> = {
+  blocking: 'flow', // Decision is flow control
+  interactive: 'flow', // Open dialog pauses a flow for a person, like Decision
+  legacy: 'integrations', // Mattermost action (legacy) is an API call
+};
+
+export const STEP_CATEGORIES: StepCategory[] = WEAVE_CATALOG.filter(
+  (cat) => !(cat.id in MERGE_INTO),
+).map((cat) => {
+  const merged = WEAVE_CATALOG.filter(
+    (c) => MERGE_INTO[c.id] === cat.id,
+  ).flatMap((c) => c.steps);
+  const steps = [...cat.steps, ...merged];
+  if (cat.id === 'triggers') {
+    return {
+      ...cat,
+      steps: steps.map((st) => ({
+        ...st,
+        group: triggerGroup(st.type),
+        label: st.label.replace(' (blocking)', ''),
+      })),
+    };
+  }
+  return { ...cat, steps };
+});
+
+/** Sub-heading for a trigger. Blocking hooks are the `*_will_be_*` triggers. */
+function triggerGroup(type: string): string | undefined {
+  if (type.includes('_will_be_')) return 'Blocking hooks';
+  return Object.keys(TRIGGER_GROUPS).find((g) =>
+    TRIGGER_GROUPS[g].includes(type),
+  );
+}
 
 /**
  * Steps added by a Weave upgrade since the policy was last saved. Stand-ins
@@ -37,6 +102,7 @@ export const NEW_STEPS: { categoryId: string; step: Step }[] = [
       id: 'trigger_plugin_event',
       type: 'plugin_event',
       label: 'Plugin event',
+      group: 'Schedule & external',
     },
   },
   {
@@ -66,7 +132,7 @@ function categorySteps(...ids: string[]): string[] {
 }
 
 const BLOCKING_TRIGGERS = STEP_CATEGORIES.find((c) => c.id === 'triggers')!
-  .steps.filter((s) => s.label.includes('(blocking)'))
+  .steps.filter((s) => s.group === 'Blocking hooks')
   .map((s) => s.id);
 
 /**
@@ -83,10 +149,13 @@ export const INITIAL_SHARED_STEPS: string[] = [
     'channels',
     'users-teams',
     'posts',
-    'interactive',
     'stored-state',
     'playbooks',
-  ).filter((id) => id !== 'node_update_user_roles'),
+  ).filter(
+    // Role changes and Decision (which can hold or reject actions) are granted
+    // to specific groups, not everyone.
+    (id) => id !== 'node_update_user_roles' && id !== 'node_decision',
+  ),
 ];
 
 /* ------------------------------------------------------------ Attributes */
@@ -268,7 +337,13 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
     conditions: [],
     match: 'all',
     members: ['g-platform-leads', 'u3', 'u40'],
-    extraSteps: ['trigger_webhook', ...categorySteps('integrations', 'ai')],
+    extraSteps: [
+      'trigger_webhook',
+      // The original Integrations and AI categories, before they were merged.
+      ...WEAVE_CATALOG.filter((c) => ['integrations', 'ai'].includes(c.id))
+        .flatMap((c) => c.steps)
+        .map((st) => st.id),
+    ],
   },
   {
     id: 'moderators',
@@ -288,7 +363,7 @@ export const INITIAL_GROUPS: PermissionGroup[] = [
     extraSteps: [
       'trigger_message_will_be_posted',
       'trigger_file_will_be_uploaded',
-      ...categorySteps('blocking'),
+      'node_decision',
     ],
   },
   {

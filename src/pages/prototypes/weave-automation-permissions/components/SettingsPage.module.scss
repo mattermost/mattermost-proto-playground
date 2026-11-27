@@ -34,12 +34,15 @@
   &__leading {
     display: flex;
     align-items: flex-start;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-xxxs);
     min-width: 0;
   }
 
   // Pulls the back button's own padding into the gutter so the title stays on the column edge.
+  // The 32px button is taller than the 28px title line; shift it up 2px so
+  // the arrow centers on the title text.
   &__back {
+    margin-top: calc(-1 * var(--spacing-xxxxs));
     margin-left: calc(-1 * var(--spacing-xs));
   }
 
@@ -64,8 +67,8 @@
 
   &__subtitle {
     margin: 0;
-    font-size: var(--font-size-75);
-    line-height: var(--line-height-75);
+    font-size: var(--font-size-100);
+    line-height: var(--line-height-100);
     color: rgba(var(--center-channel-color-rgb), 0.75);
   }
 

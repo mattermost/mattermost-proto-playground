@@ -1,0 +1,96 @@
+.editable-title {
+  &__trigger,
+  &__input {
+    min-width: 0;
+    margin: 0;
+    padding: 0 var(--spacing-xxs);
+    border: 1px solid transparent;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  &__trigger {
+    // Its side padding would add to the gap after a back button.
+    margin: -1px 0 -1px calc(-1 * var(--spacing-xxxs));
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    cursor: text;
+    transition: background var(--duration-quick) var(--ease-transition);
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--button-bg);
+      outline-offset: 1px;
+    }
+
+    &:hover .editable-title__pencil,
+    &:focus-visible .editable-title__pencil {
+      opacity: 1;
+    }
+  }
+
+  &__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__pencil {
+    display: inline-flex;
+    flex-shrink: 0;
+    color: rgba(var(--center-channel-color-rgb), 0.64);
+    opacity: 0;
+    transition: opacity var(--duration-quick) var(--ease-transition);
+  }
+
+  // Sizes to the text: a hidden copy of the value in the same grid cell sets the
+  // width, so the underline stops where the text does.
+  &__field {
+    display: inline-grid;
+    min-width: 0;
+    max-width: 100%;
+
+    // Same box as the view-mode trigger, so the text doesn't move on entering.
+    margin: -1px 0 -1px calc(-1 * var(--spacing-xxxs));
+
+    &::after {
+      padding-inline: calc(var(--spacing-xxs) + 1px);
+      border-block: 1px solid transparent;
+      content: attr(data-value);
+      font: inherit;
+      grid-area: 1 / 1;
+      letter-spacing: inherit;
+      visibility: hidden;
+      white-space: pre;
+    }
+
+    > .editable-title__input {
+      grid-area: 1 / 1;
+
+      // Width 0 keeps the input's intrinsic size out of the track, so the hidden
+      // copy decides it; min-width then fills the track.
+      width: 0;
+      min-width: 100%;
+    }
+  }
+
+  // Edit mode keeps only an underline, so the title doesn't read as a boxed field.
+  &__input {
+    max-width: 100%;
+    box-sizing: border-box;
+    border-bottom-color: var(--button-bg);
+    border-radius: 0;
+    background: transparent;
+    outline: none;
+
+    // Two pixels in all: the 1px border plus this, outside the box.
+    box-shadow: 0 1px 0 var(--button-bg);
+  }
+}

@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay } from '@mattermost/compass-ui/components/modal';
-import { Button } from '@mattermost/compass-ui/components/button';
 import { UserAvatar } from '@mattermost/compass-ui/components/user-avatar';
 import type { Person } from '../weaveAutomationPermissionsData';
+import { useOverlayContainer } from './OverlayContainer';
 import styles from '../WeaveAutomationPermissions.module.scss';
 
 interface PeopleModalProps {
@@ -20,8 +20,15 @@ export default function PeopleModal({
   onClose,
   onExited,
 }: PeopleModalProps) {
+  const container = useOverlayContainer();
   return (
-    <ModalOverlay open={open} onClose={onClose}>
+    <ModalOverlay
+      open={open}
+      onClose={onClose}
+      container={container}
+      lockScroll={false}
+      style={{ position: 'absolute' }}
+    >
       <Modal
         open={open}
         onExited={onExited}
@@ -30,12 +37,6 @@ export default function PeopleModal({
         title={title}
         subtitle={`${people.length} ${people.length === 1 ? 'person' : 'people'}, across all teams`}
         scrollable
-        footerType="1-action"
-        footer={
-          <Button emphasis="tertiary" onClick={onClose}>
-            Close
-          </Button>
-        }
       >
         <ul className={styles['weave-permissions__people']}>
           {people.map((p) => (

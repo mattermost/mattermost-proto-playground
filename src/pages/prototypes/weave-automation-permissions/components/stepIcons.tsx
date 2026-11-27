@@ -16,6 +16,7 @@ import CloseCircleOutlineIcon from '@mattermost/compass-icons/components/close-c
 import CodeTagsIcon from '@mattermost/compass-icons/components/code-tags';
 import ConsoleIcon from '@mattermost/compass-icons/components/console';
 import CreationOutlineIcon from '@mattermost/compass-icons/components/creation-outline';
+import DownloadOutlineIcon from '@mattermost/compass-icons/components/download-outline';
 import EmoticonOutlineIcon from '@mattermost/compass-icons/components/emoticon-outline';
 import EmoticonPlusOutlineIcon from '@mattermost/compass-icons/components/emoticon-plus-outline';
 import FormatListBulletedIcon from '@mattermost/compass-icons/components/format-list-bulleted';
@@ -32,12 +33,14 @@ import PencilOutlineIcon from '@mattermost/compass-icons/components/pencil-outli
 import PlayOutlineIcon from '@mattermost/compass-icons/components/play-outline';
 import PlaylistCheckIcon from '@mattermost/compass-icons/components/playlist-check';
 import PlusBoxOutlineIcon from '@mattermost/compass-icons/components/plus-box-outline';
-import RadioboxMarkedIcon from '@mattermost/compass-icons/components/radiobox-marked';
 import RefreshIcon from '@mattermost/compass-icons/components/refresh';
 import SendOutlineIcon from '@mattermost/compass-icons/components/send-outline';
 import ServerOutlineIcon from '@mattermost/compass-icons/components/server-outline';
 import SlashForwardBoxOutlineIcon from '@mattermost/compass-icons/components/slash-forward-box-outline';
 import SourceBranchIcon from '@mattermost/compass-icons/components/source-branch';
+import TableRowPlusAfterIcon from '@mattermost/compass-icons/components/table-row-plus-after';
+import TableRowRemoveIcon from '@mattermost/compass-icons/components/table-row-remove';
+import ThumbsUpDownIcon from '@mattermost/compass-icons/components/thumbs-up-down';
 import TrashCanOutlineIcon from '@mattermost/compass-icons/components/trash-can-outline';
 import UploadOutlineIcon from '@mattermost/compass-icons/components/upload-outline';
 import WebhookIncomingIcon from '@mattermost/compass-icons/components/webhook-incoming';
@@ -84,7 +87,8 @@ const BY_TYPE: Record<string, Glyph> = {
   loop: RefreshIcon,
   explode: FormatListBulletedIcon,
   implode: FormatListBulletedIcon,
-  decision: RadioboxMarkedIcon,
+  // Not the plugin's radio-button glyph: beside checkboxes it reads as a form control.
+  decision: ThumbsUpDownIcon,
 
   // Posts / messaging
   get_posts: MessageTextOutlineIcon,
@@ -120,12 +124,13 @@ const BY_TYPE: Record<string, Glyph> = {
   remove_group_member: AccountMinusOutlineIcon,
 
   // State
-  kv_set: ServerOutlineIcon,
-  kv_get: ServerOutlineIcon,
-  kv_delete: ServerOutlineIcon,
-  kv_increment: ServerOutlineIcon,
-  kv_list_append: ServerOutlineIcon,
-  kv_list_pop: ServerOutlineIcon,
+  // One glyph per action (the plugin uses a single server icon for all six).
+  kv_set: UploadOutlineIcon,
+  kv_get: DownloadOutlineIcon,
+  kv_delete: TrashCanOutlineIcon,
+  kv_increment: PlusBoxOutlineIcon,
+  kv_list_append: TableRowPlusAfterIcon,
+  kv_list_pop: TableRowRemoveIcon,
 
   // Integrations / AI / Playbooks
   http_request: LinkVariantIcon,

@@ -21,29 +21,87 @@
     color: rgba(var(--center-channel-color-rgb), 0.72);
   }
 
-  &__list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border: 1px solid rgba(var(--center-channel-color-rgb), 0.16);
-    border-radius: var(--radius-m);
+  &__toolbar-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-left: auto;
   }
 
-  &__category + &__category {
-    border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+  // Pushed out to the panel's edges (the picker sits in a 24px-padded panel
+  // body) so the row hover wash is edge to edge. Row padding puts the chevron
+  // glyph (6px inside its button) on the content column, in line with the
+  // Select all checkbox; the steps' padding is that plus the chevron column.
+  &__list {
+    margin: 0 calc(-1 * var(--spacing-xxl));
+    padding: 0;
+    list-style: none;
+  }
+
+  // Compass Checkbox is 100% wide; keep it to its box and label in the toolbar.
+  &__select-all#{&}__select-all {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  &__category {
+    position: relative;
+
+    // Hairline between categories, inset to the content column.
+    & + &::before {
+      position: absolute;
+      top: 0;
+      right: var(--spacing-xxl);
+      left: var(--spacing-xxl);
+      border-top: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      content: '';
+    }
   }
 
   &__row {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
     min-height: calc(var(--spacing-xxxl) + var(--spacing-xs));
-    padding: var(--spacing-xxxs) var(--spacing-xs) var(--spacing-xxxs)
-      var(--spacing-l);
+    padding: var(--spacing-xxxs) calc(var(--spacing-l) + var(--spacing-xxl))
+      var(--spacing-xxxs) calc(var(--spacing-xxl) - var(--spacing-xxs));
+    transition: background var(--duration-quick) var(--ease-transition);
 
-    > :first-child {
-      flex: 1 1 auto;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(var(--center-channel-color-rgb), 0.04);
     }
+
+    // An open category keeps a hairline under its row, inset to the content
+    // column, to separate it from the steps it reveals.
+    &::after {
+      position: absolute;
+      right: var(--spacing-xxl);
+      bottom: 0;
+      left: var(--spacing-xxl);
+      border-bottom: 1px solid rgba(var(--center-channel-color-rgb), 0.08);
+      content: '';
+      opacity: 0;
+      transition: opacity var(--duration-quick) var(--ease-transition);
+    }
+
+    &--open::after {
+      opacity: 1;
+    }
+  }
+
+  // Compass Checkbox stretches to 100% width; fit it to the box and label so
+  // the empty row space is a click target for expanding.
+  &__check#{&}__check {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  // Pushes the counts right while leaving empty row space clickable.
+  &__spacer {
+    flex: 1 1 auto;
   }
 
   &__label {
@@ -58,6 +116,8 @@
   }
 
   &__chevron {
+    // Pulls the category checkbox flush with the step checkboxes below.
+    margin-right: calc(-1 * var(--spacing-xxxs));
     transition: transform var(--duration-quick) var(--ease-transition);
 
     &--open {
@@ -81,26 +141,61 @@
     min-height: 0;
   }
 
+  &__section {
+    padding: 0 calc(var(--spacing-l) + var(--spacing-xxl)) var(--spacing-l)
+      calc(var(--spacing-xxl) - var(--spacing-xxs) + var(--spacing-xxxl));
+
+    // Space under the open category's row, inside the clipped collapse so it
+    // animates away with the rest.
+    &:first-child {
+      padding-top: var(--spacing-xs);
+    }
+  }
+
+  // Compass MenuGroupHeading; the section already supplies the side padding.
+  &__group-title {
+    padding-inline: 0;
+    margin-bottom: var(--spacing-xxs);
+  }
+
+  &__group-note {
+    margin: 0 0 var(--spacing-m);
+    font-size: var(--font-size-75);
+    line-height: var(--line-height-75);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
+  }
+
   &__steps {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-m) var(--spacing-l);
     margin: 0;
-    padding: var(--spacing-xxxs) var(--spacing-l) var(--spacing-l)
-      var(--spacing-xxxl);
+    padding: 0;
     list-style: none;
+  }
+
+  // Wider gap between the checkbox and what follows it (Compass default is 10px).
+  &__step-check#{&}__step-check {
+    gap: var(--spacing-m);
   }
 
   &__step-label {
     display: inline-flex;
     align-items: flex-start;
-    gap: var(--spacing-xxs);
+    gap: var(--spacing-xs);
 
     svg {
       flex: none;
       margin-top: var(--spacing-xxxxs);
       color: rgba(var(--center-channel-color-rgb), 0.64);
     }
+  }
+
+  // Sits on the label's last line, like a word in the sentence.
+  &__new-tag {
+    display: inline-flex;
+    margin-left: var(--spacing-xs);
+    vertical-align: middle;
   }
 
   &__step {

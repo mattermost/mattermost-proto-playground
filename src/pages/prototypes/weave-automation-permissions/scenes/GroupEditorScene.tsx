@@ -5,8 +5,8 @@ import { Button } from '@mattermost/compass-ui/components/button';
 import { Combobox } from '@mattermost/compass-ui/components/combobox';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { Radio } from '@mattermost/compass-ui/components/radio';
-import { TextInput } from '@mattermost/compass-ui/components/text-input';
 import AttributeRuleEditor from '../components/AttributeRuleEditor';
+import EditableTitle from '../components/EditableTitle';
 import SettingsPage from '../components/SettingsPage';
 import StepPicker from '../components/StepPicker';
 import {
@@ -23,6 +23,7 @@ import styles from '../WeaveAutomationPermissions.module.scss';
 interface GroupEditorSceneProps {
   group: PermissionGroup;
   isNew: boolean;
+  initialExpanded?: string[];
   catalog: StepCategory[];
   sharedSteps: Set<string>;
   onSave: (group: PermissionGroup) => void;
@@ -54,6 +55,7 @@ const MEMBER_OPTIONS = [
 export default function GroupEditorScene({
   group,
   isNew,
+  initialExpanded,
   catalog,
   sharedSteps,
   onSave,
@@ -64,6 +66,11 @@ export default function GroupEditorScene({
 }: GroupEditorSceneProps) {
   const [draft, setDraft] = useState<PermissionGroup>(group);
   const matches = peopleInGroup(draft);
+  // Individual users are visible as chips in the field; a count and preview only
+  // help once a user group (which expands to people) is picked.
+  const hasUserGroup = draft.members.some((id) =>
+    USER_GROUPS.some((g) => g.id === id),
+  );
   const dirty = JSON.stringify(draft) !== JSON.stringify(group);
 
   // Only offer steps that aren't already shared with everyone.
@@ -82,11 +89,17 @@ export default function GroupEditorScene({
     setDraft((d) => ({ ...d, mode }));
   }
 
-  const title = draft.name.trim() || (isNew ? 'New group' : 'Untitled group');
+  const title = draft.name;
 
   return (
     <SettingsPage
-      title={title}
+      title={
+        <EditableTitle
+          noun="group"
+          value={draft.name}
+          onChange={(name) => setDraft((d) => ({ ...d, name }))}
+        />
+      }
       onBack={onCancel}
       backLabel="Back to Permissions"
       headerActions={
@@ -103,21 +116,12 @@ export default function GroupEditorScene({
       }
       saveBar={{
         visible: dirty || isNew,
-        saveDisabled: draft.name.trim() === '',
         onSave: () => onSave({ ...draft, name: draft.name.trim() }),
         onDiscard: () => (isNew ? onCancel() : setDraft(group)),
       }}
     >
-      <AdminPanel>
-        <TextInput
-          label="Name"
-          required
-          value={draft.name}
-          onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
-        />
-      </AdminPanel>
-
       <AdminPanel
+        data-wt-focus="group-who-panel"
         title="Who's in this group"
         subtitle="They can create team automations and edit their own, in any team they belong to. Guests and deactivated accounts are never included."
       >
@@ -158,19 +162,22 @@ export default function GroupEditorScene({
                   }))
                 }
               />
-              <div className={styles['weave-permissions__count-row']}>
-                <span aria-live="polite">
-                  {matches.length} {matches.length === 1 ? 'person' : 'people'}
-                </span>
-                <Button
-                  emphasis="link"
-                  size="small"
-                  onClick={() => onSeeWho(title, matches)}
-                  disabled={matches.length === 0}
-                >
-                  See who
-                </Button>
-              </div>
+              {hasUserGroup && (
+                <div className={styles['weave-permissions__count-row']}>
+                  <span aria-live="polite">
+                    {matches.length}{' '}
+                    {matches.length === 1 ? 'person' : 'people'}
+                  </span>
+                  <Button
+                    emphasis="link"
+                    size="small"
+                    onClick={() => onSeeWho(title, matches)}
+                    disabled={matches.length === 0}
+                  >
+                    See who
+                  </Button>
+                </div>
+              )}
             </>
           ) : (
             <AttributeRuleEditor
@@ -185,11 +192,11 @@ export default function GroupEditorScene({
       </AdminPanel>
 
       <AdminPanel
+        data-wt-focus="extra-steps-panel"
         title="Extra steps"
         subtitle={
           <>
-            On top of the shared steps everyone gets from All automation
-            editors.{' '}
+            On top of the steps every editor already gets.{' '}
             <Button emphasis="link" size="small" onClick={onEditShared}>
               Edit shared steps
             </Button>
@@ -198,6 +205,7 @@ export default function GroupEditorScene({
       >
         {extraCatalog.length > 0 ? (
           <StepPicker
+            initialExpanded={initialExpanded}
             label="Extra steps by category"
             catalog={extraCatalog}
             selected={new Set(draft.extraSteps)}

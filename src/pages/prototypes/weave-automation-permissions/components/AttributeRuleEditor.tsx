@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import ChevronDownIcon from '@mattermost/compass-icons/components/chevron-down';
-import CodeBracketsIcon from '@mattermost/compass-icons/components/code-brackets';
 import CodeTagsIcon from '@mattermost/compass-icons/components/code-tags';
 import FilterVariantIcon from '@mattermost/compass-icons/components/filter-variant';
 import PlusIcon from '@mattermost/compass-icons/components/plus';
@@ -11,6 +10,7 @@ import { WithTooltip } from '@mattermost/compass-proto';
 import { Button } from '@mattermost/compass-ui/components/button';
 import { Icon } from '@mattermost/compass-ui/components/icon';
 import { IconButton } from '@mattermost/compass-ui/components/icon-button';
+import { SegmentedControl } from '@mattermost/compass-ui/components/segmented-control';
 import { TextArea } from '@mattermost/compass-ui/components/text-area';
 import {
   ATTRIBUTES,
@@ -53,15 +53,6 @@ interface AttributeRuleEditorProps {
 
 let nextId = 100;
 
-function AttributeChip({ label }: { label: string }) {
-  return (
-    <span className={styles['rule-editor__chip']}>
-      <Icon glyph={<CodeBracketsIcon />} size="12" />
-      {label}
-    </span>
-  );
-}
-
 /**
  * Attribute rule editor, following Abhijit's permission policy rule builder
  * (branch `abhijit/dm-gm-action-controls`, `prototypes/policy-rule-builder`):
@@ -98,39 +89,28 @@ export default function AttributeRuleEditor({
   }
 
   return (
-    <div className={styles['rule-editor']}>
+    <div className={styles['rule-editor']} data-wt-focus="attribute-rules">
       <div className={styles['rule-editor__header']}>
         <span className={styles['rule-editor__title']} id="rule-editor-title">
           Attribute-based rules
         </span>
-        <div
-          className={styles['rule-editor__mode-switch']}
-          role="group"
+        <SegmentedControl
           aria-label="Editor mode"
-        >
-          {(
-            [
-              { key: 'advanced', label: 'Advanced', glyph: <CodeTagsIcon /> },
-              { key: 'simple', label: 'Simple', glyph: <TableLargeIcon /> },
-            ] as const
-          ).map((o) => (
-            <button
-              key={o.key}
-              type="button"
-              aria-pressed={mode === o.key}
-              className={[
-                styles['rule-editor__mode-option'],
-                mode === o.key
-                  ? styles['rule-editor__mode-option--active']
-                  : '',
-              ].join(' ')}
-              onClick={() => setMode(o.key)}
-            >
-              <Icon glyph={o.glyph} size="12" />
-              {o.label}
-            </button>
-          ))}
-        </div>
+          options={[
+            {
+              key: 'advanced',
+              label: 'Advanced',
+              icon: <Icon glyph={<CodeTagsIcon />} />,
+            },
+            {
+              key: 'simple',
+              label: 'Simple',
+              icon: <Icon glyph={<TableLargeIcon />} />,
+            },
+          ]}
+          value={mode}
+          onChange={(key) => setMode(key as 'simple' | 'advanced')}
+        />
       </div>
 
       {mode === 'simple' ? (
@@ -213,7 +193,7 @@ export default function AttributeRuleEditor({
                             })
                           }
                         >
-                          <AttributeChip label={attr.label} />
+                          {attr.label}
                         </MenuCell>
                       </td>
                       <td className={styles['rule-editor__trigger-cell']}>
@@ -310,8 +290,9 @@ export default function AttributeRuleEditor({
 
       <div className={styles['rule-editor__footer']}>
         <Button
-          emphasis="tertiary"
+          emphasis="dim"
           size="small"
+          compact
           leadingIcon={<Icon glyph={<ShieldOutlineIcon />} />}
           onClick={onTest}
         >
